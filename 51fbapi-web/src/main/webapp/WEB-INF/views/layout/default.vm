@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="robots" content="index,follow">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimum-scale=1.0,maximum-scale=1.0">
+    <meta name="keywords" content="洗哟APP清洗_清洗地毯_清洗沙发_清洗窗帘_地毯清洗价格_洗地毯_除螨_地毯清洗服务_清洗地毯公司">
+    <meta name="description" content="洗哟APP,主营地毯清洁,窗帘清洗,沙发清洗,清洗地毯,清洗沙发,清洗窗帘,洗地毯,除螨,洗哟APP在线预约,清洗服务到家,地毯清洗服务价格优惠">
+    <meta name="format-detection" content="telephone=no,address=no,email=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="x-rim-auto-match" content="none">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<link rel="stylesheet" type="text/css" href="/css/common/base.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/common/base.css">
+    <script type="text/javascript" src="/js/common/jquery-1.10.2.min.js"></script>
+    
+    <script type="text/javascript">
+    	// 判断rem字体大小
+        (function (doc, win) {    
+            var docEl = doc.documentElement,    
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',    
+            recalc = function () {    
+                var clientWidth = docEl.clientWidth;    
+                if (!clientWidth) return;    
+                docEl.style.fontSize = 40 * (clientWidth / 640) + 'px';
+            };    
+            if (!doc.addEventListener) return;    
+            win.addEventListener(resizeEvt, recalc, false);    
+            doc.addEventListener('DOMContentLoaded', recalc, false);    
+        })(document, window);
+    </script>
+</head>
+$screen_content
+</html>

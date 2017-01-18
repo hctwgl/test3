@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<group>
+		<!-- log4j -->
+		<property name="fanbei.log.level" defaultValue="debug" description="log4j level" />
+		<property name="fanbei.log.path.root" defaultValue="/home/ald/logs/fanbei" description="log dir" />
+		
+		<!-- config -->
+		<property name="fanbei.check.sign.switch" defaultValue="0" description="检查签名开关，1：打开 （检查签名） 0：关闭（不检查签名）" />
+		<property name="fanbei.inveloment.type" defaultValue="test" description="当前环境" />
+
+		<!-- redis -->
+		<property name="fanbei.redis.hostname" defaultValue="IJgdKMamAcP5btliO3edNq7Dc1rJrWG6qZ7zI9RsgCA=" description="redis host" />
+		<property name="fanbei.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
+		<property name="fanbei.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="redis password" />
+		
+		<property name="fanbei.token.redis.hostname" defaultValue="IJgdKMamAcP5btliO3edNq7Dc1rJrWG6qZ7zI9RsgCA=" description="cache redis host" />
+		<property name="fanbei.token.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
+		<property name="fanbei.token.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="cache redis password" />
+		 
+		<!-- db -->
+		<property name="fanbei.db.url" defaultValue="2j7SkOv5iYWlWFYBTYw71eRSArpY3LstYC5dDrO833nz50fpL++TV15rOOElo3BD" description="dburl" />
+		<property name="fanbei.db.username" defaultValue="IJHsUz9iDSoqGAr1J3hHQQ==" description="db username" />
+		<property name="fanbei.db.password" defaultValue="jpARv3AeDtPuRpsMeLnu0g==" description="db password" />
+		
+		<property name="fanbei.aes.password" defaultValue="testC1b6x@6aH$2dlw" description="aes passwd" />
+		
+	</group>
+
+	<script>
+		<generate template="WEB-INF/classes/props/log4j.xml" />
+		<generate template="WEB-INF/classes/spring/biz-beans.xml" />
+		<generate template="WEB-INF/classes/props/config.properties" />
+		<generate template="WEB-INF/classes/props/encrypt.properties" />
+	</script>
+</config>
