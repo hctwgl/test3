@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>  
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ald.fanbei.dal.dao.AfUserDao">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserDao">
 	<sql id="queryFields">
 		id rid,birthday,gmt_modified,password,user_name,openid,unionid,is_subscribe,gmt_create,nick,avata,name,gender,error_count,mobile,salt,
 		undisturbed_start_time,undisturbed_end_time,is_undisturbed,invite_code,invitor

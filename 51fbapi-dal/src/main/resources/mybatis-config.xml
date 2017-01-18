@@ -9,12 +9,12 @@
 
 	<typeAliases>
 	
-		<package name="com.ald.fanbei.dal.domain"/>
+		<package name="com.ald.fanbei.api.dal.domain"/>
 
 	</typeAliases>
 
 	<plugins>
-		<plugin interceptor="com.ald.fanbei.common.page.PageInterceptor">
+		<plugin interceptor="com.ald.fanbei.api.common.page.PageInterceptor">
 			<property name="databaseType" value="Mysql" />
 		</plugin>
 	</plugins>

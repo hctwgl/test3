@@ -104,7 +104,7 @@
 	</logger>
 	
 	<!-- fanbei dal logger -->
-	<logger name="com.ald.fanbei.dal" additivity="true">
+	<logger name="com.ald.fanbei.api.dal" additivity="true">
 		<level value="${fanbei.log.level}" />
 		<appender-ref ref="FANBE_DAL_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />

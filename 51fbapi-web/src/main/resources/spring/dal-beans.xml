@@ -24,7 +24,7 @@
 	</bean>
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
-		<property name="basePackage" value="com.ald.fanbei.dal.dao"></property>
+		<property name="basePackage" value="com.ald.fanbei.api.dal.dao"></property>
 	</bean>	
 	
 	<bean id="appTransactionManager"

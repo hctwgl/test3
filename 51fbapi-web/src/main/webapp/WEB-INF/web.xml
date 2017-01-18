@@ -66,7 +66,7 @@
 
 	<filter>
 		<filter-name>h5Filter</filter-name>
-		<filter-class>com.ald.fanbei.web.filter.H5Filter</filter-class>
+		<filter-class>com.ald.fanbei.api.web.filter.H5Filter</filter-class>
 		<init-param>
 			<param-name>pubAccessUrl</param-name>
 			<param-value>

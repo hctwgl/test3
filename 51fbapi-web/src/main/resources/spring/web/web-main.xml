@@ -17,10 +17,10 @@
 	<mvc:annotation-driven/>
 	<mvc:default-servlet-handler/>
 	
-	<context:component-scan base-package="com.ald.fanbei.web.controller" />
-	<context:component-scan base-package="com.ald.fanbei.web.api.user" />
-	<context:component-scan base-package="com.ald.fanbei.web.common.impl" />
-	<context:component-scan base-package="com.ald.fanbei.biz.util" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.api.user" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
 	
 	<!-- velocity configuration -->
 	<bean id="velocityConfigurer"
@@ -97,9 +97,9 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="springBeanContextUtil" class="com.ald.fanbei.common.util.SpringBeanContextUtil" /> 
+	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" /> 
 	
-	<bean id="healthCheck" class="com.ald.fanbei.biz.bo.common.HealthCheck"/>
+	<bean id="healthCheck" class="com.ald.fanbei.api.biz.bo.common.HealthCheck"/>
 	<!-- task job -->
 	<task:scheduled-tasks>
 		<task:scheduled ref="healthCheck" method="checkBizCache" cron="0 1/2 * * * *" />

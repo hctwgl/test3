@@ -12,7 +12,7 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-	<bean class="com.ald.fanbei.common.DecrypPropertyPlaceholderConfigurer">
+	<bean class="com.ald.fanbei.api.common.DecrypPropertyPlaceholderConfigurer">
 		<property name="password" value="${fanbei.aes.password}"/>
 		<property name="encryptPropNames">
 			<list>
