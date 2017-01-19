@@ -19,7 +19,7 @@
 		<property name="fbapi.token.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="cache redis password" />
 		 
 		<!-- db -->
-		<property name="fbapi.db.url" defaultValue="jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NBM8iPVksu+CCA9HFkU2200" description="dburl" />
+		<property name="fbapi.db.url" defaultValue="jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NCZT3RtV1J4belR7B0tjJcz" description="dburl" />
 		<property name="fbapi.db.username" defaultValue="IJHsUz9iDSoqGAr1J3hHQQ==" description="db username" />
 		<property name="fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
 		

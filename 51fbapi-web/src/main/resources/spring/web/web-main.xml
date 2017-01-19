@@ -18,9 +18,11 @@
 	<mvc:default-servlet-handler/>
 	
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.api.user" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.api.*" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.service.impl" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.common" />
 	
 	<!-- velocity configuration -->
 	<bean id="velocityConfigurer"
@@ -84,6 +86,10 @@
 			    
 				<!-- user -->
 				<entry key="/user/userLogin" value-ref="userLoginApi" />
+				
+				<!-- mine -->
+				<entry key="/mine/addFootMark" value-ref="addFootMarkerApi" />
+				<entry key="/mine/getFootMarkList" value-ref="getFootMarkListApi" />
 				
 				<!-- goods
 				<entry key="/goods/goodsDetail" value-ref="goodsDetail" />
