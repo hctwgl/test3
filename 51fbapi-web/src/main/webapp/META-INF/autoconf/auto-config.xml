@@ -19,9 +19,9 @@
 		<property name="fanbei.token.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="cache redis password" />
 		 
 		<!-- db -->
-		<property name="fanbei.db.url" defaultValue="2j7SkOv5iYWlWFYBTYw71eRSArpY3LstYC5dDrO833nz50fpL++TV15rOOElo3BD" description="dburl" />
+		<property name="fanbei.db.url" defaultValue="jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NBM8iPVksu+CCA9HFkU2200" description="dburl" />
 		<property name="fanbei.db.username" defaultValue="IJHsUz9iDSoqGAr1J3hHQQ==" description="db username" />
-		<property name="fanbei.db.password" defaultValue="jpARv3AeDtPuRpsMeLnu0g==" description="db password" />
+		<property name="fanbei.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
 		
 		<property name="fanbei.aes.password" defaultValue="testC1b6x@6aH$2dlw" description="aes passwd" />
 		

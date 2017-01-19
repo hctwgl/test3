@@ -164,6 +164,6 @@ public class AesUtil {
 //        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
 //        String sec = decryptFromBase64(secretStr, "testC1b6x@6aH$2dlw");
 //        System.out.println(sec);
-        System.out.println(new String(Base64.encodeBase64(encrypt("6379", "testC1b6x@6aH$2dlw"))));
+        System.out.println(new String(Base64.encodeBase64(encrypt("Hello1234", "testC1b6x@6aH$2dlw"))));
     }
 }
