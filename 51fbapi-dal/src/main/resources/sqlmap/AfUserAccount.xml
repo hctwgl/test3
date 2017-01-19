@@ -17,35 +17,17 @@
 			user_id = #{userId}	
 	</select>
 
-	<insert id="insertUserAccount" parameterType="AfUserAccountDo" useGeneratedKeys="true" >
+	<insert id="addUserAccount" parameterType="AfUserAccountDo" useGeneratedKeys="true" >
 		INSERT INTO
 			af_user_account
 			(
 				user_id,
-				user_name,
-				au_amount,
-				remaining_amount,
-				used_amount,
-				freeze_amount,
-				score,
-				alipay_account,
-				commission,
-				id_number,
-				rebate_amount
+				user_name
 			)
 		VALUES
 			(
 				#{userId},
-				#{userName},
-				#{auAmount},
-				#{remainingAmount},
-				#{usedAmount},
-				#{freezeAmount},
-				#{score},
-				#{alipayAccount},
-				#{commission},
-				#{idNumber},
-				#{rebateAmount}
+				#{userName}
 			)
 	</insert>
 	

@@ -41,14 +41,13 @@ public class CheckVerifyCodeApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
-        String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
-
+        String userName = context.getUserName();
         int type = NumberUtil.objToIntDefault(requestDataVo.getParams().get("type"), -1);
         if(StringUtil.isBlank(verifyCode) || type < 0){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
         }
         
-        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, type);
+        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, type);
         
         if(smsDo == null){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);

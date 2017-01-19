@@ -23,7 +23,7 @@ public interface AfUserAccountDao {
 	 * @param accountDo
 	 * @return
 	 */
-	int insertUserAccount(AfUserAccountDo afUserAccountDo);
+	int addUserAccount(AfUserAccountDo afUserAccountDo);
 	
 	/**
 	 * 修改账户信息

@@ -162,8 +162,9 @@ public class AesUtil {
 //        String encryptStr = new String(Base64.encodeBase64(encrypt("8a216da85697f54201569b664aeb011a", "l9tCjbx@68aH$2dr")));
 //        System.out.println(encryptStr);
 //        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
-//        String sec = decryptFromBase64(secretStr, "testC1b6x@6aH$2dlw");
-//        System.out.println(sec);
-        System.out.println(new String(Base64.encodeBase64(encrypt("Hello1234", "testC1b6x@6aH$2dlw"))));
+        String sec = decryptFromBase64("jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NBM8iPVksu+CCA9HFkU2200", "testC1b6x@6aH$2dlw");
+        System.out.println(sec);
+        
+        System.out.println(new String(Base64.encodeBase64(encrypt("jdbc:mysql://61.164.37.200:3306/51fanbei_app", "testC1b6x@6aH$2dlw"))));
     }
 }

@@ -16,20 +16,17 @@
 			password,
 			salt,
 			nick,
-			mobile,
-			recommend_id,
-			recommend_code
+			mobile
 		)
-		VALUES(
+		VALUES
+		(
 			NOW(),
 			NOW(),
 			#{userName},
 			#{password},
 			#{salt},
 			#{nick},
-			#{mobile},
-			#{recommendId},
-			#{recommendCode}
+			#{mobile}
 		)
 	</insert>
 	
@@ -52,7 +49,7 @@
 		WHERE
 			is_delete = 0
 		AND
-			userName = #{userName}
+			user_name = #{userName}
 	</select>
 
 	<update id="updateUser" parameterType="AfUserDo">

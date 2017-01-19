@@ -27,7 +27,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 
 	@Override
 	public int addUserAccount(AfUserAccountDo accountDo) {
-		return afUserAccountDao.insertUserAccount(accountDo);
+		return afUserAccountDao.addUserAccount(accountDo);
 	}
 
 }

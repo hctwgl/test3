@@ -78,9 +78,9 @@ public class FanbeiController extends BaseController {
         return this.processRequest(body, request, false);
     }
     
-    @RequestMapping(value = 
-    	{"/user/userLogin"
-    	},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @RequestMapping(value = {
+    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/registSetPass"
+    },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

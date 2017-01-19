@@ -5,8 +5,8 @@
 		id as rid,gmt_create,template_id,user_id,gmt_modified,params,type,mobile,result,is_check
 	</sql>
 
-	<insert id="addSmsRecord" parameterType="HoaSmsRecordDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO hoa_sms_record(gmt_create , template_id , user_id , gmt_modified , params , type , mobile,result)
+	<insert id="addSmsRecord" parameterType="AfSmsRecordDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_sms_record(gmt_create , template_id , user_id , gmt_modified , params , type , mobile,result)
 		VALUES (
 		    NOW(),
 		    #{templateId},
@@ -19,13 +19,13 @@
 		)
 	</insert>
 	
-	<select id="getLatestByUidType" resultType="HoaSmsRecordDo">
+	<select id="getLatestByUidType" resultType="AfSmsRecordDo">
 		SELECT
 			<include refid="queryFields" />
-		FROM hoa_sms_record WHERE is_delete = 0 AND mobile=#{mobile} AND type=#{type} ORDER BY ID DESC LIMIT 1;
+		FROM af_sms_record WHERE is_delete = 0 AND mobile=#{mobile} AND type=#{type} ORDER BY ID DESC LIMIT 1;
 	</select>
 	
 	<update id="updateSmsIsCheck">
-		UPDATE hoa_sms_record SET gmt_modified = NOW(),is_check = 1 WHERE id=#{rid}
+		UPDATE af_sms_record SET gmt_modified = NOW(),is_check = 1 WHERE id=#{rid}
 	</update>
 </mapper>

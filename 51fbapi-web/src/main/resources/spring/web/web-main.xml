@@ -86,6 +86,9 @@
 			    
 				<!-- user -->
 				<entry key="/user/userLogin" value-ref="userLoginApi" />
+				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
+				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
+				<entry key="/user/registSetPass" value-ref="registSetPassApi" />
 				
 				<!-- mine -->
 				<entry key="/mine/addFootMark" value-ref="addFootMarkerApi" />

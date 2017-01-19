@@ -66,18 +66,20 @@ public class RegistSetPassApi implements ApiHandle {
         userDo.setUserName(userName);
         userDo.setMobile(userName);
         userDo.setPassword(password);
+        userDo.setNick(userName);
         
         afUserService.addUser(userDo);
 //        Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
         //TODO 优化邀请码规则
 //        String inviteCode = Long.toString(invteLong, 36);
-        AfUserDo afUserDo = new AfUserDo();
-        afUserDo.setRid(userDo.getRid());
-        afUserDo.setRecommendCode("");
-        afUserService.updateUser(afUserDo);
+//        AfUserDo afUserDo = new AfUserDo();
+//        afUserDo.setRid(userDo.getRid());
+//        afUserDo.setRecommendCode("");
+//        afUserService.updateUser(afUserDo);
         
         AfUserAccountDo account = new AfUserAccountDo();
         account.setUserId(userDo.getRid());
+        account.setUserName(userDo.getUserName());
         afUserAccountService.addUserAccount(account);
         return resp;
     }
