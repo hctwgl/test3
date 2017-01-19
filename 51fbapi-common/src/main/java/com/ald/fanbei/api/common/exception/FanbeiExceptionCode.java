@@ -33,6 +33,13 @@ public enum FanbeiExceptionCode {
     USER_REGIST_SMS_OVERDUE("USER_REGIST_SMS_OVERDUE",1107,"user regist sms overdue","验证码已经过期"),
     USER_SEND_SMS_ERROR("USER_SEND_SMS_ERROR",1108,"user send sms error","用户发送验证码失败"),
     
+    USER_PASSWORD_ERROR_FIRST("USER_PASSWORD_ERROR_FIRST",1121,"user password error first","密码输入有误,剩余次数(5)"),
+    USER_PASSWORD_ERROR_SECOND("USER_PASSWORD_ERROR_SECOND",1122,"user password error second","密码输入有误,剩余次数(4)"),
+    USER_PASSWORD_ERROR_THIRD("USER_PASSWORD_ERROR_THIRD",1123,"user password error third","密码输入有误,剩余次数(3)"),
+    USER_PASSWORD_ERROR_FOURTH("USER_PASSWORD_ERROR_FOURTH",1124,"user password error fourth","密码输入有误,剩余次数(2)"),
+    USER_PASSWORD_ERROR_FIFTH("USER_PASSWORD_ERROR_FIFTH",1125,"user password error fifth","密码输入有误,剩余次数(1)"),
+    USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_FIFTH",1126,"user password error fifth","密码输入有误,剩余次数(6)"),
+    
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
 

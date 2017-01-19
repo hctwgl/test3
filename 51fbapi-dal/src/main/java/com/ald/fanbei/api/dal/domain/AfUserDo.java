@@ -4,48 +4,43 @@ import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
+/**
+ * 
+ * @类描述：用户相关信息
+ * @author Xiaotianjian 2017年1月19日下午4:04:20
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
 public class AfUserDo extends AbstractSerial{
-	private static final long serialVersionUID = -6353150283853474562L;
-	private Date birthday;
-	private Date gmtModified;
-	private String password;
-	private Long rid;
-	private String userName;
-	private Date gmtCreate;
-	private String nick;
-	private String avata;
-	private String name;
-	private Integer gender;
-	private Integer errorCount;
-	private String mobile;
-	private String salt;
-	private String undisturbedStartTime;
-	private String undisturbedEndTime;
-	private Integer isUndisturbed;
-	private String inviteCode;
-	private Long invitor;
-	private Date gmtInvite;
-	private String openid;
-	private String unionid;
-	private String isSubscribe;
 	
-	public Date getBirthday() {
-		return birthday;
+	private static final long serialVersionUID = 3906727774409131470L;
+	
+	private Long rid;
+	private Date gmtCreate;
+	private Date gmtModified;
+	private String userName;//用户名
+	private String password;//用户名
+	private String salt;//密码盐值
+	private String gender;//性别 【F：女 ，M：男， U:未知】
+	private String nick;//昵称
+	private String avata;//头像
+	private String realName;//真实姓名
+	private String mobile;//绑定手机号
+	private String email;//邮箱
+	private String birthday;//出生年月日，格式yyyy-MM-dd
+	private String province;//省份
+	private String city;//城市
+	private String county;//区/县
+	private String address;//详细地址
+	private Long recommendId;//邀请人id
+	private Integer failCount;//登录失败次数
+	private Integer vipLevel;//会员等级 【 1:为普通会员，2:为青铜会员，3:为白银会员，4:为黄金会员】
+	private String recommendCode;//邀请码
+	
+	public Long getRid() {
+		return rid;
 	}
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
-	}
-	public Date getGmtModified() {
-		return gmtModified;
-	}
-	public void setGmtModified(Date gmtModified) {
-		this.gmtModified = gmtModified;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
+	public void setRid(Long rid) {
+		this.rid = rid;
 	}
 	public String getUserName() {
 		return userName;
@@ -53,11 +48,23 @@ public class AfUserDo extends AbstractSerial{
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public Date getGmtCreate() {
-		return gmtCreate;
+	public String getPassword() {
+		return password;
 	}
-	public void setGmtCreate(Date gmtCreate) {
-		this.gmtCreate = gmtCreate;
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getSalt() {
+		return salt;
+	}
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 	public String getNick() {
 		return nick;
@@ -71,23 +78,11 @@ public class AfUserDo extends AbstractSerial{
 	public void setAvata(String avata) {
 		this.avata = avata;
 	}
-	public String getName() {
-		return name;
+	public String getRealName() {
+		return realName;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public Integer getGender() {
-		return gender;
-	}
-	public void setGender(Integer gender) {
-		this.gender = gender;
-	}
-	public Integer getErrorCount() {
-		return errorCount;
-	}
-	public void setErrorCount(Integer errorCount) {
-		this.errorCount = errorCount;
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 	public String getMobile() {
 		return mobile;
@@ -95,70 +90,78 @@ public class AfUserDo extends AbstractSerial{
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public String getSalt() {
-		return salt;
+	public String getEmail() {
+		return email;
 	}
-	public void setSalt(String salt) {
-		this.salt = salt;
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	public Integer getIsUndisturbed() {
-		return isUndisturbed;
+	public String getBirthday() {
+		return birthday;
 	}
-	public void setIsUndisturbed(Integer isUndisturbed) {
-		this.isUndisturbed = isUndisturbed;
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
 	}
-	public Long getRid() {
-		return rid;
+	public String getProvince() {
+		return province;
 	}
-	public void setRid(Long rid) {
-		this.rid = rid;
+	public void setProvince(String province) {
+		this.province = province;
 	}
-	public String getUndisturbedStartTime() {
-		return undisturbedStartTime;
+	public String getCity() {
+		return city;
 	}
-	public void setUndisturbedStartTime(String undisturbedStartTime) {
-		this.undisturbedStartTime = undisturbedStartTime;
+	public void setCity(String city) {
+		this.city = city;
 	}
-	public String getUndisturbedEndTime() {
-		return undisturbedEndTime;
+	public String getCounty() {
+		return county;
 	}
-	public void setUndisturbedEndTime(String undisturbedEndTime) {
-		this.undisturbedEndTime = undisturbedEndTime;
+	public void setCounty(String county) {
+		this.county = county;
 	}
-	public String getInviteCode() {
-		return inviteCode;
+	public String getAddress() {
+		return address;
 	}
-	public void setInviteCode(String inviteCode) {
-		this.inviteCode = inviteCode;
+	public void setAddress(String address) {
+		this.address = address;
 	}
-	public void setInvitor(Long invitor) {
-		this.invitor = invitor;
+	public Long getRecommendId() {
+		return recommendId;
 	}
-	public Long getInvitor() {
-		return invitor;
+	public void setRecommendId(Long recommendId) {
+		this.recommendId = recommendId;
 	}
-	public Date getGmtInvite() {
-		return gmtInvite;
+	public Integer getFailCount() {
+		return failCount;
 	}
-	public void setGmtInvite(Date gmtInvite) {
-		this.gmtInvite = gmtInvite;
+	public void setFailCount(Integer failCount) {
+		this.failCount = failCount;
 	}
-	public String getOpenid() {
-		return openid;
+	public Integer getVipLevel() {
+		return vipLevel;
 	}
-	public void setOpenid(String openid) {
-		this.openid = openid;
+	public void setVipLevel(Integer vipLevel) {
+		this.vipLevel = vipLevel;
 	}
-	public String getUnionid() {
-		return unionid;
+	public String getRecommendCode() {
+		return recommendCode;
 	}
-	public void setUnionid(String unionid) {
-		this.unionid = unionid;
+	public void setRecommendCode(String recommendCode) {
+		this.recommendCode = recommendCode;
 	}
-	public String getIsSubscribe() {
-		return isSubscribe;
+	public Date getGmtCreate() {
+		return gmtCreate;
 	}
-	public void setIsSubscribe(String isSubscribe) {
-		this.isSubscribe = isSubscribe;
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
 	}
+	public Date getGmtModified() {
+		return gmtModified;
+	}
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
+	
+	
 }

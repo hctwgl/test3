@@ -34,6 +34,9 @@ public class Constants {
     public static final String REQ_SYS_NODE_TIME_FOR_QQ               ="time";
     public static final String REQ_SYS_NODE_NETTYPE_FOR_QQ            ="nettype";
     
+    public static final String INVELOMENT_TYPE_TEST                   = "test";
+    public static final String INVELOMENT_TYPE_ONLINE                 = "online";
+    
     
     
     public static final String  DEFAULT_ENCODE                        = "UTF-8";
@@ -42,6 +45,8 @@ public class Constants {
     public static final String YES                                    = "yes";
     public static final String NO                                     = "no";
     public static final String COMMA                                  = ",";
+    
+    public static final Long   INVITE_START_VALUE                     = 1679625L;
     
     
     //cache keys
@@ -53,12 +58,12 @@ public class Constants {
     public static final String RES_APP_QRCODE_URL                 	  = "APP_QRCODE_URL";
     public static final String RES_APP_QRCODE_GENERATE_URL            = "APP_QRCODE_GENERATE_URL";
     
-    
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
     public static final String CONFKEY_JPUSH_APPKEY                   = "fanbe.jpush.appkey";
     public static final String CONFKEY_JPUSH_SECRET                   = "fanbe.jpush.secret";
+    public static final String CONFKEY_INVELOMENT_TYPE                = "fbapi.inveloment.type";
     
     
 }
