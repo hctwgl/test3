@@ -13,7 +13,7 @@
 
 	<!-- [应用Appender] 收到客户端的请求 ,bi会拉该日志文件并解析，所以一般日志请勿放这里 -->
 	<appender name="FANBE_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fanbei.log.path.root}/bi/app-bi.log" />
+		<param name="file" value="${fbapi.log.path.root}/bi/app-bi.log" />
 		<param name="append" value="true" />
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -24,7 +24,7 @@
 
 	<!-- [应用Appender] 调用第三方接口日志，如推送日志、发送短信日志 -->
 	<appender name="FANBE_THIRD_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fanbei.log.path.root}/bi/app-third.log" />
+		<param name="file" value="${fbapi.log.path.root}/bi/app-third.log" />
 		<param name="append" value="true" />
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -35,7 +35,7 @@
 	
 	<!-- [公共Appender] 默认 -->
 	<appender name="DEFAULT_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fanbei.log.path.root}/app.log" />
+		<param name="file" value="${fbapi.log.path.root}/app.log" />
 		<param name="append" value="true" />
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -46,7 +46,7 @@
 	
 	<!-- [公共Appender] dal -->
 	<appender name="FANBE_DAL_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fanbei.log.path.root}/app-dal.log" />
+		<param name="file" value="${fbapi.log.path.root}/app-dal.log" />
 		<param name="append" value="true" />
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -58,7 +58,7 @@
 	<!-- [公共Appender] 汇总错误 -->
 	<appender name="ERROR_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file"
-			value="${fanbei.log.path.root}/app-error.log" />
+			value="${fbapi.log.path.root}/app-error.log" />
 		<param name="append" value="true" />
 		<param name="encoding" value="UTF-8" />
 		<param name="threshold" value="error" />
@@ -71,41 +71,41 @@
 
 	<!-- [公共Logger] 控制台STDOUT - jboss -->
 	<logger name="org.jboss" additivity="true">
-		<level value="${fanbei.log.level}" />
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
 
 	<!-- [公共Logger] 控制台STDOUT - STDOUT -->
 	<logger name="STDOUT" additivity="true">
-		<level value="${fanbei.log.level}" />
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
 
 	<!-- [应用Logger] BI日志 -->
 	<logger name="fanbei-BI" additivity="true">
-		<level value="${fanbei.log.level}" />
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBE_BI_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
 
 	<!-- [应用Logger] THIRD日志 -->
 	<logger name="fanbei-THIRD" additivity="true">
-		<level value="${fanbei.log.level}" />
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBE_THIRD_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
 	
 	<!-- fanbei web logger -->
 	<logger name="com.ald.fanbei" additivity="true">
-		<level value="${fanbei.log.level}" />
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="DEFAULT_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 		<appender-ref ref="ERROR_APPENDER" />
 	</logger>
 	
 	<!-- fanbei dal logger -->
-	<logger name="com.ald.fanbei.api.dal" additivity="true">
-		<level value="${fanbei.log.level}" />
+	<logger name="com.ald.fbapi.api.dal" additivity="true">
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBE_DAL_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 		<appender-ref ref="ERROR_APPENDER" />
@@ -113,7 +113,7 @@
 
 	<!-- [框架Logger] 数据访问层 - Ibatis -->
 	<logger name="com.ibatis" additivity="true">
-		<level value="${fanbei.log.level}" />
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBE_DAL_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 		<appender-ref ref="ERROR_APPENDER" />
@@ -121,7 +121,7 @@
 
 	<!-- [框架Logger] 数据访问层 - SQL -->
 	<logger name="java.sql" additivity="true">
-		<level value="${fanbei.log.level}" />
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBE_DAL_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 		<appender-ref ref="ERROR_APPENDER" />
@@ -129,7 +129,7 @@
 
 	
 	<root>
-		<level value="${fanbei.log.level}" />
+		<level value="${fbapi.log.level}" />
 		<appender-ref ref="DEFAULT_APPENDER" />
 		<appender-ref ref="ERROR_APPENDER" />
 	</root>

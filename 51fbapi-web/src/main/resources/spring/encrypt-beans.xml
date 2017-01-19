@@ -12,16 +12,16 @@
 
 	<!-- redis config -->
     <bean id="jedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-        <property name="hostName" value="${fanbei.redis.hostname}" />
-        <property name="port" value="${fanbei.redis.port}" />
-        <property name="password" value="${fanbei.redis.password}" />
+        <property name="hostName" value="${fbapi.redis.hostname}" />
+        <property name="port" value="${fbapi.redis.port}" />
+        <property name="password" value="${fbapi.redis.password}" />
         <property name="usePool" value="true" />
         <property name="poolConfig" ref="poolConfigBiz" />
     </bean>
     <bean id="cacheJedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-        <property name="hostName" value="${fanbei.token.redis.hostname}" />
-        <property name="port" value="${fanbei.token.redis.port}" />
-        <property name="password" value="${fanbei.token.redis.password}" />
+        <property name="hostName" value="${fbapi.token.redis.hostname}" />
+        <property name="port" value="${fbapi.token.redis.port}" />
+        <property name="password" value="${fbapi.token.redis.password}" />
         <property name="usePool" value="true" />
         <property name="poolConfig" ref="poolConfigToken" />
     </bean>
@@ -32,11 +32,11 @@
 		init-method="init" destroy-method="close">
 		<property name="url">
 			<value>
-			<![CDATA[${fanbei.db.url}?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull]]>
+			<![CDATA[${fbapi.db.url}?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull]]>
 			</value>
 		</property>
-		<property name="username" value="${fanbei.db.username}" />
-		<property name="password" value="${fanbei.db.password}" />
+		<property name="username" value="${fbapi.db.username}" />
+		<property name="password" value="${fbapi.db.password}" />
 		<property name="maxActive" value="100" />
 		<property name="initialSize" value="1" />
 		<property name="maxWait" value="6000" />

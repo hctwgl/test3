@@ -55,7 +55,7 @@ public class Constants {
     
     
     //config key
-    public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fanbei.check.sign.switch";
+    public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
     public static final String CONFKEY_JPUSH_APPKEY                   = "fanbe.jpush.appkey";
     public static final String CONFKEY_JPUSH_SECRET                   = "fanbe.jpush.secret";
