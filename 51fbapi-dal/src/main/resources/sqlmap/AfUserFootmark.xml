@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserFootmarkDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,user_id,goods_id,goods_name,goods_icon,price_amount,commission_amount,commission_rate,source,browse_time
+	</sql>
+	
+	<sql id="queryUserFields">
+		id rid,gmt_create,gmt_modified,user_id,goods_id,goods_name,goods_icon,price_amount,commission_amount,commission_rate,source
+	</sql>
+
+	<insert id="addUserFootmark" keyProperty="id" useGeneratedKeys="true" parameterType="AfUserFootmarkDo">
+		INSERT INTO af_user_footmark (
+			gmt_create,
+			gmt_modified,
+			user_id,
+			goods_id,
+			goods_name,
+			goods_icon,
+			price_amount,
+			commission_amount,
+			commission_rate,
+			source,
+			browse_time
+			)
+			VALUES
+			(
+			NOW(),
+			NOW(),
+			#{userId},
+			#{goodsId},
+			#{goodsName},
+			#{goodsIcon},
+			#{priceAmount},
+			#{commissionAmount},
+			#{commissionRate},
+			#{source},
+			#{browseTime}
+			)
+	</insert>
+	
+	<update id="updateUserFootmark" parameterType="AfUserFootmarkDo">
+		UPDATE af_user_footmark SET gmt_modified = NOW() 
+			<if test="goodsName != null">
+			    ,goods_name=#{goodsName}
+			</if>
+			<if test="goodsIcon != null">
+			    ,goods_icon=#{goodsIcon}
+			</if>
+			<if test="priceAmount != null">
+			    ,price_amount=#{priceAmount}
+			</if>
+			<if test="commissionAmount != null">
+			    ,commission_amount=#{commissionAmount}
+			</if>
+			<if test="commissionRate != null">
+			    ,commission_rate=#{commissionRate}
+			</if>
+			<if test="source != null">
+			    ,source=#{source}
+			</if>
+			<if test="browseTime != null">
+			    ,browse_time=#{browseTime}
+			</if>
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getUserFootmarkByUserId" resultType="AfUserFootmarkDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_footmark
+		WHERE
+			is_delete=0 AND user_id=#{userId} and goods_id=#{goodsId}
+		order by gmt_create asc limit 1
+	</select>
+	
+	<select id="getUserFootmarkList" resultType="AfUserFootmarkDo">
+		SELECT
+			<include refid="queryUserFields"/>
+		FROM
+			af_user_footmark
+		WHERE
+			is_delete=0 AND user_id=#{userId}
+		order by gmt_modified desc
+	</select>
+</mapper>
