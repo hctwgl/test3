@@ -1,6 +1,3 @@
-/*
- *@Copyright (c) 2016, 杭州喜马拉雅家居有限公司 All Rights Reserved. 
- */
 package com.ald.fanbei.api.dal.dao;
 
 import org.apache.ibatis.annotations.Param;

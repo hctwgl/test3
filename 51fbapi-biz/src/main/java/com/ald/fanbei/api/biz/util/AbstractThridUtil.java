@@ -1,6 +1,3 @@
-/*
- *@Copyright (c) 2016, 杭州喜马拉雅家居有限公司 All Rights Reserved. 
- */
 package com.ald.fanbei.api.biz.util;
 
 import org.slf4j.Logger;
