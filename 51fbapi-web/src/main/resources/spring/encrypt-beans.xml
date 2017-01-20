@@ -32,7 +32,7 @@
 		init-method="init" destroy-method="close">
 		<property name="url">
 			<value>
-			<![CDATA[${fbapi.db.url}?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull]]>
+			<![CDATA[${fbapi.db.url}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull]]>
 			</value>
 		</property>
 		<property name="username" value="${fbapi.db.username}" />
