@@ -50,12 +50,14 @@ public class Constants {
     
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
+    public static final String CACHEKEY_APK_NEWEST_VERSION            = "apk_newest_version$";
     
     
     //res type
     public static final String RES_APP_QRCODE_URL                 	  = "APP_QRCODE_URL";
     public static final String RES_APP_QRCODE_GENERATE_URL            = "APP_QRCODE_GENERATE_URL";
     public static final String RES_APP_LOGIN_FAILED_LOCK_HOUR         = "APP_LOGIN_FAILED_LOCK_HOUR";
+    
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
