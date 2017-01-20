@@ -56,6 +56,12 @@ public class Constants {
     public static final String RES_APP_QRCODE_URL                 	  = "APP_QRCODE_URL";
     public static final String RES_APP_QRCODE_GENERATE_URL            = "APP_QRCODE_GENERATE_URL";
     public static final String RES_APP_LOGIN_FAILED_LOCK_HOUR         = "APP_LOGIN_FAILED_LOCK_HOUR";
+    public static final String RES_APP_CALL_CENTER_MESSAGE         	  = "APP_CALL_CENTER_MESSAGE";
+    public static final String RES_APP_CALL_CENTER_MESSAGE_QQ    	  = "QQ";
+    public static final String RES_APP_CALL_CENTER_MESSAGE_WX    	  = "WX";
+    public static final String RES_APP_CALL_CENTER_MESSAGE_ONLINE     = "ONLINE";
+    public static final String RES_APP_CALL_CENTER_MESSAGE_TEL    	  = "TEL";
+    public static final String RES_APP_CALL_CENTER_MESSAGE_QQGROUP    = "QQGROUP";
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";

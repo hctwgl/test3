@@ -51,6 +51,7 @@ public class GetMineInfoApi implements ApiHandle{
         data.put("commission", userAccountInfo.getCommission());
         data.put("couponCount", coupleCount);
         data.put("recommendCode", userAccountInfo.getRecommendCode());
+        resp.setResponseData(data);
 		return resp;
 	}
 	
