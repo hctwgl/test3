@@ -22,7 +22,7 @@ public class AfUserAccountDo extends AbstractSerial {
 	private BigDecimal usedAmount;//已使用金额
 	private Integer freezeAmount;//冻结金额
 	private BigDecimal score;//积分
-	private Integer alipayAccount;//支付宝账号
+	private String alipayAccount;//支付宝账号
 	private String commission;//返现金额(注册,签到)
 	private String idNumber;//身份证号
 	private String rebateAmount;//返利（淘宝返利）
@@ -56,12 +56,6 @@ public class AfUserAccountDo extends AbstractSerial {
 	}
 	public void setFreezeAmount(Integer freezeAmount) {
 		this.freezeAmount = freezeAmount;
-	}
-	public Integer getAlipayAccount() {
-		return alipayAccount;
-	}
-	public void setAlipayAccount(Integer alipayAccount) {
-		this.alipayAccount = alipayAccount;
 	}
 	public String getCommission() {
 		return commission;
@@ -98,6 +92,12 @@ public class AfUserAccountDo extends AbstractSerial {
 	}
 	public void setRebateAmount(String rebateAmount) {
 		this.rebateAmount = rebateAmount;
+	}
+	public String getAlipayAccount() {
+		return alipayAccount;
+	}
+	public void setAlipayAccount(String alipayAccount) {
+		this.alipayAccount = alipayAccount;
 	}
 	
 

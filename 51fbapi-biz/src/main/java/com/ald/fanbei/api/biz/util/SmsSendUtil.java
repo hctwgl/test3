@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.impl.AfSmsRecordServiceImpl;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
@@ -37,7 +38,7 @@ public class SmsSendUtil extends AbstractThridUtil{
 	 * @param params 参数列表
 	 * @return
 	 */
-	private boolean sendTemplateSms(int type,String toMobile,Integer templateId,String...params ){
+	private boolean sendTemplateSms(String type,String toMobile,Integer templateId,String...params ){
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		if(StringUtils.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
 			result.put("statusCode", "000000");
@@ -68,7 +69,7 @@ public class SmsSendUtil extends AbstractThridUtil{
 	 * @return
 	 */
 	public boolean sendVerifyCodeReg(String mobile,String vericationCode){
-		return this.sendTemplateSms(1,mobile, REGIST_CODE_TEMPLATEID, vericationCode);
+		return this.sendTemplateSms(SmsType.REGIST.getCode(),mobile, REGIST_CODE_TEMPLATEID, vericationCode);
 	}
 	
 	/**
@@ -77,6 +78,6 @@ public class SmsSendUtil extends AbstractThridUtil{
 	 * @return
 	 */
 	public boolean sendVerifyCodeFindPass(String mobile,String vericationCode){
-		return this.sendTemplateSms(2,mobile, CHANGE_PASS_CODE_TEMPLATEID, vericationCode);
+		return this.sendTemplateSms(SmsType.FORGET_PASS.getCode(),mobile, CHANGE_PASS_CODE_TEMPLATEID, vericationCode);
 	}
 }

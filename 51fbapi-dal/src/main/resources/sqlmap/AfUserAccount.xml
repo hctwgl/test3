@@ -6,7 +6,7 @@
 		score,alipay_account,commission,id_number,rebate_amount
 	</sql>
 	
-	<select id="getUserAccountInfoByUserId" parameterType="AfUserAccountDo">
+	<select id="getUserAccountInfoByUserId" resultType="AfUserAccountDo">
 		SELECT 
 			<include refid="queryAllFields" />
 		FROM 

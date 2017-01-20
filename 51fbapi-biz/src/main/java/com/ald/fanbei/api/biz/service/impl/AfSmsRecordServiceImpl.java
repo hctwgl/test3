@@ -26,7 +26,7 @@ public class AfSmsRecordServiceImpl implements AfSmsRecordService{
 	}
 
 	@Override
-	public AfSmsRecordDo getLatestByUidType(String mobile, Integer type) {
+	public AfSmsRecordDo getLatestByUidType(String mobile, String type) {
 		return hoaSmsRecordDao.getLatestByUidType(mobile, type);
 	}
 	

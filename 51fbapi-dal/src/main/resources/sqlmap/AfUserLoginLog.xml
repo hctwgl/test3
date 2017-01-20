@@ -4,7 +4,7 @@
 	
 	<insert id="addUserLoginLog" parameterType="AfUserLoginLogDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO
-			hoa_user_login_log
+			af_user_login_log
 			(
 				gmt_create,
 				user_name,

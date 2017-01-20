@@ -12,24 +12,22 @@ import java.util.Map;
  */
 public enum SmsType {
 
-    REGIST(1, "注册短信"), MODIFIED_PASS(2, "找回密码");
+    REGIST("R", "注册短信"), FORGET_PASS("F", "忘记密码验证短信");
 
-    private int    code;
+    private String code;
 
     private String name;
-
-
     
-    private static Map<Integer,SmsType> codeRoleTypeMap = null;
+    private static Map<String,SmsType> codeRoleTypeMap = null;
 
-    SmsType(int code, String name) {
+    SmsType(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static SmsType findRoleTypeByCode(int code) {
+    public static SmsType findRoleTypeByCode(String code) {
         for (SmsType roleType : SmsType.values()) {
-            if (roleType.getCode() == code) {
+            if (roleType.getCode().equalsIgnoreCase(code)) {
                 return roleType;
             }
         }
@@ -37,24 +35,24 @@ public enum SmsType {
     }
 
     
-    public static Map<Integer,SmsType> getCodeRoleTypeMap(){
+    public static Map<String,SmsType> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
             return codeRoleTypeMap;
         }
-        codeRoleTypeMap = new HashMap<Integer, SmsType>();
+        codeRoleTypeMap = new HashMap<String, SmsType>();
         for(SmsType item:SmsType.values()){
             codeRoleTypeMap.put(item.getCode(), item);
         }
         return codeRoleTypeMap;
     }
 
-    public int getCode() {
-        return code;
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public void setCode(int code) {
-        this.code = code;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public String getName() {
 		return name;
@@ -63,6 +61,7 @@ public enum SmsType {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 
 
 }

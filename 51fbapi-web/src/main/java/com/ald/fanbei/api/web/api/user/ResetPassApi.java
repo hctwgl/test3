@@ -44,7 +44,7 @@ public class ResetPassApi implements ApiHandle {
         if(StringUtil.isBlank(passwordSrc)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
-        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.MODIFIED_PASS.getCode());
+        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.FORGET_PASS.getCode());
         if(smsDo == null){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }

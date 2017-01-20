@@ -1,17 +1,15 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -24,35 +22,40 @@ import com.ald.fanbei.api.web.vo.UserVo;
  * @author Xiaotianjian 2017年1月19日下午1:48:50
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("userInfoApi")
-public class UserInfoApi implements ApiHandle {
+@Component("getUserInfoApi")
+public class GetUserInfoApi implements ApiHandle {
 	
 	@Resource
-	AfUserService afUserService; 
+	AfUserService afUserService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		AfUserDo userDo = afUserService.getUserById(userId);
-		UserVo vo = parseUserVo(userDo);
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		UserVo vo = parseUserInfoToUserVo(userDo);
+		
+		if (accountDo != null) {
+			vo.setAlipayAccount(accountDo.getAlipayAccount());
+		}
 		resp.setResponseData(vo);
 		return resp;
 	}
 	
-	private UserVo parseUserVo(AfUserDo userDo) {
+	private UserVo parseUserInfoToUserVo(AfUserDo userDo) {
 		UserVo userVo = new UserVo();
 		userVo.setAvata(userDo.getAvata());
 		userVo.setNick(userDo.getNick());
 		userVo.setMobile(userDo.getMobile());
+		userVo.setEmail(userDo.getEmail());
+		userVo.setProvince(userDo.getProvince());
+		userVo.setCity(userDo.getCity());
+		userVo.setCounty(userDo.getCounty());
+		userVo.setAddress(userDo.getAddress());
 		return userVo;
 	}
 	
-	
-	
-	public static void main(String[] args) throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		System.out.println(sdf.format(new Date()));
-	}
-
 }
