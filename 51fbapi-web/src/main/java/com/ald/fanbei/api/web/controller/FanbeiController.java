@@ -78,8 +78,8 @@ public class FanbeiController extends BaseController {
     }
     
     @RequestMapping(value = {
-    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/registSetPass",
-    		"/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo"
+    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/registSetPass","/user/login","/user/resetPass","/user/getUserInfo",
+    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

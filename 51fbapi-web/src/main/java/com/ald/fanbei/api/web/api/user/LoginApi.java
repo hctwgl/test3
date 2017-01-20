@@ -11,14 +11,17 @@ import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -43,6 +46,8 @@ public class LoginApi implements ApiHandle {
 	AfUserLoginLogService afUserLoginLogService;
 	@Resource
 	TokenCacheUtil tokenCacheUtil;
+	@Resource
+	AfResourceService afResourceService;
 	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -56,6 +61,7 @@ public class LoginApi implements ApiHandle {
         String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
         
         if(StringUtils.isBlank(inputPassSrc)){
+        	logger.error("inputPassSrc can't be empty");
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
@@ -72,8 +78,10 @@ public class LoginApi implements ApiHandle {
         loginDo.setUserName(userName);
         loginDo.setUuid(uuid);
         
-        //check error login count,if count greater than 5,lock one hour
-        if(DateUtil.afterDay(DateUtil.addHoures(afUserDo.getGmtModified(), 2), new Date())){
+        //check login failed count,if count greater than 5,lock specify hours
+        AfResourceDo lockHourResource = afResourceService.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
+        if(DateUtil.afterDay(DateUtil.addHoures(afUserDo.getGmtModified(), 
+        		lockHourResource == null ? 2 : Integer.parseInt(lockHourResource.getValue())), new Date())){
         	if (afUserDo.getFailCount() > 5) {
         		loginDo.setResult("false:err count too max" + afUserDo.getFailCount());
         		afUserLoginLogService.addUserLoginLog(loginDo);
@@ -119,7 +127,7 @@ public class LoginApi implements ApiHandle {
         tokenCacheUtil.saveToken(userName, tokenBo);
         
         //set return user info and generate token
-        UserVo userVo = new UserVo(afUserDo);
+        UserVo userVo = parseUserVo(afUserDo);
         JSONObject jo = new JSONObject();
         jo.put("user", userVo);
         jo.put("token", token);
@@ -128,6 +136,16 @@ public class LoginApi implements ApiHandle {
         
         return resp;
     }
+    
+    private UserVo parseUserVo(AfUserDo afUserDo){
+    	UserVo vo = new UserVo();
+    	vo.setRid(afUserDo.getRid());
+    	vo.setUserName(afUserDo.getUserName());
+    	vo.setNick(afUserDo.getNick());
+    	vo.setAvata(afUserDo.getAvata());
+    	vo.setMobile(afUserDo.getMobile());
+    	return vo;
+	}
     
     public FanbeiExceptionCode getErrorCountCode(Integer errorCount) {
     	if (errorCount == 0) {

@@ -39,6 +39,13 @@ public enum FanbeiExceptionCode {
     USER_PASSWORD_ERROR_FOURTH("USER_PASSWORD_ERROR_FOURTH",1124,"user password error fourth","密码输入有误,剩余次数(2)"),
     USER_PASSWORD_ERROR_FIFTH("USER_PASSWORD_ERROR_FIFTH",1125,"user password error fifth","密码输入有误,剩余次数(1)"),
     USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_FIFTH",1126,"user password error fifth","密码输入有误,剩余次数(6)"),
+    // third mode code 1500-1599
+    JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
+    
+    ZM_ERROR("ZM_ERROR",1510,"zm error","调用芝麻信用失败"),
+//    ZM_CREDIT_WATCHLISTII_ERROR("ZM_CREDIT_WATCHLISTII_ERROR",1511,"zm credit watchlistii error","调用芝麻行业关注名单失败"),
+//    ZM_CREDIT_SCORE_GET_ERROR("ZM_CREDIT_SCORE_GET_ERROR",1512,"zm credit score get error","调用芝麻信用评分失败"),
+    
     
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");

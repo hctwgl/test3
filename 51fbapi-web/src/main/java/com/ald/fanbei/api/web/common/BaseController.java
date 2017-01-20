@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
 
@@ -49,6 +51,8 @@ public abstract class BaseController {
     protected ApiHandleFactory apiHandleFactory;
     @Resource
     TokenCacheUtil tokenCacheUtil;
+    @Resource
+    AfUserService afUserService;
     
     
     /**
@@ -192,20 +196,20 @@ public abstract class BaseController {
         beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
         
         //TODO 设置上下文
-//        if(!beforeLogin){//需要登录的接口
-//	        HoaUserDo userInfo = hoaUserService.getByUserName(userName);
-//	        if (userInfo == null) {
-//	        	throw new FanbeException(requestDataVo.getId() + "user don't exist", FanbeExceptionCode.USER_NOT_EXIST_ERROR);
-//	        }
-//	        context.setUserId(userInfo.getRid());
-//	        context.setNick(userInfo.getNick());
-//        }else if(beforeLogin && CommonUtil.isMobile(userName)){//不需要登录但是已经登录过
-//        	HoaUserDo userInfo = hoaUserService.getByUserName(userName);
-//	        if (userInfo != null) {
-//		        context.setUserId(userInfo.getRid());
-//		        context.setNick(userInfo.getNick());
-//	        }
-//        }
+        if(!beforeLogin){//需要登录的接口
+	        AfUserDo userInfo = afUserService.getUserByUserName(userName);
+	        if (userInfo == null) {
+	        	throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+	        }
+	        context.setUserId(userInfo.getRid());
+	        context.setNick(userInfo.getNick());
+        }else if(beforeLogin && CommonUtil.isMobile(userName)){//不需要登录但是已经登录过
+        	AfUserDo userInfo = afUserService.getUserByUserName(userName);
+	        if (userInfo != null) {
+		        context.setUserId(userInfo.getRid());
+		        context.setNick(userInfo.getNick());
+	        }
+        }
         
         //验证签名
         this.checkSign(appVersion,netType, userName, sign, time,requestDataVo.getParams(), beforeLogin);

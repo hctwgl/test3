@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.vo;
 
 import com.ald.fanbei.api.common.AbstractSerial;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 /**
  * 
@@ -15,21 +14,18 @@ public class UserVo extends AbstractSerial {
 	private Long rid;
 	private String avata;
 	private String mobile;
-	private String realName;
 	private String nick;
 	private String userName;
+	private String email;
+	private String province;
+	private String city;
+	private String county;
+	private String address;
+	
+	private String alipayAccount;
 	
 	public UserVo() {
 		
-	}
-	
-	public UserVo(AfUserDo afUserDo){
-		this.setRid(afUserDo.getRid());
-		this.setUserName(afUserDo.getUserName());
-		this.setNick(afUserDo.getNick());
-		this.setAvata(afUserDo.getAvata());
-		this.setRealName(afUserDo.getRealName());
-		this.setMobile(afUserDo.getMobile());
 	}
 	
 	public String getAvata() {
@@ -43,12 +39,6 @@ public class UserVo extends AbstractSerial {
 	}
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
-	}
-	public String getRealName() {
-		return realName;
-	}
-	public void setRealName(String realName) {
-		this.realName = realName;
 	}
 	public String getNick() {
 		return nick;
@@ -69,6 +59,54 @@ public class UserVo extends AbstractSerial {
 
 	public void setRid(Long rid) {
 		this.rid = rid;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getAlipayAccount() {
+		return alipayAccount;
+	}
+
+	public void setAlipayAccount(String alipayAccount) {
+		this.alipayAccount = alipayAccount;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCounty() {
+		return county;
+	}
+
+	public void setCounty(String county) {
+		this.county = county;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 	
 	

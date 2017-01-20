@@ -13,7 +13,7 @@ public interface AfUserLoginLogDao {
 	
 	/**
 	 * 增加用户登陆记录
-	 *@param HoaUserLoginLogDo
+	 *@param afUserLoginLogDo
 	 *@return
 	 */
 	int addUserLoginLog(AfUserLoginLogDo afUserLoginLogDo);

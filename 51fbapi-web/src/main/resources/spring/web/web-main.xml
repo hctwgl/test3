@@ -85,10 +85,14 @@
 			<map key-type="java.lang.String">
 			    
 				<!-- user -->
-				<entry key="/user/userLogin" value-ref="userLoginApi" />
+				<entry key="/user/login" value-ref="loginApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
 				<entry key="/user/registSetPass" value-ref="registSetPassApi" />
+				<entry key="/user/resetPass" value-ref="resetPassApi" />
+				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
+				<entry key="/user/logout" value-ref="logoutApi" />
+				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
 				<entry key="/user/getSysMsgList" value-ref="getSysMsgListApi" />
 				<entry key="/user/getMineInfo" value-ref="getMineInfoApi" />
 				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
@@ -96,7 +100,6 @@
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
-				
 				
 				<!-- 订单Order
 				<entry key="/order/createOrder" value-ref="createOrderApi" /> -->
