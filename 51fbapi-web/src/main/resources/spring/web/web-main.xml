@@ -71,7 +71,7 @@
 	<bean id="beforeLoginApiList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>/user/userLogin</value>
+				<value>/user/login</value>
 				<value>/user/getVerifyCode</value>
 				<value>/user/registSetPass</value>
 				<value>/user/checkVerifyCode</value>
