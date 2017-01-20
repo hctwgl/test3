@@ -93,15 +93,13 @@
 				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
 				<entry key="/user/logout" value-ref="logoutApi" />
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
-				
-				<!-- mine -->
-				<entry key="/mine/addFootMark" value-ref="addFootMarkerApi" />
-				<entry key="/mine/getFootMarkList" value-ref="getFootMarkListApi" />
-				
-				<!-- goods
-				<entry key="/goods/goodsDetail" value-ref="goodsDetail" />
-				<entry key="/goods/searchGoods" value-ref="searchGoodsApi" /> -->
-				
+				<entry key="/user/getSysMsgList" value-ref="getSysMsgListApi" />
+				<entry key="/user/getMineInfo" value-ref="getMineInfoApi" />
+				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
+				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
+				<!-- goods -->
+				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
+				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
 				
 				<!-- 订单Order
 				<entry key="/order/createOrder" value-ref="createOrderApi" /> -->
