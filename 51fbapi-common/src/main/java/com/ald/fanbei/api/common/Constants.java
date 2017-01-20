@@ -34,12 +34,9 @@ public class Constants {
     public static final String REQ_SYS_NODE_TIME_FOR_QQ               ="time";
     public static final String REQ_SYS_NODE_NETTYPE_FOR_QQ            ="nettype";
     
-    public static final String INVELOMENT_TYPE_TEST                   = "test";
-    public static final String INVELOMENT_TYPE_ONLINE                 = "online";
     
     
-    
-    public static final String  DEFAULT_ENCODE                        = "UTF-8";
+    public static final String DEFAULT_ENCODE                        = "UTF-8";
     public static final String SWITCH_ON                              = "1";
     public static final String SWITCH_OFF                             = "0";
     public static final String YES                                    = "yes";
@@ -47,11 +44,12 @@ public class Constants {
     public static final String COMMA                                  = ",";
     
     public static final Long   INVITE_START_VALUE                     = 1679625L;
+    public static final String INVELOMENT_TYPE_TEST                   = "test";
+    public static final String INVELOMENT_TYPE_ONLINE                 = "online";
     
     
     //cache keys
-    public static final String CACHEKEY_ORDERNO                       = "orderno$";
-    public static final String CACHEKEY_ORDERNO_LOCK                  = "orderno_lock$";
+    public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
     
     
     //res type
@@ -59,13 +57,15 @@ public class Constants {
     public static final String RES_APP_QRCODE_GENERATE_URL            = "APP_QRCODE_GENERATE_URL";
     public static final String RES_APP_LOGIN_FAILED_LOCK_HOUR         = "APP_LOGIN_FAILED_LOCK_HOUR";
     
-    
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
-    public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
-    public static final String CONFKEY_JPUSH_APPKEY                   = "fanbe.jpush.appkey";
-    public static final String CONFKEY_JPUSH_SECRET                   = "fanbe.jpush.secret";
+    public static final String CONFKEY_JPUSH_APPKEY                   = "fbapi.jpush.appkey";
+    public static final String CONFKEY_JPUSH_SECRET                   = "fbapi.jpush.secret";
+    public static final String CONFKEY_AES_KEY                        = "fbapi.aes.password";
     public static final String CONFKEY_INVELOMENT_TYPE                = "fbapi.inveloment.type";
+    public static final String CONFKEY_ZHIMA_APPID                    = "fbapi.zhima.appid";
+    public static final String CONFKEY_ZHIMA_PUBKEY                   = "fbapi.zhima.public.key";
+    public static final String CONFKEY_ZHIMA_PRIKEY                   = "fbapi.zhima.private.key";
     
     
 }
