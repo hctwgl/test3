@@ -62,6 +62,9 @@ public class Constants {
     public static final String CONFKEY_JPUSH_SECRET                   = "fbapi.jpush.secret";
     public static final String CONFKEY_AES_KEY                        = "fbapi.aes.password";
     public static final String CONFKEY_INVELOMENT_TYPE                = "fbapi.inveloment.type";
+    public static final String CONFKEY_ZHIMA_APPID                    = "fbapi.zhima.appid";
+    public static final String CONFKEY_ZHIMA_PUBKEY                   = "fbapi.zhima.public.key";
+    public static final String CONFKEY_ZHIMA_PRIKEY                   = "fbapi.zhima.private.key";
     
     
 }

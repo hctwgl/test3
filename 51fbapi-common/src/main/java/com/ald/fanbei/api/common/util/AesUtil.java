@@ -162,9 +162,9 @@ public class AesUtil {
 //        String encryptStr = new String(Base64.encodeBase64(encrypt("8a216da85697f54201569b664aeb011a", "l9tCjbx@68aH$2dr")));
 //        System.out.println(encryptStr);
 //        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
-        String sec = decryptFromBase64("jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NBM8iPVksu+CCA9HFkU2200", "testC1b6x@6aH$2dlw");
-        System.out.println(sec);
+//        String sec = decryptFromBase64("jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NBM8iPVksu+CCA9HFkU2200", "testC1b6x@6aH$2dlw");
+//        System.out.println(sec);
         
-        System.out.println(new String(Base64.encodeBase64(encrypt("jdbc:mysql://61.164.37.200:3306/51fanbei_app", "testC1b6x@6aH$2dlw"))));
+        System.out.println(new String(Base64.encodeBase64(encrypt("MIICXwIBAAKBgQDg+fPJh1sI4GlbAHQBNq2pYbhMDNOwtT+C6Ydbb0C8IowA0ssg3k6ahxDk+/BdnbJqUUar4C0u+3Fp3oB0MNvewO+p4mwWZ+LHsHn50jDNwKSQCgItZ2hIuDc6zPnRxj2eCHW9wM+wC3xainkNpuxvOkUdN5I6arc3AgcDQi4gjQIDAQABAoGBAJ2yVxIiUMtuEit5q9bV7vDV0ItuSkyJH5Wx//E1kJjPVneVSlElws9KcaswdhII4fDoO7NqlgFiuuLM1hmbzeGLLFhTeyp9By6breVZlfaXfin1cdy39wbCHxfQLyXkDk337zpIWiyj2SoRaoOBQYaxFfIHbkfQItRciJgF1n1BAkEA/srzUMiLKJndAd1usn/nlq6+Gwm7VgoriIoufx/TxIcSEC0aGFHDwIJ5TKxrfbGGwaQSbBOanxDdS5+y4GB46QJBAOIK1hEicj8yj5uVWVFQfWkpcujUkUPTFOBgeqjILm1Pau7yxgLEfZLjPm+9KI3j355JOIzsHDiX0zwnpeYTJAUCQQCRpMVNCjWxsbIJnN/oHQDuu1hj8D4rwoh79jD57eGJV4RVxtJB0ItLAcoAsBaJtO7IxdbZ/KLIBkXZMqJ3a+3xAkEAgQl2kml7lqAiYsqrJkQwk2vZ8RgHpRRGgqAQ5XEBL916SdXFO6c3mDapWdg94mIHMbDS23+dzKC/MUPg7KpYkQJBAO06tXnZVduB4r0pBm42BL/nwSQOn/fSyB2/xRq53ofIuTF8Qvd9doTc+QjZ36GNXM1nxFnZ2pSuQ5TfRmcM9ns=", "testC1b6x@6aH$2dlw"))));
     }
 }

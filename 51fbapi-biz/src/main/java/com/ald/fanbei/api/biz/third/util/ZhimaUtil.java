@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.antgroup.zmxy.openplatform.api.DefaultZhimaClient;
@@ -45,11 +48,10 @@ public class ZhimaUtil extends AbstractThird {
 	private synchronized static DefaultZhimaClient getZhimaClient() {
 		if (ZhimaClient == null) {
 			String gatewayUrl = "https://zmopenapi.zmxy.com.cn/openapi.do";
-			String appId = "appId";// TODO ;
-			String privateKey = "privateKey";// TODO
-			String zhimaPublicKey = "zhimaPublicKey";// TODO
-			ZhimaClient = new DefaultZhimaClient(gatewayUrl, appId, privateKey,
-					zhimaPublicKey);
+			String appId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String privateKey =  AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PRIKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String zhimaPublicKey =  AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			ZhimaClient = new DefaultZhimaClient(gatewayUrl, appId, privateKey,zhimaPublicKey);
 		}
 		return ZhimaClient;
 	}
