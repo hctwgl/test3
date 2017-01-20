@@ -6,6 +6,12 @@
 		score,alipay_account,commission,id_number,rebate_amount
 	</sql>
 	
+	<sql id="queryWithUserFields">
+		c.id rid,c.user_id,c.user_name,c.au_amount,c.remaining_amount,c.used_amount,c.freeze_amount,
+		c.score,c.alipay_account,c.commission,c.id_number,c.rebate_amount,u.gender,u.nick,u.avata,
+		u.realName,u.mobile,u.vip_level,u.recommend_code
+	</sql>
+	
 	<select id="getUserAccountInfoByUserId" parameterType="AfUserAccountDo">
 		SELECT 
 			<include refid="queryAllFields" />
@@ -75,4 +81,18 @@
 			id = #{rid}
 	</update>
 
+	<select id="getUserAndAccountByUserId" parameterType="AfUserAccountDo">
+		SELECT 
+			<include refid="queryWithUserFields" />
+		FROM 
+			af_user u
+		LEFT JOIN
+			af_user_account c
+		ON
+			c.is_delete = 0 and u.id = c.user_id
+		WHERE
+			u.is_delete = 0 
+		AND
+			u.id = #{userId}	
+	</select>
 </mapper>

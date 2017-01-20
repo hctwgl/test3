@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserCouponDao">
+	<sql id="queryAllFields">
+		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.coupon_id,u.gmt_start,u.gmt_end,
+		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.user_rule
+	</sql>
+	
+	<select id="getUserCouponByUser" resultType="AfUserCouponDto">
+		SELECT 
+			<include refid="queryAllFields" />
+		FROM 
+			af_user_coupon u
+		LEFT JOIN
+			af_coupon c
+		ON
+			c.is_delete = 0 and u.coupon_id = c.id
+		WHERE
+			u.is_delete = 0 
+		AND
+			u.user_id = #{userId}	
+		<if test="status != null and status !=''">
+			and u.status = #{status}
+		</if>
+		ORDER BY u.gmt_create desc
+	</select>
+
+	<!-- 可使用优惠券 -->
+	<select id="getUserCouponByUserNouse" parameterType="java.lang.Long">
+		SELECT 
+			count(1)
+		FROM 
+			af_user_coupon
+		WHERE
+			is_delete = 0 
+		AND
+			user_id = #{userId}
+		AND
+			status = 'NOUSE'
+	</select>
+</mapper>

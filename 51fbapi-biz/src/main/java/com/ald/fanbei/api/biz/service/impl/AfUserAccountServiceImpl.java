@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 
 /**
  * 
@@ -28,6 +29,11 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	@Override
 	public int addUserAccount(AfUserAccountDo accountDo) {
 		return afUserAccountDao.addUserAccount(accountDo);
+	}
+
+	@Override
+	public AfUserAccountDto getUserAndAccountByUserId(Long userId) {
+		return afUserAccountDao.getUserAndAccountByUserId(userId);
 	}
 
 }

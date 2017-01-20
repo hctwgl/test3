@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 
 /**
  * 
@@ -24,5 +25,10 @@ public interface AfUserAccountService {
 	 */
 	int addUserAccount(AfUserAccountDo accountDo);
 	
-
+	/**
+	 * 获取用户账号关联信息
+	 * @param userId
+	 * @return
+	 */
+	AfUserAccountDto getUserAndAccountByUserId(Long userId);
 }
