@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfYoudunFaceDao">
+	<sql id="queryFields">
+		back_card,birthday,oid_partner,photo_living,result_auth,fail_reason,id,sign_field,age,gender,user_id,validity_period,photo_get,no_order,
+		id_name,front_card,info_order,nation,sign,gmt_create,photo_grid,address,issuing_authority,be_idcard,no_product,id_no
+	</sql>
+
+	<insert id="addYoudunFace" parameterType="AfYoudunFaceDo" keyProperty="rid" useGeneratedKeys="true">
+		INSERT INTO af_youdun_face(
+			back_card , birthday , oid_partner , photo_living , result_auth , fail_reason , sign_field , age , gender , user_id , validity_period , 
+			photo_get , no_order , id_name , front_card , info_order , nation , sign , gmt_create , photo_grid , address , issuing_authority , be_idcard , no_product , id_no
+		)VALUES(
+		    #{backCard},
+		    #{birthday},
+		    #{oidPartner},
+		    #{photoLiving},
+		    #{resultAuth},
+		    #{failReason},
+		    #{signField},
+		    #{age},
+		    #{gender},
+		    #{userId},
+		    #{validityPeriod},
+		    #{photoGet},
+		    #{noOrder},
+		    #{idName},
+		    #{frontCard},
+		    #{infoOrder},
+		    #{nation},
+		    #{sign},
+		    NOW(),
+		    #{photoGrid},
+		    #{address},
+		    #{issuingAuthority},
+		    #{beIdcard},
+		    #{noProduct},
+		    #{idNo}
+		)
+	</insert>
+	
+</mapper>
