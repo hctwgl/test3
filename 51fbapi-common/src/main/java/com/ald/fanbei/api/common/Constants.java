@@ -74,6 +74,9 @@ public class Constants {
     public static final String CONFKEY_ZHIMA_APPID                    = "fbapi.zhima.appid";
     public static final String CONFKEY_ZHIMA_PUBKEY                   = "fbapi.zhima.public.key";
     public static final String CONFKEY_ZHIMA_PRIKEY                   = "fbapi.zhima.private.key";
+    public static final String CONFKEY_TONGDUN_PARTNER_CODE           = "fbapi.tongdun.partner.code";
+    public static final String CONFKEY_TONGDUN_PARTNER_KEY            = "fbapi.tongdun.partner.key";
+    public static final String CONFKEY_TONGDUN_APP_NAME               = "fbapi.tongdun.app.name";
     
     
 }

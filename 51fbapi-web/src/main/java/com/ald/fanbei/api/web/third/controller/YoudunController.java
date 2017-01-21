@@ -66,6 +66,8 @@ public class YoudunController{
     	
     	youdunUtil.dealYoudunNotify(youdunDo);
     	
+    	//TODO 更新af_user_auth表对应的有盾信息
+    	
     	return "success";
 	}
 	

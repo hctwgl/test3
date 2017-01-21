@@ -46,9 +46,9 @@ public class JpushUtil extends AbstractThird{
 	
 	private synchronized static JPushClient getPushClient(){
 		if	(jpushClient == null){
-			String appKey = ConfigProperties.get(Constants.CONFKEY_JPUSH_APPKEY);
-			String appSecret = ConfigProperties.get(Constants.CONFKEY_JPUSH_SECRET);
-			jpushClient = new JPushClient(AesUtil.decrypt(appSecret, ConfigProperties.get(Constants.CONFKEY_AES_KEY)),AesUtil.decrypt(appKey, ConfigProperties.get(Constants.CONFKEY_AES_KEY)));  
+			String appKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_JPUSH_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String appSecret = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_JPUSH_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			jpushClient = new JPushClient(appSecret,appKey);  
 			return jpushClient;
 		}
 		return jpushClient;
