@@ -14,7 +14,7 @@ public class AfUserCouponDto extends AfUserCouponDo{
 	
 	private BigDecimal  limitAmount;//起始金额
 	
-	private String		userRule;//使用须知
+	private String		useRule;//使用须知
 
 	public String getName() {
 		return name;
@@ -40,12 +40,12 @@ public class AfUserCouponDto extends AfUserCouponDo{
 		this.limitAmount = limitAmount;
 	}
 
-	public String getUserRule() {
-		return userRule;
+	public String getUseRule() {
+		return useRule;
 	}
 
-	public void setUserRule(String userRule) {
-		this.userRule = userRule;
+	public void setUseRule(String useRule) {
+		this.useRule = useRule;
 	}
 	
 }

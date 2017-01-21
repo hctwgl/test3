@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserCouponDao">
 	<sql id="queryAllFields">
 		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.coupon_id,u.gmt_start,u.gmt_end,
-		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.user_rule
+		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.use_rule
 	</sql>
 	
 	<select id="getUserCouponByUser" resultType="AfUserCouponDto">
@@ -26,7 +26,7 @@
 	</select>
 
 	<!-- 可使用优惠券 -->
-	<select id="getUserCouponByUserNouse" parameterType="java.lang.Long">
+	<select id="getUserCouponByUserNouse" parameterType="java.lang.Long" resultType="java.lang.Integer">
 		SELECT 
 			count(1)
 		FROM 

@@ -38,5 +38,5 @@ public interface AfUserAccountDao {
 	 * @param userId
 	 * @return
 	 */
-	AfUserAccountDto getUserAndAccountByUserId(Long userId);
+	AfUserAccountDto getUserAndAccountByUserId(@Param("userId")Long userId);
 }

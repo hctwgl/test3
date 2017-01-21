@@ -69,7 +69,7 @@ public class GetMineCouponListApi implements ApiHandle{
 		couponVo.setLimitAmount(afUserCouponDto.getLimitAmount());
 		couponVo.setName(afUserCouponDto.getName());
 		couponVo.setStatus(afUserCouponDto.getStatus());
-		couponVo.setUseRule(afUserCouponDto.getUserRule());
+		couponVo.setUseRule(afUserCouponDto.getUseRule());
 		return couponVo;
 	}
 	

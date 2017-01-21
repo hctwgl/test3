@@ -62,7 +62,7 @@
 			<if test="browseTime != null">
 			    ,browse_time=#{browseTime}
 			</if>
-		WHERE id = #{id}
+		WHERE id = #{rid}
 	</update>
 	
 	<select id="getUserFootmarkByUserId" resultType="AfUserFootmarkDo">
