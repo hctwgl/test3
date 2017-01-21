@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import com.ald.fanbei.api.biz.bo.TongdunResultBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -49,7 +50,7 @@ public class TongdunUtil extends AbstractThird {
 	 * @param reportId
 	 * @return
 	 */
-	public static JSONObject queryPreloan(String reportId){
+	public static TongdunResultBo queryPreloan(String reportId){
 		String urlPre = "https://api.tongdun.cn/preloan/report/v7?";
 		String reqUrl = urlPre + "partner_code=" + getPatnerCode() + "&partner_key=" + getPartnerKey() + "&app_name=" + getAppName() + "&report_id=" + reportId;
 		String reqResult = HttpUtil.doGet(reqUrl, 1000);
@@ -57,8 +58,17 @@ public class TongdunUtil extends AbstractThird {
 		if(StringUtil.isBlank(reqResult)){
 			return null;
 		}
+		TongdunResultBo resultBo = new TongdunResultBo();
 		JSONObject jo = JSONObject.parseObject(reqResult);
-		return jo;
+		resultBo.setSuccess(jo.getBooleanValue("success"));
+		resultBo.setReasonCode(jo.getString("reason_code"));
+		resultBo.setResultStr(jo.toJSONString());
+		if(resultBo.isSuccess()){
+			resultBo.setReportId(jo.getString("report_id"));
+			resultBo.setFinalDecision(jo.getString("final_decision"));
+			resultBo.setFinalScore(jo.getInteger("final_score"));
+		}
+		return resultBo;
 	}
 	
 	
