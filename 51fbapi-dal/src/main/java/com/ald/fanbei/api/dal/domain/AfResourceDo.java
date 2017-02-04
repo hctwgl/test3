@@ -28,8 +28,20 @@ public class AfResourceDo extends AbstractSerial {
 	private String value1;//扩展值1
 	private String value2;//扩展值2
 	private String value3;//扩展值3
-	private String sort;//排序
+	private Long sort;//排序
 	
+	/**
+	 * @return the sort
+	 */
+	public Long getSort() {
+		return sort;
+	}
+	/**
+	 * @param sort the sort to set
+	 */
+	public void setSort(Long sort) {
+		this.sort = sort;
+	}
 	public Long getRid() {
 		return rid;
 	}
@@ -120,11 +132,6 @@ public class AfResourceDo extends AbstractSerial {
 	public void setValue3(String value3) {
 		this.value3 = value3;
 	}
-	public String getSort() {
-		return sort;
-	}
-	public void setSort(String sort) {
-		this.sort = sort;
-	}
+
 
 }

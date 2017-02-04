@@ -69,6 +69,12 @@ public class GetHomeInfoApi implements ApiHandle {
 				homeOneToOneList.add(getHomeOneToOneObjectWithAfResourceDo(afResourceDo));
 			}
 		}
+		data.put("homeBannerList", homeBannerList);
+		data.put("homeToolsList", homeToolsList);
+		data.put("homeCouponList", homeCouponList);
+		data.put("homeOneToManyList", homeOneToManyList);
+		data.put("homeOneToTwoList", homeOneToTwoList);
+		data.put("homeOneToOneList", homeOneToOneList);
 
 		return data;
 

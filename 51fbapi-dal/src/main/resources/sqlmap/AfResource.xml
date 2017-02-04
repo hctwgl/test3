@@ -6,7 +6,7 @@
 		id rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
 		sec_type,value_1,value_2,value_3,sort
 	</sql>
-<select id="getHomeConfigByAllTypes" resultType="AfResourceDo">
+<select id="selectHomeConfigByAllTypes" resultType="AfResourceDo">
     SELECT
     <include refid="queryAllFields" />
     FROM
@@ -14,7 +14,7 @@
     WHERE
     is_delete = 0
     AND
-			 type in (HOME_BANNER,HOME_TOOLS,HOME_COUPON,HOME_ONE_TO_MANY,HOME_ONE_TO_TWO,HOME_ONE_TO_ONE)
+	 type in ('HOME_BANNER','HOME_TOOLS','HOME_COUPON','HOME_ONE_TO_MANY','HOME_ONE_TO_TWO','HOME_ONE_TO_ONE')
 </select>
 
 
