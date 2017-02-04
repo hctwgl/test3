@@ -77,6 +77,6 @@ public class Constants {
     public static final String CONFKEY_TONGDUN_PARTNER_CODE           = "fbapi.tongdun.partner.code";
     public static final String CONFKEY_TONGDUN_PARTNER_KEY            = "fbapi.tongdun.partner.key";
     public static final String CONFKEY_TONGDUN_APP_NAME               = "fbapi.tongdun.app.name";
-    
-    
+    public static final String CONFKEY_TAOBAO_BCDS_APPID			  = "fbapi.taobao.bcds.appid";
+    public static final String CONFKEY_TAOBAO_BCDS_SECRET			  = "fbapi.taobao.bcds.secret";
 }
