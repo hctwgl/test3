@@ -11,6 +11,7 @@ import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
 /**
+
  *@类描述：
  *@author Xiaotianjian 2017年1月20日上午10:27:48
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -20,7 +21,16 @@ public class AfResourceServiceImpl implements AfResourceService {
 	
 	@Resource
 	AfResourceDao afResourceDao;
-
+    @Override
+    public List<AfResourceDo> getHomeConfigByAllTypes() {
+        return afResourceDao.selectHomeConfigByAllTypes();
+    }
+    
+    
+    @Override
+    public List<AfResourceDo> getConfigByTypes(String type) {
+        return afResourceDao.getConfigByTypes(type);
+    }
 	@Override
 	public List<AfResourceDo> getResourceListByType(String type) {
 		return afResourceDao.getResourceListByType(type);

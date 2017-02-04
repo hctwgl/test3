@@ -37,7 +37,8 @@ import com.alibaba.fastjson.JSONObject;
 public class FanbeiController extends BaseController {
 	
     @RequestMapping(value ={
-    	"/goods/goodsListByKeyWords","/goods/getPriceParameter","/goods/getFootMarkList","/goods/addFootMark"
+
+    	"/goods/goodsListByKeyWords","/goods/getPriceParameter","/goods/getFootMarkList","/goods/addFootMark","/goods/getHomeInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -68,7 +69,7 @@ public class FanbeiController extends BaseController {
     }
     
     @RequestMapping(value ={
-    	"/system/appUpgrade","/system/commitFeedBack","/system/feedbackList","/system/getArea",
+    	"/system/appUpgrade","/system/commitFeedBack","/system/feedbackList","/system/getArea","/system/getSettingInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -79,7 +80,7 @@ public class FanbeiController extends BaseController {
     
     @RequestMapping(value = {
     		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/registSetPass","/user/login","/user/resetPass","/user/getUserInfo",
-    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo"
+    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo","/user/commitFeedback"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
