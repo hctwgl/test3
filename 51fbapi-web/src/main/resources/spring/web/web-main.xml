@@ -83,8 +83,6 @@
 	<bean id="apiHandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">
-			    <!--首页  -->
-   				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 			    
 				<!-- user -->
 				<entry key="/user/login" value-ref="loginApi" />
@@ -102,12 +100,14 @@
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
+				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 				
 				<!-- 订单Order
 				<entry key="/order/createOrder" value-ref="createOrderApi" /> -->
 				
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" /> 
+				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" /> 
 				
 				
 			</map>

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ald.fanbei.api.web.api.goods;
+package com.ald.fanbei.api.web.api.system;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.ResourceHomeType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -34,7 +35,7 @@ public class GetSettingInfoApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		List<AfResourceDo> list = afResourceService.getHomeConfigByAllTypes();
+		List<AfResourceDo> list = afResourceService.getConfigByTypes(ResourceHomeType.ResourceTypeSet.getCode());
 		Map<String, Object> data = new HashMap<String, Object>();
 		for (AfResourceDo afResourceDo : list) {
 			if(StringUtils.equals(afResourceDo.getSecType(), "COMMON_PROBLEM")){
