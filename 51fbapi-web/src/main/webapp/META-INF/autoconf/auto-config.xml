@@ -32,6 +32,10 @@
 		<property name="fbapi.tongdun.partner.key" defaultValue="30ohw4+pyRhim1YJthNzzvLKAsRkWviuLyI/5ZjKs3TQroYLtEIaqFC8Jmft4E4B" description="铜盾商户key" />
 		<property name="fbapi.tongdun.app.name" defaultValue="alading_web" description="铜盾appname" />
 		
+		<!-- 阿里百川 -->
+		<property name="fbapi.taobao.bcds.appid" defaultValue="nAub69Lxd7kZn+wFq5kxcg==" description="阿里百川电商appid" />
+		<property name="fbapi.taobao.bcds.secret" defaultValue="lRS35F+0PW+D/l8fP2RJJu57Z4cjeiJ0lUsTs5vFkYTQroYLtEIaqFC8Jmft4E4B" description="阿里百川电商secret" />
+		
 		<!-- db -->
 		<property name="fbapi.db.url" defaultValue="jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NCZT3RtV1J4belR7B0tjJcz" description="dburl" />
 		<property name="fbapi.db.username" defaultValue="IJHsUz9iDSoqGAr1J3hHQQ==" description="db username" />
