@@ -30,7 +30,7 @@ public class AfResourceServiceImpl implements AfResourceService {
     @Override
     public List<AfResourceDo> getConfigByTypes(String type) {
         return afResourceDao.getConfigByTypes(type);
-
+    }
 	@Override
 	public List<AfResourceDo> getResourceListByType(String type) {
 		return afResourceDao.getResourceListByType(type);
