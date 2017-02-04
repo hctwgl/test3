@@ -27,6 +27,15 @@ public interface AfResourceService {
      * @return
      */
     List<AfResourceDo> getConfigByTypes(String type);
+    /**
+     * 获取type类型的配置信息
+     * @param type
+     * @return
+     */
+    AfResourceDo getConfigByTypesAndSecType(String type,String secType);
+
+    
+    
 	/**
 	 * 根据type获取资源列表
 	 * @param type
