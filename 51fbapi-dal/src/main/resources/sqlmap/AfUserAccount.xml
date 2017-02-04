@@ -95,4 +95,5 @@
 		AND
 			u.id = #{userId}	
 	</select>
+
 </mapper>

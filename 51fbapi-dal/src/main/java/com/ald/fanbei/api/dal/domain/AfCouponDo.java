@@ -30,11 +30,25 @@ public class AfCouponDo extends AbstractSerial {
 	private String gmtStart;//有效期开始时间
 	private String gmtEnd;//有效期结束时间
 	private Integer validDays;//有效天数，与有效开始/结束时间互斥，要么设置有效开始时间有效结束时间，要么设置有效期  【  -1:表示永久有效;  0：表示设置了有效期;  >0:表示有效期（天数）】
+	private Integer limitCount;
+	
 	/**
 	 * @return the rid
 	 */
 	public Long getRid() {
 		return rid;
+	}
+	/**
+	 * @return the limitCount
+	 */
+	public Integer getLimitCount() {
+		return limitCount;
+	}
+	/**
+	 * @param limitCount the limitCount to set
+	 */
+	public void setLimitCount(Integer limitCount) {
+		this.limitCount = limitCount;
 	}
 	/**
 	 * @param rid the rid to set

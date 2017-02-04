@@ -6,6 +6,31 @@
 		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.use_rule
 	</sql>
 	
+	<insert id="addUserCoupon" parameterType="AfUserCouponDo" keyProperty="rid" useGeneratedKeys="true">
+		INSERT INTO af_user_coupon
+		(
+			gmt_create,
+			gmt_modified,
+			user_id,
+			coupon_id,
+			gmt_start,
+			gmt_end,
+			status,
+			source_type
+		)
+		VALUES
+		(
+			NOW(),
+			NOW(),
+			#{userId},
+			#{couponId},
+			#{gmtStart},
+			#{gmtEnd},
+			#{status},
+			#{sourceType}
+		)
+	</insert>
+	
 	<select id="getUserCouponByUser" resultType="AfUserCouponDto">
 		SELECT 
 			<include refid="queryAllFields" />
@@ -38,4 +63,18 @@
 		AND
 			status = 'NOUSE'
 	</select>
+	
+	<select id="getUserCouponByUserIdAndCouponId"  resultType="java.lang.Integer">
+		SELECT 
+			count(id)
+		FROM 
+			af_user_coupon
+		WHERE
+			is_delete = 0 
+		AND
+			user_id = #{userId}	
+		AND
+			coupon_id = #{couponId}
+	</select>
+	
 </mapper>

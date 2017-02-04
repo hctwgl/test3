@@ -69,7 +69,8 @@ public class GetRefundCouponListApi implements ApiHandle {
 		data.put("gmtStart",afCouponDo.getGmtStart() );
 		data.put("gmtEnd",afCouponDo.getGmtEnd());
 		data.put("validDays",afCouponDo.getValidDays() );
-	
+		data.put("limitCount",afCouponDo.getLimitCount() );
+
 		return data;
 	}
 

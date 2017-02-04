@@ -26,4 +26,11 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	int getUserCouponByUserNouse(Long userId);
+	/**
+	 * 获取可用优惠券数量
+	 * @param userId
+	 * @param couponId
+	 * @return
+	 */
+	int getUserCouponByUserIdAndCouponId(Long userId,Long couponId);
 }

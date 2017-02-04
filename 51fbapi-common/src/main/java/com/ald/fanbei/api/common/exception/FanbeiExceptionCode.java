@@ -39,6 +39,9 @@ public enum FanbeiExceptionCode {
     USER_PASSWORD_ERROR_FOURTH("USER_PASSWORD_ERROR_FOURTH",1124,"user password error fourth","密码输入有误,剩余次数(2)"),
     USER_PASSWORD_ERROR_FIFTH("USER_PASSWORD_ERROR_FIFTH",1125,"user password error fifth","密码输入有误,剩余次数(1)"),
     USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_FIFTH",1126,"user password error fifth","密码输入有误,剩余次数(6)"),
+    
+    USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
+
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
     

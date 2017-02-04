@@ -28,4 +28,14 @@ public interface AfUserCouponDao {
 	 * @return
 	 */
 	int getUserCouponByUserNouse(@Param("userId")Long userId);
+	
+	/**
+	 * 获取可用优惠券数量
+	 * @param userId
+	 * @param couponId
+	 * @return
+	 */
+	int getUserCouponByUserIdAndCouponId(@Param("userId")Long userId,@Param("couponId")Long couponId);
+	
+	
 }
