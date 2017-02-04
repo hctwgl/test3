@@ -83,6 +83,8 @@
 	<bean id="apiHandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">
+			    <!--首页  -->
+   				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 			    
 				<!-- user -->
 				<entry key="/user/userLogin" value-ref="userLoginApi" />

@@ -37,7 +37,7 @@ import com.alibaba.fastjson.JSONObject;
 public class FanbeiController extends BaseController {
 	
     @RequestMapping(value ={
-    	"/goods/goodsListByKeyWords","/goods/getPriceParameter"
+    	"/goods/goodsListByKeyWords","/goods/getPriceParameter","/goods/getHomeInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
