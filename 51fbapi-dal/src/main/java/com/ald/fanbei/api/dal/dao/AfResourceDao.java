@@ -26,6 +26,16 @@ public interface AfResourceDao {
      */
     
     List<AfResourceDo> getConfigByTypes(@Param("type")String type);
+    /**
+     * 获取type类型的配置信息
+     * @param type
+     * @return
+     */
+    
+    AfResourceDo getConfigByTypesAndSecType(@Param("type")String type,@Param("secType")String secType);
+    
+    
+    
 
 	/**
 	 * 根据type获取资源列表

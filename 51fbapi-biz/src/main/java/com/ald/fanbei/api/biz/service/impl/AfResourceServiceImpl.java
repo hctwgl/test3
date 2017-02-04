@@ -41,4 +41,11 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getSingleResourceBytype(type);
 	}
 
+
+
+	@Override
+	public AfResourceDo getConfigByTypesAndSecType(String type, String secType) {
+		return afResourceDao.getConfigByTypesAndSecType(type, secType);
+	}
+
 }
