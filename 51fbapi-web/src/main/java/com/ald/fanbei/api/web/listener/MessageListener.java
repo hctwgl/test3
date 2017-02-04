@@ -57,18 +57,23 @@ public class MessageListener extends ContextLoaderListener{
 		            if(StringUtil.isNotEmpty(message.getTopic())){
 		            	switch(message.getTopic()){
 		            		case "taobao_tae_BaichuanTradeCreated":
-		            			System.out.println(afOrderService);
 		            			afOrderService.createOrderTrade(message.getContent());
+		            			break;
 		            		case "taobao_tae_BaichuanTradeSuccess":
 		            			afOrderService.updateOrderTradeSuccess(message.getContent());
+		            			break;
 		            		case "taobao_tae_BaichuanTradeRefundCreated":
 		            			afOrderService.updateOrderTradeRefundCreated(message.getContent());
+		            			break;
 		            		case "taobao_tae_BaichuanTradeRefundSuccess":
 		            			afOrderService.updateOrderTradeRefundSuccess(message.getContent());
+		            			break;
 		            		case "taobao_tae_BaichuanTradePaidDone":
 		            			afOrderService.updateOrderTradePaidDone(message.getContent());
+		            			break;
 		            		case "taobao_tae_BaichuanTradeClosed":
 		            			afOrderService.updateOrderTradeClosed(message.getContent());
+		            			break;
 		            		default:break;
 		            	} 
 		            }
@@ -84,5 +89,4 @@ public class MessageListener extends ContextLoaderListener{
 			e.printStackTrace();
 		}  
 	}
-
 }
