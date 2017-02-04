@@ -97,6 +97,8 @@
 				<entry key="/user/getMineInfo" value-ref="getMineInfoApi" />
 				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
 				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
+				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
+
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
