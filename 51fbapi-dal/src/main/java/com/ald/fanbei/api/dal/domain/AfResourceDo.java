@@ -4,41 +4,32 @@ import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
+/**
+ *@类描述：
+ *@author Xiaotianjian 2017年1月20日上午10:09:09
+ *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
 public class AfResourceDo extends AbstractSerial {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private Long rid;
+	
+	private static final long serialVersionUID = -5566198924650170281L;
+	
+	private Long rid;//用户id
 	private Date gmtCreate;
 	private Date gmtModified;
-	private String creator;//用户名
-	private String modifier;//最后修改人
+	private String creator;
+	private String modifier;
 	private String dataType;//配置类型，S:系统配置,B:业务配置
-	
-	/**
-	 * type
-	 * 配置类型，即配置的KEY，用于定位配置；所有字母大写，多个字母中间用下划线“_”分割；
-	 * 如：用户白名单类型USER_WHITE_LIST
-	 * 
-	 */
-	private String type;
-	
-	/**
-	 * 配置类型描述，如针对TYPE=USER_WHITE_LIST该值可描述为：用户白名单列表
-	 */
-	private String typeDesc;
+	private String type;//配置类型，即配置的KEY，用于定位配置；所有字母大写，多个字母中间用下划线“_”分割；如：用户白名单类型USER_WHITE_LIST
+	private String typeDesc;//配置类型描述，如针对TYPE=USER_WHITE_LIST该值可描述为：用户白名单列表
 	private String name;//名称
 	private String value;//值
 	private String description;//描述
 	private String secType;//类型，可针对某一类型的配置做分类
+	private String value1;//扩展值1
+	private String value2;//扩展值2
+	private String value3;//扩展值3
+	private String sort;//排序
 	
-	private String value1;//值1
-	private String value2;//值2
-	private String value3;//值3
-	private int sort;//排序
 	public Long getRid() {
 		return rid;
 	}
@@ -129,14 +120,11 @@ public class AfResourceDo extends AbstractSerial {
 	public void setValue3(String value3) {
 		this.value3 = value3;
 	}
-	public int getSort() {
+	public String getSort() {
 		return sort;
 	}
-	public void setSort(int sort) {
+	public void setSort(String sort) {
 		this.sort = sort;
 	}
-
-
-	
 
 }

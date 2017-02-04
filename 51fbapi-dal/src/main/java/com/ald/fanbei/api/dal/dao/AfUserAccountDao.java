@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 
 /**
  * 
@@ -32,4 +33,10 @@ public interface AfUserAccountDao {
 	 */
 	int updateUserAccount(AfUserAccountDo afUserAccountDo);
 	
+	/**
+	 * 获取账户关联信息
+	 * @param userId
+	 * @return
+	 */
+	AfUserAccountDto getUserAndAccountByUserId(@Param("userId")Long userId);
 }

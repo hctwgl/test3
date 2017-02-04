@@ -17,7 +17,7 @@ public interface AfSmsRecordDao {
 	/**
 	 * 增加短信发送短信记录
 	 * 
-	 *@param hoaSmsRecordDo
+	 *@param afSmsRecordDo
 	 *@return
 	 */
 	int addSmsRecord(AfSmsRecordDo afSmsRecordDo);
@@ -25,7 +25,7 @@ public interface AfSmsRecordDao {
 	/**
 	 * 根据条件查询发送短信记录列表
 	 * 
-	 *@param hoaSmsRecordDo
+	 *@param afSmsRecordDo
 	 *@return
 	 */
 	List<AfSmsRecordDo> getBySmsRecord(AfSmsRecordDo afSmsRecordDo);
@@ -37,7 +37,7 @@ public interface AfSmsRecordDao {
 	 *@param type
 	 *@return
 	 */
-	AfSmsRecordDo getLatestByUidType(@Param("mobile")String mobile,@Param("type")Integer type);
+	AfSmsRecordDo getLatestByUidType(@Param("mobile")String mobile,@Param("type")String type);
 	
 	/**
 	 * 更新验证码已经验证

@@ -23,7 +23,7 @@ public interface AfSmsRecordService {
 	 *@param type
 	 *@return
 	 */
-	AfSmsRecordDo getLatestByUidType(String mobile,Integer type);
+	AfSmsRecordDo getLatestByUidType(String mobile,String type);
 	
 	/**
 	 * 更新验证码已经验证

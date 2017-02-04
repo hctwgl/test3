@@ -71,7 +71,7 @@
 	<bean id="beforeLoginApiList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>/user/userLogin</value>
+				<value>/user/login</value>
 				<value>/user/getVerifyCode</value>
 				<value>/user/registSetPass</value>
 				<value>/user/checkVerifyCode</value>
@@ -87,22 +87,28 @@
    				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 			    
 				<!-- user -->
-				<entry key="/user/userLogin" value-ref="userLoginApi" />
+				<entry key="/user/login" value-ref="loginApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
 				<entry key="/user/registSetPass" value-ref="registSetPassApi" />
-				
-				<!-- mine -->
-				<entry key="/mine/addFootMark" value-ref="addFootMarkerApi" />
-				<entry key="/mine/getFootMarkList" value-ref="getFootMarkListApi" />
-				
-				<!-- goods
-				<entry key="/goods/goodsDetail" value-ref="goodsDetail" />
-				<entry key="/goods/searchGoods" value-ref="searchGoodsApi" /> -->
-				
+				<entry key="/user/resetPass" value-ref="resetPassApi" />
+				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
+				<entry key="/user/logout" value-ref="logoutApi" />
+				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
+				<entry key="/user/getSysMsgList" value-ref="getSysMsgListApi" />
+				<entry key="/user/getMineInfo" value-ref="getMineInfoApi" />
+				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
+				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
+				<!-- goods -->
+				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
+				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
 				
 				<!-- 订单Order
 				<entry key="/order/createOrder" value-ref="createOrderApi" /> -->
+				
+				<!-- system模块 -->
+				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" /> 
+				
 				
 			</map>
 		</constructor-arg>

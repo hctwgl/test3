@@ -18,6 +18,20 @@
 		<property name="fbapi.token.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
 		<property name="fbapi.token.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="cache redis password" />
 		 
+		 <!-- 极光推送 -->
+  		<property name="o2oapp.jpush.appkey" defaultValue="+NiuaeJqIbMOgsO/KrWgfEODa/LLdz98Xnf0QaRNNDY=" description="极光推送key" />
+		<property name="o2oapp.jpush.secret" defaultValue="Uiu3g6sVZHdz+SYV0KtqFfCJDZQfI/kJUOOwQ+sA9L0=" description="极光推送secret" />
+		 
+		 <!-- zhima config -->
+  		<property name="fbapi.zhima.appid" defaultValue="DbEZOAcvoj6WEnRHs2+tcg==" description="zhima appid" />
+		<property name="fbapi.zhima.private.key" defaultValue="QYtRBk+sCfJ6O2Y1nPL2yEL+J2ew11l/t6FlWzJXuZrUvioMIj3pG7CohttTVu7FsP8VXyvo/4Fzz48gx8+9ZaFAVVzLERNWlHKiuMsAF7g60tZQmGjh7XIcfoFo6M9W8WHQomCnQV/am8MxZDnL1gEfOq6FKvjfX9KFD9aPZCNxcez/VVmLeUCxh0Rvib4nt59X0T+Chocsqw4JUfMwlBr4jY7fisEuB5iVdFUVSfjPW4fZhqs98duPcQEMdALY1eBCvgzp/TtVuP8ahY7eQCuQJR1w0fg02ZWdz1hr7367huTHX465veiN0lrikXMPqbebwFzFvaZaxEIb8q9G2YhsW4QC4Nswe6AUdeAxsYYRKJ/F2ts4glLLfCxSK7/grlgcgfl6VwIdX9N5USxAcfugdkT73DQTUtEuW4FJ9ZpBC+be9BV2Na++YoGsTa2whsb8hkuUPfmFg5l+6xudZVTsO2u3uRTs6QyN7nN2DpqGtovL/857AtGEwKjDO9O3BFDiykaeAbmGXwiHfHM90Wvn2YmFXpPwKU5ZKTz23R4T+eB8QqyZ21spcVI2RQtvg61yw62pwl5NthfCIEq0UatME/+OnStML1IWCfSG8IdipK+Cm+TqIYZoQAV76/s2FJpsRSdJtkTdeP+1lDg177Aash7dbv+1eY6Bt8eb4solXEytDVlBDNFGmaGrbC8b27Cvd3Yl0f+GhANTpcDRhrj7QRbCklXqPME6HaB9xEuTsN4j8sUKjK69QVRGgNxpVMLkSRRckXxfVAj6NnXKBqdWMPmJpxwa0ylr2o6h+8zxxJV2FaxBqPvd8D3paIMaw8553w/rCnePlWk3KGINZyydEyxFd40a4dSEUwg7seYZ+e6ntYoGz0LhvTJ4IOXlrJrJR0dpXDX6PPnp8kvHXWZKjb5QxnvKNQaFnZFdjL6NhuTosUKXG3+0HmZPTfNCunIEHfGL8JNGBM+YK8W804djyPNLUq7H0KncdhYo410Va396DKnCzsFSERbSq0LJXJcx6YExgaytn6Sz9r7CC5PBm6Uh9mgjqrOhhqeg7kBDl/QuXE/iXKQENw0IX+DX0K6GC7RCGqhQvCZn7eBOAQ==" description="zhima 私钥" />
+		<property name="fbapi.zhima.public.key" defaultValue="xApjX+tDbdHJF2EwP+PkLu7YQzJy6wpPxG6vACfgrQZqWp3D/TG79Mv68jl2/BenfZ3fh9KtvGZzpVKjDjhmTgI9CY/Dk4GtQtmeejnuDn385gntoDgBf8dDBtIvxBZwI2wjQlie0MrsRN2MkCq0KF7u/EmeZ+EBzyEuQvRjapoWs38PX6TGoNC9w7QdEOAy24ldE9piw4Vo5b2m2QkILQqPmcBwztpvVhIIIfPPDL+mu7k7O54jzVflVrSXoBprr3hBymKdY+OVMEGY5CxEw0gEkz2fjduFlySQ8kZemcY=" description="zhima 公钥" />
+		
+		<!-- tongdun -->
+		<property name="fbapi.tongdun.partner.code" defaultValue="ktRtt1OM1sQ8bvM5E0Q6Gw==" description="铜盾商户code" />
+		<property name="fbapi.tongdun.partner.key" defaultValue="30ohw4+pyRhim1YJthNzzvLKAsRkWviuLyI/5ZjKs3TQroYLtEIaqFC8Jmft4E4B" description="铜盾商户key" />
+		<property name="fbapi.tongdun.app.name" defaultValue="alading_web" description="铜盾appname" />
+		
 		<!-- db -->
 		<property name="fbapi.db.url" defaultValue="jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NCZT3RtV1J4belR7B0tjJcz" description="dburl" />
 		<property name="fbapi.db.username" defaultValue="IJHsUz9iDSoqGAr1J3hHQQ==" description="db username" />

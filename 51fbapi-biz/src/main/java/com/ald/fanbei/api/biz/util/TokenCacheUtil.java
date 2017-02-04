@@ -17,7 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
-import com.ald.fanbei.api.biz.bo.common.AbstractThrid;
+import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.SerializeUtil;
 
@@ -30,7 +30,7 @@ import com.ald.fanbei.api.common.util.SerializeUtil;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("tokenCacheUtil")
-public class TokenCacheUtil extends AbstractThrid{
+public class TokenCacheUtil extends AbstractThird{
     protected static Logger   logger           = LoggerFactory.getLogger(TokenCacheUtil.class);
     
     public static boolean BIZ_CACHE_SWITCH = true;//业务缓存开关，true：打开（即使用缓存）  false：关闭（即不使用缓存）

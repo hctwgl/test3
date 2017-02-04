@@ -20,9 +20,9 @@ public class AfSysMsgDo extends AbstractSerial{
 	
 	private Long 	userId;
 	
-	private String	title;
+	private String	title;//标题
 	
-	private String  content;
+	private String  content;//内容
 
 	public Long getRid() {
 		return rid;

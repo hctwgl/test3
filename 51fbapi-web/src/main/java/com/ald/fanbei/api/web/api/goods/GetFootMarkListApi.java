@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.api.mine;
+package com.ald.fanbei.api.web.api.goods;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class GetFootMarkListApi implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 
         Long userId = context.getUserId();
-        Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 0);
+        Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
 		
         logger.info("userId=" + userId + ",pageNo=" + pageNo);
         AfUserFootmarkQuery query = new AfUserFootmarkQuery();

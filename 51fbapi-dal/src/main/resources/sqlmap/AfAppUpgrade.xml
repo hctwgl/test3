@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfAppUpgradeDao">
+	<sql id="queryAllFields">
+		id rid, gmt_create, gmt_modified, creator, modifier, status, version_code,
+		version_name, version_desc, apk_url, upgrade_range, is_force, is_silence,
+		min_version, max_version,apk_md5
+	</sql>
+	
+	<select id="getAppUpgradeById" resultType="AfAppUpgradeDo">
+		SELECT 
+			<include refid="queryAllFields"/>
+		FROM 
+			af_app_upgrade 
+		WHERE 
+			is_delete = 0 
+		AND 
+			id = #{id}
+    </select>
+    
+    <select id="getMaxAppUpgradeVersion" resultType="AfAppUpgradeDo">
+		SELECT 
+			<include refid="queryAllFields" />
+		FROM af_app_upgrade 
+		WHERE is_delete = 0 
+		AND status = 'O' AND upgrade_range = 'A'
+		ORDER BY version_code DESC
+		LIMIT 1
+    </select>
+    
+    <select id="getNewestVersionBySpecify" resultType="AfAppUpgradeDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM af_app_upgrade 
+		WHERE is_delete = 0 
+		AND status = 'O' AND upgrade_range = 'P'
+		AND #{versionCode} BETWEEN min_version AND max_version 
+		ORDER BY version_code DESC
+		LIMIT 1
+	</select>
+</mapper>

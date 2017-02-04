@@ -13,7 +13,7 @@ public class Page<T> extends AbstractSerial implements Paginable<T> {
 
 	private static final long serialVersionUID = -7087449214551867328L;
 
-	public static final int DEFAULT_PAGE_SIZE = 20; // 默认每页记录数
+	public static final int DEFAULT_PAGE_SIZE = 10; // 默认每页记录数
 
 	public static final int PAGE_COUNT = 10;
 
