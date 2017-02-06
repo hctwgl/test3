@@ -91,7 +91,7 @@ public class BaseControllerTest extends AbstractJUnit4SpringContextTests {
     	Map<String,String> head = new HashMap<String,String>();
         head.put("id", "a_1234_hwe123");
         head.put("appVersion", "1");
-        head.put("userName", "18672349815");
+        head.put("userName", "13989455620");
         head.put("time", "1450230780000");
         head.put("sign", "145asd023sdf078we0000");
         head.put("netType", "4G");
