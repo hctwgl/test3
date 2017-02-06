@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 
@@ -37,6 +38,12 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	@Override
 	public int getUserCouponByUserIdAndCouponId(Long userId, Long couponId) {
 		return afUserCouponDao.getUserCouponByUserIdAndCouponId(userId, couponId);
+	}
+
+
+	@Override
+	public int addUserCoupon(AfUserCouponDo afUserCouponDo) {
+		return afUserCouponDao.addUserCoupon(afUserCouponDo);
 	}
 
 }

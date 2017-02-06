@@ -100,6 +100,7 @@
 				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
 				<entry key="/user/getRefundCouponList" value-ref="getRefundCouponListApi" />
+				<entry key="/user/acquireReundCoupon" value-ref="acquireReundCouponApi" />
 
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />

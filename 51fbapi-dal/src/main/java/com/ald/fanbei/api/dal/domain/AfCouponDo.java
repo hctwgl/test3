@@ -27,8 +27,8 @@ public class AfCouponDo extends AbstractSerial {
 	private BigDecimal amount;//优惠金额
 	private String useRule;//使用须知
 	private Integer totalCount;//总发放数量
-	private String gmtStart;//有效期开始时间
-	private String gmtEnd;//有效期结束时间
+	private Date gmtStart;//有效期开始时间
+	private Date gmtEnd;//有效期结束时间
 	private Integer validDays;//有效天数，与有效开始/结束时间互斥，要么设置有效开始时间有效结束时间，要么设置有效期  【  -1:表示永久有效;  0：表示设置了有效期;  >0:表示有效期（天数）】
 	private Integer limitCount;
 	
@@ -140,28 +140,30 @@ public class AfCouponDo extends AbstractSerial {
 	public void setTotalCount(Integer totalCount) {
 		this.totalCount = totalCount;
 	}
+
+	
 	/**
 	 * @return the gmtStart
 	 */
-	public String getGmtStart() {
+	public Date getGmtStart() {
 		return gmtStart;
 	}
 	/**
 	 * @param gmtStart the gmtStart to set
 	 */
-	public void setGmtStart(String gmtStart) {
+	public void setGmtStart(Date gmtStart) {
 		this.gmtStart = gmtStart;
 	}
 	/**
 	 * @return the gmtEnd
 	 */
-	public String getGmtEnd() {
+	public Date getGmtEnd() {
 		return gmtEnd;
 	}
 	/**
 	 * @param gmtEnd the gmtEnd to set
 	 */
-	public void setGmtEnd(String gmtEnd) {
+	public void setGmtEnd(Date gmtEnd) {
 		this.gmtEnd = gmtEnd;
 	}
 	/**

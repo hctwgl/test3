@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 
@@ -33,4 +34,11 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	int getUserCouponByUserIdAndCouponId(Long userId,Long couponId);
+	
+	/**
+	 * 添加抵用券
+	 * @param afUserCouponDo
+	 * @return
+	 */
+	int addUserCoupon(AfUserCouponDo afUserCouponDo);
 }
