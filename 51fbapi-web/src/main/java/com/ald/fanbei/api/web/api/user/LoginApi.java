@@ -139,11 +139,12 @@ public class LoginApi implements ApiHandle {
     
     private UserVo parseUserVo(AfUserDo afUserDo){
     	UserVo vo = new UserVo();
-    	vo.setRid(afUserDo.getRid());
+    	vo.setUserId(afUserDo.getRid());
     	vo.setUserName(afUserDo.getUserName());
     	vo.setNick(afUserDo.getNick());
     	vo.setAvata(afUserDo.getAvata());
     	vo.setMobile(afUserDo.getMobile());
+    	vo.setFailCount(afUserDo.getFailCount());
     	return vo;
 	}
     

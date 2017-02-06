@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<bean class="com.ald.fanbei.api.common.DecrypPropertyPlaceholderConfigurer">
+		<property name="password" value="testC1b6x@6aH$2dlw"/>
+		<property name="encryptPropNames">
+			<list>
+				<value>fbapi.db.url</value>
+				<value>fbapi.db.username</value>
+				<value>fbapi.db.password</value>
+				
+				<value>fbapi.redis.hostname</value>
+				<value>fbapi.redis.port</value>
+				<value>fbapi.redis.password</value>
+				<value>fbapi.token.redis.hostname</value>
+				<value>fbapi.token.redis.port</value>
+				<value>fbapi.token.redis.password</value>
+			</list>
+		</property>
+		<property name="locations">
+			<list>
+				<value>classpath:props/encrypt.properties</value>
+			</list>
+		</property>
+	</bean>	
+	
+	<!-- redis 192.168.11.118 foobared	 -->
+    <bean id="poolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
+    	<property name="minIdle" value="8" />
+        <property name="maxIdle" value="200" />  
+        <property name="maxTotal" value="300" />  
+        <property name="maxWaitMillis" value="1000" />  
+        <property name="testOnBorrow" value="true" />  
+    </bean> 
+	<!-- redis 192.168.11.118 foobared -->
+    <bean id="poolConfigToken" class="redis.clients.jedis.JedisPoolConfig">
+    	<property name="minIdle" value="8" />
+        <property name="maxIdle" value="200" />  
+        <property name="maxTotal" value="300" />  
+        <property name="maxWaitMillis" value="1000" />  
+        <property name="testOnBorrow" value="true" />  
+    </bean>
+	
+	<!-- redis template definition -->
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="jedisConnFactory" />
+	</bean>
+	
+	<!-- redis template definition  -->
+	<bean id="cacheRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="cacheJedisConnFactory" />
+	</bean>
+
+</beans>

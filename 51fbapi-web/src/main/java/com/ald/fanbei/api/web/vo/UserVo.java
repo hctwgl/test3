@@ -11,7 +11,7 @@ import com.ald.fanbei.api.common.AbstractSerial;
 public class UserVo extends AbstractSerial {
 
 	private static final long serialVersionUID = 1L;
-	private Long rid;
+	private Long userId;
 	private String avata;
 	private String mobile;
 	private String nick;
@@ -21,6 +21,7 @@ public class UserVo extends AbstractSerial {
 	private String city;
 	private String county;
 	private String address;
+	private Integer failCount;
 	
 	private String alipayAccount;
 	
@@ -53,13 +54,6 @@ public class UserVo extends AbstractSerial {
 		this.userName = userName;
 	}
 
-	public Long getRid() {
-		return rid;
-	}
-
-	public void setRid(Long rid) {
-		this.rid = rid;
-	}
 
 	public String getEmail() {
 		return email;
@@ -108,7 +102,23 @@ public class UserVo extends AbstractSerial {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Integer getFailCount() {
+		return failCount;
+	}
+
+	public void setFailCount(Integer failCount) {
+		this.failCount = failCount;
+	}
+
 	
 
 }
