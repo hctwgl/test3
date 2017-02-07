@@ -36,6 +36,10 @@
 		<property name="fbapi.taobao.bcds.appid" defaultValue="nAub69Lxd7kZn+wFq5kxcg==" description="阿里百川电商appid" />
 		<property name="fbapi.taobao.bcds.secret" defaultValue="lRS35F+0PW+D/l8fP2RJJu57Z4cjeiJ0lUsTs5vFkYTQroYLtEIaqFC8Jmft4E4B" description="阿里百川电商secret" />
 		
+		<!-- 短信配置 -->
+		<property name="fbapi.sms.userid" defaultValue="nAub69Lxd7kZn+wFq5kxcg==" description="短信userid" />
+		<property name="fbapi.sms.password" defaultValue="lRS35F+0PW+D/l8fP2RJJu57Z4cjeiJ0lUsTs5vFkYTQroYLtEIaqFC8Jmft4E4B" description="短信密码" />
+		
 		<!-- db -->
 		<property name="fbapi.db.url" defaultValue="jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NCZT3RtV1J4belR7B0tjJcz" description="dburl" />
 		<property name="fbapi.db.username" defaultValue="IJHsUz9iDSoqGAr1J3hHQQ==" description="db username" />
