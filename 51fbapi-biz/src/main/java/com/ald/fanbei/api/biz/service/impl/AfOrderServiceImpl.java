@@ -7,7 +7,7 @@ import com.ald.fanbei.api.biz.service.BaseService;
 /**
  *@类描述：
  *@author 何鑫 2017年16月20日 下午4:20:22
- *@注意：本内容仅限于杭州喜马拉雅家居有限公司内部传阅，禁止外泄以及用于其他的商业目的 
+ *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afOrderService")
 public class AfOrderServiceImpl extends BaseService implements AfOrderService{

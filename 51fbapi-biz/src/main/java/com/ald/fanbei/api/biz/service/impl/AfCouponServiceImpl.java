@@ -6,7 +6,6 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.annotation.Resources;
 
 import org.springframework.stereotype.Service;
 
@@ -29,6 +28,11 @@ public class AfCouponServiceImpl implements AfCouponService {
 	@Override
 	public List<AfCouponDo> selectCouponByCouponIds(String ids) {
 		return afCouponDao.selectCouponByCouponIds(ids);
+	}
+
+	@Override
+	public AfCouponDo getCouponById(Long couponId) {
+		return afCouponDao.getCouponById(couponId);
 	}
 
 }

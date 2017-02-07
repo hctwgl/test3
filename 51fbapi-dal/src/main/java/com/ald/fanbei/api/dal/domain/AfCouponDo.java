@@ -15,9 +15,6 @@ import com.ald.fanbei.api.common.AbstractSerial;
  */
 public class AfCouponDo extends AbstractSerial {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private Long rid;
 	private Date gmtCreate;

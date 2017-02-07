@@ -19,7 +19,7 @@
 	
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.listener" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.api.*" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.api" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service.impl" />

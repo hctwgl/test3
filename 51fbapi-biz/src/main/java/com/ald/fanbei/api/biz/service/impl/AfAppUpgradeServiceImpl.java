@@ -11,9 +11,10 @@ import com.ald.fanbei.api.dal.dao.AfAppUpgradeDao;
 import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
 
 /**
- *@类描述：
- *@author 肖天剑 2016年8月18日 上午11:15:10
- *@注意：本内容仅限于杭州喜马拉雅家居有限公司内部传阅，禁止外泄以及用于其他的商业目的 
+ * 
+ * @类描述：
+ * @author xiaotianjian 2017年2月7日下午3:07:38
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afAppUpgradeService")
 public class AfAppUpgradeServiceImpl implements AfAppUpgradeService {

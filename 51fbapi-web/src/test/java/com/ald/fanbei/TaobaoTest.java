@@ -4,9 +4,7 @@ import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.TbkItemGetRequest;
-import com.taobao.api.request.TbkItemRecommendGetRequest;
 import com.taobao.api.response.TbkItemGetResponse;
-import com.taobao.api.response.TbkItemRecommendGetResponse;
 
 /**
  *@类描述：
@@ -105,7 +103,7 @@ public class TaobaoTest {
 //		req.setPlatform(1L);
 //		req.setPageNo(123L);
 		TbkItemGetResponse rsp = client.execute(req);
-		String str = rsp.getBody();
+//		String str = rsp.getBody();
 		System.out.println(rsp.getBody());
 		
 //		537034608173  扬州专卖
