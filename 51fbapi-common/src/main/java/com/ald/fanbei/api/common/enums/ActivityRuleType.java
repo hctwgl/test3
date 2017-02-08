@@ -11,7 +11,10 @@ import java.util.Map;
  */
 public enum ActivityRuleType {
 
-    REGIST("REGIST", "注册"), INVITE("INVITE", "邀请");
+    REGIST("REGIST", "注册"),
+    SIGNIN("SIGNIN", "签到"),
+
+    INVITE("INVITE", "邀请");
 
     private String code;
     private String name;

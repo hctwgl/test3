@@ -101,6 +101,8 @@
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
 				<entry key="/user/getRefundCouponList" value-ref="getRefundCouponListApi" />
 				<entry key="/user/acquireReundCoupon" value-ref="acquireReundCouponApi" />
+				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
+				<entry key="/user/signin" value-ref="signinApi" />
 
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />

@@ -21,7 +21,8 @@ import com.ald.fanbei.api.common.enums.Source;
 public class ActiveRuleEngineUtil {
 	@Resource
 	ActiveRuleEnginer registRuleEngine;
-	
+	@Resource
+	ActiveRuleEnginer afSigninRuleEngine;
 	/**
 	 * 注册时执行规则
 	 * 
@@ -34,4 +35,9 @@ public class ActiveRuleEngineUtil {
 		inputData.put("userId", userId);
 		registRuleEngine.executeRule(inputData,source);
 	}
+	@Async
+	public void signin(Map<String,Object> inputData,Source source){
+		afSigninRuleEngine.executeRule(inputData,source);
+	}
+	
 }

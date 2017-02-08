@@ -14,6 +14,8 @@ public enum UserCouponSource {
 	
 	REGIST("REGIST", "注册"), 
     INVITE("INVITE", "邀请"),
+    SIGNIN("SIGNIN", "签到"),
+
     SPECIAL("SPECIAL", "邀请");
 	
     private String code;

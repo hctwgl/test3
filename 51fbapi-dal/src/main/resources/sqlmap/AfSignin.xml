@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfSigninDao">
+<sql id="queryAllFields">
+	id rid,gmt_create,gmt_series,user_id,total_count,series_count
+	</sql>
+
+	<insert id="insertSignin" parameterType="AfSigninDo" keyProperty="rid" useGeneratedKeys="true">
+		INSERT INTO af_signin
+		(
+			gmt_create,
+			gmt_series,
+			user_id,
+			total_count,
+			series_count
+		)
+		VALUES
+		(
+			NOW(),
+			NOW(),
+			#{userId},
+			#{totalCount},			
+			#{seriesCount}
+		)
+	</insert>
+	
+	<update id="updateSignin" parameterType="AfSigninDo">
+		UPDATE
+			af_signin
+		SET
+			is_delete = 0
+			,
+			gmt_series = NOW()
+			
+		<if test="totalCount != null">
+			, total_count = #{totalCount}
+		</if>
+		<if test="seriesCount != null">
+			, series_count = #{seriesCount}
+		</if>
+		
+		WHERE
+			is_delete = 0
+		AND
+			user_id = #{userId}
+	</update>
+	
+	<select id="selectSigninByUserId" resultType="AfSigninDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_signin
+		WHERE
+			is_delete = 0
+		AND
+			user_id = #{userId}
+	</select>
+	
+	
+	
+</mapper>
