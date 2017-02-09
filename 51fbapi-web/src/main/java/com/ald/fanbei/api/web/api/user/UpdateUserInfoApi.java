@@ -39,9 +39,9 @@ public class UpdateUserInfoApi implements ApiHandle {
 		}
 		Map<String, Object> params = requestDataVo.getParams();
 		String nick = ObjectUtils.toString(params.get("nick"), "").toString() ;
-		String avata = ObjectUtils.toString(params.get("avata"), "").toString() ;
+		String avatar = ObjectUtils.toString(params.get("avata"), "").toString() ;
 
-		if (StringUtils.isEmpty(nick) &&StringUtils.isEmpty(avata)) {
+		if (StringUtils.isEmpty(nick) &&StringUtils.isEmpty(avatar)) {
 			throw new FanbeiException("nick and avata are both empty",FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
@@ -50,7 +50,7 @@ public class UpdateUserInfoApi implements ApiHandle {
 		
 		afUserDo.setNick(StringUtils.isNotBlank(nick) ? nick : null);
 
-		afUserDo.setAvata(StringUtils.isNotBlank(avata) ? avata : null);
+		afUserDo.setAvatar(StringUtils.isNotBlank(avatar) ? avatar : null);
 		
 		if (afUserService.updateUser(afUserDo) > 0) {
 			return resp;

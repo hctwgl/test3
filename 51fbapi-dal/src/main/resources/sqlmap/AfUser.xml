@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserDao">
 	<sql id="queryAllFields">
-		id rid,gmt_create,gmt_modified,user_name,password,salt,gender,nick,avata,real_name,
+		id rid,gmt_create,gmt_modified,user_name,password,salt,gender,nick,avatar,real_name,
 		mobile,email,birthday,province,city,county,address,recommend_id,fail_count
 		recommend_code
 	</sql>
@@ -72,8 +72,8 @@
 		<if test="nick != null">
 			,nick = #{nick}
 		</if>
-		<if test="avata != null">
-			,avata = #{avata}
+		<if test="avatar != null">
+			,avatar = #{avatar}
 		</if>
 		<if test="realName != null">
 			,real_name = #{realName}

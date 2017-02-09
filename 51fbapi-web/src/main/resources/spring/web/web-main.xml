@@ -108,7 +108,7 @@
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
 				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
-				<entry key="/goods/searchGoods" value-ref="searchGoodsApi" />
+				<entry key="/goods/searchGoodsOfSearchBay" value-ref="searchGoodsOfSearchBayApi" />
 				
 				<!-- 订单Order
 				<entry key="/order/createOrder" value-ref="createOrderApi" /> -->

@@ -15,7 +15,7 @@ public class AfUserAccountDto extends AfUserAccountDo{
 
 	private String gender;//性别 【F：女 ，M：男， U:未知】
 	private String nick;//昵称
-	private String avata;//头像
+	private String avatar;//头像
 	private String realName;//真实姓名
 	private String mobile;//绑定手机号
 	private Integer vipLevel;//会员等级 【 1:为普通会员，2:为青铜会员，3:为白银会员，4:为黄金会员】
@@ -32,11 +32,11 @@ public class AfUserAccountDto extends AfUserAccountDo{
 	public void setNick(String nick) {
 		this.nick = nick;
 	}
-	public String getAvata() {
-		return avata;
+	public String getAvatar() {
+		return avatar;
 	}
-	public void setAvata(String avata) {
-		this.avata = avata;
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 	public String getRealName() {
 		return realName;

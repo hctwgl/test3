@@ -8,7 +8,7 @@
 	
 	<sql id="queryWithUserFields">
 		c.id rid,c.user_id,c.user_name,c.au_amount,c.remaining_amount,c.used_amount,c.freeze_amount,
-		c.score,c.alipay_account,c.commission,c.id_number,c.rebate_amount,u.gender,u.nick,u.avata,
+		c.score,c.alipay_account,c.commission,c.id_number,c.rebate_amount,u.gender,u.nick,u.avatar,
 		u.real_name,u.mobile,u.vip_level,u.recommend_code
 	</sql>
 	

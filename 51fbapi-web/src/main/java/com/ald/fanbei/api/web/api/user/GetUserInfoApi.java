@@ -47,7 +47,7 @@ public class GetUserInfoApi implements ApiHandle {
 	
 	private AfUserVo parseUserInfoToUserVo(AfUserDo userDo) {
 		AfUserVo userVo = new AfUserVo();
-		userVo.setAvata(userDo.getAvata());
+		userVo.setAvatar(userDo.getAvatar());
 		userVo.setNick(userDo.getNick());
 		userVo.setMobile(userDo.getMobile());
 		userVo.setEmail(userDo.getEmail());

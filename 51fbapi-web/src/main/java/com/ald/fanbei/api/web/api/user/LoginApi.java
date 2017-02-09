@@ -131,7 +131,7 @@ public class LoginApi implements ApiHandle {
         JSONObject jo = new JSONObject();
         jo.put("user", userVo);
         jo.put("token", token);
-        jo.put("firstLogin", afUserDo.getFailCount() ==  -1?1:0);
+//        jo.put("firstLogin", afUserDo.getFailCount() ==  -1?1:0);
         resp.setResponseData(jo);
         
         return resp;
@@ -142,7 +142,7 @@ public class LoginApi implements ApiHandle {
     	vo.setUserId(afUserDo.getRid());
     	vo.setUserName(afUserDo.getUserName());
     	vo.setNick(afUserDo.getNick());
-    	vo.setAvata(afUserDo.getAvata());
+    	vo.setAvatar(afUserDo.getAvatar());
     	vo.setMobile(afUserDo.getMobile());
     	vo.setFailCount(afUserDo.getFailCount());
     	return vo;

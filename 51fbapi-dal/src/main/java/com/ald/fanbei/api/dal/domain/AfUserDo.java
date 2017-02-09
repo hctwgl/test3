@@ -22,7 +22,7 @@ public class AfUserDo extends AbstractSerial{
 	private String salt;//密码盐值
 	private String gender;//性别 【F：女 ，M：男， U:未知】
 	private String nick;//昵称
-	private String avata;//头像
+	private String avatar;//头像
 	private String realName;//真实姓名
 	private String mobile;//绑定手机号
 	private String email;//邮箱
@@ -71,11 +71,11 @@ public class AfUserDo extends AbstractSerial{
 	public void setNick(String nick) {
 		this.nick = nick;
 	}
-	public String getAvata() {
-		return avata;
+	public String getAvatar() {
+		return avatar;
 	}
-	public void setAvata(String avata) {
-		this.avata = avata;
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 	public String getRealName() {
 		return realName;

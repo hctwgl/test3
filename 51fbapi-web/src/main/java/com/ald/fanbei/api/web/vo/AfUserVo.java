@@ -12,7 +12,7 @@ public class AfUserVo extends AbstractSerial {
 
 	private static final long serialVersionUID = 1L;
 	private Long userId;
-	private String avata;
+	private String avatar;
 	private String mobile;
 	private String nick;
 	private String userName;
@@ -29,12 +29,14 @@ public class AfUserVo extends AbstractSerial {
 		
 	}
 	
-	public String getAvata() {
-		return avata;
+	public String getAvatar() {
+		return avatar;
 	}
-	public void setAvata(String avata) {
-		this.avata = avata;
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
+
 	public String getMobile() {
 		return mobile;
 	}
