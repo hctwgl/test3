@@ -16,6 +16,8 @@ public class GoodsControllerTest extends BaseControllerTest {
 
 	
 	public static final String SEARCH_GOODS      = HTTPHOST + "/goods/searchGoods";
+	public static final String HOME      = HTTPHOST + "/goods/getHomeInfo";
+	
 	
 	@Test
 	public void testSearchGoods() {
@@ -28,4 +30,17 @@ public class GoodsControllerTest extends BaseControllerTest {
 	            e.printStackTrace();
 	        }
 	}
+	
+	@Test
+	public void testaas() {
+		 try {
+	            Map<String, String> params = new HashMap<String, String>();
+	           //登陆测试 
+	            this.testApi(HOME, params);   
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	}
+	
+	
 }
