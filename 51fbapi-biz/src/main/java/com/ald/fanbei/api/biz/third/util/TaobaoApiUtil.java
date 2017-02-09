@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.biz.util;
+package com.ald.fanbei.api.biz.third.util;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +50,7 @@ public class TaobaoApiUtil extends AbstractThird {
 	}
 	
 	/**
-	 * 搜索淘宝客商品
+	 * 搜索淘宝客商品，taobao.tbk.item.get接口
 	 * @param params
 	 * @throws ApiException 
 	 */
@@ -120,7 +120,7 @@ public class TaobaoApiUtil extends AbstractThird {
 	}
 	
 	/**
-	 * 查询定制淘宝客商品，有返利比率
+	 * 查询定制淘宝客商品，有返利比率，taobao.tae.item.list接口
 	 * @param params
 	 * @return
 	 * @throws ApiException

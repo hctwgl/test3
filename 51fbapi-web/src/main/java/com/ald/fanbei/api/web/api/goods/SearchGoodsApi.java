@@ -14,7 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.util.TaobaoApiUtil;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -30,12 +30,12 @@ import com.taobao.api.domain.NTbkItem;
 
 /**
  * 
- * @类描述：获取搜呗主页信息
+ * @类描述：搜呗搜索商品
  * @author xiaotianjian 2017年2月9日上午9:47:36
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("searchGoodsApi")
-public class SearchSearchBayGoodsApi implements ApiHandle {
+public class SearchGoodsApi implements ApiHandle {
 
 	@Resource
 	TaobaoApiUtil taobaoApiUtil;

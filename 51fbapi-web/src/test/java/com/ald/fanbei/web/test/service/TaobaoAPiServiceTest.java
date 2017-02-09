@@ -5,13 +5,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.junit.Test;
 
-import com.ald.fanbei.api.biz.util.TaobaoApiUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.web.test.common.BaseControllerTest;
 import com.taobao.api.ApiException;
 
@@ -36,7 +32,7 @@ public class TaobaoAPiServiceTest extends BaseControllerTest {
 		params.put("isTmall", false);
 		params.put("pageNo", 1L);
 		
-		System.out.println(taobaoApiUtil.searchTaoBaokeGoods(params));
+		System.out.println(taobaoApiUtil.executeTaobaokeSearch(params));
 		
 	}
 }
