@@ -44,37 +44,37 @@ public class GetHomeInfoApi implements ApiHandle {
 
 	public Map<String, Object> homeInfoDataWithAfResourceDoList(List<AfResourceDo> AfResourceDoList) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		List<Object> homeBannerList = new ArrayList<Object>();
-		List<Object> homeToolsList = new ArrayList<Object>();
-		List<Object> homeCouponList = new ArrayList<Object>();
-		List<Object> homeOneToManyList = new ArrayList<Object>();
-		List<Object> homeOneToTwoList = new ArrayList<Object>();
-		List<Object> homeOneToOneList = new ArrayList<Object>();
+		List<Object> bannerList = new ArrayList<Object>();
+		List<Object> toolsList = new ArrayList<Object>();
+		List<Object> couponList = new ArrayList<Object>();
+		List<Object> one2ManyList = new ArrayList<Object>();
+		List<Object> one2TwoList = new ArrayList<Object>();
+		List<Object> one2OneList = new ArrayList<Object>();
 
 		for (AfResourceDo afResourceDo : AfResourceDoList) {
 			if (StringUtils.equals(afResourceDo.getType(), ResourceHomeType.ResourceHomeTypeBanner.getCode())) {
-				homeBannerList.add(getHomeBannerObjectWithAfResourceDo(afResourceDo));
+				bannerList.add(getHomeBannerObjectWithAfResourceDo(afResourceDo));
 			} else if (StringUtils.equals(afResourceDo.getType(), ResourceHomeType.ResourceHomeTypeTools.getCode())) {
-				homeToolsList.add(getHomeToolsObjectWithAfResourceDo(afResourceDo));
+				toolsList.add(getHomeToolsObjectWithAfResourceDo(afResourceDo));
 			} else if (StringUtils.equals(afResourceDo.getType(), ResourceHomeType.ResourceHomeTypeCoupon.getCode())) {
-				homeCouponList.add(getHomeCouponObjectWithAfResourceDo(afResourceDo));
+				couponList.add(getHomeCouponObjectWithAfResourceDo(afResourceDo));
 			} else if (StringUtils.equals(afResourceDo.getType(),
 					ResourceHomeType.ResourceHomeTypeOneToMany.getCode())) {
-				homeOneToManyList.add(getHomeOneToManyObjectWithAfResourceDo(afResourceDo));
+				one2ManyList.add(getHomeOneToManyObjectWithAfResourceDo(afResourceDo));
 			} else if (StringUtils.equals(afResourceDo.getType(),
 					ResourceHomeType.ResourceHomeTypeOneToTwo.getCode())) {
-				homeOneToTwoList.add(getHomeOneToTwoObjectWithAfResourceDo(afResourceDo));
+				one2TwoList.add(getHomeOneToTwoObjectWithAfResourceDo(afResourceDo));
 			} else if (StringUtils.equals(afResourceDo.getType(),
 					ResourceHomeType.ResourceHomeTypeOneToOne.getCode())) {
-				homeOneToOneList.add(getHomeOneToOneObjectWithAfResourceDo(afResourceDo));
+				one2OneList.add(getHomeOneToOneObjectWithAfResourceDo(afResourceDo));
 			}
 		}
-		data.put("homeBannerList", homeBannerList);
-		data.put("homeToolsList", homeToolsList);
-		data.put("homeCouponList", homeCouponList);
-		data.put("homeOneToManyList", homeOneToManyList);
-		data.put("homeOneToTwoList", homeOneToTwoList);
-		data.put("homeOneToOneList", homeOneToOneList);
+		data.put("bannerList", bannerList);
+		data.put("toolsList", toolsList);
+		data.put("couponList", couponList);
+		data.put("one2ManyList", one2ManyList);
+		data.put("one2TwoList", one2TwoList);
+		data.put("one2OneList", one2OneList);
 
 		return data;
 
@@ -96,6 +96,7 @@ public class GetHomeInfoApi implements ApiHandle {
 		data.put("iconUrl", afResourceDo.getValue());
 		data.put("toolsTitle", afResourceDo.getName());
 		data.put("toolsType", afResourceDo.getSecType());
+		data.put("comment", afResourceDo.getValue1());
 		data.put("sort", afResourceDo.getSort());
 
 		return data;
@@ -104,7 +105,7 @@ public class GetHomeInfoApi implements ApiHandle {
 	private Map<String, Object> getHomeCouponObjectWithAfResourceDo(AfResourceDo afResourceDo) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("imageUrl", afResourceDo.getValue());
-		data.put("titleName", afResourceDo.getName());
+		data.put("name", afResourceDo.getName());
 		data.put("type", afResourceDo.getSecType());
 		data.put("sort", afResourceDo.getSort());
 
@@ -117,11 +118,11 @@ public class GetHomeInfoApi implements ApiHandle {
 		List<Object> manyData = new ArrayList<Object>();
 
 		oneData.put("imageUrl", afResourceDo.getValue());
-		oneData.put("titleName", afResourceDo.getName());
+		oneData.put("name", afResourceDo.getName());
 		oneData.put("type", afResourceDo.getSecType());
 		oneData.put("comment", afResourceDo.getValue1());
-		data.put("oneProduct", oneData);
-		data.put("manyProduct", manyData);
+		data.put("oneEntity", oneData);
+		data.put("manyEntity", manyData);
 		
 		return data;
 	}
@@ -129,7 +130,7 @@ public class GetHomeInfoApi implements ApiHandle {
 	private Map<String, Object> getHomeOneToTwoObjectWithAfResourceDo(AfResourceDo afResourceDo) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("imageUrl", afResourceDo.getValue());
-		data.put("titleName", afResourceDo.getName());
+		data.put("name", afResourceDo.getName());
 		data.put("type", afResourceDo.getSecType());
 		data.put("comment", afResourceDo.getValue1());
 		data.put("sort", afResourceDo.getSort());
@@ -140,7 +141,7 @@ public class GetHomeInfoApi implements ApiHandle {
 	private Map<String, Object> getHomeOneToOneObjectWithAfResourceDo(AfResourceDo afResourceDo) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("imageUrl", afResourceDo.getValue());
-		data.put("titleName", afResourceDo.getName());
+		data.put("name", afResourceDo.getName());
 		data.put("type", afResourceDo.getSecType());
 		data.put("comment", afResourceDo.getValue1());
 		data.put("sort", afResourceDo.getSort());

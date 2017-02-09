@@ -79,7 +79,7 @@ public class SigninApi implements ApiHandle {
 			if (DateUtil.isSameDay(DateUtil.getCertainDay(-1), seriesTime) && cycle != afSigninDo.getSeriesCount()) {
 				seriesCount = afSigninDo.getSeriesCount() + 1;
 			}
-
+																																																																																																																							
 			totalCount = afSigninDo.getTotalCount() + 1;
 			afSigninDo.setSeriesCount(seriesCount);
 			afSigninDo.setTotalCount(totalCount);
