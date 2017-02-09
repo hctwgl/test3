@@ -3,7 +3,9 @@ package com.ald.fanbei;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
+import com.taobao.api.request.TaeItemsListRequest;
 import com.taobao.api.request.TbkItemGetRequest;
+import com.taobao.api.response.TaeItemsListResponse;
 import com.taobao.api.response.TbkItemGetResponse;
 
 /**
@@ -42,13 +44,6 @@ public class TaobaoTest {
 //		System.out.println(rsp.getBody());
 		
 		
-//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-//		TaeItemsListRequest req = new TaeItemsListRequest();
-//		req.setFields("title,nick,price");
-//		req.setNumIids("123456789,123456789");
-//		req.setOpenIids("AAEYxNL_AClXeBuXBI6npdso");
-//		TaeItemsListResponse rsp = client.execute(req);
-//		System.out.println(rsp.getBody());
 		
 //		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
 //		AtbItemsGetRequest req = new AtbItemsGetRequest();
@@ -85,28 +80,44 @@ public class TaobaoTest {
 		
 		
 		
-		//淘宝客，搜索商品，没有返利
-		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-		TbkItemGetRequest req = new TbkItemGetRequest();
-		req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick");
-		req.setQ("南极人");
-		req.setSort("total_sales_des");
-		req.setIsOverseas(false);
-		req.setStartPrice(0L);
-		req.setEndPrice(100000L);
-		req.setStartTkRate(123L);
-		req.setEndTkRate(1000L);
-		req.setPageSize(100L);
+//		//淘宝客，搜索商品，没有返利
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		TbkItemGetRequest req = new TbkItemGetRequest();
+//		req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick");
+//		req.setQ("南极人");
+//		req.setSort("total_sales_des");
+//		req.setIsOverseas(false);
+//		req.setStartPrice(0L);
+//		req.setEndPrice(100000L);
+//		req.setStartTkRate(123L);
+//		req.setEndTkRate(1000L);
+//		req.setPageSize(100L);
+//		TbkItemGetResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+//		System.out.println(rsp.getResults());
+//		System.out.println(rsp.getTotalResults());
+//		System.out.println(rsp.getErrorCode());
+//		System.out.println(rsp.getParams());
+		
+		//获取淘宝客返利
+		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+		TaeItemsListRequest req1 = new TaeItemsListRequest();
+		req1.setFields("title,nick,price");
+		req1.setNumIids("25354992789");
+		TaeItemsListResponse rsp1 = client1.execute(req1);
+		System.out.println(rsp1.getBody());
+		System.out.println(rsp1.getItems());
+		System.out.println(rsp1.getParams());
+		
+		
 //		req.setIsTmall(false);
 //		req.setCat("16,18");
 //		req.setItemloc("杭州");
 //		req.setPlatform(1L);
 //		req.setPageNo(123L);
-		TbkItemGetResponse rsp = client.execute(req);
 //		String str = rsp.getBody();
-		System.out.println(rsp.getBody());
-		
-//		537034608173  扬州专卖
+//		25354992789,521524876965,537010515173
+//		537034608173  扬州专卖 
 //		System.out.println(((Map<String,Object>)((Map<String,Object>)JSON.parse(str)).get("tbk_item_get_response")).get("results"));
 		
 		//淘宝客 推荐商品
@@ -117,6 +128,31 @@ public class TaobaoTest {
 //		req.setCount(20L);
 //		req.setPlatform(1L);
 //		TbkItemRecommendGetResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+		
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		TbkItemInfoGetRequest req = new TbkItemInfoGetRequest();
+//		req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url");
+//		req.setPlatform(1L);
+//		req.setNumIids("537034608173");
+//		TbkItemInfoGetResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		ShopGetRequest req = new ShopGetRequest();
+//		req.setFields("sid,cid,title,nick,desc,bulletin,pic_path,created,modified");
+//		req.setNick("南极人扬州专卖店");
+//		ShopGetResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+//		TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+//		ItemcatsGetRequest req = new ItemcatsGetRequest();
+//		req.setCids("18957,19562");
+//		req.setDatetime(StringUtils.parseDateTime("2000-01-01 00:00:00"));
+//		req.setFields("cid,parent_cid,name,is_parent");
+//		req.setParentCid(50011999L);
+//		ItemcatsGetResponse rsp = client.execute(req);
 //		System.out.println(rsp.getBody());
 		
 	}

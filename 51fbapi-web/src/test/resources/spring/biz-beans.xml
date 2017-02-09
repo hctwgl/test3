@@ -26,6 +26,12 @@
 				<value>fbapi.token.redis.hostname</value>
 				<value>fbapi.token.redis.port</value>
 				<value>fbapi.token.redis.password</value>
+				
+				<!-- 阿里百川 淘宝客 -->
+				<value>fbapi.taobao.bcds.url</value>
+				<value>fbapi.taobao.bcds.appid</value>
+				<value>fbapi.taobao.bcds.secret</value>
+				
 			</list>
 		</property>
 		<property name="locations">

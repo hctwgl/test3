@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.impl.AfSmsRecordServiceImpl;
+import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -21,7 +22,7 @@ import com.alibaba.druid.util.StringUtils;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("smsSendUtil")
-public class SmsSendUtil extends AbstractThridUtil{
+public class SmsSendUtil extends AbstractThird{
 	
 	@Resource
 	AfSmsRecordServiceImpl afSmsRecordServiceImpl;

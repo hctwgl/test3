@@ -77,8 +77,13 @@ public class Constants {
     public static final String CONFKEY_TONGDUN_PARTNER_CODE           = "fbapi.tongdun.partner.code";
     public static final String CONFKEY_TONGDUN_PARTNER_KEY            = "fbapi.tongdun.partner.key";
     public static final String CONFKEY_TONGDUN_APP_NAME               = "fbapi.tongdun.app.name";
+    public static final String CONFKEY_TAOBAO_BCDS_URL			      = "fbapi.taobao.bcds.url";
     public static final String CONFKEY_TAOBAO_BCDS_APPID			  = "fbapi.taobao.bcds.appid";
     public static final String CONFKEY_TAOBAO_BCDS_SECRET			  = "fbapi.taobao.bcds.secret";
     public static final String CONFKEY_SMS_USERID          			  = "fbapi.sms.userid";
     public static final String CONFKEY_SMS_PASSWORD					  = "fbapi.sms.password";
+    public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS	  = "taobao.tbk.item.get.fields";
+    public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
+    
+    
 }

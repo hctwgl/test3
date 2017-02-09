@@ -33,7 +33,6 @@ public class AfUserDo extends AbstractSerial{
 	private String address;//详细地址
 	private Long recommendId;//邀请人id
 	private Integer failCount;//登录失败次数
-	private Integer vipLevel;//会员等级 【 1:为普通会员，2:为青铜会员，3:为白银会员，4:为黄金会员】
 	private String recommendCode;//邀请码
 	
 	public Long getRid() {
@@ -137,12 +136,6 @@ public class AfUserDo extends AbstractSerial{
 	}
 	public void setFailCount(Integer failCount) {
 		this.failCount = failCount;
-	}
-	public Integer getVipLevel() {
-		return vipLevel;
-	}
-	public void setVipLevel(Integer vipLevel) {
-		this.vipLevel = vipLevel;
 	}
 	public String getRecommendCode() {
 		return recommendCode;
