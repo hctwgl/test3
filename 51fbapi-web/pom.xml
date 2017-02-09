@@ -50,6 +50,25 @@
 		
 	</dependencies>
 	<build>
-		<finalName>51fbapi-web</finalName>
+		<finalName>ROOT</finalName>
+		<plugins>
+			<plugin>
+				<groupId>com.alibaba.citrus.tool</groupId>
+				<artifactId>autoconfig-maven-plugin</artifactId>
+				<version>1.2</version>
+				<configuration>
+					<exploding>true</exploding>
+					<explodedDirectory>${project.build.directory}/${project.build.finalName}</explodedDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>autoconfig</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 </project>
