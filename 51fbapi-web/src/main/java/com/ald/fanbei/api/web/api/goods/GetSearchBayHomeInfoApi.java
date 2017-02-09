@@ -24,8 +24,6 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("GetSearchBayHomeInfo")
 public class GetSearchBayHomeInfoApi implements ApiHandle {
 
-	@Resource
-	TaobaoApiUtil taobaoApiUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -30,7 +31,7 @@ import com.taobao.api.response.TbkItemGetResponse;
  *@author xiaotianjian 2017年2月8日下午3:30:25
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Service("taobaoApiUtil")
+@Component("taobaoApiUtil")
 public class TaobaoApiUtil extends AbstractThird {
 	
 	private static TaobaoClient client = null;
