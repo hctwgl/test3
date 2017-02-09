@@ -70,7 +70,7 @@ public class GetHomeInfoApi implements ApiHandle {
 			}
 		}
 		data.put("bannerList", bannerList);
-		data.put("toolsList", toolsList);
+//		data.put("toolsList", toolsList);
 		data.put("couponList", couponList);
 		data.put("one2ManyList", one2ManyList);
 		data.put("one2TwoList", one2TwoList);
