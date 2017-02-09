@@ -14,10 +14,10 @@ import com.ald.fanbei.web.test.common.BaseControllerTest;
  */
 public class GoodsControllerTest extends BaseControllerTest {
 
+	
 	public static final String SEARCH_GOODS      = HTTPHOST + "/goods/searchGoods";
-
-	public static final String SEARCH_GOODS      = HTTPHOST + "/goods/searchGoodsOfSearchBay";
-	public static final String GET_HOME_INFO      = HTTPHOST + "/goods/getHomeInfo";
+	public static final String HOME      = HTTPHOST + "/goods/getHomeInfo";
+	
 	
 	@Test
 	public void testSearchGoods() {
@@ -36,20 +36,12 @@ public class GoodsControllerTest extends BaseControllerTest {
 		 try {
 	            Map<String, String> params = new HashMap<String, String>();
 	           //登陆测试 
-	            this.testApi(HOME, params);   
-         } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-    }
-	public void testGetHome() {
-		 try {
-	            Map<String, String> params = new HashMap<String, String>();
-	            this.testApi(GET_HOME_INFO, params);   
+	            params.put("q", "男装");
+	            this.testApi(SEARCH_GOODS, params);   
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
 	}
-
 	
-
+	
 }
