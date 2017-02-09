@@ -22,7 +22,7 @@ public class AfUserDo extends AbstractSerial{
 	private String salt;//密码盐值
 	private String gender;//性别 【F：女 ，M：男， U:未知】
 	private String nick;//昵称
-	private String avata;//头像
+	private String avatar;//头像
 	private String realName;//真实姓名
 	private String mobile;//绑定手机号
 	private String email;//邮箱
@@ -33,7 +33,6 @@ public class AfUserDo extends AbstractSerial{
 	private String address;//详细地址
 	private Long recommendId;//邀请人id
 	private Integer failCount;//登录失败次数
-	private Integer vipLevel;//会员等级 【 1:为普通会员，2:为青铜会员，3:为白银会员，4:为黄金会员】
 	private String recommendCode;//邀请码
 	
 	public Long getRid() {
@@ -72,11 +71,11 @@ public class AfUserDo extends AbstractSerial{
 	public void setNick(String nick) {
 		this.nick = nick;
 	}
-	public String getAvata() {
-		return avata;
+	public String getAvatar() {
+		return avatar;
 	}
-	public void setAvata(String avata) {
-		this.avata = avata;
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 	public String getRealName() {
 		return realName;
@@ -137,12 +136,6 @@ public class AfUserDo extends AbstractSerial{
 	}
 	public void setFailCount(Integer failCount) {
 		this.failCount = failCount;
-	}
-	public Integer getVipLevel() {
-		return vipLevel;
-	}
-	public void setVipLevel(Integer vipLevel) {
-		this.vipLevel = vipLevel;
 	}
 	public String getRecommendCode() {
 		return recommendCode;

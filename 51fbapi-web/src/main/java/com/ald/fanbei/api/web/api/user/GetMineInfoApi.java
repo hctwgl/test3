@@ -44,7 +44,7 @@ public class GetMineInfoApi implements ApiHandle{
         AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
         
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("avata", userAccountInfo.getAvata());
+        data.put("avata", userAccountInfo.getAvatar());
         data.put("nick", userAccountInfo.getNick());
         data.put("userName", userAccountInfo.getUserName());
         data.put("vipLevel", userAccountInfo.getVipLevel());

@@ -19,8 +19,8 @@
 		<property name="fbapi.token.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="cache redis password" />
 		 
 		 <!-- 极光推送 -->
-  		<property name="o2oapp.jpush.appkey" defaultValue="+NiuaeJqIbMOgsO/KrWgfEODa/LLdz98Xnf0QaRNNDY=" description="极光推送key" />
-		<property name="o2oapp.jpush.secret" defaultValue="Uiu3g6sVZHdz+SYV0KtqFfCJDZQfI/kJUOOwQ+sA9L0=" description="极光推送secret" />
+  		<property name="fbapi.jpush.appkey" defaultValue="+NiuaeJqIbMOgsO/KrWgfEODa/LLdz98Xnf0QaRNNDY=" description="极光推送key" />
+		<property name="fbapi.jpush.secret" defaultValue="Uiu3g6sVZHdz+SYV0KtqFfCJDZQfI/kJUOOwQ+sA9L0=" description="极光推送secret" />
 		 
 		 <!-- zhima config -->
   		<property name="fbapi.zhima.appid" defaultValue="DbEZOAcvoj6WEnRHs2+tcg==" description="zhima appid" />
@@ -33,6 +33,7 @@
 		<property name="fbapi.tongdun.app.name" defaultValue="alading_web" description="铜盾appname" />
 		
 		<!-- 阿里百川 -->
+		<property name="fbapi.taobao.bcds.url" defaultValue="fmWxZsP7A1fishuunHGrhkUgikLQNVFoclPF+UHiju7NRtiU+RzKs5iec6JwzkhZ" description="阿里百川电商url" />
 		<property name="fbapi.taobao.bcds.appid" defaultValue="nAub69Lxd7kZn+wFq5kxcg==" description="阿里百川电商appid" />
 		<property name="fbapi.taobao.bcds.secret" defaultValue="lRS35F+0PW+D/l8fP2RJJu57Z4cjeiJ0lUsTs5vFkYTQroYLtEIaqFC8Jmft4E4B" description="阿里百川电商secret" />
 		

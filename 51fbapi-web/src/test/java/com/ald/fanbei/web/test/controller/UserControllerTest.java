@@ -13,7 +13,7 @@ import com.ald.fanbei.web.test.common.BaseControllerTest;
  * @author Xiaotianjian 2017年2月6日下午3:17:02
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class UserController extends BaseControllerTest {
+public class UserControllerTest extends BaseControllerTest {
     
 	public static final String USER_LOGIN      = HTTPHOST + "/user/login";
 	

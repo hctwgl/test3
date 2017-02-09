@@ -14,7 +14,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.UserVo;
+import com.ald.fanbei.api.web.vo.AfUserVo;
 
 /**
  * 
@@ -36,7 +36,7 @@ public class GetUserInfoApi implements ApiHandle {
 		Long userId = context.getUserId();
 		AfUserDo userDo = afUserService.getUserById(userId);
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
-		UserVo vo = parseUserInfoToUserVo(userDo);
+		AfUserVo vo = parseUserInfoToUserVo(userDo);
 		
 		if (accountDo != null) {
 			vo.setAlipayAccount(accountDo.getAlipayAccount());
@@ -45,9 +45,9 @@ public class GetUserInfoApi implements ApiHandle {
 		return resp;
 	}
 	
-	private UserVo parseUserInfoToUserVo(AfUserDo userDo) {
-		UserVo userVo = new UserVo();
-		userVo.setAvata(userDo.getAvata());
+	private AfUserVo parseUserInfoToUserVo(AfUserDo userDo) {
+		AfUserVo userVo = new AfUserVo();
+		userVo.setAvatar(userDo.getAvatar());
 		userVo.setNick(userDo.getNick());
 		userVo.setMobile(userDo.getMobile());
 		userVo.setEmail(userDo.getEmail());

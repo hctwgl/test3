@@ -61,6 +61,15 @@ public class NumberUtil {
             return defaultValue;
         }
     }
+    
+    public static Boolean objToBooleanDefault(Object obj, Boolean defaultValue) {
+        if (null == obj) return defaultValue;
+        try {
+            return Boolean.parseBoolean(obj.toString());
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
 
     /**
      * 无默认返回
@@ -102,6 +111,16 @@ public class NumberUtil {
         try {
         	int pageNum = Integer.parseInt(obj.toString()); 
             return pageNum == 0 ? 1 : pageNum;
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+    
+    public static Long objToPageLongDefault(Object obj, Long defaultValue) {
+        if (null == obj) return defaultValue;
+        try {
+        	Long pageNum = Long.parseLong(obj.toString()); 
+            return pageNum == 0L ? 1L : pageNum;
         } catch (Exception e) {
             return defaultValue;
         }

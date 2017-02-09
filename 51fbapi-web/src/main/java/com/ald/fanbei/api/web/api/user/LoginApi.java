@@ -27,7 +27,7 @@ import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.UserVo;
+import com.ald.fanbei.api.web.vo.AfUserVo;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -127,22 +127,22 @@ public class LoginApi implements ApiHandle {
         tokenCacheUtil.saveToken(userName, tokenBo);
         
         //set return user info and generate token
-        UserVo userVo = parseUserVo(afUserDo);
+        AfUserVo userVo = parseUserVo(afUserDo);
         JSONObject jo = new JSONObject();
         jo.put("user", userVo);
         jo.put("token", token);
-        jo.put("firstLogin", afUserDo.getFailCount() ==  -1?1:0);
+//        jo.put("firstLogin", afUserDo.getFailCount() ==  -1?1:0);
         resp.setResponseData(jo);
         
         return resp;
     }
     
-    private UserVo parseUserVo(AfUserDo afUserDo){
-    	UserVo vo = new UserVo();
+    private AfUserVo parseUserVo(AfUserDo afUserDo){
+    	AfUserVo vo = new AfUserVo();
     	vo.setUserId(afUserDo.getRid());
     	vo.setUserName(afUserDo.getUserName());
     	vo.setNick(afUserDo.getNick());
-    	vo.setAvata(afUserDo.getAvata());
+    	vo.setAvatar(afUserDo.getAvatar());
     	vo.setMobile(afUserDo.getMobile());
     	vo.setFailCount(afUserDo.getFailCount());
     	return vo;

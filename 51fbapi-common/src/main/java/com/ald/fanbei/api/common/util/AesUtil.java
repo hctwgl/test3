@@ -164,7 +164,7 @@ public class AesUtil {
 //        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
 //        String sec = decryptFromBase64("jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NBM8iPVksu+CCA9HFkU2200", "testC1b6x@6aH$2dlw");
 //        System.out.println(sec);
-        
-        System.out.println(new String(Base64.encodeBase64(encrypt("171bd4c890bd43ffb9dbeab350af56aa", "testC1b6x@6aH$2dlw"))));
+    	AesUtil.decryptFromBase64("", "testC1b6x");
+        System.out.println(new String(Base64.encodeBase64(encrypt("http://gw.api.taobao.com/router/rest", "testC1b6x@6aH$2dlw"))));
     }
 }

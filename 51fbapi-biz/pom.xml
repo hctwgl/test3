@@ -62,5 +62,6 @@
 		  <version>20170204</version>
 		  <classifier>source</classifier>
 		</dependency>
+		
 	</dependencies>
 </project>
