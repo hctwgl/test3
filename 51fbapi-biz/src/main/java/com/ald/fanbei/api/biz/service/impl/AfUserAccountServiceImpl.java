@@ -91,6 +91,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		borrow.setName("取现");
 		borrow.setUserId(userId);
 		borrow.setNper(1);
+		borrow.setPerAmount(money);
 		borrow.setNperRepaid(0);
 		borrow.setInterestType(InterestType.CHARGES.getCode());
 		return borrow;

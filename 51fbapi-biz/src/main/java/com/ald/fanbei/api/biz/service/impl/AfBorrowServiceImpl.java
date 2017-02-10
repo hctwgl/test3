@@ -53,7 +53,7 @@ public class AfBorrowServiceImpl implements AfBorrowService{
 					//
 					List<AfResourceDo> list = afResourceDao.getConfigByTypes(new StringBuffer("BORROW_").append(borrow.getType()).toString());
 					if(null == list || list.size()==0){
-						throw new Exception("取现利率配置不能为空");
+						throw new Exception("利率配置不能为空");
 					}else{
 						AfResourceDo resource = list.get(0);
 						BigDecimal money = borrow.getAmount();//借款金额
@@ -74,7 +74,8 @@ public class AfBorrowServiceImpl implements AfBorrowService{
 						}
 						BigDecimal interestAmount = money.multiply(dayRate);//日利息
 						afBorrowDao.updateBorrow(borrowId, interestAmount, chargeAmount);
-						//afBorrowDao.addBorrowBill(borrowBill);
+						List<AfBorrowBillDo> billList = buildBorrowBill(borrow);
+						afBorrowDao.addBorrowBill(billList);
 					}
 					return 1;
 				} catch (Exception e) {
@@ -93,8 +94,12 @@ public class AfBorrowServiceImpl implements AfBorrowService{
 			bill.setUserId(borrow.getUserId());
 			bill.setBorrowId(borrow.getRid());
 			bill.setName(borrow.getName());
+			bill.setGmtBorrow(now);
 			bill.setBillMonth(DateUtil.formatDate(now, DateUtil.MONTH_PATTERN));
-			bill.setBillNper(new StringBuffer(i).append("/").append(borrow.getNper()).toString());
+			bill.setBillNper(new StringBuffer("").append(i).append("/").append(borrow.getNper()).toString());
+			bill.setBillAmount(borrow.getPerAmount());
+			bill.setStatus("N");
+			bill.setOverdueStatus("N");
 			list.add(bill);
 			DateUtil.addMonths(now, 1);
 		}

@@ -118,7 +118,9 @@
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" /> 
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" /> 
 				
-				
+				<!-- 分呗模块 -->
+				<entry key="/fenbei/getCashInfo" value-ref="getCashInfoApi" />
+				<entry key="/fenbei/applyCash" value-ref="applyCashApi" />
 			</map>
 		</constructor-arg>
 	</bean>

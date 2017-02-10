@@ -21,14 +21,14 @@ public interface AfBorrowDao {
 	 * @param borrow
 	 * @return
 	 */
-	int addBorrow(@Param("borrow")AfBorrowDo borrow);
+	int addBorrow(AfBorrowDo borrow);
 	
 	/**
 	 * 新增借款详情信息
 	 * @param borrowBill
 	 * @return
 	 */
-	int addBorrowBill(@Param("borrowBill")List<AfBorrowBillDo> borrowBill);
+	int addBorrowBill(@Param("billList")List<AfBorrowBillDo> borrowBill);
 	
 	/**
 	 * 通过id获取借款信息
