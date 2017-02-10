@@ -90,7 +90,7 @@
 				<entry key="/user/login" value-ref="loginApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
-				<entry key="/user/registSetPass" value-ref="registSetPassApi" />
+				<entry key="/user/registerSetPwd" value-ref="registerSetPwdApi" />
 				<entry key="/user/resetPwd" value-ref="resetPwdApi" />
 				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
 				<entry key="/user/logout" value-ref="logoutApi" />
@@ -118,9 +118,7 @@
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" /> 
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" /> 
 				
-				<!-- 分呗模块 -->
-				<entry key="/fenbei/getCashInfo" value-ref="getCashInfoApi" />
-				<entry key="/fenbei/applyCash" value-ref="applyCashApi" />
+				
 			</map>
 		</constructor-arg>
 	</bean>
