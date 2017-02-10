@@ -29,8 +29,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @author Xiaotianjian 2017年1月19日下午1:48:50
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("registSetPassApi")
-public class RegistSetPassApi implements ApiHandle {
+@Component("registerSetPwdApi")
+public class RegisterSetPwdApi implements ApiHandle {
 
 	@Resource
 	AfUserService afUserService;
