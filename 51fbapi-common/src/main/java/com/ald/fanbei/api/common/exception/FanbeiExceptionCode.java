@@ -43,6 +43,7 @@ public enum FanbeiExceptionCode {
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
     USER_SIGNIN_AGAIN_ERROR("USER_SIGNIN_AGAIN_ERROR",1210,"user coupon error ","今日已签到"),
 
+    USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
     

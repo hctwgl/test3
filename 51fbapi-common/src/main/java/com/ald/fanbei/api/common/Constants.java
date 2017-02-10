@@ -47,6 +47,8 @@ public class Constants {
     public static final String INVELOMENT_TYPE_TEST                   = "test";
     public static final String INVELOMENT_TYPE_ONLINE                 = "online";
     
+    public static final double DEFAULT_CHARGE_MIN 					  = 1;
+    public static final double DEFAULT_CHARGE_MAX 					  = 50;
     
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
@@ -63,7 +65,6 @@ public class Constants {
     public static final String RES_APP_CALL_CENTER_MESSAGE_ONLINE     = "ONLINE";
     public static final String RES_APP_CALL_CENTER_MESSAGE_TEL    	  = "TEL";
     public static final String RES_APP_CALL_CENTER_MESSAGE_QQGROUP    = "QQGROUP";
-    
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
