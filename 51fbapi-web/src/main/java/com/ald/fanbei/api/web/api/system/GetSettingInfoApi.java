@@ -40,9 +40,12 @@ public class GetSettingInfoApi implements ApiHandle {
 		for (AfResourceDo afResourceDo : list) {
 			if(StringUtils.equals(afResourceDo.getSecType(), "COMMON_PROBLEM")){
 				
-				data.put("commonProblem",afResourceDo.getValue() );
+				data.put("faqUrl",afResourceDo.getValue() );
 			}else if(StringUtils.equals(afResourceDo.getSecType(), "USING_HELP")){
-				data.put("usingHelp", afResourceDo.getValue());
+				data.put("helpUrl", afResourceDo.getValue());
+				
+			}else if(StringUtils.equals(afResourceDo.getSecType(), "APP_VERSION")){
+				data.put("versionName", afResourceDo.getValue());
 				
 			}
 		}
