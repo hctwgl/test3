@@ -17,15 +17,17 @@ public class AfUserAccountDo extends AbstractSerial {
 	private Long rid;
 	private Long userId; //用户id
 	private String userName;//用户名
-	private String auAmount;//授信额度,总金额
-	private String remainingAmount;//剩余金额
+	private BigDecimal auAmount;//授信额度,总金额
+	private BigDecimal remainingAmount;//剩余金额
 	private BigDecimal usedAmount;//已使用金额
-	private Integer freezeAmount;//冻结金额
+	private BigDecimal freezeAmount;//冻结金额
 	private BigDecimal score;//积分
 	private String alipayAccount;//支付宝账号
-	private String commission;//返现金额(注册,签到)
+	private BigDecimal commission;//返现金额(注册,签到)
 	private String idNumber;//身份证号
-	private String rebateAmount;//返利（淘宝返利）
+	private BigDecimal rebateAmount;//返利（淘宝返利）
+	private BigDecimal ccAmount;//可取现额度
+	private BigDecimal ucAmount;//已取现额度
 	
 	public Long getRid() {
 		return rid;
@@ -45,22 +47,22 @@ public class AfUserAccountDo extends AbstractSerial {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public String getAuAmount() {
+	public BigDecimal getAuAmount() {
 		return auAmount;
 	}
-	public void setAuAmount(String auAmount) {
+	public void setAuAmount(BigDecimal auAmount) {
 		this.auAmount = auAmount;
 	}
-	public Integer getFreezeAmount() {
+	public BigDecimal getFreezeAmount() {
 		return freezeAmount;
 	}
-	public void setFreezeAmount(Integer freezeAmount) {
+	public void setFreezeAmount(BigDecimal freezeAmount) {
 		this.freezeAmount = freezeAmount;
 	}
-	public String getCommission() {
+	public BigDecimal getCommission() {
 		return commission;
 	}
-	public void setCommission(String commission) {
+	public void setCommission(BigDecimal commission) {
 		this.commission = commission;
 	}
 	public BigDecimal getScore() {
@@ -69,10 +71,10 @@ public class AfUserAccountDo extends AbstractSerial {
 	public void setScore(BigDecimal score) {
 		this.score = score;
 	}
-	public String getRemainingAmount() {
+	public BigDecimal getRemainingAmount() {
 		return remainingAmount;
 	}
-	public void setRemainingAmount(String remainingAmount) {
+	public void setRemainingAmount(BigDecimal remainingAmount) {
 		this.remainingAmount = remainingAmount;
 	}
 	public BigDecimal getUsedAmount() {
@@ -87,10 +89,10 @@ public class AfUserAccountDo extends AbstractSerial {
 	public void setIdNumber(String idNumber) {
 		this.idNumber = idNumber;
 	}
-	public String getRebateAmount() {
+	public BigDecimal getRebateAmount() {
 		return rebateAmount;
 	}
-	public void setRebateAmount(String rebateAmount) {
+	public void setRebateAmount(BigDecimal rebateAmount) {
 		this.rebateAmount = rebateAmount;
 	}
 	public String getAlipayAccount() {
@@ -99,6 +101,17 @@ public class AfUserAccountDo extends AbstractSerial {
 	public void setAlipayAccount(String alipayAccount) {
 		this.alipayAccount = alipayAccount;
 	}
-	
+	public BigDecimal getCcAmount() {
+		return ccAmount;
+	}
+	public void setCcAmount(BigDecimal ccAmount) {
+		this.ccAmount = ccAmount;
+	}
+	public BigDecimal getUcAmount() {
+		return ucAmount;
+	}
+	public void setUcAmount(BigDecimal ucAmount) {
+		this.ucAmount = ucAmount;
+	}
 
 }

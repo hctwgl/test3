@@ -1,26 +1,18 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
-import com.taobao.api.domain.NTbkItem;
-import com.taobao.api.domain.XItem;
 import com.taobao.api.request.TaeItemsListRequest;
 import com.taobao.api.request.TbkItemGetRequest;
 import com.taobao.api.response.TaeItemsListResponse;
@@ -41,7 +33,6 @@ public class TaobaoApiUtil extends AbstractThird {
 	
 	private static TaobaoClient getTaobaoClient() {
 		if (client == null) {
-			
 			client = new DefaultTaobaoClient(AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_BCDS_URL), ConfigProperties.get(Constants.CONFKEY_AES_KEY)),
 					AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_BCDS_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY)),
 					AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_BCDS_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY)));
@@ -51,35 +42,7 @@ public class TaobaoApiUtil extends AbstractThird {
 	}
 	
 	/**
-	 * 搜索淘宝客商品，taobao.tbk.item.get接口
-	 * @param params
-	 * @throws ApiException 
-	 */
-	public List<XItem> searchTaoBaokeGoods(Map<String, Object> params) throws ApiException {
-		logger.info("searchTaoBaokeGoods begin, param = {}", params);
-		List<NTbkItem> results = executeTaobaokeSearch(params).getResults();
-		
-		List<Long> numIidsList = CollectionConverterUtil.convertToListFromList(results, new Converter<NTbkItem, Long>() {
-			@Override
-			public Long convert(NTbkItem source) {
-				return source.getNumIid();
-			}
-		});
-		String numIids = StringUtil.turnListToStr(numIidsList);
-		
-		Map<String,Object> rebatesParams = new HashMap<String,Object>();
-		
-		rebatesParams.put(NUM_IID, numIids);
-		
-		List<XItem> items = executeTbkItemSearch(rebatesParams).getItems();
-		
-		logger.info("searchTaoBaokeGoods complete.");
-		return items;
-		
-	}
-	
-	/**
-	 * 搜索淘宝客商品，没有返利
+	 * 搜索淘宝客商品，没有返利 taobao.tbk.item.get接口
 	 * @param params
 	 * @return
 	 * @throws ApiException

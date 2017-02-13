@@ -77,7 +77,7 @@
 				<value>/user/getVerifyCode</value>
 				<value>/user/registSetPass</value>
 				<value>/user/checkVerifyCode</value>
-				<value>/user/resetPass</value>
+				<value>/user/resetPwd</value>
 			</list>
 		</constructor-arg>
 	</bean>	
@@ -90,8 +90,8 @@
 				<entry key="/user/login" value-ref="loginApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
-				<entry key="/user/registSetPass" value-ref="registSetPassApi" />
-				<entry key="/user/resetPass" value-ref="resetPassApi" />
+				<entry key="/user/registerSetPwd" value-ref="registerSetPwdApi" />
+				<entry key="/user/resetPwd" value-ref="resetPwdApi" />
 				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
 				<entry key="/user/logout" value-ref="logoutApi" />
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />

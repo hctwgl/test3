@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowDao">
+	<sql id="queryFields">
+		id rid,gmt_create, gmt_modified,user_id,type,name,amount,status,remark,nper,per_amount,nper_repaid,interest_type,total_interest,
+		total_poundage,timeout_num,order_id
+	</sql>
+	
+	<select id="getBorrowById" resultType="AfBorrowDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_borrow WHERE is_delete = 0 AND id = #{id}
+    </select>
+
+	<insert id="addBorrow" keyProperty="id" useGeneratedKeys="true" parameterType="AfBorrowDo">
+		INSERT INTO af_borrow (
+			gmt_create,
+			gmt_modified,
+			user_id,
+			type,
+			name,
+			amount,
+			status,
+			nper,
+			per_amount,
+			nper_repaid,
+			interest_type
+			)
+			VALUES
+			(
+			NOW(),
+			NOW(),
+			#{userId},
+			#{type},
+			#{name},
+			#{amount},
+			#{status},
+			#{nper},
+			#{perAmount},
+			#{nperRepaid},
+			#{interestType}
+			)
+	</insert>
+	
+	<insert id="addBorrowBill" parameterType="java.util.List">
+		  INSERT INTO af_borrow_bill (
+		  gmt_create,
+		  gmt_modified,
+		  user_id,
+		  borrow_id,
+		  name,
+		  gmt_borrow,
+		  bill_month,
+		  bill_nper,
+		  bill_amount,
+		  status,
+		  overdue_status
+		) 
+		VALUES
+	    <foreach collection = "billList" separator = "," item = "item" index = "index" > 
+	    (
+	    	NOW(),
+	    	NOW(),
+	  		#{item.userId}, 
+	  		#{item.borrowId}, 
+	  		#{item.name}, 
+	  		#{item.gmtBorrow}, 
+	  		#{item.billMonth},
+	  		#{item.billNper}, 
+	  		#{item.billAmount}, 
+	  		#{item.status}, 
+	  		#{item.overdueStatus}
+	  	)
+	  	</foreach> 
+   </insert>
+   
+   <update id="updateBorrow">
+		UPDATE
+			af_borrow
+		SET
+			gmt_modified = NOW(),
+			total_interest = #{totalInterest},
+			total_poundage = #{totalPoundage}
+		WHERE
+			id = #{id}
+	</update>
+</mapper>

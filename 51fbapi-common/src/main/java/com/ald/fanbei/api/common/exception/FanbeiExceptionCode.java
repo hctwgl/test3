@@ -33,6 +33,15 @@ public enum FanbeiExceptionCode {
     USER_REGIST_SMS_OVERDUE("USER_REGIST_SMS_OVERDUE",1107,"user regist sms overdue","验证码已经过期"),
     USER_SEND_SMS_ERROR("USER_SEND_SMS_ERROR",1108,"user send sms error","用户发送验证码失败"),
     
+    USER_DUPLICATE_INVITE_CODE("USER_DUPLICATE_INVITE_CODE",1109,"user duplicate commit invite code","用户已经重复输入邀请码"),
+    COMMIT_INVITE_CODE_EXPIRE_TIME("COMMIT_INVITE_CODE_EXPIRE_TIME",1110,"commit invite code expire time","输入邀请码时限已经超过72小时"),
+    LIMIT_INVITE_EACH_OTHER("LIMIT_INVITE_EACH_OTHER",1111,"limit invite each other","限制互相推荐"),
+    CODE_NOT_EXIST("CODE_NOT_EXIST",1112,"code not exist","您输入的邀请码不存在"),
+    LIMIT_INVITE_SELF("LIMIT_INVITE_SELF",1113,"limit invite self","您不能邀请自己"),
+    CAN_NOT_APPLY_CASHED("CAN_NOT_APPLY_CASHED",1114,"can not apply cashed","系统维护中，暂不能申请提现"),
+    APPLY_CASHED_AMOUNT_ERROR("APPLY_CASHED_AMOUNT_ERROR",1115,"apply cashed amount invalid","申请的金额无效"),
+    
+    
     USER_PASSWORD_ERROR_FIRST("USER_PASSWORD_ERROR_FIRST",1121,"user password error first","密码输入有误,剩余次数(5)"),
     USER_PASSWORD_ERROR_SECOND("USER_PASSWORD_ERROR_SECOND",1122,"user password error second","密码输入有误,剩余次数(4)"),
     USER_PASSWORD_ERROR_THIRD("USER_PASSWORD_ERROR_THIRD",1123,"user password error third","密码输入有误,剩余次数(3)"),
@@ -43,6 +52,7 @@ public enum FanbeiExceptionCode {
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
     USER_SIGNIN_AGAIN_ERROR("USER_SIGNIN_AGAIN_ERROR",1210,"user coupon error ","今日已签到"),
 
+    USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
     
