@@ -38,14 +38,11 @@ public class GetSettingInfoApi implements ApiHandle {
 		List<AfResourceDo> list = afResourceService.getConfigByTypes(ResourceHomeType.ResourceTypeSet.getCode());
 		Map<String, Object> data = new HashMap<String, Object>();
 		for (AfResourceDo afResourceDo : list) {
-			if(StringUtils.equals(afResourceDo.getSecType(), "COMMON_PROBLEM")){
+			if(StringUtils.equals(afResourceDo.getSecType(), "SET_FAQ")){
 				
 				data.put("faqUrl",afResourceDo.getValue() );
-			}else if(StringUtils.equals(afResourceDo.getSecType(), "USING_HELP")){
+			}else if(StringUtils.equals(afResourceDo.getSecType(), "SET_HELP")){
 				data.put("helpUrl", afResourceDo.getValue());
-				
-			}else if(StringUtils.equals(afResourceDo.getSecType(), "APP_VERSION")){
-				data.put("versionName", afResourceDo.getValue());
 				
 			}
 		}

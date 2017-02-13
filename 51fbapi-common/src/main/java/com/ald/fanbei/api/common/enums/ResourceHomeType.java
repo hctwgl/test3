@@ -17,7 +17,7 @@ public enum ResourceHomeType {
 	
 	
 	//ResourceTypeSetType不是首页配置是设置页面的配置
-	ResourceTypeSet("SETTING_CONFIG", "设置页面配置");
+	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置");
 
 	
 
