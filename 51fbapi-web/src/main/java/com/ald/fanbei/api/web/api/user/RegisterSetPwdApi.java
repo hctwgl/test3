@@ -1,8 +1,5 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,16 +7,12 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import sun.awt.AppContext;
-
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
@@ -52,7 +45,7 @@ public class RegisterSetPwdApi implements ApiHandle {
         String userName = context.getUserName();
         String passwordSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
-        String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"));
+//        String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"));
         String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"));
         if(StringUtil.isBlank(passwordSrc)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
