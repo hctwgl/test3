@@ -18,21 +18,21 @@ import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 public class AfSmsRecordServiceImpl implements AfSmsRecordService{
 
 	@Resource
-	AfSmsRecordDao hoaSmsRecordDao;
+	AfSmsRecordDao afSmsRecordDao;
 	
 	@Override
 	public int addSmsRecord(AfSmsRecordDo AfSmsRecordDo) {
-		return hoaSmsRecordDao.addSmsRecord(AfSmsRecordDo);
+		return afSmsRecordDao.addSmsRecord(AfSmsRecordDo);
 	}
 
 	@Override
 	public AfSmsRecordDo getLatestByUidType(String mobile, String type) {
-		return hoaSmsRecordDao.getLatestByUidType(mobile, type);
+		return afSmsRecordDao.getLatestByUidType(mobile, type);
 	}
 	
 	@Override
 	public int updateSmsIsCheck(Integer id) {
-		return hoaSmsRecordDao.updateSmsIsCheck(id);
+		return afSmsRecordDao.updateSmsIsCheck(id);
 	}
 
 }

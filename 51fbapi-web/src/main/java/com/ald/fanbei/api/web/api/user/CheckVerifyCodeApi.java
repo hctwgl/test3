@@ -54,7 +54,7 @@ public class CheckVerifyCodeApi implements ApiHandle {
         }
         
         //判断验证码是否一致
-        String realCode = smsDo.getParams().split(",")[0];
+        String realCode = smsDo.getVerifyCode();//TODO 验证半小时内有效
         if(!StringUtils.equals(verifyCode, realCode)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
         }

@@ -6,13 +6,10 @@
 	</sql>
 
 	<insert id="addSmsRecord" parameterType="AfSmsRecordDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_sms_record(gmt_create , template_id , user_id , gmt_modified , params , type , mobile,result)
+		INSERT INTO af_sms_record(user_id , verify_code , type , mobile,result)
 		VALUES (
-		    NOW(),
-		    #{templateId},
 		    #{userId},
-		    NOW(),
-		    #{params},
+		    #{verifyCode},
 		    #{type},
 		    #{mobile},
 		    #{result}

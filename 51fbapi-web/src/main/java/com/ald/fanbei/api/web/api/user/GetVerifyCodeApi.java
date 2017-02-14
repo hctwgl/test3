@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.util.SmsSendUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -31,7 +31,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 	@Resource
 	AfUserService afUserService;
 	@Resource
-	SmsSendUtil smsSendUtil;
+	SmsUtil smsUtil;
 	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -54,8 +54,8 @@ public class GetVerifyCodeApi implements ApiHandle {
 	        if(afUserDo != null){
 	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_HAS_REGIST_ERROR);
 	        }
-	        boolean result = smsSendUtil.sendVerifyCodeReg(mobile, CommonUtil.getRandomNumber(6));
-	        if(!result){
+	        boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
+	        if(!resultReg){
 	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_SEND_SMS_ERROR);
 	        }
 			break;
@@ -63,8 +63,9 @@ public class GetVerifyCodeApi implements ApiHandle {
 			if(afUserDo == null){
 				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 			}
-			boolean result1 = smsSendUtil.sendVerifyCodeFindPass(mobile, CommonUtil.getRandomNumber(6));
-			if(!result1){
+			
+			boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile,afUserDo.getRid());
+			if(!resultForget){
 	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_SEND_SMS_ERROR);
 	        }
 			break;

@@ -48,7 +48,7 @@ public class ResetPwdApi implements ApiHandle {
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
         //判断验证码是否一致并且验证码是否已经做过验证
-        String realCode = smsDo.getParams().split(",")[0];
+        String realCode = smsDo.getVerifyCode();//TODO 验证半小时内有效
         if(!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 0){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }

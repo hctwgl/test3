@@ -16,10 +16,9 @@ public class AfSmsRecordDo extends AbstractSerial{
 	
 	private Integer rid;
 	private Date gmtCreate;
-	private Integer templateId;
 	private Long userId;//用户id
 	private Date gmtModified;
-	private String params;//参数，多个逗号隔开
+	private String verifyCode;//验证码
 	private String type;//验证码类型 【R.regist注册验证码 F.forget忘记密码】
 	private String mobile;//发送手机号码
 	private Integer isCheck;//是否已经验证,0:未验证 1：已经验证
@@ -37,12 +36,6 @@ public class AfSmsRecordDo extends AbstractSerial{
 	public void setGmtCreate(Date gmtCreate) {
 		this.gmtCreate = gmtCreate;
 	}
-	public Integer getTemplateId() {
-		return templateId;
-	}
-	public void setTemplateId(Integer templateId) {
-		this.templateId = templateId;
-	}
 	public Long getUserId() {
 		return userId;
 	}
@@ -55,11 +48,11 @@ public class AfSmsRecordDo extends AbstractSerial{
 	public void setGmtModified(Date gmtModified) {
 		this.gmtModified = gmtModified;
 	}
-	public String getParams() {
-		return params;
+	public String getVerifyCode() {
+		return verifyCode;
 	}
-	public void setParams(String params) {
-		this.params = params;
+	public void setVerifyCode(String verifyCode) {
+		this.verifyCode = verifyCode;
 	}
 	public String getMobile() {
 		return mobile;
