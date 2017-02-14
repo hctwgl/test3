@@ -122,7 +122,7 @@ public class HttpUtil {
         try{
 	        response = httpClient.execute(postMethod);
 	        HttpEntity entity = response.getEntity();
-	        System.out.println(response.getStatusLine());
+//	        System.out.println(response.getStatusLine());
 	        // 显示结果
 	        if (!url.contains("preview")) {
 	            BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));

@@ -47,7 +47,7 @@ public class RegisterSetPwdApi implements ApiHandle {
         String passwordSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
         String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
-        String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
+//        String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
         if(StringUtil.isBlank(passwordSrc)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }

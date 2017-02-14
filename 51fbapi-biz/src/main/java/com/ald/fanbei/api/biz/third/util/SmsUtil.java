@@ -1,15 +1,16 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -19,61 +20,33 @@ import com.ald.fanbei.api.common.util.StringUtil;
  */
 public class SmsUtil extends AbstractThird{
 	
-	private final static String HOST 					= "ws.montnets.com";
-	private final static String PORT 					= "9002";
-	private final static String SEND_SMS_API 			= "/MWGate/wmgw.asmx/MongateCsSpSendSmsNew";
-	
-	private static final String PARAM_KEY_USERID 		= "userId";
-	private static final String PARAM_KEY_PASSWORD 		= "password";
-	private static final String PARAM_KEY_PSMOBIS 		= "pszMobis";
-	private static final String PARAM_KEY_PSMSG 		= "pszMsg";
-	private static final String PARAM_KEY_IMOBICOUNT	= "iMobiCount";
-	private static final String PARAM_KEY_PSZSUBPORT	= "pszSubPort";
+	private final static String URL = "http://www.dh3t.com/json/sms/Submit";
+	private final static String ACCOUNT = "dh15433";
+	private final static String SIGN = "51返呗";
+	private static String password = null;
 	
 	/**
 	 * 对单个手机号发送短消息，这里不验证手机号码有效性
 	 * @param mobile
 	 * @param msg
 	 */
-	public static void sendSms(String mobile,String msg){
-		String url = StringUtil.appendStrs("http://",HOST,":",PORT,SEND_SMS_API);
-		Map<String, String> paramsMap = getCommonParamMap();
-		paramsMap.put(PARAM_KEY_PSMOBIS, mobile);
-		paramsMap.put(PARAM_KEY_PSMSG, msg);
-		paramsMap.put(PARAM_KEY_IMOBICOUNT, "1");
-		String reqResult = HttpUtil.httpPost(url, paramsMap);
-
-		logger.info(StringUtil.appendStrs("sendSms params=|",mobile,"|",msg,"|",reqResult));
-	}
-	
-	/**
-	 * 对多个手机号发送段消息,最多发送100个，不验证手机号码的有效性
-	 * @param mobiles
-	 * @param msg
-	 */
-	public static void sendSms(List<String> mobiles,String msg){
-		if(mobiles.size() > 100){
-			logger.error("mobiles is to mach,mobiles=" + mobiles);
-			return;
-		}
-		String url = StringUtil.appendStrs("http://",HOST,":",PORT,SEND_SMS_API);
-		Map<String, String> paramsMap = getCommonParamMap();
-		paramsMap.put(PARAM_KEY_PSMOBIS, StringUtil.turnListToStr(mobiles, ","));
-		paramsMap.put(PARAM_KEY_PSMSG, msg);
-		paramsMap.put(PARAM_KEY_IMOBICOUNT, mobiles.size()+"");
-		String reqResult = HttpUtil.httpPost(url, paramsMap);
-
-		logger.info(StringUtil.appendStrs("sendSms params=|",mobiles,"|",msg,"|",reqResult));
-		
-	}
-	
-	private static Map<String, String> getCommonParamMap(){
-		String userId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SMS_USERID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-		String password = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SMS_PASSWORD), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+	public static void sendSms(String mobiles,String content){
 		Map<String, String> paramsMap = new HashMap<String, String>();
-		paramsMap.put(PARAM_KEY_USERID, userId);
-		paramsMap.put(PARAM_KEY_PASSWORD, password);
-		paramsMap.put(PARAM_KEY_PSZSUBPORT, "*");
-		return paramsMap;
+		paramsMap.put("account", ACCOUNT);
+		paramsMap.put("password", DigestUtil.MD5(getPassword()).toLowerCase() );
+		paramsMap.put("phones", mobiles);
+		paramsMap.put("content", content);
+		paramsMap.put("sign", SIGN);
+		String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
+
+		logger.info(StringUtil.appendStrs("sendSms params=|",mobiles,"|",content,"|",reqResult));
+	}
+	
+
+	private static String getPassword(){
+		if(password == null){
+			password = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SMS_DHST_PASSWORD), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		}
+		return password;
 	}
 }
