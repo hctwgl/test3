@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserDao">
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_name,password,salt,gender,nick,avatar,real_name,
-		mobile,email,birthday,province,city,county,address,recommend_id,fail_count
+		mobile,email,birthday,province,city,county,address,recommend_id,fail_count,
 		recommend_code
 	</sql>
 
