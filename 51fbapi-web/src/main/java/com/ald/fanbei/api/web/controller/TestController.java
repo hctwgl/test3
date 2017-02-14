@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +18,22 @@ import com.ald.fanbei.api.common.Constants;
 
 @Controller
 public class TestController {
+
+	
+	/**
+	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = {"/h5/app/*_new","/h5/app/sys/*_new","/h5/app/goods/*_new","/h5/app/mine/*_new","/h5/app/order/*_new"}, method = RequestMethod.GET)
+    public String newVmPage(Model model,HttpServletRequest request, HttpServletResponse response) throws IOException{
+        String returnUrl = request.getRequestURI().replace("/h5/", "");
+        return returnUrl;
+    }
+	
 	
     @RequestMapping(value ={
         	"/test"
