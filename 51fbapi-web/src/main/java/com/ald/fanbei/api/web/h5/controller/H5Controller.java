@@ -1,6 +1,3 @@
-/*
- *@Copyright (c) 2016, 杭州喜马拉雅家居有限公司 All Rights Reserved. 
- */
 package com.ald.fanbei.api.web.h5.controller;
 
 import java.io.IOException;
@@ -19,9 +16,9 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
  * 
- *@类WxGoodsController.java 的实现描述：微信h5接口,商品相关相关微信h5接口
- *@author 陈金虎 2016年10月23日 上午9:46:33
- *@注意：本内容仅限于杭州喜马拉雅家居有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @类描述：
+ * @author xiaotianjian 2017年2月14日下午2:55:20
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
 @RequestMapping("/")
@@ -35,7 +32,7 @@ public class H5Controller extends BaseController{
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping(value = {"app/goods/*_new","test","app/goods/*"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"app/goods/*_new","test","app/goods/*","app/*"}, method = RequestMethod.GET)
     public String newVmPage(Model model,HttpServletRequest request, HttpServletResponse response) throws IOException{
         String returnUrl = request.getRequestURI();
         return returnUrl;
