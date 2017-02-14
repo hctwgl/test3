@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+h2{
+	font-size: 0.7rem;
+	text-align: center;
+	margin-top: 2.0rem;
+}
+.qr_code img{
+	width: 7.0rem;
+	height: 7.0rem;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	margin: 1.2rem auto 1.2rem;
+}
+.invite_code{
+	text-align: center;
+}
+.invite_code p,.text{
+	font-size: 0.6rem;
+	color: #999;
+	margin-bottom: 0.3rem;
+}
+.invite_code .num{
+	font-size: 0.75rem;
+	color: #111;
+}
+.text{
+	margin: 2.0rem 1.5rem 0;
+	color: #111;
+	text-align: center;
+}
+.text span{
+	color: #e00000;
+}
