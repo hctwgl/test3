@@ -32,7 +32,7 @@ public class H5Controller extends BaseController{
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping(value = {"app/goods/*_new","test","app/goods/*","app/*"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"app/goods/*_new","app/goods/*","app/mine/*","app/sys/*","app/*"}, method = RequestMethod.GET)
     public String newVmPage(Model model,HttpServletRequest request, HttpServletResponse response) throws IOException{
         String returnUrl = request.getRequestURI();
         return returnUrl;
