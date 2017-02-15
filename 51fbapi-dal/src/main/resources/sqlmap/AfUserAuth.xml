@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserDao">
+	<sql id="queryField">
+		id,gmt_modified,user_id,zm_status,gmt_zm,zm_score,isv_status,gmt_isv,isv_score,td_status,gmt_td,td_core,faces_status,similar_degree,mobile_status,bankcard_status,teldir_status,yd_status
+	</sql>
+
+
+	<insert id="addUserAuth" parameterType="AfUserAuthDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_user_auth(gmt_modified , user_id )
+		VALUES (
+    		NOW(),
+    		#{userId}
+		)
+	</insert>
+	
+	<update id="updateUserAuth" parameterType="AfUserAuthDo" >
+		UPDATE af_user_auth SET gmt_modified = NOW()
+			<if test="zmStatus != null">
+    			,zm_status=#{zmStatus}
+			</if>
+			<if test="gmtZm != null">
+    			,gmt_zm=#{gmtZm}
+			</if>
+			<if test="zmScore != null">
+    			,zm_score=#{zmScore}
+			</if>
+			<if test="isvStatus != null">
+    			,isv_status=#{isvStatus}
+			</if>
+			<if test="gmtIsv != null">
+    			,gmt_isv=#{gmtIsv}
+			</if>
+			<if test="isvScore != null">
+    			,isv_score=#{isvScore}
+			</if>
+			<if test="tdStatus != null">
+    			,td_status=#{tdStatus}
+			</if>
+			<if test="gmtTd != null">
+    			,gmt_td=#{gmtTd}
+			</if>
+			<if test="tdCore != null">
+    			,td_core=#{tdCore}
+			</if>
+			<if test="facesStatus != null">
+    			,faces_status=#{facesStatus}
+			</if>
+			<if test="similarDegree != null">
+    			,similar_degree=#{similarDegree}
+			</if>
+			<if test="mobileStatus != null">
+    			,mobile_status=#{mobileStatus}
+			</if>
+			<if test="bankcardStatus != null">
+    			,bankcard_status=#{bankcardStatus}
+			</if>
+			<if test="teldirStatus != null">
+    			,teldir_status=#{teldirStatus}
+			</if>
+			<if test="ydStatus != null">
+    			,yd_status=#{ydStatus}
+			</if>
+		WHERE user_id = #{userId}
+	</update>
+	
+</mapper>
