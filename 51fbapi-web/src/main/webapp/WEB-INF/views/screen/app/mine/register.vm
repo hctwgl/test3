@@ -3,11 +3,7 @@
     <head>
     	#set($version="2017021501")
 		<title>注册</title>
-		<!-- <link rel="stylesheet" type="text/css" href="/css/common/layer.css?version=$version"> -->
 		<link rel="stylesheet" type="text/css" href="/css/app/mine/register.css?version=$version">
-		<script type="text/javascript" src="/js/common/layer.js?version=$version"></script>
-		<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
-		<script type="text/javascript" src="/js/app/mine/register.js?version=$version"></script>
     </head>
     <body>
     	<div class="register_main">
@@ -28,8 +24,8 @@
 	        </ul>
 	      	<div class="register_submitBtn">完成注册并下载App</div>
 		</div>
-		<!-- <script type="text/javascript" src="/js/common/layer.js?version=$version"></script>
+		<script type="text/javascript" src="/js/common/layer.js?version=$version"></script>
 		<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
-		<script type="text/javascript" src="/js/app/mine/register.js?version=$version"></script> -->
+		<script type="text/javascript" src="/js/app/mine/register.js?version=$version"></script>
     </body>
 </html>
