@@ -1,0 +1,76 @@
+/*
+* @Author: Yangyang
+* @Date:   2017-02-13 14:20:33
+* @Last Modified by:   Yangyang
+* @Last Modified time: 2017-02-14 17:02:21
+* @title:  领取优惠券
+*/
+
+.cardCoupons_main li{
+	width: 8.0rem;
+	height: 3.0rem;
+	margin: 0.5rem auto;
+	background-color: #fff;
+	position: relative;
+}
+.cardCoupons_mainContent{
+	height: 2.5rem;
+}
+.cardCoupons_priceInfo{
+	width: 2.75rem;
+	height: 2.5rem;
+	line-height: 2.5rem;
+	font-size: 0.6rem;
+	color: #3cafe7;
+	text-align: left;
+	letter-spacing: -3px;
+}
+.cardCoupons_priceInfo span{
+	font-size: 1.15rem;
+}
+.cardCoupons_text{
+	width: 3.0rem;
+}
+.cardCoupons_priceInfo,.cardCoupons_text{
+	float: left;
+}
+.cardCoupons_text p{
+	font-size: 0.35rem;
+	color: #666;
+}
+.cardCoupons_text p:nth-child(1){
+	color: #111;
+	font-size: 0.45rem;
+	margin-top: 0.2rem;
+}
+.cardCoupons_text p:nth-child(2){
+	line-height: 1.0rem;
+}
+.cardCoupons_date{
+	border-top: 1px dashed red;
+	line-height: 0.475rem;
+	text-align: left;
+}
+.cardCoupons_btn{
+	width: 2.4rem;
+	height: 3.0rem;
+	background-color: pink;
+	line-height: 3.0rem;
+	text-align: center;
+	position: absolute;
+	top: 50%;
+	right: 0;
+	-webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+
+
+
+
+
+.cardCoupons_btn_gray{
+	background-color: grey;
+}

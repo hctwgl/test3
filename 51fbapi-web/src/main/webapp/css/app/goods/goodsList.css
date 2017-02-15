@@ -1,0 +1,121 @@
+/*
+* @Author: Yangyang
+* @Date:   2017-02-14 10:46:07
+* @Last Modified by:   Yangyang
+* @Last Modified time: 2017-02-14 17:47:02
+* @title:  商品列表页
+*/
+
+/*.goodsList_header{
+	width: 100%;
+    height: 50px;
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    font-size: 0.55rem;
+    margin-bottom: 0.5rem;
+}
+.goodsList_header li{
+	width: 25%;
+	height: 2.5rem;
+	float: left;
+	background-color: #fff;
+	position: relative;
+}
+.goodsList_header li i{
+	width: 0.75rem;
+	height: 0.75rem;
+	background-color: pink;
+	position: absolute;
+    top: 10px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+.goodsList_header li span{
+	width: 100%;
+	text-align: center;
+	position: absolute;
+    top: 30px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}*/
+
+
+
+.goodsList_banner{
+	width: 100%;
+	height: 4.6rem;
+	background-color: pink;
+}
+.goodsList_header li{
+	width: 25%;
+	height: 1.25rem;
+	line-height: 1.25rem;
+	text-align: center;
+	float: left;
+	background-color: #fff;
+	font-size: 0.4rem;
+	border-bottom: 1px solid #cfcfcf;
+}
+.goodsList_header .current{
+	border-bottom: 2px solid #FD9A43;
+}
+.goodsList_mainContent{
+	padding: 0.35rem;
+}
+.goodsList_mainContent li{
+	width: 4.25rem;
+	height: 5.1rem;
+	float: left;
+	background-color: pink;
+}
+.goodsList_mainContent li:nth-child(2n+1){
+	margin-right: 0.15rem;
+	margin-bottom: 0.15rem;
+}
+.goodsList_mainContent_img{
+	width: 100%;
+	height: 3.5rem;
+	background-color: #666;
+}
+
+.goodsList_mainContent_title{
+	padding: 0.125rem;
+}
+.goodsList_mainContent p,.goodsList_mainContent_priceWrap{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.35rem;
+}
+.goodsList_mainContent_priceWrap{
+	margin-top: 0.2rem;
+}
+.goodsList_mainContent_price{
+	float: left;
+	color: #EB0000;
+}
+.goodsList_mainContent_rebate{
+	float: right;
+}
+.goodsList_mainContent_rebate span:nth-child(1){
+	width: 0.5rem;
+	height: 0.5rem;
+	line-height: 0.5rem;
+	text-align: center;
+	color: #fff;
+	background-color: #FD9A43;
+}
+.goodsList_mainContent_rebate span:nth-child(2){
+	height: 0.45rem;
+	line-height: 0.45rem;
+	text-align: center;
+	border: 1px dashed #FD9A43;
+	border-left: 0;
+	padding-right: 0.125rem;
+	color: #FD9A43;
+}

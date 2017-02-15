@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    	#set($version="2017021402")
+		<title>领取优惠券</title>
+		<link rel="stylesheet" type="text/css" href="/css/app/sys/receiveCoupons.css?version=$version">
+    </head>
+    <body>
+    	<div class="cardCoupons_main">
+			<ul>
+
+			    <li>
+					<div class="cardCoupons_mainContent">
+						<div class="cardCoupons_content clearfix">
+							<span class="cardCoupons_priceInfo">￥<span>50</span></span>
+							<div class="cardCoupons_text">
+								<p>还款抵用劵</p>
+								<p>还款满100元可用</p>
+								<p>每人限领一张</p>
+							</div>
+						</div>
+						<p class="cardCoupons_date">2017-02-13 至 2017-12-31</p>
+					</div>
+					<div class="cardCoupons_btn">立即领取</div>
+				</li>
+
+
+
+				##foreach($item in $!{couponList})
+				    <!-- <li>
+						<div class="cardCoupons_mainContent">
+							<div class="cardCoupons_content clearfix">
+								<span class="cardCoupons_priceInfo">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></span>
+								<div class="cardCoupons_text">
+									<p class="rightOne">$!{item.name}</p>    
+									<p class="rightTwo">$!{item.useRule}</p>
+									<p class="rightThree">$!{item.limitCount}</p>
+								</div>
+							</div>
+							<p class="cardCoupons_date">$dateUtil.formatDate($!{item.gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
+						</div>
+						<div class="cardCoupons_btn">立即领取</div>
+					</li> -->
+				##end
+				<!-- <li class="discountType">
+					<p class="leftInfo"><span>$priceUtil.getDiscountRemoveInvalidNumber($!{item.amount})</span>折</p>
+					<div class="right_content">
+						<p class="rightOne">$!{item.name}</p>    
+						<p class="rightTwo">$!{item.useRange}</p>
+						<p class="rightThree">$!{item.useRule}</p>
+					</div>
+					<p class="timerP">$dateUtil.formatDate($!{item.gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
+				</li> -->
+			</ul>
+		</div>
+		<script type="text/javascript" src="/js/app/sys/receiveCoupons.js?version=$version"></script>
+    </body>
+</html>

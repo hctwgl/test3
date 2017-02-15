@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    	#set($version="2017021402")
+		<title>商品列表页</title>
+		<link rel="stylesheet" type="text/css" href="/css/app/goods/goodsList.css?version=$version">
+    </head>
+    <body>
+    	<img class="goodsList_banner" src="" alt="">
+    	<div class="goodsList_header clearfix">
+    		<ul>
+    			<li><span class="current">女神上装</span></li>
+    			<li><span>女神下装</span></li>
+    			<li><span>男神上装</span></li>
+    			<li><span>男神下装</span></li>
+    		</ul>
+    	</div>
+    	<div class="goodsList_main">
+			<ul class="goodsList_mainContent clearfix">
+				<li>
+					<img src="" alt="" class="goodsList_mainContent_img">
+                    <div class="goodsList_mainContent_title">
+                        <p>正品真皮雕花新款韩版潮流情侣休闲布洛克鞋</p>
+                        <div class="goodsList_mainContent_priceWrap">
+                            <span class="goodsList_mainContent_price">￥500.00</span>
+                            <div class="goodsList_mainContent_rebate">
+                                <span>返</span><span>￥10.00</span>
+                            </div>
+                        </div>
+                    </div>
+				</li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ul>
+    	</div>
+    </body>
+</html>
