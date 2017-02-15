@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,9 +11,11 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
@@ -48,9 +52,13 @@ public class ResetPwdApi implements ApiHandle {
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
         //判断验证码是否一致并且验证码是否已经做过验证
-        String realCode = smsDo.getVerifyCode();//TODO 验证半小时内有效
+        String realCode = smsDo.getVerifyCode();
         if(!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 0){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+        }
+        //判断验证码是否过期
+        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
         }
         
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
