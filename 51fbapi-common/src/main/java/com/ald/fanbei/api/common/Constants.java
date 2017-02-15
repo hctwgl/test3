@@ -16,6 +16,7 @@ public class Constants {
     public static final long   SECOND_OF_ONE_WEEK                     = 90 * 24 * 60 * 60l;
     
     public static final int   MINITS_OF_2HOURS                        = 120;
+    public static final int   MINITS_OF_HALF_HOUR                     = 30;
 //    
     public static final String REQ_PARAM_NODE_SYSTEM                  ="system";
     public static final String REQ_PARAM_NODE_METHOD                  ="method";
