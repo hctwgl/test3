@@ -35,7 +35,7 @@ public class SmsUtil extends AbstractThird {
 
 	private final static String URL = "http://www.dh3t.com/json/sms/Submit";
 	private final static String ACCOUNT = "dh15433";
-	private final static String SIGN = "51返呗";
+	private final static String SIGN = "【51返呗】";
 	private static String password = null;
 	private static String REGIST_TEMPLATE = "注册验证码为:&param1";
 	private static String FORGET_TEMPLATE = "证码为:&param1";

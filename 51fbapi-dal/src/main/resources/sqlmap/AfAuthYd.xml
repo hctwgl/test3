@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfAuthYdDao">
+	<sql id="queryFields">
+		id,gmt_create,user_id,type,auth_result
+	</sql>
+
+	<insert id="addAuthYd" parameterType="AfAuthYdDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_auth_yd(gmt_create , user_id , type , auth_result)
+		VALUES (
+    		NOW(),
+    		#{userId},
+    		#{type},
+    		#{authResult}
+		)
+	</insert>
+	
+</mapper>

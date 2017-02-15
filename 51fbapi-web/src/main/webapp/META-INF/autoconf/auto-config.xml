@@ -41,7 +41,7 @@
 		<property name="fbapi.sms.dhst.password" defaultValue="sFY+DhjxkNpQMNltXNgPlQ==" description="大汉三通短信密码" />
 		
 		<!-- db -->
-		<property name="fbapi.db.url" defaultValue="jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NCZT3RtV1J4belR7B0tjJcz" description="dburl" />
+		<property name="fbapi.db.url" defaultValue="OZAtwQcAyH5+BVcIbdZW6euzZCntyUxwH743Udhr9+LU+d0IhGa6JAh4bXHXkgeqEAD/gApVuKDhPmIPoVSEBQ==" description="dburl" />
 		<property name="fbapi.db.username" defaultValue="IJHsUz9iDSoqGAr1J3hHQQ==" description="db username" />
 		<property name="fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
 		

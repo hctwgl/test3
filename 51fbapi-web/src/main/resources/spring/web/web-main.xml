@@ -120,6 +120,13 @@
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" /> 
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" /> 
 				
+				<!-- auth模块 -->
+				<entry key="/auth/authFace" value-ref="authFaceApi" /> 
+				<!-- <entry key="/auth/authRealname" value-ref="authRealnameApi" />
+				<entry key="/auth/authContacts" value-ref="authContactsApi" />
+				<entry key="/auth/authCredit" value-ref="authCreditApi" /> 
+				<entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
+				 -->
 				
 			</map>
 		</constructor-arg>
