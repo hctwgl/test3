@@ -26,36 +26,42 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("updateUserInfoApi")
 public class UpdateUserInfoApi implements ApiHandle {
-	
+
 	@Resource
 	AfUserService afUserService;
 
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		if (userId == null) {
-			throw new FanbeiException("user id is invalid",FanbeiExceptionCode.PARAM_ERROR);
+			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		Map<String, Object> params = requestDataVo.getParams();
-		String nick = ObjectUtils.toString(params.get("nick"), "").toString() ;
-		String avatar = ObjectUtils.toString(params.get("avata"), "").toString() ;
+		String nick = ObjectUtils.toString(params.get("nick"), "").toString();
+		String avatar = ObjectUtils.toString(params.get("avatar"), "").toString();
+		String province = ObjectUtils.toString(params.get("province"), "").toString();
+		String city = ObjectUtils.toString(params.get("city"), "").toString();
+		String county = ObjectUtils.toString(params.get("county"), "").toString();
 
-		if (StringUtils.isEmpty(nick) &&StringUtils.isEmpty(avatar)) {
-			throw new FanbeiException("nick and avata are both empty",FanbeiExceptionCode.PARAM_ERROR);
+		if (StringUtils.isEmpty(nick) && StringUtils.isEmpty(avatar) && StringUtils.isEmpty(province)
+				&& StringUtils.isEmpty(city) && StringUtils.isEmpty(county)) {
+			throw new FanbeiException("(nick or avata or province or city or county) is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}
-		
+
 		AfUserDo afUserDo = new AfUserDo();
 		afUserDo.setRid(userId);
-		
+
 		afUserDo.setNick(StringUtils.isNotBlank(nick) ? nick : null);
 
 		afUserDo.setAvatar(StringUtils.isNotBlank(avatar) ? avatar : null);
-		
+		afUserDo.setProvince(StringUtils.isNotBlank(province) ? province : null);
+		afUserDo.setCity(StringUtils.isNotBlank(city) ? city : null);
+		afUserDo.setCounty(StringUtils.isNotBlank(county)?county:null);
 		if (afUserService.updateUser(afUserDo) > 0) {
 			return resp;
 		} else {
-			throw new FanbeiException("update User info failed",FanbeiExceptionCode.SYSTEM_ERROR);
+			throw new FanbeiException("update User info failed", FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 	}
 
