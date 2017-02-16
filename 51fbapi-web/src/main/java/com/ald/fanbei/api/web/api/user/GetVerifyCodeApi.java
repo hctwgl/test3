@@ -69,6 +69,16 @@ public class GetVerifyCodeApi implements ApiHandle {
 	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_SEND_SMS_ERROR);
 	        }
 			break;
+		case MOBILE_BIND://忘记密码
+			if(afUserDo == null){
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			}
+			
+			boolean resultMobileBind = smsUtil.sendForgetPwdVerifyCode(mobile,afUserDo.getRid());
+			if(!resultMobileBind){
+	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_SEND_SMS_ERROR);
+	        }
+			break;
 		default:
 			break;
 		}

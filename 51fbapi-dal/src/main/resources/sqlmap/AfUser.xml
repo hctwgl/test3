@@ -40,6 +40,16 @@
 		AND
 			id = #{userId}
 	</select>
+		<select id="getUserByRecommendCode" resultType="AfUserDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_user
+		WHERE
+			is_delete = 0
+		AND
+			recommend_code = #{recommendCode}
+	</select>
 	
 	<select id="getUserByUserName" resultType="AfUserDo">
 		SELECT

@@ -92,7 +92,7 @@
 				<entry key="/user/login" value-ref="loginApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
-				<entry key="/user/registerSetPwd" value-ref="registerSetPwdApi" />
+				<entry key="/user/setRegisterPwd" value-ref="setRegisterPwdApi" />
 				<entry key="/user/resetPwd" value-ref="resetPwdApi" />
 				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
 				<entry key="/user/logout" value-ref="logoutApi" />

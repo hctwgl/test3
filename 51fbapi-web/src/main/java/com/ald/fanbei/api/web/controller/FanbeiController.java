@@ -78,7 +78,7 @@ public class FanbeiController extends BaseController {
     }
     
     @RequestMapping(value = {
-    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/registerSetPwd","/user/login","/user/resetPwd","/user/getUserInfo",
+    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/login","/user/resetPwd","/user/getUserInfo",
     		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo",
     		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getSigninInfo","/user/signin"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")

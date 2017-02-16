@@ -12,7 +12,10 @@ import java.util.Map;
  */
 public enum SmsType {
 
-    REGIST("R", "注册短信"), FORGET_PASS("F", "忘记密码验证短信"),COMMON("C","通用");
+    REGIST("R", "注册短信"), 
+    FORGET_PASS("F", "忘记密码验证短信"),
+    MOBILE_BIND("M", "注册短信"),
+    COMMON("C","通用");
 
     private String code;
 

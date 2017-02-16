@@ -39,4 +39,11 @@ public class AfUserServiceImpl implements AfUserService {
 		return afUserDao.getUserByUserName(userName);
 	}
 
+	
+	@Override
+	public AfUserDo getUserByRecommendCode(String recommendCode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
