@@ -22,7 +22,8 @@ public class AfUserVo extends AbstractSerial {
 	private String county;
 	private String address;
 	private Integer failCount;
-	
+	private String bindCard;
+
 	private String alipayAccount;
 	
 	public AfUserVo() {
@@ -71,6 +72,20 @@ public class AfUserVo extends AbstractSerial {
 
 	public void setAlipayAccount(String alipayAccount) {
 		this.alipayAccount = alipayAccount;
+	}
+
+	/**
+	 * @return the bindCard
+	 */
+	public String getBindCard() {
+		return bindCard;
+	}
+
+	/**
+	 * @param bindCard the bindCard to set
+	 */
+	public void setBindCard(String bindCard) {
+		this.bindCard = bindCard;
 	}
 
 	public String getProvince() {

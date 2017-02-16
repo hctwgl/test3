@@ -39,7 +39,7 @@ public class GetUserInfoApi implements ApiHandle {
 		AfUserVo vo = parseUserInfoToUserVo(userDo);
 		
 		if (accountDo != null) {
-			vo.setAlipayAccount(accountDo.getAlipayAccount());
+			vo.setBindCard(accountDo.getBindCard());
 		}
 		resp.setResponseData(vo);
 		return resp;

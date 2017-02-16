@@ -18,17 +18,34 @@ public class AfUserAccountDo extends AbstractSerial {
 	private Long userId; //用户id
 	private String userName;//用户名
 	private BigDecimal auAmount;//授信额度,总金额
-	private BigDecimal remainingAmount;//剩余金额
 	private BigDecimal usedAmount;//已使用金额
 	private BigDecimal freezeAmount;//冻结金额
-	private BigDecimal score;//积分
-	private String alipayAccount;//支付宝账号
-	private BigDecimal commission;//返现金额(注册,签到)
-	private String idNumber;//身份证号
+	private BigDecimal score;//积分	
+	private String alipayAccount;//支付宝账号	
 	private BigDecimal rebateAmount;//返利（淘宝返利）
-	private BigDecimal ccAmount;//可取现额度
+	private String idNumber;//身份证号
+	private BigDecimal jfbAmount;//返利（淘宝返利）
+	private String password;//支付密码
+	private String salt;//盐值
 	private BigDecimal ucAmount;//已取现额度
+	private Integer failCount; //密码连续错误次数
+	private String bindCard;//是否绑卡：Y：绑卡：N：未绑卡
+
 	
+	
+	
+	/**
+	 * @return the bindCard
+	 */
+	public String getBindCard() {
+		return bindCard;
+	}
+	/**
+	 * @param bindCard the bindCard to set
+	 */
+	public void setBindCard(String bindCard) {
+		this.bindCard = bindCard;
+	}
 	public Long getRid() {
 		return rid;
 	}
@@ -59,24 +76,14 @@ public class AfUserAccountDo extends AbstractSerial {
 	public void setFreezeAmount(BigDecimal freezeAmount) {
 		this.freezeAmount = freezeAmount;
 	}
-	public BigDecimal getCommission() {
-		return commission;
-	}
-	public void setCommission(BigDecimal commission) {
-		this.commission = commission;
-	}
+	
 	public BigDecimal getScore() {
 		return score;
 	}
 	public void setScore(BigDecimal score) {
 		this.score = score;
 	}
-	public BigDecimal getRemainingAmount() {
-		return remainingAmount;
-	}
-	public void setRemainingAmount(BigDecimal remainingAmount) {
-		this.remainingAmount = remainingAmount;
-	}
+
 	public BigDecimal getUsedAmount() {
 		return usedAmount;
 	}
@@ -101,17 +108,60 @@ public class AfUserAccountDo extends AbstractSerial {
 	public void setAlipayAccount(String alipayAccount) {
 		this.alipayAccount = alipayAccount;
 	}
-	public BigDecimal getCcAmount() {
-		return ccAmount;
-	}
-	public void setCcAmount(BigDecimal ccAmount) {
-		this.ccAmount = ccAmount;
-	}
+
 	public BigDecimal getUcAmount() {
 		return ucAmount;
 	}
 	public void setUcAmount(BigDecimal ucAmount) {
 		this.ucAmount = ucAmount;
+	}
+	/**
+	 * @return the jfbAmount
+	 */
+	public BigDecimal getJfbAmount() {
+		return jfbAmount;
+	}
+	/**
+	 * @param jfbAmount the jfbAmount to set
+	 */
+	public void setJfbAmount(BigDecimal jfbAmount) {
+		this.jfbAmount = jfbAmount;
+	}
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+	/**
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	/**
+	 * @return the salt
+	 */
+	public String getSalt() {
+		return salt;
+	}
+	/**
+	 * @param salt the salt to set
+	 */
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+	/**
+	 * @return the failCount
+	 */
+	public Integer getFailCount() {
+		return failCount;
+	}
+	/**
+	 * @param failCount the failCount to set
+	 */
+	public void setFailCount(Integer failCount) {
+		this.failCount = failCount;
 	}
 
 }
