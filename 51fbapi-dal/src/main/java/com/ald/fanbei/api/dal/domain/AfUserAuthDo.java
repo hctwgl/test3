@@ -19,8 +19,8 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String zmStatus;
 	private Date gmtZm;
 	private Integer zmScore;
-	private String isvStatus;
-	private Date gmtIsv;
+	private String ivsStatus;
+	private Date gmtIvs;
 	private Integer isvScore;
 	private String realnameStatus;
 	private Date gmtRealname;
@@ -68,17 +68,18 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setZmScore(Integer zmScore) {
 		this.zmScore = zmScore;
 	}
-	public String getIsvStatus() {
-		return isvStatus;
+	
+	public String getIvsStatus() {
+		return ivsStatus;
 	}
-	public void setIsvStatus(String isvStatus) {
-		this.isvStatus = isvStatus;
+	public void setIvsStatus(String ivsStatus) {
+		this.ivsStatus = ivsStatus;
 	}
-	public Date getGmtIsv() {
-		return gmtIsv;
+	public Date getGmtIvs() {
+		return gmtIvs;
 	}
-	public void setGmtIsv(Date gmtIsv) {
-		this.gmtIsv = gmtIsv;
+	public void setGmtIvs(Date gmtIvs) {
+		this.gmtIvs = gmtIvs;
 	}
 	public Integer getIsvScore() {
 		return isvScore;
