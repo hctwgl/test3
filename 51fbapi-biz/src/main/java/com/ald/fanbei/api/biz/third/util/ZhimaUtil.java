@@ -109,7 +109,7 @@ public class ZhimaUtil extends AbstractThird {
 	 * @param address 地址
 	 * @return
 	 */
-	public ZhimaCreditIvsDetailGetResponse isvDetailGet(String idNumber,String realName,String mobile,String email,String address) {
+	public ZhimaCreditIvsDetailGetResponse ivsDetailGet(String idNumber,String realName,String mobile,String email,String address) {
 		ZhimaCreditIvsDetailGetRequest req = new ZhimaCreditIvsDetailGetRequest();
 		req.setAddress(address);;
 //		req.setBankCard(bankCard);

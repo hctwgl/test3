@@ -47,6 +47,7 @@ public class MessageListener extends ContextLoaderListener{
 	
 	public void contextInitialized(ServletContextEvent event) {
 		super.contextInitialized(event);
+		
 		TmcClient client = new TmcClient(getBcAppId(),getBcSecret(), "default");  
 	    client.setMessageHandler(new MessageHandler() {
 			@Override
@@ -73,6 +74,12 @@ public class MessageListener extends ContextLoaderListener{
 		            			break;
 		            		case "taobao_tae_BaichuanTradeClosed":
 		            			afOrderService.updateOrderTradeClosed(message.getContent());
+		            			break;
+		            		case "taobao_tae_ItemSubscribe":
+		            			System.out.println("taobao_tae_ItemSubscribe" + message.getContent());
+		            			break;
+		            		case "taobao_tae_ItemUnSubscribe":
+		            			System.out.println("taobao_tae_ItemUnSubscribe" + message.getContent());
 		            			break;
 		            		default:break;
 		            	} 

@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的 
  */
 public class TongdunUtil extends AbstractThird {
+	private static String host = "https://api.tongdun.cn";
 	private static String partnerCode = null;
 	private static String partnerKey = null;
 	private static String appName = null;
@@ -29,7 +30,7 @@ public class TongdunUtil extends AbstractThird {
 	 * @return
 	 */
 	public static String applyPreloan(String idNumber,String realName,String mobile,String email){
-		String urlPre = "https://api.tongdun.cn/preloan/apply/v5?";
+		String urlPre = host + "/preloan/apply/v5?";
 		String reqUrl = urlPre + "partner_code=" + getPatnerCode() + "&partner_key=" + getPartnerKey() + "&app_name=" + getAppName();
 		String query = "id_number=" + idNumber + "&name=" + realName + "&mobile=" + mobile + "&email=" + email;
 		String reqResult = HttpUtil.doHttpPost(reqUrl, query);
@@ -51,7 +52,7 @@ public class TongdunUtil extends AbstractThird {
 	 * @return
 	 */
 	public static TongdunResultBo queryPreloan(String reportId){
-		String urlPre = "https://api.tongdun.cn/preloan/report/v7?";
+		String urlPre = host + "/preloan/report/v7?";
 		String reqUrl = urlPre + "partner_code=" + getPatnerCode() + "&partner_key=" + getPartnerKey() + "&app_name=" + getAppName() + "&report_id=" + reportId;
 		String reqResult = HttpUtil.doGet(reqUrl, 1000);
 		logger.info(StringUtil.appendStrs("queryPreloan params=|",reportId,"|,reqResult=",reqResult));
