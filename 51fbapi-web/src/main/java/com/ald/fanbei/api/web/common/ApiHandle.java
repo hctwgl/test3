@@ -16,6 +16,15 @@ import com.ald.fanbei.api.common.FanbeiContext;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface ApiHandle {
+	//log
 	Logger logger = LoggerFactory.getLogger(ApiHandle.class);
+	
+	/**
+	 * api处理方法
+	 * @param requestDataVo
+	 * @param context
+	 * @param request
+	 * @return
+	 */
     ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request);
 }

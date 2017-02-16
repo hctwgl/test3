@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -27,6 +29,9 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class CommonUtil {
+	
+
+    protected static Logger   logger           = LoggerFactory.getLogger(CommonUtil.class);
     
     static Random random = new Random();
     static String[] charactors = new String[]{"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9"}; 
@@ -134,6 +139,14 @@ public class CommonUtil {
     
     public static int getRandomNum(int num){
         return random.nextInt(num);
+    }
+    
+    public static void sleepMilliSeconds(long milliSeconds){
+    	try {
+			Thread.sleep(milliSeconds);
+		} catch (InterruptedException e) {
+			logger.error("sleep error");
+		}
     }
     
     /**

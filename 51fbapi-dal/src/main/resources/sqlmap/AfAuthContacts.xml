@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfAuthContactsDao">
+	<sql id="queryFields">
+		id,gmt_create,user_id,friend_nick,friend_phone
+	</sql>
+	
+	<insert id="addAuthContacts"  parameterType="java.util.List">
+		INSERT INTO af_auth_contacts(gmt_create  , user_id , friend_nick , friend_phone)
+		VALUES 
+		<foreach collection="afAuthContactsDos"  separator="," item="item" index="index">
+			( NOW(), #{item.userId}, #{item.friendNick}, #{item.friendPhone} )
+		</foreach>
+	</insert>
+	
+</mapper>
