@@ -5,7 +5,9 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 /**
@@ -18,10 +20,16 @@ public class AfUserServiceImpl implements AfUserService {
 
 	@Resource
 	AfUserDao afUserDao;
+	@Resource
+	AfUserAuthDao afUserAuthDao;
 	
 	@Override
-	public int addUser(AfUserDo afUserDo) {
-		return afUserDao.addUser(afUserDo);
+	public int addUser(AfUserDo afUserDo) {//TODO 事物
+		int result = afUserDao.addUser(afUserDo);
+		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
+		afUserAuthDo.setUserId(afUserDo.getRid());
+		afUserAuthDao.addUserAuth(afUserAuthDo);
+		return result;
 	}
 
 	@Override
