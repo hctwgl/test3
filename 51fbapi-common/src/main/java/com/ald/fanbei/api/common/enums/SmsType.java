@@ -14,7 +14,7 @@ public enum SmsType {
 
     REGIST("R", "注册短信"), 
     FORGET_PASS("F", "忘记密码验证短信"),
-    MOBILE_BIND("M", "注册短信"),
+    MOBILE_BIND("M", "手机绑定"),
     COMMON("C","通用");
 
     private String code;

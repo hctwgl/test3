@@ -1,11 +1,14 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -18,6 +21,7 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -93,7 +97,7 @@ public class SmsUtil extends AbstractThird {
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = BIND_TEMPLATE.replace("&param1", verifyCode);
 		SmsResult smsResult = sendSmsToDhst(mobile, content);
-		this.addSmsRecord(SmsType.MOBILE_BIND, mobile, verifyCode, 0l, smsResult);
+		this.addSmsRecord(SmsType.MOBILE_BIND, mobile, verifyCode, userId, smsResult);
 		return smsResult.isSucc();
 	}
 	/**
@@ -109,6 +113,60 @@ public class SmsUtil extends AbstractThird {
 			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		sendSmsToDhst(mobile, content);
+	}
+	public void checkSmsByMapAndUserName(String userName, String type ,String verifyCode){
+		 AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, type);
+	        
+	        if(smsDo == null){
+				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
+
+	        }
+	        
+	        //判断验证码是否一致
+	        String realCode = smsDo.getVerifyCode();
+	        if(!StringUtils.equals(verifyCode, realCode)){
+				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
+
+	        }
+	        //判断验证码是否过期
+	        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
+				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
+
+	        }
+	        //更新为已经验证
+	        afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+	}
+	
+	
+	public void checkSmsByMobileAndType(String userName,Map<String, Object> map ){
+        String verifyCode = ObjectUtils.toString(map.get("verifyCode"));
+        String type = ObjectUtils.toString(map.get("type"));
+        String mobile =userName;
+        if(StringUtil.equals(type, SmsType.MOBILE_BIND.getCode())){
+        	mobile = ObjectUtils.toString(map.get("mobile"));
+        }
+
+		
+		 AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, type);
+	        
+	        if(smsDo == null){
+				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
+
+	        }
+	        
+	        //判断验证码是否一致
+	        String realCode = smsDo.getVerifyCode();
+	        if(!StringUtils.equals(verifyCode, realCode)){
+				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
+
+	        }
+	        //判断验证码是否过期
+	        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
+				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
+
+	        }
+	        //更新为已经验证
+	        afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 	}
 
 	/**
