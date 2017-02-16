@@ -48,7 +48,8 @@ public enum FanbeiExceptionCode {
     USER_PASSWORD_ERROR_FOURTH("USER_PASSWORD_ERROR_FOURTH",1124,"user password error fourth","密码输入有误,剩余次数(2)"),
     USER_PASSWORD_ERROR_FIFTH("USER_PASSWORD_ERROR_FIFTH",1125,"user password error fifth","密码输入有误,剩余次数(1)"),
     USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_FIFTH",1126,"user password error fifth","密码输入有误,剩余次数(6)"),
-    
+    USER_PASSWORD_OLD_ERROR("USER_PASSWORD_OLD_ERROR",1127,"user password error fifth","旧密码输入有误"),
+
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
     USER_SIGNIN_AGAIN_ERROR("USER_SIGNIN_AGAIN_ERROR",1210,"user coupon error ","今日已签到"),
 

@@ -105,6 +105,10 @@
 				<entry key="/user/getCouponList" value-ref="getCouponListApi" />
 				<entry key="/user/pickCoupon" value-ref="pickCouponApi" />
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
+				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
+				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
+				
+				
 				<entry key="/user/signin" value-ref="signinApi" />
 
 				<!-- goods -->
