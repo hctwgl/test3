@@ -87,12 +87,13 @@ public class SetRegisterPwdApi implements ApiHandle {
         userDo.setSalt(salt);
         userDo.setUserName(userName);
         userDo.setMobile(userName);
+        userDo.setNick(nick);
+
         userDo.setPassword(password);
         afUserService.addUser(userDo);
         
         Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
         String inviteCode = Long.toString(invteLong, 36);
-        userDo.setNick(nick);
         userDo.setRecommendCode(inviteCode);
         afUserService.updateUser(userDo);
         

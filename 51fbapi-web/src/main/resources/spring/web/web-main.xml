@@ -77,7 +77,7 @@
 			<list>
 				<value>/user/login</value>
 				<value>/user/getVerifyCode</value>
-				<value>/user/registSetPass</value>
+				<value>/user/setRegisterPwd</value>
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
 			</list>
