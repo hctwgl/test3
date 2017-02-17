@@ -17,6 +17,7 @@ public class AfUserAccountDo extends AbstractSerial {
 	private Long rid;
 	private Long userId; //用户id
 	private String userName;//用户名
+	private String realName;
 	private BigDecimal auAmount;//授信额度,总金额
 	private BigDecimal usedAmount;//已使用金额
 	private BigDecimal freezeAmount;//冻结金额
@@ -162,6 +163,12 @@ public class AfUserAccountDo extends AbstractSerial {
 	 */
 	public void setFailCount(Integer failCount) {
 		this.failCount = failCount;
+	}
+	public String getRealName() {
+		return realName;
+	}
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 
 }

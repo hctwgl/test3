@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TongdunResultBo;
 import com.ald.fanbei.api.biz.service.AfAuthTdService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -38,6 +39,8 @@ public class AuthRealnameApi implements ApiHandle {
 	AfAuthTdService afAuthTdService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -77,6 +80,10 @@ public class AuthRealnameApi implements ApiHandle {
 		userAuthDo.setRealnameStatus(YesNoStatus.YES.getCode());
 		userAuthDo.setGmtRealname(new Date());
 		afUserAuthService.updateUserAuth(userAuthDo);
+		
+		//TODO 更新user_account中身份证号和真实姓名
+		
+		//TODO 触发邀请人获得奖励规则
 		
 		return resp;
 	}
