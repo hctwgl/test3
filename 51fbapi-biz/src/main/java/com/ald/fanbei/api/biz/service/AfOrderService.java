@@ -1,5 +1,11 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+
+
 /**
  * 
  * @类描述：
@@ -21,20 +27,6 @@ public interface AfOrderService {
 	int updateOrderTradeSuccess(String content);
 	
 	/**
-	 * 买家点击退款按钮后促发
-	 * @param content
-	 * @return
-	 */
-	int updateOrderTradeRefundCreated(String content);
-	
-	/**
-	 * 退款成功
-	 * @param content
-	 * @return
-	 */
-	int updateOrderTradeRefundSuccess(String content);
-	
-	/**
 	 * 付款成功(下单已付款)
 	 * @param content
 	 * @return
@@ -47,4 +39,23 @@ public interface AfOrderService {
 	 * @return
 	 */
 	int updateOrderTradeClosed(String content);
+	
+	/**
+	 * 手机充值订单创建
+	 * @param userId
+	 * @param couponDto
+	 * @param money
+	 * @param mobile
+	 * @param rebateAmount
+	 * @return
+	 */
+	int createMobileChargeOrder(Long userId, AfUserCouponDto couponDto,BigDecimal money,String mobile,BigDecimal rebateAmount);
+	
+	/**
+	 * 获取当天最近的订单
+	 * @param currentDate
+	 * @param orderType
+	 * @return
+	 */
+	String getCurrentLastOrderNo(Date currentDate,String orderType);
 }

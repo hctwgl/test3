@@ -50,6 +50,7 @@ public enum FanbeiExceptionCode {
     USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_FIFTH",1126,"user password error fifth","密码输入有误,剩余次数(6)"),
     
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
+    USER_COUPON_ERROR("USER_COUPON_ERROR",1201,"user coupon error ","优惠券不可用"),
     USER_SIGNIN_AGAIN_ERROR("USER_SIGNIN_AGAIN_ERROR",1210,"user coupon error ","今日已签到"),
 
     USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),

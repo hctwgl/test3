@@ -41,4 +41,17 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	int addUserCoupon(AfUserCouponDo afUserCouponDo);
+	
+	/**
+	 * 获取可用优惠券
+	 * @return
+	 */
+	AfUserCouponDto getUserCouponById(Long rid);
+	
+	/**
+	 * 修改优惠券为已使用状态
+	 * @param rid
+	 * @return
+	 */
+	int updateUserCouponSatusUsedById(Long rid);
 }

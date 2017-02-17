@@ -85,6 +85,11 @@ public class Constants {
     public static final String CONFKEY_SMS_DHST_PASSWORD			  = "fbapi.sms.dhst.password";
     public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS	  = "taobao.tbk.item.get.fields";
     public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
-    
+    public static final String CACHEKEY_ORDERNO_LOCK				  = "ala_order_lock";
+    public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
+    public static final String CONFIG_KEY_LOCK_TRY_TIMES              = "fbapi.sync.lock.try.times";
+    public static final String CONFKEY_KXG_PASSWORD					  = "fbapi.kxg.password";
+    public static final String CONFKEY_KXG_PAY_PASSWORD				  = "fbapi.kxg.pay.password";
+    public static final String CONFKEY_KXG_KEY				  		  = "fbapi.kxg.key";
     
 }

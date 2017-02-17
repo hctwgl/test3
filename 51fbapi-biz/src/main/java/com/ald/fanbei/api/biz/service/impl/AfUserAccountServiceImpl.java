@@ -96,5 +96,4 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		borrow.setInterestType(InterestType.CHARGES.getCode());
 		return borrow;
 	}
-	
 }

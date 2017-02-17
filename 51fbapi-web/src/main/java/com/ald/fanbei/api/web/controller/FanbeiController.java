@@ -58,7 +58,7 @@ public class FanbeiController extends BaseController {
     }
     
     @RequestMapping(value ={
-    	"/order/confirmReceipt"
+    	"/order/confirmReceipt","/order/mobileCharge"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String orderRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

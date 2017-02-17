@@ -46,4 +46,14 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		return afUserCouponDao.addUserCoupon(afUserCouponDo);
 	}
 
+	@Override
+	public AfUserCouponDto getUserCouponById(Long rid) {
+		return afUserCouponDao.getUserCouponById(rid);
+	}
+
+	@Override
+	public int updateUserCouponSatusUsedById(Long rid) {
+		return afUserCouponDao.updateUserCouponSatusUsedById(rid);
+	}
+
 }

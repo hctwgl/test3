@@ -47,6 +47,12 @@
 		
 		<property name="fbapi.aes.password" defaultValue="testC1b6x@6aH$2dlw" description="aes passwd" />
 		
+		<property name="fbapi.sync.lock.try.times" defaultValue="1" description="同步锁重试次数" /> 
+		
+		<!-- kxg -->
+		<property name="fbapi.kxg.password" defaultValue="XmlfLrtI1Xb7QToAbNiIrg==" description="开心果登录密码" />
+		<property name="fbapi.kxg.pay.password" defaultValue="QhSQiFjhoS0U4Mxfr58Sug==" description="开心果支付密码" />
+		<property name="fbapi.kxg.key" defaultValue="2jAzMm3fMGexbK0cNsrSZdCuhgu0QhqoULwmZ+3gTgE=" description="开心果key" />
 	</group>
 
 	<script>

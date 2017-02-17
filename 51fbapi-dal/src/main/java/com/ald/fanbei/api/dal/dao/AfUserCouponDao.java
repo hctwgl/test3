@@ -39,4 +39,18 @@ public interface AfUserCouponDao {
 	int getUserCouponByUserIdAndCouponId(@Param("userId")Long userId,@Param("couponId")Long couponId);
 	
 	int addUserCoupon(AfUserCouponDo afUserCouponDo);
+	
+	/**
+	 * 获取用户优惠券
+	 * @param id
+	 * @return
+	 */
+	AfUserCouponDto getUserCouponById(@Param("rid")Long rid);
+	
+	/**
+	 * 修改优惠券为已使用状态
+	 * @param id
+	 * @return
+	 */
+	int updateUserCouponSatusUsedById(@Param("rid")Long rid);
 }
