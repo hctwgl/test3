@@ -64,6 +64,26 @@
 			status = 'NOUSE'
 	</select>
 	
+	
+	<!-- 可使用优惠券 -->
+	<select id="getUserCouponByInvite" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+		SELECT 
+			 sum(c.amount)
+		FROM 
+			af_user_coupon uc,af_coupon c
+		WHERE
+			uc.is_delete = 0 
+		AND
+			c.is_delete = 0 
+		AND
+			uc.coupon_id = c.id
+		AND
+			uc.user_id = #{userId}
+		AND
+			uc.source_type = 'INVITE'
+	</select>
+	
+	
 	<select id="getUserCouponByUserIdAndCouponId"  resultType="java.lang.Integer">
 		SELECT 
 			count(id)

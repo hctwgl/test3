@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -44,6 +45,12 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	@Override
 	public int addUserCoupon(AfUserCouponDo afUserCouponDo) {
 		return afUserCouponDao.addUserCoupon(afUserCouponDo);
+	}
+
+	
+	@Override
+	public BigDecimal getUserCouponByInvite(Long userId) {
+		return afUserCouponDao.getUserCouponByInvite(userId);
 	}
 
 }

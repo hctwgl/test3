@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
  *@类描述：
@@ -50,8 +53,13 @@ public class AfUserServiceImpl implements AfUserService {
 	
 	@Override
 	public AfUserDo getUserByRecommendCode(String recommendCode) {
-		// TODO Auto-generated method stub
-		return null;
+		return afUserDao.getUserByRecommendCode(recommendCode);
+	}
+
+	
+	@Override
+	public List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId) {
+		return afUserDao.getRecommendUserByRecommendId(recommendId);
 	}
 
 }

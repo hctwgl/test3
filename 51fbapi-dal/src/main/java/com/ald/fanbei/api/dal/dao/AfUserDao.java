@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
  *@类描述：
@@ -44,4 +47,10 @@ public interface AfUserDao {
 	 *@return
 	 */
 	AfUserDo getUserByUserName(@Param("userName")String userName);
+	/**
+	 * 获取该用户邀请的用户
+	 * @param recommendId
+	 * @return
+	 */
+	List<AfUserInvitationDto> getRecommendUserByRecommendId(@Param("recommendId")Long recommendId);
 }

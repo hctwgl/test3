@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -39,4 +40,7 @@ public interface AfUserCouponDao {
 	int getUserCouponByUserIdAndCouponId(@Param("userId")Long userId,@Param("couponId")Long couponId);
 	
 	int addUserCoupon(AfUserCouponDo afUserCouponDo);
+	
+	
+	BigDecimal getUserCouponByInvite(@Param("userId")Long userId);
 }

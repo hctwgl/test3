@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -41,4 +44,6 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	int addUserCoupon(AfUserCouponDo afUserCouponDo);
+	
+	BigDecimal getUserCouponByInvite(Long userId);
 }

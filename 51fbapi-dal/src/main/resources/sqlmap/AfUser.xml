@@ -6,6 +6,11 @@
 		mobile,email,birthday,province,city,county,address,recommend_id,fail_count,
 		recommend_code
 	</sql>
+	
+	<sql id="queryRecommendAllFields">
+		u.id rid,u.gmt_create,u.user_name,u.nick,u.avatar,u.real_name,c.amount
+		
+	</sql>
 
 	<insert id="addUser" parameterType="AfUserDo" keyProperty="rid" useGeneratedKeys="true">
 		INSERT INTO af_user
@@ -40,7 +45,7 @@
 		AND
 			id = #{userId}
 	</select>
-		<select id="getUserByRecommendCode" resultType="AfUserDo">
+	<select id="getUserByRecommendCode" resultType="AfUserDo">
 		SELECT
 			<include refid="queryAllFields" />
 		FROM
@@ -49,6 +54,35 @@
 			is_delete = 0
 		AND
 			recommend_code = #{recommendCode}
+	</select>
+	
+	
+	<select id="getRecommendUserByRecommendId" resultType="AfUserInvitationDto">
+		SELECT
+			<include refid="queryRecommendAllFields" />
+		FROM
+			af_user u
+	
+		LEFT JOIN 
+			af_user_coupon uc
+		ON 
+		  	uc.source_ref = u.id
+		LEFT JOIN 
+			af_coupon c
+		ON 
+		  	uc.coupon_id  =	c.id
+		  	
+		WHERE
+			u.is_delete = 0
+		AND
+			uc.is_delete = 0
+		AND
+			c.is_delete = 0
+		AND
+			u.recommend_id = #{recommendId} 
+			
+			
+		
 	</select>
 	
 	<select id="getUserByUserName" resultType="AfUserDo">

@@ -44,7 +44,9 @@ public class SmsUtil extends AbstractThird {
 	private static String REGIST_TEMPLATE = "注册验证码为:&param1";
 	private static String FORGET_TEMPLATE = "证码为:&param1";
 	private static String BIND_TEMPLATE = "证码为:&param1";
+	private static String SETPAY_TEMPLATE = "证码为:&param1";
 
+	
 	private static String TEST_VERIFY_CODE = "888888";
 	
 	
@@ -101,6 +103,22 @@ public class SmsUtil extends AbstractThird {
 		return smsResult.isSucc();
 	}
 	/**
+	 * 设置支付发送短信验证码
+	 * @param mobile 用户绑定的手机号（注意：不是userName）
+	 * @param userId 用户id
+	 * @return
+	 */
+	public boolean sendSetPayPwdVerifyCode(String mobile,Long userId){
+		if (!CommonUtil.isMobile(mobile)) {
+			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+		}
+		String verifyCode = CommonUtil.getRandomNumber(6);
+		String content = SETPAY_TEMPLATE.replace("&param1", verifyCode);
+		SmsResult smsResult = sendSmsToDhst(mobile, content);
+		this.addSmsRecord(SmsType.SET_PAY_PWD, mobile, verifyCode, userId, smsResult);
+		return smsResult.isSucc();
+	}
+	/**
 	 * 对单个手机号发送普通短信
 	 * 
 	 * @param mobile
@@ -142,11 +160,10 @@ public class SmsUtil extends AbstractThird {
         String verifyCode = ObjectUtils.toString(map.get("verifyCode"));
         String type = ObjectUtils.toString(map.get("type"));
         String mobile =userName;
-        if(StringUtil.equals(type, SmsType.MOBILE_BIND.getCode())){
+        if(StringUtil.equals(type, SmsType.MOBILE_BIND.getCode())||StringUtil.equals(type, SmsType.SET_PAY_PWD.getCode())){
         	mobile = ObjectUtils.toString(map.get("mobile"));
         }
 
-		
 		 AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, type);
 	        
 	        if(smsDo == null){
