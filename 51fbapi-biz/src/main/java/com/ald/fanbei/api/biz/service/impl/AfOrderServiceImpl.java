@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.annotation.Resource;
 
@@ -23,6 +24,7 @@ import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 /**
  *@类描述：
@@ -54,9 +56,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public int createOrderTrade(String content) {
 		logger.info("createOrderTrade_content:"+content);
 		JSONObject obj = JSON.parseObject(content);
-		
-		AfOrderDo order = buildOrder(obj.getString("order_id"), 0, null, money, mobile, rebateAmount, 
-				OrderType., goodsId, openId, goodsName, goodsIcon, goodsUrl, count, obj.getString("shop_name"));
+		JSONArray array = JSON.parseArray(obj.getString("auction_infos"));
+		Iterator<Object> it = array.iterator();
+		while(it.hasNext()){
+			JSONObject goods = (JSONObject) it.next();
+			Long goodsId =0l;
+		}
 		return 0;
 	}
 
@@ -100,7 +105,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						actualAmount = money.subtract(couponDto.getAmount());
 					}
 					//订单创建
-					orderDao.createOrder(buildOrder(orderNo,userId, couponDto, money, mobile, rebateAmount, 
+					orderDao.createOrder(buildOrder(orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
 							OrderType.MOBILE.getCode(),actualAmount, 0l, "", "", "", "", 1, ""));
 					return 1;
 				} catch (Exception e) {
