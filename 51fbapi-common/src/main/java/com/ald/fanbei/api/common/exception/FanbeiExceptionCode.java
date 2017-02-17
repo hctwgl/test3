@@ -40,7 +40,9 @@ public enum FanbeiExceptionCode {
     LIMIT_INVITE_SELF("LIMIT_INVITE_SELF",1113,"limit invite self","您不能邀请自己"),
     CAN_NOT_APPLY_CASHED("CAN_NOT_APPLY_CASHED",1114,"can not apply cashed","系统维护中，暂不能申请提现"),
     APPLY_CASHED_AMOUNT_ERROR("APPLY_CASHED_AMOUNT_ERROR",1115,"apply cashed amount invalid","申请的金额无效"),
-    
+    USER_ACCOUNT_NOT_EXIST_ERROR("USER_ACCOUNT_NOT_EXIST_ERROR",1116,"user not exist error","账户不存在"),
+    USER_ACCOUNT_IDNUMBER_INVALID_ERROR("USER_ACCOUNT_IDNUMBER_INVALID_ERROR",1117,"id number error","身份证输入有误"),
+
     
     USER_PASSWORD_ERROR_FIRST("USER_PASSWORD_ERROR_FIRST",1121,"user password error first","密码输入有误,剩余次数(5)"),
     USER_PASSWORD_ERROR_SECOND("USER_PASSWORD_ERROR_SECOND",1122,"user password error second","密码输入有误,剩余次数(4)"),
