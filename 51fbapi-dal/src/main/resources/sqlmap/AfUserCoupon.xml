@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserCouponDao">
 	<sql id="queryAllFields">
 		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.coupon_id,u.gmt_start,u.gmt_end,
-		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.use_rule
+		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.use_rule,c.type
 	</sql>
 	
 	<insert id="addUserCoupon" parameterType="AfUserCouponDo" keyProperty="rid" useGeneratedKeys="true">
@@ -97,4 +97,31 @@
 			coupon_id = #{couponId}
 	</select>
 	
+	<select id="getUserCouponById" resultType="AfUserCouponDto">
+		SELECT 
+			<include refid="queryAllFields" />
+		FROM 
+			af_user_coupon u
+		LEFT JOIN
+			af_coupon c
+		ON
+			c.is_delete = 0 and u.coupon_id = c.id
+		WHERE
+			u.is_delete = 0 
+		AND
+			u.id = #{rid}
+	</select>
+	
+	<update id="updateUserCouponSatusUsedById" parameterType="java.lang.Long">
+		UPDATE
+			af_user_coupon
+		SET
+			is_delete = 0,
+			status = 'USED',
+			gmt_use = NOW()
+		WHERE
+			is_delete = 0
+		AND
+			id = #{rid}
+	</update>
 </mapper>

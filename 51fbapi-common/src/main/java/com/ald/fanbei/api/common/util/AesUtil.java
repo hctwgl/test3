@@ -165,6 +165,6 @@ public class AesUtil {
 //        String sec = decryptFromBase64("jzFO/f18lKlHTZcpWNSD856v79WIxRAfwIPYbEPj4NBM8iPVksu+CCA9HFkU2200", "testC1b6x@6aH$2dlw");
 //        System.out.println(sec);
 //    	AesUtil.decryptFromBase64("", "testC1b6x");
-        System.out.println(new String(Base64.encodeBase64(encrypt("jdbc:mysql://115.236.44.230:3306/51fanbei_app", "testC1b6x@6aH$2dlw"))));
+        System.out.println(new String(Base64.encodeBase64(encrypt("113b43fc279b34519a1ffd14c7e546c7", "testC1b6x@6aH$2dlw"))));
     }
 }

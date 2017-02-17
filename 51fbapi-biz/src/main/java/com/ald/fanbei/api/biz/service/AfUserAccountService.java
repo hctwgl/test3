@@ -41,4 +41,5 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	int dealCashApply(AfUserAccountDto userDto,BigDecimal money);
+	
 }

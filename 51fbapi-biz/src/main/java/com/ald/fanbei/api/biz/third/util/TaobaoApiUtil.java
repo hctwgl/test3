@@ -13,8 +13,10 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
+import com.taobao.api.request.TaeItemDetailGetRequest;
 import com.taobao.api.request.TaeItemsListRequest;
 import com.taobao.api.request.TbkItemGetRequest;
+import com.taobao.api.response.TaeItemDetailGetResponse;
 import com.taobao.api.response.TaeItemsListResponse;
 import com.taobao.api.response.TbkItemGetResponse;
 
@@ -75,7 +77,7 @@ public class TaobaoApiUtil extends AbstractThird {
 		if (pageNo != null) {
 			req.setPageNo(pageNo);
 		}
-		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS));
+		req.setFields(Constants.CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS);
 		req.setIsOverseas(false);
 		req.setPageSize(PAGE_SIZE);
 		req.setIsTmall(isTmall);
@@ -98,4 +100,20 @@ public class TaobaoApiUtil extends AbstractThird {
 		logger.info("executeTbkRebateRecords complete.");
 		return client.execute(req);
 	}
+	
+	/**
+	 * 查询商品详情接口 taobao.tae.item.detail.get
+	 * @param params
+	 * @return
+	 * @throws ApiException
+	 */
+	public TaeItemDetailGetResponse executeTaeItemDetailSearch(String openId) throws ApiException{
+		logger.info("executeTaeItemDetailSearch start,openId={}",openId);
+		TaobaoClient client = getTaobaoClient();
+		TaeItemDetailGetRequest req = new TaeItemDetailGetRequest();
+		req.setFields(Constants.CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS);
+		req.setOpenIid(openId);
+		return client.execute(req);
+	}
+	
 }

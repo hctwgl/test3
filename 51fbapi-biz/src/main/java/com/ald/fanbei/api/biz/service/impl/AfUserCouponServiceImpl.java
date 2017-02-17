@@ -52,5 +52,14 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	public BigDecimal getUserCouponByInvite(Long userId) {
 		return afUserCouponDao.getUserCouponByInvite(userId);
 	}
+	@Override
+	public AfUserCouponDto getUserCouponById(Long rid) {
+		return afUserCouponDao.getUserCouponById(rid);
+	}
+
+	@Override
+	public int updateUserCouponSatusUsedById(Long rid) {
+		return afUserCouponDao.updateUserCouponSatusUsedById(rid);
+	}
 
 }

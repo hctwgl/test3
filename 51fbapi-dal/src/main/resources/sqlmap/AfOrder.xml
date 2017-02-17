@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,user_id,order_no,status,user_coupon_id,order_type,goods_id,open_id,goods_name,goods_icon,
+		count,price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,rebate_amount,gmt_rebated,
+		mobile,gmt_finished,commission_amount
+	</sql>
+	
+	<insert id="createOrder" keyProperty="id" useGeneratedKeys="true"  parameterType="AfOrderDo">
+		INSERT INTO af_order(
+		    gmt_create ,
+		    gmt_modified ,
+			<if test="userId != null">
+		    	user_id , 
+			</if>
+			order_no , 
+			<if test="userCouponId != null">
+		    	user_coupon_id, 
+			</if>
+			order_type , 
+		    goods_id ,
+		    open_id , 
+			goods_name , 
+			goods_icon , 
+			count , 
+			price_amount , 
+			sale_amount , 
+			actual_amount , 
+			shop_name , 
+			rebate_amount , 
+			mobile
+		)
+		VALUES (
+			<if test="gmtCreate != null">
+		    	#{gmtCreate} ,
+		    	#{gmtCreate} ,
+			</if>
+			<if test="gmtCreate == null">
+				NOW(),
+				NOW(),
+			</if>
+		    <if test="userId != null">
+		    	#{userId},
+			</if>
+		    #{orderNo},
+		    <if test="userCouponId != null">
+		    	 #{userCouponId},
+			</if>
+		    #{orderType},
+	    	#{goodsId},
+	    	#{openId},
+		    #{goodsName},
+		    #{goodsIcon},
+		    #{count},
+		    #{priceAmount},
+		    #{saleAmount},
+		    #{actualAmount},
+		    #{shopName},
+		    #{rebateAmount},
+		    #{mobile}
+		)
+	</insert>
+
+	<update id="updateOrderByOrderNo" parameterType="AfOrderDo">
+		update af_order  set gmt_modified=NOW()
+		<if test="userId != null">
+		    ,user_id=#{userId}
+		</if>
+		<if test="orderNo != null">
+		    ,order_no=#{orderNo}
+		</if>
+		<if test="status != null">
+		    ,status=#{status}
+		</if>
+		<if test="userCouponId != null">
+		    ,user_coupon_id=#{userCouponId}
+		</if>
+		<if test="orderType != null">
+		    ,order_type=#{orderType}
+		</if>
+		<if test="goodsId != null">
+		    ,goods_id=#{goodsId}
+		</if>
+		<if test="openId != null">
+		    ,open_id=#{openId}
+		</if>
+		<if test="goodsName != null">
+		    ,goods_name=#{goodsName}
+		</if>
+		<if test="goodsIcon != null">
+		    ,goods_icon=#{goodsIcon}
+		</if>
+		<if test="count != null">
+		    ,count=#{count}
+		</if>
+		<if test="priceAmount != null">
+		    ,price_amount=#{priceAmount}
+		</if>
+		<if test="saleAmount != null">
+		    ,sale_amount=#{saleAmount}
+		</if>
+		<if test="actualAmount != null">
+		    ,actual_amount=#{actualAmount}
+		</if>
+		<if test="shopName != null">
+		    ,shop_name=#{shopName}
+		</if>
+		<if test="payStatus != null">
+		    ,pay_status=#{payStatus}
+		</if>
+		<if test="payType != null">
+		    ,pay_type=#{payType}
+		</if>
+		<if test="payTradeNo != null">
+		    ,pay_trade_no=#{payTradeNo}
+		</if>
+		<if test="gmtPay != null">
+		    ,gmt_pay=#{gmtPay}
+		</if>
+		<if test="tradeNo != null">
+		    ,trade_no=#{tradeNo}
+		</if>
+		<if test="rebateAmount != null">
+		    ,rebate_amount=#{rebateAmount}
+		</if>
+		<if test="gmtRebated != null">
+		    ,gmt_rebated=#{gmtRebated}
+		</if>
+		<if test="mobile != null">
+		    ,mobile=#{mobile}
+		</if>
+		<if test="gmtFinished != null">
+		    ,gmt_finished=#{gmtFinished}
+		</if>
+		<if test="commissionAmount != null">
+		    ,commission_amount=#{commissionAmount}
+		</if>
+		where is_delete=0 and order_no = #{orderNo}
+	</update>
+	
+	<select id="getCurrentLastOrderNo" resultType="java.lang.String">
+		select order_no from af_order WHERE #{endDate} >= gmt_create AND gmt_create >=#{startDate} AND order_type = #{orderType} ORDER BY id DESC LIMIT 1;
+	</select>
+	
+	<select id="getOrderInfoById" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_order
+		WHERE
+			is_delete=0 AND id = #{rid} AND user_id = #{userId}
+	</select>
+	
+	
+	
+	<select id="getOrderListByStatus" resultType="AfOrderDo" parameterType="AfOrderQuery">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_order
+		WHERE
+			is_delete=0 and user_id = #{userId} 
+		<if test="orderStatus == 'WC'" >
+			and (status = 'NEW' or status = 'PAID')
+		</if>
+		<if test="orderStatus == 'WR'">
+			and status = 'FINISHED'
+		</if>
+		<if test="orderStatus == 'AR'">
+			and status = 'REBATED'
+		</if>
+	</select>
+</mapper>

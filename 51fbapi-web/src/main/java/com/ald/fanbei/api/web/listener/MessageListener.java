@@ -63,12 +63,6 @@ public class MessageListener extends ContextLoaderListener{
 		            		case "taobao_tae_BaichuanTradeSuccess":
 		            			afOrderService.updateOrderTradeSuccess(message.getContent());
 		            			break;
-		            		case "taobao_tae_BaichuanTradeRefundCreated":
-		            			afOrderService.updateOrderTradeRefundCreated(message.getContent());
-		            			break;
-		            		case "taobao_tae_BaichuanTradeRefundSuccess":
-		            			afOrderService.updateOrderTradeRefundSuccess(message.getContent());
-		            			break;
 		            		case "taobao_tae_BaichuanTradePaidDone":
 		            			afOrderService.updateOrderTradePaidDone(message.getContent());
 		            			break;
