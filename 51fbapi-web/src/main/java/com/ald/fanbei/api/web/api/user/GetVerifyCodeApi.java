@@ -35,6 +35,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+    	
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
         String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
         String typeParam = ObjectUtils.toString(requestDataVo.getParams().get("type"));
@@ -47,10 +48,12 @@ public class GetVerifyCodeApi implements ApiHandle {
         }
         SmsType type = SmsType.findRoleTypeByCode(typeParam);
         
-        AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
-        
+        AfUserDo afUserDo =null;
         switch (type) {
 		case REGIST://注册短信
+	
+	        afUserDo = afUserService.getUserByUserName(mobile);
+
 	        if(afUserDo != null){
 	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_HAS_REGIST_ERROR);
 	        }
@@ -58,14 +61,31 @@ public class GetVerifyCodeApi implements ApiHandle {
 	        if(!resultReg){
 	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_SEND_SMS_ERROR);
 	        }
+		
 			break;
 		case FORGET_PASS://忘记密码
+	        afUserDo = afUserService.getUserByUserName(mobile);
+
 			if(afUserDo == null){
 				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 			}
 			
 			boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile,afUserDo.getRid());
 			if(!resultForget){
+	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_SEND_SMS_ERROR);
+	        }
+			break;
+		case MOBILE_BIND://更换手机号
+	        String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
+
+	        afUserDo = afUserService.getUserByUserName(userName);
+
+			if(afUserDo == null){
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			}
+			
+			boolean resultMobileBind = smsUtil.sendMobileBindVerifyCode(mobile,afUserDo.getRid());
+			if(!resultMobileBind){
 	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_SEND_SMS_ERROR);
 	        }
 			break;

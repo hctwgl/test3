@@ -48,7 +48,7 @@ public class GetMineInfoApi implements ApiHandle{
         data.put("nick", userAccountInfo.getNick());
         data.put("userName", userAccountInfo.getUserName());
         data.put("vipLevel", userAccountInfo.getVipLevel());
-        data.put("commission", userAccountInfo.getCommission());
+//        data.put("commission", userAccountInfo.getCommission());
         data.put("couponCount", coupleCount);
         data.put("recommendCode", userAccountInfo.getRecommendCode());
         resp.setResponseData(data);

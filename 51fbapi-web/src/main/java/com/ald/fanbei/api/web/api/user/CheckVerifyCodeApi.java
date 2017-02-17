@@ -1,22 +1,19 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.Date;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -35,7 +32,8 @@ public class CheckVerifyCodeApi implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfSmsRecordService afSmsRecordService;
-	
+	@Resource
+	SmsUtil smsUtil;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -46,24 +44,26 @@ public class CheckVerifyCodeApi implements ApiHandle {
         	logger.error("verifyCode or type is empty verifyCode = " + verifyCode + " type = " + type);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
         }
+
+        smsUtil.checkSmsByMobileAndType(userName, requestDataVo.getParams());
         
-        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, type);
-        
-        if(smsDo == null){
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
-        }
-        
-        //判断验证码是否一致
-        String realCode = smsDo.getVerifyCode();
-        if(!StringUtils.equals(verifyCode, realCode)){
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
-        }
-        //判断验证码是否过期
-        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
-        }
-        //更新为已经验证
-        afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+//        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, type);
+//        
+//        if(smsDo == null){
+//        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
+//        }
+//        
+//        //判断验证码是否一致
+//        String realCode = smsDo.getVerifyCode();
+//        if(!StringUtils.equals(verifyCode, realCode)){
+//        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
+//        }
+//        //判断验证码是否过期
+//        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
+//        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
+//        }
+//        //更新为已经验证
+//        afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
         
         return resp;
     }

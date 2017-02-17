@@ -12,6 +12,7 @@ public class FanbeiContext {
     private String userName;
     private String nick;
     private Integer appVersion;
+    private String mobile;//绑定手机号
     
 	public Long getUserId() {
 		return userId;
@@ -37,7 +38,12 @@ public class FanbeiContext {
 	public void setAppVersion(Integer appVersion) {
 		this.appVersion = appVersion;
 	}
-	
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 	
 	@Override
 	public String toString() {

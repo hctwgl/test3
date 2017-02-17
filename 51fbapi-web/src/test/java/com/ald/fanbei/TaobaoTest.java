@@ -3,8 +3,14 @@ package com.ald.fanbei;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
-import com.taobao.api.request.TaeItemsListRequest;
-import com.taobao.api.response.TaeItemsListResponse;
+import com.taobao.api.request.BaichuanItemSubscribeRelationsQueryRequest;
+import com.taobao.api.request.BaichuanItemSubscribeRelationsQueryRequest.Condition;
+import com.taobao.api.request.BaichuanItemsUnsubscribeRequest;
+import com.taobao.api.response.BaichuanItemSubscribeRelationsQueryResponse;
+import com.taobao.api.response.BaichuanItemsUnsubscribeResponse;
+
+
+
 
 /**
  *@类描述：
@@ -98,14 +104,14 @@ public class TaobaoTest {
 //		System.out.println(rsp.getParams());
 		
 		//获取淘宝客返利
-		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-		TaeItemsListRequest req1 = new TaeItemsListRequest();
-		req1.setFields("title,nick,price");
-		req1.setNumIids("25354992789");
-		TaeItemsListResponse rsp1 = client1.execute(req1);
-		System.out.println(rsp1.getBody());
-		System.out.println(rsp1.getItems());
-		System.out.println(rsp1.getParams());
+//		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		TaeItemsListRequest req1 = new TaeItemsListRequest();
+//		req1.setFields("title,nick,price");
+//		req1.setNumIids("25354992789");
+//		TaeItemsListResponse rsp1 = client1.execute(req1);
+//		System.out.println(rsp1.getBody());
+//		System.out.println(rsp1.getItems());
+//		System.out.println(rsp1.getParams());
 		
 		
 //		req.setIsTmall(false);
@@ -151,6 +157,82 @@ public class TaobaoTest {
 //		req.setFields("cid,parent_cid,name,is_parent");
 //		req.setParentCid(50011999L);
 //		ItemcatsGetResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+//		查询当天剩余订阅次数
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		BaichuanItemSubscribeDailyLeftQueryRequest req = new BaichuanItemSubscribeDailyLeftQueryRequest();
+//		BaichuanItemSubscribeDailyLeftQueryResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+		//订阅单个商品
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		BaichuanItemSubscribeRequest req = new BaichuanItemSubscribeRequest();
+//		req.setItemId(22116135732L);
+//		BaichuanItemSubscribeResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+		//删除单个商品订阅
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		BaichuanItemUnsubscribeRequest req = new BaichuanItemUnsubscribeRequest();
+//		req.setItemId(22116135732L);
+//		BaichuanItemUnsubscribeResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+		//查询单个商品订阅情况
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		BaichuanItemSubscribeRelationQueryRequest req = new BaichuanItemSubscribeRelationQueryRequest();
+//		req.setItemId(537034608173L);
+//		BaichuanItemSubscribeRelationQueryResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+		//批量订阅商品,最多100个
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		BaichuanItemsSubscribeRequest req = new BaichuanItemsSubscribeRequest();
+//		req.setItemIds("22116135732,538337335488,537642216604");
+//		BaichuanItemsSubscribeResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+		
+		//批量删除商品订阅， 最多100个
+		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+		BaichuanItemsUnsubscribeRequest req1 = new BaichuanItemsUnsubscribeRequest();
+		req1.setItemIds("22116135732,538337335488,537642216604");
+		BaichuanItemsUnsubscribeResponse rsp1 = client1.execute(req1);
+		System.out.println(rsp1.getBody());
+		
+		
+		//按条件查询订阅关系，最多100
+		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+		BaichuanItemSubscribeRelationsQueryRequest req = new BaichuanItemSubscribeRelationsQueryRequest();
+		Condition obj1 = new Condition();
+		obj1.setLimit(100L);
+		req.setCondition(obj1);
+		BaichuanItemSubscribeRelationsQueryResponse rsp = client.execute(req);
+		System.out.println(rsp.getBody());
+//		obj1.setStartTime(StringUtils.parseDateTime("2015-11-23 12:00:32"));
+//		obj1.setStartId(0L);
+//		obj1.setItemStatus(0L);
+//		obj1.setEndTime(StringUtils.parseDateTime("2015-11-26 12:00:32"));
+		
+		//根据条件删除，最多100
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		BaichuanItemsUnsubscribeByConditionRequest req = new BaichuanItemsUnsubscribeByConditionRequest();
+//		Condition obj1 = new Condition();
+//		obj1.setLimit(100L);
+//		req.setCondition(obj1);
+//		BaichuanItemsUnsubscribeByConditionResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+//		obj1.setStartTime(StringUtils.parseDateTime("2015-11-23 12:00:32"));
+//		obj1.setStartId(23L);
+//		obj1.setItemStatus(0L);
+//		obj1.setEndTime(StringUtils.parseDateTime("2015-11-26 12:00:32"));
+		
+		//添加淘宝分组
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		TmcGroupAddRequest req = new TmcGroupAddRequest();
+//		req.setGroupName("dev_test");
+//		req.setNicks("51返呗");
+//		TmcGroupAddResponse rsp = client.execute(req);
 //		System.out.println(rsp.getBody());
 		
 	}

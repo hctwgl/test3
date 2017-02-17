@@ -61,10 +61,10 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 				try {
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
-					account.setCcAmount(userDto.getCcAmount().subtract(money));//可取现金额=可取现金额-申请取现金额
+//					account.setCcAmount(userDto.getCcAmount().subtract(money));//可取现金额=可取现金额-申请取现金额
 					account.setUcAmount(userDto.getUcAmount().add(money));//已取现金额=已取现金额+申请取现金额
 					account.setUsedAmount(userDto.getUsedAmount().add(money));//授信已使用金额=授信已使用金额+申请取现金额
-					account.setRemainingAmount(userDto.getRemainingAmount().subtract(money));//授信剩余金额=授信剩余金额-申请取现金额
+//					account.setRemainingAmount(userDto.getRemainingAmount().subtract(money));//授信剩余金额=授信剩余金额-申请取现金额
 					afUserAccountDao.updateUserAccount(account);					
 					AfBorrowDo borrow =  buildBorrow(userDto.getUserId(), money);
 					afBorrowDao.addBorrow(borrow);

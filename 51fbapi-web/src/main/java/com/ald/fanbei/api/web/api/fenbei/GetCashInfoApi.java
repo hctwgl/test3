@@ -36,7 +36,7 @@ public class GetCashInfoApi implements ApiHandle{
 		//账户关联信息
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("usableAmount", userDto.getCcAmount());
+//		data.put("usableAmount", userDto.getCcAmount());
 		data.put("cardNo", userDto.getAlipayAccount());
 		data.put("realName", userDto.getRealName());
 		resp.setResponseData(data);

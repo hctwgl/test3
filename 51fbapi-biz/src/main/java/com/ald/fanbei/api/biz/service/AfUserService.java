@@ -22,7 +22,12 @@ public interface AfUserService {
 	 * @return
 	 */
 	AfUserDo getUserById(Long userId);
-
+	/**
+	 * 根据用户邀请码获取用户信息
+	 * @param recommendCode 用户邀请码
+	 * @return
+	 */
+	AfUserDo getUserByRecommendCode(String recommendCode);
 	/**
 	 * 通过用户名获取用户信息
 	 *@param id

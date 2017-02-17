@@ -39,9 +39,9 @@ public class ApplyCashApi implements ApiHandle{
         logger.info("userId=" + userId + ",money=" + money);
 
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
-		if(userDto.getCcAmount().compareTo(money)==-1){
-			throw new FanbeiException("user cash money error", FanbeiExceptionCode.USER_CASH_MONEY_ERROR);
-		}
+//		if(userDto.getCcAmount().compareTo(money)==-1){
+//			throw new FanbeiException("user cash money error", FanbeiExceptionCode.USER_CASH_MONEY_ERROR);
+//		}
 		if(afUserAccountService.dealCashApply(userDto, money)>0){
 			return resp;
 		}

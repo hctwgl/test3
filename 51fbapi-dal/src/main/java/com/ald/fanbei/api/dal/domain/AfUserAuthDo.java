@@ -19,12 +19,12 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String zmStatus;
 	private Date gmtZm;
 	private Integer zmScore;
-	private String isvStatus;
-	private Date gmtIsv;
+	private String ivsStatus;
+	private Date gmtIvs;
 	private Integer isvScore;
-	private String tdStatus;
-	private Date gmtTd;
-	private Integer tdCore;
+	private String realnameStatus;
+	private Date gmtRealname;
+	private Integer realnameScore;
 	private String facesStatus;
 	private BigDecimal similarDegree;
 	private String mobileStatus;
@@ -68,17 +68,18 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setZmScore(Integer zmScore) {
 		this.zmScore = zmScore;
 	}
-	public String getIsvStatus() {
-		return isvStatus;
+	
+	public String getIvsStatus() {
+		return ivsStatus;
 	}
-	public void setIsvStatus(String isvStatus) {
-		this.isvStatus = isvStatus;
+	public void setIvsStatus(String ivsStatus) {
+		this.ivsStatus = ivsStatus;
 	}
-	public Date getGmtIsv() {
-		return gmtIsv;
+	public Date getGmtIvs() {
+		return gmtIvs;
 	}
-	public void setGmtIsv(Date gmtIsv) {
-		this.gmtIsv = gmtIsv;
+	public void setGmtIvs(Date gmtIvs) {
+		this.gmtIvs = gmtIvs;
 	}
 	public Integer getIsvScore() {
 		return isvScore;
@@ -86,23 +87,23 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setIsvScore(Integer isvScore) {
 		this.isvScore = isvScore;
 	}
-	public String getTdStatus() {
-		return tdStatus;
+	public String getRealnameStatus() {
+		return realnameStatus;
 	}
-	public void setTdStatus(String tdStatus) {
-		this.tdStatus = tdStatus;
+	public void setRealnameStatus(String realnameStatus) {
+		this.realnameStatus = realnameStatus;
 	}
-	public Date getGmtTd() {
-		return gmtTd;
+	public Date getGmtRealname() {
+		return gmtRealname;
 	}
-	public void setGmtTd(Date gmtTd) {
-		this.gmtTd = gmtTd;
+	public void setGmtRealname(Date gmtRealname) {
+		this.gmtRealname = gmtRealname;
 	}
-	public Integer getTdCore() {
-		return tdCore;
+	public Integer getRealnameScore() {
+		return realnameScore;
 	}
-	public void setTdCore(Integer tdCore) {
-		this.tdCore = tdCore;
+	public void setRealnameScore(Integer realnameScore) {
+		this.realnameScore = realnameScore;
 	}
 	public String getFacesStatus() {
 		return facesStatus;

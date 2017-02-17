@@ -24,6 +24,12 @@ public interface AfUserDao {
 	 * @return
 	 */
 	AfUserDo getUserById(@Param("userId")Long userId);
+	/**
+	 * 根据用户邀请码获取用户信息
+	 * @param recommendCode
+	 * @return
+	 */
+	AfUserDo getUserByRecommendCode(@Param("recommendCode")String recommendCode);
 	
 	/**
 	 * 更新用户消息
