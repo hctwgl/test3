@@ -8,17 +8,18 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.antgroup.zmxy.openplatform.api.DefaultZhimaClient;
+import com.antgroup.zmxy.openplatform.api.ZhimaApiException;
 import com.antgroup.zmxy.openplatform.api.ZhimaResponse;
 import com.antgroup.zmxy.openplatform.api.request.ZhimaAuthInfoAuthorizeRequest;
 import com.antgroup.zmxy.openplatform.api.request.ZhimaAuthInfoAuthqueryRequest;
 import com.antgroup.zmxy.openplatform.api.request.ZhimaCreditIvsDetailGetRequest;
 import com.antgroup.zmxy.openplatform.api.request.ZhimaCreditScoreGetRequest;
 import com.antgroup.zmxy.openplatform.api.request.ZhimaCreditWatchlistiiGetRequest;
-import com.antgroup.zmxy.openplatform.api.response.ZhimaAuthInfoAuthorizeResponse;
 import com.antgroup.zmxy.openplatform.api.response.ZhimaAuthInfoAuthqueryResponse;
 import com.antgroup.zmxy.openplatform.api.response.ZhimaCreditIvsDetailGetResponse;
 import com.antgroup.zmxy.openplatform.api.response.ZhimaCreditScoreGetResponse;
@@ -34,7 +35,7 @@ public class ZhimaUtil extends AbstractThird {
 
 	private static DefaultZhimaClient ZhimaClient = null;
 	private static String DEFAULT_PLATFORM = "zmop";
-	private static String PRODUCT_CODE = "w1010100100000000022";
+//	private static String PRODUCT_CODE = "w1010100100000000022";
 	private static String CHANNEL = "app";
 	private static String DEFAULT_IDENTITY_TYPE = "2";
 	private static String DEFAULT_CERTtYPE = "IDENTITY_CARD";
@@ -62,15 +63,16 @@ public class ZhimaUtil extends AbstractThird {
 	 * @param openId
 	 * @return
 	 */
-	public static ZhimaCreditWatchlistiiGetResponse creditWatchlistiiGet(String openId) {
+	public static ZhimaCreditWatchlistiiGetResponse watchlistiiGet(String openId) {
 		ZhimaCreditWatchlistiiGetRequest req = new ZhimaCreditWatchlistiiGetRequest();
 		req.setPlatform(DEFAULT_PLATFORM);
 		req.setOpenId(openId);
-		req.setProductCode(PRODUCT_CODE);
-		req.setTransactionId("hygzmd_" + openId + "_" + System.currentTimeMillis());
+		req.setProductCode("w1010100000000000103");
+		String transactionId = getTransactionId(CommonUtil.getRandomNumber(13));
+		req.setTransactionId(transactionId);
 		try {
 			ZhimaCreditWatchlistiiGetResponse resp = (ZhimaCreditWatchlistiiGetResponse) getZhimaClient().execute(req);
-			dealWithZhimaResp(resp, "creditWatchlistiiGet", openId);
+			dealWithZhimaResp(resp, "creditWatchlistiiGet",transactionId, openId);
 			return resp;
 		} catch (Exception e) {
 			logger.error("watchlistii error;|" + openId, e);
@@ -88,11 +90,12 @@ public class ZhimaUtil extends AbstractThird {
 		ZhimaCreditScoreGetRequest req = new ZhimaCreditScoreGetRequest();
 		req.setPlatform(DEFAULT_PLATFORM);
 		req.setOpenId(openId);
-		req.setProductCode(PRODUCT_CODE);
-		req.setTransactionId(openId + "_" + System.currentTimeMillis());
+		req.setProductCode("w1010100100000000001");
+		String transactionId = getTransactionId(CommonUtil.getRandomNumber(13));
+		req.setTransactionId(transactionId);
 		try {
 			ZhimaCreditScoreGetResponse resp = (ZhimaCreditScoreGetResponse) getZhimaClient().execute(req);
-			dealWithZhimaResp(resp, "scoreGet", openId);
+			dealWithZhimaResp(resp, "scoreGet", transactionId,openId);
 			return resp;
 		} catch (Exception e) {
 			logger.error("scoreGet error,openId=" + openId, e);
@@ -109,7 +112,7 @@ public class ZhimaUtil extends AbstractThird {
 	 * @param address 地址
 	 * @return
 	 */
-	public ZhimaCreditIvsDetailGetResponse ivsDetailGet(String idNumber,String realName,String mobile,String email,String address) {
+	public static ZhimaCreditIvsDetailGetResponse ivsDetailGet(String idNumber,String realName,String mobile,String email,String address) {
 		ZhimaCreditIvsDetailGetRequest req = new ZhimaCreditIvsDetailGetRequest();
 		req.setAddress(address);;
 //		req.setBankCard(bankCard);
@@ -125,13 +128,14 @@ public class ZhimaUtil extends AbstractThird {
 		req.setMobile(mobile);
 		req.setName(realName);
 		req.setPlatform(DEFAULT_PLATFORM);
-		req.setProductCode(PRODUCT_CODE);
+		req.setProductCode("w1010100100000000022");
 //		req.setScene(scene);
-		req.setTransactionId("fqz_" + mobile + "_" + System.currentTimeMillis());
+		String transactionId = getTransactionId(CommonUtil.getRandomNumber(13));
+		req.setTransactionId(transactionId);
 //		req.setWifimac(wifimac);
 		try{
 			ZhimaCreditIvsDetailGetResponse resp = (ZhimaCreditIvsDetailGetResponse)getZhimaClient().execute(req);
-			dealWithZhimaResp(resp, "isvDetailGet", idNumber,realName,mobile,email,address);
+			dealWithZhimaResp(resp, "isvDetailGet", transactionId,idNumber,realName,mobile,email,address);
 			return resp;
 		}catch(Exception e){
 			logger.error(StringUtil.appendStrs("isvDetailGet error;|",idNumber,"|",realName,"|",mobile,"|",email,"|",address), e);
@@ -146,7 +150,7 @@ public class ZhimaUtil extends AbstractThird {
 	 * @param realName 真实姓名
 	 * @return
 	 */
-	public ZhimaAuthInfoAuthqueryResponse authQuery(String idNumber,String realName){
+	public static ZhimaAuthInfoAuthqueryResponse authQuery(String idNumber,String realName){
 		ZhimaAuthInfoAuthqueryRequest req = new ZhimaAuthInfoAuthqueryRequest();
 		Map<String,String> paramMap = new HashMap<String,String>();
 		paramMap.put("certNo", idNumber);
@@ -173,28 +177,45 @@ public class ZhimaUtil extends AbstractThird {
 	 * @param uid
 	 * @return
 	 */
-	public ZhimaAuthInfoAuthorizeResponse authorize(String idNumber,String realName,String uid){
+	public static Map<String, String> authorize(String idNumber,String realName) {
+		Map<String,String> result = new HashMap<String, String>();
 		ZhimaAuthInfoAuthorizeRequest req = new ZhimaAuthInfoAuthorizeRequest();
-		Map<String,String> bizParamsMap = new HashMap<String, String>();
-		bizParamsMap.put("auth_code", "M_H5");
-		bizParamsMap.put("state", uid);
-		req.setBizParams(JSON.toJSONString(bizParamsMap));
-		req.setChannel(CHANNEL);
-		Map<String,String> identityParamsMap = new HashMap<String, String>();
-		identityParamsMap.put("certNo", idNumber);
-		identityParamsMap.put("certType", DEFAULT_CERTtYPE);
-		identityParamsMap.put("name", realName);
-		req.setIdentityParam(JSON.toJSONString(identityParamsMap));
-		req.setIdentityType(DEFAULT_IDENTITY_TYPE);
-		req.setPlatform("sq_" + idNumber + "_" + System.currentTimeMillis());
-		try{
-			ZhimaAuthInfoAuthorizeResponse resp = (ZhimaAuthInfoAuthorizeResponse)getZhimaClient().execute(req);
-			dealWithZhimaResp(resp, "authorize", idNumber,realName,uid);
-			return resp;
-		}catch(Exception e){
-			logger.error(StringUtil.appendStrs("authorize error;|",idNumber,"|",realName,"|",uid), e);
+		req.setChannel("apppc");
+		req.setPlatform("zmop");
+		req.setIdentityType("1");// 必要参数
+		Map<String,String> identityParam = new HashMap<String, String>();
+		identityParam.put("name", realName);
+		identityParam.put("certType", "IDENTITY_CARD");
+		identityParam.put("certNo", idNumber);
+		Map<String,String> bizParam = new HashMap<String, String>();
+		bizParam.put("auth_code", "M_APPSDK");
+		bizParam.put("channelType", "app");
+		bizParam.put("state", idNumber.substring(8) + "_" + System.currentTimeMillis());
+		
+		req.setIdentityParam(JSON.toJSONString(identityParam));
+		req.setBizParams(JSON.toJSONString(bizParam));
+		
+		Map<String,String> paramsMap = new HashMap<String, String>();
+		try {
+			String url = getZhimaClient().generatePageRedirectInvokeUrl(req);
+			String paramsStr = url.substring(url.indexOf("?")+1);
+			String[] paramsArr = paramsStr.split("&");
+			for(String item:paramsArr){
+				String itemKey = item.substring(0,item.indexOf("="));
+				String itemValue = item.substring(item.indexOf("=")+1);
+				paramsMap.put(itemKey, itemValue);
+			}
+			
+		} catch (ZhimaApiException e) {
+			logger.error(StringUtil.appendStrs("authorize error;|",idNumber,"|",realName), e);
 			throw new FanbeiException(FanbeiExceptionCode.ZM_ERROR);
 		}
+		
+		result.put("param", paramsMap.get("param"));
+		result.put("sign", paramsMap.get("sign"));
+		result.put("appId", paramsMap.get("app_id"));
+		
+		return result;
 	}
 	
 	
@@ -209,12 +230,58 @@ public class ZhimaUtil extends AbstractThird {
 		for (String item : param) {
 			sb = sb.append("|").append(item);
 		}
-		thirdLog.info(StringUtil.appendStrs("methodName=", methodName,",params=", sb.toString() + ",resp=" + resp));
+		thirdLog.info(StringUtil.appendStrs("methodName=", methodName,",params=", sb.toString() + ",resp=" + resp==null?"":JSON.toJSONString(resp)));
 		if (resp.isSuccess()) {
 			return;
 		} else {
 			throw new FanbeiException("调用芝麻失败", FanbeiExceptionCode.ZM_ERROR);
 		}
 	}
-
+	
+	
+	private static String getTransactionId(String last13Characts){
+		return System.currentTimeMillis() + last13Characts;
+	}
+	
+	
+//	//芝麻开放平台地址
+//    private String gatewayUrl     = "https://zmopenapi.zmxy.com.cn/openapi.do";
+//    //商户应用 Id
+//    private String appId          = "1000743";
+//    //商户 RSA 私钥
+//    private String privateKey     = "MIICeQIBADANBgkqhkiG9w0BAQEFAASCAmMwggJfAgEAAoGBAOD588mHWwjgaVsAdAE2ralhuEwM07C1P4Lph1tvQLwijADSyyDeTpqHEOT78F2dsmpRRqvgLS77cWnegHQw297A76nibBZn4sewefnSMM3ApJAKAi1naEi4NzrM+dHGPZ4Idb3Az7ALfFqKeQ2m7G86RR03kjpqtzcCBwNCLiCNAgMBAAECgYEAnbJXEiJQy24SK3mr1tXu8NXQi25KTIkflbH/8TWQmM9Wd5VKUSXCz0pxqzB2Egjh8Og7s2qWAWK64szWGZvN4YssWFN7Kn0HLput5VmV9pd+KfVx3Lf3BsIfF9AvJeQOTffvOkhaLKPZKhFqg4FBhrEV8gduR9Ai1FyImAXWfUECQQD+yvNQyIsomd0B3W6yf+eWrr4bCbtWCiuIii5/H9PEhxIQLRoYUcPAgnlMrGt9sYbBpBJsE5qfEN1Ln7LgYHjpAkEA4grWESJyPzKPm5VZUVB9aSly6NSRQ9MU4GB6qMgubU9q7vLGAsR9kuM+b70ojePfnkk4jOwcOJfTPCel5hMkBQJBAJGkxU0KNbGxsgmc3+gdAO67WGPwPivCiHv2MPnt4YlXhFXG0kHQi0sBygCwFom07sjF1tn8osgGRdkyondr7fECQQCBCXaSaXuWoCJiyqsmRDCTa9nxGAelFEaCoBDlcQEv3XpJ1cU7pzeYNqlZ2D3iYgcxsNLbf53MoL8xQ+DsqliRAkEA7Tq1edlV24HivSkGbjYEv+fBJA6f99LIHb/FGrneh8i5MXxC9312hNz5CNnfoY1czWfEWdnalK5DlN9GZwz2ew==";
+//    //芝麻 RSA 公钥
+//    private String zhimaPublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDbhnWS/fonmssn+yHVrXkS9BCVpZbWruFs/Ajj8J8wU2557JUebK/HYIoB+FkYGHLj3z7gwlRcSRwUbkub/Ov3mW+NBd4XKLCQEweu19ttO+93ebvYFb29JZJ5vTP8XNQmdq5/yAZI+bXgbMoSbIQdmFBi0QgR8hsIywS5qlctoQIDAQAB";
+// 
+//    public void  testZhimaAuthInfoAuthorize() {
+//        ZhimaAuthInfoAuthorizeRequest req = new ZhimaAuthInfoAuthorizeRequest();
+//        req.setChannel("apppc");
+//        req.setPlatform("zmop");
+//               req.setIdentityType("1");// 必要参数        
+//               req.setIdentityParam("{\"name\":\"张三\",\"certType\":\"IDENTITY_CARD\",\"certNo\":\"330100xxxxxxxxxxxx\"}");// 必要参数        
+//               req.setBizParams("{\"auth_code\":\"M_H5\",\"channelType\":\"app\",\"state\":\"商户自定义\"}");//        
+//                DefaultZhimaClient client = new DefaultZhimaClient(gatewayUrl, appId, privateKey,
+//            zhimaPublicKey);
+//        try {
+//            String url = client.generatePageRedirectInvokeUrl(req);  
+//			System.out.println(url);
+//			String paramsStr = url.substring(url.indexOf("?")+1);
+//			System.out.println(paramsStr);
+//			String[] paramsArr = paramsStr.split("&");
+//			Map<String,String> paramsMap = new HashMap<String, String>();
+//			for(String item:paramsArr){
+//				String itemKey = item.substring(0,item.indexOf("="));
+//				String itemValue = item.substring(item.indexOf("=")+1);
+//				paramsMap.put(itemKey, itemValue);
+//			}
+//			System.out.println(paramsMap);
+//        } catch (ZhimaApiException e) {
+//            e.printStackTrace();
+//        }
+//    }
+// 
+//    public static void main(String[] args) {
+//    	ZhimaUtil result = new  ZhimaUtil();
+//        result.testZhimaAuthInfoAuthorize();
+//    }
 }

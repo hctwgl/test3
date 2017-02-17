@@ -61,6 +61,15 @@
 			<if test="ydStatus != null">
     			,yd_status=#{ydStatus}
 			</if>
+			<if test="watchlistStatus != null">
+    			,watchlist_status=#{watchlistStatus}
+			</if>
+			<if test="gmtWatchlist != null">
+    			,gmt_watchlist=#{gmtWatchlist}
+			</if>
+			<if test="watchlistScore != null">
+    			,watchlist_score=#{watchlistScore}
+			</if>
 		WHERE user_id = #{userId}
 	</update>
 	

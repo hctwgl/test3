@@ -131,8 +131,8 @@
 				<entry key="/auth/authFace" value-ref="authFaceApi" /> 
 				<entry key="/auth/authRealname" value-ref="authRealnameApi" />
 				<entry key="/auth/authContacts" value-ref="authContactsApi" />
-				<!-- <entry key="/auth/authCredit" value-ref="authCreditApi" /> 
-				<entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
+				<entry key="/auth/authCredit" value-ref="authCreditApi" /> 
+				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
 				 -->
 				
 			</map>

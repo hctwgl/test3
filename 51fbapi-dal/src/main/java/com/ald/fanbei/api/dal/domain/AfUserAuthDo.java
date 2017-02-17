@@ -21,7 +21,7 @@ public class AfUserAuthDo extends AbstractSerial {
 	private Integer zmScore;
 	private String ivsStatus;
 	private Date gmtIvs;
-	private Integer isvScore;
+	private Integer ivsScore;
 	private String realnameStatus;
 	private Date gmtRealname;
 	private Integer realnameScore;
@@ -31,6 +31,9 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String bankcardStatus;
 	private String teldirStatus;
 	private String ydStatus;
+	private String watchlistStatus;
+	private Date gmtWatchlist;
+	private String watchlistScore;
 	
 	public Long getRid() {
 		return rid;
@@ -81,11 +84,11 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setGmtIvs(Date gmtIvs) {
 		this.gmtIvs = gmtIvs;
 	}
-	public Integer getIsvScore() {
-		return isvScore;
+	public Integer getIvsScore() {
+		return ivsScore;
 	}
-	public void setIsvScore(Integer isvScore) {
-		this.isvScore = isvScore;
+	public void setIvsScore(Integer ivsScore) {
+		this.ivsScore = ivsScore;
 	}
 	public String getRealnameStatus() {
 		return realnameStatus;
@@ -140,6 +143,24 @@ public class AfUserAuthDo extends AbstractSerial {
 	}
 	public void setYdStatus(String ydStatus) {
 		this.ydStatus = ydStatus;
+	}
+	public String getWatchlistStatus() {
+		return watchlistStatus;
+	}
+	public void setWatchlistStatus(String watchlistStatus) {
+		this.watchlistStatus = watchlistStatus;
+	}
+	public Date getGmtWatchlist() {
+		return gmtWatchlist;
+	}
+	public void setGmtWatchlist(Date gmtWatchlist) {
+		this.gmtWatchlist = gmtWatchlist;
+	}
+	public String getWatchlistScore() {
+		return watchlistScore;
+	}
+	public void setWatchlistScore(String watchlistScore) {
+		this.watchlistScore = watchlistScore;
 	}
 	
 }
