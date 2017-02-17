@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGoodsDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,creator,modifier,name,goods_icon,thumbnail_icon,goods_url,open_id,num_id,price_amount,
+		sale_amount,category_id,sale_count,gmt_start,gmt_end,status,source,rebate_amount,rebate_rate,shop_id,shop_name
+	</sql>
+	
+	<select id="getGoodsById" resultType="AfGoodsDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_goods
+		WHERE
+			is_delete=0 AND id = #{rid}
+	</select>
+	
+	<select id="getGoodsByOpenId" resultType="AfGoodsDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_goods
+		WHERE
+			is_delete=0 AND open_id=#{openId}
+		order by gmt_modified desc limit 1
+	</select>
+	
+	<select id="getCateGoodsList" resultType="AfGoodsDo" parameterType="AfGoodsQuery">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_goods
+		WHERE
+			is_delete=0 and categorg_id = #{categorgId} 
+		limit 1
+	</select>
+</mapper>

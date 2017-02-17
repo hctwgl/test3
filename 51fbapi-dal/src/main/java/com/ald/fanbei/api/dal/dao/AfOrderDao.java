@@ -1,10 +1,12 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 
 /**
  * @类描述：
@@ -25,7 +27,7 @@ public interface AfOrderDao {
 	 * @param afOrder
 	 * @return
 	 */
-	int updateOrder(AfOrderDo afOrder);
+	int updateOrderByOrderNo(AfOrderDo afOrder);
 	
 	/**
 	 * @param startDate
@@ -34,4 +36,18 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	public String getCurrentLastOrderNo(@Param("startDate")Date startDate,@Param("endDate")Date endDate, @Param("orderType")String orderType);
+	
+	/**
+	 * 获取订单详情
+	 * @param rid
+	 * @return
+	 */
+	public AfOrderDo getOrderInfoById(@Param("rid")Long rid,@Param("userId")Long userId);
+	
+	/**
+	 * 获取订单列表
+	 * @param query
+	 * @return
+	 */
+	public List<AfOrderDo> getOrderListByStatus(AfOrderQuery query);
 }

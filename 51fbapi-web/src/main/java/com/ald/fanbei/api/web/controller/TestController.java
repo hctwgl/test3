@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 
@@ -19,6 +20,9 @@ public class TestController {
 	
 	@Resource
 	SmsUtil smsUtil;
+	
+	@Resource
+	AfOrderService afOrderService;
 
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
@@ -46,10 +50,10 @@ public class TestController {
 //		TongdunResultBo result = TongdunUtil.queryPreloan("ER2017012121595110613362");
 //
 //		System.out.println("-----reportId---" + 11 + ",result=" + result);
-		smsUtil.sendRegistVerifyCode("15958119936");
+		//smsUtil.sendRegistVerifyCode("15958119936");
 
 //		SmsUtil.sendSms("15958119936", "验证码:1234");
-		
+		afOrderService.createOrderTrade("{'buyer_id':'AAGtxNL8AClXeBuXBPILbV-s','paid_fee':'138.00','shop_title':'佐祥车品旗舰店','is_eticket':false,'create_order_time':'2017-02-17 14:36:28','order_id':'3065189213875206','order_status':'7','seller_nick':'佐祥车品旗舰店','auction_infos':[{'detail_order_id':'3065189213875206','auction_id':'AAEnxNL_AClXeBuXBIxwBj6s','real_pay':'138.00','auction_pict_url':'i1/2208256900/TB2uxTDXNXkpuFjy0FiXXbUfFXa_!!2208256900.jpg','auction_title':'汽车载氧吧空气净化雾霾器 负离子杀菌香薰除甲醛异味全自动过滤','auction_amount':'1'}]}");
 		return "succ";
 	}
 

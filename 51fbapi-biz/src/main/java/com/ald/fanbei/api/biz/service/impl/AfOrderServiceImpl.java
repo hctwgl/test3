@@ -2,7 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -14,18 +14,26 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.MobileStatus;
+import com.ald.fanbei.api.common.enums.OrderSatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.taobao.api.response.TaeItemDetailGetResponse;
 /**
  *@类描述：
  *@author 何鑫 2017年16月20日 下午4:20:22
@@ -52,35 +60,71 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
 	
+	@Resource
+	private AfGoodsDao afGoodsDao;
+	
+	@Resource
+	private TaobaoApiUtil taobaoApiUtil;
+	
 	@Override
 	public int createOrderTrade(String content) {
 		logger.info("createOrderTrade_content:"+content);
 		JSONObject obj = JSON.parseObject(content);
 		JSONArray array = JSON.parseArray(obj.getString("auction_infos"));
-		Iterator<Object> it = array.iterator();
-		while(it.hasNext()){
-			JSONObject goods = (JSONObject) it.next();
-			Long goodsId =0l;
+		JSONObject goodsObj = array.getJSONObject(0);
+		Long goodsId =0l;
+		String orderType="";
+		BigDecimal priceAmount = BigDecimal.ZERO;
+		int count = NumberUtil.objToIntDefault(goodsObj.getString("auction_amount"), 1);
+		priceAmount = NumberUtil.objToBigDecimalDefault(goodsObj.getString("real_pay"), BigDecimal.ZERO).multiply(new BigDecimal(count));
+		AfGoodsDo goods = afGoodsDao.getGoodsByOpenId(goodsObj.getString("auction_id"));
+		if(null == goods){
+			try {
+				TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(goodsObj.getString("auction_id"));
+				JSONObject resObj = JSON.parseObject(res.getBody());
+				JSONObject sellerInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data").getJSONObject("seller_info");
+				orderType = sellerInfo.getString("seller_type").toUpperCase();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else{
+			goodsId = goods.getRid();
+			orderType = goods.getSource();
 		}
-		return 0;
+		AfOrderDo order = buildOrder(obj.getString("order_id"), 0l, null, priceAmount, priceAmount, "", BigDecimal.ZERO, 
+				orderType, priceAmount, goodsId, goodsObj.getString("auction_id"), 
+				goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, obj.getString("shop_title"));
+		return orderDao.createOrder(order);
 	}
 
 	@Override
 	public int updateOrderTradeSuccess(String content) {
 		logger.info("updateOrderTradeSuccess_content:"+content);
-		return 0;
+		AfOrderDo order = new AfOrderDo();
+		order.setOrderNo(JSON.parseObject(content).getString("order_id"));
+		order.setStatus(OrderSatus.FINISHED.getCode());
+		order.setGmtFinished(new Date());
+		return orderDao.updateOrderByOrderNo(order);
 	}
 
 	@Override
 	public int updateOrderTradePaidDone(String content) {
 		logger.info("updateOrderTradePaidDone_content:"+content);
-		return 0;
+		AfOrderDo order = new AfOrderDo();
+		order.setOrderNo(JSON.parseObject(content).getString("order_id"));
+		order.setStatus(OrderSatus.PAID.getCode());
+		order.setGmtPay(new Date());
+		return orderDao.updateOrderByOrderNo(order);
 	}
 
 	@Override
 	public int updateOrderTradeClosed(String content) {
 		logger.info("updateOrderTradeClosed_content:"+content);
-		return 0;
+		AfOrderDo order = new AfOrderDo();
+		order.setOrderNo(JSON.parseObject(content).getString("order_id"));
+		order.setStatus(OrderSatus.CLOSED.getCode());
+		
+		return orderDao.updateOrderByOrderNo(order);
 	}
 
 	@Override
@@ -106,7 +150,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					}
 					//订单创建
 					orderDao.createOrder(buildOrder(orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
-							OrderType.MOBILE.getCode(),actualAmount, 0l, "", "", "", "", 1, ""));
+							OrderType.MOBILE.getCode(),actualAmount, 0l, "","", "", 1, ""));
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -117,10 +161,28 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 	}
 
+	/**
+	 * 
+	 * @param orderNo  --订单编号
+	 * @param userId   --用户id
+	 * @param couponDto --优惠券对象
+	 * @param money     --订单原价
+	 * @param saleAmount --订单折后价
+	 * @param mobile  --手机号
+	 * @param rebateAmount --返利金额
+	 * @param orderType  --订单类型
+	 * @param actualAmount --实际支付价格
+	 * @param goodsId --商品id
+	 * @param openId  --商品混淆id
+	 * @param goodsName --商品名称
+	 * @param goodsIcon --商品图片
+	 * @param count --数量
+	 * @param shopName --店铺名称
+	 * @return
+	 */
 	private AfOrderDo buildOrder(String orderNo,Long userId, AfUserCouponDto couponDto,
 			BigDecimal money,BigDecimal saleAmount, String mobile,BigDecimal rebateAmount,String orderType,BigDecimal actualAmount,
-			Long goodsId,String openId,String goodsName,String goodsIcon,String goodsUrl,
-			int count,String shopName){
+			Long goodsId,String openId,String goodsName,String goodsIcon,int count,String shopName){
 		AfOrderDo orderDo = new AfOrderDo();
 		orderDo.setUserId(userId);
 		orderDo.setOrderNo(orderNo);
@@ -129,7 +191,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		orderDo.setOpenId(openId);
 		orderDo.setGoodsName(goodsName);
 		orderDo.setGoodsIcon(goodsIcon);
-		orderDo.setGoodsUrl(goodsUrl);
 		orderDo.setCount(count);
 		orderDo.setShopName(shopName);
 		orderDo.setPriceAmount(money);
@@ -151,5 +212,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		Date startDate = DateUtil.getStartOfDate(currentDate);
 		Date endDate = DateUtil.getEndOfDate(currentDate);
 		return orderDao.getCurrentLastOrderNo(startDate,endDate, orderType);
+	}
+
+	@Override
+	public AfOrderDo getOrderInfoById(Long id,Long userId) {
+		return orderDao.getOrderInfoById(id,userId);
+	}
+
+	@Override
+	public List<AfOrderDo> getOrderListByStatus(Integer pageNo, String status,Long userId) {
+		AfOrderQuery query = new AfOrderQuery();
+		query.setPageNo(pageNo);
+		query.setOrderStatus(status);
+		query.setUserId(userId);
+		return orderDao.getOrderListByStatus(query);
+	}
+
+	@Override
+	public int syncOrderNoWithUser(Long userId, String orderNo) {
+		AfOrderDo order = new AfOrderDo();
+		order.setOrderNo(orderNo);
+		order.setUserId(userId);
+		return orderDao.updateOrderByOrderNo(order);
 	}
 }

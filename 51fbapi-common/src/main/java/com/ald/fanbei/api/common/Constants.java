@@ -83,8 +83,10 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_BCDS_APPID			  = "fbapi.taobao.bcds.appid";
     public static final String CONFKEY_TAOBAO_BCDS_SECRET			  = "fbapi.taobao.bcds.secret";
     public static final String CONFKEY_SMS_DHST_PASSWORD			  = "fbapi.sms.dhst.password";
-    public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS	  = "taobao.tbk.item.get.fields";
+    public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS	  = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick";
     public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
+    public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "sellerInfo,priceInfo";
+    public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION	  = "http://img02.taobaocdn.com/bao/uploaded/";
     public static final String CACHEKEY_ORDERNO_LOCK				  = "ala_order_lock";
     public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
     public static final String CONFIG_KEY_LOCK_TRY_TIMES              = "fbapi.sync.lock.try.times";

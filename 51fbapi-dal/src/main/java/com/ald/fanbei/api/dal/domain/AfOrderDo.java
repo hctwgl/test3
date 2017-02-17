@@ -29,7 +29,6 @@ public class AfOrderDo extends AbstractSerial{
 	private String openId;
 	private String goodsName;
 	private String goodsIcon;
-	private String goodsUrl;
 	private Integer count;
 	private BigDecimal priceAmount;
 	private BigDecimal saleAmount;
@@ -118,12 +117,6 @@ public class AfOrderDo extends AbstractSerial{
 	}
 	public void setGoodsIcon(String goodsIcon) {
 		this.goodsIcon = goodsIcon;
-	}
-	public String getGoodsUrl() {
-		return goodsUrl;
-	}
-	public void setGoodsUrl(String goodsUrl) {
-		this.goodsUrl = goodsUrl;
 	}
 	public Integer getCount() {
 		return count;

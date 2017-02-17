@@ -119,6 +119,9 @@
 				
 				<!-- 订单Order -->
 				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />
+				<entry key="/order/getOrderDetailInfo" value-ref="getOrderDetailInfoApi" />
+				<entry key="/order/getOrderList" value-ref="getOrderListApi" />
+				<entry key="/order/getOrderNoWithUser" value-ref="getOrderNoWithUserApi" />
 				
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" /> 

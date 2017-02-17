@@ -27,7 +27,7 @@ public class SqlmapDomainTest {
     String url = "jdbc:mysql://51fanbeitest.db.com:3306/51fanbei_app" ;    
     String username = "root" ;   
     String password = "Hello1234" ;   
-    private static String tableName = "af_order";
+    private static String tableName = "af_goods";
 	Connection con = null;
 	
 	public static void main(String[] args) throws Exception {

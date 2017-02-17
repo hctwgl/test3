@@ -2,7 +2,9 @@ package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 
 
@@ -58,4 +60,27 @@ public interface AfOrderService {
 	 * @return
 	 */
 	String getCurrentLastOrderNo(Date currentDate,String orderType);
+	
+	/**
+	 * 获取订单详情
+	 * @param id
+	 * @return
+	 */
+	AfOrderDo getOrderInfoById(Long id,Long userId);
+	
+	/**
+	 * 获取订单列表
+	 * @param pageNo
+	 * @param status
+	 * @return
+	 */
+	List<AfOrderDo> getOrderListByStatus(Integer pageNo,String status,Long userId);
+	
+	/**
+	 * 同步用户订单关系
+	 * @param userId
+	 * @param orderNo
+	 * @return
+	 */
+	int syncOrderNoWithUser(Long userId,String orderNo);
 }
