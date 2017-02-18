@@ -20,8 +20,10 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderSatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
@@ -131,13 +133,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public int createMobileChargeOrder(final Long userId, final AfUserCouponDto couponDto,
 			final BigDecimal money, final String mobile,final BigDecimal rebateAmount) {
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
-		String msg = kaixinUtil.charge(orderNo, mobile, money.setScale(0).toString());
-		JSONObject returnMsg = JSON.parseObject(msg);
-		JSONObject result = JSON.parseObject(returnMsg.getString("result"));
-		if(!result.getString("ret_code").equals(MobileStatus.SUCCESS.getCode())){
-			//TODO  发送短信
-			System.out.println(result.getString("ret_msg"));
+		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
+			String msg = kaixinUtil.charge(orderNo, mobile, money.setScale(0).toString());
+			JSONObject returnMsg = JSON.parseObject(msg);
+			JSONObject result = JSON.parseObject(returnMsg.getString("result"));
+			if(!result.getString("ret_code").equals(MobileStatus.SUCCESS.getCode())){
+				//TODO  发送短信
+				System.out.println(result.getString("ret_msg"));
+			}
 		}
+		
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {

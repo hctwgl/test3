@@ -66,6 +66,7 @@ public class Constants {
     public static final String RES_APP_CALL_CENTER_MESSAGE_ONLINE     = "ONLINE";
     public static final String RES_APP_CALL_CENTER_MESSAGE_TEL    	  = "TEL";
     public static final String RES_APP_CALL_CENTER_MESSAGE_QQGROUP    = "QQGROUP";
+    public static final String RES_THIRD_GOODS_REBATE_RATE			  = "THIRD_GOODS_REBATE_RATE";
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
