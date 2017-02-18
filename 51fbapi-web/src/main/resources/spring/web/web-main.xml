@@ -113,6 +113,7 @@
 				<entry key="/user/getPayPwdVerifyCode" value-ref="getPayPwdVerifyCodeApi" />
 				<entry key="/user/checkPayPwdVerifyCode" value-ref="checkPayPwdVerifyCodeApi" />
 				<entry key="/user/checkIdNumber" value-ref="checkIdNumberApi" />
+				<entry key="/user/checkPayPwd" value-ref="checkPayPwdApi" />
 				
 				
 				<entry key="/user/signin" value-ref="signinApi" />

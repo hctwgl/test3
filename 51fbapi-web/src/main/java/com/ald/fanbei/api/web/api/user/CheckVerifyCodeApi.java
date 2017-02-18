@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
