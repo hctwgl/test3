@@ -28,6 +28,13 @@ public interface AfUserAccountService {
 	int addUserAccount(AfUserAccountDo accountDo);
 	
 	/**
+	 * 修改账户信息
+	 * @param accountDo
+	 * @return
+	 */
+	int updateUserAccount(AfUserAccountDo afUserAccountDo);
+	
+	/**
 	 * 获取用户账号关联信息
 	 * @param userId
 	 * @return

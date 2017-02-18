@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfCouponSceneDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,creator,modifier,name,type,status,description,rule_json,gmt_start,gmt_end,quota,quota_already
+	</sql>
+	
+	<select id="getCouponSceneByType" resultType="AfCouponSceneDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_coupon_scene WHERE is_delete = 0 AND status = 'O' AND type=#{type} LIMIT 1;
+    </select>
+
+</mapper>

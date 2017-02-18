@@ -37,54 +37,54 @@
 			)
 	</insert>
 	
-	<update id="updateUserAccount" parameterType="AfUserAccountDo">
-		UPDATE
-			af_user_account
-		SET
-			is_delete = 0
-		<if test="userId != null">
-			, userId = #{userId}
-		</if>
-		<if test="userName != null">
-			, user_name = #{userName}
-		</if>
-		<if test="auAmount != null">
-			, au_amount = #{auAmount}
-		</if>
-		<if test="remainingAmount != null">
-			, remaining_amount = #{remainingAmount}
-		</if>
-		<if test="usedAmount != null">
-			, used_amount = #{usedAmount}
-		</if>
-		<if test="freezeAmount != null">
-			, freeze_amount = #{freezeAmount}
-		</if>
-		<if test="score != null">
-			, score = #{score}
-		</if>
-		<if test="alipayAccount != null">
-			, alipay_account = #{alipay_account}
-		</if>
-		<if test="commission != null">
-			, commission = #{commission}
-		</if>
-		<if test="idNumber != null">
-			, id_number = #{idNumber}
-		</if>
-		<if test="rebateAmount != null">
-			, rebate_amount = #{rebateAmount}
-		</if>
-		<if test="ccAmount != null">
-			, cc_amount = #{ccAmount}
-		</if>
-		<if test="ucAmount != null">
-			, uc_amount = #{ucAmount}
-		</if>
-		WHERE
-			is_delete = 0
-		AND
-			id = #{rid}
+	<update id="updateUserAccount" parameterType="AfUserAccountDo" >
+		UPDATE af_user_account SET gmt_modified = NOW()
+			<if test="userName != null">
+    			,user_name=#{userName}
+			</if>
+			<if test="auAmount != null">
+    			,au_amount=au_amount + #{auAmount}
+			</if>
+			<if test="usedAmount != null">
+    			,used_amount=used_amount + #{usedAmount}
+			</if>
+			<if test="freezeAmount != null">
+    			,freeze_amount=freeze_amount + #{freezeAmount}
+			</if>
+			<if test="score != null">
+    			,score=#{score}
+			</if>
+			<if test="alipayAccount != null">
+    			,alipay_account=#{alipayAccount}
+			</if>
+			<if test="rebateAmount != null">
+    			,rebate_amount=rebate_amount + #{rebateAmount}
+			</if>
+			<if test="idNumber != null">
+    			,id_number=#{idNumber}
+			</if>
+			<if test="realName != null">
+    			,real_name=#{realName}
+			</if>
+			<if test="jfbAmount != null">
+    			,jfb_amount=jfb_amount + #{jfbAmount}
+			</if>
+			<if test="password != null">
+    			,password=#{password}
+			</if>
+			<if test="salt != null">
+    			,salt=#{salt}
+			</if>
+			<if test="failCount != null">
+    			,fail_count=#{failCount}
+			</if>
+			<if test="ucAmount != null">
+    			,uc_amount=uc_amount + #{ucAmount}
+			</if>
+			<if test="bindCard != null">
+    			,bind_card=#{bindCard}
+			</if>
+		WHERE user_id = #{userId}
 	</update>
 
 	<select id="getUserAndAccountByUserId" parameterType="java.lang.Long" resultType="AfUserAccountDto">

@@ -6,11 +6,11 @@ import com.ald.fanbei.api.common.AbstractSerial;
 
 /**
  * 
- * @类描述：
+ * @类描述：用户获取优惠券场景对象
  * @author xiaotianjian 2017年2月7日下午1:41:19
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class AfActivityDo extends AbstractSerial{
+public class AfCouponSceneDo extends AbstractSerial{
 	
 	private static final long serialVersionUID = 8443117928246080930L;
 	
