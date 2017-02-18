@@ -23,4 +23,11 @@ public interface AfUserAuthService {
 	 * @return
 	 */
 	int updateUserAuth(AfUserAuthDo afUserAuthDo);
+	
+	/**
+	 * 获取用户认证信息
+	 * @param userId
+	 * @return
+	 */
+	AfUserAuthDo getUserAuthInfoByUserId(Long userId);
 }

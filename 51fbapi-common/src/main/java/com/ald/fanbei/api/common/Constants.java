@@ -50,6 +50,7 @@ public class Constants {
     
     public static final double DEFAULT_CHARGE_MIN 					  = 1;
     public static final double DEFAULT_CHARGE_MAX 					  = 50;
+    public static final int DEFAULT_CASH_DEVIDE					  	  = 2;
     
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
@@ -67,6 +68,7 @@ public class Constants {
     public static final String RES_APP_CALL_CENTER_MESSAGE_TEL    	  = "TEL";
     public static final String RES_APP_CALL_CENTER_MESSAGE_QQGROUP    = "QQGROUP";
     public static final String RES_THIRD_GOODS_REBATE_RATE			  = "THIRD_GOODS_REBATE_RATE";
+    public static final String RES_BORROW_CASH_RATE_DESC			  = "BORROW_CASH_RATE_DESC";
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
@@ -84,9 +86,9 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_BCDS_APPID			  = "fbapi.taobao.bcds.appid";
     public static final String CONFKEY_TAOBAO_BCDS_SECRET			  = "fbapi.taobao.bcds.secret";
     public static final String CONFKEY_SMS_DHST_PASSWORD			  = "fbapi.sms.dhst.password";
-    public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS	  = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick";
+    public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS	  = "taobao.tbk.item.get.fields";
     public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
-    public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "sellerInfo,priceInfo";
+    public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "taobao.tae.item.detail.get.fields";
     public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION	  = "http://img02.taobaocdn.com/bao/uploaded/";
     public static final String CACHEKEY_ORDERNO_LOCK				  = "ala_order_lock";
     public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
@@ -94,5 +96,6 @@ public class Constants {
     public static final String CONFKEY_KXG_PASSWORD					  = "fbapi.kxg.password";
     public static final String CONFKEY_KXG_PAY_PASSWORD				  = "fbapi.kxg.pay.password";
     public static final String CONFKEY_KXG_KEY				  		  = "fbapi.kxg.key";
-    
+    public static final String CONFKEY_BILL_CREATE_TIME 			  = "fbapi.bill.create.time";
+    public static final String CONFKEY_BILL_REPAY_TIME				  = "fbapi.bill.repay.time";
 }

@@ -31,7 +31,7 @@ public class AfUserAccountDo extends AbstractSerial {
 	private BigDecimal ucAmount;//已取现额度
 	private Integer failCount; //密码连续错误次数
 	private String bindCard;//是否绑卡：Y：绑卡：N：未绑卡
-
+	private BigDecimal repaymentAmount;//本期待还款金额
 	
 	
 	
@@ -169,6 +169,12 @@ public class AfUserAccountDo extends AbstractSerial {
 	}
 	public void setRealName(String realName) {
 		this.realName = realName;
+	}
+	public BigDecimal getRepaymentAmount() {
+		return repaymentAmount;
+	}
+	public void setRepaymentAmount(BigDecimal repaymentAmount) {
+		this.repaymentAmount = repaymentAmount;
 	}
 
 }

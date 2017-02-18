@@ -23,4 +23,10 @@ public interface AfUserAuthDao {
 	 */
 	int updateUserAuth(AfUserAuthDo afUserAuthDo);
 	
+	/**
+	 * 获取用户认证信息
+	 * @param userId
+	 * @return
+	 */
+	public AfUserAuthDo getUserAuthInfoByUserId(Long userId);
 }

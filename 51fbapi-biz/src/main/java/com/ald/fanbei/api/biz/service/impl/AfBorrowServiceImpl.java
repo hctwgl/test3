@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -105,4 +106,16 @@ public class AfBorrowServiceImpl implements AfBorrowService{
 		}
 		return list;
 	}
+
+	@Override
+	public Date getReyLimitDate(Date now){
+    	Date startDate = DateUtil.addDays(DateUtil.getFirstOfMonth(now), 
+				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10)-1);
+		Date limitTime = DateUtil.getEndOfDate(DateUtil.addDays(DateUtil.getFirstOfMonth(now), 
+				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_REPAY_TIME), 20)-1));
+		if(startDate.after(now)){
+			limitTime = DateUtil.addMonths(limitTime, -1);
+		}
+		return limitTime;
+    }
 }

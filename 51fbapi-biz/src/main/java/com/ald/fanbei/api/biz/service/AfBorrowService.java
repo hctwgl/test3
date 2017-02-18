@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Date;
+
 /**
  * 
  * @类描述：
@@ -14,4 +16,6 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	int dealWithTransferSuccess(Long borrowId);
+	
+	Date getReyLimitDate(Date now);
 }

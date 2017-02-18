@@ -142,6 +142,10 @@
 				<entry key="/auth/authCredit" value-ref="authCreditApi" /> 
 				<entry key="/auth/authZhima" value-ref="authZhimaApi" /> 
 				
+				<!-- borrow -->
+				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" /> 
+				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" /> 
+				
 				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
 				 -->
 				

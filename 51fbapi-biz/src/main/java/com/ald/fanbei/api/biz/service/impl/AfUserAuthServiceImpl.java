@@ -30,4 +30,9 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		return afUserAuthDao.updateUserAuth(afUserAuthDo);
 	}
 
+	@Override
+	public AfUserAuthDo getUserAuthInfoByUserId(Long userId) {
+		return afUserAuthDao.getUserAuthInfoByUserId(userId);
+	}
+
 }

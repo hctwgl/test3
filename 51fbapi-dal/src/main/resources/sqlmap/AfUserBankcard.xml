@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,user_id,mobile,bankcode,card_number,is_main
+	</sql>
+	
+	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 AND user_id = #{userId} AND is_main = 'Y' limit 1
+	</select>
+	
+</mapper>

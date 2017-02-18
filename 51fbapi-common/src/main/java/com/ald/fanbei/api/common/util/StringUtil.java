@@ -107,5 +107,12 @@ public class StringUtil extends StringUtils{
     	return StringUtils.isNotEmpty(str) ? str : StringUtils.EMPTY;
     }
     
-    
+    public static String getLastString(String str,int num){
+    	int len = str.length();
+    	if(len<=num){
+    		return str;
+    	}else{
+    		return str.substring(len-num);
+    	}
+    }
 }
