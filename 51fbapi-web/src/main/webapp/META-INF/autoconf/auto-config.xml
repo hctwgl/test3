@@ -28,9 +28,15 @@
 		<property name="fbapi.zhima.public.key" defaultValue="xApjX+tDbdHJF2EwP+PkLu7YQzJy6wpPxG6vACfgrQZqWp3D/TG79Mv68jl2/BenfZ3fh9KtvGZzpVKjDjhmTgI9CY/Dk4GtQtmeejnuDn385gntoDgBf8dDBtIvxBZwI2wjQlie0MrsRN2MkCq0KF7u/EmeZ+EBzyEuQvRjapoWs38PX6TGoNC9w7QdEOAy24ldE9piw4Vo5b2m2QkILQqPmcBwztpvVhIIIfPPDL+mu7k7O54jzVflVrSXoBprr3hBymKdY+OVMEGY5CxEw0gEkz2fjduFlySQ8kZemcY=" description="zhima 公钥" />
 		
 		<!-- tongdun -->
+		<property name="fbapi.tongdun.partner.host" defaultValue="https://api.tongdun.cn" description="铜盾商户接口host" />
 		<property name="fbapi.tongdun.partner.code" defaultValue="ktRtt1OM1sQ8bvM5E0Q6Gw==" description="铜盾商户code" />
 		<property name="fbapi.tongdun.partner.key" defaultValue="30ohw4+pyRhim1YJthNzzvLKAsRkWviuLyI/5ZjKs3TQroYLtEIaqFC8Jmft4E4B" description="铜盾商户key" />
 		<property name="fbapi.tongdun.app.name" defaultValue="alading_web" description="铜盾appname" />
+
+		<!-- youdun -->
+		<property name="fbapi.youdun.host" defaultValue="https://api4.udcredit.com" description="有盾接口host" />
+		<property name="fbapi.youdun.pubkey" defaultValue="sYJMMVhOQLa3KeM69BcNDALpS7Fo+barJ3IFIwuG/pg=" description="有盾pubkey" />
+		<property name="fbapi.youdun.securitykey" defaultValue="sYJMMVhOQLa3KeM69BcNDALpS7Fo+barJ3IFIwuG/pg=" description="有盾secretykey" />
 		
 		<!-- 阿里百川 -->
 		<property name="fbapi.taobao.bcds.url" defaultValue="fmWxZsP7A1fishuunHGrhkUgikLQNVFoclPF+UHiju7NRtiU+RzKs5iec6JwzkhZ" description="阿里百川电商url" />
