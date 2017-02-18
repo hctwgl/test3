@@ -40,7 +40,7 @@ public class CommitFeedbackApi implements ApiHandle {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		Map<String, Object> params = requestDataVo.getParams();
-		String description = ObjectUtils.toString(params.get("description"), "").toString();
+		String description = ObjectUtils.toString(params.get("content"), "").toString();
 		AfFeedBackDo feedBackDo = new AfFeedBackDo();
 		feedBackDo.setUserId(userId);
 		feedBackDo.setDescription(description);

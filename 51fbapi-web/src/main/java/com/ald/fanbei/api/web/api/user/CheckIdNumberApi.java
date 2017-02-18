@@ -46,13 +46,13 @@ public class CheckIdNumberApi implements ApiHandle {
 			throw new FanbeiException("account id is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 
 		}
-		if (StringUtils.equals(idNumber, afUserAccountDo.getIdNumber())) {
-			return resp;
+		if (!StringUtils.equals(idNumber, afUserAccountDo.getIdNumber())) {
+			throw new FanbeiException("idNumber id is invalid", FanbeiExceptionCode.USER_ACCOUNT_IDNUMBER_INVALID_ERROR);
 
 		}
-		throw new FanbeiException("idNumber id is invalid", FanbeiExceptionCode.USER_ACCOUNT_IDNUMBER_INVALID_ERROR);
 
-		
+		return resp;
+
 	}
 
 }
