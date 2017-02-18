@@ -11,18 +11,22 @@ import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
+import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfCouponSceneDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 
 
@@ -45,6 +49,8 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 	private AfUserDao afUserDao;
 	@Resource
 	private AfUserCouponDao afUserCouponDao;
+	@Resource
+	private AfUserAccountLogDao afUserAccountLogDao;
 	@Resource
 	private AfUserAccountDao afUserAccountDao;
 	@Resource
@@ -142,14 +148,21 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 		userCoupon.setUserId(userId);
 		afUserCouponDao.addUserCoupon(userCoupon);
 
-		// TODO 如果是现金，需要在账户或者金额上增加额度
-		switch (ruleType) {
-		case AUTHNAME:// 用户账号金额增加
+		switch (CouponType.getByCode(couponDo.getType())) {
+		case REBATE:
+			// 用户账号金额增加
 			AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
 			afUserAccountDo.setUserId(userId);// 邀请人
 			afUserAccountDo.setRebateAmount(couponDo.getAmount());
 			afUserAccountDao.updateUserAccount(afUserAccountDo);
-			//TODO 增加account变更日志
+			
+			//增加account变更日志
+			AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+			accountLog.setAmount(couponDo.getAmount());
+			accountLog.setUserId(userId);
+			accountLog.setRefId(sourceRef == null?"":sourceRef);
+			accountLog.setType(AccountLogType.REBATE.getCode());
+			afUserAccountLogDao.addUserAccountLog(accountLog);
 			
 			break;
 		default:
