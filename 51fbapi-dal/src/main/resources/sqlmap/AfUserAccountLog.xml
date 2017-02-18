@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAccountLogDao">
+	<sql id="queryAllFields">
+		id,gmt_create,user_id,type,amount,ref_id
+	</sql>
+
+	<insert id="addUserAccountLog" parameterType="AfUserAccountLogDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_user_account_log(gmt_create , user_id , type , amount , ref_id)
+		VALUES (
+    		NOW(),
+    		#{userId},
+    		#{type},
+    		#{amount},
+    		#{refId}
+		)
+	</insert>
+
+</mapper>

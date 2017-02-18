@@ -9,25 +9,25 @@ import java.util.Map;
  * @author xiaotianjian 2017年2月7日下午2:34:01
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum ActivityRuleType {
+public enum CouponType {
 
-    REGIST("REGIST", "注册"),
-    SIGNIN("SIGNIN", "签到"),
-
-    INVITE("INVITE", "邀请");
+	COMMON("COMMON", "通用"),
+	MOBILE("MOBILE", "手机充值"),
+	REPAYMENT("REPAYMENT", "还款"),
+	REBATE("REBATE", "返现(签到、注册)");
 
     private String code;
     private String name;
     
-    private static Map<String,ActivityRuleType> codeRoleTypeMap = null;
+    private static Map<String,CouponType> codeRoleTypeMap = null;
 
-    ActivityRuleType(String code, String name) {
+    CouponType(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static ActivityRuleType findRoleTypeByCode(String code) {
-        for (ActivityRuleType roleType : ActivityRuleType.values()) {
+    public static CouponType findRoleTypeByCode(String code) {
+        for (CouponType roleType : CouponType.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
@@ -36,15 +36,19 @@ public enum ActivityRuleType {
     }
 
     
-    public static Map<String,ActivityRuleType> getCodeRoleTypeMap(){
+    public static Map<String,CouponType> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
             return codeRoleTypeMap;
         }
-        codeRoleTypeMap = new HashMap<String, ActivityRuleType>();
-        for(ActivityRuleType item:ActivityRuleType.values()){
+        codeRoleTypeMap = new HashMap<String, CouponType>();
+        for(CouponType item:CouponType.values()){
             codeRoleTypeMap.put(item.getCode(), item);
         }
         return codeRoleTypeMap;
+    }
+    
+    public static CouponType getByCode(String code){
+    	return getCodeRoleTypeMap().get(code);
     }
 
 

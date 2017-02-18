@@ -28,6 +28,8 @@ public class AfCouponDo extends AbstractSerial {
 	private Date gmtEnd;//有效期结束时间
 	private Integer validDays;//有效天数，与有效开始/结束时间互斥，要么设置有效开始时间有效结束时间，要么设置有效期  【  -1:表示永久有效;  0：表示设置了有效期;  >0:表示有效期（天数）】
 	private Integer limitCount;
+	private String status;
+	private String type;
 	
 	/**
 	 * @return the rid
@@ -174,6 +176,18 @@ public class AfCouponDo extends AbstractSerial {
 	 */
 	public void setValidDays(Integer validDays) {
 		this.validDays = validDays;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

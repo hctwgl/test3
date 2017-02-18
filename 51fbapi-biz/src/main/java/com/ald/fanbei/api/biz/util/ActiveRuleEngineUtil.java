@@ -1,15 +1,9 @@
 package com.ald.fanbei.api.biz.util;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Resource;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.service.ActiveRuleEnginer;
-import com.ald.fanbei.api.common.enums.Source;
 
 /**
  * 
@@ -19,10 +13,6 @@ import com.ald.fanbei.api.common.enums.Source;
  */
 @Component("activeRuleEngineUtil")
 public class ActiveRuleEngineUtil {
-	@Resource
-	ActiveRuleEnginer registRuleEngine;
-	@Resource
-	ActiveRuleEnginer afSigninRuleEngine;
 	/**
 	 * 注册时执行规则
 	 * 
@@ -30,14 +20,14 @@ public class ActiveRuleEngineUtil {
 	 *@param invitor 邀请人userId
 	 */
 	@Async
-	public void regist(Long userId,Source source){
-		Map<String,Object> inputData = new HashMap<String,Object>();
-		inputData.put("userId", userId);
-		registRuleEngine.executeRule(inputData,source);
+	public void regist(Long userId){
+//		Map<String,Object> inputData = new HashMap<String,Object>();
+//		inputData.put("userId", userId);
+//		registRuleEngine.executeRule(inputData,source);
 	}
 	@Async
-	public void signin(Map<String,Object> inputData,Source source){
-		afSigninRuleEngine.executeRule(inputData,source);
+	public void signin(Map<String,Object> inputData){
+//		afSigninRuleEngine.executeRule(inputData,source);
 	}
 	
 }

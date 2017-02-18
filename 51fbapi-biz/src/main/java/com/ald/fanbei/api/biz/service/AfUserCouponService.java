@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
@@ -42,6 +43,7 @@ public interface AfUserCouponService {
 	 */
 	int addUserCoupon(AfUserCouponDo afUserCouponDo);
 	
+	BigDecimal getUserCouponByInvite(Long userId);
 	/**
 	 * 获取可用优惠券
 	 * @return

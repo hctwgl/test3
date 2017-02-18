@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfCouponDao">
 	<sql id="queryAllFields">
-		id rid,gmt_create,gmt_modified,name,limit_amount,amount,use_rule,total_count,gmt_start,gmt_end,valid_days,limit_count
+		id rid,gmt_create,gmt_modified,name,status,limit_amount,amount,use_rule,valid_days,type
 	</sql>
 	
 	<select id="selectCouponByCouponIds" resultType="AfCouponDo">

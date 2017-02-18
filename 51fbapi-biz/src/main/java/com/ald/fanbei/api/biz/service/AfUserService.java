@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
  *@类描述：
@@ -42,4 +45,6 @@ public interface AfUserService {
 	 * @return
 	 */
 	int updateUser(AfUserDo afUserDo);
+	
+	List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId);
 }

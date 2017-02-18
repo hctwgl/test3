@@ -24,6 +24,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service.impl" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.rule.service.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.common" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
 	
@@ -107,6 +108,11 @@
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
 				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
 				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
+				<entry key="/user/getInvitationInfo" value-ref="getInvitationInfoApi" />
+				<entry key="/user/setPayPwd" value-ref="setPayPwdApi" />
+				<entry key="/user/getPayPwdVerifyCode" value-ref="getPayPwdVerifyCodeApi" />
+				<entry key="/user/checkPayPwdVerifyCode" value-ref="checkPayPwdVerifyCodeApi" />
+				<entry key="/user/checkIdNumber" value-ref="checkIdNumberApi" />
 				
 				
 				<entry key="/user/signin" value-ref="signinApi" />
@@ -134,6 +140,8 @@
 				<entry key="/auth/authRealname" value-ref="authRealnameApi" />
 				<entry key="/auth/authContacts" value-ref="authContactsApi" />
 				<entry key="/auth/authCredit" value-ref="authCreditApi" /> 
+				<entry key="/auth/authZhima" value-ref="authZhimaApi" /> 
+				
 				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
 				 -->
 				

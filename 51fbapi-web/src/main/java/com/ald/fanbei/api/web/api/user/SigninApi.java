@@ -16,7 +16,6 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSigninService;
 import com.ald.fanbei.api.biz.util.ActiveRuleEngineUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.Source;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -88,7 +87,7 @@ public class SigninApi implements ApiHandle {
 			inputData.put("userId", userId);
 			inputData.put("seriesCount", seriesCount.toString());
 			if (afSigninService.changeSignin(afSigninDo) > 0) {
-				activeRuleEngineUtil.signin(inputData, Source.APP);
+				activeRuleEngineUtil.signin(inputData);
 				return resp;
 
 			}

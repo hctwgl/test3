@@ -3,36 +3,32 @@ package com.ald.fanbei.api.common.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * 
  * @类描述：
- * @author Xiaotianjian 2017年1月19日下午4:48:07
+ * @author xiaotianjian 2017年2月7日下午2:34:01
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum SmsType {
+public enum CouponSenceRuleType {
 
-    REGIST("R", "注册短信"), 
-    FORGET_PASS("F", "忘记密码验证短信"),
-    MOBILE_BIND("M", "手机绑定"),
-    SET_PAY_PWD("P", "设置支付"),
-
-    COMMON("C","通用");
+    REGIST("REGIST", "注册"),
+    SIGNIN("SIGNIN", "签到"),
+    AUTHNAME("AUTHNAME", "实名认证"),
+    INVITE("INVITE", "邀请");
 
     private String code;
-
     private String name;
     
-    private static Map<String,SmsType> codeRoleTypeMap = null;
+    private static Map<String,CouponSenceRuleType> codeRoleTypeMap = null;
 
-    SmsType(String code, String name) {
+    CouponSenceRuleType(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static SmsType findRoleTypeByCode(String code) {
-        for (SmsType roleType : SmsType.values()) {
-            if (roleType.getCode().equalsIgnoreCase(code)) {
+    public static CouponSenceRuleType findRoleTypeByCode(String code) {
+        for (CouponSenceRuleType roleType : CouponSenceRuleType.values()) {
+            if (roleType.getCode().equals(code)) {
                 return roleType;
             }
         }
@@ -40,16 +36,21 @@ public enum SmsType {
     }
 
     
-    public static Map<String,SmsType> getCodeRoleTypeMap(){
+    public static Map<String,CouponSenceRuleType> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
             return codeRoleTypeMap;
         }
-        codeRoleTypeMap = new HashMap<String, SmsType>();
-        for(SmsType item:SmsType.values()){
+        codeRoleTypeMap = new HashMap<String, CouponSenceRuleType>();
+        for(CouponSenceRuleType item:CouponSenceRuleType.values()){
             codeRoleTypeMap.put(item.getCode(), item);
         }
         return codeRoleTypeMap;
     }
+
+
+	public String getName() {
+		return name;
+	}
 
 	public String getCode() {
 		return code;
@@ -59,14 +60,9 @@ public enum SmsType {
 		this.code = code;
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
 
 
 }

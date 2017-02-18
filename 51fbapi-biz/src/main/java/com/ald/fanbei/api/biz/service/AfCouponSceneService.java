@@ -2,8 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
-import com.ald.fanbei.api.biz.bo.ActivityRuleBo;
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
+import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 
 /**
  * 
@@ -11,13 +11,13 @@ import com.ald.fanbei.api.dal.domain.AfActivityDo;
  * @author xiaotianjian 2017年2月7日下午2:37:56
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public interface AfActivityService {
+public interface AfCouponSceneService {
 	/**
 	 * 根据活动类型获取活动
 	 *@param type
 	 *@return
 	 */
-	AfActivityDo getActivityByType(String type);
+	AfCouponSceneDo getCouponSceneByType(String type);
 	
 	
 	/**
@@ -25,5 +25,5 @@ public interface AfActivityService {
 	 *@param type
 	 *@return
 	 */
-	List<ActivityRuleBo> getRules(String type, String key);
+	List<CouponSceneRuleBo> getRules(String type, String key);
 }
