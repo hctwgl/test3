@@ -1,8 +1,6 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -51,10 +49,12 @@ public class TestController {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
 
-		Map<String,Object> inputData = new HashMap<String, Object>();
-		inputData.put("userId", 11l);
-		inputData.put("seriesCount", 5);
-		signinRuleEngine.executeRule(inputData);
+//		Map<String,Object> inputData = new HashMap<String, Object>();
+//		inputData.put("userId", 11l);
+//		inputData.put("seriesCount", 5);
+//		signinRuleEngine.executeRule(inputData);
+		
+		
 		
 		// String reportId = TongdunUtil.applyPreloan("362525198601022112",
 		// "陈金虎", "15958119936", "410228573@qq.com");

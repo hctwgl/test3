@@ -77,9 +77,13 @@ public class Constants {
     public static final String CONFKEY_ZHIMA_APPID                    = "fbapi.zhima.appid";
     public static final String CONFKEY_ZHIMA_PUBKEY                   = "fbapi.zhima.public.key";
     public static final String CONFKEY_ZHIMA_PRIKEY                   = "fbapi.zhima.private.key";
+    public static final String CONFKEY_TONGDUN_PARTNER_HOST           = "fbapi.tongdun.partner.host";
     public static final String CONFKEY_TONGDUN_PARTNER_CODE           = "fbapi.tongdun.partner.code";
     public static final String CONFKEY_TONGDUN_PARTNER_KEY            = "fbapi.tongdun.partner.key";
     public static final String CONFKEY_TONGDUN_APP_NAME               = "fbapi.tongdun.app.name";
+    public static final String CONFKEY_YOUDUN_HOST       		      = "fbapi.youdun.host";
+    public static final String CONFKEY_YOUDUN_PUBKEY                  = "fbapi.youdun.pubkey";
+    public static final String CONFKEY_YOUDUN_SECURITYKEY             = "fbapi.youdun.securitykey";
     public static final String CONFKEY_TAOBAO_BCDS_URL			      = "fbapi.taobao.bcds.url";
     public static final String CONFKEY_TAOBAO_BCDS_APPID			  = "fbapi.taobao.bcds.appid";
     public static final String CONFKEY_TAOBAO_BCDS_SECRET			  = "fbapi.taobao.bcds.secret";
