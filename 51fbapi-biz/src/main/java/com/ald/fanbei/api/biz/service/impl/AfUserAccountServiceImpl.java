@@ -46,6 +46,11 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	public int addUserAccount(AfUserAccountDo accountDo) {
 		return afUserAccountDao.addUserAccount(accountDo);
 	}
+	
+	@Override
+	public int updateUserAccount(AfUserAccountDo afUserAccountDo) {
+		return afUserAccountDao.updateUserAccount(afUserAccountDo);
+	}
 
 	@Override
 	public AfUserAccountDto getUserAndAccountByUserId(Long userId) {
@@ -61,6 +66,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 				try {
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUserId(userDto.getUserId());
 //					account.setCcAmount(userDto.getCcAmount().subtract(money));//可取现金额=可取现金额-申请取现金额
 					account.setUcAmount(userDto.getUcAmount().add(money));//已取现金额=已取现金额+申请取现金额
 					account.setUsedAmount(userDto.getUsedAmount().add(money));//授信已使用金额=授信已使用金额+申请取现金额

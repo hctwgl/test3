@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 
@@ -23,6 +26,8 @@ public class TestController {
 	
 	@Resource
 	AfOrderService afOrderService;
+	@Resource
+	CouponSceneRuleEnginer authRealnameRuleEngine;
 
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
@@ -44,6 +49,11 @@ public class TestController {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
 
+		Map<String,Object> inputData = new HashMap<String, Object>();
+		inputData.put("userId", 11l);
+		inputData.put("inviterId", 13l);
+		authRealnameRuleEngine.executeRule(inputData);
+		
 		// String reportId = TongdunUtil.applyPreloan("362525198601022112",
 		// "陈金虎", "15958119936", "410228573@qq.com");
 		// ER2017012122013411346564

@@ -5,7 +5,6 @@ import javax.annotation.Resource;
 import org.junit.Test;
 
 import com.ald.fanbei.api.biz.util.ActiveRuleEngineUtil;
-import com.ald.fanbei.api.common.enums.Source;
 import com.ald.fanbei.web.test.common.BaseControllerTest;
 
 /**
@@ -20,7 +19,7 @@ public class ActivityRuleEngineTest extends BaseControllerTest {
 	
 	@Test
 	public void registActivityEngine() {
-		activeRuleEngineUtil.regist(8L, Source.APP);
+		activeRuleEngineUtil.regist(8L);
 	}
 	
 }

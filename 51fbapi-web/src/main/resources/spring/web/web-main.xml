@@ -24,6 +24,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service.impl" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.rule.service.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.common" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
 	
@@ -137,6 +138,8 @@
 				<entry key="/auth/authRealname" value-ref="authRealnameApi" />
 				<entry key="/auth/authContacts" value-ref="authContactsApi" />
 				<entry key="/auth/authCredit" value-ref="authCreditApi" /> 
+				<entry key="/auth/authZhima" value-ref="authZhimaApi" /> 
+				
 				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
 				 -->
 				

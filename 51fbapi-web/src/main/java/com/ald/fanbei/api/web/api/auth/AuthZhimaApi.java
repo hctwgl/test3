@@ -5,6 +5,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -20,6 +22,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@Component("authZhimaApi")
 public class AuthZhimaApi implements ApiHandle {
 	@Resource
 	AfUserAccountService afUserAccountService;
