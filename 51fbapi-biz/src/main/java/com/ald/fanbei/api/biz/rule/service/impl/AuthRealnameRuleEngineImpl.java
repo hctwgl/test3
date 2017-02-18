@@ -24,7 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 @Component("authRealnameRuleEngine")
 public class AuthRealnameRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 
-	private static final String AUTHNAME = "authname";
+	private static final String AUTHNAMEKEY = "authname";
 	
 	@Override
 	protected AfCouponSceneDo getCouponScene(Date now) {
@@ -35,15 +35,15 @@ public class AuthRealnameRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 	@Override
 	protected Map<String, List<CouponSceneRuleBo>> getRules(Date now, AfCouponSceneDo couponScene) {
 		JSONObject jsonStr = JSONObject.parseObject(couponScene.getRuleJson());
-		List<CouponSceneRuleBo> registRuleList = JSONObject.parseArray(jsonStr.getString(AUTHNAME), CouponSceneRuleBo.class);
+		List<CouponSceneRuleBo> registRuleList = JSONObject.parseArray(jsonStr.getString(AUTHNAMEKEY), CouponSceneRuleBo.class);
 		Map<String,List<CouponSceneRuleBo>> ruleMap = new HashMap<String, List<CouponSceneRuleBo>>();
-		ruleMap.put(AUTHNAME, registRuleList);
+		ruleMap.put(AUTHNAMEKEY, registRuleList);
 		return ruleMap;
 	}
 
 	@Override
 	protected Map<String, List<CouponSceneRuleBo>> matchRule(Date now, Map<String, Object> inputData, Map<String, List<CouponSceneRuleBo>> rules, AfCouponSceneDo couponScene) {
-		List<CouponSceneRuleBo> ruleList = rules.get(AUTHNAME);
+		List<CouponSceneRuleBo> ruleList = rules.get(AUTHNAMEKEY);
 		List<CouponSceneRuleBo> matchList = new ArrayList<CouponSceneRuleBo>();
 		for(CouponSceneRuleBo item:ruleList){
 			matchList.add(item);
@@ -52,7 +52,7 @@ public class AuthRealnameRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 			return null;
 		}
 		Map<String,List<CouponSceneRuleBo>> ruleMap = new HashMap<String, List<CouponSceneRuleBo>>();
-		ruleMap.put(AUTHNAME, matchList);
+		ruleMap.put(AUTHNAMEKEY, matchList);
 		return ruleMap;
 	}
 
@@ -60,7 +60,7 @@ public class AuthRealnameRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 	protected void exeRule(Map<String, Object> inputData, Map<String, List<CouponSceneRuleBo>> rules) {
 		Long userId = (Long)inputData.get("userId");
 		Long inviterId = (Long)inputData.get("inviterId");//邀请人用户id
-		List<CouponSceneRuleBo> ruleList = rules.get(AUTHNAME);
+		List<CouponSceneRuleBo> ruleList = rules.get(AUTHNAMEKEY);
 		for(CouponSceneRuleBo item:ruleList){
 			//邀请人获取优惠券
 			this.addUserCoupon(item, inviterId,CouponSenceRuleType.AUTHNAME,userId+"");

@@ -3,8 +3,6 @@ package com.ald.fanbei.api.biz.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;

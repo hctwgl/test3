@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.goods;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +15,16 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -31,14 +35,17 @@ import com.taobao.api.domain.NTbkItem;
 /**
  * 
  * @类描述：搜呗搜索商品
- * @author xiaotianjian 2017年2月9日上午9:47:36
+ * @author hexin 2017年2月18日上午11:00:39
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("searchGoodsOfSearchBayApi")
-public class SearchGoodsOfSearchBayApi implements ApiHandle {
+@Component("getThirdGoodsListApi")
+public class GetThirdGoodsListApi implements ApiHandle {
 
 	@Resource
 	TaobaoApiUtil taobaoApiUtil;
+	
+	@Resource
+	private AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -46,11 +53,17 @@ public class SearchGoodsOfSearchBayApi implements ApiHandle {
 		Map<String, Object> buildParams = checkAndbuildParam(requestDataVo);
 		try {
 			List<NTbkItem> list = taobaoApiUtil.executeTaobaokeSearch(buildParams).getResults();
+			final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
 			if (CollectionUtils.isNotEmpty(list)) {
 				List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
 					@Override
 					public AfSearchGoodsVo convert(NTbkItem source) {
-						return parseToVo(source);
+						if(null == resource){
+							return parseToVo(source,BigDecimal.ZERO,BigDecimal.ZERO);
+						}else{
+							return parseToVo(source,NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO),
+									NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO));
+						}
 					}
 				});
 				resp.addResponseData("goodsList", result);
@@ -62,25 +75,35 @@ public class SearchGoodsOfSearchBayApi implements ApiHandle {
 		return resp;
 	}
 	
-	private AfSearchGoodsVo parseToVo(NTbkItem item) {
+	private AfSearchGoodsVo parseToVo(NTbkItem item,BigDecimal minRate,BigDecimal maxRate) {
+		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(item.getZkFinalPrice(), BigDecimal.ZERO);
+		BigDecimal minRebateAmount = saleAmount.multiply(minRate).setScale(2,BigDecimal.ROUND_HALF_UP);
+		BigDecimal maxRebateAmount = saleAmount.multiply(maxRate).setScale(2,BigDecimal.ROUND_HALF_UP);
 		AfSearchGoodsVo vo = new AfSearchGoodsVo();
 		vo.setNumIid(item.getNumIid());
-		vo.setPictUrl(item.getPictUrl());
-		vo.setRebateStart("0.1");
-		vo.setReservePrice("20.00");
-		vo.setTitle(item.getTitle());
-		vo.setVolume(item.getVolume());
+		vo.setGoodsIcon(item.getPictUrl());
+		vo.setGoodsName(item.getTitle());
+		vo.setGoodsUrl(item.getItemUrl());
+		vo.setRealAmount(new StringBuffer("").append(saleAmount.subtract(maxRebateAmount)).append("~").append(saleAmount.subtract(minRebateAmount)).toString());
+		vo.setRebateAmount(new StringBuffer("").append(minRebateAmount).append("~").append(maxRebateAmount).toString());
+		vo.setSaleAmount(saleAmount);
+		List<String> icons = item.getSmallImages();
+		if(icons.size()>0){
+			vo.setThumbnailIcon(icons.get(0));
+		}else{
+			vo.setThumbnailIcon(item.getPictUrl());
+		}
 		return vo;
 	}
 	
 	private Map<String, Object> checkAndbuildParam(RequestDataVo requestDataVo) {
 		Map<String, Object> buildParams = new HashMap<String, Object>();
 		Map<String, Object> params = requestDataVo.getParams();
-		String q = ObjectUtils.toString(params.get("q"), null);
+		String q = ObjectUtils.toString(params.get("keywords"), null);
 		String sort = ObjectUtils.toString(params.get("sort"), null);
-		Long startPrice = NumberUtil.objToLongDefault(params.get("startPrice"), null);
-		Long endPrice = NumberUtil.objToLongDefault(params.get("endPrice"), null);
-		Boolean isTmall =  NumberUtil.objToBooleanDefault(params.get("isTmall"), null);
+		Long minAmount = NumberUtil.objToLongDefault(params.get("minAmount"), null);
+		Long maxAmount = NumberUtil.objToLongDefault(params.get("maxAmount"), null);
+		Boolean isTmall =  NumberUtil.objToBooleanDefault(params.get("onlyTmall"), null);
 		Long pageNo = NumberUtil.objToPageLongDefault(params.get("pageNo"), 1L);
 		
 		if (q == null) {
@@ -91,11 +114,11 @@ public class SearchGoodsOfSearchBayApi implements ApiHandle {
 		if (sort != null) {
 			buildParams.put("sort", sort);
 		}
-		if (startPrice != null) {
-			buildParams.put("startPrice", startPrice);
+		if (minAmount != null) {
+			buildParams.put("startPrice", minAmount);
 		}
-		if (endPrice != null) {
-			buildParams.put("endPrice", endPrice);
+		if (maxAmount != null) {
+			buildParams.put("endPrice", maxAmount);
 		}
 		if (isTmall != null) {
 			buildParams.put("isTmall", isTmall);
@@ -103,6 +126,5 @@ public class SearchGoodsOfSearchBayApi implements ApiHandle {
 		return buildParams;
 		
 	}
-
 
 }

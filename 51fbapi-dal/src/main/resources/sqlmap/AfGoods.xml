@@ -3,7 +3,8 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfGoodsDao">
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,creator,modifier,name,goods_icon,thumbnail_icon,goods_url,open_id,num_id,price_amount,
-		sale_amount,category_id,sale_count,gmt_start,gmt_end,status,source,rebate_amount,rebate_rate,shop_id,shop_name
+		sale_amount,category_id,sale_count,gmt_start,gmt_end,status,source,rebate_amount,rebate_rate,shop_id,shop_name,
+		(sale_amount-rebate_amount) real_amount
 	</sql>
 	
 	<select id="getGoodsById" resultType="AfGoodsDo">
@@ -31,7 +32,15 @@
 		FROM
 			af_goods
 		WHERE
-			is_delete=0 and categorg_id = #{categorgId} 
-		limit 1
+			is_delete=0 and category_id = #{categoryId} 
+			<if test="keywords != null and keywords !=''">
+				AND name LIKE CONCAT('%',#{keywords}, '%')
+			</if>
+			<if test="minAmount != null and minAmount !=0">
+				AND (sale_amount-rebate_amount)>=#{minAmount}
+			</if>
+			<if test="maxAmount != null and maxAmount !=0">
+				AND (sale_amount-rebate_amount)<![CDATA[  <=  ]]> #{maxAmount}
+			</if>
 	</select>
 </mapper>
