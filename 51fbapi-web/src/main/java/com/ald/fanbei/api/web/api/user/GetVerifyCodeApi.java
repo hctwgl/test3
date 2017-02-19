@@ -46,7 +46,7 @@ public class GetVerifyCodeApi implements ApiHandle {
         if(!CommonUtil.isMobile(mobile)){
         	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_INVALID_MOBILE_NO);
         }
-        SmsType type = SmsType.findRoleTypeByCode(typeParam);
+        SmsType type = SmsType.findByCode(typeParam);
         
         AfUserDo afUserDo =null;
         switch (type) {

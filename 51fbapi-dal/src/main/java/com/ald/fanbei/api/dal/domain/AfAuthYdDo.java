@@ -11,6 +11,7 @@ public class AfAuthYdDo extends AbstractSerial {
 	private Date gmtCreate;
 	private Long userId;
 	private String type;
+	private String authParam;
 	private String authResult;
 	public Long getId() {
 		return id;
@@ -35,6 +36,12 @@ public class AfAuthYdDo extends AbstractSerial {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public String getAuthParam() {
+		return authParam;
+	}
+	public void setAuthParam(String authParam) {
+		this.authParam = authParam;
 	}
 	public String getAuthResult() {
 		return authResult;

@@ -16,6 +16,7 @@ public enum SmsType {
     FORGET_PASS("F", "忘记密码验证短信"),
     MOBILE_BIND("M", "手机绑定"),
     SET_PAY_PWD("P", "设置支付"),
+    BANK_CARD("B", "银行卡"),
 
     COMMON("C","通用");
 
@@ -30,7 +31,7 @@ public enum SmsType {
         this.name = name;
     }
 
-    public static SmsType findRoleTypeByCode(String code) {
+    public static SmsType findByCode(String code) {
         for (SmsType roleType : SmsType.values()) {
             if (roleType.getCode().equalsIgnoreCase(code)) {
                 return roleType;

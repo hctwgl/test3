@@ -3,8 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,9 +49,9 @@ public class ChangeMobileApi implements ApiHandle {
 	        	logger.error("changeMobile verifyCode or mobile is empty verifyCode = " + verifyCode + " mobile = " + mobile);
 	        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
 	        }
-	        Map<String, Object> map =requestDataVo.getParams();
-	        map.put("type",SmsType.MOBILE_BIND.getCode() );
-	        smsUtil.checkSmsByMobileAndType(userName,map );
+//	        Map<String, Object> map =requestDataVo.getParams();
+//	        map.put("type",SmsType.MOBILE_BIND.getCode() );
+	        smsUtil.checkSmsByMobileAndType(userName,verifyCode, SmsType.MOBILE_BIND);
 	        AfUserDo afUserDo = new AfUserDo();
 			afUserDo.setRid(userId);
 			afUserDo.setMobile(mobile);

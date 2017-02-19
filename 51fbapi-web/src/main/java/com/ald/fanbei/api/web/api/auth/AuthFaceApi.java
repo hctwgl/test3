@@ -53,8 +53,9 @@ public class AuthFaceApi implements ApiHandle {
 		}
 		
 		AfAuthYdDo afAuthYdDo = new AfAuthYdDo();
-		afAuthYdDo.setType("A");
+		afAuthYdDo.setType("FACE_APP");
 		afAuthYdDo.setUserId(context.getUserId());
+		afAuthYdDo.setAuthParam("");
 		afAuthYdDo.setAuthResult(result);
 		afAuthYdService.addAuthYd(afAuthYdDo);
 		

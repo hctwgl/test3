@@ -21,8 +21,8 @@ public class AfAuthYdServiceImpl implements AfAuthYdService {
 	AfAuthYdDao afAuthYdDao;
 	
 	@Override
-	public int addAuthYd(AfAuthYdDo AfAuthYdDo) {
-		return afAuthYdDao.addAuthYd(AfAuthYdDo);
+	public int addAuthYd(AfAuthYdDo afAuthYdDo) {
+		return afAuthYdDao.addAuthYd(afAuthYdDo);
 	}
 
 }

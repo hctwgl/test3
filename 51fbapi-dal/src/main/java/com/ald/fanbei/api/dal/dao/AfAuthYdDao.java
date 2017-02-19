@@ -15,6 +15,6 @@ public interface AfAuthYdDao {
 	 * @param AfAuthYdDo
 	 * @return
 	 */
-	int addAuthYd(AfAuthYdDo AfAuthYdDo);
+	int addAuthYd(AfAuthYdDo afAuthYdDo);
 
 }

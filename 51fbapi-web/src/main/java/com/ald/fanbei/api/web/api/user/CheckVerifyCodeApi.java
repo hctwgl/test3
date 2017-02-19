@@ -11,6 +11,7 @@ import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -39,12 +40,12 @@ public class CheckVerifyCodeApi implements ApiHandle {
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
         String userName = context.getUserName();
         String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-        if(StringUtil.isBlank(verifyCode) || StringUtil.isBlank(type)){
+        if(StringUtil.isBlank(verifyCode) || StringUtil.isBlank(type) || SmsType.findByCode(type) == null){
         	logger.error("verifyCode or type is empty verifyCode = " + verifyCode + " type = " + type);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
         }
 
-        smsUtil.checkSmsByMobileAndType(userName, requestDataVo.getParams());
+        smsUtil.checkSmsByMobileAndType(userName, verifyCode,SmsType.findByCode(type));
         
 //        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, type);
 //        

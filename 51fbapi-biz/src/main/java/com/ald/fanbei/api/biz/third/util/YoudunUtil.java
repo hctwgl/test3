@@ -18,8 +18,12 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  *@类描述：有盾工具类
@@ -28,7 +32,6 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
  */
 @Component("youdunUtil")
 public class YoudunUtil extends AbstractThird{
-//	private static String host = null;
 	private static String pubkey = null;
 	private static String securityKey = null;
 	
@@ -40,9 +43,11 @@ public class YoudunUtil extends AbstractThird{
 	 * @param cardNumber 卡号
 	 * @param mobile 银行预留手机号
 	 */
-	public static void fourItemCheck(String realName,String idNumber,String cardNumber,String mobile){
-		String url = ConfigProperties.get(Constants.CONFKEY_YOUDUN_HOST) + "/dsp-front/4.1/dsp-front/default/pubkey/%s/product_code/%s/out_order_id/%s/signature/%s" ;
-		Map<String,String> params = new HashMap<String, String>();
+	public static boolean fourItemCheck(String realName, String idNumber, String cardNumber, String mobile) {
+
+		String outOrderId = idNumber.substring(10) + System.currentTimeMillis();
+		String url = ConfigProperties.get(Constants.CONFKEY_YOUDUN_HOST) + "/dsp-front/4.1/dsp-front/default/pubkey/%s/product_code/%s/out_order_id/%s/signature/%s";
+		Map<String, String> params = new HashMap<String, String>();
 		params.put("id_name", realName);
 		params.put("bank_card_no", cardNumber);
 		params.put("id_no", idNumber);
@@ -50,43 +55,36 @@ public class YoudunUtil extends AbstractThird{
 		params.put("req_type", "01");
 		StringBuffer bodySb = new StringBuffer("{");
 		for (Map.Entry<String, String> entry : params.entrySet()) {
-		bodySb.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',");
+			bodySb.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',");
 		}
 		String bodyStr = bodySb.substring(0, bodySb.length() - 1) + "}";
 
-//		String bodyStr = JSON.toJSONString(params);
 		String signature = "";
 		try {
 			signature = md5(bodyStr + "|" + getSecuritykey());
-		
-		url = String.format(url, getPubkey(), "O1001S0401", System.currentTimeMillis() + "", signature);
-		HttpResponse r = makePostRequest(url, bodyStr);
-		System.out.println(r.toString());
-		System.out.println(EntityUtils.toString(r.getEntity()));
+
+			url = String.format(url, getPubkey(), "O1001S0401", outOrderId + "", signature);
+			HttpResponse r = makePostRequest(url, bodyStr);
+
+			String reqResult = EntityUtils.toString(r.getEntity());
+			// {"header":{"resp_time":"2017-02-18 17:57:30","ret_msg":"操作成功","version":"4.1","ret_code":"000000","req_time":"2017-02-18 17:57:29"},"body":{"card_name":"借记IC卡","req_type":"01","message":"认证一致","card_type":"借记卡","org_name":"浙江省农村信用社联合社","org_code":"14293300","status":"1","ud_order_no":"153906928068722688"}}
+			logThird(reqResult, "fourItemCheck", outOrderId, realName, idNumber, cardNumber, mobile);
+			if(StringUtil.isBlank(reqResult)){
+				throw new FanbeiException(FanbeiExceptionCode.AUTH_CARD_ERROR);
+			}
+			//认证表中添加记录
+			JSONObject resultJson = JSONObject.parseObject(reqResult);
+			JSONObject header = resultJson.getJSONObject("header");
+			JSONObject body = resultJson.getJSONObject("body");
+			if( header != null && StringUtil.equals(header.getString("ret_code"), "000000") && body != null && StringUtil.equals(body.getString("status"), "1")){
+				return true;
+			}
+			return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new FanbeiException(FanbeiExceptionCode.AUTH_CARD_ERROR,e);
 		}
-		//		String result = HttpUtil.doHttpPost(url, JSON.toJSONString(params));
-//		System.out.println(result);
 	}
 	
-//	private static String fformatStr = "https://api4.udcredit.com/dsp-front/4.1/dsp-front/default/pubkey/%s/product_code/%s/out_order_id/%s/signature/%s";
-
-//	public static String apiCall(String url, String pubkey, String secretkey, String serviceCode, String outOrderId, Map<String, String> parameter) throws Exception {
-//		if (parameter == null || parameter.isEmpty())
-//			throw new Exception("error ! the parameter Map can't be null.");
-//		StringBuffer bodySb = new StringBuffer("{");
-//		for (Map.Entry<String, String> entry : parameter.entrySet()) {
-//			bodySb.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',");
-//		}
-//		String bodyStr = bodySb.substring(0, bodySb.length() - 1) + "}";
-//		String signature = md5(bodyStr + "|" + secretkey);
-//		url += String.format(fformatStr, pubkey, serviceCode, System.currentTimeMillis() + "", signature);
-//		System.out.println("requestUrl=>" + url);
-//		System.out.println("request parameter body=>" + bodyStr);
-//		HttpResponse r = makePostRequest(url, bodyStr);
-//		return EntityUtils.toString(r.getEntity());
-//	}
 
 	private static final CloseableHttpClient client = HttpClientBuilder.create().build();
 

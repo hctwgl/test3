@@ -3,8 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,7 +40,7 @@ public class CheckPayPwdVerifyCodeApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		 ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 	        String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
-	        String userName = context.getUserName();
+//	        String userName = context.getUserName();
 	        if(context.getUserId()==null){
 				throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 
@@ -55,11 +53,11 @@ public class CheckPayPwdVerifyCodeApi implements ApiHandle {
 	      
 			AfUserDo userDo = afUserService.getUserById(context.getUserId());
 			
-	        Map<String, Object> map =requestDataVo.getParams();
-	        map.put("type",SmsType.SET_PAY_PWD.getCode() );
-	        map.put("mobile",userDo.getMobile());
+//	        Map<String, Object> map =requestDataVo.getParams();
+//	        map.put("type",SmsType.SET_PAY_PWD.getCode() );
+//	        map.put("mobile",userDo.getMobile());
 
-	        smsUtil.checkSmsByMobileAndType(userName, map);
+	        smsUtil.checkSmsByMobileAndType(userDo.getMobile(), verifyCode,SmsType.SET_PAY_PWD);
 	        return resp;
 	}
 

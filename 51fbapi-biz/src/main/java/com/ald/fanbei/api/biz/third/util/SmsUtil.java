@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -132,58 +131,35 @@ public class SmsUtil extends AbstractThird {
 		}
 		sendSmsToDhst(mobile, content);
 	}
-	public void checkSmsByMapAndUserName(String userName, String type ,String verifyCode){
-		 AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, type);
-	        
-	        if(smsDo == null){
-				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
-
-	        }
-	        
-	        //判断验证码是否一致
-	        String realCode = smsDo.getVerifyCode();
-	        if(!StringUtils.equals(verifyCode, realCode)){
-				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
-
-	        }
-	        //判断验证码是否过期
-	        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
-				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
-
-	        }
-	        //更新为已经验证
-	        afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
-	}
 	
-	
-	public void checkSmsByMobileAndType(String userName,Map<String, Object> map ){
-        String verifyCode = ObjectUtils.toString(map.get("verifyCode"));
-        String type = ObjectUtils.toString(map.get("type"));
-        String mobile =userName;
-        if(StringUtil.equals(type, SmsType.MOBILE_BIND.getCode())||StringUtil.equals(type, SmsType.SET_PAY_PWD.getCode())){
-        	mobile = ObjectUtils.toString(map.get("mobile"));
-        }
+	/**
+	 * 验证短信验证码
+	 * @param mobile
+	 * @param verifyCode
+	 * @param type
+	 */
+	public void checkSmsByMobileAndType(String mobile, String verifyCode, SmsType type) {
 
-		 AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, type);
-	        
-	        if(smsDo == null){
-				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
+		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, type.getCode());
 
-	        }
-	        
-	        //判断验证码是否一致
-	        String realCode = smsDo.getVerifyCode();
-	        if(!StringUtils.equals(verifyCode, realCode)){
-				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
+		if (smsDo == null) {
+			throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
 
-	        }
-	        //判断验证码是否过期
-	        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
-				throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
+		}
 
-	        }
-	        //更新为已经验证
-	        afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+		// 判断验证码是否一致
+		String realCode = smsDo.getVerifyCode();
+		if (!StringUtils.equals(verifyCode, realCode)) {
+			throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
+
+		}
+		// 判断验证码是否过期
+		if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+			throw new FanbeiException("invalid Sms", FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
+
+		}
+		// 更新为已经验证
+		afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 	}
 
 	/**
