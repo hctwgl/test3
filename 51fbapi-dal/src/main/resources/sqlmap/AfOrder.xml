@@ -7,7 +7,7 @@
 		mobile,gmt_finished,commission_amount
 	</sql>
 	
-	<insert id="createOrder" keyProperty="id" useGeneratedKeys="true"  parameterType="AfOrderDo">
+	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
 		    gmt_create ,
 		    gmt_modified ,

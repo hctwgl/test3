@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -24,12 +23,12 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
  * 
- *@类描述：ApplyCashApi
+ *@类描述：ApplyConsumeApi
  *@author 何鑫 2017年2月07日  11:01:26
  *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("applyCashApi")
-public class ApplyCashApi implements ApiHandle{
+@Component("applyConsumeApi")
+public class ApplyConsumeApi implements ApiHandle{
 
 	@Resource
 	private AfUserAccountService afUserAccountService;
@@ -44,21 +43,24 @@ public class ApplyCashApi implements ApiHandle{
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		BigDecimal money = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("money")), BigDecimal.ZERO);
+		BigDecimal amount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("amount")), BigDecimal.ZERO);
+		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId")), 0l);
+		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
+		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
+		int nper = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("nper")), 2);
 		Long userId = context.getUserId();
-        logger.info("userId=" + userId + ",money=" + money);
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
-		BigDecimal useableAmount = userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount());
+		BigDecimal useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
 		
-		if(useableAmount.compareTo(money)==-1){
-			throw new FanbeiException("user cash money error", FanbeiExceptionCode.USER_CASH_MONEY_ERROR);
+		if(useableAmount.compareTo(amount)==-1){
+			throw new FanbeiException("borrow consume money error", FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 		}
 		
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		if(null == card){
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
-		if(afBorrowService.dealCashApply(userDto, money,card.getRid())>0){
+		if(afBorrowService.dealConsumeApply(userDto, amount, card.getRid(), goodsId, openId, name, nper)>0){
 			return resp;
 		}
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);

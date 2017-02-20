@@ -15,6 +15,7 @@ public class AfGoodsVo extends AbstractSerial{
 	private static final long serialVersionUID = -7150400787252733902L;
 
 	private Long goodsId;
+	private String numId;
 	private String openId;
 	private BigDecimal saleAmount;
 	private BigDecimal realAmount;
@@ -77,5 +78,10 @@ public class AfGoodsVo extends AbstractSerial{
 	public void setGoodsUrl(String goodsUrl) {
 		this.goodsUrl = goodsUrl;
 	}
-	
+	public String getNumId() {
+		return numId;
+	}
+	public void setNumId(String numId) {
+		this.numId = numId;
+	}
 }

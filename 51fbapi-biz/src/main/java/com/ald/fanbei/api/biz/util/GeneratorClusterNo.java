@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -25,16 +26,19 @@ public class GeneratorClusterNo {
 	TokenCacheUtil TokenCacheUtil;
 	@Resource
 	AfOrderService afOrderService;
+	@Resource
+	AfBorrowService afBorrowService;
 	
+	//获取订单号
 	public String getOrderNo(OrderType orderType){//订单号规则：6位日期_2位订单类型_5位订单序号
 		Date currDate = new Date();
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.DEFAULT_PATTERN).substring(2);
 		StringBuffer orderSb = new StringBuffer(orderType.getShortName());
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum(currDate,orderType)));
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getOrderSequenceNum(currDate,orderType)));
 		return orderSb.toString();
 	}
 	
-    private int getSequenceNum(Date currentDate,OrderType orderType) {//加锁，防止并发
+    private int getOrderSequenceNum(Date currentDate,OrderType orderType) {//加锁，防止并发
         Integer channelNum = 1;
         String lockKey = Constants.CACHEKEY_ORDERNO_LOCK;
         String cacheKey = Constants.CACHEKEY_ORDERNO;
@@ -75,4 +79,39 @@ public class GeneratorClusterNo {
     	return Integer.parseInt(newStr);
     }
     
+    //获取借款号
+  	public String getBorrowNo(Date currDate){//订单号规则：6位日期_2位订单类型_5位订单序号
+  		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+  		StringBuffer orderSb = new StringBuffer("jk");
+  		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowSequenceNum(currDate)));
+  		return orderSb.toString();
+  	}
+  	
+      private int getBorrowSequenceNum(Date currentDate) {//加锁，防止并发
+          Integer channelNum = 1;
+          String lockKey = Constants.CACHEKEY_BORROWNO_LOCK;
+          String cacheKey = Constants.CACHEKEY_BORROWNO;
+          
+          try{
+              if(TokenCacheUtil.getLockTryTimes(lockKey, "1", Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")))){//获得同步锁
+                  channelNum = (Integer)TokenCacheUtil.getObject(cacheKey);
+                  if(channelNum == null){//缓存中无数据,从库中获取
+                  	String borrowNo = afBorrowService.getCurrentLastBorrowNo(currentDate);
+                      channelNum = borrowNo == null?1:(getOrderSeqInt(borrowNo.substring(16, 20))+1);
+                  }else{
+                      channelNum = channelNum + 1;
+                  }
+              }else{//获取锁失败，从库中取订单号
+              	String borrowNo = afBorrowService.getCurrentLastBorrowNo(currentDate);
+                  if(borrowNo != null){
+                      channelNum = getOrderSeqInt(borrowNo.substring(16, 20))+1;
+                  }
+                  return channelNum;
+              }
+              TokenCacheUtil.saveObject(cacheKey, channelNum, 0l);
+          }finally{
+          	TokenCacheUtil.delCache(lockKey);
+          }
+          return channelNum;
+      }
 }

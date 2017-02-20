@@ -26,5 +26,9 @@ public class AfGoodsServiceImpl implements AfGoodsService{
 	public List<AfGoodsDo> getCateGoodsList(AfGoodsQuery query) {
 		return afGoodsDao.getCateGoodsList(query);
 	}
+	@Override
+	public AfGoodsDo getGoodsById(Long rid) {
+		return afGoodsDao.getGoodsById(rid);
+	}
 
 }

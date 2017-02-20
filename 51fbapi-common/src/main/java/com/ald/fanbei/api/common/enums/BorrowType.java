@@ -13,8 +13,10 @@ import java.util.Map;
 public enum BorrowType {
 
 	CASH("CASH", "现金"), 
-	CONSUME("CONSUME", "消费"),
-	INSTALMENT("INSTALMENT", "消费分期");
+	CONSUME("CONSUME", "消费分期"),
+	CONSUME_TEMP("CONSUME_TEMP", "消费分期待确认"),
+	TOCASH("TOCASH", "消费转换成现金借款"),
+	TOCONSUME("TOCONSUME", "消费待确认转化成消费");
     
     private String code;
     private String name;

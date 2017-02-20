@@ -28,8 +28,10 @@ import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfUserOrderDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
@@ -67,6 +69,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	
 	@Resource
 	private TaobaoApiUtil taobaoApiUtil;
+	
+	@Resource
+	private AfUserOrderDao afUserOrderDao;
 	
 	@Override
 	public int createOrderTrade(String content) {
@@ -235,9 +240,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Override
 	public int syncOrderNoWithUser(Long userId, String orderNo) {
-		AfOrderDo order = new AfOrderDo();
+		AfUserOrderDo order = new AfUserOrderDo();
 		order.setOrderNo(orderNo);
 		order.setUserId(userId);
-		return orderDao.updateOrderByOrderNo(order);
+		return afUserOrderDao.addUserOrder(order);
 	}
 }

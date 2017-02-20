@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowDao">
 	<sql id="queryFields">
-		id rid,gmt_create, gmt_modified,user_id,type,name,amount,status,remark,nper,per_amount,nper_repaid,interest_type,total_interest,
-		total_poundage,timeout_num,order_id
+		id rid,gmt_create, gmt_modified,borrow_no,user_id,type,name,amount,status,remark,nper,nper_repayment,overdue_num,order_id,
+		goods_id,open_id,bank_id
 	</sql>
 	
 	<select id="getBorrowById" resultType="AfBorrowDo">
@@ -12,33 +12,43 @@
 		FROM af_borrow WHERE is_delete = 0 AND id = #{id}
     </select>
 
-	<insert id="addBorrow" keyProperty="id" useGeneratedKeys="true" parameterType="AfBorrowDo">
+	<insert id="addBorrow" keyProperty="rid" useGeneratedKeys="true" parameterType="AfBorrowDo">
 		INSERT INTO af_borrow (
 			gmt_create,
 			gmt_modified,
 			user_id,
 			type,
+			borrow_no,
 			name,
 			amount,
 			status,
 			nper,
-			per_amount,
-			nper_repaid,
-			interest_type
+			<if test="goodsId != null">
+		    	goods_id, 
+			</if>
+			<if test="openId != null">
+		    	open_id, 
+			</if>
+			bank_id
 			)
 			VALUES
 			(
-			NOW(),
-			NOW(),
+			#{gmtCreate},
+			#{gmtCreate},
 			#{userId},
 			#{type},
+			#{borrowNo},
 			#{name},
 			#{amount},
 			#{status},
 			#{nper},
-			#{perAmount},
-			#{nperRepaid},
-			#{interestType}
+			<if test="goodsId != null">
+		    	#{goodsId},
+			</if>
+			<if test="openId != null">
+		    	#{openId}, 
+			</if>
+			#{bankId}
 			)
 	</insert>
 	
@@ -48,13 +58,17 @@
 		  gmt_modified,
 		  user_id,
 		  borrow_id,
+		  borrow_no,
 		  name,
 		  gmt_borrow,
+		  bill_year,
 		  bill_month,
+		  nper,
 		  bill_nper,
 		  bill_amount,
-		  status,
-		  overdue_status
+		  principle_amount,
+		  interest_amount,
+		  poundage_amount
 		) 
 		VALUES
 	    <foreach collection = "billList" separator = "," item = "item" index = "index" > 
@@ -62,14 +76,18 @@
 	    	NOW(),
 	    	NOW(),
 	  		#{item.userId}, 
-	  		#{item.borrowId}, 
+	  		#{item.borrowId},
+	  		#{item.borrowNo},  
 	  		#{item.name}, 
 	  		#{item.gmtBorrow}, 
+	  		#{item.billYear},
 	  		#{item.billMonth},
+	  		#{item.nper}, 
 	  		#{item.billNper}, 
 	  		#{item.billAmount}, 
-	  		#{item.status}, 
-	  		#{item.overdueStatus}
+	  		#{item.principleAmount},
+	  		#{item.interestAmount},
+	  		#{item.poundageAmount}
 	  	)
 	  	</foreach> 
    </insert>
@@ -84,4 +102,8 @@
 		WHERE
 			id = #{id}
 	</update>
+	
+	<select id="getCurrentLastBorrowNo" resultType="java.lang.String">
+		select borrow_no from af_borrow WHERE gmt_create=#{currentDate} ORDER BY id DESC LIMIT 1;
+	</select>
 </mapper>

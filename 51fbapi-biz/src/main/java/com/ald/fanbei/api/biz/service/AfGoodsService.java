@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 
@@ -19,4 +21,11 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	List<AfGoodsDo> getCateGoodsList(AfGoodsQuery query);
+	
+	/**
+	 * 通过商品id获取商品信息
+	 * @param rid
+	 * @return
+	 */
+	AfGoodsDo getGoodsById(@Param("rid")Long rid);
 }

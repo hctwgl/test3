@@ -55,6 +55,7 @@ public class GetCateGoodsListApi implements ApiHandle{
 			vo.setGoodsIcon(afGoods.getGoodsIcon());
 			vo.setGoodsName(afGoods.getName());
 			vo.setGoodsUrl(afGoods.getGoodsUrl());
+			vo.setNumId(afGoods.getNumId());
 			vo.setOpenId(afGoods.getOpenId());
 			vo.setRealAmount(afGoods.getRealAmount());
 			vo.setRebateAmount(afGoods.getRebateAmount());

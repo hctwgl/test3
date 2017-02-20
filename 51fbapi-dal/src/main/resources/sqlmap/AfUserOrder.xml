@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserOrderDao">
+	<sql id="queryFields">
+		id rid,user_id,order_no,status
+	</sql>
+	
+	<insert id="addUserOrder" parameterType="AfUserOrderDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_user_order(user_id ,gmt_create, order_no)
+		VALUES (
+    		#{userId},
+    		NOW(),
+    		#{orderNo}
+		)
+	</insert>
+</mapper>
