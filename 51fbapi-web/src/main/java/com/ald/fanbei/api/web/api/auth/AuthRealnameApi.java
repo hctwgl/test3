@@ -11,7 +11,9 @@ import com.ald.fanbei.api.biz.bo.TongdunResultBo;
 import com.ald.fanbei.api.biz.service.AfAuthTdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -20,6 +22,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthTdDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -36,11 +39,15 @@ public class AuthRealnameApi implements ApiHandle {
 	private static final String TONGDUN_CODE_WAIT_FOR_REPORT = "204";//还未出报告
 	
 	@Resource
-	AfAuthTdService afAuthTdService;
+	private AfAuthTdService afAuthTdService;
 	@Resource
-	AfUserAuthService afUserAuthService;
+	private AfUserService afUserService;
 	@Resource
-	AfUserAccountService afUserAccountService;
+	private AfUserAuthService afUserAuthService;
+	@Resource
+	private AfUserAccountService afUserAccountService;
+	@Resource
+	private CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -83,8 +90,9 @@ public class AuthRealnameApi implements ApiHandle {
 		
 		//TODO 更新user_account中身份证号和真实姓名
 		
-		//TODO 触发邀请人获得奖励规则
-		
+		//触发邀请人获得奖励规则
+		AfUserDo userDo = afUserService.getUserById(context.getUserId());
+		couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
 		return resp;
 	}
 	

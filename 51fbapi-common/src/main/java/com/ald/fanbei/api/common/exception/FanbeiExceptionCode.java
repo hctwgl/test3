@@ -76,7 +76,10 @@ public enum FanbeiExceptionCode {
     AUTH_REALNAME_ERROR("AUTH_REALNAME_ERROR",1540,"auth realname error","实名认证失败"),
     AUTH_CARD_ERROR("AUTH_CARD_ERROR",1541,"auth card error","银行卡认证失败"),
     
-    //order goods model 1600-1699
+    AUTH_UPS_BF_SIGN_ERROR("AUTH_UPS_BF_SIGN_ERROR",1550,"bao fu auth error","银行卡认证失败"),
+    AUTH_UPS_YSB_SIGN_ERROR("AUTH_UPS_YSB_SIGN_ERROR",1551,"bao fu auth error","银行卡认证失败"),
+    
+    //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1600,"goods not exist error","商品不存在"),
     

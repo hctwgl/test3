@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
@@ -42,6 +43,8 @@ public class SetRegisterPwdApi implements ApiHandle {
 	AfSmsRecordService afSmsRecordService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
 	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -101,6 +104,9 @@ public class SetRegisterPwdApi implements ApiHandle {
         account.setUserId(userDo.getRid());
         account.setUserName(userDo.getUserName());
         afUserAccountService.addUserAccount(account);
+        
+        couponSceneRuleEnginerUtil.regist(context.getUserId());
+        
         return resp;
     }
     

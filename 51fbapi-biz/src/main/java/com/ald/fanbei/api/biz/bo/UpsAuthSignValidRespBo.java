@@ -6,7 +6,7 @@ package com.ald.fanbei.api.biz.bo;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class PayRoutAuthSignValidRespBo extends PayRoutRespBo {
+public class UpsAuthSignValidRespBo extends UpsRespBo {
 	private String tradeNo			;   //签约时的订单号
 	private String smsCode			;   //短信验证码
 	private String tradeDate		;   //订单日期

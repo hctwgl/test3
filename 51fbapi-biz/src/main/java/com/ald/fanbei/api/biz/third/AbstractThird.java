@@ -21,9 +21,9 @@ public abstract class AbstractThird {
      * @param methodName 接口名称
      * @param param 参数数组
      */
-	protected static void logThird(String resp,String methodName, String... param) {
+	protected static void logThird(Object resp,String methodName, Object... param) {
 		StringBuffer sb = new StringBuffer();
-		for (String item : param) {
+		for (Object item : param) {
 			sb = sb.append("|").append(item);
 		}
 		thirdLog.info(StringUtil.appendStrs("methodName=", methodName,",params=", sb.toString() + ",resp=" + resp==null?"":resp));

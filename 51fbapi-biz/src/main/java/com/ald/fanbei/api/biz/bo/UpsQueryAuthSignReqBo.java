@@ -7,7 +7,7 @@ package com.ald.fanbei.api.biz.bo;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class PayRoutQueryAuthSignReqBo  extends PayRoutReqBo{
+public class UpsQueryAuthSignReqBo  extends UpsReqBo{
 	private static final long serialVersionUID = -6762573744930105400L;
 	
 	private String tradeNo		;   //签约订单号

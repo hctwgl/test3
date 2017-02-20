@@ -2,22 +2,19 @@ package com.ald.fanbei.api.biz.bo;
 
 
 /**
- *@类现描述：支付路由认证支付bo
+ *@类现描述：支付路由认证确认支付bo
  *@author chenjinhu 2017年2月19日 下午1:49:59
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class PayRoutAuthPayReqBo extends PayRoutReqBo{
+public class UpsDelegatePayReqBo extends UpsReqBo{
 	private static final long serialVersionUID = 8310455391344267354L;
 	
-	private String amount				;  //交易金额
-	private String userCustNo		;  //第三方账户号
-	private String realName			;  //真实姓名
-	private String cardNo				;  //银行卡号
-	private String certType			;  //证件类型
-	private String certNo				;  //证件号码
-	private String notifyUrl			;  //异步通知地址
-	
+	private String amount		;   //交易金额
+	private String realName	;   //收款人名称
+	private String cardNo		;   //银行卡号
+	private String purpose		;   //用途
+	private String notifyUrl	;   //异步通知地址
 	
 	public String getAmount() {
 		return amount;
@@ -25,13 +22,6 @@ public class PayRoutAuthPayReqBo extends PayRoutReqBo{
 	public void setAmount(String amount) {
 		this.amount = amount;
 		this.put("amount", amount);
-	}
-	public String getUserCustNo() {
-		return userCustNo;
-	}
-	public void setUserCustNo(String userCustNo) {
-		this.userCustNo = userCustNo;
-		this.put("userCustNo", userCustNo);
 	}
 	public String getRealName() {
 		return realName;
@@ -47,19 +37,11 @@ public class PayRoutAuthPayReqBo extends PayRoutReqBo{
 		this.cardNo = cardNo;
 		this.put("cardNo", cardNo);
 	}
-	public String getCertType() {
-		return certType;
+	public String getPurpose() {
+		return purpose;
 	}
-	public void setCertType(String certType) {
-		this.certType = certType;
-		this.put("certType", certType);
-	}
-	public String getCertNo() {
-		return certNo;
-	}
-	public void setCertNo(String certNo) {
-		this.certNo = certNo;
-		this.put("certNo", certNo);
+	public void setPurpose(String purpose) {
+		this.purpose = purpose;
 	}
 	public String getNotifyUrl() {
 		return notifyUrl;

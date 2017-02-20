@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.biz.bo;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 
 /**
  *@类现描述：支付响应路由父类
@@ -7,7 +10,7 @@ package com.ald.fanbei.api.biz.bo;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class PayRoutRespBo{
+public class UpsRespBo{
 
 	private String version;  //版本号     接口版本号，此处为10
 	private String service;  //接口服务名称，此处为 authSign
@@ -89,4 +92,9 @@ public class PayRoutRespBo{
 	public void setTppRespCode(String tppRespCode) {
 		this.tppRespCode = tppRespCode;
 	}
+	
+	@Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

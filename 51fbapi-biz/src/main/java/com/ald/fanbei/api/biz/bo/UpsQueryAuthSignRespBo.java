@@ -6,14 +6,15 @@ package com.ald.fanbei.api.biz.bo;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class PayRoutQueryAuthSignRespBo extends PayRoutRespBo {
+public class UpsQueryAuthSignRespBo extends UpsRespBo {
 	private String tradeNo			;   //签约订单号
 	private String contractNo	;   //签约协议号
 	private String realName		;   //真实姓名
 	private String certNo			;   //证件号码
 	private String cardNo			;   //卡号
-	private String startDate		;   //开始日期
-	private String endDate			;   //结束日期
+	private String tradeState		;   //开始日期
+	private String tradeDesc			;   //结束日期
+	
 	public String getTradeNo() {
 		return tradeNo;
 	}
@@ -44,17 +45,16 @@ public class PayRoutQueryAuthSignRespBo extends PayRoutRespBo {
 	public void setCardNo(String cardNo) {
 		this.cardNo = cardNo;
 	}
-	public String getStartDate() {
-		return startDate;
+	public String getTradeState() {
+		return tradeState;
 	}
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
+	public void setTradeState(String tradeState) {
+		this.tradeState = tradeState;
 	}
-	public String getEndDate() {
-		return endDate;
+	public String getTradeDesc() {
+		return tradeDesc;
 	}
-	public void setEndDate(String endDate) {
-		this.endDate = endDate;
+	public void setTradeDesc(String tradeDesc) {
+		this.tradeDesc = tradeDesc;
 	}
-	
 }

@@ -4,7 +4,7 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 
-import com.ald.fanbei.api.biz.util.ActiveRuleEngineUtil;
+import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.web.test.common.BaseControllerTest;
 
 /**
@@ -15,7 +15,7 @@ import com.ald.fanbei.web.test.common.BaseControllerTest;
 public class ActivityRuleEngineTest extends BaseControllerTest {
 
 	@Resource
-	ActiveRuleEngineUtil activeRuleEngineUtil;
+	CouponSceneRuleEnginerUtil activeRuleEngineUtil;
 	
 	@Test
 	public void registActivityEngine() {

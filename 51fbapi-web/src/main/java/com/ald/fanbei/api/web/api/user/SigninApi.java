@@ -4,8 +4,6 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSigninService;
-import com.ald.fanbei.api.biz.util.ActiveRuleEngineUtil;
+import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -41,7 +39,7 @@ public class SigninApi implements ApiHandle {
 	AfResourceService afResourceService;
 
 	@Resource
-	ActiveRuleEngineUtil activeRuleEngineUtil;
+	CouponSceneRuleEnginerUtil activeRuleEngineUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -83,11 +81,11 @@ public class SigninApi implements ApiHandle {
 			afSigninDo.setSeriesCount(seriesCount);
 			afSigninDo.setTotalCount(totalCount);
 			afSigninDo.setUserId(userId);
-			Map<String, Object> inputData = new HashMap<String, Object>();
-			inputData.put("userId", userId);
-			inputData.put("seriesCount", seriesCount.toString());
-			if (afSigninService.changeSignin(afSigninDo) > 0) {
-				activeRuleEngineUtil.signin(inputData);
+//			Map<String, Object> inputData = new HashMap<String, Object>();
+//			inputData.put("userId", userId);
+//			inputData.put("seriesCount", seriesCount.toString());
+			if (totalCount == 5 && afSigninService.changeSignin(afSigninDo) > 0) {
+				activeRuleEngineUtil.signin(userId);
 				return resp;
 
 			}
