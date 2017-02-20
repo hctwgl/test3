@@ -2,16 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfSmsRecordDao">
 	<sql id="queryFields">
-		id as rid,gmt_create,user_id,gmt_modified,verify_code,type,mobile,result,is_check
+		id as rid,gmt_create,user_id,gmt_modified,verify_code,type,send_account,result,is_check
 	</sql>
 
 	<insert id="addSmsRecord" parameterType="AfSmsRecordDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_sms_record(user_id , verify_code , type , mobile,result)
+		INSERT INTO af_code_record(user_id , verify_code , type , send_account,result)
 		VALUES (
 		    #{userId},
 		    #{verifyCode},
 		    #{type},
-		    #{mobile},
+		    #{sendAccount},
 		    #{result}
 		)
 	</insert>
@@ -19,10 +19,10 @@
 	<select id="getLatestByUidType" resultType="AfSmsRecordDo">
 		SELECT
 			<include refid="queryFields" />
-		FROM af_sms_record WHERE is_delete = 0 AND mobile=#{mobile} AND type=#{type} ORDER BY ID DESC LIMIT 1;
+		FROM af_code_record WHERE is_delete = 0 AND send_account=#{mobile} AND type=#{type} ORDER BY ID DESC LIMIT 1;
 	</select>
 	
 	<update id="updateSmsIsCheck">
-		UPDATE af_sms_record SET gmt_modified = NOW(),is_check = 1 WHERE id=#{rid}
+		UPDATE af_code_record SET gmt_modified = NOW(),is_check = 1 WHERE id=#{rid}
 	</update>
 </mapper>

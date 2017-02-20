@@ -49,19 +49,23 @@
 			<artifactId>zmxy-sdk</artifactId>
 			<version>20170119133446</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>third.taobao.sdk</groupId>
 			<artifactId>taobao-sdk</artifactId>
 			<version>20170204</version>
 		</dependency>
-		
+
 		<dependency>
-		  <groupId>third.taobao.sdk</groupId>
-		  <artifactId>taobao-sdk-source</artifactId>
-		  <version>20170204</version>
-		  <classifier>source</classifier>
+			<groupId>third.taobao.sdk</groupId>
+			<artifactId>taobao-sdk-source</artifactId>
+			<version>20170204</version>
+			<classifier>source</classifier>
 		</dependency>
-		
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.4.7</version>
+		</dependency>
 	</dependencies>
 </project>

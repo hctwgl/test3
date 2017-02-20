@@ -4,8 +4,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.Resource;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -48,7 +58,14 @@ public class SmsUtil extends AbstractThird {
 	
 	private static String TEST_VERIFY_CODE = "888888";
 	
-	
+
+	   public static String sendUserName = "suweili@edspay.com";
+	    public static String sendPassword = "Su272727";
+	  
+	  private static final String sendProtocol = "25";// 发送邮件使用的端口 
+	  
+	  private static final String sendHostAddress = "smtp.mxhichina.com";// 发送邮件使用的服务器的地址 
+	  
 	@Resource
 	AfSmsRecordService afSmsRecordService;
 
@@ -117,6 +134,34 @@ public class SmsUtil extends AbstractThird {
 		this.addSmsRecord(SmsType.SET_PAY_PWD, mobile, verifyCode, userId, smsResult);
 		return smsResult.isSucc();
 	}
+	
+	/**
+	 * 设置邮箱验证码
+	 * @param mobile 用户绑定的手机号（注意：不是userName）
+	 * @param userId 用户id
+	 * @return
+	 */
+	public boolean sendEmailVerifyCode(String email,Long userId){
+
+		String verifyCode = CommonUtil.getRandomNumber(6);
+		String content = SETPAY_TEMPLATE.replace("&param1", verifyCode);
+		SmsResult emailResult = new SmsResult();
+		emailResult.setResultStr("email send");
+		try {
+			sendEmailToDhst(email, content);
+			
+			emailResult.setSucc(true);
+			this.addEmailRecord(SmsType.EMAIL_BIND, email, verifyCode, userId, emailResult);
+			
+		} catch (Exception e) {
+			emailResult.setSucc(false);
+			logger.info(StringUtil.appendStrs("sendEmail params=|", email, "|",content, "|", emailResult));
+
+		}
+	
+		return emailResult.isSucc();
+	}
+	
 	/**
 	 * 对单个手机号发送普通短信
 	 * 
@@ -202,6 +247,58 @@ public class SmsUtil extends AbstractThird {
 		return result;
 	}
 	
+	
+	
+
+	private static void sendEmailToDhst(String email, String content) throws Exception{
+		// 1. 创建参数配置, 用于连接邮件服务器的参数配置
+        Properties props = new Properties();                    // 参数配置
+        props.setProperty("mail.transport.protocol", "smtp");   // 使用的协议（JavaMail规范要求）
+        props.setProperty("mail.host", sendHostAddress);        // 发件人的邮箱的 SMTP 服务器地址
+        props.setProperty("mail.smtp.auth", "true");            // 请求认证，参数名称与具体实现有关
+
+        // 2. 根据配置创建会话对象, 用于和邮件服务器交互
+        Session session = Session.getDefaultInstance(props);
+        session.setDebug(true);                                 // 设置为debug模式, 可以查看详细的发送 log
+
+        // 3. 创建一封邮件
+        MimeMessage message = createMimeMessage(session, sendUserName, email,content);
+
+        // 4. 根据 Session 获取邮件传输对象
+        Transport transport = session.getTransport();
+
+        // 5. 使用 邮箱账号 和 密码 连接邮件服务器
+        //    这里认证的邮箱必须与 message 中的发件人邮箱一致，否则报错
+        transport.connect(sendUserName, sendPassword);
+
+        // 6. 发送邮件, 发到所有的收件地址, message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人
+        transport.sendMessage(message, message.getAllRecipients());
+
+        // 7. 关闭连接
+        transport.close();
+
+       
+	}
+	
+	 public static MimeMessage createMimeMessage(Session session, String sendMail, String receiveMail,String content) throws Exception {
+	        // 1. 创建一封邮件
+	        MimeMessage message = new MimeMessage(session);
+
+	        // 2. From: 发件人
+	        message.setFrom(new InternetAddress(sendMail, "51返呗", "UTF-8"));
+
+	        // 3. To: 收件人（可以增加多个收件人、抄送、密送）
+	        message.setRecipient(MimeMessage.RecipientType.TO, new InternetAddress(receiveMail, "", "UTF-8"));
+	        message.setSubject("51返呗邮箱验证吗", "UTF-8");
+	        message.setContent(content, "text/html;charset=UTF-8");
+	        message.setSentDate(new Date());
+
+	        // 7. 保存设置
+	        message.saveChanges();
+
+	        return message;
+	    }
+
 
 	/**
 	 * 短信记录表中增加记录
@@ -217,13 +314,34 @@ public class SmsUtil extends AbstractThird {
 			verifyCode = TEST_VERIFY_CODE;
 		}
 		AfSmsRecordDo recordDo = new AfSmsRecordDo();
-		recordDo.setMobile(mobile);
+		recordDo.setSendAccount(mobile);
 		recordDo.setUserId(userId);
 		recordDo.setType(smsType.getCode());
 		recordDo.setVerifyCode(verifyCode);
 		recordDo.setResult(smsResult.getResultStr());
 		return afSmsRecordService.addSmsRecord(recordDo);
 	}
+	
+	/**
+	 * 短信记录表中增加记录
+	 * @param smsType
+	 * @param mobile
+	 * @param verifyCode
+	 * @param userId
+	 * @param smsResult
+	 * @return
+	 */
+	private int addEmailRecord(SmsType smsType,String mobile,String verifyCode,Long userId,SmsResult smsResult){
+	
+		AfSmsRecordDo recordDo = new AfSmsRecordDo();
+		recordDo.setSendAccount(mobile);
+		recordDo.setUserId(userId);
+		recordDo.setType(smsType.getCode());
+		recordDo.setVerifyCode(verifyCode);
+		recordDo.setResult(smsResult.getResultStr());
+		return afSmsRecordService.addSmsRecord(recordDo);
+	}
+	
 
 	private static String getPassword() {
 		if (password == null) {

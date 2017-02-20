@@ -20,7 +20,7 @@ public class AfSmsRecordDo extends AbstractSerial{
 	private Date gmtModified;
 	private String verifyCode;//验证码
 	private String type;//验证码类型 【R.regist注册验证码 F.forget忘记密码】
-	private String mobile;//发送手机号码
+	private String sendAccount;//发送手机号码或者邮箱
 	private Integer isCheck;//是否已经验证,0:未验证 1：已经验证
 	private String result;//返回结果
 	
@@ -54,12 +54,7 @@ public class AfSmsRecordDo extends AbstractSerial{
 	public void setVerifyCode(String verifyCode) {
 		this.verifyCode = verifyCode;
 	}
-	public String getMobile() {
-		return mobile;
-	}
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
-	}
+
 	public Integer getIsCheck() {
 		return isCheck;
 	}
@@ -77,6 +72,18 @@ public class AfSmsRecordDo extends AbstractSerial{
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	/**
+	 * @return the sendAccount
+	 */
+	public String getSendAccount() {
+		return sendAccount;
+	}
+	/**
+	 * @param sendAccount the sendAccount to set
+	 */
+	public void setSendAccount(String sendAccount) {
+		this.sendAccount = sendAccount;
 	}
 	
 }
