@@ -1,28 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017021501")
+    	#set($version="2017022001")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/mine/register.css?version=$version">
     </head>
     <body>
-    	<div class="register_main">
+    	<div class="bgc_white register_main">
 			<ul>
-		        <li>
-			    	<input type="text" class="register_mobile" id="register_mobile" placeholder="请输入手机号" pattern="[0-9]*"  maxlength="11">
+		        <li class="bdr_cb tal">
+		        	<div class="fl register_mobile_icon_wrap"><i class="register_mobile_icon_icon"></i></div>
+			    	<input type="text" class="fs_16 register_mobile" id="register_mobile" placeholder="请输入注册手机号" pattern="[0-9]*"  maxlength="11">
 			    	<i class="register_mobileIcon register_icon_hide">X</i>
 		        </li>
-	    	    <li class="clearfix">
-			        <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码">
-			        <i class="register_verificationIcon register_icon_hide">X</i>
-		        	<span class="register_codeBtn"><span>获取验证码</span></span>
+	    	    <li class="tal clearfix">
+	    	    	<div class="bdr_cb fl register_verification_main">
+	    	    		<div class="fl register_verification_icon_wrap"><i class="register_verification_icon"></i></div>
+			        	<input type="text" class="fl fs_16 register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+			        	<i class="register_verificationIcon register_icon_hide">X</i>
+	    	    	</div>
+		        	<span class="bdr_cb fr tac brd_4 register_codeBtn"><span>获取验证码</span></span>
 		        </li>
-		        <li>
-		        	<input type="text" class="register_password" id="register_password" placeholder="请设置登录密码" pattern="[0-9]*"  maxlength="11">
+		        <li class="bdr_cb tal">
+		        	<div class="fl register_password_icon_wrap"><i class="register_password_icon"></i></div>
+		        	<input type="text" class="fs_16 register_password" id="register_password" placeholder="请输入登陆密码" pattern="[0-9]*"  maxlength="11">
 		        	<i class="register_passwordIcon register_icon_hide">X</i>
 		        </li>
 	        </ul>
-	      	<div class="register_submitBtn">完成注册并下载App</div>
+	      	<div class="brd_4 tac bgc_orange register_submitBtn"><a class="fsc_f" href="www.51fanbei.com">完成注册并下载App</a></div>
+	      	<div class="register_checkbox clearfix">
+	      		<input type="checkbox" class="fl" id="register_checkbox_input" checked="checked">
+	      		<p class="fl fs_13 clearfix"><span class="fl">阅读并同意</span><a  class="fl" href="www.51fanbei.com">《51返呗用户注册协议》</a></p>
+	      	</div>
 		</div>
 		<script type="text/javascript" src="/js/common/layer.js?version=$version"></script>
 		<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
