@@ -15,7 +15,7 @@ public enum SmsType {
     REGIST("R", "注册短信"), 
     FORGET_PASS("F", "忘记密码验证短信"),
     MOBILE_BIND("M", "手机绑定"),
-    EMAIL_BIND("E", "设置支付"),
+    EMAIL_BIND("E", "邮箱绑定"),
 
     SET_PAY_PWD("P", "设置支付"),
     BANK_CARD("B", "银行卡"),
