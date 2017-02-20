@@ -46,25 +46,7 @@ public class CheckVerifyCodeApi implements ApiHandle {
         }
 
         smsUtil.checkSmsByMobileAndType(userName, verifyCode,SmsType.findByCode(type));
-        
-//        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, type);
-//        
-//        if(smsDo == null){
-//        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
-//        }
-//        
-//        //判断验证码是否一致
-//        String realCode = smsDo.getVerifyCode();
-//        if(!StringUtils.equals(verifyCode, realCode)){
-//        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
-//        }
-//        //判断验证码是否过期
-//        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
-//        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
-//        }
-//        //更新为已经验证
-//        afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
-        
+
         return resp;
     }
     

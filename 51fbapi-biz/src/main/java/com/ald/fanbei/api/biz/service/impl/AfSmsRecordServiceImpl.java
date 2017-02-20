@@ -21,8 +21,8 @@ public class AfSmsRecordServiceImpl implements AfSmsRecordService{
 	AfSmsRecordDao afSmsRecordDao;
 	
 	@Override
-	public int addSmsRecord(AfSmsRecordDo AfSmsRecordDo) {
-		return afSmsRecordDao.addSmsRecord(AfSmsRecordDo);
+	public int addSmsRecord(AfSmsRecordDo afSmsRecordDo) {
+		return afSmsRecordDao.addSmsRecord(afSmsRecordDo);
 	}
 
 	@Override
