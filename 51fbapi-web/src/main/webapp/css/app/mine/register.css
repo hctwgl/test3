@@ -2,27 +2,45 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 15:15:44
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-15 10:28:13
+* @Last Modified time: 2017-02-20 14:24:16
 * @title:  注册
 */
 
 .register_main{
-	padding: 0.25rem;
+	margin-top: 0.1rem;
+}
+.register_main ul{
+	margin-top: 0.825rem;
 }
 .register_main li{
-	margin-bottom: 0.25rem;
-	height: 1.0rem;
 	position: relative;
-	padding-left: 0.25rem;
-	background-color: #fff;
+	height: 1.25rem;
+	line-height: 1.25rem;
+	margin: 0 auto;
+	margin-bottom: 0.25rem;
+	margin-left: 0.3rem;
+	margin-right: 0.3rem;
 }
-.register_mobile,.register_password{
-	width: 100%;
-}
-.register_mobile,.register_verification,.register_password{
-	height: 1.0rem;
-	line-height: 1.0rem;
+.register_mobile_icon_wrap,.register_verification_icon_wrap,.register_password_icon_wrap{
+	width: 1.2rem;
+	height: 1.25rem;
+	background-color: pink;
 	text-align: left;
+}
+.register_verification_main{
+	position: relative;
+	width: 5.2rem;
+	height: 1.25rem;
+}
+.register_verification{
+	width: 4.0rem;
+	height: 1.25rem;
+	line-height: 1.25rem;
+}
+.register_codeBtn{
+	width: 3.0rem;
+	height: 1.25rem;
+	line-height: 1.25rem;
 }
 .register_mobileIcon,.register_verificationIcon,.register_passwordIcon{
 	width: 0.5rem;
@@ -36,7 +54,7 @@
 .register_mobileIcon,.register_passwordIcon{
 	position: absolute;
 	top: 50%;
-	right: 0.5rem;
+	right: 0.125rem;
 	-webkit-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
@@ -45,22 +63,14 @@
 .register_verificationIcon{
 	position: absolute;
 	top: 50%;
-	right: 3.5rem;
+	right: 0.125rem;
 	-webkit-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
 }
-.register_verification{
-	float: left;
-}
-.register_codeBtn{
-	float: right;
-	height: 0.95rem;
-	line-height: 0.95rem;
-	text-align: center;
-	padding: 0 0.5rem;
-	border: 1px solid #000;
+.register_icon_hide{
+	display: none;
 }
 input::-webkit-input-placeholder{
 	color: #999;
@@ -75,11 +85,29 @@ input:-ms-input-placeholder{
 	color: #999;
 }
 .register_submitBtn{
-	margin-top: 2.5rem;
-	width: 100%;
+	width: 8.75rem;
 	height: 1.0rem;
 	line-height: 1.0rem;
-	text-align: center;
-	border: 1px solid #000;
-	background-color: #fff;
+	margin: 1.25rem auto 0;
+}
+.register_checkbox{
+	position: relative;
+	height: 0.45rem;
+	line-height: 0.45rem;
+	text-align: left;
+	margin-left: 0.3rem;
+	margin-top: 0.55rem;
+	
+}
+.register_checkbox input{
+	position: absolute;
+	top: 50%;
+	left: 0;
+	-webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.register_checkbox p{
+	margin-left: 20px;
 }
