@@ -148,6 +148,9 @@
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" /> 
 				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" /> 
+				<entry key="/borrow/getConsumeConfirmInfo" value-ref="getConsumeConfirmInfoApi" />
+				<entry key="/borrow/applyCash" value-ref="applyCashApi" />
+				<entry key="/borrow/applyConsume" value-ref="applyConsumeApi" />
 				
 				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
 				 -->

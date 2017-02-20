@@ -61,7 +61,7 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 	}
 	private Map<String, Object> getCashInfo(AfResourceDo resource,AfUserBankcardDo card,AfUserAccountDto userDto){
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("usableAmount", userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE)).subtract(userDto.getUcAmount()));
+		data.put("usableAmount", userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount()));
 		data.put("cardNo", StringUtil.getLastString(card.getCardNumber(),4));
 		data.put("cardName",card.getBankname());
 		data.put("cardId", card.getRid());

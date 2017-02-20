@@ -1,9 +1,8 @@
 package com.ald.fanbei.api.web.listener;
 
-import javax.servlet.ServletContextEvent;
-
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.ContextLoaderListener;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.Constants;
@@ -23,8 +22,8 @@ import com.taobao.api.internal.toplink.LinkException;
  *@author 何鑫 2017年2月4日 下午3:02:01
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component
-public class MessageListener extends ContextLoaderListener{
+@Component("messageListener")
+public class MessageListener implements ApplicationListener<ContextRefreshedEvent>{
 
 	private static String appId = null;
 	private static String secret = null;
@@ -45,9 +44,8 @@ public class MessageListener extends ContextLoaderListener{
 		return secret;
 	}
 	
-	public void contextInitialized(ServletContextEvent event) {
-		super.contextInitialized(event);
-		
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
 		TmcClient client = new TmcClient(getBcAppId(),getBcSecret(), "default");  
 	    client.setMessageHandler(new MessageHandler() {
 			@Override

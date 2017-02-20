@@ -23,6 +23,8 @@ public class AfBorrowDo extends AbstractSerial{
 	
 	private Long userId;//用户id
 	
+	private String borrowNo;//借款编号
+	
 	private String type;//借款类型：【CASH:现金 ,CONSUME:消费,INSTALMENT:消费分期】
 	
 	private String name;//借款名称
@@ -35,19 +37,17 @@ public class AfBorrowDo extends AbstractSerial{
 	
 	private Integer nper;//分期数
 	
-	private BigDecimal perAmount;//每期账单
+	private Integer nperRepayment;//已还款期数
 	
-	private Integer nperRepaid;//已还款期数
-	
-	private String interestType;//利息类型【F:free免息 , C:charges收费】
-	
-	private BigDecimal totalInterest;//总利息
-	
-	private BigDecimal totalPoundage;//总手续费
-	
-	private Integer	timeoutNum;//逾期期数
+	private Integer	overdueNum;//逾期期数
 	
 	private Long orderId;//订单id
+
+	private Long goodsId;//商品id
+	
+	private String openId;//商品混淆id
+	
+	private Long bankId;//银行卡id
 
 	public Long getRid() {
 		return rid;
@@ -79,6 +79,14 @@ public class AfBorrowDo extends AbstractSerial{
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getBorrowNo() {
+		return borrowNo;
+	}
+
+	public void setBorrowNo(String borrowNo) {
+		this.borrowNo = borrowNo;
 	}
 
 	public String getType() {
@@ -129,44 +137,20 @@ public class AfBorrowDo extends AbstractSerial{
 		this.nper = nper;
 	}
 
-	public Integer getNperRepaid() {
-		return nperRepaid;
+	public Integer getNperRepayment() {
+		return nperRepayment;
 	}
 
-	public void setNperRepaid(Integer nperRepaid) {
-		this.nperRepaid = nperRepaid;
+	public void setNperRepayment(Integer nperRepayment) {
+		this.nperRepayment = nperRepayment;
 	}
 
-	public String getInterestType() {
-		return interestType;
+	public Integer getOverdueNum() {
+		return overdueNum;
 	}
 
-	public void setInterestType(String interestType) {
-		this.interestType = interestType;
-	}
-
-	public BigDecimal getTotalInterest() {
-		return totalInterest;
-	}
-
-	public void setTotalInterest(BigDecimal totalInterest) {
-		this.totalInterest = totalInterest;
-	}
-
-	public BigDecimal getTotalPoundage() {
-		return totalPoundage;
-	}
-
-	public void setTotalPoundage(BigDecimal totalPoundage) {
-		this.totalPoundage = totalPoundage;
-	}
-
-	public Integer getTimeoutNum() {
-		return timeoutNum;
-	}
-
-	public void setTimeoutNum(Integer timeoutNum) {
-		this.timeoutNum = timeoutNum;
+	public void setOverdueNum(Integer overdueNum) {
+		this.overdueNum = overdueNum;
 	}
 
 	public Long getOrderId() {
@@ -177,12 +161,28 @@ public class AfBorrowDo extends AbstractSerial{
 		this.orderId = orderId;
 	}
 
-	public BigDecimal getPerAmount() {
-		return perAmount;
+	public Long getGoodsId() {
+		return goodsId;
 	}
 
-	public void setPerAmount(BigDecimal perAmount) {
-		this.perAmount = perAmount;
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
+	public Long getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(Long bankId) {
+		this.bankId = bankId;
 	}
 	
 }

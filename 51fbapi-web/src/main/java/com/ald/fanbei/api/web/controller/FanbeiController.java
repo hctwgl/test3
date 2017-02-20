@@ -91,7 +91,7 @@ public class FanbeiController extends BaseController {
     }
     
     @RequestMapping(value = {
-    		"/borrow/getCashConfirmInfo","/fenbei/applyCash","/borrow/getBorrowHomeInfo"
+    		"/borrow/getCashConfirmInfo","/borrow/applyCash","/borrow/getBorrowHomeInfo","/borrow/getConsumeConfirmInfo","/borrow/applyConsume"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

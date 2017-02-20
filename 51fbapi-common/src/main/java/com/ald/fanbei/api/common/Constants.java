@@ -17,6 +17,8 @@ public class Constants {
     
     public static final int   MINITS_OF_2HOURS                        = 120;
     public static final int   MINITS_OF_HALF_HOUR                     = 30;
+    
+    public static final int   MONTH_OF_YEAR                    		  = 12;
 //    
     public static final String REQ_PARAM_NODE_SYSTEM                  ="system";
     public static final String REQ_PARAM_NODE_METHOD                  ="method";
@@ -51,6 +53,7 @@ public class Constants {
     public static final double DEFAULT_CHARGE_MIN 					  = 1;
     public static final double DEFAULT_CHARGE_MAX 					  = 50;
     public static final int DEFAULT_CASH_DEVIDE					  	  = 2;
+    public static final String DEFAULT_BORROW_CASH_NAME				  = "取现";
     
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
@@ -69,6 +72,7 @@ public class Constants {
     public static final String RES_APP_CALL_CENTER_MESSAGE_QQGROUP    = "QQGROUP";
     public static final String RES_THIRD_GOODS_REBATE_RATE			  = "THIRD_GOODS_REBATE_RATE";
     public static final String RES_BORROW_CASH_RATE_DESC			  = "BORROW_CASH_RATE_DESC";
+    public static final String RES_BORROW_CONSUME					  = "BORROW_CONSUME";
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
@@ -96,6 +100,8 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION	  = "http://img02.taobaocdn.com/bao/uploaded/";
     public static final String CACHEKEY_ORDERNO_LOCK				  = "ala_order_lock";
     public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
+    public static final String CACHEKEY_BORROWNO_LOCK				  = "ala_borrow_no_lock";
+    public static final String CACHEKEY_BORROWNO    				  = "ala_borrow_no";
     public static final String CONFIG_KEY_LOCK_TRY_TIMES              = "fbapi.sync.lock.try.times";
     public static final String CONFKEY_KXG_PASSWORD					  = "fbapi.kxg.password";
     public static final String CONFKEY_KXG_PAY_PASSWORD				  = "fbapi.kxg.pay.password";

@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.math.BigDecimal;
-
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 
@@ -40,13 +38,5 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	AfUserAccountDto getUserAndAccountByUserId(Long userId);
-	
-	/**
-	 * 用户取现处理
-	 * @param userDto
-	 * @param money
-	 * @return
-	 */
-	int dealCashApply(AfUserAccountDto userDto,BigDecimal money);
 	
 }

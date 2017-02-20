@@ -16,173 +16,158 @@ public class AfBorrowBillDo extends AbstractSerial{
 	private static final long serialVersionUID = -4099172521665179067L;
 
 	private Long rid;
-	
 	private Date gmtCreate;
-	
 	private Date gmtModified;
-	
-	private Long userId;//用户id
-	
-	private Long borrowId;//借款Id
-	
-	private String name;//借款名称
-	
-	private Date gmtBorrow;//借款时间
-	
-	private String billMonth;//账单月，yyyy-MM
-	
-	private String billNper;//账单期数，如3期中的第一期则值为 1/3
-	
-	private BigDecimal billAmount;//账单金额
-	
-	private String status;//是否还款状态【Y:已还款 ，N:未还款】
-	
-	private Long repaymentId;//还款id
-	
-	private Date gmtRepayment;//实际还款时间
-	
-	private BigDecimal repaymentAmount;//实际还款金额
-	
-	private String overdueStatus;//是否逾期状态【Y:逾期 ，N:未逾期】
-	
-	private Integer overdueDays;//逾期天数,还款之后才计算逾期天数
-	
-	private BigDecimal overdueAmount;//逾期手续费
-
+	private Long userId;
+	private Long borrowId;
+	private String borrowNo;
+	private String name;
+	private Date gmtBorrow;
+	private String billYear;
+	private String billMonth;
+	private Integer nper;
+	private Integer billNper;
+	private BigDecimal billAmount;
+	private String status;
+	private String overdueStatus;
+	private Integer overdueDays;
+	private Long repaymentId;
+	private BigDecimal principleAmount;
+	private BigDecimal interestAmount;
+	private BigDecimal overdueInterestAmount;
+	private BigDecimal poundageAmount;
+	private BigDecimal overduePoundageAmount;
 	public Long getRid() {
 		return rid;
 	}
-
 	public void setRid(Long rid) {
 		this.rid = rid;
 	}
-
 	public Date getGmtCreate() {
 		return gmtCreate;
 	}
-
 	public void setGmtCreate(Date gmtCreate) {
 		this.gmtCreate = gmtCreate;
 	}
-
 	public Date getGmtModified() {
 		return gmtModified;
 	}
-
 	public void setGmtModified(Date gmtModified) {
 		this.gmtModified = gmtModified;
 	}
-
 	public Long getUserId() {
 		return userId;
 	}
-
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-
 	public Long getBorrowId() {
 		return borrowId;
 	}
-
 	public void setBorrowId(Long borrowId) {
 		this.borrowId = borrowId;
 	}
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	public Date getGmtBorrow() {
 		return gmtBorrow;
 	}
-
 	public void setGmtBorrow(Date gmtBorrow) {
 		this.gmtBorrow = gmtBorrow;
 	}
-
+	public String getBillYear() {
+		return billYear;
+	}
+	public void setBillYear(String billYear) {
+		this.billYear = billYear;
+	}
 	public String getBillMonth() {
 		return billMonth;
 	}
-
 	public void setBillMonth(String billMonth) {
 		this.billMonth = billMonth;
 	}
-
-	public String getBillNper() {
+	public Integer getNper() {
+		return nper;
+	}
+	public void setNper(Integer nper) {
+		this.nper = nper;
+	}
+	public Integer getBillNper() {
 		return billNper;
 	}
-
-	public void setBillNper(String billNper) {
+	public void setBillNper(Integer billNper) {
 		this.billNper = billNper;
 	}
-
 	public BigDecimal getBillAmount() {
 		return billAmount;
 	}
-
 	public void setBillAmount(BigDecimal billAmount) {
 		this.billAmount = billAmount;
 	}
-
 	public String getStatus() {
 		return status;
 	}
-
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-	public Long getRepaymentId() {
-		return repaymentId;
-	}
-
-	public void setRepaymentId(Long repaymentId) {
-		this.repaymentId = repaymentId;
-	}
-
-	public Date getGmtRepayment() {
-		return gmtRepayment;
-	}
-
-	public void setGmtRepayment(Date gmtRepayment) {
-		this.gmtRepayment = gmtRepayment;
-	}
-
-	public BigDecimal getRepaymentAmount() {
-		return repaymentAmount;
-	}
-
-	public void setRepaymentAmount(BigDecimal repaymentAmount) {
-		this.repaymentAmount = repaymentAmount;
-	}
-
 	public String getOverdueStatus() {
 		return overdueStatus;
 	}
-
 	public void setOverdueStatus(String overdueStatus) {
 		this.overdueStatus = overdueStatus;
 	}
-
 	public Integer getOverdueDays() {
 		return overdueDays;
 	}
-
 	public void setOverdueDays(Integer overdueDays) {
 		this.overdueDays = overdueDays;
 	}
-
-	public BigDecimal getOverdueAmount() {
-		return overdueAmount;
+	public Long getRepaymentId() {
+		return repaymentId;
+	}
+	public void setRepaymentId(Long repaymentId) {
+		this.repaymentId = repaymentId;
+	}
+	public BigDecimal getPrincipleAmount() {
+		return principleAmount;
+	}
+	public void setPrincipleAmount(BigDecimal principleAmount) {
+		this.principleAmount = principleAmount;
+	}
+	public BigDecimal getInterestAmount() {
+		return interestAmount;
+	}
+	public void setInterestAmount(BigDecimal interestAmount) {
+		this.interestAmount = interestAmount;
+	}
+	public BigDecimal getOverdueInterestAmount() {
+		return overdueInterestAmount;
+	}
+	public void setOverdueInterestAmount(BigDecimal overdueInterestAmount) {
+		this.overdueInterestAmount = overdueInterestAmount;
+	}
+	public BigDecimal getPoundageAmount() {
+		return poundageAmount;
+	}
+	public void setPoundageAmount(BigDecimal poundageAmount) {
+		this.poundageAmount = poundageAmount;
+	}
+	public BigDecimal getOverduePoundageAmount() {
+		return overduePoundageAmount;
+	}
+	public void setOverduePoundageAmount(BigDecimal overduePoundageAmount) {
+		this.overduePoundageAmount = overduePoundageAmount;
+	}
+	public String getBorrowNo() {
+		return borrowNo;
+	}
+	public void setBorrowNo(String borrowNo) {
+		this.borrowNo = borrowNo;
 	}
 
-	public void setOverdueAmount(BigDecimal overdueAmount) {
-		this.overdueAmount = overdueAmount;
-	}
-	
 }
