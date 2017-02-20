@@ -51,10 +51,16 @@ public class RegisterSetPwdApi implements ApiHandle {
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
         String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
 //        String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
-        if(StringUtil.isBlank(passwordSrc)){
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+        if(StringUtils.isBlank(userName) || StringUtils.isBlank(passwordSrc)){
+        	logger.error("verifyCode or type is empty userName = " + userName + " password = " + passwordSrc);
+        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.PARAM_ERROR);
         }
-        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.REGIST.getCode());
+        AfUserDo eUserDo = afUserService.getUserByUserName(userName);
+        if(eUserDo != null){
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST);
+
+        }
+        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.REGIST.getCode());
         if(smsDo == null){
         	logger.error("sms record is empty");
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
