@@ -177,8 +177,8 @@ public class ZhimaUtil extends AbstractThird {
 	 * @param uid
 	 * @return
 	 */
-	public static Map<String, String> authorize(String idNumber,String realName) {
-		Map<String,String> result = new HashMap<String, String>();
+	public static String authorize(String idNumber,String realName) {
+//		Map<String,String> result = new HashMap<String, String>();
 		ZhimaAuthInfoAuthorizeRequest req = new ZhimaAuthInfoAuthorizeRequest();
 		req.setChannel("apppc");
 		req.setPlatform("zmop");
@@ -195,27 +195,28 @@ public class ZhimaUtil extends AbstractThird {
 		req.setIdentityParam(JSON.toJSONString(identityParam));
 		req.setBizParams(JSON.toJSONString(bizParam));
 		
-		Map<String,String> paramsMap = new HashMap<String, String>();
+//		Map<String,String> paramsMap = new HashMap<String, String>();
 		try {
 			String url = getZhimaClient().generatePageRedirectInvokeUrl(req);
-			String paramsStr = url.substring(url.indexOf("?")+1);
-			String[] paramsArr = paramsStr.split("&");
-			for(String item:paramsArr){
-				String itemKey = item.substring(0,item.indexOf("="));
-				String itemValue = item.substring(item.indexOf("=")+1);
-				paramsMap.put(itemKey, itemValue);
-			}
+			return url;
+//			String paramsStr = url.substring(url.indexOf("?")+1);
+//			String[] paramsArr = paramsStr.split("&");
+//			for(String item:paramsArr){
+//				String itemKey = item.substring(0,item.indexOf("="));
+//				String itemValue = item.substring(item.indexOf("=")+1);
+//				paramsMap.put(itemKey, itemValue);
+//			}
 			
 		} catch (ZhimaApiException e) {
 			logger.error(StringUtil.appendStrs("authorize error;|",idNumber,"|",realName), e);
 			throw new FanbeiException(FanbeiExceptionCode.ZM_ERROR);
 		}
 		
-		result.put("param", paramsMap.get("param"));
-		result.put("sign", paramsMap.get("sign"));
-		result.put("appId", paramsMap.get("app_id"));
+//		result.put("param", paramsMap.get("param"));
+//		result.put("sign", paramsMap.get("sign"));
+//		result.put("appId", paramsMap.get("app_id"));
 		
-		return result;
+//		return result;
 	}
 	
 	

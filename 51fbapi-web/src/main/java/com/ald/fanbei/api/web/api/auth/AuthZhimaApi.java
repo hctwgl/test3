@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.web.api.auth;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,8 +32,8 @@ public class AuthZhimaApi implements ApiHandle {
 		String idNumber = userAccount.getIdNumber();
 		String realName = userAccount.getRealName();
 		
-		Map<String,String> authParamMap =  ZhimaUtil.authorize(idNumber, realName);
-		resp.setResponseData(authParamMap);
+		String authParamUrl =  ZhimaUtil.authorize(idNumber, realName);
+		resp.addResponseData("authUrl", authParamUrl);
 		
 		return resp;
 	}
