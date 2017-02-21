@@ -2,61 +2,44 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 14:20:33
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-14 17:02:21
+* @Last Modified time: 2017-02-21 17:41:13
 * @title:  领取优惠券
 */
 
 .cardCoupons_main li{
-	width: 8.0rem;
-	height: 3.0rem;
-	margin: 0.5rem auto;
-	background-color: #fff;
 	position: relative;
-}
-.cardCoupons_mainContent{
-	height: 2.5rem;
+	width: 16.0rem;
+	height: 5.3;
+	margin: 1.4rem 1.4rem 0 1.4rem;
+	/*background-color: #fff;*/
+	/*box-shadow: 3px 3px 3px 3px red inset; */
+	-moz-box-shadow: 1px 1px 3px #CFCFCF;
+	-webkit-box-shadow: 1px 1px 3px #CFCFCF;
+	box-shadow: 1px 1px 3px #CFCFCF;
 }
 .cardCoupons_priceInfo{
-	width: 2.75rem;
-	height: 2.5rem;
-	line-height: 2.5rem;
-	font-size: 0.6rem;
-	color: #3cafe7;
-	text-align: left;
+	width: 5.05rem;
+	height: 4.05rem;
+	line-height: 4.05rem;
+	margin-right: 0.2rem;
 	letter-spacing: -3px;
 }
-.cardCoupons_priceInfo span{
-	font-size: 1.15rem;
-}
 .cardCoupons_text{
-	width: 3.0rem;
-}
-.cardCoupons_priceInfo,.cardCoupons_text{
-	float: left;
-}
-.cardCoupons_text p{
-	font-size: 0.35rem;
-	color: #666;
+	height: 4.05rem;
 }
 .cardCoupons_text p:nth-child(1){
-	color: #111;
-	font-size: 0.45rem;
-	margin-top: 0.2rem;
+	margin-top: 0.14rem;
 }
 .cardCoupons_text p:nth-child(2){
-	line-height: 1.0rem;
+	margin: 0.14rem 0;
 }
 .cardCoupons_date{
-	border-top: 1px dashed red;
-	line-height: 0.475rem;
-	text-align: left;
+	height: 1.15rem;
+	line-height: 1.15rem;
+	padding-left: 0.4rem;
+	border-top: 1px dashed #afafaf;
 }
 .cardCoupons_btn{
-	width: 2.4rem;
-	height: 3.0rem;
-	background-color: pink;
-	line-height: 3.0rem;
-	text-align: center;
 	position: absolute;
 	top: 50%;
 	right: 0;
@@ -64,13 +47,12 @@
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
+	width: 4.8rem;
+	height: 5.3rem;
+	background-color: pink;
+	line-height: 6.0rem;
 }
-
-
-
-
-
-
 .cardCoupons_btn_gray{
 	background-color: grey;
+	/*background-image: url(images/yishiyong.png);*/
 }

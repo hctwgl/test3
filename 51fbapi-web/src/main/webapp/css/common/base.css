@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-18 16:32:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-20 14:16:17
+* @Last Modified time: 2017-02-21 17:35:47
 * @title:  公用的样式
 */
 
@@ -19,13 +19,17 @@
 .bgc_e { background-color: #eee; }
 
 /*公用的字体大小*/
-.fs_11 { font-size: 0.275rem; }
-.fs_12 { font-size: 0.3rem; }
-.fs_13 { font-size: 0.325rem; }
-.fs_14 { font-size: 0.35rem; }
-.fs_16 { font-size: 0.4rem; }
-.fs_18 { font-size: 0.45rem; }
+.fs_22 { font-size: 0.55rem; }
+.fs_24 { font-size: 0.6rem; }
+.fs_26 { font-size: 0.65rem; }
+.fs_28 { font-size: 0.7rem; }
+.fs_32 { font-size: 0.8rem; }
+.fs_36 { font-size: 0.9rem; }
+.fs_48 { font-size: 1.2rem; }
+.fs_92 { font-size: 2.3rem; }
 .fsc_f { color: #fff; }
+.fsc_blue { color: #3cafe7; }
+.fsc_orange { color: #FE963B; }
 
 /*浮动、居中、圆角*/
 .fl { float: left; }
@@ -33,7 +37,7 @@
 .tal { text-align: left; }
 .tac { text-align: center; }
 .tar { text-align: right; }
-.brd_4 { border-radius: 0.1rem; }
+.brd_4 { border-radius: 0.2rem; }
 .bdr_cb { border: 1px solid #CBCBCB; }
 
 

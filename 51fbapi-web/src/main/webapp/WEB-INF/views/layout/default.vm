@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        #set($version="2017022001")
+        #set($version="2017022101")
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -28,7 +28,7 @@
                 recalc = function () {    
                     var clientWidth = docEl.clientWidth;    
                     if (!clientWidth) return;    
-                    docEl.style.fontSize = 40 * (clientWidth / 375) + 'px';
+                    docEl.style.fontSize = 40 * (clientWidth / 750) + 'px';
                 };    
                 if (!doc.addEventListener) return;    
                 win.addEventListener(resizeEvt, recalc, false);    

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-		<title>邀请奖励规则</title>
+		<title>奖励规则</title>
 	    <style type="text/css">
-	    	.invitationRewardRule_text{
+	    	.registerProtocol_text{
 	    		padding: 1.0rem;
 	    		text-align: Justify;
 				text-justify: inter-ideograph;
@@ -11,7 +11,7 @@
 	    </style>
     </head>
     <body>
-    	<div class="invitationRewardRule_text">•您邀请的所有好友在51返呗成功购物并获得返利后，您将获得返利的20%现金奖励；当您邀请的好友A邀请她的好友B成功在51返呗购物并获得返利后，你将获得B所得返利的10%现金奖励；当B邀请她的好友C成功在51返呗购物并获得返利后，你将获得C所得返利的5%现金奖励。（当订单退货后，返利和佣金将一并退回。）
+    	<div class="registerProtocol_text fs_14">•您邀请的所有好友在51返呗成功购物并获得返利后，您将获得返利的20%现金奖励；当您邀请的好友A邀请她的好友B成功在51返呗购物并获得返利后，你将获得B所得返利的10%现金奖励；当B邀请她的好友C成功在51返呗购物并获得返利后，你将获得C所得返利的5%现金奖励。（当订单退货后，返利和佣金将一并退回。）
     	<br><br>• 邀请好友必须是新用户，如果她已是51返呗老用户了，那么是没有奖励的。
     	<br><br>• 邀请好友注册奖励规则如：被邀请者必需成功完善所有个人资料手机号、邮箱、支付宝绑定、头像、所在地，邀请者才能收到现金奖励。
     	<br><br>• 您可以把您的专用邀请链接通过QQ或者微信发给您的朋友，也可以分享到您的朋友圈、微博和qq空间里面去。
