@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowInterestDao">
+	<sql id="queryFields">
+		id rid,gmt_create,creator,borrow_id,interest
+	</sql>
+	
+	<insert id="addBorrowInterest" parameterType="AfBorrowInterestDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_borrow_interest(gmt_create , creator , borrow_id , interest)
+		VALUES (
+    		NOW(),
+    		#{creator},
+    		#{borrowId},
+    		#{interest}
+		)
+	</insert>
+</mapper>

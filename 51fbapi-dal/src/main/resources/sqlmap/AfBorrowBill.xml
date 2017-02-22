@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowBillDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,user_id,borrow_id,borrow_no,name,gmt_borrow,bill_year,bill_month,nper,bill_nper,bill_amount,
+		status,overdue_status,overdue_days,repayment_id,principle_amount,interest_amount,overdue_interest_amount,poundage_amount,overdue_poundage_amount
+	</sql>
+	
+	<sql id="queryWithFields">
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.borrow_id,b.borrow_no,b.name,b.gmt_borrow,
+		b.bill_year,b.bill_month,b.nper,b.bill_nper,b.bill_amount,b.status,b.overdue_status,
+		b.overdue_days,b.repayment_id,b.principle_amount,b.interest_amount,b.overdue_interest_amount,
+		b.poundage_amount,b.overdue_poundage_amount,w.type borrow_type
+	</sql>
+	
+	<select id="getMonthBillList" resultType="AfBorrowBillDo" parameterType="AfBorrowBillQuery">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId} 
+		AND bill_year = #{billYear} AND bill_month = #{billMonth}
+    </select>
+    
+    <select id="getMonthlyBillByStatus" resultType="java.math.BigDecimal">
+		SELECT 
+			sum(bill_amount)
+		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId} 
+		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status = #{status}
+    </select>
+	<select id="getUserFullBillList" resultType="AfBorrowTotalBillDo">
+		SELECT 
+		  bill_amount,
+		  bill_year,
+		  bill_month,
+		  status
+		FROM
+		  af_borrow_total_bill 
+		WHERE is_delete = 0 
+		  AND user_id = #{userId}
+		ORDER BY bill_year DESC,
+		  bill_month DESC
+    </select>
+    
+    <select id="getBorrowBillById" resultType="AfBorrowBillDto">
+		SELECT 
+			<include refid="queryWithFields"/>
+		FROM af_borrow_bill b,
+		af_borrow w WHERE b.is_delete = 0 AND w.is_delete=0
+		AND b.borrow_id=w.id AND b.id = #{rid}
+    </select>
+</mapper>

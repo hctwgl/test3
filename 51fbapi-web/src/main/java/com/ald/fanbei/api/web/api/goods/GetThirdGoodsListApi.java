@@ -16,6 +16,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserSearchService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -24,7 +25,9 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -46,6 +49,9 @@ public class GetThirdGoodsListApi implements ApiHandle {
 	
 	@Resource
 	private AfResourceService afResourceService;
+	
+	@Resource
+	private AfUserSearchService afUserSearchService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -53,6 +59,10 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		Map<String, Object> buildParams = checkAndbuildParam(requestDataVo);
 		try {
 			List<NTbkItem> list = taobaoApiUtil.executeTaobaokeSearch(buildParams).getResults();
+			String keyword = ObjectUtils.toString(requestDataVo.getParams().get("keywords"), null);
+			if(StringUtil.isNotBlank(keyword)){
+				afUserSearchService.addUserSearch(getUserSearchDo(context.getUserId(), keyword));
+			}
 			final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
 			if (CollectionUtils.isNotEmpty(list)) {
 				List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
@@ -127,4 +137,10 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		
 	}
 
+	private AfUserSearchDo getUserSearchDo(Long userId,String keyword){
+		AfUserSearchDo search = new AfUserSearchDo();
+		search.setKeyword(keyword);
+		search.setUserId(userId);
+		return search;
+	}
 }

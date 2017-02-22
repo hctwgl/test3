@@ -1,16 +1,20 @@
 package com.ald.fanbei.api.web.api.borrow;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -36,6 +40,9 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfBorrowService afBorrowService;
+	
+	@Resource
+	private AfBorrowBillService afBorrowBillService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -44,15 +51,16 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		//账户关联信息
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		AfBorrowHomeVo data = getBorrowHomeInfo(userDto, authDo);
+		Map<String,Integer> map = afBorrowService.getCurrentYearAndMonth("");
+		AfBorrowHomeVo data = getBorrowHomeInfo(afBorrowBillService.getMonthlyBillByStatus(userId, map.get("year"), map.get("month"), YesNoStatus.NO.getCode()),userDto, authDo);
 		resp.setResponseData(data);
 		return resp;
 	}
 
-	private AfBorrowHomeVo getBorrowHomeInfo(AfUserAccountDto userDto,AfUserAuthDo authDo){
+	private AfBorrowHomeVo getBorrowHomeInfo(BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo){
 		AfBorrowHomeVo vo = new AfBorrowHomeVo();
 		vo.setBankcardStatus(authDo.getBankcardStatus());
-		vo.setCurrentAmount(userDto.getRepaymentAmount());
+		vo.setCurrentAmount(repaymentAmount);
 		vo.setIvsStatus(authDo.getIvsStatus());
 		vo.setMobileStatus(authDo.getMobileStatus());
 		vo.setRealnameStatus(authDo.getRealnameStatus());

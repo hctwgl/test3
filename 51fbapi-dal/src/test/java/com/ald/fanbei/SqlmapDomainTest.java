@@ -27,7 +27,7 @@ public class SqlmapDomainTest {
     String url = "jdbc:mysql://192.168.101.69:3306/51fanbei_app" ;    
     String username = "root" ;   
     String password = "Hello1234" ;   
-    private static String tableName = "af_user_order";
+    private static String tableName = "af_borrow_total_bill";
     private static String beanName = "";
     private static int tableNamePreLen = 2;
 	Connection con = null;
