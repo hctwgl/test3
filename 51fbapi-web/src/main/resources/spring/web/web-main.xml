@@ -117,6 +117,7 @@
 				<entry key="/user/getEmailVerifyCode" value-ref="getEmailVerifyCodeApi" />
 				<entry key="/user/changeEmail" value-ref="changeEmailApi" />
 				<entry key="/user/getBankCardList" value-ref="getBankCardListApi" />
+				<entry key="/user/deleteBankCard" value-ref="deleteBankCardApi" />
 				
 				
 				<entry key="/user/signin" value-ref="signinApi" />
