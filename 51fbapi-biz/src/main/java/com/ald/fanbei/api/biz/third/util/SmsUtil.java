@@ -195,19 +195,16 @@ public class SmsUtil extends AbstractThird {
 
 		if (smsDo == null) {
 			throw new FanbeiException("invalid Sms or email", FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
-
 		}
 
 		// 判断验证码是否一致
 		String realCode = smsDo.getVerifyCode();
 		if (!StringUtils.equals(verifyCode, realCode)) {
 			throw new FanbeiException("invalid Sms or email", FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
-
 		}
 		// 判断验证码是否过期
 		if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
 			throw new FanbeiException("invalid Sms or email", FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
-
 		}
 		// 更新为已经验证
 		afSmsRecordService.updateSmsIsCheck(smsDo.getRid());

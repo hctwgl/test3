@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.ResourceHomeType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -41,19 +41,19 @@ public class GetCouponListApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceHomeType.ResourceHomeTypeCoupon.getCode(), "COUPON_R");
-		Map<String, Object> data = new HashMap<String, Object>();
-		List<Object> couponList = new ArrayList<Object>();
-
-		if(afResourceDo !=null ){
-			List<AfCouponDo> list = afCouponService.selectCouponByCouponIds(afResourceDo.getValue1());
-			for (AfCouponDo afCouponDo : list) {
-				Map<String, Object> couponData = couponWithAfCouponList(afCouponDo);
-				couponList.add(couponData);
-			}
-		}
-		data.put("couponList", couponList);
-		resp.setResponseData(data);
+//		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ResourceHomeTypeCoupon.getCode(), "COUPON_R");
+//		Map<String, Object> data = new HashMap<String, Object>();
+//		List<Object> couponList = new ArrayList<Object>();
+//
+//		if(afResourceDo !=null ){
+//			List<AfCouponDo> list = afCouponService.selectCouponByCouponIds(afResourceDo.getValue1());
+//			for (AfCouponDo afCouponDo : list) {
+//				Map<String, Object> couponData = couponWithAfCouponList(afCouponDo);
+//		   		couponList.add(couponData);
+//			}
+//		}
+//		data.put("couponList", couponList);
+//		resp.setResponseData(data);
 
 		return resp;
 	}

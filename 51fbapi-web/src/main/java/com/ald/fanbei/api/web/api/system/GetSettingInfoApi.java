@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.ResourceHomeType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -35,7 +35,7 @@ public class GetSettingInfoApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		List<AfResourceDo> list = afResourceService.getConfigByTypes(ResourceHomeType.ResourceTypeSet.getCode());
+		List<AfResourceDo> list = afResourceService.getConfigByTypes(AfResourceType.ResourceTypeSet.getCode());
 		Map<String, Object> data = new HashMap<String, Object>();
 		for (AfResourceDo afResourceDo : list) {
 			if(StringUtils.equals(afResourceDo.getSecType(), "SET_FAQ")){

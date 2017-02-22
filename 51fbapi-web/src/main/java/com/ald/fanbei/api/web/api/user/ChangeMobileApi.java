@@ -51,7 +51,7 @@ public class ChangeMobileApi implements ApiHandle {
 	        }
 //	        Map<String, Object> map =requestDataVo.getParams();
 //	        map.put("type",SmsType.MOBILE_BIND.getCode() );
-	        smsUtil.checkSmsByMobileAndType(userName,verifyCode, SmsType.MOBILE_BIND);
+	        smsUtil.checkSmsByMobileAndType(mobile,verifyCode, SmsType.MOBILE_BIND);
 	        AfUserDo afUserDo = new AfUserDo();
 			afUserDo.setRid(userId);
 			afUserDo.setMobile(mobile);

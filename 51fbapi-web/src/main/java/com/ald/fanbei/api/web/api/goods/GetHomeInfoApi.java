@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.ResourceHomeType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -52,20 +52,20 @@ public class GetHomeInfoApi implements ApiHandle {
 		List<Object> one2OneList = new ArrayList<Object>();
 
 		for (AfResourceDo afResourceDo : AfResourceDoList) {
-			if (StringUtils.equals(afResourceDo.getType(), ResourceHomeType.ResourceHomeTypeBanner.getCode())) {
+			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.ResourceTypeHomeBanner.getCode())) {
 				bannerList.add(getHomeBannerObjectWithAfResourceDo(afResourceDo));
-			} else if (StringUtils.equals(afResourceDo.getType(), ResourceHomeType.ResourceHomeTypeTools.getCode())) {
+			} else if (StringUtils.equals(afResourceDo.getType(), AfResourceType.ResourceTypeHomeNavigation.getCode())) {
 				toolsList.add(getHomeToolsObjectWithAfResourceDo(afResourceDo));
-			} else if (StringUtils.equals(afResourceDo.getType(), ResourceHomeType.ResourceHomeTypeCoupon.getCode())) {
+			} else if (StringUtils.equals(afResourceDo.getType(), AfResourceType.ResourceTypeHomeSecond.getCode())) {
 				couponList.add(getHomeCouponObjectWithAfResourceDo(afResourceDo));
 			} else if (StringUtils.equals(afResourceDo.getType(),
-					ResourceHomeType.ResourceHomeTypeOneToMany.getCode())) {
+					AfResourceType.ResourceTypeHomeOneToMany.getCode())) {
 				one2ManyList.add(getHomeOneToManyObjectWithAfResourceDo(afResourceDo));
 			} else if (StringUtils.equals(afResourceDo.getType(),
-					ResourceHomeType.ResourceHomeTypeOneToTwo.getCode())) {
+					AfResourceType.ResourceTypeHomeOneToTwo.getCode())) {
 				one2TwoList.add(getHomeOneToTwoObjectWithAfResourceDo(afResourceDo));
 			} else if (StringUtils.equals(afResourceDo.getType(),
-					ResourceHomeType.ResourceHomeTypeOneToOne.getCode())) {
+					AfResourceType.ResourceTypeHomeOneImage.getCode())) {
 				one2OneList.add(getHomeOneToOneObjectWithAfResourceDo(afResourceDo));
 			}
 		}
