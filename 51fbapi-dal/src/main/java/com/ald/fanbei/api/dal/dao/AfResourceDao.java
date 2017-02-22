@@ -26,6 +26,8 @@ public interface AfResourceDao {
      */
     
     List<AfResourceDo> getConfigByTypes(@Param("type")String type);
+    
+    
     /**
      * 获取type类型的配置信息
      * @param type
@@ -43,6 +45,12 @@ public interface AfResourceDao {
 	 * @return
 	 */
 	List<AfResourceDo> getResourceListByType(@Param("type")String type);
+	/**
+	 * 根据type获取资源排序列表
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getResourceListByTypeOrderBy(@Param("type")String type);
 	
 	/**
 	 * 根据type获取一个资源信息
@@ -50,4 +58,7 @@ public interface AfResourceDao {
 	 * @return
 	 */
 	AfResourceDo getSingleResourceBytype(@Param("type")String type);
+	
+	
+	
 }

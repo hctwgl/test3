@@ -8,12 +8,12 @@ package com.ald.fanbei.api.common.enums;
  *
  */
 public enum AfResourceType {
-	ResourceTypeHomeBanner("HOME_BANNER", "轮播图"),
-	ResourceTypeHomeNavigation("HOME_NAVIGATION", "四个导航"),
-	ResourceTypeHomeSecond("HOME_SECOND_BANNER", "第二个轮播"),
-	ResourceTypeHomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
-	ResourceTypeHomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二模块"),
-	ResourceTypeHomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
+	HomeBanner("HOME_BANNER", "轮播图"),
+	HomeNavigation("HOME_NAVIGATION", "四个导航"),
+	HomeSecondBanner("HOME_SECOND_BANNER", "第二个轮播"),
+	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
+	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二模块"),
+	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
 	
 	
 	//ResourceTypeSetType不是首页配置是设置页面的配置
