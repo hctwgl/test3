@@ -22,7 +22,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.BillDetailInfoVo;
+import com.ald.fanbei.api.web.vo.AfBillDetailInfoVo;
 
 /**
  * 
@@ -50,13 +50,13 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		if(null == billDto){
 			throw new FanbeiException("borrow bill not exist error", FanbeiExceptionCode.BORROW_BILL_NOT_EXIST_ERROR);
 		}
-		BillDetailInfoVo billVo = getBorrowBillVo(billDto);
+		AfBillDetailInfoVo billVo = getBorrowBillVo(billDto);
 		resp.setResponseData(billVo);
 		return resp;
 	}
 	
-	private BillDetailInfoVo getBorrowBillVo(AfBorrowBillDto billDto){
-		BillDetailInfoVo vo = new BillDetailInfoVo();
+	private AfBillDetailInfoVo getBorrowBillVo(AfBorrowBillDto billDto){
+		AfBillDetailInfoVo vo = new AfBillDetailInfoVo();
 		vo.setBillAmount(billDto.getBillAmount());
 		vo.setBillId(billDto.getRid());
 		vo.setBillNper(billDto.getBillNper());
