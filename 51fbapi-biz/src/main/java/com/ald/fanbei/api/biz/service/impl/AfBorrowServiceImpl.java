@@ -3,7 +3,9 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -16,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -24,11 +27,13 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowInterestDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowInterestDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -63,8 +68,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
 	
+	@Resource
+	AfBorrowInterestDao afBorrowInterestDao;
+	
 	@Override
-	public int dealCashWithTransferSuccess(final Long borrowId) {
+	public int dealCashWithTransferSuccess(final Long borrowId,final AfUserAccountDto userDto) {
 		
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 
@@ -97,6 +105,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						BigDecimal interestAmount = money.multiply(dayRate);//日利息
 						List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CASH,borrow,money.add(interestAmount).add(chargeAmount),interestAmount,BigDecimal.ZERO,chargeAmount);
 						afBorrowDao.addBorrowBill(billList);
+						//生成利息日志
+						afBorrowInterestDao.addBorrowInterest(buildBorrowInterest(borrowId, interestAmount,userDto.getUserName()));
 					}
 					return 1;
 				} catch (Exception e) {
@@ -147,7 +157,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		if(result>0l){
 			//TODO 转账处理
 			//生成账单
-			dealCashWithTransferSuccess(result);
+			dealCashWithTransferSuccess(result,userDto);
 		}
 		return result;
 	}
@@ -199,11 +209,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			bill.setGmtBorrow(gmtBorrow);
 			String[] billMonth = getBillYearAndMonth(now);
 			if(billMonth.length==2){
-				bill.setBillYear(billMonth[0]);
-				bill.setBillMonth(billMonth[1]);
+				bill.setBillYear(NumberUtil.objToIntDefault(billMonth[0], 0));
+				bill.setBillMonth(NumberUtil.objToIntDefault(billMonth[1], 0));
 			}else{
-				bill.setBillYear("");
-				bill.setBillMonth("");
+				bill.setBillYear(0);
+				bill.setBillMonth(0);
 			}
 			bill.setNper(borrow.getNper());
 			bill.setBillNper(i);
@@ -212,6 +222,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				bill.setPrincipleAmount(borrow.getAmount());
 				bill.setInterestAmount(interestAmount);
 				bill.setPoundageAmount(poundageAmount);
+				bill.setStatus(BorrowBillStatus.NO.getCode());
 			}else{
 				BigDecimal perPoundageAmount = poundageAmount.divide(new BigDecimal(borrow.getNper()),2,BigDecimal.ROUND_HALF_UP);//当月手续费
 				BigDecimal perInterest = totalAmount.multiply(monthRate).setScale(2, BigDecimal.ROUND_HALF_UP);//本月利息
@@ -219,6 +230,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				bill.setPoundageAmount(perPoundageAmount);
 				bill.setPrincipleAmount(billAmount.subtract(perInterest).subtract(perPoundageAmount));//本金 = 账单金额 -本月利息 -手续费
 				totalAmount = totalAmount.subtract(billAmount);
+				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
 			}
 			list.add(bill);
 			now = DateUtil.addMonths(now, 1);
@@ -250,6 +262,16 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		accountLog.setType(borrowType.getCode());
 		return accountLog;
 	}
+	
+	private AfBorrowInterestDo buildBorrowInterest(Long borrowId,BigDecimal interest,String creator){
+		AfBorrowInterestDo borrow = new AfBorrowInterestDo();
+		//利息日志
+		borrow.setBorrowId(borrowId);
+		borrow.setInterest(interest);
+		borrow.setCreator(creator);
+		return borrow;
+	}
+	
 
 	@Override
 	public long dealConsumeApply(final AfUserAccountDto userDto,final BigDecimal amount,
@@ -323,5 +345,26 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				}
 			}
 		});
+	}
+
+	@Override
+	public Map<String,Integer> getCurrentYearAndMonth(String type) {
+		Map<String,Integer> map = new HashMap<String,Integer>();
+		//还款日期
+		Date repayDate;
+		if("N".equals(type)){
+			repayDate = getReyLimitDate(DateUtil.addMonths(new Date(), 1));
+		}else{
+			repayDate = getReyLimitDate(new Date());
+		}
+		int billYear=0,billMonth=0;
+		String[] billDay = DateUtil.formatDate(DateUtil.addMonths(repayDate, -1), DateUtil.MONTH_PATTERN).split("-");
+		if(billDay.length==2){
+			billYear = NumberUtil.objToIntDefault(billDay[0], 0);
+			billMonth = NumberUtil.objToIntDefault(billDay[1], 0);
+		}
+		map.put("year", billYear);
+		map.put("month", billMonth);
+		return map;
 	}
 }

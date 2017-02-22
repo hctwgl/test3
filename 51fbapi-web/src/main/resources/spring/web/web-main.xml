@@ -151,6 +151,10 @@
 				<entry key="/borrow/getConsumeConfirmInfo" value-ref="getConsumeConfirmInfoApi" />
 				<entry key="/borrow/applyCash" value-ref="applyCashApi" />
 				<entry key="/borrow/applyConsume" value-ref="applyConsumeApi" />
+				<entry key="/bill/getMyBillHomeInfo" value-ref="getMyBillHomeInfoApi" />
+				<entry key="/bill/getMyBillList" value-ref="getMyBillListApi" />
+				<entry key="/bill/getBillDetailList" value-ref="getBillDetailListApi" />
+				<entry key="/bill/getBillDetailInfo" value-ref="getBillDetailInfoApi" />
 				
 				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
 				 -->

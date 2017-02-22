@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 
@@ -18,7 +19,7 @@ public interface AfBorrowService {
 	 * @param borrowId
 	 * @return
 	 */
-	int dealCashWithTransferSuccess(Long borrowId);
+	int dealCashWithTransferSuccess(Long borrowId,AfUserAccountDto userDto);
 	
 	/**
 	 * 消费分期转账成功后处理
@@ -62,4 +63,11 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	String getCurrentLastBorrowNo(Date current);
+	
+	/**
+	 * 获取本月账单 year month 
+	 * @param type C-本月 N-next
+	 * @return
+	 */
+	Map<String,Integer> getCurrentYearAndMonth(String type);
 }

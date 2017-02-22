@@ -12,6 +12,6 @@
 			af_category
 		WHERE
 			is_delete=0 AND level=3 AND is_show='Y'
-		order by sort desc
+		order by gmt_create desc
 	</select>
 </mapper>

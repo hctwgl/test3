@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017022001")
+    	#set($version="2017022101")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/mine/register.css?version=$version">
     </head>
@@ -28,7 +28,7 @@
 		        </li>
 	        </ul>
 	      	<div class="brd_4 tac bgc_orange register_submitBtn"><a class="fsc_f" href="www.51fanbei.com">完成注册并下载App</a></div>
-	      	<div class="register_checkbox clearfix">
+	      	<div class="tal register_checkbox clearfix">
 	      		<input type="checkbox" class="fl" id="register_checkbox_input" checked="checked">
 	      		<p class="fl fs_13 clearfix"><span class="fl">阅读并同意</span><a  class="fl" href="www.51fanbei.com">《51返呗用户注册协议》</a></p>
 	      	</div>

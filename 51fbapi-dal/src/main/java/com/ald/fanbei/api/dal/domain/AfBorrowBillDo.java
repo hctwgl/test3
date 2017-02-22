@@ -23,8 +23,8 @@ public class AfBorrowBillDo extends AbstractSerial{
 	private String borrowNo;
 	private String name;
 	private Date gmtBorrow;
-	private String billYear;
-	private String billMonth;
+	private int  billYear;
+	private int  billMonth;
 	private Integer nper;
 	private Integer billNper;
 	private BigDecimal billAmount;
@@ -79,16 +79,16 @@ public class AfBorrowBillDo extends AbstractSerial{
 	public void setGmtBorrow(Date gmtBorrow) {
 		this.gmtBorrow = gmtBorrow;
 	}
-	public String getBillYear() {
+	public int getBillYear() {
 		return billYear;
 	}
-	public void setBillYear(String billYear) {
+	public void setBillYear(int billYear) {
 		this.billYear = billYear;
 	}
-	public String getBillMonth() {
+	public int getBillMonth() {
 		return billMonth;
 	}
-	public void setBillMonth(String billMonth) {
+	public void setBillMonth(int billMonth) {
 		this.billMonth = billMonth;
 	}
 	public Integer getNper() {

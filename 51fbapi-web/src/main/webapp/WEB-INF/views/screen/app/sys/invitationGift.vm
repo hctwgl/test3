@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<title>邀请有奖</title>
+	    <style type="text/css">
+	    	.invitationGift_wrap{
+	    		width: 18.75rem;
+				height: 30.45rem;
+				background-image: url(/images/app/sys/invitationGift_bg.png);
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				-ms-background-size: cover;
+				background-size: cover;
+	    	}
+	    	.invitationGift_footer{
+	    		position: fixed;
+	    		left: 0;
+	    		bottom: 0;
+	    		width: 100%;
+	    		height: 6.0rem;
+	    		background-color: rgba(0,0,0,.9);
+	    		padding: 0.5rem;
+	    		font-size: 0.6rem;
+	    		-webkit-box-sizing: border-box;
+				box-sizing: border-box;
+	    	}
+	    	.invitationGift_text img{
+	    		width: 2.5rem;
+	    		height: 2.5rem;
+	    		background-color: pink;
+	    		margin-right: 1.0rem;
+	    	}
+	    	.invitationGift_text p{
+	    		width: 14.2rem;
+	    		text-align: Justify;
+				text-justify: inter-ideograph;
+	    		color: #fff;
+	    	}
+	    	.invitationGift_btn{
+	    		height: 1.75rem;
+	    		line-height: 1.75rem;
+	    		text-align: center;
+	    		margin-top: 0.65rem;
+	    	}
+	    </style>
+    </head>
+    <body>
+    	<div class="invitationGift_wrap">
+    		<div class="invitationGift_footer">
+    			<div class="invitationGift_text clearfix">
+    				<img class="fl" src="">
+    				<p class="fl">亲，您的好友<span>12345678901</span>邀你来51返呗购物省钱，请注册的时候填写推荐人的ID<span class="fsc_orange">8888</span>，立即开启省钱之旅</p>
+    			</div>
+    			<div class="bgc_orange brd_4 tac invitationGift_btn"><a class="fsc_f" href="666666">马上注册拿返利</a></div>
+    		</div>
+    	</div>
+    </body>
+</html>

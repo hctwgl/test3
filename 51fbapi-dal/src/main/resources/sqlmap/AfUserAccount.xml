@@ -3,13 +3,13 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAccountDao">
 	<sql id="queryAllFields">
 		id rid,user_id,user_name,au_amount,used_amount,freeze_amount,
-		score,alipay_account,rebate_amount,id_number,jfb_amount,password,salt,fail_count,uc_amount,bind_card,repayment_amount
+		score,alipay_account,rebate_amount,id_number,jfb_amount,password,salt,fail_count,uc_amount,bind_card
 	</sql>
 	
 	<sql id="queryWithUserFields">
 		c.id rid,c.user_id,c.user_name,c.au_amount,c.used_amount,c.freeze_amount,
 		c.score,c.alipay_account,c.rebate_amount,c.id_number,c.jfb_amount,c.uc_amount,u.gender,u.nick,u.avatar,
-		u.real_name,u.mobile,u.recommend_code,c.repayment_amount
+		u.real_name,u.mobile,u.recommend_code
 	</sql>
 	
 	<select id="getUserAccountInfoByUserId" resultType="AfUserAccountDo" >
@@ -83,9 +83,6 @@
 			</if>
 			<if test="bindCard != null">
     			,bind_card=#{bindCard}
-			</if>
-			<if test="repaymentAmount != null">
-    			,repayment_amount=#{repaymentAmount}
 			</if>
 		WHERE user_id = #{userId}
 	</update>
