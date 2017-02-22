@@ -21,7 +21,7 @@ public class AfUserBankcardDo extends AbstractSerial{
 	private Date gmtModified;
 	private Long userId;
 	private String mobile;
-	private String bankcode;
+	private String bankCode;
 	private String cardNumber;
 	private String isMain;
 	private String bankname;
@@ -55,12 +55,7 @@ public class AfUserBankcardDo extends AbstractSerial{
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public String getBankcode() {
-		return bankcode;
-	}
-	public void setBankcode(String bankcode) {
-		this.bankcode = bankcode;
-	}
+
 	public String getCardNumber() {
 		return cardNumber;
 	}

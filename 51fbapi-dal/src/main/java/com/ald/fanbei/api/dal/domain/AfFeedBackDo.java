@@ -24,7 +24,7 @@ public class AfFeedBackDo extends AbstractSerial {
 	private Date gmtCreate;
 	private Date gmtModified;
 	private Long userId;
-	private String description;
+	private String content;
 	/**
 	 * @return the rid
 	 */
@@ -86,16 +86,17 @@ public class AfFeedBackDo extends AbstractSerial {
 		this.userId = userId;
 	}
 	/**
-	 * @return the description
+	 * @return the content
 	 */
-	public String getDescription() {
-		return description;
+	public String getContent() {
+		return content;
 	}
 	/**
-	 * @param description the description to set
+	 * @param content the content to set
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public void setContent(String content) {
+		this.content = content;
 	}
+
 
 }

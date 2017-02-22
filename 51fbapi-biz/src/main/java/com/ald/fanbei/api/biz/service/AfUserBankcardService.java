@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 /**
@@ -16,4 +20,20 @@ public interface AfUserBankcardService {
 	 * @return
 	 */
 	AfUserBankcardDo getUserMainBankcardByUserId(Long userId);
+	
+	
+	/**
+	 * 获取银行卡列表
+	 * @param userId
+	 * @return
+	 */
+	List<AfUserBankcardDo> getUserBankcardByUserId(Long userId);
+	
+	/**
+	 * 删除银行卡
+	 * @param userId
+	 * @param rid
+	 * @return
+	 */
+	int deleteUserBankcardByIdAndUserId(Long userId, Long rid);
 }

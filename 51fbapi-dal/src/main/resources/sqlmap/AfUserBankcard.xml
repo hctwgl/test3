@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,mobile,bankcode,card_number,is_main
+		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main
 	</sql>
 	
 	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
@@ -13,5 +13,27 @@
 		WHERE
 			is_delete=0 AND user_id = #{userId} AND is_main = 'Y' limit 1
 	</select>
+	
+	<select id="getUserBankcardByUserId" resultType="AfUserBankcardDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND user_id = #{userId} 
+		
+	</select>
+	
+	<update id="deleteUserBankcardByIdAndUserId">
+		UPDATE 
+			af_user_bankcard 
+		SET 
+			gmt_modified = NOW(),is_delete = 1 
+		WHERE 
+			id=#{rid} 
+		AND 
+			user_id = #{userId} 
+	</update>
 	
 </mapper>
