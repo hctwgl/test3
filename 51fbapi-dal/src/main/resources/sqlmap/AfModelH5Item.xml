@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfModelH5ItemDao">
+	<sql id="queryAllFields">
+
+		id rid,gmt_create,gmt_modified,creator,modifier,model_type,model_id,item_icon,item_type,sec_sort,sort
+	</sql>
+
+
+	<select id="getModelH5ItemListByModelIdAndModelType" resultType="AfModelH5ItemDo">
+		SELECT 
+			<include refid="queryAllFields" />
+		FROM
+			af_model_h5_item
+		WHERE 
+			model_id = #{modelId}
+		AND
+			is_delete = 0
+		AND
+			model_type =#{modelType}
+		order by 
+			
+			concat(sort,sec_sort) desc 
+	</select>
+	
+		
+</mapper>

@@ -110,4 +110,8 @@ public class Constants {
     public static final String CONFKEY_KXG_KEY				  		  = "fbapi.kxg.key";
     public static final String CONFKEY_BILL_CREATE_TIME 			  = "fbapi.bill.create.time";
     public static final String CONFKEY_BILL_REPAY_TIME				  = "fbapi.bill.repay.time";
+    
+    public static final String FANBEI_REQUEST_CONTEXT_KEY            = "fanbei_request_context";
+    public static final String FANBEI_REQUEST_DATA_KEY               = "fanbei_request_data";
+    
 }
