@@ -68,6 +68,7 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 					AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
 					afUserAccountLogDo.setRefId( afCashRecordDo.getRid()+"");
 					afUserAccountLogDo.setType(afCashRecordDo.getType());
+					afUserAccountLogDo.setUserId(afCashRecordDo.getUserId());
 					afUserAccountLogDo.setAmount(amount);
 					afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
 					return 1;
