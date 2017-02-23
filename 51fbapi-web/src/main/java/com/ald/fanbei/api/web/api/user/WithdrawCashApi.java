@@ -15,10 +15,9 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfCashRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.CashRecordType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -50,7 +49,8 @@ public class WithdrawCashApi implements ApiHandle {
 		if (userId == null || StringUtils.isEmpty(account) || StringUtils.isEmpty(type)) {
 			throw new FanbeiException("user id or account or type is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}
-		if(!StringUtils.equals(type, CashRecordType.JIFENBAO.getCode())&&!StringUtils.equals(type, CashRecordType.CASH.getCode())){
+		if (!StringUtils.equals(type, UserAccountLogType.REBATE_JFB.getCode())
+				&& !StringUtils.equals(type, UserAccountLogType.REBATE_CASH.getCode())) {
 			throw new FanbeiException(" type is error", FanbeiExceptionCode.PARAM_ERROR);
 		}
 
@@ -58,23 +58,28 @@ public class WithdrawCashApi implements ApiHandle {
 		if (userAccountDo == null) {
 			throw new FanbeiException("account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
-		if (StringUtils.equals(type, CashRecordType.CASH.getCode())&&userAccountDo.getRebateAmount().compareTo(amount)<0) {
-  			throw new FanbeiException("apply cash amount more than account money", FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
-	
-		} else if (StringUtils.equals(type, CashRecordType.JIFENBAO.getCode())&&userAccountDo.getJfbAmount().compareTo(amount)<0) {
-  			throw new FanbeiException("apply cash amount more than account money", FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
+		if (StringUtils.equals(type, UserAccountLogType.REBATE_CASH.getCode())
+				&& userAccountDo.getRebateAmount().compareTo(amount) < 0) {
+			throw new FanbeiException("apply cash amount more than account money",
+					FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
 
-		} else {
-			AfCashRecordDo afCashRecordDo = new AfCashRecordDo();
-			afCashRecordDo.setType(type);
-			afCashRecordDo.setAccount(account);
-			afCashRecordDo.setAmount(amount);
-			afCashRecordDo.setStatus("");
-			afCashRecordService.addCashRecord(afCashRecordDo);
+		} else if (StringUtils.equals(type, UserAccountLogType.REBATE_JFB.getCode())
+				&& userAccountDo.getJfbAmount().compareTo(amount) < 0) {
+			throw new FanbeiException("apply cash amount more than account money",
+					FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
+		}
+		AfCashRecordDo afCashRecordDo = new AfCashRecordDo();
+		afCashRecordDo.setType(type);
+		afCashRecordDo.setAccount(account);
+		afCashRecordDo.setAmount(amount);
+		afCashRecordDo.setUserId(userId);
+		afCashRecordDo.setStatus("TRANSED");
 
+		if (afCashRecordService.addCashRecord(afCashRecordDo) > 0) {
+			return resp;
 		}
 
-		return resp;
+		throw new FanbeiException(FanbeiExceptionCode.FAILED);
 	}
 
 }

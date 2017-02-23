@@ -3,6 +3,8 @@
  */
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,13 +15,14 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfCashRecordService;
 import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.common.enums.CashRecordType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 
 /**
  * @类描述：
@@ -41,24 +44,37 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 	@Override
 	public int addCashRecord(final AfCashRecordDo afCashRecordDo) {
 
-//		return 
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
+				
 				try {
 					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afCashRecordDo.getUserId());
-					AfUserAccountDo newAccountDo = new AfUserAccountDo();
-					newAccountDo.setRid(afUserAccountDo.getRid());
-					
-					if(StringUtils.equals(afCashRecordDo.getType(), CashRecordType.JIFENBAO.getCode())){
-//						BigDecimal aumont = BigDecimalUtil.
+
+					AfUserAccountDo updateAccountDo = new AfUserAccountDo();
+					updateAccountDo.setRid(afUserAccountDo.getRid());
+					BigDecimal amount =null;
+					if(StringUtils.equals(afCashRecordDo.getType(), UserAccountLogType.REBATE_JFB.getCode())){
+						amount = BigDecimalUtil.multiply(afUserAccountDo.getJfbAmount(), afCashRecordDo.getAmount());
+						updateAccountDo.setJfbAmount(amount);
+
+					}else{
+						amount = BigDecimalUtil.multiply(afUserAccountDo.getRebateAmount(), afCashRecordDo.getAmount());
+						updateAccountDo.setRebateAmount(amount);
 					}
-					
+					afUserAccountDao.updateUserAccount(updateAccountDo);
 					afCashRecordDao.addCashRecord(afCashRecordDo);
+					AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
+					afUserAccountLogDo.setRefId( afCashRecordDo.getRid()+"");
+					afUserAccountLogDo.setType(afCashRecordDo.getType());
+					afUserAccountLogDo.setAmount(amount);
+					afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
 					return 1;
 				} catch (Exception e) {
 					logger.info("dealWithTransferSuccess error:"+e);
+					
+					
 					status.setRollbackOnly();
 					return 0;
 				}

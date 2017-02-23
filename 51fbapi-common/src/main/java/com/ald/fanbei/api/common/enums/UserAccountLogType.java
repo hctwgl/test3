@@ -20,8 +20,9 @@ public enum UserAccountLogType {
 	SIGN("SIGN", "签到"),
 	REGIST("REGIST", "新注册"),
 	CONSUME("CONSUME", "分期"),
-	REPAYMENT("REPAYMENT", "还款");
-    
+	REPAYMENT("REPAYMENT", "还款"),
+	REBATE_CASH("REBATE_CASH", "现金提现"),
+	REBATE_JFB("REBATE_JFB", "集分宝提现");
     private String code;
     private String name;
 

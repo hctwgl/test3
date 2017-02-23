@@ -19,7 +19,7 @@ public class AfCashRecordDo extends AbstractSerial {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Integer rid;
+	private Long rid;
 	private Date gmtCreate;
 	private Date gmtModified;	
 	private Long userId;//用户id
@@ -27,18 +27,7 @@ public class AfCashRecordDo extends AbstractSerial {
 	private String account;//Type 为CASH时 为 银行卡id；Type为JIFENBAO时 为支付宝账号
 	private String type;//类型【CASH：cash 现金提现；JIFENBAO：集分宝提现】
 	private String status;//类型【APPLY:申请,AUTH:审核,REFUSE:拒绝,TRANSED:转账】
-	/**
-	 * @return the rid
-	 */
-	public Integer getRid() {
-		return rid;
-	}
-	/**
-	 * @param rid the rid to set
-	 */
-	public void setRid(Integer rid) {
-		this.rid = rid;
-	}
+
 	/**
 	 * @return the gmtCreate
 	 */
@@ -123,6 +112,18 @@ public class AfCashRecordDo extends AbstractSerial {
 	 */
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
+	}
+	/**
+	 * @return the rid
+	 */
+	public Long getRid() {
+		return rid;
+	}
+	/**
+	 * @param rid the rid to set
+	 */
+	public void setRid(Long rid) {
+		this.rid = rid;
 	}
 
 }
