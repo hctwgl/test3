@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -23,6 +25,16 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 	@Override
 	public AfUserBankcardDo getUserMainBankcardByUserId(Long userId) {
 		return afUserBankcardDao.getUserMainBankcardByUserId(userId);
+	}
+
+	@Override
+	public List<AfUserBankcardDo> getUserBankcardByUserId(Long userId) {
+		return afUserBankcardDao.getUserBankcardByUserId(userId);
+	}
+
+	@Override
+	public int deleteUserBankcardByIdAndUserId(Long userId, Long rid) {
+		return afUserBankcardDao.deleteUserBankcardByIdAndUserId(userId, rid);
 	}
 
 }

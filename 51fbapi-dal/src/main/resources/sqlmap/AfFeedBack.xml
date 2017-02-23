@@ -4,19 +4,19 @@
 
 
 	<insert id="addFeedBack" parameterType="AfFeedBackDo" keyProperty="rid" useGeneratedKeys="true">
-		INSERT INTO af_feed_back
+		INSERT INTO af_feedback
 		(
 			gmt_create,
 			gmt_modified,
 			user_id,
-			description
+			content
 		)
 		VALUES
 		(
 			NOW(),
 			NOW(),
 			#{userId},
-			#{description}
+			#{content}
 		)
 	</insert>
 	

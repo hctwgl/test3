@@ -14,4 +14,26 @@
 			is_delete=0 AND user_id = #{userId} AND is_main = 'Y' limit 1
 	</select>
 	
+	<select id="getUserBankcardByUserId" resultType="AfUserBankcardDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND user_id = #{userId} 
+		
+	</select>
+	
+	<update id="deleteUserBankcardByIdAndUserId">
+		UPDATE 
+			af_user_bankcard 
+		SET 
+			gmt_modified = NOW(),is_delete = 1 
+		WHERE 
+			id=#{rid} 
+		AND 
+			user_id = #{userId} 
+	</update>
+	
 </mapper>

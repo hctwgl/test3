@@ -4,6 +4,8 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +13,16 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -36,118 +41,98 @@ public class GetHomeInfoApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		List<AfResourceDo> list = afResourceService.getHomeConfigByAllTypes();
-		Map<String, Object> data = homeInfoDataWithAfResourceDoList(list);
+
+		Map<String, Object> data = new HashMap<String, Object>();
+		List<Object> bannerList = getObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
+		List<Object> bannerSecList = getObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
+		List<Object> one2OneList = getObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeOneImage.getCode()));
+		List<Object> one2ManyList = getOne2ManyObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeOneToMany.getCode()));
+		List<Object> one2TwoList = getOne2ManyObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeOneToTwo.getCode()));
+
+		data.put("bannerList", bannerList);
+		data.put("bannerSecList", bannerSecList);
+		data.put("one2ManyList", one2ManyList);
+		data.put("one2TwoList", one2TwoList);
+		data.put("one2OneList", one2OneList);
+		
 		resp.setResponseData(data);
 		return resp;
 	}
 
-	public Map<String, Object> homeInfoDataWithAfResourceDoList(List<AfResourceDo> AfResourceDoList) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		List<Object> bannerList = new ArrayList<Object>();
-		List<Object> toolsList = new ArrayList<Object>();
-		List<Object> couponList = new ArrayList<Object>();
-		List<Object> one2ManyList = new ArrayList<Object>();
-		List<Object> one2TwoList = new ArrayList<Object>();
-		List<Object> one2OneList = new ArrayList<Object>();
+	
+	
 
-		for (AfResourceDo afResourceDo : AfResourceDoList) {
-			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.ResourceTypeHomeBanner.getCode())) {
-				bannerList.add(getHomeBannerObjectWithAfResourceDo(afResourceDo));
-			} else if (StringUtils.equals(afResourceDo.getType(), AfResourceType.ResourceTypeHomeNavigation.getCode())) {
-				toolsList.add(getHomeToolsObjectWithAfResourceDo(afResourceDo));
-			} else if (StringUtils.equals(afResourceDo.getType(), AfResourceType.ResourceTypeHomeSecond.getCode())) {
-				couponList.add(getHomeCouponObjectWithAfResourceDo(afResourceDo));
-			} else if (StringUtils.equals(afResourceDo.getType(),
-					AfResourceType.ResourceTypeHomeOneToMany.getCode())) {
-				one2ManyList.add(getHomeOneToManyObjectWithAfResourceDo(afResourceDo));
-			} else if (StringUtils.equals(afResourceDo.getType(),
-					AfResourceType.ResourceTypeHomeOneToTwo.getCode())) {
-				one2TwoList.add(getHomeOneToTwoObjectWithAfResourceDo(afResourceDo));
-			} else if (StringUtils.equals(afResourceDo.getType(),
-					AfResourceType.ResourceTypeHomeOneImage.getCode())) {
-				one2OneList.add(getHomeOneToOneObjectWithAfResourceDo(afResourceDo));
+	private List<Object>  getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
+		List<Object> bannerList = new ArrayList<Object>();
+		for (AfResourceDo afResourceDo : bannerResclist) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("imageUrl", afResourceDo.getValue());
+			data.put("titleName", afResourceDo.getName());
+			data.put("type", afResourceDo.getSecType());
+			data.put("content", afResourceDo.getValue2());
+			data.put("sort", afResourceDo.getSort());
+			
+			bannerList.add(data);
+		}
+		
+		return bannerList;
+	}
+	private List<Object>  getOne2ManyObjectWithResourceDolist(List<AfResourceDo> resclist) {
+		List<Object> bannerList = new ArrayList<Object>();
+		Long sort=  -1L;
+		Map<String, Object> oneData = new HashMap<String, Object>();
+		List<Map<String, Object>> manyData = new ArrayList<Map<String, Object>>();
+		
+		for (int i = 0; i < resclist.size(); i++) {
+			AfResourceDo afResourceDo = resclist.get(i);
+			if(sort!=afResourceDo.getSort()){
+				//将多个对象加入数组中
+				if(sort !=-1){
+					addListDataWithResource(oneData, manyData, bannerList);
+				}
+				sort =afResourceDo.getSort();				
+			}
+			
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("imageUrl", afResourceDo.getValue());
+			data.put("titleName", afResourceDo.getName());
+			data.put("type", afResourceDo.getSecType());
+			data.put("content", afResourceDo.getValue2());
+			data.put("sort", afResourceDo.getValue4());
+			if(StringUtil.equals(afResourceDo.getValue1(), AfResourceSecType.ResourceValue1MainImage.getCode())){
+				oneData = data;
+			}else{
+				manyData.add(data);
 			}
 		}
-		data.put("bannerList", bannerList);
-//		data.put("toolsList", toolsList);
-		data.put("couponList", couponList);
-		data.put("one2ManyList", one2ManyList);
-		data.put("one2TwoList", one2TwoList);
-		data.put("one2OneList", one2OneList);
-
-		return data;
-
-	}
-
-	private Map<String, Object> getHomeBannerObjectWithAfResourceDo(AfResourceDo afResourceDo) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("imageUrl", afResourceDo.getValue());
-		data.put("titleName", afResourceDo.getName());
-		data.put("type", afResourceDo.getSecType());
-		data.put("comment", afResourceDo.getValue1());
-		data.put("sort", afResourceDo.getSort());
-
-		return data;
-	}
-
-	private Map<String, Object> getHomeToolsObjectWithAfResourceDo(AfResourceDo afResourceDo) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("iconUrl", afResourceDo.getValue());
-		data.put("toolsTitle", afResourceDo.getName());
-		data.put("toolsType", afResourceDo.getSecType());
-		data.put("comment", afResourceDo.getValue1());
-		data.put("sort", afResourceDo.getSort());
-
-		return data;
-	}
-
-	private Map<String, Object> getHomeCouponObjectWithAfResourceDo(AfResourceDo afResourceDo) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("imageUrl", afResourceDo.getValue());
-		data.put("name", afResourceDo.getName());
-		data.put("type", afResourceDo.getSecType());
-		data.put("sort", afResourceDo.getSort());
-
-		return data;
-	}
-
-	private Map<String, Object> getHomeOneToManyObjectWithAfResourceDo(AfResourceDo afResourceDo) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		Map<String, Object> oneData = new HashMap<String, Object>();
-		List<Object> manyData = new ArrayList<Object>();
-
-		oneData.put("imageUrl", afResourceDo.getValue());
-		oneData.put("name", afResourceDo.getName());
-		oneData.put("type", afResourceDo.getSecType());
-		oneData.put("comment", afResourceDo.getValue1());
-		data.put("oneEntity", oneData);
-		data.put("manyEntity", manyData);
+		if(manyData.size()>0||oneData.size()>0){
+			addListDataWithResource(oneData, manyData, bannerList);
+		}
 		
-		return data;
+		return bannerList;
 	}
-
-	private Map<String, Object> getHomeOneToTwoObjectWithAfResourceDo(AfResourceDo afResourceDo) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("imageUrl", afResourceDo.getValue());
-		data.put("name", afResourceDo.getName());
-		data.put("type", afResourceDo.getSecType());
-		data.put("comment", afResourceDo.getValue1());
-		data.put("sort", afResourceDo.getSort());
-
-		return data;
-	}
-
-	private Map<String, Object> getHomeOneToOneObjectWithAfResourceDo(AfResourceDo afResourceDo) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("imageUrl", afResourceDo.getValue());
-		data.put("name", afResourceDo.getName());
-		data.put("type", afResourceDo.getSecType());
-		data.put("comment", afResourceDo.getValue1());
-		data.put("sort", afResourceDo.getSort());
-		return data;
-	}
-
 	
+	private void addListDataWithResource(Map<String,Object> oneData, List<Map<String, Object>> manyData,List<Object> bannerList){
+		Map<String, Object> listData = new HashMap<String, Object>();
+		List<Map<String, Object>> manyTemData = new ArrayList<Map<String, Object>>(manyData) ;
+//		Collections.sort(manyTemData, new Comparator<Map<String, Object>>() {
+//			@Override
+//			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+//				String sort1 = ObjectUtils.toString(o1.get("sort"), "").toString();
+//				String sort2 = ObjectUtils.toString(o2.get("sort"), "").toString();
+//				return NumberUtil.objToInteger(sort1)-NumberUtil.objToInteger(sort2);
+//			}
+//		});
+		
+		
+		Map<String, Object> oneTemData =new HashMap<String, Object>();
+		oneTemData.putAll(oneData);
+				
+		listData.put("manyEntity", manyTemData);
+		listData.put("oneEntity", oneTemData);
+		bannerList.add(listData);
+		manyData.clear();
+		oneData.clear();
+	}
 
 }

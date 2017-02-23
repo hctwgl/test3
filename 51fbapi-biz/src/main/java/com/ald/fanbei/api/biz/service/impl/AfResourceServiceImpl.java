@@ -48,4 +48,11 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getConfigByTypesAndSecType(type, secType);
 	}
 
+
+	
+	@Override
+	public List<AfResourceDo> getResourceListByTypeOrderBy(String type) {
+		return afResourceDao.getResourceListByTypeOrderBy(type);
+	}
+
 }

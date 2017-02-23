@@ -28,6 +28,20 @@ public class AfResourceDo extends AbstractSerial {
 	private String value1;//扩展值1
 	private String value2;//扩展值2
 	private String value3;//扩展值3
+	private String value4;//扩展值4
+
+	/**
+	 * @return the value4
+	 */
+	public String getValue4() {
+		return value4;
+	}
+	/**
+	 * @param value4 the value4 to set
+	 */
+	public void setValue4(String value4) {
+		this.value4 = value4;
+	}
 	private Long sort;//排序
 	
 	/**
