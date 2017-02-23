@@ -1,7 +1,12 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.dto.AfLimitDetailDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.query.AfLimitDetailQuery;
 
 /**
  * 
@@ -38,5 +43,20 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	AfUserAccountDto getUserAndAccountByUserId(Long userId);
+	
+	/**
+	 * 增加记录
+	 * 
+	 * @param afUserAccountLogDo
+	 * @return
+	 */
+	int addUserAccountLog(AfUserAccountLogDo afUserAccountLogDo);
+	
+	/**
+	 * 获取明细列表
+	 * @param query
+	 * @return
+	 */
+	List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query);
 	
 }

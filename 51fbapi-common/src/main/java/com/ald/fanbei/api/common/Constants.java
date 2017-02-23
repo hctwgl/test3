@@ -53,7 +53,7 @@ public class Constants {
     public static final double DEFAULT_CHARGE_MIN 					  = 1;
     public static final double DEFAULT_CHARGE_MAX 					  = 50;
     public static final int DEFAULT_CASH_DEVIDE					  	  = 2;
-    public static final String DEFAULT_BORROW_CASH_NAME				  = "取现";
+    public static final String DEFAULT_BORROW_CASH_NAME				  = "现金借款";
     
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";

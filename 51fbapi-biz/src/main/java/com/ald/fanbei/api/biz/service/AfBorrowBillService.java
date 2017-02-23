@@ -64,7 +64,7 @@ public interface AfBorrowBillService {
 	 * @param ids
 	 * @return
 	 */
-	int updateBorrowBillStatusByIds(String ids,String status);
+	int updateBorrowBillStatusByIds(String ids,String status,Long repaymentId);
 	
 	/**
 	 * 获取未还款账单数量

@@ -126,9 +126,12 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						}
 						BigDecimal interestAmount = money.multiply(dayRate);//日利息
 						List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CASH,borrow,money.add(interestAmount).add(chargeAmount),interestAmount,BigDecimal.ZERO,chargeAmount);
-						afBorrowDao.addBorrowBill(billList);
-						//生成利息日志
-						afBorrowInterestDao.addBorrowInterest(buildBorrowInterest(borrow.getRid(), interestAmount,userDto.getUserName()));
+						if(null!=billList&&billList.size()>0){
+							AfBorrowBillDo cashBill = billList.get(0);
+							//生成利息日志
+							afBorrowDao.addBorrowBillInfo(cashBill);
+							afBorrowInterestDao.addBorrowInterest(buildBorrowInterest(cashBill.getRid(), interestAmount,userDto.getUserName(),money));
+						}
 					}
 					return borrow.getRid();
 				} catch (Exception e) {
@@ -229,12 +232,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		return accountLog;
 	}
 	
-	private AfBorrowInterestDo buildBorrowInterest(Long borrowId,BigDecimal interest,String creator){
+	private AfBorrowInterestDo buildBorrowInterest(Long billId,BigDecimal interest,String creator,BigDecimal money){
 		AfBorrowInterestDo borrow = new AfBorrowInterestDo();
 		//利息日志
-		borrow.setBorrowId(borrowId);
+		borrow.setBillId(billId);
 		borrow.setInterest(interest);
 		borrow.setCreator(creator);
+		borrow.setPrincipleAmount(money);
 		return borrow;
 	}
 	

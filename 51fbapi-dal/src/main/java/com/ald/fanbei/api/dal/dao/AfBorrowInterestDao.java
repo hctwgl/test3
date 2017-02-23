@@ -24,5 +24,5 @@ public interface AfBorrowInterestDao {
      * @param borrowId
      * @return
      */
-    int getBorrowInterestCountByBorrowId(@Param("borrowId")Long borrowId);
+    int getBorrowInterestCountByBorrowId(@Param("billId")Long billId);
 }

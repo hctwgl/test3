@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.dto.AfLimitDetailDto;
+import com.ald.fanbei.api.dal.domain.query.AfLimitDetailQuery;
 
 /**
  * @类现描述：用户账户日志
@@ -17,4 +21,11 @@ public interface AfUserAccountLogDao {
 	 * @return
 	 */
 	int addUserAccountLog(AfUserAccountLogDo afUserAccountLogDo);
+	
+	/**
+	 * 获取明细列表
+	 * @param query
+	 * @return
+	 */
+	List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query);
 }

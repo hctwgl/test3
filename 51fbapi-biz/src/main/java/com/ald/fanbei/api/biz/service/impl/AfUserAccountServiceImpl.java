@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -8,8 +10,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.dto.AfLimitDetailDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.query.AfLimitDetailQuery;
 
 /**
  * 
@@ -29,6 +35,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	@Resource
 	AfBorrowDao afBorrowDao;
 	
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
+	
 	@Override
 	public AfUserAccountDo getUserAccountByUserId(Long userId) {
 		return afUserAccountDao.getUserAccountInfoByUserId(userId);
@@ -47,6 +56,16 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	@Override
 	public AfUserAccountDto getUserAndAccountByUserId(Long userId) {
 		return afUserAccountDao.getUserAndAccountByUserId(userId);
+	}
+
+	@Override
+	public int addUserAccountLog(AfUserAccountLogDo afUserAccountLogDo) {
+		return afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+	}
+
+	@Override
+	public List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query) {
+		return afUserAccountLogDao.getLimitDetailList(query);
 	}
 
 }

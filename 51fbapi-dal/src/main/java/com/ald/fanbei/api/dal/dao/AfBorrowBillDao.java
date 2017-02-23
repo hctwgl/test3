@@ -71,7 +71,7 @@ public interface AfBorrowBillDao {
 	 * @param ids
 	 * @return
 	 */
-	int updateBorrowBillStatusByIds(@Param("ids")List<String> ids,@Param("status")String status);
+	int updateBorrowBillStatusByIds(@Param("ids")List<String> ids,@Param("status")String status,@Param("repaymentId")Long repaymentId);
 	
 	/**
 	 * 获取未还款账单数量

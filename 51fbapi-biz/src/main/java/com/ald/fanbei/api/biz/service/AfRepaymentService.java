@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 
 /**
@@ -25,7 +26,7 @@ public interface AfRepaymentService {
 	 * @return
 	 */
 	int createRepayment(BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
-			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,BigDecimal principleAmount);
+			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo);
 	
 	/**
 	 * 获取最近还款编号

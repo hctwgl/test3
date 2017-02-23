@@ -62,7 +62,7 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		vo.setBorrowNo(billDto.getBorrowNo());
 		if(BorrowType.CASH.getCode().equals(billDto.getType())){
 			vo.setBorrowType(BorrowType.CASH.getCode());
-			int count = afBorrowService.getBorrowInterestCountByBorrowId(billDto.getBorrowId());
+			int count = afBorrowService.getBorrowInterestCountByBorrowId(billDto.getRid());
 			vo.setInterestDay(count-billDto.getOverdueDays());//总利息天数-逾期利息天数
 		}else if(BorrowType.CONSUME.getCode().equals(billDto.getType())){
 			vo.setBorrowType(BorrowType.CONSUME.getCode());

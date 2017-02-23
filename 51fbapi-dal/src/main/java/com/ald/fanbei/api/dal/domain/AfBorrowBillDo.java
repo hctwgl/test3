@@ -39,6 +39,7 @@ public class AfBorrowBillDo extends AbstractSerial{
 	private BigDecimal overduePoundageAmount;
 	private String	billIds;
 	private String  type;
+	private Integer count;//数量
 	public Long getRid() {
 		return rid;
 	}
@@ -183,5 +184,10 @@ public class AfBorrowBillDo extends AbstractSerial{
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+	public Integer getCount() {
+		return count;
+	}
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 }

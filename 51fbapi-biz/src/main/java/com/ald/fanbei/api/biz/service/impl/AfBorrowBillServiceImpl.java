@@ -60,8 +60,8 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService{
 	}
 
 	@Override
-	public int updateBorrowBillStatusByIds(String ids, String status) {
-		return afBorrowBillDao.updateBorrowBillStatusByIds(StringUtil.splitToList(ids, ","), status);
+	public int updateBorrowBillStatusByIds(String ids, String status,Long repaymentId) {
+		return afBorrowBillDao.updateBorrowBillStatusByIds(StringUtil.splitToList(ids, ","), status,repaymentId);
 	}
 
 	@Override

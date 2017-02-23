@@ -20,8 +20,9 @@ public class AfBorrowInterestDo extends AbstractSerial{
 	private Long rid;
 	private Date gmtCreate;
 	private String creator;
-	private Long borrowId;
+	private Long billId;
 	private BigDecimal interest;
+	private BigDecimal principleAmount;
 	public Date getGmtCreate() {
 		return gmtCreate;
 	}
@@ -34,12 +35,6 @@ public class AfBorrowInterestDo extends AbstractSerial{
 	public void setCreator(String creator) {
 		this.creator = creator;
 	}
-	public Long getBorrowId() {
-		return borrowId;
-	}
-	public void setBorrowId(Long borrowId) {
-		this.borrowId = borrowId;
-	}
 	public BigDecimal getInterest() {
 		return interest;
 	}
@@ -51,5 +46,17 @@ public class AfBorrowInterestDo extends AbstractSerial{
 	}
 	public void setRid(Long rid) {
 		this.rid = rid;
+	}
+	public Long getBillId() {
+		return billId;
+	}
+	public void setBillId(Long billId) {
+		this.billId = billId;
+	}
+	public BigDecimal getPrincipleAmount() {
+		return principleAmount;
+	}
+	public void setPrincipleAmount(BigDecimal principleAmount) {
+		this.principleAmount = principleAmount;
 	}
 }
