@@ -4,8 +4,18 @@
 html { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
 /* 初始化 */
-body, div, ul, li, ol, h1, h2, h3, h4, h5, h6, input, textarea, select, p, dl, dt, dd, a, img, button, form, table, th, tr, td, tbody, article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { margin: 0; padding: 0; border: none; }
-body { font-size: 0.7rem; font-family: 'Microsoft Yahei', '微软雅黑', '宋体', arial, 'Hiragino Sans GB', Tahoma, Arial, Helvetica; color: #111; background-color: #fff; }
+body, div, ul, li, ol, h1, h2, h3, h4, h5, h6, input, textarea, select, p, dl, dt, dd, a, img, button, form, table, th, tr, td, tbody, article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	margin: 0;
+	padding: 0;
+	border: none;
+	list-style: none;
+}
+body {
+	font-size: 0.7rem;
+	font-family: 'Microsoft Yahei', '微软雅黑', '宋体', arial, 'Hiragino Sans GB', Tahoma, Arial, Helvetica;
+	color: #111;
+	background-color: #fff;
+}
 
 /*字号、字体*/
 button, input, select, textarea { font-family: 'Microsoft Yahei', '微软雅黑', '宋体', arial, 'Hiragino Sans GB', Tahoma, Arial, Helvetica; outline: none; }
