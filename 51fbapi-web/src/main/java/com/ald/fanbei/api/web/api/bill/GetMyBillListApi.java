@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -44,15 +43,13 @@ public class GetMyBillListApi implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		List<AfBorrowTotalBillDo> billList = afBorrowBillService.getUserFullBillList(userId);
-		Map<String,Object> map = getBillList(billList);
-		resp.setResponseData(map);
+		resp.setResponseData(getBillList(billList));
 		return resp;
 	}
 	
-	private Map<String,Object> getBillList(List<AfBorrowTotalBillDo> billList){
+	private List<Object> getBillList(List<AfBorrowTotalBillDo> billList){
+		List<Object> dataList = new ArrayList<Object>();
 		List<Map<String,Object>> monthList = new ArrayList<Map<String,Object>>();
-		TreeMap<String, Object> treemap = new TreeMap<String, Object>();
-		Map<String,Object> resultMap = new HashMap<String,Object>();
 		int year = 0;
 		for (int i=0;i<billList.size();i++) {
 			AfBorrowTotalBillDo afBorrowBillDo = billList.get(i);
@@ -61,14 +58,24 @@ public class GetMyBillListApi implements ApiHandle{
 			dataMap.put("billAmount", afBorrowBillDo.getBillAmount());
 			dataMap.put("billStatus", afBorrowBillDo.getStatus());
 			if(year!=0&&year!=afBorrowBillDo.getBillYear()){
+				Map<String, Object> yearMap = new HashMap<String, Object>();
+				yearMap.put("billYear", year);
+				yearMap.put("monthList", monthList);
+				dataList.add(yearMap);
 				monthList = new ArrayList<Map<String,Object>>();
 			}
-			year = afBorrowBillDo.getBillYear();
+			if(i==billList.size()-1){
+				monthList.add(dataMap);
+				Map<String, Object> yearMap = new HashMap<String, Object>();
+				yearMap.put("billYear", year);
+				yearMap.put("monthList", monthList);
+				dataList.add(yearMap);
+				break;
+			}
 			monthList.add(dataMap);
-			treemap.put(afBorrowBillDo.getBillYear()+"", monthList);
+			year = afBorrowBillDo.getBillYear();
 		}
-		resultMap.put("billYear", treemap.descendingMap());
-		return resultMap;
+		return dataList;
 	}
 	
 }

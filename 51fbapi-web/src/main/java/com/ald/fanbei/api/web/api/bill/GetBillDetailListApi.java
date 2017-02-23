@@ -86,6 +86,7 @@ public class GetBillDetailListApi implements ApiHandle{
 			listVo.setGmtCreate(afBorrowBillDo.getGmtBorrow());
 			listVo.setName(afBorrowBillDo.getName());
 			listVo.setNper(afBorrowBillDo.getNper());
+			listVo.setType(afBorrowBillDo.getType());
 			list.add(listVo);
 		}
 		vo.setBillList(list);

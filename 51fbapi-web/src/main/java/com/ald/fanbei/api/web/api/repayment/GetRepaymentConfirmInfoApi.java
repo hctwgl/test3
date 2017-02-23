@@ -17,7 +17,6 @@ import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -63,7 +62,7 @@ public class GetRepaymentConfirmInfoApi implements ApiHandle{
 		AfRepaymentConfirmVo vo = new AfRepaymentConfirmVo();
 		vo.setRebateAmount(userDto.getRebateAmount());
 		if(billId>0){//单笔还款
-			AfBorrowBillDto billDo = afBorrowBillService.getBorrowBillById(billId);
+			AfBorrowBillDo billDo = afBorrowBillService.getBorrowBillById(billId);
 			vo.setRepayAmount(billDo.getBillAmount());
 			vo.setBillId(billDo.getRid()+"");
 		}else{//月账单还款

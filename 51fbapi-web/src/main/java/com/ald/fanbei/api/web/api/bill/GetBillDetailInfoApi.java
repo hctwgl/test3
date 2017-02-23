@@ -16,7 +16,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -44,7 +44,7 @@ public class GetBillDetailInfoApi implements ApiHandle{
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long billId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("billId")), 0);
-		AfBorrowBillDto billDto = afBorrowBillService.getBorrowBillById(billId);
+		AfBorrowBillDo billDto = afBorrowBillService.getBorrowBillById(billId);
 		if(null == billDto){
 			throw new FanbeiException("borrow bill not exist error", FanbeiExceptionCode.BORROW_BILL_NOT_EXIST_ERROR);
 		}
@@ -53,21 +53,18 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		return resp;
 	}
 	
-	private AfBillDetailInfoVo getBorrowBillVo(AfBorrowBillDto billDto){
+	private AfBillDetailInfoVo getBorrowBillVo(AfBorrowBillDo billDto){
 		AfBillDetailInfoVo vo = new AfBillDetailInfoVo();
 		vo.setBillAmount(billDto.getBillAmount());
 		vo.setBillId(billDto.getRid());
 		vo.setBillNper(billDto.getBillNper());
 		vo.setBorrowAmount(billDto.getPrincipleAmount());
 		vo.setBorrowNo(billDto.getBorrowNo());
-		if(BorrowType.CASH.getCode().equals(billDto.getBorrowType())
-				||BorrowType.TOCASH.getCode().equals(billDto.getBorrowType())){
+		if(BorrowType.CASH.getCode().equals(billDto.getType())){
 			vo.setBorrowType(BorrowType.CASH.getCode());
 			int count = afBorrowService.getBorrowInterestCountByBorrowId(billDto.getBorrowId());
 			vo.setInterestDay(count-billDto.getOverdueDays());//总利息天数-逾期利息天数
-		}else if(BorrowType.CONSUME.getCode().equals(billDto.getBorrowType())
-				||BorrowType.TOCONSUME.getCode().equals(billDto.getBorrowType())
-				||BorrowType.CONSUME_TEMP.getCode().equals(billDto.getBorrowType())){
+		}else if(BorrowType.CONSUME.getCode().equals(billDto.getType())){
 			vo.setBorrowType(BorrowType.CONSUME.getCode());
 			vo.setInterestDay(0);
 		}

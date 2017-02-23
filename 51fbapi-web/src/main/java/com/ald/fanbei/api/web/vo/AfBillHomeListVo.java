@@ -22,6 +22,7 @@ public class AfBillHomeListVo extends AbstractSerial{
 	private Date gmtCreate;//借款时间	 
 	private String billStatus;//账单状态 Y:已还款 ，N:未还款 ,F:冻结
 	private String borrowNo;//借款编号
+	private String type;//账单类型
 	public Long getBiilId() {
 		return biilId;
 	}
@@ -70,5 +71,10 @@ public class AfBillHomeListVo extends AbstractSerial{
 	public void setBorrowNo(String borrowNo) {
 		this.borrowNo = borrowNo;
 	}
-	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 }

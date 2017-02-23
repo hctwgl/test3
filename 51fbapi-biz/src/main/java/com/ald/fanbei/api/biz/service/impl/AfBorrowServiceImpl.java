@@ -197,6 +197,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				bill.setInterestAmount(interestAmount);
 				bill.setPoundageAmount(poundageAmount);
 				bill.setStatus(BorrowBillStatus.NO.getCode());
+				bill.setType(BorrowType.CASH.getCode());
 			}else{
 				BigDecimal perPoundageAmount = poundageAmount.divide(new BigDecimal(borrow.getNper()),2,BigDecimal.ROUND_HALF_UP);//当月手续费
 				BigDecimal perInterest = totalAmount.multiply(monthRate).setScale(2, BigDecimal.ROUND_HALF_UP);//本月利息
@@ -205,6 +206,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				bill.setPrincipleAmount(billAmount.subtract(perInterest).subtract(perPoundageAmount));//本金 = 账单金额 -本月利息 -手续费
 				totalAmount = totalAmount.subtract(billAmount);
 				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
+				bill.setType(BorrowType.CONSUME.getCode());
 			}
 			list.add(bill);
 			now = DateUtil.addMonths(now, 1);
