@@ -2,57 +2,50 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 14:20:33
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-21 17:41:13
+* @Last Modified time: 2017-02-23 19:04:06
 * @title:  领取优惠券
 */
 
-.cardCoupons_main li{
+.cardCoupons_main li,.cardCoupons_alreadyReceive{
 	position: relative;
-	width: 16.0rem;
-	height: 5.3;
-	margin: 1.4rem 1.4rem 0 1.4rem;
-	/*background-color: #fff;*/
-	/*box-shadow: 3px 3px 3px 3px red inset; */
-	-moz-box-shadow: 1px 1px 3px #CFCFCF;
-	-webkit-box-shadow: 1px 1px 3px #CFCFCF;
-	box-shadow: 1px 1px 3px #CFCFCF;
+	width: 16.35rem;
+	height: 5.7rem;
+	margin: 0.5rem auto;
+	background-image: url(/images/app/sys/receiveCoupons_bg1.png);
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	background-size: cover;
+}
+.cardCoupons_main .cardCoupons_alreadyReceive{
+	background-image: url(/images/app/sys/receiveCoupons_bg2.png);
 }
 .cardCoupons_priceInfo{
-	width: 5.05rem;
 	height: 4.05rem;
 	line-height: 4.05rem;
-	margin-right: 0.2rem;
-	letter-spacing: -3px;
+	margin: 0.075rem 0.3rem 0 0;
+	padding-left: 0.25rem;
+	letter-spacing: -0.15rem;
+}
+.cardCoupons_priceInfo span{
+	margin-left: -0.15rem;
 }
 .cardCoupons_text{
 	height: 4.05rem;
 }
 .cardCoupons_text p:nth-child(1){
-	margin-top: 0.14rem;
+	margin-top: 0.5rem;
 }
 .cardCoupons_text p:nth-child(2){
 	margin: 0.14rem 0;
 }
 .cardCoupons_date{
-	height: 1.15rem;
-	line-height: 1.15rem;
+	height: 1.3rem;
+	line-height: 1.3rem;
 	padding-left: 0.4rem;
-	border-top: 1px dashed #afafaf;
 }
 .cardCoupons_btn{
-	position: absolute;
-	top: 50%;
-	right: 0;
-	-webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
 	width: 4.8rem;
-	height: 5.3rem;
-	background-color: pink;
-	line-height: 6.0rem;
-}
-.cardCoupons_btn_gray{
-	background-color: grey;
-	/*background-image: url(images/yishiyong.png);*/
+	height: 5.7rem;
+	opacity: 0;
 }

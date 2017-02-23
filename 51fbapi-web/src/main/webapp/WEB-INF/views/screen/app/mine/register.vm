@@ -8,26 +8,26 @@
     <body>
     	<div class="bgc_white register_main">
 			<ul>
-		        <li class="bdr_cb tal">
+		        <li class="bdc_cb tal">
 		        	<div class="fl register_mobile_icon_wrap"><i class="register_mobile_icon_icon"></i></div>
 			    	<input type="text" class="fs_16 register_mobile" id="register_mobile" placeholder="请输入注册手机号" pattern="[0-9]*"  maxlength="11">
 			    	<i class="register_mobileIcon register_icon_hide">X</i>
 		        </li>
 	    	    <li class="tal clearfix">
-	    	    	<div class="bdr_cb fl register_verification_main">
+	    	    	<div class="bdc_cb fl register_verification_main">
 	    	    		<div class="fl register_verification_icon_wrap"><i class="register_verification_icon"></i></div>
 			        	<input type="text" class="fl fs_16 register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
 			        	<i class="register_verificationIcon register_icon_hide">X</i>
 	    	    	</div>
-		        	<span class="bdr_cb fr tac brd_4 register_codeBtn"><span>获取验证码</span></span>
+		        	<span class="bdc_cb fr tac bdr_4 register_codeBtn"><span>获取验证码</span></span>
 		        </li>
-		        <li class="bdr_cb tal">
+		        <li class="bdc_cb tal">
 		        	<div class="fl register_password_icon_wrap"><i class="register_password_icon"></i></div>
 		        	<input type="text" class="fs_16 register_password" id="register_password" placeholder="请输入登陆密码" pattern="[0-9]*"  maxlength="11">
 		        	<i class="register_passwordIcon register_icon_hide">X</i>
 		        </li>
 	        </ul>
-	      	<div class="brd_4 tac bgc_orange register_submitBtn"><a class="fsc_f" href="www.51fanbei.com">完成注册并下载App</a></div>
+	      	<div class="bdr_4 tac bgc_orange register_submitBtn"><a class="fsc_f" href="www.51fanbei.com">完成注册并下载App</a></div>
 	      	<div class="tal register_checkbox clearfix">
 	      		<input type="checkbox" class="fl" id="register_checkbox_input" checked="checked">
 	      		<p class="fl fs_13 clearfix"><span class="fl">阅读并同意</span><a  class="fl" href="www.51fanbei.com">《51返呗用户注册协议》</a></p>
