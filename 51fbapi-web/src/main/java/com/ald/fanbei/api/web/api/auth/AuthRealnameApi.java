@@ -104,8 +104,9 @@ public class AuthRealnameApi implements ApiHandle {
 		
 		//触发邀请人获得奖励规则
 		AfUserDo userDo = afUserService.getUserById(context.getUserId());
-		couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
-//		
+		if(userDo.getRecommendId() > 0l){
+			couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
+		}
 		String authParamUrl =  ZhimaUtil.authorize(idNumber, realName);
 		resp.addResponseData("zmxyAuthUrl", authParamUrl);
 		

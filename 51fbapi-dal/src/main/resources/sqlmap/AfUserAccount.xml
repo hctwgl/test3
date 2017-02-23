@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAccountDao">
 	<sql id="queryAllFields">
-		id rid,user_id,user_name,au_amount,used_amount,freeze_amount,
-		score,alipay_account,rebate_amount,id_number,jfb_amount,password,salt,fail_count,uc_amount,bind_card
+		id rid,gmt_modified,user_id,user_name,au_amount,used_amount,freeze_amount,score,alipay_account,rebate_amount,id_number,
+		real_name,jfb_amount,password,salt,fail_count,uc_amount,bind_card
 	</sql>
 	
 	<sql id="queryWithUserFields">
