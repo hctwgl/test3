@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -55,44 +56,48 @@ public class AuthRealnameApi implements ApiHandle {
 		
 		String idNumber = (String)requestDataVo.getParams().get("idNumber");
 		String realName = (String)requestDataVo.getParams().get("realName");
-		if(StringUtil.isBlank(idNumber) || StringUtil.isBlank(realName)){
-			throw new FanbeiException("authRealnameApi param error",FanbeiExceptionCode.PARAM_ERROR);
-		}
+//		if(StringUtil.isBlank(idNumber) || StringUtil.isBlank(realName)){
+//			throw new FanbeiException("authRealnameApi param error",FanbeiExceptionCode.PARAM_ERROR);
+//		}
+//		
+//		String reportId = TongdunUtil.applyPreloan(idNumber, realName, context.getMobile(), null);
+//		if(StringUtil.isBlank(reportId)){
+//			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
+//		}
+//		CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+//		TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
+//		while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
+//			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+//			authResult = TongdunUtil.queryPreloan(reportId);
+//		}
+//		
+//		//存库，更新userAuth状态
+//		AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
+//		afAuthTdDo.setReportId(reportId);
+//		afAuthTdDo.setAuthResult(authResult.getResultStr());
+//		afAuthTdDo.setUserId(context.getUserId());
+//		afAuthTdService.addAuthTd(afAuthTdDo);
+//		
+//		if(!authResult.isSuccess()){
+//			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
+//		}
+//		
+//		AfUserAuthDo userAuthDo = new AfUserAuthDo();
+//		userAuthDo.setUserId(context.getUserId());
+//		userAuthDo.setRealnameScore(authResult.getFinalScore());
+//		userAuthDo.setRealnameStatus(YesNoStatus.YES.getCode());
+//		userAuthDo.setGmtRealname(new Date());
+//		afUserAuthService.updateUserAuth(userAuthDo);
+//		
+//		//TODO 更新user_account中身份证号和真实姓名
+//		
+//		//触发邀请人获得奖励规则
+//		AfUserDo userDo = afUserService.getUserById(context.getUserId());
+//		couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
+//		
+		String authParamUrl =  ZhimaUtil.authorize(idNumber, realName);
+		resp.addResponseData("zmxyAuthUrl", authParamUrl);
 		
-		String reportId = TongdunUtil.applyPreloan(idNumber, realName, context.getMobile(), null);
-		if(StringUtil.isBlank(reportId)){
-			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
-		}
-		CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
-		TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
-		while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
-			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
-			authResult = TongdunUtil.queryPreloan(reportId);
-		}
-		
-		//存库，更新userAuth状态
-		AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
-		afAuthTdDo.setReportId(reportId);
-		afAuthTdDo.setAuthResult(authResult.getResultStr());
-		afAuthTdDo.setUserId(context.getUserId());
-		afAuthTdService.addAuthTd(afAuthTdDo);
-		
-		if(!authResult.isSuccess()){
-			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
-		}
-		
-		AfUserAuthDo userAuthDo = new AfUserAuthDo();
-		userAuthDo.setUserId(context.getUserId());
-		userAuthDo.setRealnameScore(authResult.getFinalScore());
-		userAuthDo.setRealnameStatus(YesNoStatus.YES.getCode());
-		userAuthDo.setGmtRealname(new Date());
-		afUserAuthService.updateUserAuth(userAuthDo);
-		
-		//TODO 更新user_account中身份证号和真实姓名
-		
-		//触发邀请人获得奖励规则
-		AfUserDo userDo = afUserService.getUserById(context.getUserId());
-		couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
 		return resp;
 	}
 	
