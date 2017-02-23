@@ -15,6 +15,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -68,16 +69,24 @@ public class GetBillDetailListApi implements ApiHandle{
 		List<AfBorrowBillDo> billList =  afBorrowBillService.getMonthBillList(query);
 		AfBillHomeVo vo = new AfBillHomeVo();
 		List<AfBillHomeListVo> list =new ArrayList<AfBillHomeListVo>();
+		boolean flag = false;//是否逾期
 		for (AfBorrowBillDo afBorrowBillDo : billList) {
 			AfBillHomeListVo listVo = new AfBillHomeListVo();
 			listVo.setBiilId(afBorrowBillDo.getRid());
 			listVo.setBillAmount(afBorrowBillDo.getBillAmount());
 			listVo.setBillNper(afBorrowBillDo.getBillNper());
-			listVo.setBillStatus(afBorrowBillDo.getStatus());
+			if(afBorrowBillDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())
+					&&afBorrowBillDo.getStatus().equals(BorrowBillStatus.NO.getCode())){
+				listVo.setBillStatus(BorrowBillStatus.OVERDUE.getCode());
+				flag = true;
+			}else{
+				listVo.setBillStatus(afBorrowBillDo.getStatus());
+			}
 			listVo.setBorrowNo(afBorrowBillDo.getBorrowNo());
 			listVo.setGmtCreate(afBorrowBillDo.getGmtBorrow());
 			listVo.setName(afBorrowBillDo.getName());
 			listVo.setNper(afBorrowBillDo.getNper());
+			listVo.setType(afBorrowBillDo.getType());
 			list.add(listVo);
 		}
 		vo.setBillList(list);
@@ -88,9 +97,13 @@ public class GetBillDetailListApi implements ApiHandle{
 		vo.setPageNo(pageNo);
 		vo.setRepayDay(repayDate);
 		if(repaymentAmount.compareTo(BigDecimal.ZERO)==0){
-			vo.setRepayStatus(YesNoStatus.YES.getCode());
+			vo.setRepayStatus(BorrowBillStatus.YES.getCode());
 		}else{
-			vo.setRepayStatus(YesNoStatus.NO.getCode());
+			if(flag){
+				vo.setRepayStatus(BorrowBillStatus.OVERDUE.getCode());
+			}else{
+				vo.setRepayStatus(BorrowBillStatus.NO.getCode());
+			}
 		}
 		BigDecimal hasAmount = afBorrowBillService.getMonthlyBillByStatus(userId, billYear, billMonth, YesNoStatus.YES.getCode());
 		vo.setHaspayAmount(hasAmount);

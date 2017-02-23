@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -21,6 +22,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthTdDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -89,10 +91,24 @@ public class AuthRealnameApi implements ApiHandle {
 		afUserAuthService.updateUserAuth(userAuthDo);
 		
 		//TODO 更新user_account中身份证号和真实姓名
+		AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+		afUserAccountDo.setUserId(context.getUserId());
+		afUserAccountDo.setRealName(realName);
+		afUserAccountDo.setIdNumber(idNumber);
+		afUserAccountService.updateUserAccount(afUserAccountDo);
+		
+		AfUserDo afUserDo = new AfUserDo();
+		afUserDo.setRid(context.getUserId());
+		afUserDo.setRealName(realName);
+		afUserService.updateUser(afUserDo);
 		
 		//触发邀请人获得奖励规则
 		AfUserDo userDo = afUserService.getUserById(context.getUserId());
 		couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
+//		
+		String authParamUrl =  ZhimaUtil.authorize(idNumber, realName);
+		resp.addResponseData("zmxyAuthUrl", authParamUrl);
+		
 		return resp;
 	}
 	

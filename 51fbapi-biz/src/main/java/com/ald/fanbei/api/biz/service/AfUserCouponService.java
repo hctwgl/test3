@@ -45,7 +45,7 @@ public interface AfUserCouponService {
 	
 	BigDecimal getUserCouponByInvite(Long userId);
 	/**
-	 * 获取可用优惠券
+	 * 获取用户优惠券
 	 * @return
 	 */
 	AfUserCouponDto getUserCouponById(Long rid);
@@ -56,4 +56,12 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	int updateUserCouponSatusUsedById(Long rid);
+	
+	/**
+	 * 获取类型可用优惠券
+	 * @param userId
+	 * @param type
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserCouponByUserIdAndType(Long userId,String type,BigDecimal amount);
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main
+		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name
 	</sql>
 	
 	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">

@@ -7,28 +7,33 @@ import java.util.Map;
 /**
  * 
  * @类描述：
- * @author hexin 2017年2月9日下午2:14:26
+ * @author hexin 2017年2月22日下午16:12:23
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum BorrowBillStatus {
+public enum UserAccountLogType {
 
-	YES("Y", "已还款"), 
-	NO("N", "未还款"),
-	FORBIDDEN("F", "冻结"),
-	OVERDUE("O","逾期");
+	CASH("CASH", "取现"), 
+	AU_SCORE("AU_SCORE", "授权分数"),
+	AU_AMOUNT("AU_AMOUNT", "授权金额"),
+	FREEZE("FREEZE", "冻结金额"),
+	REBATE("REBATE", "返利"), 
+	SIGN("SIGN", "签到"),
+	REGIST("REGIST", "新注册"),
+	CONSUME("CONSUME", "分期"),
+	REPAYMENT("REPAYMENT", "还款");
     
     private String code;
     private String name;
 
-    private static Map<String,BorrowBillStatus> codeRoleTypeMap = null;
+    private static Map<String,UserAccountLogType> codeRoleTypeMap = null;
 
-    BorrowBillStatus(String code, String name) {
+    UserAccountLogType(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static BorrowBillStatus findRoleTypeByCode(String code) {
-        for (BorrowBillStatus roleType : BorrowBillStatus.values()) {
+    public static UserAccountLogType findRoleTypeByCode(String code) {
+        for (UserAccountLogType roleType : UserAccountLogType.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
@@ -37,12 +42,12 @@ public enum BorrowBillStatus {
     }
 
     
-    public static Map<String,BorrowBillStatus> getCodeRoleTypeMap(){
+    public static Map<String,UserAccountLogType> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
             return codeRoleTypeMap;
         }
-        codeRoleTypeMap = new HashMap<String, BorrowBillStatus>();
-        for(BorrowBillStatus item:BorrowBillStatus.values()){
+        codeRoleTypeMap = new HashMap<String, UserAccountLogType>();
+        for(UserAccountLogType item:UserAccountLogType.values()){
             codeRoleTypeMap.put(item.getCode(), item);
         }
         return codeRoleTypeMap;

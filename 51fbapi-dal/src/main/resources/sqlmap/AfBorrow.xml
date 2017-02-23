@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowDao">
 	<sql id="queryFields">
 		id rid,gmt_create, gmt_modified,borrow_no,user_id,type,name,amount,status,remark,nper,nper_repayment,overdue_num,order_id,
-		goods_id,open_id,bank_id
+		goods_id,open_id,bank_id,nper_amount
 	</sql>
 	
 	<select id="getBorrowById" resultType="AfBorrowDo">
@@ -29,7 +29,8 @@
 			<if test="openId != null">
 		    	open_id, 
 			</if>
-			bank_id
+			bank_id,
+			nper_amount
 			)
 			VALUES
 			(
@@ -48,7 +49,8 @@
 			<if test="openId != null">
 		    	#{openId}, 
 			</if>
-			#{bankId}
+			#{bankId},
+			#{nperAmount}
 			)
 	</insert>
 	
@@ -61,6 +63,7 @@
 		  borrow_no,
 		  name,
 		  status,
+		  type,
 		  gmt_borrow,
 		  bill_year,
 		  bill_month,
@@ -81,6 +84,7 @@
 	  		#{item.borrowNo},  
 	  		#{item.name}, 
 	  		#{item.status},
+	  		#{item.type},
 	  		#{item.gmtBorrow}, 
 	  		#{item.billYear},
 	  		#{item.billMonth},

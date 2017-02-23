@@ -2,15 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowBillDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,borrow_id,borrow_no,name,gmt_borrow,bill_year,bill_month,nper,bill_nper,bill_amount,
+		id rid,gmt_create,gmt_modified,user_id,borrow_id,borrow_no,name,gmt_borrow,bill_year,bill_month,nper,bill_nper,bill_amount,type,
 		status,overdue_status,overdue_days,repayment_id,principle_amount,interest_amount,overdue_interest_amount,poundage_amount,overdue_poundage_amount
-	</sql>
-	
-	<sql id="queryWithFields">
-		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.borrow_id,b.borrow_no,b.name,b.gmt_borrow,
-		b.bill_year,b.bill_month,b.nper,b.bill_nper,b.bill_amount,b.status,b.overdue_status,
-		b.overdue_days,b.repayment_id,b.principle_amount,b.interest_amount,b.overdue_interest_amount,
-		b.poundage_amount,b.overdue_poundage_amount,w.type borrow_type
 	</sql>
 	
 	<select id="getMonthBillList" resultType="AfBorrowBillDo" parameterType="AfBorrowBillQuery">
@@ -40,11 +33,61 @@
 		  bill_month DESC
     </select>
     
-    <select id="getBorrowBillById" resultType="AfBorrowBillDto">
+    <select id="getBorrowBillById" resultType="AfBorrowBillDo">
 		SELECT 
-			<include refid="queryWithFields"/>
-		FROM af_borrow_bill b,
-		af_borrow w WHERE b.is_delete = 0 AND w.is_delete=0
-		AND b.borrow_id=w.id AND b.id = #{rid}
+			<include refid="queryFields"/>
+		FROM af_borrow_bill WHERE is_delete = 0 AND id = #{rid}
+    </select>
+    
+    <select id="getTotalMonthlyBillByUserId" resultType="AfBorrowBillDo">
+		SELECT SUM(bill_amount) bill_amount,GROUP_CONCAT(id) bill_ids
+		FROM af_borrow_bill
+		WHERE is_delete=0 AND user_id = #{userId}
+		AND bill_year=#{billYear} AND bill_month=#{billMonth} AND STATUS ='N'
+    </select>
+    
+    <select id="getBillAmountByIds" resultType="AfBorrowBillDo">
+		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount
+		FROM af_borrow_bill
+		WHERE is_delete=0  AND STATUS ='N'
+		AND id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+    </select>
+    
+    <update id="updateBorrowBillStatusByIds">
+		update af_borrow_bill  set gmt_modified=NOW(),status=#{status}
+		WHERE is_delete=0
+		AND id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</update>
+    
+    
+    <update id="updateTotalBillStatus">
+		update af_borrow_total_bill  set gmt_modified=NOW(),status=#{status}
+		WHERE is_delete=0
+		AND user_id=#{userId} AND bill_year=#{year} AND bill_month=#{month}
+	</update>
+    
+    <select id="getUserMonthlyBillNotpayCount" resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM af_borrow_bill
+		WHERE is_delete=0  AND STATUS ='N' AND user_id=#{userId} AND bill_year=#{year} AND bill_month=#{month}
+    </select>
+    
+    <select id="getBillAmountByCashIds" resultType="AfBorrowBillDo">
+		SELECT SUM(b.bill_amount) bill_amount,SUM(b.principle_amount) principle_amount
+		FROM af_borrow_bill b,af_borrow w
+		WHERE b.is_delete=0 and w.is_delete=0 and b.borrow_id=w.id and (w.type = 'CASH' or w.type = 'TOCASH')
+		AND b.id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
     </select>
 </mapper>

@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.dal.dao;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -37,15 +36,6 @@ public interface AfBorrowDao {
 	 * @return
 	 */
 	AfBorrowDo getBorrowById(@Param("id")Long id);
-	
-	/**
-	 * 修改借款信息
-	 * @param id
-	 * @param totalInterest
-	 * @param totalPoundage
-	 * @return
-	 */
-	int updateBorrow(@Param("id")Long id,@Param("totalInterest")BigDecimal totalInterest,@Param("totalPoundage")BigDecimal totalPoundage);
 	
 	/**
 	 * 获取最近借款编号

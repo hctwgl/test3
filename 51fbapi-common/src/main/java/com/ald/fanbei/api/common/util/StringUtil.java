@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.common.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -114,5 +115,17 @@ public class StringUtil extends StringUtils{
     	}else{
     		return str.substring(len-num);
     	}
+    }
+    
+    public static List<String> splitToList(String source, String sep){
+    	List<String> result = new ArrayList<String>();
+        if (isBlank(source)) {
+            return result;
+        }
+        String[] tempResult = source.split(sep);
+        for(String item:tempResult){
+        	result.add(item);
+        }
+    	return result;
     }
 }

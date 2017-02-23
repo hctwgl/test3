@@ -102,6 +102,8 @@ public class Constants {
     public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
     public static final String CACHEKEY_BORROWNO_LOCK				  = "ala_borrow_no_lock";
     public static final String CACHEKEY_BORROWNO    				  = "ala_borrow_no";
+    public static final String CACHEKEY_REPAYNO_LOCK				  = "ala_repay_no_lock";
+    public static final String CACHEKEY_REPAYNO    				      = "ala_repay_no";
     public static final String CONFIG_KEY_LOCK_TRY_TIMES              = "fbapi.sync.lock.try.times";
     public static final String CONFKEY_KXG_PASSWORD					  = "fbapi.kxg.password";
     public static final String CONFKEY_KXG_PAY_PASSWORD				  = "fbapi.kxg.pay.password";

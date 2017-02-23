@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +14,6 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -45,35 +43,39 @@ public class GetMyBillListApi implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		List<AfBorrowTotalBillDo> billList = afBorrowBillService.getUserFullBillList(userId);
-		Map<String,Object> map = getBillList(billList);
-		resp.setResponseData(map);
+		resp.setResponseData(getBillList(billList));
 		return resp;
 	}
 	
-	private Map<String,Object> getBillList(List<AfBorrowTotalBillDo> billList){
+	private List<Object> getBillList(List<AfBorrowTotalBillDo> billList){
+		List<Object> dataList = new ArrayList<Object>();
 		List<Map<String,Object>> monthList = new ArrayList<Map<String,Object>>();
-		TreeMap<Integer, Object> treemap = new TreeMap<Integer, Object>();
-		Map<String,Object> resultMap = new HashMap<String,Object>();
 		int year = 0;
 		for (int i=0;i<billList.size();i++) {
 			AfBorrowTotalBillDo afBorrowBillDo = billList.get(i);
 			Map<String,Object> dataMap = new HashMap<String,Object>();
-			dataMap.put("billMonth", String.format("%2d", afBorrowBillDo.getBillMonth()));
+			dataMap.put("billMonth", String.format("%02d", afBorrowBillDo.getBillMonth()));
 			dataMap.put("billAmount", afBorrowBillDo.getBillAmount());
-			if(afBorrowBillDo.getStatus().contains(BorrowBillStatus.NO.getCode())){
-				dataMap.put("billStatus", BorrowBillStatus.NO.getCode());
-			}else{
-				dataMap.put("billStatus", BorrowBillStatus.YES.getCode());
-			}
+			dataMap.put("billStatus", afBorrowBillDo.getStatus());
 			if(year!=0&&year!=afBorrowBillDo.getBillYear()){
+				Map<String, Object> yearMap = new HashMap<String, Object>();
+				yearMap.put("billYear", year);
+				yearMap.put("monthList", monthList);
+				dataList.add(yearMap);
 				monthList = new ArrayList<Map<String,Object>>();
 			}
-			year = afBorrowBillDo.getBillYear();
+			if(i==billList.size()-1){
+				monthList.add(dataMap);
+				Map<String, Object> yearMap = new HashMap<String, Object>();
+				yearMap.put("billYear", year);
+				yearMap.put("monthList", monthList);
+				dataList.add(yearMap);
+				break;
+			}
 			monthList.add(dataMap);
-			treemap.put(afBorrowBillDo.getBillYear(), monthList);
+			year = afBorrowBillDo.getBillYear();
 		}
-		resultMap.put("billYear", treemap.descendingMap());
-		return resultMap;
+		return dataList;
 	}
 	
 }

@@ -56,4 +56,12 @@ public interface AfUserCouponDao {
 	 * @return
 	 */
 	int updateUserCouponSatusUsedById(@Param("rid")Long rid);
+	
+	/**
+	 * 获取类型可用优惠券
+	 * @param userId
+	 * @param type
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserCouponByUserIdAndType(@Param("userId")Long userId,@Param("type")String type,@Param("amount")BigDecimal amount);
 }

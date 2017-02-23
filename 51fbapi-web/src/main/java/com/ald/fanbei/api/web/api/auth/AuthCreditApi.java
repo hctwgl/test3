@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.auth;
 
+import java.net.URLDecoder;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -7,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.ZhimaAuthResultBo;
 import com.ald.fanbei.api.biz.service.AfAuthZmService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -16,7 +18,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthZmDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -44,15 +45,20 @@ public class AuthCreditApi implements ApiHandle {
 	@Resource
 	AfUserAuthService afUserAuthService;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		
-		String openId = (String)requestDataVo.getParams().get("openId");
-		if(StringUtil.isBlank(openId)){
-			throw new FanbeiException("authCreditApi param error",FanbeiExceptionCode.PARAM_ERROR);
+		String respBody = (String)requestDataVo.getParams().get("respBody");
+		String sign = (String)requestDataVo.getParams().get("sign");
+		
+		ZhimaAuthResultBo zarb = ZhimaUtil.decryptAndVerifySign(URLDecoder.decode(respBody), URLDecoder.decode(sign));
+		if(!zarb.isSuccess()){
+			throw new FanbeiException(FanbeiExceptionCode.ZM_AUTH_ERROR);
 		}
+		String openId = zarb.getOpenId();
 		
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
 		String idNumber = userAccount.getIdNumber();
@@ -92,7 +98,8 @@ public class AuthCreditApi implements ApiHandle {
 		afUserAuthService.updateUserAuth(userAuth);
 		
 		// TODO 计算信用分 更新userAccount
+		resp.addResponseData("tooLow", 'N');
+		resp.addResponseData("creditAmount", 200);
 		return resp;
 	}
-
 }

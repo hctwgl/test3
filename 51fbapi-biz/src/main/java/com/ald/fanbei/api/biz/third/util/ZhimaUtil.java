@@ -1,15 +1,14 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.bo.ZhimaAuthResultBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.antgroup.zmxy.openplatform.api.DefaultZhimaClient;
@@ -49,9 +48,9 @@ public class ZhimaUtil extends AbstractThird {
 	private synchronized static DefaultZhimaClient getZhimaClient() {
 		if (ZhimaClient == null) {
 			String gatewayUrl = "https://zmopenapi.zmxy.com.cn/openapi.do";
-			String appId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-			String privateKey =  AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PRIKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-			String zhimaPublicKey =  AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String appId = "1001908";//AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String privateKey =  "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAMNDc33KJ72xZcwYhSjpqPuPGv/TInDAomJrvovLOJ9U/iPKbq5fRT1bL0OmNnXr8ShOPhqK+C31uvFN0Flo6KbaALwz7l8AeuGqiu2y6oOk9ESpxfnp3f9G/ljNNnUKFO9egGIrnLZZdHAysECxDaxPjCUTOqa5i2+Fuokq9EVdAgMBAAECgYA1m+o0afEZQoApVb4Ran1re3G1NPlqrWinzt8EsGm+TO5tUyGqHBv9aXCDiTnAjGOsZjbkwKy8qY+Guo9uTMA6vBW3Dg0F7clD9QJ9qxia2HwAcaODwpZ26cxjZZjmP6SY+wZNBeaZGcqDiSvf1ObJyKhW3WCPahiOThj5WODaPQJBAOkb0y1AYkbiO+hzCf9L6M+awmMA+hVW6BYLC7V9CaBhSp6E5FXb2F6i7vSLhjv7MZFqyUvFP2eBHtGdSpi9HCcCQQDWcDn4m3aEbKUK+cnBjxGl6p5o6q7YJw9ylChJIhEhTIMMvLQq+6f62jGAKyxpHK9r9pi/xQLHHvQ6ZE5EN1DbAkAtPYAzhQ5NsXRs/X6QNHw/ZkqZikP+xjoOpSAlndmzbY5cy2/BFgSdAUQc48Mueua40R+1+9b9UHrZtYwXroP7AkBRFylk8O01kJws9V6tWnvzATEcPbsWtFasHojJdx+BNxzLoUSEiJvySba0YB8wNI/FxP/obQjq4bK7rhjGxSBHAkBd0f4QCx1RxfAkr68ery7WWtAtB8RW+EKCnowIaW3iZkakV9Zw39t8PNVf78WddkT8IPqqWITHT+YAZ795q2MV";//AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PRIKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String zhimaPublicKey =  "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1jiVoaKsIQtk0PU3HolnS9hFEQ5Sfv2naxbOBSR6xix/jQbdzZ3sQyQ8xV6Z4xgary5vnxGOMtJDIUIshUJE3ByQJ0apOa+YqFsZpFJBmPwpLwIG54R0ZtOkhTJZ3ZNXgUo4MOJgDowfz/GcDyimZSS7NlecX4wN4JXLoPZH7KwIDAQAB";//AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 			ZhimaClient = new DefaultZhimaClient(gatewayUrl, appId, privateKey,zhimaPublicKey);
 		}
 		return ZhimaClient;
@@ -67,7 +66,7 @@ public class ZhimaUtil extends AbstractThird {
 		ZhimaCreditWatchlistiiGetRequest req = new ZhimaCreditWatchlistiiGetRequest();
 		req.setPlatform(DEFAULT_PLATFORM);
 		req.setOpenId(openId);
-		req.setProductCode("w1010100000000000103");
+		req.setProductCode("w1010100100000000022");
 		String transactionId = getTransactionId(CommonUtil.getRandomNumber(13));
 		req.setTransactionId(transactionId);
 		try {
@@ -78,6 +77,48 @@ public class ZhimaUtil extends AbstractThird {
 			logger.error("watchlistii error;|" + openId, e);
 			throw new FanbeiException(FanbeiExceptionCode.ZM_ERROR);
 		}
+	}
+	
+	public static ZhimaAuthResultBo decryptAndVerifySign(String respBody,String sign){
+		ZhimaAuthResultBo zarb = new ZhimaAuthResultBo();
+		
+		try{
+			zarb.setSuccess(false);
+			String result = getZhimaClient().decryptAndVerifySign(respBody , sign);
+			thirdLog.info(StringUtil.appendStrs("methodName=decryptAndVerifySign",",params=", respBody , "|" , sign));
+			if(StringUtil.isBlank(result)){
+				throw new FanbeiException("zhima auth error",FanbeiExceptionCode.ZM_AUTH_ERROR);
+			}
+			String[] resultFields = result.split("&");
+			for(String item:resultFields){
+				if(StringUtil.isNotBlank(item)){
+					String[] keyValue = item.split("=");
+					switch(keyValue[0]){
+						case "success":
+							zarb.setSuccess(new Boolean(keyValue[1]));
+							break;
+						case "open_id":
+							zarb.setOpenId(keyValue[1]);
+							break;
+						case "app_id":
+							zarb.setAppId(keyValue[1]);
+							break;
+						case "error_code":
+							zarb.setErrorCode(keyValue[1]);
+							break;
+						case "error_message":
+							zarb.setErrorMssage(keyValue[1]);
+						default:
+							break;
+					}
+				}
+			}
+			
+		}catch(Exception e){
+			logger.error(StringUtil.appendStrs("methodName=decryptAndVerifySign", ",params=", respBody , "|" , sign),e);
+		}
+		
+		return zarb;
 	}
 
 	/**
@@ -128,7 +169,7 @@ public class ZhimaUtil extends AbstractThird {
 		req.setMobile(mobile);
 		req.setName(realName);
 		req.setPlatform(DEFAULT_PLATFORM);
-		req.setProductCode("w1010100100000000022");
+		req.setProductCode("w1010100000000000103");
 //		req.setScene(scene);
 		String transactionId = getTransactionId(CommonUtil.getRandomNumber(13));
 		req.setTransactionId(transactionId);
@@ -182,13 +223,14 @@ public class ZhimaUtil extends AbstractThird {
 		ZhimaAuthInfoAuthorizeRequest req = new ZhimaAuthInfoAuthorizeRequest();
 		req.setChannel("apppc");
 		req.setPlatform("zmop");
-		req.setIdentityType("1");// 必要参数
-		Map<String,String> identityParam = new HashMap<String, String>();
+		req.setApiVersion("1.0");
+		req.setIdentityType("2");// 必要参数
+		Map<String,String> identityParam = new LinkedHashMap<String, String>();
 		identityParam.put("name", realName);
 		identityParam.put("certType", "IDENTITY_CARD");
 		identityParam.put("certNo", idNumber);
-		Map<String,String> bizParam = new HashMap<String, String>();
-		bizParam.put("auth_code", "M_APPSDK");
+		Map<String,String> bizParam = new LinkedHashMap<String, String>();
+		bizParam.put("auth_code", "M_H5");
 		bizParam.put("channelType", "app");
 		bizParam.put("state", idNumber.substring(8) + "_" + System.currentTimeMillis());
 		
@@ -197,7 +239,10 @@ public class ZhimaUtil extends AbstractThird {
 		
 //		Map<String,String> paramsMap = new HashMap<String, String>();
 		try {
+			System.out.println(identityParam);
+			System.out.println(bizParam);
 			String url = getZhimaClient().generatePageRedirectInvokeUrl(req);
+			System.out.println("url" + url);
 			return url;
 //			String paramsStr = url.substring(url.indexOf("?")+1);
 //			String[] paramsArr = paramsStr.split("&");
@@ -243,7 +288,6 @@ public class ZhimaUtil extends AbstractThird {
 	private static String getTransactionId(String last13Characts){
 		return System.currentTimeMillis() + last13Characts;
 	}
-	
 	
 //	//芝麻开放平台地址
 //    private String gatewayUrl     = "https://zmopenapi.zmxy.com.cn/openapi.do";

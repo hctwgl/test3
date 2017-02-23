@@ -8,10 +8,10 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 
 /**
@@ -44,8 +44,40 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService{
 	}
 
 	@Override
-	public AfBorrowBillDto getBorrowBillById(Long rid) {
+	public AfBorrowBillDo getBorrowBillById(Long rid) {
 		return afBorrowBillDao.getBorrowBillById(rid);
+	}
+
+	@Override
+	public AfBorrowBillDo getTotalMonthlyBillByUserId(Long userId,
+			int billYear, int billMonth) {
+		return afBorrowBillDao.getTotalMonthlyBillByUserId(userId, billYear, billMonth);
+	}
+
+	@Override
+	public AfBorrowBillDo getBillAmountByIds(String ids) {
+		return afBorrowBillDao.getBillAmountByIds(StringUtil.splitToList(ids, ","));
+	}
+
+	@Override
+	public int updateBorrowBillStatusByIds(String ids, String status) {
+		return afBorrowBillDao.updateBorrowBillStatusByIds(StringUtil.splitToList(ids, ","), status);
+	}
+
+	@Override
+	public int getUserMonthlyBillNotpayCount(int year, int month, Long userId) {
+		return afBorrowBillDao.getUserMonthlyBillNotpayCount(year, month, userId);
+	}
+
+	@Override
+	public int updateTotalBillStatus(int year, int month, Long userId,
+			String status) {
+		return afBorrowBillDao.updateTotalBillStatus(year, month, userId, status);
+	}
+
+	@Override
+	public AfBorrowBillDo getBillAmountByCashIds(String ids) {
+		return afBorrowBillDao.getBillAmountByCashIds(StringUtil.splitToList(ids, ","));
 	}
 
 }

@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 
 /**
@@ -49,5 +48,55 @@ public interface AfBorrowBillDao {
 	 * @param rid
 	 * @return
 	 */
-	public AfBorrowBillDto getBorrowBillById(@Param("rid")Long rid);
+	public AfBorrowBillDo getBorrowBillById(@Param("rid")Long rid);
+	
+	/**
+	 * 获取用户某期全部账单
+	 * @param userId
+	 * @param billYear
+	 * @param billMonth
+	 * @return
+	 */
+	AfBorrowBillDo getTotalMonthlyBillByUserId(@Param("userId")Long userId,@Param("billYear")int billYear,@Param("billMonth")int billMonth);
+	
+	/**
+	 * 获取账单金额,本金总额
+	 * @param ids
+	 * @return
+	 */
+	public AfBorrowBillDo getBillAmountByIds(@Param("ids")List<String> ids);
+	
+	/**
+	 * 变更账单状态
+	 * @param ids
+	 * @return
+	 */
+	int updateBorrowBillStatusByIds(@Param("ids")List<String> ids,@Param("status")String status);
+	
+	/**
+	 * 获取未还款账单数量
+	 * @param year
+	 * @param month
+	 * @param userId
+	 * @return
+	 */
+	int getUserMonthlyBillNotpayCount(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId);
+	
+	/**
+	 * 修改总账单状态
+	 * @param year
+	 * @param month
+	 * @param userId
+	 * @param status
+	 * @return
+	 */
+	int updateTotalBillStatus(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId,
+			@Param("status")String status);
+	
+	/**
+	 * 获取现金借款的账单金额
+	 * @param ids
+	 * @return
+	 */
+	AfBorrowBillDo getBillAmountByCashIds(@Param("ids")List<String> ids);
 }

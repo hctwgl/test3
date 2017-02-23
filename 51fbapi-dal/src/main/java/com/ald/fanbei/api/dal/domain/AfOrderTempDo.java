@@ -10,7 +10,7 @@ import com.ald.fanbei.api.common.AbstractSerial;
  * @author hexin 2017年2月20日下午18:08:54
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class AfUserOrderDo extends AbstractSerial{
+public class AfOrderTempDo extends AbstractSerial{
 
 	private static final long serialVersionUID = -3189424376395191989L;
 	private Long rid;

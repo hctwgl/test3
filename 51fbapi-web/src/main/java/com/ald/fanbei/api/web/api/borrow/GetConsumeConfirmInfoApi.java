@@ -141,7 +141,7 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 	    }
 	    vo.setGoodsId(goodsId);
 		vo.setSaleAmount(goodsAmount);
-		vo.setBankName(card.getBankname());
+		vo.setBankName(card.getBankName());
 		vo.setCardId(card.getRid());
 		vo.setCardNo(StringUtil.getLastString(card.getCardNumber(), 4));
 		vo.setTimeLimitList(list);
