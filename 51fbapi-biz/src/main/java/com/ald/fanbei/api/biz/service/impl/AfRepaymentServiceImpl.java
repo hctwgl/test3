@@ -149,4 +149,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		accountLog.setType(type.getCode());
 		return accountLog;
 	}
+
+	@Override
+	public AfRepaymentDo getRepaymentById(Long rid) {
+		return afRepaymentDao.getRepaymentById(rid);
+	}
 }

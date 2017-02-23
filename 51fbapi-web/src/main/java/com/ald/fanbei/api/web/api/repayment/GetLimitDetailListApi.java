@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.web.api.repayment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +45,10 @@ public class GetLimitDetailListApi implements ApiHandle{
 		query.setUserId(userId);
 		query.setPageNo(pageNo);
 		List<AfLimitDetailDto> detailList = afUserAccountService.getLimitDetailList(query);
-		resp.setResponseData(getLimitDetailVoList(detailList));
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("limitList", getLimitDetailVoList(detailList));
+		map.put("pageNo", pageNo);
+		resp.setResponseData(map);
 		return resp;
 	}
 	

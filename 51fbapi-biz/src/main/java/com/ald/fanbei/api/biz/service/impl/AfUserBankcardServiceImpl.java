@@ -37,4 +37,9 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 		return afUserBankcardDao.deleteUserBankcardByIdAndUserId(userId, rid);
 	}
 
+	@Override
+	public AfUserBankcardDo getUserBankcardById(Long id) {
+		return afUserBankcardDao.getUserBankcardById(id);
+	}
+
 }

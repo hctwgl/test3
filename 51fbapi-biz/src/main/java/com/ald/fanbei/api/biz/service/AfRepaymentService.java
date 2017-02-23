@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 
 /**
@@ -34,4 +35,11 @@ public interface AfRepaymentService {
 	 * @return
 	 */
 	String getCurrentLastRepayNo(Date current);
+	
+	/**
+     * 通过id获取详情
+     * @param rid
+     * @return
+     */
+    AfRepaymentDo getRepaymentById(Long rid);
 }

@@ -48,4 +48,11 @@
 	<select id="getCurrentLastRepayNo" resultType="java.lang.String">
 		select repay_no from af_repayment WHERE gmt_create=#{currentDate} ORDER BY id DESC LIMIT 1;
 	</select>
+	
+	<select id="getRepaymentById" resultType="AfRepaymentDo">
+		select 
+			<include refid="queryFields"/> 
+		from af_repayment WHERE is_delete=0 and id=#{rid};
+	</select>
+	
 </mapper>

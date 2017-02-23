@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 
 /**
@@ -63,4 +64,11 @@ public interface AfBorrowService {
      * @return
      */
     int getBorrowInterestCountByBorrowId(Long borrowId);
+    
+    /**
+     * 通过借款id获取借款信息
+     * @param id
+     * @return
+     */
+    AfBorrowDo getBorrowById(Long id);
 }

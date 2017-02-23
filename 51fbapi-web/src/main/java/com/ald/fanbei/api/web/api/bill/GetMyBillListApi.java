@@ -43,7 +43,9 @@ public class GetMyBillListApi implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		List<AfBorrowTotalBillDo> billList = afBorrowBillService.getUserFullBillList(userId);
-		resp.setResponseData(getBillList(billList));
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("yearList", getBillList(billList));
+		resp.setResponseData(map);
 		return resp;
 	}
 	

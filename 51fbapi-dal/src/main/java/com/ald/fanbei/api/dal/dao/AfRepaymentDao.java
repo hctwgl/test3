@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import java.util.Date;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 
 /**
@@ -18,5 +20,17 @@ public interface AfRepaymentDao {
     */
     int addRepayment(AfRepaymentDo afRepaymentDo);
     
+    /**
+     * 获取最近还款编号
+     * @param current
+     * @return
+     */
     public String getCurrentLastRepayNo(Date current);
+    
+    /**
+     * 通过id获取详情
+     * @param rid
+     * @return
+     */
+    AfRepaymentDo getRepaymentById(@Param("rid")Long rid);
 }
