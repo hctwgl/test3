@@ -53,6 +53,7 @@ public class GetUserInfoApi implements ApiHandle {
 		userVo.setEmail(userDo.getEmail());
 		userVo.setProvince(userDo.getProvince());
 		userVo.setCity(userDo.getCity());
+		userVo.setRealName(userDo.getRealName());
 		userVo.setCounty(userDo.getCounty());
 		userVo.setAddress(userDo.getAddress());
 		return userVo;

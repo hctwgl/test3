@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfCashRecordDao">
+
+
+	<insert id="addCashRecord" parameterType="AfCashRecordDo" keyProperty="rid" useGeneratedKeys="true">
+		INSERT INTO af_cash_record
+		(
+			gmt_create,
+			gmt_modified,
+			type,
+			status,
+			user_id,
+			account,
+			amount
+		)
+		VALUES
+		(
+			NOW(),
+			NOW(),
+			#{type},
+			#{status},
+			#{userId},
+			#{account},
+			#{amount}
+		)
+	</insert>
+	
+</mapper>

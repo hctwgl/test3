@@ -16,6 +16,7 @@ public class AfUserVo extends AbstractSerial {
 	private String mobile;
 	private String nick;
 	private String userName;
+	private String realName;
 	private String email;
 	private String province;
 	private String city;
@@ -134,6 +135,20 @@ public class AfUserVo extends AbstractSerial {
 
 	public void setFailCount(Integer failCount) {
 		this.failCount = failCount;
+	}
+
+	/**
+	 * @return the realName
+	 */
+	public String getRealName() {
+		return realName;
+	}
+
+	/**
+	 * @param realName the realName to set
+	 */
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 
 	

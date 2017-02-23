@@ -21,8 +21,11 @@
 			af_user_bankcard
 		WHERE
 			is_delete=0 
-		AND user_id = #{userId} 
-		
+		AND 
+			user_id = #{userId} 
+		ORDER BY
+			is_main 
+		DESC
 	</select>
 	
 	<update id="deleteUserBankcardByIdAndUserId">

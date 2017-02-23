@@ -3,7 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +14,12 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：
@@ -39,6 +37,9 @@ public class GetBankCardListApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 
         Long userId = context.getUserId();
+        if (userId == null) {
+			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
+		}
         List<AfUserBankcardDo> list = afUserBankcardService.getUserBankcardByUserId(userId);
     
         Map<String, Object> data = new HashMap<String, Object>();
