@@ -45,6 +45,7 @@ public enum FanbeiExceptionCode {
     USER_ACCOUNT_NOT_EXIST_ERROR("USER_ACCOUNT_NOT_EXIST_ERROR",1118,"user not exist error","账户不存在"),
     USER_ACCOUNT_IDNUMBER_INVALID_ERROR("USER_ACCOUNT_IDNUMBER_INVALID_ERROR",1119,"id number error","身份证输入有误"),
     USER_PAY_PASSWORD_INVALID_ERROR("USER_PAY_PASSWORD_INVALID_ERROR",1110,"pay password error","支付密码输入有误"),
+    APPLY_CASHED_AMOUNT_MORE_ACCOUNT("APPLY_CASHED_AMOUNT_MORE_ACCOUNT",1111,"apply cash amount more than account money","申请金额大于账户可提现金额"),
 
     
     USER_PASSWORD_ERROR_FIRST("USER_PASSWORD_ERROR_FIRST",1131,"user password error first","密码输入有误,剩余次数(5)"),
