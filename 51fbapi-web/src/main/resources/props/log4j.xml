@@ -82,14 +82,14 @@
 	</logger>
 
 	<!-- [应用Logger] BI日志 -->
-	<logger name="fanbei-BI" additivity="true">
+	<logger name="FANBEI_BI" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_BI_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
 
 	<!-- [应用Logger] THIRD日志 -->
-	<logger name="fanbei-THIRD" additivity="true">
+	<logger name="FANBEI_THIRD" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_THIRD_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
