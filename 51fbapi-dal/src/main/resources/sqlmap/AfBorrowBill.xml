@@ -47,4 +47,56 @@
 		af_borrow w WHERE b.is_delete = 0 AND w.is_delete=0
 		AND b.borrow_id=w.id AND b.id = #{rid}
     </select>
+    
+    <select id="getTotalMonthlyBillByUserId" resultType="AfBorrowBillDo">
+		SELECT SUM(bill_amount) bill_amount,GROUP_CONCAT(id) bill_ids
+		FROM af_borrow_bill
+		WHERE is_delete=0 AND user_id = #{userId}
+		AND bill_year=#{billYear} AND bill_month=#{billMonth} AND STATUS ='N'
+    </select>
+    
+    <select id="getBillAmountByIds" resultType="AfBorrowBillDo">
+		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount
+		FROM af_borrow_bill
+		WHERE is_delete=0  AND STATUS ='N'
+		AND id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+    </select>
+    
+    <update id="updateBorrowBillStatusByIds">
+		update af_borrow_bill  set gmt_modified=NOW(),status=#{status}
+		WHERE is_delete=0
+		AND id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</update>
+    
+    
+    <update id="updateTotalBillStatus">
+		update af_borrow_total_bill  set gmt_modified=NOW(),status=#{status}
+		WHERE is_delete=0
+		AND user_id=#{userId} AND bill_year=#{year} AND bill_month=#{month}
+	</update>
+    
+    <select id="getUserMonthlyBillNotpayCount" resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM af_borrow_bill
+		WHERE is_delete=0  AND STATUS ='N' AND user_id=#{userId} AND bill_year=#{year} AND bill_month=#{month}
+    </select>
+    
+    <select id="getBillAmountByCashIds" resultType="AfBorrowBillDo">
+		SELECT SUM(b.bill_amount) bill_amount,SUM(b.principle_amount) principle_amount
+		FROM af_borrow_bill b,af_borrow w
+		WHERE b.is_delete=0 and w.is_delete=0 and b.borrow_id=w.id and (w.type = 'CASH' or w.type = 'TOCASH')
+		AND b.id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+    </select>
 </mapper>

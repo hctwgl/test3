@@ -155,6 +155,8 @@
 				<entry key="/bill/getMyBillList" value-ref="getMyBillListApi" />
 				<entry key="/bill/getBillDetailList" value-ref="getBillDetailListApi" />
 				<entry key="/bill/getBillDetailInfo" value-ref="getBillDetailInfoApi" />
+				<entry key="/repay/getRepaymentConfirmInfo" value-ref="getRepaymentConfirmInfoApi" />
+				<entry key="/repay/submitRepayment" value-ref="submitRepaymentApi" />
 				
 				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
 				 -->

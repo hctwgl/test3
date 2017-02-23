@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfRepaymentDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,repay_no,repayment_amount,actual_amount,bill_ids,pay_trade_no,trade_no,user_coupon_id,coupon_amount,rebate_amount,card_id
+	</sql>
+	
+	<insert id="addRepayment" parameterType="AfRepaymentDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_repayment(
+		gmt_create , 
+		gmt_modified , 
+		repay_no , 
+		repayment_amount , 
+		actual_amount , 
+		bill_ids , 
+		pay_trade_no , 
+		trade_no , 
+		<if test="userCouponId !=null ">
+		user_coupon_id , 
+		</if>
+		<if test="couponAmount !=null ">
+		coupon_amount ,
+		</if>
+		rebate_amount , 
+		card_id)
+		VALUES (
+    		#{gmtCreate},
+    		#{gmtCreate},
+    		#{repayNo},
+    		#{repaymentAmount},
+    		#{actualAmount},
+    		#{billIds},
+    		#{payTradeNo},
+    		#{tradeNo},
+    		<if test="userCouponId !=null ">
+			#{userCouponId}, 
+			</if>
+			<if test="couponAmount !=null ">
+			#{couponAmount},
+			</if>
+    		#{rebateAmount},
+    		#{cardId}
+		)
+	</insert>
+	
+	<select id="getCurrentLastRepayNo" resultType="java.lang.String">
+		select repay_no from af_repayment WHERE gmt_create=#{currentDate} ORDER BY id DESC LIMIT 1;
+	</select>
+</mapper>

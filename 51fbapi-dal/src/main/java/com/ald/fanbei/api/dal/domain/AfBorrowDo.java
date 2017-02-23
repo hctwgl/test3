@@ -48,6 +48,8 @@ public class AfBorrowDo extends AbstractSerial{
 	private String openId;//商品混淆id
 	
 	private Long bankId;//银行卡id
+	
+	private BigDecimal nperAmount;//每期应还金额
 
 	public Long getRid() {
 		return rid;
@@ -184,5 +186,12 @@ public class AfBorrowDo extends AbstractSerial{
 	public void setBankId(Long bankId) {
 		this.bankId = bankId;
 	}
-	
+
+	public BigDecimal getNperAmount() {
+		return nperAmount;
+	}
+
+	public void setNperAmount(BigDecimal nperAmount) {
+		this.nperAmount = nperAmount;
+	}
 }

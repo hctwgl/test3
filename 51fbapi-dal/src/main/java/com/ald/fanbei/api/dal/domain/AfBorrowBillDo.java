@@ -37,6 +37,7 @@ public class AfBorrowBillDo extends AbstractSerial{
 	private BigDecimal overdueInterestAmount;
 	private BigDecimal poundageAmount;
 	private BigDecimal overduePoundageAmount;
+	private String	billIds;
 	public Long getRid() {
 		return rid;
 	}
@@ -169,5 +170,11 @@ public class AfBorrowBillDo extends AbstractSerial{
 	public void setBorrowNo(String borrowNo) {
 		this.borrowNo = borrowNo;
 	}
-
+	public String getBillIds() {
+		return billIds;
+	}
+	public void setBillIds(String billIds) {
+		this.billIds = billIds;
+	}
+	
 }

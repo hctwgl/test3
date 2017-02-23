@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBorrowInterestDo;
 
 /**
@@ -16,4 +18,11 @@ public interface AfBorrowInterestDao {
     * @return
     */
     int addBorrowInterest(AfBorrowInterestDo afBorrowInterestDo);
+    
+    /**
+     * 获取利息总天数
+     * @param borrowId
+     * @return
+     */
+    int getBorrowInterestCountByBorrowId(@Param("borrowId")Long borrowId);
 }

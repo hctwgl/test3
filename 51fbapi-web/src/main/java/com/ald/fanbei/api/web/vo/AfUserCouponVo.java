@@ -14,6 +14,8 @@ import com.ald.fanbei.api.common.AbstractSerial;
 public class AfUserCouponVo extends AbstractSerial{
 	
 	private static final long serialVersionUID = 3223281017295487747L;
+	
+	private Long		userCouponId;//优惠券id
 
 	private String 		name;//优惠券名字
 	
@@ -83,6 +85,14 @@ public class AfUserCouponVo extends AbstractSerial{
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Long getUserCouponId() {
+		return userCouponId;
+	}
+
+	public void setUserCouponId(Long userCouponId) {
+		this.userCouponId = userCouponId;
 	}
 	
 }

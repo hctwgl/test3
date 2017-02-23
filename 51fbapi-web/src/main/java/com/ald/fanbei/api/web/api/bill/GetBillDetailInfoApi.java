@@ -1,8 +1,5 @@
 package com.ald.fanbei.api.web.api.bill;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,10 +10,11 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -60,35 +58,26 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		vo.setBillAmount(billDto.getBillAmount());
 		vo.setBillId(billDto.getRid());
 		vo.setBillNper(billDto.getBillNper());
-		vo.setBillStatus(billDto.getStatus());
 		vo.setBorrowAmount(billDto.getPrincipleAmount());
 		vo.setBorrowNo(billDto.getBorrowNo());
-		//获取账单还款日
-		Calendar calendar=Calendar.getInstance();
-        calendar.set(billDto.getBillYear(), billDto.getBillMonth(),1);
-        Date date=afBorrowService.getReyLimitDate(DateUtil.addMonths(calendar.getTime(), 1));
-        Date now = new Date();
-		Calendar c1 = Calendar.getInstance();//还款日时间
-		Calendar c2 = Calendar.getInstance();//借款时间
-		Calendar c3 = Calendar.getInstance();//当前时间
-		c1.setTime(date);
-		c2.setTime(billDto.getGmtBorrow());
-		c3.setTime(now);
-        int interestDay =0;
 		if(BorrowType.CASH.getCode().equals(billDto.getBorrowType())
 				||BorrowType.TOCASH.getCode().equals(billDto.getBorrowType())){
 			vo.setBorrowType(BorrowType.CASH.getCode());
-		}else{
+			int count = afBorrowService.getBorrowInterestCountByBorrowId(billDto.getBorrowId());
+			vo.setInterestDay(count-billDto.getOverdueDays());//总利息天数-逾期利息天数
+		}else if(BorrowType.CONSUME.getCode().equals(billDto.getBorrowType())
+				||BorrowType.TOCONSUME.getCode().equals(billDto.getBorrowType())
+				||BorrowType.CONSUME_TEMP.getCode().equals(billDto.getBorrowType())){
 			vo.setBorrowType(BorrowType.CONSUME.getCode());
+			vo.setInterestDay(0);
 		}
-		if(date.before(now)){
-			vo.setOverdueDay((int) DateUtil.getNumberOfDaysBetween(c3, c1));
-			interestDay = (int) DateUtil.getNumberOfDaysBetween(c1, c2);
+		if(billDto.getOverdueStatus().equals(YesNoStatus.YES.getCode())
+				&& billDto.getStatus().equals(BorrowBillStatus.NO.getCode())){
+			vo.setBillStatus(BorrowBillStatus.OVERDUE.getCode());
 		}else{
-			vo.setOverdueDay(0);
-			interestDay = (int) DateUtil.getNumberOfDaysBetween(c3, c2);
+			vo.setBillStatus(billDto.getStatus());
 		}
-		vo.setInterestDay(interestDay);
+		vo.setOverdueDay(billDto.getOverdueDays());
 		vo.setGmtBorrow(billDto.getGmtBorrow());
 		vo.setInterestAmount(billDto.getInterestAmount());
 		vo.setName(billDto.getName());

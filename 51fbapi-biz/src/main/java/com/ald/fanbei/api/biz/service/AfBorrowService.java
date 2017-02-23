@@ -15,20 +15,6 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 public interface AfBorrowService {
 
 	/**
-	 * 现金借款转账成功后处理
-	 * @param borrowId
-	 * @return
-	 */
-	int dealCashWithTransferSuccess(Long borrowId,AfUserAccountDto userDto);
-	
-	/**
-	 * 消费分期转账成功后处理
-	 * @param borrowId
-	 * @return
-	 */
-	int dealConsumeWithTransferSuccess(Long borrowId);
-	
-	/**
 	 * 获取还款日
 	 * @param now
 	 * @return
@@ -69,5 +55,12 @@ public interface AfBorrowService {
 	 * @param type C-本月 N-next
 	 * @return
 	 */
-	Map<String,Integer> getCurrentYearAndMonth(String type);
+	Map<String,Integer> getCurrentYearAndMonth(String type,Date now);
+	
+	/**
+     * 获取利息总天数
+     * @param borrowId
+     * @return
+     */
+    int getBorrowInterestCountByBorrowId(Long borrowId);
 }

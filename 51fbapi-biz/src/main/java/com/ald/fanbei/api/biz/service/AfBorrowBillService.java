@@ -43,4 +43,48 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	public AfBorrowBillDto getBorrowBillById(Long rid);
+	
+	/**
+	 * 获取用户某期全部账单
+	 * @param userId
+	 * @param billYear
+	 * @param billMonth
+	 * @return
+	 */
+	AfBorrowBillDo getTotalMonthlyBillByUserId(Long userId,int billYear,int billMonth);
+	
+	/**
+	 * 获取账单金额
+	 * @param ids
+	 * @return
+	 */
+	AfBorrowBillDo getBillAmountByIds(String ids);
+	
+	/**
+	 * 账单状态变更
+	 * @param ids
+	 * @return
+	 */
+	int updateBorrowBillStatusByIds(String ids,String status);
+	
+	/**
+	 * 获取未还款账单数量
+	 * @return
+	 */
+	int getUserMonthlyBillNotpayCount(int year,int month,Long userId);
+	
+	/**
+	 * 修改总账单状态
+	 * @param year
+	 * @param month
+	 * @param userId
+	 * @param status
+	 * @return
+	 */
+	int updateTotalBillStatus(int year,int month,Long userId,String status);
+	
+	/**
+	 * 获取现金借款的账单金额
+	 */
+	AfBorrowBillDo getBillAmountByCashIds(String ids);
 }

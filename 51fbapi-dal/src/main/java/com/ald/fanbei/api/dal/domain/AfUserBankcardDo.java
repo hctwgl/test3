@@ -21,10 +21,10 @@ public class AfUserBankcardDo extends AbstractSerial{
 	private Date gmtModified;
 	private Long userId;
 	private String mobile;
-	private String bankcode;
+	private String bankCode;
 	private String cardNumber;
 	private String isMain;
-	private String bankname;
+	private String bankName;
 	public Long getRid() {
 		return rid;
 	}
@@ -55,12 +55,6 @@ public class AfUserBankcardDo extends AbstractSerial{
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public String getBankcode() {
-		return bankcode;
-	}
-	public void setBankcode(String bankcode) {
-		this.bankcode = bankcode;
-	}
 	public String getCardNumber() {
 		return cardNumber;
 	}
@@ -73,10 +67,16 @@ public class AfUserBankcardDo extends AbstractSerial{
 	public void setIsMain(String isMain) {
 		this.isMain = isMain;
 	}
-	public String getBankname() {
-		return bankname;
+	public String getBankCode() {
+		return bankCode;
 	}
-	public void setBankname(String bankname) {
-		this.bankname = bankname;
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+	public String getBankName() {
+		return bankName;
+	}
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
 	}
 }

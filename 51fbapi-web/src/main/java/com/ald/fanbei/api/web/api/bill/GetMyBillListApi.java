@@ -15,7 +15,6 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -52,25 +51,21 @@ public class GetMyBillListApi implements ApiHandle{
 	
 	private Map<String,Object> getBillList(List<AfBorrowTotalBillDo> billList){
 		List<Map<String,Object>> monthList = new ArrayList<Map<String,Object>>();
-		TreeMap<Integer, Object> treemap = new TreeMap<Integer, Object>();
+		TreeMap<String, Object> treemap = new TreeMap<String, Object>();
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		int year = 0;
 		for (int i=0;i<billList.size();i++) {
 			AfBorrowTotalBillDo afBorrowBillDo = billList.get(i);
 			Map<String,Object> dataMap = new HashMap<String,Object>();
-			dataMap.put("billMonth", String.format("%2d", afBorrowBillDo.getBillMonth()));
+			dataMap.put("billMonth", String.format("%02d", afBorrowBillDo.getBillMonth()));
 			dataMap.put("billAmount", afBorrowBillDo.getBillAmount());
-			if(afBorrowBillDo.getStatus().contains(BorrowBillStatus.NO.getCode())){
-				dataMap.put("billStatus", BorrowBillStatus.NO.getCode());
-			}else{
-				dataMap.put("billStatus", BorrowBillStatus.YES.getCode());
-			}
+			dataMap.put("billStatus", afBorrowBillDo.getStatus());
 			if(year!=0&&year!=afBorrowBillDo.getBillYear()){
 				monthList = new ArrayList<Map<String,Object>>();
 			}
 			year = afBorrowBillDo.getBillYear();
 			monthList.add(dataMap);
-			treemap.put(afBorrowBillDo.getBillYear(), monthList);
+			treemap.put(afBorrowBillDo.getBillYear()+"", monthList);
 		}
 		resultMap.put("billYear", treemap.descendingMap());
 		return resultMap;
