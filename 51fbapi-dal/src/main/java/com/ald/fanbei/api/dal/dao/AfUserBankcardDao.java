@@ -38,5 +38,12 @@ public interface AfUserBankcardDao {
 	 * @return
 	 */
 	int deleteUserBankcardByIdAndUserId(@Param("userId") Long userId, @Param("rid") Long rid);
+	
+	/**
+	 * 获取银行卡信息
+	 * @param id
+	 * @return
+	 */
+	public AfUserBankcardDo getUserBankcardById(@Param("rid")Long id);
 
 }

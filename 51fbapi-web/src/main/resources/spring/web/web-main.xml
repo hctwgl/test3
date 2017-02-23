@@ -161,7 +161,8 @@
 				<entry key="/bill/getBillDetailInfo" value-ref="getBillDetailInfoApi" />
 				<entry key="/repay/getRepaymentConfirmInfo" value-ref="getRepaymentConfirmInfoApi" />
 				<entry key="/repay/submitRepayment" value-ref="submitRepaymentApi" />
-				
+				<entry key="/bill/getLimitDetailList" value-ref="getLimitDetailListApi" />
+				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
 				 -->
 				

@@ -52,8 +52,7 @@ public class SubmitRepaymentApi implements ApiHandle{
 		BigDecimal rebateAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
 		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
 		AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
-		BigDecimal billAmount = billDo==null?BigDecimal.ZERO:billDo.getBillAmount();
-		if(repaymentAmount.compareTo(billAmount)!=0){
+		if(billDo.getCount()==0 ||repaymentAmount.compareTo(billDo.getBillAmount())!=0){
 			throw new FanbeiException("borrow bill update error", FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
 		}
 		AfUserCouponDto coupon = afUserCouponService.getUserCouponById(couponId);
@@ -61,7 +60,7 @@ public class SubmitRepaymentApi implements ApiHandle{
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
 		if(afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
-				cardId,userId,billDo==null?BigDecimal.ZERO:billDo.getPrincipleAmount())>0){
+				cardId,userId,billDo)>0){
 			return resp;
 		}
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);

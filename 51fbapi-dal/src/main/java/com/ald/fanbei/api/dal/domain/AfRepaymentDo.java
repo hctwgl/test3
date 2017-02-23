@@ -19,6 +19,7 @@ public class AfRepaymentDo extends AbstractSerial{
 	private Date gmtCreate;
 	private Date gmtModified;
 	private String repayNo;
+	private String name;
 	private BigDecimal repaymentAmount;
 	private BigDecimal actualAmount;
 	private String billIds;
@@ -105,5 +106,11 @@ public class AfRepaymentDo extends AbstractSerial{
 	}
 	public void setCardId(Long cardId) {
 		this.cardId = cardId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 }

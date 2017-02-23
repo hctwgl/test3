@@ -50,6 +50,8 @@ public class AfBorrowDo extends AbstractSerial{
 	private Long bankId;//银行卡id
 	
 	private BigDecimal nperAmount;//每期应还金额
+	
+	private BigDecimal repayPrinAmount;//已还本金
 
 	public Long getRid() {
 		return rid;
@@ -194,4 +196,13 @@ public class AfBorrowDo extends AbstractSerial{
 	public void setNperAmount(BigDecimal nperAmount) {
 		this.nperAmount = nperAmount;
 	}
+
+	public BigDecimal getRepayPrinAmount() {
+		return repayPrinAmount;
+	}
+
+	public void setRepayPrinAmount(BigDecimal repayPrinAmount) {
+		this.repayPrinAmount = repayPrinAmount;
+	}
+	
 }

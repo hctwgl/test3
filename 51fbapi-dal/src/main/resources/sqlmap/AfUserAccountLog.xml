@@ -16,4 +16,31 @@
 		)
 	</insert>
 
+	<select id="getLimitDetailList" resultType="AfLimitDetailDto">
+		SELECT 
+		  l.id limit_id,
+		  l.type,
+		  l.gmt_create,
+		  b.name borrow_name,
+		  b.amount borrow_amount,
+		  b.borrow_no,
+		  r.name repayment_name,
+		  r.repayment_amount,
+		  r.repay_no repayment_no,
+		  l.ref_id
+		FROM
+		  af_user_account_log l 
+		  LEFT JOIN af_borrow b 
+		    ON l.type IN ('CASH', 'CONSUME') 
+		    AND b.is_delete = 0 
+		    AND l.`ref_id` = b.id 
+		  LEFT JOIN af_repayment r 
+		    ON l.type = 'REPAYMENT' 
+		    AND r.is_delete = 0 
+		    AND l.`ref_id` = r.id 
+		WHERE l.user_id = #{userId}
+		  AND l.is_delete = 0 
+		  AND l.type IN ('CASH', 'CONSUME', 'REPAYMENT') 
+		ORDER BY l.gmt_create DESC 
+	</select>
 </mapper>

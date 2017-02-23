@@ -2,21 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowInterestDao">
 	<sql id="queryFields">
-		id rid,gmt_create,creator,borrow_id,interest
+		id rid,gmt_create,creator,borrow_id,interest,principle_amount
 	</sql>
 	
 	<insert id="addBorrowInterest" parameterType="AfBorrowInterestDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_borrow_interest(gmt_create , creator , borrow_id , interest)
+		INSERT INTO af_borrow_interest(gmt_create , creator , bill_id , interest,principle_amount)
 		VALUES (
     		NOW(),
     		#{creator},
-    		#{borrowId},
-    		#{interest}
+    		#{billId},
+    		#{interest},
+    		#{principleAmount}
 		)
 	</insert>
 	
 	<select id="getBorrowInterestCountByBorrowId" >
-		select count(1) from af_borrow_interest where is_delete=0 and borrow_id=#{borrowId}
+		select count(1) from af_borrow_interest where is_delete=0 and bill_id=#{billId}
 	</select>
 	
 </mapper>

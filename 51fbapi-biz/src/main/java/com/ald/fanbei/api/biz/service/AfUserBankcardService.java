@@ -34,4 +34,11 @@ public interface AfUserBankcardService {
 	 * @return
 	 */
 	int deleteUserBankcardByIdAndUserId(Long userId, Long rid);
+	
+	/**
+	 * 获取用户银行卡信息
+	 * @param userId
+	 * @return
+	 */
+	AfUserBankcardDo getUserBankcardById(Long id);
 }

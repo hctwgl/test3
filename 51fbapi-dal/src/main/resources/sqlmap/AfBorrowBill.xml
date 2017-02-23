@@ -47,7 +47,8 @@
     </select>
     
     <select id="getBillAmountByIds" resultType="AfBorrowBillDo">
-		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount
+		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount,min(bill_year) bill_year,min(bill_month) bill_month,
+		min(name) name,count(1) count
 		FROM af_borrow_bill
 		WHERE is_delete=0  AND STATUS ='N'
 		AND id in (
@@ -58,9 +59,20 @@
     </select>
     
     <update id="updateBorrowBillStatusByIds">
-		update af_borrow_bill  set gmt_modified=NOW(),status=#{status}
-		WHERE is_delete=0
-		AND id in (
+    	UPDATE 
+		  af_borrow a,
+		  af_borrow_bill b 
+		SET
+		  a.gmt_modified = NOW(),
+		  b.gmt_modified = NOW(),
+		  b.status = #{status},
+		  b.repayment_id = #{repaymentId}
+		  a.nper_repayment = a.nper_repayment + 1,
+		  a.repay_prin_amount = a.repay_prin_amount + b.principle_amount 
+		WHERE b.is_delete = 0 
+		  AND a.is_delete = 0 
+		  AND a.id = b.borrow_id
+		AND b.id in (
 		<foreach collection="ids" item="item" index="index" separator="," >
 			#{item}
 		</foreach>

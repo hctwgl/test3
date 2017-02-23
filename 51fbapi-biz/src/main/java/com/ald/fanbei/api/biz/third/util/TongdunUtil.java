@@ -80,7 +80,7 @@ public class TongdunUtil extends AbstractThird {
 	
 	private static String getPartnerHost(){
 		if(host == null){
-			host = ConfigProperties.get(Constants.CONFKEY_TONGDUN_PARTNER_CODE);
+			host = "https://api.tongdun.cn";
 		}
 		return host;
 	}

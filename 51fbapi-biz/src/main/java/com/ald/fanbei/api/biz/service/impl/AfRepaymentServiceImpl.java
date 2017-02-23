@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -64,7 +63,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Override
 	public int createRepayment(final BigDecimal repaymentAmount,
 			final BigDecimal actualAmount,final AfUserCouponDto coupon,
-			final BigDecimal rebateAmount,final String billIds,final Long cardId,final Long userId,final BigDecimal principleAmount) {
+			final BigDecimal rebateAmount,final String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo) {
 		final Date now = new Date();
 		final String repayNo = generatorClusterNo.getRepaymentNo(now);
 		//TODO 支付流程
@@ -75,17 +74,20 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					//新增还款记录
+					String name =billDo.getName();
+					if(billDo.getCount()>1){
+						name=new StringBuffer(billDo.getBillYear()).append("年")
+								.append(billDo.getBillMonth()).append("月账单").toString();
+					}
 					AfRepaymentDo repayment = buildRepayment(repaymentAmount, repayNo, now, actualAmount,coupon, 
-							rebateAmount, billIds, cardId, payTradeNo, tradeNo);
+							rebateAmount, billIds, cardId, payTradeNo, tradeNo,name);
 					afRepaymentDao.addRepayment(repayment);
-					//变更账单状态
-					afBorrowBillService.updateBorrowBillStatusByIds(billIds, BorrowBillStatus.YES.getCode());
+					//变更账单 借款表状态
+					afBorrowBillService.updateBorrowBillStatusByIds(billIds, BorrowBillStatus.YES.getCode(),repayment.getRid());
 					//判断该期是否还清，如已还清，更新total_bill 状态
-					Map<String,Integer> map = afBorrowService.getCurrentYearAndMonth("",new Date());
-					int year = map.get("year"),month = map.get("month");
-					int count = afBorrowBillService.getUserMonthlyBillNotpayCount(year, month, userId);
+					int count = afBorrowBillService.getUserMonthlyBillNotpayCount(billDo.getBillYear(), billDo.getBillMonth(), userId);
 					if(count==0){
-						afBorrowBillService.updateTotalBillStatus(year, month, userId, BorrowBillStatus.YES.getCode());
+						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userId, BorrowBillStatus.YES.getCode());
 					}
 					if(null != coupon){
 						//优惠券设置已使用
@@ -98,10 +100,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userId);
 					account.setUcAmount(cashAmount.multiply(new BigDecimal(-1)));
-					account.setUsedAmount(principleAmount.multiply(new BigDecimal(-1)));
+					account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
 					account.setRebateAmount(rebateAmount.multiply(new BigDecimal(-1)));
 					afUserAccountDao.updateUserAccount(account);					
-					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT,principleAmount,userId, billIds));
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT,billDo.getPrincipleAmount(),userId, repayment.getRid()));
 					return 1;
 				} catch (Exception e) {
 					logger.info("createRepayment error:", e);
@@ -119,7 +121,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	}
 
 	private AfRepaymentDo buildRepayment(BigDecimal repaymentAmount,String repayNo,Date gmtCreate,BigDecimal actualAmount,
-			AfUserCouponDto coupon,BigDecimal rebateAmount, String billIds, Long cardId,String payTradeNo,String tradeNo){
+			AfUserCouponDto coupon,BigDecimal rebateAmount, String billIds, Long cardId,String payTradeNo,String tradeNo,String name){
 		AfRepaymentDo repay = new AfRepaymentDo();
 		repay.setActualAmount(actualAmount);
 		repay.setBillIds(billIds);
@@ -134,16 +136,22 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			repay.setUserCouponId(coupon.getRid());
 			repay.setCouponAmount(coupon.getAmount());
 		}
+		repay.setName(name);
 		return repay;
 	}
 	
-	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type,BigDecimal amount,Long userId,String ids){
+	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type,BigDecimal amount,Long userId,Long repaymentId){
 		//增加account变更日志
 		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
 		accountLog.setAmount(amount);
 		accountLog.setUserId(userId);
-		accountLog.setRefId(ids);
+		accountLog.setRefId(repaymentId+"");
 		accountLog.setType(type.getCode());
 		return accountLog;
+	}
+
+	@Override
+	public AfRepaymentDo getRepaymentById(Long rid) {
+		return afRepaymentDao.getRepaymentById(rid);
 	}
 }

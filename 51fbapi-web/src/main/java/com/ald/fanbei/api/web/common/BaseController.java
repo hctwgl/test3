@@ -203,11 +203,13 @@ public abstract class BaseController {
 	        }
 	        context.setUserId(userInfo.getRid());
 	        context.setNick(userInfo.getNick());
+	        context.setMobile(userInfo.getMobile());
         }else if(beforeLogin && CommonUtil.isMobile(userName)){//不需要登录但是已经登录过
         	AfUserDo userInfo = afUserService.getUserByUserName(userName);
 	        if (userInfo != null) {
 		        context.setUserId(userInfo.getRid());
 		        context.setNick(userInfo.getNick());
+		        context.setMobile(userInfo.getMobile());
 	        }
         }
         
