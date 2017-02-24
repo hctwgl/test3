@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.h5.controller;
 
 import java.io.IOException;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,9 +12,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
@@ -28,6 +29,10 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @RequestMapping("/")
 public class H5Controller extends BaseController {
 
+	
+	
+	 
+	 
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -51,18 +56,9 @@ public class H5Controller extends BaseController {
 		return "/app/sys/invitationRewardRule";
 	}
 
-	@RequestMapping(value = { "app/goods/goodsList" }, method = RequestMethod.GET)
-	public String goodsList(HttpServletRequest request, ModelMap model) throws IOException {
-//		Long modelId =NumberUtil.objToLongDefault(request.getParameter("modelId"), 1) ;
-		Long modelId =(long) 1 ;
-		
-		
 
-
-
-		model.put("rule", "您邀请的所有好友在51返呗成功购物并获得返利后，您将获得返利的20%现金奖励；当您邀请的好友A邀请她的好友B成功在51返呗购物并获得返利后，");
-		return "/app/sys/invitationRewardRule";
-	}
+	
+	
 
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {

@@ -3,25 +3,73 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfModelH5ItemDao">
 	<sql id="queryAllFields">
 
-		id rid,gmt_create,gmt_modified,creator,modifier,model_type,model_id,item_icon,item_type,sec_sort,sort
+		id
+		rid,gmt_create,gmt_modified,creator,modifier,model_type,model_id,item_icon,item_type,sec_sort,sort
 	</sql>
 
 
 	<select id="getModelH5ItemListByModelIdAndModelType" resultType="AfModelH5ItemDo">
-		SELECT 
-			<include refid="queryAllFields" />
+		SELECT
+		<include refid="queryAllFields" />
 		FROM
-			af_model_h5_item
-		WHERE 
-			model_id = #{modelId}
+		af_model_h5_item
+		WHERE
+		model_id = #{modelId}
 		AND
-			is_delete = 0
+		is_delete = 0
 		AND
-			model_type =#{modelType}
-		order by 
-			
-			concat(sort,sec_sort) desc 
+		model_type =#{modelType}
+		order by
+
+		sort desc
+	</select>
+	<select id="getModelH5ItemCategoryListByModelId" resultType="AfModelH5ItemDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_model_h5_item
+		WHERE
+		model_id = #{modelId}
+		AND
+		is_delete = 0
+		AND
+		model_type in ('CATEGORY','GOODSLIST')
+		order by
+
+		concat(sort,sec_sort)
+		desc
 	</select>
 	
-		
+	
+	<select id="getModelH5ItemGoodsCountListCountByModelIdAndSort" resultType="AfTypeCountDto">
+		SELECT	 
+			sort , count(sort) 
+		FROM 
+			af_model_h5_item 
+		WHERE
+			model_id = #{modelId}
+		AND
+			model_type ='GOODSLIST'
+		AND
+			is_delete = 0	
+		GROUP BY
+			sort
+	</select>
+	
+	<select id="getModelH5ItemGoodsListCountByModelIdAndSort" resultType="AfModelH5ItemDo">
+		SELECT	 
+			sort , count(sort) 
+		FROM 
+			af_model_h5_item 
+		WHERE
+			model_id = #{modelId}
+		AND
+			model_type ='GOODSLIST'
+		AND
+			is_delete = 0	
+		AND 
+			sort =#{sort}
+		LIMIT #{start},#{end}
+	</select>
+	
 </mapper>

@@ -54,6 +54,8 @@ public abstract class BaseController {
     @Resource
     AfUserService afUserService;
     
+   
+    
     /**
      * 解析request
      * 

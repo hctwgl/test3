@@ -150,6 +150,30 @@ public class AfModelH5ItemDo extends AbstractSerial {
 	public void setSecSort(Integer secSort) {
 		this.secSort = secSort;
 	}
+	/**
+	 * @return the creator
+	 */
+	public String getCreator() {
+		return creator;
+	}
+	/**
+	 * @param creator the creator to set
+	 */
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+	/**
+	 * @return the modifier
+	 */
+	public String getModifier() {
+		return modifier;
+	}
+	/**
+	 * @param modifier the modifier to set
+	 */
+	public void setModifier(String modifier) {
+		this.modifier = modifier;
+	}
 
 	
 	
