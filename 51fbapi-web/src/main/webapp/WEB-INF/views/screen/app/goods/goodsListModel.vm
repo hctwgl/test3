@@ -14,7 +14,7 @@
     <div class="goodsList_wrap">
         <div class="bgc_white header_wrap">
             <ul class="fs_32 fsc_6 goodsList_header">
-                <li><span class="current">女神</span></li>
+                <li><span class="current">女神$!{typeCurrent}</span></li>
                 <li><span>女神上装</span></li>
                 <li><span>化妆品</span></li>
                 <li><span>男神下</span></li>

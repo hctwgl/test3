@@ -44,8 +44,8 @@ public class AppGoodsControler extends BaseController {
 	@Resource
 	AfModelH5ItemService afModelH5ItemService;
 
-	@RequestMapping(value = { "goodsList" }, method = RequestMethod.GET)
-	public void goodsList(HttpServletRequest request, ModelMap model) throws IOException {
+	@RequestMapping(value = { "goodsListModel" }, method = RequestMethod.GET)
+	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
 		Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
 
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
