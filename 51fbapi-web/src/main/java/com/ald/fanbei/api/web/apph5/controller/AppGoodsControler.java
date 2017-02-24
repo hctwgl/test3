@@ -85,9 +85,9 @@ public class AppGoodsControler extends BaseController {
 		try {
 			Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
 			Integer pageCurrent = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
+			Integer sort = NumberUtil.objToIntDefault(request.getParameter("type"), 0);
 
 			Integer pageCount = 20;// 每一页显示20条数据
-			Integer sort = 0;
 			List<AfModelH5ItemDo> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndSort(modelId,
 					sort, (pageCurrent-1)*pageCount, pageCount*pageCurrent);
 			List<Object> goodsList =getH5ItemGoodsListObjectWithAfModelH5ItemDoList(list);
