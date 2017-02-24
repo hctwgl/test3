@@ -4,7 +4,7 @@
 	<sql id="queryAllFields">
 
 		id
-		rid,gmt_create,gmt_modified,creator,modifier,model_type,model_id,item_icon,item_type,sec_sort,sort
+		rid,gmt_create,gmt_modified,creator,modifier,model_type,model_id,item_icon,item_type,item_value,sec_sort,sort
 	</sql>
 
 
@@ -58,7 +58,7 @@
 	
 	<select id="getModelH5ItemGoodsListCountByModelIdAndSort" resultType="AfModelH5ItemDo">
 		SELECT	 
-			sort , count(sort) 
+			<include refid="queryAllFields" />
 		FROM 
 			af_model_h5_item 
 		WHERE

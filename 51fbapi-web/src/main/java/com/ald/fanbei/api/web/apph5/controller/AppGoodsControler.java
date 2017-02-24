@@ -58,8 +58,6 @@ public class AppGoodsControler extends BaseController {
 				sortCountList);
 		model.put("bannerList", bannerList);
 		model.put("categoryList", categoryList);
-		
-
 		Integer pageCount = 20;// 每一页显示20条数据
 		Integer sort = 0;
 		if (categoryDbList.size() > 0) {
@@ -68,6 +66,8 @@ public class AppGoodsControler extends BaseController {
 		}
 		List<AfModelH5ItemDo> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndSort(modelId,
 				sort, 0, pageCount);
+		logger.info("list++++++===="+JSON.toJSONString(list));
+
 		List<Object> goodsList =getH5ItemGoodsListObjectWithAfModelH5ItemDoList(list);
 		model.put("goodsList", goodsList);
 		model.put("typeCurrent", sort);

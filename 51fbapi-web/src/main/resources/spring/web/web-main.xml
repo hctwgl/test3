@@ -83,6 +83,9 @@
 				<value>/user/setRegisterPwd</value>
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
+				<value>/goods/getHomeInfo</value>
+				<value>/good/getSearchHome</value>
+				
 			</list>
 		</constructor-arg>
 	</bean>	
@@ -132,6 +135,7 @@
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
+				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
 				
 				<!-- 订单Order -->
 				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />
