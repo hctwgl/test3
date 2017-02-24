@@ -2,16 +2,16 @@
 * @Author: Yangyang
 * @Date:   2017-02-18 16:32:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-23 16:42:31
+* @Last Modified time: 2017-02-24 15:33:14
 * @title:  公用的样式
 */
 
 
 /*公用的背景色*/
 .bgc_orange { background-color: #FE963B; }
-.bgc_cf { background-color: #CFCFCF; }
 .bgc_white { background-color: #fff; }
 .bgc_e { background-color: #eee; }
+.btnC_gray { background-color: #CFCFCF; }
 
 /*公用的字体大小、公用的字体颜色*/
 .fs_22 { font-size: 0.55rem; }
@@ -26,6 +26,7 @@
 .fsc_6 { color: #666; }
 .fsc_9 { color: #999; }
 .fsc_f { color: #fff; }
+.fsc_bf { color: #BFBFBF; }
 .fsc_red { color: #EB0000; }
 .fsc_blue { color: #3cafe7; }
 .fsc_orange { color: #FE963B; }
@@ -39,7 +40,15 @@
 .bdr_4 { border-radius: 0.2rem; }
 .bdc_cb { border: 1px solid #CBCBCB; }
 
-
+/*公用的缺省页*/
+.nullPrompt{
+	text-align: center;
+}
+.nullPrompt img{
+	width: 6.0rem;
+	height: 5.35rem;
+	margin: 6.0rem auto 1.25rem;
+}
 
 
 

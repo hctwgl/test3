@@ -2,14 +2,11 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 15:15:44
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-21 17:53:55
+* @Last Modified time: 2017-02-24 14:34:40
 * @title:  注册
 */
 
 .register_main{
-	margin-top: 0.2rem;
-}
-.register_main ul{
 	margin-top: 1.65rem;
 }
 .register_main li{
@@ -17,80 +14,101 @@
 	height: 2.5rem;
 	line-height: 2.5rem;
 	margin: 0 0.6rem 0.5rem 0.6rem;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 .register_mobile_icon_wrap,.register_verification_icon_wrap,.register_password_icon_wrap{
+	position: relative;
 	width: 2.4rem;
-	height: 2.5rem;
-	background-color: pink;
+	height: 2.45rem;
+}
+.register_mobile_icon,.register_verification_icon,.register_password_icon{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    -webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	background-size: cover;
+}
+.register_mobile_icon{
+	width: 0.8rem;
+	height: 1.2rem;
+	background-image: url(/images/app/mine/phone.png);
+}
+.register_verification_icon{
+	width: 1.2rem;
+	height: 1.2rem;
+	background-image: url(/images/app/mine/yzm.png);
+}
+.register_password_icon{
+	width: 1.2rem;
+	height: 1.25rem;
+	background-image: url(/images/app/mine/mima.png);
 }
 .register_verification_main{
 	position: relative;
 	width: 10.4rem;
-	height: 2.5rem;
-	line-height: 2.5rem;
+	height: 2.45rem;
+	line-height: 2.45rem;
 }
 .register_verification{
 	width: 8.0rem;
-	line-height: 2.5rem;
+	line-height: 2.45rem;
 }
 .register_codeBtn{
 	width: 6.0rem;
 }
 /*×的样式待定*/
 .register_mobileIcon,.register_verificationIcon,.register_passwordIcon{
-	width: 1.0rem;
-	height: 1.0rem;
-	line-height: 1.0rem;
-	text-align: center;
-	border-radius: 50%;
-	color: #fff;
-	background-color: #eee;
-}
-
-.register_mobileIcon,.register_passwordIcon{
 	position: absolute;
 	top: 50%;
-	right: 0.25rem;
+	right: 0.5rem;
 	-webkit-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
+	width: 0.7rem;
+	height: 0.7rem;
+	background-image: url(/images/app/mine/register_shanc.png);
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	background-size: cover;
 }
-.register_verificationIcon{
-	position: absolute;
-	top: 50%;
-	right: 0.25rem;
-	-webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-}
-.register_icon_hide{
+.registerIcon_hide{
 	display: none;
 }
 input::-webkit-input-placeholder{
-	color: #999;
+	color: #BFBFBF;
 }
 input:-moz-placeholder{
-	color: #999;
+	color: #BFBFBF;
 }
 input::-moz-placeholder{
-	color: #999;
+	color: #BFBFBF;
 }
 input:-ms-input-placeholder{
-	color: #999;
+	color: #BFBFBF;
+}
+.register_submitBtn_wrap{
+	text-align: center;
 }
 .register_submitBtn{
 	width: 17.5rem;
 	height: 2.0rem;
 	line-height: 2.0rem;
-	margin: 2.5rem auto 0;
+	margin-top: 2.5rem;
 }
 .register_checkbox{
 	position: relative;
 	height: 0.9rem;
 	line-height: 0.9rem;
-	margin: 1.1rem 0 0 0.6rem;
+	margin: 1.1rem 0.6rem 0;
 }
 .register_checkbox input{
 	position: absolute;

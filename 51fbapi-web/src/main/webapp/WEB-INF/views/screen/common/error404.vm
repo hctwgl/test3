@@ -4,28 +4,24 @@
 	<title>错误页面</title>
 	<style type="text/css">
 		.error404_wrap{
-			font-size: 0.7rem;
 			text-align: center;
 		}
 		.error404_wrap figure{
 			width: 4.75rem;
 			height: 4.15rem;
-			background-image: url(/images/404.png);
+			background-image: url(/images/common/error404.png);
 			-webkit-background-size: cover;
 		    -moz-background-size: cover;
 		    -ms-background-size: cover;
 		    -o-background-size: cover;
 		    background-size: cover;
-		    margin: 3.0rem auto 1.0rem;
+		    margin: 7.0rem auto 1.0rem;
 		}
 		.error404_wrap .error404_refresh{
 			width: 5.0rem;
 			height: 1.5rem;
 			line-height: 1.5rem;
-			text-align: center;
-			border: 1px solid #111;
-			border-radius: 0.2rem;
-			margin: 2.5rem auto 0;
+			margin: 3.0rem auto 0;
 		}
 	</style>
 </head>
@@ -33,12 +29,12 @@
 	<div class="error404_wrap clearfix">
 		<figure></figure>
 		<h2>哎呀...您访问的页面找不到了，请先歇一会儿</h2>
-		<div class="error404_refresh">重新查看页面</div>
+		<div class="tac bdc_cb bdr_4 error404_refresh">重新查看页面</div>
 	</div>
 	<script type="text/javascript">
 		$(function(){
 			$(".error404_refresh").click(function() {
-		    	window.location.href=""; //跳转新的页面
+		    	window.location.reload();
 			});
 		});
 	</script>

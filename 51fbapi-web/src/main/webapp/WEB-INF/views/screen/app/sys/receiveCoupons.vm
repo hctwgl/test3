@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017022301")
-		<title>领取优惠券</title>
+    	#set($version="2017022401")
+		<<title>领取优惠劵</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/sys/receiveCoupons.css?version=$version">
     </head>
     <body class="bgc_e">
+
+		##if($!{couponList.size()}==0)
+	   		<!-- <div class="nullPrompt">
+	   			<img src="/images/common/wuyouhui.png">
+				<span class="fsc_6">暂无优惠劵</span>
+	   		</div> -->
+		##end
+
     	<div class="cardCoupons_main">
 			<ul>
 
@@ -51,6 +59,8 @@
 					</div>
 					<p class="timerP">$dateUtil.formatDate($!{item.gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
 				</li> -->
+
+				
 			</ul>
 		</div>
 		<script type="text/javascript" src="/js/app/sys/receiveCoupons.js?version=$version"></script>
