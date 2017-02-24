@@ -2,13 +2,78 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-15 11:24:27
+* @Last Modified time: 2017-02-24 14:32:17
 * @title:  注册
 */
 
 
+// 根据判断姓名和验证码来控制按钮的颜色
+function changeBtn() {
+
+	var mobileNum = $("#register_mobile").val();
+	var verificationNum = $("#register_verification").val();
+	var passwordNum = $("#register_password").val();
+
+	if ( mobileNum == "" ) {
+		$(".register_mobileIcon").addClass("registerIcon_hide");
+	} else {
+		$(".register_mobileIcon").removeClass("registerIcon_hide");
+	};
+
+	if ( verificationNum == "" ) {
+		$(".register_verificationIcon").addClass("registerIcon_hide");
+	} else {
+		$(".register_verificationIcon").removeClass("registerIcon_hide");
+	};
+
+	if ( passwordNum == "" ) {
+		$(".register_passwordIcon").addClass("registerIcon_hide");
+	} else {
+		$(".register_passwordIcon").removeClass("registerIcon_hide");
+	};
+
+	// 默认状态下提交按钮的样式
+	if ( mobileNum != "" && verificationNum != "" && passwordNum != "" ) {
+		$(".register_submitBtn").removeClass("btnC_gray");
+	} else{
+		$(".register_submitBtn").addClass("btnC_gray");
+	};
+		
+};
+
+// 点击删除按钮清空vul
+$(function(){
+
+	$(".register_mobileIcon").click(function(){
+		$(".register_mobile").val("");
+		$(".register_mobileIcon").addClass("registerIcon_hide");
+	});
+
+	$(".mineMoneyPrompt_verificationIcon").click(function(){
+		$(".mineMoneyPrompt_verification").val("");
+		$(".mineMoneyPrompt_verificationIcon").addClass("registerIcon_hide");
+	});
+
+});
+
+
+
+
+
+
 // 判断手机号、接收验证码
 $(function(){
+
+
+
+
+
+
+
+
+
+
+
 
 	// var mobileNum=$(".register_mobile").val();
 	
