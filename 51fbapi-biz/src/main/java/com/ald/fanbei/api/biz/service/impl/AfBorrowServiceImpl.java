@@ -103,11 +103,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					//TODO 转账处理
 					
 					//生成账单
-					List<AfResourceDo> list = afResourceDao.getConfigByTypes(new StringBuffer("BORROW_").append(borrow.getType()).toString());
-					if(null == list || list.size()==0){
+					AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CASH);
+					if(null == resource){
 						throw new Exception("现金借款利率配置不能为空");
 					}else{
-						AfResourceDo resource = list.get(0);
 						BigDecimal money = borrow.getAmount();//借款金额
 						BigDecimal dayRate = NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO);//取现日利率
 						BigDecimal serviceCharge = NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO);//取现手续费率
@@ -256,7 +255,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					account.setUsedAmount(amount);
 					afUserAccountDao.updateUserAccount(account);
 					//获取借款分期配置信息
-					AfResourceDo resource = afResourceDao.getSingleResourceBytype(Constants.RES_BORROW_CONSUME);
+					AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME);
 					if(null == resource){
 						throw new Exception("分期利率配置不能为空");
 					}else{
