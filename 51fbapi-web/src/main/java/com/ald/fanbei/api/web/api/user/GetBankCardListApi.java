@@ -3,9 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -13,9 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -42,10 +46,24 @@ public class GetBankCardListApi implements ApiHandle {
 		}
         List<AfUserBankcardDo> list = afUserBankcardService.getUserBankcardByUserId(userId);
     
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("bankCardList", list);
-        
-        resp.setResponseData(data);
+//        Map<String, Object> data = new HashMap<String, Object>();
+//        data.put("bankCardList", list);
+        resp.addResponseData("bankCardList", list);
+        String bankcardStatus = "N";
+        if(CollectionUtil.isNotEmpty(list)){
+        	for(AfUserBankcardDo item:list){
+        		if(StringUtil.equals(item.getIsMain(), YesNoStatus.YES.getCode())){
+        			bankcardStatus = "Y";
+        			break;
+        		}
+        	}
+        }
+        resp.addResponseData("bankcardStatus", bankcardStatus);
+        if(StringUtil.equals(bankcardStatus, YesNoStatus.NO.getCode())){
+        	String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+        	resp.addResponseData("ydKey", publicKey);
+        	resp.addResponseData("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
+        }
 		return resp;
 	}
 
