@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 
 /**
@@ -42,6 +43,13 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	public AfBorrowBillDo getBorrowBillById(Long rid);
+	
+	/**
+	 * 获取借款账单关联信息
+	 * @param rid
+	 * @return
+	 */
+	AfBorrowBillDto getBorrowBillDtoById(Long rid);
 	
 	/**
 	 * 获取用户某期全部账单

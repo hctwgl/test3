@@ -178,7 +178,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	private List<AfBorrowBillDo> buildBorrowBill(BorrowType borrowType,AfBorrowDo borrow,BigDecimal totalAmount,BigDecimal interestAmount,BigDecimal monthRate,BigDecimal poundageAmount){
 		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
 		Date now = new Date();//当前时间
-		Date gmtBorrow = new Date();//借款到账时间
 		BigDecimal billAmount = totalAmount.divide(new BigDecimal(borrow.getNper()),2,BigDecimal.ROUND_HALF_UP);
 		//计算本息总计
 		for (int i = 1; i <= borrow.getNper(); i++) {
@@ -187,26 +186,31 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			bill.setBorrowId(borrow.getRid());
 			bill.setBorrowNo(borrow.getBorrowNo());
 			bill.setName(borrow.getName());
-			bill.setGmtBorrow(gmtBorrow);
+			bill.setGmtBorrow(borrow.getGmtCreate());
 			Map<String,Integer> timeMap = getCurrentYearAndMonth("", now);
 			bill.setBillYear(timeMap.get("year"));
 			bill.setBillMonth(timeMap.get("month"));
 			bill.setNper(borrow.getNper());
 			bill.setBillNper(i);
-			bill.setBillAmount(billAmount);
 			if(borrowType.equals(BorrowType.CASH)){
 				bill.setPrincipleAmount(borrow.getAmount());
 				bill.setInterestAmount(interestAmount);
 				bill.setPoundageAmount(poundageAmount);
 				bill.setStatus(BorrowBillStatus.NO.getCode());
 				bill.setType(BorrowType.CASH.getCode());
+				bill.setBillAmount(billAmount);
 			}else{
 				BigDecimal perPoundageAmount = poundageAmount.divide(new BigDecimal(borrow.getNper()),2,BigDecimal.ROUND_HALF_UP);//当月手续费
 				BigDecimal perInterest = totalAmount.multiply(monthRate).setScale(2, BigDecimal.ROUND_HALF_UP);//本月利息
 				bill.setInterestAmount(perInterest);
 				bill.setPoundageAmount(perPoundageAmount);
-				bill.setPrincipleAmount(billAmount.subtract(perInterest).subtract(perPoundageAmount));//本金 = 账单金额 -本月利息 -手续费
 				totalAmount = totalAmount.subtract(billAmount);
+				if(i<borrow.getNper()){
+					bill.setBillAmount(billAmount);
+				}else{
+					bill.setBillAmount(totalAmount.add(billAmount));
+				}
+				bill.setPrincipleAmount(bill.getBillAmount().subtract(perInterest).subtract(perPoundageAmount));//本金 = 账单金额 -本月利息 -手续费
 				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
 				bill.setType(BorrowType.CONSUME.getCode());
 			}

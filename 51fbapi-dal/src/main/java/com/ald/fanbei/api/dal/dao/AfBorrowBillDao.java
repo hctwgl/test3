@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 
 /**
@@ -49,6 +50,13 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	public AfBorrowBillDo getBorrowBillById(@Param("rid")Long rid);
+	
+	/**
+	 * 获取借款账单关联信息
+	 * @param rid
+	 * @return
+	 */
+	AfBorrowBillDto getBorrowBillDtoById(@Param("rid")Long rid);
 	
 	/**
 	 * 获取用户某期全部账单
