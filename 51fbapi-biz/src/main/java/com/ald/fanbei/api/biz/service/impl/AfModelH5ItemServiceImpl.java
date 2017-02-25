@@ -43,9 +43,9 @@ public class AfModelH5ItemServiceImpl implements AfModelH5ItemService {
 
 
 	@Override
-	public List<AfModelH5ItemDo> getModelH5ItemGoodsListCountByModelIdAndSort(Long modelId, Integer sort, Integer start,
+	public List<AfModelH5ItemDo> getModelH5ItemGoodsListCountByModelIdAndCategory(Long modelId,  String category, Integer start,
 			Integer end) {
-		return afModelH5ItemDao.getModelH5ItemGoodsListCountByModelIdAndSort(modelId, sort, start, end);
+		return afModelH5ItemDao.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId, category, start, end);
 	}
 
 }

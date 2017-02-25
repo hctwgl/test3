@@ -10,7 +10,7 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum H5ItemModelType {
 	
-	BANNELl("BANNELl", "导航"),
+	BANNER("BANNER", "导航"),
 	SUBJECT("SUBJECT", "主题"),
 	CATEGORY("CATEGORY", "类别"),
 	IMAGE("IMAGE", "图片"),

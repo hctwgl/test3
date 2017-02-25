@@ -29,7 +29,7 @@ public class AfModelH5ItemDo extends AbstractSerial {
 	private String itemType;//品牌项的类型，如【URL,GOODS】
 	private String itemValue;//品牌项值
 	private Integer sort;//排序
-	private Integer secSort;//排序
+	private String itemValue2;//排序
 	/**
 	 * @return the rid
 	 */
@@ -138,18 +138,7 @@ public class AfModelH5ItemDo extends AbstractSerial {
 	public void setSort(Integer sort) {
 		this.sort = sort;
 	}
-	/**
-	 * @return the secSort
-	 */
-	public Integer getSecSort() {
-		return secSort;
-	}
-	/**
-	 * @param secSort the secSort to set
-	 */
-	public void setSecSort(Integer secSort) {
-		this.secSort = secSort;
-	}
+
 	/**
 	 * @return the creator
 	 */
@@ -173,6 +162,18 @@ public class AfModelH5ItemDo extends AbstractSerial {
 	 */
 	public void setModifier(String modifier) {
 		this.modifier = modifier;
+	}
+	/**
+	 * @return the itemValue2
+	 */
+	public String getItemValue2() {
+		return itemValue2;
+	}
+	/**
+	 * @param itemValue2 the itemValue2 to set
+	 */
+	public void setItemValue2(String itemValue2) {
+		this.itemValue2 = itemValue2;
 	}
 
 	

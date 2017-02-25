@@ -16,6 +16,12 @@ public enum AfResourceType {
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
 	
 	
+	SEARCH_HOT("SEARCH_HOT", "热门搜索"),
+	INVITE("INVITE", "邀请"),
+	SIGNIN("SIGNIN", "签到"),
+	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),
+
+	
 	//ResourceTypeSetType不是首页配置是设置页面的配置
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置");
 

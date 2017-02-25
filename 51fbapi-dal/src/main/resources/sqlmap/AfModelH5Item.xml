@@ -4,7 +4,7 @@
 	<sql id="queryAllFields">
 
 		id
-		rid,gmt_create,gmt_modified,creator,modifier,model_type,model_id,item_icon,item_type,item_value,sec_sort,sort
+		rid,gmt_create,gmt_modified,creator,modifier,model_type,model_id,item_icon,item_type,item_value,item_value2,sort
 	</sql>
 
 
@@ -36,7 +36,7 @@
 		model_type in ('CATEGORY','GOODSLIST')
 		order by
 
-		concat(sort,sec_sort)
+			sort
 		desc
 	</select>
 	
@@ -56,7 +56,7 @@
 			sort
 	</select>
 	
-	<select id="getModelH5ItemGoodsListCountByModelIdAndSort" resultType="AfModelH5ItemDo">
+	<select id="getModelH5ItemGoodsListCountByModelIdAndCategory" resultType="AfModelH5ItemDo">
 		SELECT	 
 			<include refid="queryAllFields" />
 		FROM 
@@ -68,7 +68,7 @@
 		AND
 			is_delete = 0	
 		AND 
-			sort =#{sort}
+			item_value2 =#{category}
 		LIMIT #{start},#{end}
 	</select>
 	

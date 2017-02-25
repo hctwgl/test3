@@ -39,7 +39,7 @@ public interface AfModelH5ItemService {
 	 * @param end
 	 * @return
 	 */
-	List<AfModelH5ItemDo> getModelH5ItemGoodsListCountByModelIdAndSort(Long modelId,Integer sort,Integer start, Integer end);
+	List<AfModelH5ItemDo> getModelH5ItemGoodsListCountByModelIdAndCategory(Long modelId,String category,Integer start, Integer end);
 
 	
 	List<AfTypeCountDto> getModelH5ItemGoodsCountListCountByModelIdAndSort(Long modelId);
