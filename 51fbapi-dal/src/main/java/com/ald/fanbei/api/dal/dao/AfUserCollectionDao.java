@@ -39,6 +39,7 @@ public interface AfUserCollectionDao {
 	 * @return
 	 */
 	AfUserCollectionDo getUserCollectionListById(@Param("rid") Long rid);
-	
+	int deleteUserCollectionGoods(AfUserCollectionDo afUserCollectionDo);
 
+	
 }

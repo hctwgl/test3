@@ -121,6 +121,8 @@ public class AppGoodsControler extends BaseController {
 			data.put("goodsUrl", "http://item.taobao.com/item.htm?id=544085886371");
 			data.put("rebateAmount", "10");
 			data.put("saleAmount", "130");
+			data.put("title", "商品名称");
+
 			data.put("sort", afModelH5ItemDo.getSort());
 			list.add(data);
 

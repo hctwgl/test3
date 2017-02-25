@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.goods;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -17,6 +18,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfUserCollectionDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -41,20 +43,31 @@ public class AddCollectionApi implements ApiHandle {
 		}
 		Map<String, Object> params = requestDataVo.getParams();
 		String name = ObjectUtils.toString(params.get("name"), "").toString();
-		String avatar = ObjectUtils.toString(params.get("avatar"), "").toString();
-		String province = ObjectUtils.toString(params.get("province"), "").toString();
-		String city = ObjectUtils.toString(params.get("city"), "").toString();
-		String county = ObjectUtils.toString(params.get("county"), "").toString();
-		Long goodId = NumberUtil.objToLongDefault(params.get("goodId"), 1);
+		BigDecimal priceAmount =new  BigDecimal(ObjectUtils.toString(params.get("priceAmount"), "").toString());
+		BigDecimal actualAmount =new  BigDecimal(ObjectUtils.toString(params.get("actualAmount"), "").toString());
 
-		if (StringUtils.isEmpty(name) && StringUtils.isEmpty(avatar) && StringUtils.isEmpty(province)
-				&& StringUtils.isEmpty(city) && StringUtils.isEmpty(county)) {
-			throw new FanbeiException("(nick or avata or province or city or county) is  empty", FanbeiExceptionCode.PARAM_ERROR);
+		String openId = ObjectUtils.toString(params.get("openId"), "").toString();
+		String goodsIcon = ObjectUtils.toString(params.get("goodsIcon"), "").toString();
+		String goodsUrl = ObjectUtils.toString(params.get("goodsUrl"), "").toString();
+
+		Long goodsId = NumberUtil.objToLongDefault(params.get("goodsId"), 1);
+		if (StringUtils.isEmpty(name) && StringUtils.isEmpty(openId) && StringUtils.isEmpty(goodsIcon)
+				&& StringUtils.isEmpty(goodsUrl)) {
+			throw new FanbeiException("(name or openId or goodsIcon or goodsUrl ) is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}
-		
-		
-
-		return null;
+		AfUserCollectionDo afUserCollectionDo = new AfUserCollectionDo();
+		afUserCollectionDo.setActualAmount(actualAmount);
+		afUserCollectionDo.setPriceAmount(priceAmount);
+		afUserCollectionDo.setOpenId(openId);
+		afUserCollectionDo.setGoodsName(name);
+		afUserCollectionDo.setGoodsId(goodsId);
+		afUserCollectionDo.setGoodsIcon(goodsIcon);
+		afUserCollectionDo.setGoodsUrl(goodsUrl);
+		afUserCollectionDo.setUserId(userId);
+		if(afuserCollectionService.addUserCollectionGoods(afUserCollectionDo)>0){
+			return resp;
+		}
+        throw new FanbeiException(FanbeiExceptionCode.FAILED);
 	}
 
 }

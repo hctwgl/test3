@@ -39,4 +39,6 @@ public interface AfuserCollectionService {
 	 * @return
 	 */
 	AfUserCollectionDo getUserCollectionListById( Long rid);
+	int deleteUserCollectionGoods(AfUserCollectionDo afUserCollectionDo);
+
 }

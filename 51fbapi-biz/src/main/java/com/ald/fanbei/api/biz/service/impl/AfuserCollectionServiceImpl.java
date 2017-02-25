@@ -46,4 +46,9 @@ public class AfuserCollectionServiceImpl implements AfuserCollectionService {
 		return afUserCollectionDao.getUserCollectionListById(rid);
 	}
 
+	@Override
+	public int deleteUserCollectionGoods(AfUserCollectionDo afUserCollectionDo) {
+		return afUserCollectionDao.deleteUserCollectionGoods(afUserCollectionDo);
+	}
+
 }

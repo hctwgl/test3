@@ -48,7 +48,7 @@
 	</select>
 	
 	
-	<update id="updateUserCollectionGoods"  parameterType="AfUserBankcardDo" >
+	<update id="updateUserCollectionGoods"  parameterType="AfUserCollectionDo" >
 		UPDATE 
 			af_user_collection 
 		SET 
@@ -82,8 +82,19 @@
 			user_id = #{userId} 
 		
 	</update>
-	
-	<select id="getUserCollectionListById" resultType="AfUserBankcardDo">
+	<update id="deleteUserCollectionGoods"  parameterType="AfUserCollectionDo" >
+		UPDATE 
+			af_user_collection 
+		SET 
+			gmt_modified = NOW()
+			,is_delete=1
+		WHERE 
+			id=#{rid} 
+		AND 
+			user_id = #{userId} 
+		
+	</update>
+	<select id="getUserCollectionListById" resultType="AfUserCollectionDo">
 		SELECT
 			<include refid="queryFields"/>
 		FROM
