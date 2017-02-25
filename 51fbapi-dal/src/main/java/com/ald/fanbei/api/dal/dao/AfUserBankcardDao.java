@@ -45,5 +45,11 @@ public interface AfUserBankcardDao {
 	 * @return
 	 */
 	public AfUserBankcardDo getUserBankcardById(@Param("rid")Long id);
-
+	
+	/**
+	 * 修改银行卡
+	 * @param afUserBankcardDo
+	 * @return
+	 */
+	int updateUserBankcard(AfUserBankcardDo afUserBankcardDo);
 }

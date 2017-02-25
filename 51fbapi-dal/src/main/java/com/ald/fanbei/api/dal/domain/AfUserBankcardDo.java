@@ -25,6 +25,8 @@ public class AfUserBankcardDo extends AbstractSerial{
 	private String cardNumber;
 	private String isMain;
 	private String bankName;
+	private String status;	
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -78,5 +80,17 @@ public class AfUserBankcardDo extends AbstractSerial{
 	}
 	public void setBankName(String bankName) {
 		this.bankName = bankName;
+	}
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

@@ -16,6 +16,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -40,7 +41,11 @@ public class DeleteBankCardApi implements ApiHandle {
 		}
         Map<String, Object> params = requestDataVo.getParams();
         Long bankId = NumberUtil.objToLongDefault(ObjectUtils.toString(params.get("bankId")), 0);
-        if(afUserBankcardService.deleteUserBankcardByIdAndUserId(userId, bankId)>0){
+        AfUserBankcardDo afUserBankcardDo = new AfUserBankcardDo();
+        afUserBankcardDo.setRid(bankId);
+       afUserBankcardDo.setUserId(userId);
+       afUserBankcardDo.setStatus("U");
+        if(afUserBankcardService.updateUserBankcard(afUserBankcardDo)>0){
        		return resp;
           }
         

@@ -41,4 +41,11 @@ public interface AfUserBankcardService {
 	 * @return
 	 */
 	AfUserBankcardDo getUserBankcardById(Long id);
+	/**
+	 * 修改银行卡信息
+	 * @param afUserBankcardDo
+	 * @return
+	 */
+	int updateUserBankcard(AfUserBankcardDo afUserBankcardDo);
+
 }

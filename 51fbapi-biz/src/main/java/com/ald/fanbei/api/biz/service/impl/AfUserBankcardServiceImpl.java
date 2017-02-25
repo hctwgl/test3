@@ -42,4 +42,10 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 		return afUserBankcardDao.getUserBankcardById(id);
 	}
 
+	
+	@Override
+	public int updateUserBankcard(AfUserBankcardDo afUserBankcardDo) {
+		return afUserBankcardDao.updateUserBankcard(afUserBankcardDo);
+	}
+
 }

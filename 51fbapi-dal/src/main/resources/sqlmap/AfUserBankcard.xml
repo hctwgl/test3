@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name
+		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status
 	</sql>
 	
 	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
@@ -37,6 +37,31 @@
 			id=#{rid} 
 		AND 
 			user_id = #{userId} 
+	</update>
+	<update id="updateUserBankcard"  parameterType="AfUserBankcardDo">
+		UPDATE 
+			af_user_bankcard 
+		SET 
+			gmt_modified = NOW()
+		
+		<if test="status != null">
+			,status = #{status}
+		</if>
+		<if test="cardNumber != null">
+			,card_number = #{cardNumber}
+		</if>
+		<if test="isMain != null">
+			,is_main = #{isMain}
+		</if>
+		<if test="bankCode != null">
+			,bank_code = #{bankCode}
+		</if>
+		WHERE 
+			id=#{rid} 
+		AND 
+			user_id = #{userId} 
+		AND 	
+			is_delete = 1 
 	</update>
 	
 	<select id="getUserBankcardById" resultType="AfUserBankcardDo">
