@@ -115,6 +115,12 @@ public class AppGoodsControler extends BaseController {
 			data.put("imageIcon", afModelH5ItemDo.getItemIcon());
 			data.put("type", afModelH5ItemDo.getItemType());
 			data.put("content", afModelH5ItemDo.getItemValue());
+			data.put("goodsId", "0");
+			data.put("priceAmount", "140");
+			data.put("numIid", "0");			
+			data.put("goodsUrl", "http://item.taobao.com/item.htm?id=544085886371");
+			data.put("rebateAmount", "10");
+			data.put("saleAmount", "130");
 			data.put("sort", afModelH5ItemDo.getSort());
 			list.add(data);
 

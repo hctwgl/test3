@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,user_id,goods_id,goods_name,goods_icon,open_id,goods_url,price_amount,actual_amount
+	</sql>
+	
+	<insert id="addUserCollectionGoods" keyProperty="id" useGeneratedKeys="true" parameterType="AfUserCollectionDo">
+		INSERT INTO af_user_collection (
+			gmt_create,
+			gmt_modified,
+			user_id,
+			goods_id,
+			goods_name,
+			goods_icon,
+			open_id,
+			goods_url,
+			price_amount,
+			actual_amount		
+			)
+			VALUES
+			(
+			NOW(),
+			NOW(),
+			#{userId},
+			#{goodsId},
+			#{goodsName},
+			#{goodsIcon},
+			#{openId},
+			#{goodsUrl},			
+			#{priceAmount},
+			#{actualAmount}
+			)
+	</insert>
+	
+	<select id="getUserCollectionListByUserId" resultType="AfUserCollectionDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_collection
+		WHERE
+			is_delete=0 
+		AND 
+			user_id = #{userId} 
+		ORDER BY
+			gmt_create 
+		DESC
+	</select>
+	
+	
+	<update id="updateUserCollectionGoods"  parameterType="AfUserBankcardDo">
+		UPDATE 
+			af_user_collection 
+		SET 
+			gmt_modified = NOW()
+		
+
+		<if test="goodsId != null">
+			,goods_id = #{goodsId}
+		</if>
+		<if test="goodsName != null">
+			,goods_name = #{goodsName}
+		</if>
+		<if test="goodsIcon != null">
+			,goods_icon = #{goodsIcon}
+		</if>
+		<if test="goods_url != null">
+			,goods_url = #{goods_url}
+		</if>
+		<if test="openId != null">
+			,open_id = #{openId}
+		</if>		
+		<if test="priceAmount != null">
+			,price_amount = #{priceAmount}
+		</if>
+		<if test="actualAmount != null">
+			,actual_amount = #{actualAmount}
+		</if>
+		WHERE 
+			id=#{rid} 
+		AND 
+			user_id = #{userId} 
+		
+	</update>
+	
+	<select id="getUserCollectionListById" resultType="AfUserBankcardDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND 
+			id = #{rid}
+	</select>
+	
+</mapper>
