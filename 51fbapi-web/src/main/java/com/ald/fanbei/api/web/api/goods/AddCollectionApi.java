@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.service.AfuserCollectionService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -39,16 +40,19 @@ public class AddCollectionApi implements ApiHandle {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		Map<String, Object> params = requestDataVo.getParams();
-		String nick = ObjectUtils.toString(params.get("nick"), "").toString();
+		String name = ObjectUtils.toString(params.get("name"), "").toString();
 		String avatar = ObjectUtils.toString(params.get("avatar"), "").toString();
 		String province = ObjectUtils.toString(params.get("province"), "").toString();
 		String city = ObjectUtils.toString(params.get("city"), "").toString();
 		String county = ObjectUtils.toString(params.get("county"), "").toString();
+		Long goodId = NumberUtil.objToLongDefault(params.get("goodId"), 1);
 
-		if (StringUtils.isEmpty(nick) && StringUtils.isEmpty(avatar) && StringUtils.isEmpty(province)
+		if (StringUtils.isEmpty(name) && StringUtils.isEmpty(avatar) && StringUtils.isEmpty(province)
 				&& StringUtils.isEmpty(city) && StringUtils.isEmpty(county)) {
 			throw new FanbeiException("(nick or avata or province or city or county) is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}
+		
+		
 
 		return null;
 	}

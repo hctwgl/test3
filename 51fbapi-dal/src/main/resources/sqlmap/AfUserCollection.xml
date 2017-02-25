@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>  
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserCollectionDao">
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,user_id,goods_id,goods_name,goods_icon,open_id,goods_url,price_amount,actual_amount
 	</sql>
@@ -48,7 +48,7 @@
 	</select>
 	
 	
-	<update id="updateUserCollectionGoods"  parameterType="AfUserBankcardDo">
+	<update id="updateUserCollectionGoods"  parameterType="AfUserBankcardDo" >
 		UPDATE 
 			af_user_collection 
 		SET 

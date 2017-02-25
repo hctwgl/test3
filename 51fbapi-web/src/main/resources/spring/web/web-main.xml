@@ -124,9 +124,9 @@
 				<entry key="/user/getBankCardList" value-ref="getBankCardListApi" />
 				<entry key="/user/deleteBankCard" value-ref="deleteBankCardApi" />
 				<entry key="/user/withdrawCash" value-ref="withdrawCashApi" />
-				<entry key="/user/deleteCollection" value-ref="DeleteCollectionApi" />
-				<entry key="/user/addCollection" value-ref="AddCollectionApi" />
-				<entry key="/user/getCollectionList" value-ref="GetCollectionListApi" />
+				<entry key="/user/deleteCollection" value-ref="deleteCollectionApi" />
+				<entry key="/user/addCollection" value-ref="addCollectionApi" />
+				<entry key="/user/getCollectionList" value-ref="getCollectionListApi" />
 				
 				
 				<entry key="/user/signin" value-ref="signinApi" />
