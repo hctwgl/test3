@@ -7,9 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAuthYdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -28,17 +26,20 @@ public class AuthBankcardApi implements ApiHandle {
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	private AfAuthYdService afAuthYdService;
-	@Resource
-	private SmsUtil smsUtil;
+//	@Resource
+//	private SmsUtil smsUtil;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 //		String cardNumber = (String)requestDataVo.getParams().get("cardNumber");
-		String mobile = (String)requestDataVo.getParams().get("mobile");
-		String verifyCode = (String)requestDataVo.getParams().get("verifyCode");
+//		String mobile = (String)requestDataVo.getParams().get("mobile");
+//		String verifyCode = (String)requestDataVo.getParams().get("verifyCode");
+		
+//		UpsUtil.authSign(bankCode, realName, mobile, idNumber, cardNumber, "app");
+		
 		//验证短信
-		smsUtil.checkSmsByMobileAndType(mobile, verifyCode, SmsType.BANK_CARD);
+//		smsUtil.checkSmsByMobileAndType(mobile, verifyCode, SmsType.BANK_CARD);
 		//银行卡四要素验证
 //		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
 //		String authResult = YoudunUtil.fourItemCheck(userAccount.getRealName(), userAccount.getIdNumber(), cardNumber, mobile);

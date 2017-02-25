@@ -37,6 +37,7 @@
 		<property name="fbapi.youdun.host" defaultValue="https://api4.udcredit.com" description="有盾接口host" />
 		<property name="fbapi.youdun.pubkey" defaultValue="sYJMMVhOQLa3KeM69BcNDALpS7Fo+barJ3IFIwuG/pg=" description="有盾pubkey" />
 		<property name="fbapi.youdun.securitykey" defaultValue="sYJMMVhOQLa3KeM69BcNDALpS7Fo+barJ3IFIwuG/pg=" description="有盾secretykey" />
+		<property name="fbapi.youdun.notify" defaultValue="http://apptest.51fanbei.com/third/youdun/faceRecognitionNotify" description="有盾回调地址" />
 		
 		<!-- 阿里百川 -->
 		<property name="fbapi.taobao.bcds.url" defaultValue="fmWxZsP7A1fishuunHGrhkUgikLQNVFoclPF+UHiju7NRtiU+RzKs5iec6JwzkhZ" description="阿里百川电商url" />

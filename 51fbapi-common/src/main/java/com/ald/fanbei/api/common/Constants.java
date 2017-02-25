@@ -92,6 +92,7 @@ public class Constants {
     public static final String CONFKEY_YOUDUN_HOST       		      = "fbapi.youdun.host";
     public static final String CONFKEY_YOUDUN_PUBKEY                  = "fbapi.youdun.pubkey";
     public static final String CONFKEY_YOUDUN_SECURITYKEY             = "fbapi.youdun.securitykey";
+    public static final String CONFKEY_YOUDUN_NOTIFY                  = "fbapi.youdun.notify";
     public static final String CONFKEY_TAOBAO_BCDS_URL			      = "fbapi.taobao.bcds.url";
     public static final String CONFKEY_TAOBAO_BCDS_APPID			  = "fbapi.taobao.bcds.appid";
     public static final String CONFKEY_TAOBAO_BCDS_SECRET			  = "fbapi.taobao.bcds.secret";

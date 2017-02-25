@@ -19,7 +19,7 @@ public class UpsReqBo extends HashMap<String, String> {
 	private String service;  //接口服务名称，此处为 authSign
 	private String merNo;  //UPS商户号    UPS分配给商户的商户号
 	private String orderNo;  //订单号    业务订单号，必须保证唯一
-	private String payCanal;  //支付渠道     见 附件一 支付渠道
+//	private String payCanal;  //支付渠道     见 附件一 支付渠道
 	private String clientType;  //客户端类型
 	private String merPriv;  //私有域     商户自定义参数，响应时原样返回
 	private String reqExt;  //扩展参数
@@ -54,13 +54,13 @@ public class UpsReqBo extends HashMap<String, String> {
 		this.orderNo = orderNo;
 		this.put("orderNo", orderNo);
 	}
-	public String getPayCanal() {
-		return payCanal;
-	}
-	public void setPayCanal(String payCanal) {
-		this.payCanal = payCanal;
-		this.put("payCanal", payCanal);
-	}
+//	public String getPayCanal() {
+//		return payCanal;
+//	}
+//	public void setPayCanal(String payCanal) {
+//		this.payCanal = payCanal;
+//		this.put("payCanal", payCanal);
+//	}
 	public String getClientType() {
 		return clientType;
 	}

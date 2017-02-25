@@ -24,6 +24,8 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	private String bankcardStatus;
 	private String mobileStatus;
 	private String teldirStatus;
+	private String ydKey;
+	private String ydUrl;
 	public BigDecimal getTotalAmount() {
 		return totalAmount;
 	}
@@ -84,5 +86,16 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	public void setTeldirStatus(String teldirStatus) {
 		this.teldirStatus = teldirStatus;
 	}
-	
+	public String getYdKey() {
+		return ydKey;
+	}
+	public void setYdKey(String ydKey) {
+		this.ydKey = ydKey;
+	}
+	public String getYdUrl() {
+		return ydUrl;
+	}
+	public void setYdUrl(String ydUrl) {
+		this.ydUrl = ydUrl;
+	}
 }
