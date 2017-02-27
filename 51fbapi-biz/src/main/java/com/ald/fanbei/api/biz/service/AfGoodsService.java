@@ -28,4 +28,34 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	AfGoodsDo getGoodsById(@Param("rid")Long rid);
+	
+	/**
+	 * 订阅商品
+	 * @param messageContent
+	 * @return
+	 */
+	
+	int subscribeGoods(String messageContent);
+	
+	/**
+	 * 取消订阅商品
+	 * @param messageContent
+	 * @return
+	 */
+	
+	int unSubscribeGoods(String messageContent);
+	
+	/**
+	 * 淘宝商品，价格,主图,title发生变化，进行修改
+	 * @param messageContent
+	 * @return
+	 */
+	int updateTaobaoInfo(String messageContent);
+	
+	/**
+	 * 淘宝商品下架
+	 * @param messageContent
+	 * @return
+	 */
+	int cancelPublishGoods(String messageContent);
 }

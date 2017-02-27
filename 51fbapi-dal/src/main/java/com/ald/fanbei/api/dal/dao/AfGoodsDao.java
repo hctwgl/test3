@@ -34,4 +34,27 @@ public interface AfGoodsDao {
 	 * @return
 	 */
 	List<AfGoodsDo> getCateGoodsList(AfGoodsQuery query);
+	
+	/**
+	 * 修改商品订阅状态
+	 * @param messageContent
+	 * @return
+	 */
+	int updateSubscribeStatus(@Param("numId")String numId, @Param("status")String status);
+	
+	/**
+	 * 更新商品淘宝信息
+	 * @param afGoodsDo
+	 * @return
+	 */
+	int updateTaobaoGoodsInfo(AfGoodsDo afGoodsDo);
+	
+	/**
+	 * 下架淘宝商品
+	 * @param messageContent
+	 * @return
+	 */
+	int cancelPublishGoods(@Param("numId")String numId);
+	
+	
 }

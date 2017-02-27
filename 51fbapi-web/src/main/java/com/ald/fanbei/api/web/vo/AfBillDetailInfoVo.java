@@ -20,6 +20,9 @@ public class AfBillDetailInfoVo extends AbstractSerial{
 	private String billStatus;//还款状态 Y:已还款 ，N:未还款，F:冻结
 	private String borrowType;//借款类型：【CASH:现金 ,CONSUME:消费分期,CONSUME_TEMP:消费分期待确认,TOCASH:消费转换成现金借款,TOCONSUME:消费待确认转化成消费】
 	private String name;//借款名称
+	private Long   orderId;//订单id
+	private String orderNo;//订单编号
+	private String refId;//关联id
 	private BigDecimal borrowAmount;//借款本金
 	private BigDecimal poundageAmount;//手续费
 	private BigDecimal overduePoundageAmount;//逾期手续费
@@ -126,5 +129,23 @@ public class AfBillDetailInfoVo extends AbstractSerial{
 	}
 	public void setOverduePoundageAmount(BigDecimal overduePoundageAmount) {
 		this.overduePoundageAmount = overduePoundageAmount;
+	}
+	public Long getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
+	}
+	public String getOrderNo() {
+		return orderNo;
+	}
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+	public String getRefId() {
+		return refId;
+	}
+	public void setRefId(String refId) {
+		this.refId = refId;
 	}
 }

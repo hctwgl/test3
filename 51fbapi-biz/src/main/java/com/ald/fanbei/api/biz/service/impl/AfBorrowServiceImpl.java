@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
@@ -72,6 +73,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	@Resource
 	AfBorrowInterestDao afBorrowInterestDao;
 	
+	@Resource
+	private JpushService pushService;
+	
 	@Override
 	public Date getReyLimitDate(Date now){
     	Date startDate = DateUtil.addDays(DateUtil.getFirstOfMonth(now), 
@@ -91,6 +95,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
+					Date now = new Date();
+					//TODO 转账处理
+					pushService.dealBorrowCashTransfer(userDto.getUserName(), now);
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userDto.getUserId());
@@ -100,7 +107,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					AfBorrowDo borrow =  buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,null,null,1,money);
 					afBorrowDao.addBorrow(borrow);
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CASH,money, userDto.getUserId(), borrow.getRid()));
-					//TODO 转账处理
 					
 					//生成账单
 					AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CASH);
@@ -178,7 +184,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	private List<AfBorrowBillDo> buildBorrowBill(BorrowType borrowType,AfBorrowDo borrow,BigDecimal totalAmount,BigDecimal interestAmount,BigDecimal monthRate,BigDecimal poundageAmount){
 		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
 		Date now = new Date();//当前时间
-		Date gmtBorrow = new Date();//借款到账时间
 		BigDecimal billAmount = totalAmount.divide(new BigDecimal(borrow.getNper()),2,BigDecimal.ROUND_HALF_UP);
 		//计算本息总计
 		for (int i = 1; i <= borrow.getNper(); i++) {
@@ -187,26 +192,31 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			bill.setBorrowId(borrow.getRid());
 			bill.setBorrowNo(borrow.getBorrowNo());
 			bill.setName(borrow.getName());
-			bill.setGmtBorrow(gmtBorrow);
+			bill.setGmtBorrow(borrow.getGmtCreate());
 			Map<String,Integer> timeMap = getCurrentYearAndMonth("", now);
 			bill.setBillYear(timeMap.get("year"));
 			bill.setBillMonth(timeMap.get("month"));
 			bill.setNper(borrow.getNper());
 			bill.setBillNper(i);
-			bill.setBillAmount(billAmount);
 			if(borrowType.equals(BorrowType.CASH)){
 				bill.setPrincipleAmount(borrow.getAmount());
 				bill.setInterestAmount(interestAmount);
 				bill.setPoundageAmount(poundageAmount);
 				bill.setStatus(BorrowBillStatus.NO.getCode());
 				bill.setType(BorrowType.CASH.getCode());
+				bill.setBillAmount(billAmount);
 			}else{
 				BigDecimal perPoundageAmount = poundageAmount.divide(new BigDecimal(borrow.getNper()),2,BigDecimal.ROUND_HALF_UP);//当月手续费
 				BigDecimal perInterest = totalAmount.multiply(monthRate).setScale(2, BigDecimal.ROUND_HALF_UP);//本月利息
 				bill.setInterestAmount(perInterest);
 				bill.setPoundageAmount(perPoundageAmount);
-				bill.setPrincipleAmount(billAmount.subtract(perInterest).subtract(perPoundageAmount));//本金 = 账单金额 -本月利息 -手续费
 				totalAmount = totalAmount.subtract(billAmount);
+				if(i<borrow.getNper()){
+					bill.setBillAmount(billAmount);
+				}else{
+					bill.setBillAmount(totalAmount.add(billAmount));
+				}
+				bill.setPrincipleAmount(bill.getBillAmount().subtract(perInterest).subtract(perPoundageAmount));//本金 = 账单金额 -本月利息 -手续费
 				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
 				bill.setType(BorrowType.CONSUME.getCode());
 			}
@@ -249,6 +259,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
+					//TODO 转账处理
+					pushService.dealBorrowConsumeTransfer(userDto.getUserName(), name);
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userDto.getUserId());

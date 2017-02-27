@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -53,8 +54,9 @@ public class MessageListener implements ApplicationListener<ContextRefreshedEven
 				try {  
 		            // 默认不抛出异常则认为消息处理成功  
 					AfOrderService afOrderService = (AfOrderService)SpringBeanContextUtil.getBean("afOrderService");
+					AfGoodsService afGoodsService = (AfGoodsService)SpringBeanContextUtil.getBean("afGoodsService");
 		            if(StringUtil.isNotEmpty(message.getTopic())){
-		            	switch(message.getTopic()){
+		            	switch(message.getTopic()) {
 		            		case "taobao_tae_BaichuanTradeCreated":
 		            			afOrderService.createOrderTrade(message.getContent());
 		            			break;
@@ -68,10 +70,28 @@ public class MessageListener implements ApplicationListener<ContextRefreshedEven
 		            			afOrderService.updateOrderTradeClosed(message.getContent());
 		            			break;
 		            		case "taobao_tae_ItemSubscribe":
-		            			System.out.println("taobao_tae_ItemSubscribe" + message.getContent());
+		            			//订阅成功
+		            			afGoodsService.subscribeGoods(message.getContent());
 		            			break;
 		            		case "taobao_tae_ItemUnSubscribe":
-		            			System.out.println("taobao_tae_ItemUnSubscribe" + message.getContent());
+		            			//取消订阅
+		            			afGoodsService.unSubscribeGoods(message.getContent());
+		            			break;
+		            		case "taobao_tae_ItemTitleChange":
+		            			//名称title发生变化
+		            			afGoodsService.updateTaobaoInfo(message.getContent());
+		            			break;
+		            		case "taobao_tae_ItemImageChange":
+		            			//商品title变化
+		            			afGoodsService.updateTaobaoInfo(message.getContent());
+		            			break;
+		            		case "taobao_tae_ItemPriceChange":
+		            			//商品最低价格变化 
+		            			afGoodsService.updateTaobaoInfo(message.getContent());
+		            			break;
+		            		case "taobao_tae_ItemDownShelf":
+		            			//淘宝商品下架
+		            			afGoodsService.unSubscribeGoods(message.getContent());
 		            			break;
 		            		default:break;
 		            	} 

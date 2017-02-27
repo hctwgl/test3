@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -26,9 +27,9 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
-import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
@@ -73,6 +74,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Resource
 	private AfOrderTempDao afUserOrderDao;
 	
+	@Resource
+	private JpushService pushService;
+	
 	@Override
 	public int createOrderTrade(String content) {
 		logger.info("createOrderTrade_content:"+content);
@@ -98,7 +102,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			goodsId = goods.getRid();
 			orderType = goods.getSource();
 		}
-		AfOrderDo order = buildOrder(obj.getString("order_id"), 0l, null, priceAmount, priceAmount, "", BigDecimal.ZERO, 
+		AfOrderDo order = buildOrder(null,obj.getString("order_id"), 0l, null, priceAmount, priceAmount, "", BigDecimal.ZERO, 
 				orderType, priceAmount, goodsId, goodsObj.getString("auction_id"), 
 				goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, obj.getString("shop_title"));
 		return orderDao.createOrder(order);
@@ -135,17 +139,24 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public int createMobileChargeOrder(final Long userId, final AfUserCouponDto couponDto,
+	public int createMobileChargeOrder(final String userName,final Long userId, final AfUserCouponDto couponDto,
 			final BigDecimal money, final String mobile,final BigDecimal rebateAmount) {
+		final Date now = new Date();
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
+		//TODO  充值支付
 		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
 			String msg = kaixinUtil.charge(orderNo, mobile, money.setScale(0).toString());
 			JSONObject returnMsg = JSON.parseObject(msg);
 			JSONObject result = JSON.parseObject(returnMsg.getString("result"));
 			if(!result.getString("ret_code").equals(MobileStatus.SUCCESS.getCode())){
-				//TODO  发送短信
-				System.out.println(result.getString("ret_msg"));
+				//System.out.println(result.getString("ret_msg"));
+				//TODO 退款 生成退款记录  走微信退款流程，或者银行卡代付
+				pushService.chargeMobileError(userName, mobile, now);
+			}else{
+				pushService.chargeMobileSucc(userName, mobile, now);
 			}
+		}else{
+			pushService.chargeMobileSucc(userName, mobile, now);
 		}
 		
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -159,7 +170,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						actualAmount = money.subtract(couponDto.getAmount());
 					}
 					//订单创建
-					orderDao.createOrder(buildOrder(orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
+					orderDao.createOrder(buildOrder(now,orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
 							OrderType.MOBILE.getCode(),actualAmount, 0l, "","", "", 1, ""));
 					return 1;
 				} catch (Exception e) {
@@ -190,10 +201,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param shopName --店铺名称
 	 * @return
 	 */
-	private AfOrderDo buildOrder(String orderNo,Long userId, AfUserCouponDto couponDto,
+	private AfOrderDo buildOrder(Date now,String orderNo,Long userId, AfUserCouponDto couponDto,
 			BigDecimal money,BigDecimal saleAmount, String mobile,BigDecimal rebateAmount,String orderType,BigDecimal actualAmount,
 			Long goodsId,String openId,String goodsName,String goodsIcon,int count,String shopName){
 		AfOrderDo orderDo = new AfOrderDo();
+		orderDo.setGmtCreate(now);
 		orderDo.setUserId(userId);
 		orderDo.setOrderNo(orderNo);
 		orderDo.setOrderType(orderType);

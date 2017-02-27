@@ -43,4 +43,50 @@
 				AND (sale_amount-rebate_amount)<![CDATA[  <=  ]]> #{maxAmount}
 			</if>
 	</select>
+	
+	<update id="updateSubscribeStatus">
+		UPDATE
+			af_goods
+		SET
+			gmt_modified = NOW(),
+			modifier = 'system',
+			subscribe = #{status}
+		WHERE
+			num_id = ${numId}
+	</update>
+	
+	<update id="updateTaobaoGoodsInfo" parameterType="AfGoodsDo" >
+		UPDATE
+			af_goods
+		SET
+			gmt_modified = NOW()
+			,modifier = 'system'
+			<if test="name != null and name != ''">
+				,name = #{name}
+			</if>
+			<if test="goodsIcon != null and goodsIcon != ''">
+				,goods_icon = #{goodsIcon}
+			</if>
+			<if test="priceAmount != null">
+				,price_amount = #{priceAmount}
+			</if>
+			<if test="saleAmount != null">
+				,sale_amount = #{saleAmount}
+			</if>
+		WHERE
+			num_id = #{numId}
+	</update>
+	
+	<update id="cancelPublishGoods">
+		UPDATE
+			af_goods
+		SET
+			gmt_modified = NOW(),
+			modifier = 'system',
+			status = 'CANCEL'
+		WHERE
+			num_id = ${numId}
+	</update>
+	
+	
 </mapper>

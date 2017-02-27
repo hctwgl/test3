@@ -59,7 +59,7 @@ public class SubmitRepaymentApi implements ApiHandle{
 		if(null != coupon &&!coupon.getStatus().equals(CouponStatus.NOUSE.getCode())){
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
-		if(afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
+		if(afRepaymentService.createRepayment(context.getUserName(),repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
 				cardId,userId,billDo)>0){
 			return resp;
 		}

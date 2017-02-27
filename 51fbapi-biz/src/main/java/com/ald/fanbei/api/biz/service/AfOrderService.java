@@ -51,7 +51,7 @@ public interface AfOrderService {
 	 * @param rebateAmount
 	 * @return
 	 */
-	int createMobileChargeOrder(Long userId, AfUserCouponDto couponDto,BigDecimal money,String mobile,BigDecimal rebateAmount);
+	int createMobileChargeOrder(String userName,Long userId, AfUserCouponDto couponDto,BigDecimal money,String mobile,BigDecimal rebateAmount);
 	
 	/**
 	 * 获取当天最近的订单

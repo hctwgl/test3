@@ -6,6 +6,12 @@
 		status,overdue_status,overdue_days,repayment_id,principle_amount,interest_amount,overdue_interest_amount,poundage_amount,overdue_poundage_amount
 	</sql>
 	
+	<sql id="queryWithFields">
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.borrow_id,b.borrow_no,b.name,b.gmt_borrow,b.bill_year,b.bill_month,
+		b.nper,b.bill_nper,b.bill_amount,b.type,b.status,b.overdue_status,b.overdue_days,b.repayment_id,b.principle_amount,b.interest_amount,
+		b.overdue_interest_amount,b.poundage_amount,b.overdue_poundage_amount,w.order_id,w.order_no
+	</sql>
+	
 	<select id="getMonthBillList" resultType="AfBorrowBillDo" parameterType="AfBorrowBillQuery">
 		SELECT 
 			<include refid="queryFields"/>
@@ -37,6 +43,16 @@
 		SELECT 
 			<include refid="queryFields"/>
 		FROM af_borrow_bill WHERE is_delete = 0 AND id = #{rid}
+    </select>
+    
+    <select id="getBorrowBillDtoById" resultType="AfBorrowBillDto">
+		SELECT 
+			<include refid="queryWithFields"/>
+		FROM af_borrow_bill b
+		left join
+			af_borrow w
+		on w.is_delete=0 and w.id = b.borrow_id
+		 WHERE b.is_delete = 0 AND b.id = #{rid}
     </select>
     
     <select id="getTotalMonthlyBillByUserId" resultType="AfBorrowBillDo">

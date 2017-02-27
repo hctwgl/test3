@@ -16,7 +16,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -44,7 +44,7 @@ public class GetBillDetailInfoApi implements ApiHandle{
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long billId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("billId")), 0);
-		AfBorrowBillDo billDto = afBorrowBillService.getBorrowBillById(billId);
+		AfBorrowBillDto billDto = afBorrowBillService.getBorrowBillDtoById(billId);
 		if(null == billDto){
 			throw new FanbeiException("borrow bill not exist error", FanbeiExceptionCode.BORROW_BILL_NOT_EXIST_ERROR);
 		}
@@ -53,13 +53,14 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		return resp;
 	}
 	
-	private AfBillDetailInfoVo getBorrowBillVo(AfBorrowBillDo billDto){
+	private AfBillDetailInfoVo getBorrowBillVo(AfBorrowBillDto billDto){
 		AfBillDetailInfoVo vo = new AfBillDetailInfoVo();
 		vo.setBillAmount(billDto.getBillAmount());
 		vo.setBillId(billDto.getRid());
 		vo.setBillNper(billDto.getBillNper());
 		vo.setBorrowAmount(billDto.getPrincipleAmount());
 		vo.setBorrowNo(billDto.getBorrowNo());
+		vo.setRefId(billDto.getRepaymentId()+"");
 		if(BorrowType.CASH.getCode().equals(billDto.getType())){
 			vo.setBorrowType(BorrowType.CASH.getCode());
 			int count = afBorrowService.getBorrowInterestCountByBorrowId(billDto.getRid());
@@ -67,6 +68,8 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		}else if(BorrowType.CONSUME.getCode().equals(billDto.getType())){
 			vo.setBorrowType(BorrowType.CONSUME.getCode());
 			vo.setInterestDay(0);
+			vo.setOrderId(billDto.getOrderId());
+			vo.setOrderNo(billDto.getOrderNo());
 		}
 		if(billDto.getOverdueStatus().equals(YesNoStatus.YES.getCode())
 				&& billDto.getStatus().equals(BorrowBillStatus.NO.getCode())){

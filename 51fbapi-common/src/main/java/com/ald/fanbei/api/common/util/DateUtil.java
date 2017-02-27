@@ -55,6 +55,8 @@ public class DateUtil {
     public static final String DEFAULT_PATTERN_WITH_DOT    = "yyyy.MM.dd";
 
     public static final String DEFAULT_CHINESE_PATTERN     = "yyyy年MM月dd";
+    
+    public static final String DEFAULT_CHINESE_FULL_PATTERN = "yyyy年MM月dd日HH点mm分";
 
     public static final String HOUR_PATTERN          = "yyyyMMddHH";
 

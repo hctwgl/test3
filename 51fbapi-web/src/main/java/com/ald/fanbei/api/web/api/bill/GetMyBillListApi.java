@@ -68,6 +68,7 @@ public class GetMyBillListApi implements ApiHandle{
 			}
 			if(i==billList.size()-1){
 				monthList.add(dataMap);
+				year = afBorrowBillDo.getBillYear();
 				Map<String, Object> yearMap = new HashMap<String, Object>();
 				yearMap.put("billYear", year);
 				yearMap.put("monthList", monthList);

@@ -26,7 +26,7 @@ public interface AfRepaymentService {
 	 * @param cardId
 	 * @return
 	 */
-	int createRepayment(BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
+	int createRepayment(String userName,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo);
 	
 	/**

@@ -125,7 +125,7 @@ public class BigDecimalUtil {
 		poundage = poundage ==null?new BigDecimal(0):poundage;
 		BigDecimal v1 = (amount.multiply(monthRate).multiply((BigDecimal.ONE.add(monthRate)).pow(num)))
 				.divide((BigDecimal.ONE.add(monthRate)).pow(num).subtract(BigDecimal.ONE),6,RoundingMode.HALF_UP).add(poundage.divide(new BigDecimal(num),2,RoundingMode.HALF_UP));
-		return v1.setScale(2, RoundingMode.HALF_UP);
+		return v1;
 	}
 	
 	/**

@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 
 /**
@@ -78,6 +79,11 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService{
 	@Override
 	public AfBorrowBillDo getBillAmountByCashIds(String ids) {
 		return afBorrowBillDao.getBillAmountByCashIds(StringUtil.splitToList(ids, ","));
+	}
+
+	@Override
+	public AfBorrowBillDto getBorrowBillDtoById(Long rid) {
+		return afBorrowBillDao.getBorrowBillDtoById(rid);
 	}
 
 }
