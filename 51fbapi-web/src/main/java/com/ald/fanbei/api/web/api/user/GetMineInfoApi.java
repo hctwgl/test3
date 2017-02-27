@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -47,6 +48,12 @@ public class GetMineInfoApi implements ApiHandle{
         data.put("avata", userAccountInfo.getAvatar());
         data.put("nick", userAccountInfo.getNick());
         data.put("userName", userAccountInfo.getUserName());
+        data.put("realName", userAccountInfo.getRealName());
+        String isPay = YesNoStatus.NO.getCode();
+        if(userAccountInfo.getPassword()!=null){
+        	isPay =YesNoStatus.YES.getCode();
+        }
+        data.put("isPayPwd",isPay);
         data.put("vipLevel", userAccountInfo.getVipLevel());
 //        data.put("commission", userAccountInfo.getCommission());
         data.put("couponCount", coupleCount);
