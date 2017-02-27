@@ -30,6 +30,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -248,6 +249,15 @@ public class SmsUtil extends AbstractThird {
 		String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
 
 		logger.info(StringUtil.appendStrs("sendSms params=|", mobiles, "|", content, "|", reqResult));
+		
+		JSONObject json = JSON.parseObject(reqResult);
+		if(json.getInteger("result")==0){
+			result.setSucc(true);
+			result.setResultStr(json.getString("desc"));
+		}else{
+			result.setSucc(false);
+			result.setResultStr(json.getString("desc"));
+		}
 		return result;
 	}
 
