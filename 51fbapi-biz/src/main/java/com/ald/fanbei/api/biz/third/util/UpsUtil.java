@@ -2,6 +2,10 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmReqBo;
 import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmRespBo;
@@ -21,10 +25,18 @@ import com.ald.fanbei.api.biz.bo.UpsQueryTradeRespBo;
 import com.ald.fanbei.api.biz.bo.UpsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
+import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
+import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
+import com.ald.fanbei.api.biz.service.wxpay.WxpayCore;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -374,6 +386,47 @@ public class UpsUtil extends AbstractThird {
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");
 		payRoutBo.setReqExt("");
+	}
+	
+	/**
+	 * 微信支付退款
+	 * @param out_refund_no --订单退款编号
+	 * @param out_trade_no --订单号
+	 * @param refund_fee --退款金额
+	 * @param total_fee --总金额
+	 * @return
+	 * @throws Exception
+	 */
+	public static String wxRefund(String out_refund_no,String out_trade_no,BigDecimal refund_fee,BigDecimal total_fee) throws Exception {
+    	
+		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String mchId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_MCHID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String wxKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String certPath = ConfigProperties.get(Constants.CONFKEY_WX_CERTPATH);
+    	
+		 //元转换分
+        BigDecimal hundred = new BigDecimal(100);
+        //退款金额
+        String order_refund_fee = refund_fee.multiply(hundred).setScale(0)+"";
+        //总金额
+        String order_total_fee = total_fee.multiply(hundred).setScale(0)+"";
+       
+    	Map<String,String> param = new HashMap<>();
+    	param.put("appid", appId);
+    	param.put("mch_id", mchId);
+    	param.put("nonce_str", DigestUtil.MD5(UUID.randomUUID().toString()));
+    	param.put("op_user_id", mchId);
+    	param.put("out_refund_no", out_refund_no);
+    	param.put("out_trade_no", out_trade_no);
+    	param.put("refund_fee", order_refund_fee);
+    	param.put("total_fee", order_total_fee);
+    	
+    	String sign = WxSignBase.byteToHex(WxSignBase.MD5Digest((WxpayCore.toQueryString(param,wxKey)).getBytes(Constants.DEFAULT_ENCODE)));
+    	param.put(WxpayConfig.KEY_SIGN, sign);
+    	String buildStr = WxpayCore.buildXMLBody(param);
+    	String result = WxpayCore.refundPost(WxpayConfig.WX_REFUND_API, buildStr,mchId,certPath);
+    	Properties respPro = WxXMLParser.parseXML(result);
+    	return respPro.getProperty("result_code");
 	}
 	
 	

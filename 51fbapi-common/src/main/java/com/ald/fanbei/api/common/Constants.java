@@ -117,4 +117,8 @@ public class Constants {
     public static final String FANBEI_REQUEST_CONTEXT_KEY            = "fanbei_request_context";
     public static final String FANBEI_REQUEST_DATA_KEY               = "fanbei_request_data";
     
+    public static final String CONFKEY_WX_APPID				  		 = "fbapi.wx.appid";
+    public static final String CONFKEY_WX_MCHID						 = "fbapi.wx.mchid";
+    public static final String CONFKEY_WX_KEY						 = "fbapi.wx.key";
+    public static final String CONFKEY_WX_CERTPATH					 = "fbapi.wx.certpath";
 }
