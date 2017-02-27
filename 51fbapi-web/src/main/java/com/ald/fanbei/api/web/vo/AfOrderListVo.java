@@ -20,6 +20,7 @@ public class AfOrderListVo extends AbstractSerial {
 	private String goodsIcon;
 	private String goodsName;
 	private BigDecimal rebateAmount;
+	private BigDecimal saleAmount;
 	private Date gmtCreate;
 	private String type;
 	public Long getOrderId() {
@@ -69,5 +70,11 @@ public class AfOrderListVo extends AbstractSerial {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public BigDecimal getSaleAmount() {
+		return saleAmount;
+	}
+	public void setSaleAmount(BigDecimal saleAmount) {
+		this.saleAmount = saleAmount;
 	}
 }
