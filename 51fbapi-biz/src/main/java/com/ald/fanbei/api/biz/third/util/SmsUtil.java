@@ -45,10 +45,10 @@ public class SmsUtil extends AbstractThird {
 	private final static String ACCOUNT = "dh15433";
 	private final static String SIGN = "【51返呗】";
 	private static String password = null;
-	private static String REGIST_TEMPLATE = "注册验证码为:&param1";
-	private static String FORGET_TEMPLATE = "证码为:&param1";
-	private static String BIND_TEMPLATE = "证码为:&param1";
-	private static String SETPAY_TEMPLATE = "证码为:&param1";
+	private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册51返呗，请在30分钟内完成注册";
+	private static String FORGET_TEMPLATE = "验证码为:&param1;您正在找回51返呗的账户密码，请在30分钟内完成";
+	private static String BIND_TEMPLATE = "验证码为:&param1;您正在51返呗绑定手机号，请在30分钟内完成";
+	private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
 
 	private static String TEST_VERIFY_CODE = "888888";
 

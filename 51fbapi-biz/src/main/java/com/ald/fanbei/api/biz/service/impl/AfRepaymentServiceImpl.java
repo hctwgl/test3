@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -60,8 +61,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Resource
 	AfUserCouponDao afUserCouponDao;
 	
+	@Resource
+	private JpushService pushService;
+	
 	@Override
-	public int createRepayment(final BigDecimal repaymentAmount,
+	public int createRepayment(final String userName,final BigDecimal repaymentAmount,
 			final BigDecimal actualAmount,final AfUserCouponDto coupon,
 			final BigDecimal rebateAmount,final String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo) {
 		final Date now = new Date();
@@ -88,6 +92,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					int count = afBorrowBillService.getUserMonthlyBillNotpayCount(billDo.getBillYear(), billDo.getBillMonth(), userId);
 					if(count==0){
 						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userId, BorrowBillStatus.YES.getCode());
+						pushService.repayBillSuccess(userName, billDo.getBillYear()+"", String.format("%02d", billDo.getBillMonth()));
 					}
 					if(null != coupon){
 						//优惠券设置已使用

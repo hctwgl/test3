@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
@@ -72,6 +73,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	@Resource
 	AfBorrowInterestDao afBorrowInterestDao;
 	
+	@Resource
+	private JpushService pushService;
+	
 	@Override
 	public Date getReyLimitDate(Date now){
     	Date startDate = DateUtil.addDays(DateUtil.getFirstOfMonth(now), 
@@ -91,6 +95,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
+					Date now = new Date();
+					//TODO 转账处理
+					pushService.dealBorrowCashTransfer(userDto.getUserName(), now);
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userDto.getUserId());
@@ -100,7 +107,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					AfBorrowDo borrow =  buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,null,null,1,money);
 					afBorrowDao.addBorrow(borrow);
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CASH,money, userDto.getUserId(), borrow.getRid()));
-					//TODO 转账处理
 					
 					//生成账单
 					AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CASH);
@@ -253,6 +259,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
+					//TODO 转账处理
+					pushService.dealBorrowConsumeTransfer(userDto.getUserName(), name);
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userDto.getUserId());

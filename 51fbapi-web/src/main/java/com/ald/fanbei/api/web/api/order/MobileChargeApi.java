@@ -51,7 +51,7 @@ public class MobileChargeApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
 		//TODO:支付流程
-		if(afOrderService.createMobileChargeOrder(userId, coupon, money, mobile, rebateAmount)<=0){
+		if(afOrderService.createMobileChargeOrder(context.getUserName(),userId, coupon, money, mobile, rebateAmount)<=0){
 			throw new FanbeiException(FanbeiExceptionCode.FAILED);
 		}
 		return resp;
