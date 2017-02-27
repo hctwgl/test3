@@ -52,8 +52,8 @@ public class SmsUtil extends AbstractThird {
 
 	private static String TEST_VERIFY_CODE = "888888";
 
-	public static String sendUserName = "suweili@edspay.com";
-	public static String sendPassword = "Su272727";
+	// public static String sendUserName = "suweili@edspay.com";
+	// public static String sendPassword = "Su272727";
 
 	private static final String sendHostAddress = "smtp.mxhichina.com";// 发送邮件使用的服务器的地址
 
@@ -261,7 +261,10 @@ public class SmsUtil extends AbstractThird {
 		// 2. 根据配置创建会话对象, 用于和邮件服务器交互
 		Session session = Session.getDefaultInstance(props);
 		session.setDebug(true); // 设置为debug模式, 可以查看详细的发送 log
-
+		String sendUserName = AesUtil.decrypt(ConfigProperties.get(Constants.EMAIL_SEND_USERNAME),
+				ConfigProperties.get(Constants.EMAIL_SEND_USERNAME));
+		String sendPassword = AesUtil.decrypt(ConfigProperties.get(Constants.EMAIL_SEND_PWD),
+				ConfigProperties.get(Constants.EMAIL_SEND_PWD));
 		// 3. 创建一封邮件
 		MimeMessage message = createMimeMessage(session, sendUserName, email, content);
 

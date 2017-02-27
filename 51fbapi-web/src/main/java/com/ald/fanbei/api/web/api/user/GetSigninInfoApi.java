@@ -65,7 +65,7 @@ public class GetSigninInfoApi implements ApiHandle {
 			}
 		}
 		data.put("cycle", afResourceDo.getValue());
-    	data.put("ruleSignin", afResourceDo.getDescription());
+    	data.put("ruleSignin", afResourceDo.getValue3());
 
         resp.setResponseData(data);
 
