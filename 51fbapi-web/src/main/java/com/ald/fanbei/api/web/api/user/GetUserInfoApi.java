@@ -6,10 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -29,18 +30,19 @@ public class GetUserInfoApi implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfUserAccountService afUserAccountService;
-
+	@Resource
+	AfUserBankcardService afUserBankcardService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		AfUserDo userDo = afUserService.getUserById(userId);
-		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
-		AfUserVo vo = parseUserInfoToUserVo(userDo);
-		
-		if (accountDo != null) {
-			vo.setBindCard(accountDo.getBindCard());
+		if (userId == null) {
+			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
+		AfUserDo userDo = afUserService.getUserById(userId);
+		AfUserVo vo = parseUserInfoToUserVo(userDo);
+	 int bankCardBind = afUserBankcardService.getUserBankcardCountByUserId(userId);
+		vo.setBindCard(bankCardBind+"");
 		resp.setResponseData(vo);
 		return resp;
 	}

@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSigninService;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -46,7 +47,7 @@ public class SigninApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
-		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGNIN");
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(AfResourceType.SIGNIN.getCode());
 		if (afResourceDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 
