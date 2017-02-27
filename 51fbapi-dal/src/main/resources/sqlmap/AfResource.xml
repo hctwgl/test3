@@ -4,7 +4,7 @@
 	<sql id="queryAllFields">
 
 		id rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
-		sec_type,value_1,value_2,value_3,value_4,sort
+		sec_type,value_1,value_2,value_3,value_4,sort,sec_sort
 	</sql>
 <select id="selectHomeConfigByAllTypes" resultType="AfResourceDo">
     SELECT
@@ -63,7 +63,7 @@
 		AND
 			is_delete = 0
 		order by 
-			concat(sort,value_4) desc 
+			concat(sort,sec_sort) desc 
 	</select>
 	
 	<select id="getSingleResourceBytype" resultType="AfResourceDo">

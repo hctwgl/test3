@@ -29,7 +29,9 @@ public class AfResourceDo extends AbstractSerial {
 	private String value2;//扩展值2
 	private String value3;//扩展值3
 	private String value4;//扩展值4
+	private String secSort;//排序
 
+	
 	/**
 	 * @return the value4
 	 */
@@ -145,6 +147,18 @@ public class AfResourceDo extends AbstractSerial {
 	}
 	public void setValue3(String value3) {
 		this.value3 = value3;
+	}
+	/**
+	 * @return the secSort
+	 */
+	public String getSecSort() {
+		return secSort;
+	}
+	/**
+	 * @param secSort the secSort to set
+	 */
+	public void setSecSort(String secSort) {
+		this.secSort = secSort;
 	}
 
 

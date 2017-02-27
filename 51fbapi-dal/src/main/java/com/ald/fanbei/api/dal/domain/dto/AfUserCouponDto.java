@@ -15,6 +15,8 @@ public class AfUserCouponDto extends AfUserCouponDo{
 	private BigDecimal  limitAmount;//起始金额
 	
 	private String		useRule;//使用须知
+	private Integer validDays;//
+	
 
 	public String getName() {
 		return name;
@@ -46,6 +48,20 @@ public class AfUserCouponDto extends AfUserCouponDo{
 
 	public void setUseRule(String useRule) {
 		this.useRule = useRule;
+	}
+
+	/**
+	 * @return the validDays
+	 */
+	public Integer getValidDays() {
+		return validDays;
+	}
+
+	/**
+	 * @param validDays the validDays to set
+	 */
+	public void setValidDays(Integer validDays) {
+		this.validDays = validDays;
 	}
 	
 }

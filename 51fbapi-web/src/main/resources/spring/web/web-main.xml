@@ -127,6 +127,7 @@
 				<entry key="/user/deleteCollection" value-ref="deleteCollectionApi" />
 				<entry key="/user/addCollection" value-ref="addCollectionApi" />
 				<entry key="/user/getCollectionList" value-ref="getCollectionListApi" />
+				<entry key="/user/getMobileRechargeMoneyList" value-ref="getMobileRechargeMoneyListApi" />
 				
 				
 				<entry key="/user/signin" value-ref="signinApi" />
