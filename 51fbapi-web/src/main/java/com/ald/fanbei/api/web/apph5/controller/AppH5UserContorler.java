@@ -75,7 +75,6 @@ public class AppH5UserContorler extends BaseController {
 
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
-		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 
 		String ids = resourceDo.getValue();
