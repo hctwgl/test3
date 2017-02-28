@@ -4,8 +4,11 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +39,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -76,8 +80,27 @@ public class AppH5UserContorler extends BaseController {
 
 		String ids = resourceDo.getValue();
 		List<AfCouponDo> afCouponList = afCouponDao.selectCouponByCouponIds(ids);
+		List<Object> list = new ArrayList<Object>();
+		for (AfCouponDo afCouponDo : afCouponList) {
+			list.add(couponObjectWithAfUserCouponDto(afCouponDo));
+		}
 		model.put("couponList", afCouponList);
 		logger.info(JSON.toJSONString(model));
+	}
+	public Map<String, Object> couponObjectWithAfUserCouponDto(AfCouponDo afCouponDo){
+		
+		Map<String, Object> returnData = new HashMap<String, Object>();
+		returnData.put("rid", afCouponDo.getRid());
+		returnData.put("useRule", afCouponDo.getUseRule());
+		returnData.put("limitAmount", afCouponDo.getLimitAmount());
+		returnData.put("name", afCouponDo.getName());
+		returnData.put("gmtStart", afCouponDo.getGmtStart());
+		returnData.put("gmtEnd", afCouponDo.getGmtEnd());
+		returnData.put("amount", afCouponDo.getAmount());
+		returnData.put("limitCount", afCouponDo.getLimitCount());
+
+		return returnData;
+
 	}
 
 	@RequestMapping(value = { "invitationGift" }, method = RequestMethod.GET)
@@ -156,9 +179,7 @@ public class AppH5UserContorler extends BaseController {
 			}
 			// 判断验证码是否过期
 			if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-				return H5CommonResponse
-						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null)
-						.toString();
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
 
 			}
 

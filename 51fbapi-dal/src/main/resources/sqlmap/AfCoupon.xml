@@ -13,7 +13,7 @@
 	    WHERE
 	    	is_delete = 0
 	    AND
-			 id in (#{ids})
+			 id in (${ids})
 	</select>
 	
 	<select id="getCouponById" resultType="AfCouponDo">
