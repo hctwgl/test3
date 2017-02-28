@@ -54,11 +54,11 @@
 					<bean class="org.apache.commons.lang.StringUtils" />
 				</entry>
 					<entry key="dateUtil">
-					<bean class="com.hmly.o2o.app.common.util.DateUtil" />
+					<bean class="com.ald.fanbei.api.common.util.DateUtil" />
 				</entry>
-				<entry key="jsonUtil">
-					<bean class="com.hmly.o2o.app.common.util.JsonUtil" />
-				</entry>
+		<!-- 		<entry key="jsonUtil">
+					<bean class="com.ald.fanbei.api.common.util.JsonUtil" />
+				</entry> -->
 			</map>
 		</property>
 	</bean>
