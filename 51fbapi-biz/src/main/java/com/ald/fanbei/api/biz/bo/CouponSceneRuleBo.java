@@ -14,6 +14,8 @@ public class CouponSceneRuleBo extends AbstractSerial{
 	
 	private String condition;   //条件，如：针对签到，condition值为连续签到的次数,如果condition=-1则表示无条件
 	private Long couponId;      //优惠券id
+	private Long resourceId;      //优惠券id
+
 	private String ext1;		//扩展字段1
 	private String ext2;		//扩展字段2
 	
@@ -40,6 +42,18 @@ public class CouponSceneRuleBo extends AbstractSerial{
 	}
 	public void setExt2(String ext2) {
 		this.ext2 = ext2;
+	}
+	/**
+	 * @return the resourceId
+	 */
+	public Long getResourceId() {
+		return resourceId;
+	}
+	/**
+	 * @param resourceId the resourceId to set
+	 */
+	public void setResourceId(Long resourceId) {
+		this.resourceId = resourceId;
 	}
 	
 }

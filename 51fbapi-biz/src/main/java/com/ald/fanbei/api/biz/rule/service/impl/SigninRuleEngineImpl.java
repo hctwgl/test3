@@ -50,9 +50,8 @@ public class SigninRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 		List<CouponSceneRuleBo> matchList = new ArrayList<CouponSceneRuleBo>();
 		for(CouponSceneRuleBo item:ruleList){
 
-			if(StringUtils.equals(inputData.get("seriesCount").toString(), item.getCondition())){
-				matchList.add(item);
-			}
+			matchList.add(item);
+
 		}
 		if(CollectionUtil.isEmpty(matchList)){
 			return null;

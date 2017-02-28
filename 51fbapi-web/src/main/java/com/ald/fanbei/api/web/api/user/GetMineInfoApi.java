@@ -49,13 +49,15 @@ public class GetMineInfoApi implements ApiHandle{
         data.put("nick", userAccountInfo.getNick());
         data.put("userName", userAccountInfo.getUserName());
         data.put("realName", userAccountInfo.getRealName());
+        data.put("jfbAmount", userAccountInfo.getJfbAmount());
+
         String isPay = YesNoStatus.NO.getCode();
         if(userAccountInfo.getPassword()!=null){
         	isPay =YesNoStatus.YES.getCode();
         }
         data.put("isPayPwd",isPay);
         data.put("vipLevel", userAccountInfo.getVipLevel());
-//        data.put("commission", userAccountInfo.getCommission());
+        data.put("rebateAmount", userAccountInfo.getRebateAmount());
         data.put("couponCount", coupleCount);
         data.put("recommendCode", userAccountInfo.getRecommendCode());
         resp.setResponseData(data);

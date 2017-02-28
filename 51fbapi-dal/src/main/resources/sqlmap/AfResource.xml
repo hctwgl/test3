@@ -42,6 +42,21 @@
     LIMIT 1
     
 </select>
+	<select id="getResourceByResourceId" resultType="AfResourceDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_resource
+		WHERE
+			is_delete = 0
+		AND
+			id = #{rid}
+	
+		LIMIT 1
+	
+	</select>
+
+
 	<select id="getResourceListByType" resultType="AfResourceDo">
 		SELECT 
 			<include refid="queryAllFields" />

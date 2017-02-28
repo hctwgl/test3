@@ -23,8 +23,8 @@ public class AfSigninDo extends AbstractSerial {
 	private Date gmtCreate;
 	private Date gmtSeries;
 	private Long userId;
-	private Long totalCount;
-	private Long seriesCount;
+	private Integer totalCount;
+	private Integer seriesCount;
 	/**
 	 * @return the rid
 	 */
@@ -88,26 +88,26 @@ public class AfSigninDo extends AbstractSerial {
 	/**
 	 * @return the totalCount
 	 */
-	public Long getTotalCount() {
+	public Integer getTotalCount() {
 		return totalCount;
 	}
 	/**
 	 * @param totalCount the totalCount to set
 	 */
-	public void setTotalCount(Long totalCount) {
+	public void setTotalCount(Integer totalCount) {
 		this.totalCount = totalCount;
 	}
 	/**
 	 * @return the seriesCount
 	 */
-	public Long getSeriesCount() {
+	public Integer getSeriesCount() {
 		return seriesCount;
 	}
 	/**
 	 * @param seriesCount the seriesCount to set
 	 */
-	public void setSeriesCount(Long seriesCount) {
+	public void setSeriesCount(Integer seriesCount) {
 		this.seriesCount = seriesCount;
 	}
-
+	
 }

@@ -5,6 +5,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
 /**
@@ -27,6 +29,12 @@ public interface AfResourceService {
      * @return
      */
     List<AfResourceDo> getConfigByTypes(String type);
+    /**
+     * 根据id获取资源配置
+     * @param rid
+     * @return
+     */
+    AfResourceDo getResourceByResourceId(Long rid);
     /**
      * 获取type类型的配置信息
      * @param type
