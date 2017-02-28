@@ -453,7 +453,7 @@ public class UpsUtil extends AbstractThird {
 		Map<String,Object> result = new HashMap<String,Object>();
 		try{
 			//构建调用微信需要的参数
-			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, notifyHost+"/third/wxpayNotify",attach);
+			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, notifyHost+"/third/ups/wxpayNotify",attach);
 			String url = WxpayConfig.WX_UNIFIEDORDER_API;
 			String buildStr = WxpayCore.buildXMLBody(orderData);
 			
