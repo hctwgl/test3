@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017022401")
+    	#set($version="2017022801")
 		<title>注册</title>
-		<link rel="stylesheet" type="text/css" href="/css/app/mine/register.css?version=$version">
+		<link rel="stylesheet" type="text/css" href="/css/app/user/register.css?version=$version">
     </head>
     <body>
     	<div class="bgc_white register_main">
@@ -35,6 +35,6 @@
 		</div>
 		<script type="text/javascript" src="/js/common/layer.js?version=$version"></script>
 		<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
-		<script type="text/javascript" src="/js/app/mine/register.js?version=$version"></script>
+		<script type="text/javascript" src="/js/app/user/register.js?version=$version"></script>
     </body>
 </html>

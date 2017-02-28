@@ -6,7 +6,7 @@
 	    	.invitationGift_wrap{
 	    		width: 18.75rem;
 				height: 30.45rem;
-				background-image: url(/images/app/sys/invitationGift_bg.png);
+				background-image: url(/images/app/user/invitationGift_bg.png);
 				-webkit-background-size: cover;
 				-moz-background-size: cover;
 				-ms-background-size: cover;
@@ -39,7 +39,6 @@
 	    	.invitationGift_btn{
 	    		height: 1.75rem;
 	    		line-height: 1.75rem;
-	    		text-align: center;
 	    		margin-top: 0.65rem;
 	    	}
 	    </style>
@@ -51,7 +50,7 @@
     				<img class="fl" src="">
     				<p class="fl">亲，您的好友<span>12345678901</span>邀你来51返呗购物省钱，请注册的时候填写推荐人的ID<span class="fsc_orange">8888</span>，立即开启省钱之旅</p>
     			</div>
-    			<div class="bgc_orange brd_4 tac invitationGift_btn"><a class="fsc_f" href="666666">马上注册拿返利</a></div>
+    			<div class="bgc_orange bdr_4 tac invitationGift_btn"><a class="fsc_f" href="666666">马上注册拿返利</a></div>
     		</div>
     	</div>
     </body>

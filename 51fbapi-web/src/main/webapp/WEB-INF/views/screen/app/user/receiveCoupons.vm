@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017022401")
-		<<title>领取优惠劵</title>
-		<link rel="stylesheet" type="text/css" href="/css/app/sys/receiveCoupons.css?version=$version">
+    	#set($version="2017022801")
+		<title>领取优惠劵</title>
+		<link rel="stylesheet" type="text/css" href="/css/app/user/receiveCoupons.css?version=$version">
     </head>
     <body class="bgc_e">
 
@@ -63,6 +63,6 @@
 				
 			</ul>
 		</div>
-		<script type="text/javascript" src="/js/app/sys/receiveCoupons.js?version=$version"></script>
+		<script type="text/javascript" src="/js/app/user/receiveCoupons.js?version=$version"></script>
     </body>
 </html>
