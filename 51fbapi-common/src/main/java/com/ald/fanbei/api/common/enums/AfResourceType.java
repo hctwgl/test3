@@ -22,6 +22,7 @@ public enum AfResourceType {
 	SIGNIN("SIGNIN", "签到"),
 	
 	PickedCoupon("PICKED_COUPON", "领券专场"),
+	RegisterProtocol("REGISTER_PROTOCOL", "注册协议"),
 
 	
 	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),

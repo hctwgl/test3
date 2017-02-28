@@ -82,13 +82,8 @@ public class AppH5UserContorler extends BaseController {
 	@RequestMapping(value = { "register" }, method = RequestMethod.GET)
 	public void register(HttpServletRequest request, ModelMap model) throws IOException {
 //		Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
-
-		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
-		model.put("avatar", afUserDo.getAvatar());
-		model.put("userName", afUserDo.getUserName());
-		model.put("recommendCode", afUserDo.getRecommendCode());
-		model.put("mobile", afUserDo.getMobile());
+		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.RegisterProtocol.getCode());
+		model.put("registerRule", resourceDo.getValue());
 		logger.info(JSON.toJSONString(model));
 	}
 	
