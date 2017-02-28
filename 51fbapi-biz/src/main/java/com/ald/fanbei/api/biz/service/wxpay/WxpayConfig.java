@@ -11,9 +11,12 @@ public class WxpayConfig {
 	
 	public static final String KEY_SIGN                    = "sign";
 	public static final String WX_REFUND_API               = "https://api.mch.weixin.qq.com/secapi/pay/refund";
+	public static final String WX_UNIFIEDORDER_API         = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+	public static final String WX_ORDERQUERY_API           = "https://api.mch.weixin.qq.com/pay/orderquery";
+
 	
-//	public static final String WX_APP_ID                   = "wx195a899c2da34c8b";
-//	public static final String WX_MCH_ID                   = "1373909902";
+	public static final String WX_APP_ID                   = "wx7b2b0aa8b3f0459e";
+	public static final String WX_MCH_ID                   = "1441757802";
 	
 	public static final String WX_REFUND_QUERY_API               = "https://api.mch.weixin.qq.com/pay/refundquery";
 

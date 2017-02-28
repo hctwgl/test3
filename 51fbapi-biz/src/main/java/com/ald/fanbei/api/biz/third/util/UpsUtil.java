@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmReqBo;
 import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmRespBo;
 import com.ald.fanbei.api.biz.bo.UpsAuthPayReqBo;
@@ -48,10 +50,12 @@ import com.alibaba.fastjson.JSONObject;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@Component("upsUtil")
 public class UpsUtil extends AbstractThird {
 	
 	private static String url = "http://192.168.101.57:8091/ups/main.html";
-	private static String notifyHost = "http://192.168.96.67";
+//	private static String notifyHost = "http://192.168.96.67";
+	private static String notifyHost = "http://testapp.51fanbei.com";
 	
 	private static String SYS_KEY = "01";
 	private static String TRADE_STATUE_SUCC = "00";
@@ -401,8 +405,7 @@ public class UpsUtil extends AbstractThird {
     	
 		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		String mchId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_MCHID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-		String wxKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-		String certPath = ConfigProperties.get(Constants.CONFKEY_WX_CERTPATH);
+		String certPath = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_CERTPATH), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
     	
 		 //元转换分
         BigDecimal hundred = new BigDecimal(100);
@@ -411,7 +414,7 @@ public class UpsUtil extends AbstractThird {
         //总金额
         String order_total_fee = total_fee.multiply(hundred).setScale(0)+"";
        
-    	Map<String,String> param = new HashMap<>();
+    	Map<String,Object> param = new HashMap<String,Object>();
     	param.put("appid", appId);
     	param.put("mch_id", mchId);
     	param.put("nonce_str", DigestUtil.MD5(UUID.randomUUID().toString()));
@@ -421,7 +424,7 @@ public class UpsUtil extends AbstractThird {
     	param.put("refund_fee", order_refund_fee);
     	param.put("total_fee", order_total_fee);
     	
-    	String sign = WxSignBase.byteToHex(WxSignBase.MD5Digest((WxpayCore.toQueryString(param,wxKey)).getBytes(Constants.DEFAULT_ENCODE)));
+    	String sign = WxSignBase.byteToHex(WxSignBase.MD5Digest((WxpayCore.toQueryString(param)).getBytes(Constants.DEFAULT_ENCODE)));
     	param.put(WxpayConfig.KEY_SIGN, sign);
     	String buildStr = WxpayCore.buildXMLBody(param);
     	String result = WxpayCore.refundPost(WxpayConfig.WX_REFUND_API, buildStr,mchId,certPath);
@@ -429,6 +432,37 @@ public class UpsUtil extends AbstractThird {
     	return respPro.getProperty("result_code");
 	}
 	
+	//微信支付
+	public Map<String,Object> buildWxpayTradeOrder(String orderNo,Long userId,String goodsName,BigDecimal totalFee,String attach) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		try{
+			//构建调用微信需要的参数
+			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, notifyHost+"/third/wxpayNotify",attach);
+			String url = WxpayConfig.WX_UNIFIEDORDER_API;
+			String buildStr = WxpayCore.buildXMLBody(orderData);
+			
+			//请求微信，获取预支付流水号
+			String respXml = WxpayCore.executePostXML(url, buildStr);
+			Properties respPro = WxXMLParser.parseXML(respXml);
+
+			logger.info("buildStr = " + buildStr);
+			//分装返回客户端参数
+			result.put("appid", WxpayConfig.WX_APP_ID);
+			result.put("partnerid", orderData.get("mch_id")+"");
+			result.put("prepayid", respPro.getProperty("prepay_id"));
+			result.put("noncestr", respPro.getProperty("nonce_str"));
+			result.put("timestamp", System.currentTimeMillis()/1000+"");
+			result.put("package", "Sign=WXPay");
+			
+			StringBuilder sbPre = new StringBuilder().append(WxpayCore.toQueryString(result));
+			String signPre = WxSignBase.byteToHex(WxSignBase.MD5Digest(sbPre.toString().getBytes("utf-8")));
+			result.put("sign", signPre.toUpperCase());
+			result.put("wxpackage", "Sign=WXPay");
+		}catch(Exception e){
+			throw new FanbeiException("",FanbeiExceptionCode.REQ_WXPAY_ERR);
+		}
+		return result;
+	}
 	
 	public static void main(String[] args) {
 		System.out.println(System.currentTimeMillis());

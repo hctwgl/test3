@@ -65,17 +65,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	private JpushService pushService;
 	
 	@Override
-	public int createRepayment(final String userName,final BigDecimal repaymentAmount,
+	public long createRepayment(final String userName,final BigDecimal repaymentAmount,
 			final BigDecimal actualAmount,final AfUserCouponDto coupon,
 			final BigDecimal rebateAmount,final String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo) {
 		final Date now = new Date();
 		final String repayNo = generatorClusterNo.getRepaymentNo(now);
 		//TODO 支付流程
 		final String payTradeNo="",tradeNo="";
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+		return transactionTemplate.execute(new TransactionCallback<Long>() {
 
 			@Override
-			public Integer doInTransaction(TransactionStatus status) {
+			public Long doInTransaction(TransactionStatus status) {
 				try {
 					//新增还款记录
 					String name =billDo.getName();
@@ -109,11 +109,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					account.setRebateAmount(rebateAmount.multiply(new BigDecimal(-1)));
 					afUserAccountDao.updateUserAccount(account);					
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT,billDo.getPrincipleAmount(),userId, repayment.getRid()));
-					return 1;
+					return repayment.getRid();
 				} catch (Exception e) {
 					logger.info("createRepayment error:", e);
 					status.setRollbackOnly();
-					return 0;
+					return 0l;
 				}
 			}
 		});

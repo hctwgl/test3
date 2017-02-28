@@ -3,8 +3,10 @@ package com.ald.fanbei.api.biz.service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 
 
@@ -51,7 +53,15 @@ public interface AfOrderService {
 	 * @param rebateAmount
 	 * @return
 	 */
-	int createMobileChargeOrder(String userName,Long userId, AfUserCouponDto couponDto,BigDecimal money,String mobile,BigDecimal rebateAmount);
+	Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,Long userId, AfUserCouponDto couponDto,BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId);
+	
+	/**
+	 * 手机充值订单充值逻辑
+	 * @param orderNo
+	 * @param tradeNo
+	 * @return
+	 */
+	void dealMobileChargeOrder(String orderNo,String tradeNo);
 	
 	/**
 	 * 获取当天最近的订单
