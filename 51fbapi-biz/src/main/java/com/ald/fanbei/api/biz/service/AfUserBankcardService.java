@@ -47,5 +47,11 @@ public interface AfUserBankcardService {
 	 * @return
 	 */
 	int updateUserBankcard(AfUserBankcardDo afUserBankcardDo);
+	/**
+	 * 获取银行卡个数
+	 * @param userId
+	 * @return
+	 */
+	int getUserBankcardCountByUserId(Long userId);
 
 }

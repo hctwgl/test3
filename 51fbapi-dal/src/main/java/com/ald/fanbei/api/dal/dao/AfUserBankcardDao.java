@@ -52,4 +52,6 @@ public interface AfUserBankcardDao {
 	 * @return
 	 */
 	int updateUserBankcard(AfUserBankcardDo afUserBankcardDo);
+	
+	int getUserBankcardCountByUserId(@Param("userId") Long userId);
 }

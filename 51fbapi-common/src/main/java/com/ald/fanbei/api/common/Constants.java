@@ -115,8 +115,8 @@ public class Constants {
     public static final String CONFKEY_BILL_CREATE_TIME 			  = "fbapi.bill.create.time";
     public static final String CONFKEY_BILL_REPAY_TIME				  = "fbapi.bill.repay.time";
     //发送邮箱
-    public static final String EMAIL_SEND_USERNAME            = "email_send_user_name";
-    public static final String EMAIL_SEND_PWD       = "email_send_password";
+    public static final String EMAIL_SEND_USERNAME            = "fbapi.email.username";
+    public static final String EMAIL_SEND_PWD       = "fbapi.email.pwd";
     
     public static final String CONFKEY_WX_APPID				  		 = "fbapi.wx.appid";
     public static final String CONFKEY_WX_MCHID						 = "fbapi.wx.mchid";

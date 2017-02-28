@@ -55,4 +55,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getResourceListByTypeOrderBy(type);
 	}
 
+
+	@Override
+	public AfResourceDo getResourceByResourceId(Long rid) {
+		return afResourceDao.getResourceByResourceId(rid);
+	}
+
 }

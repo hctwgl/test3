@@ -16,7 +16,7 @@ public enum AccountLogType {
 	AU_AMOUNT("AU_AMOUNT", "授权金额"),
 	FREEZE("FREEZE", "冻结金额"),
 	REBATE("REBATE", "返利"),
-	SIGN("SIGN", "签到"),
+	SIGNIN("SIGNIN", "签到"),
 	REGIST("REGIST", "新注册款");
 
     private String code;

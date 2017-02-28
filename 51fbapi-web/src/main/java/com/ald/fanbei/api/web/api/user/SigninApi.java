@@ -4,24 +4,34 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
+import com.ald.fanbei.api.biz.service.AfCouponSceneService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSigninService;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 import com.ald.fanbei.api.dal.domain.AfSigninDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：
@@ -40,20 +50,30 @@ public class SigninApi implements ApiHandle {
 
 	@Resource
 	CouponSceneRuleEnginerUtil activeRuleEngineUtil;
-
+	@Resource
+	AfCouponSceneService afCouponSceneService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
-		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGNIN");
-		if (afResourceDo == null) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
+		 AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
+	        if(afCouponSceneDo==null){
+	        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED); 
+	        }
+	        Integer cycle = 1;
+	        List<CouponSceneRuleBo> ruleBoList=   afCouponSceneService.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");
+	        
+	        if(ruleBoList.size()==0){
+	        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED); 
 
-		}
+	        }
 
-		Long seriesCount = (long) 1;
-		Long totalCount = (long) 0;
+	        CouponSceneRuleBo ruleBo = ruleBoList.get(0);
+	        cycle= NumberUtil.objToIntDefault(ruleBo.getCondition(), 1) ;
+	 	   
+		Integer seriesCount =  1;
+		Integer totalCount =  0;
 		if (afSigninDo == null) {
 			afSigninDo = new AfSigninDo();
 			totalCount += 1;
@@ -65,11 +85,9 @@ public class SigninApi implements ApiHandle {
 			}
 
 		} else {
-			Long cycle = NumberUtil.objToLongDefault(afResourceDo.getValue(), 1);
 			Date seriesTime = afSigninDo.getGmtSeries();
 			if (DateUtil.isSameDay(new Date(), seriesTime)) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SIGNIN_AGAIN_ERROR);
-
 			}
 
 			// 当连续签到天数小于循环周期时
@@ -81,11 +99,12 @@ public class SigninApi implements ApiHandle {
 			afSigninDo.setSeriesCount(seriesCount);
 			afSigninDo.setTotalCount(totalCount);
 			afSigninDo.setUserId(userId);
-//			Map<String, Object> inputData = new HashMap<String, Object>();
-//			inputData.put("userId", userId);
-//			inputData.put("seriesCount", seriesCount.toString());
-			if (totalCount == 5 && afSigninService.changeSignin(afSigninDo) > 0) {
-				activeRuleEngineUtil.signin(userId);
+
+			if ( afSigninService.changeSignin(afSigninDo) > 0) {
+				if(seriesCount == cycle){
+					activeRuleEngineUtil.signin(userId);
+				}
+			
 				return resp;
 
 			}

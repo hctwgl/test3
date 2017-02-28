@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 15:15:44
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-24 14:34:40
+* @Last Modified time: 2017-02-28 10:07:40
 * @title:  注册
 */
 
@@ -38,17 +38,17 @@
 .register_mobile_icon{
 	width: 0.8rem;
 	height: 1.2rem;
-	background-image: url(/images/app/mine/phone.png);
+	background-image: url(/images/app/user/phone.png);
 }
 .register_verification_icon{
 	width: 1.2rem;
 	height: 1.2rem;
-	background-image: url(/images/app/mine/yzm.png);
+	background-image: url(/images/app/user/yzm.png);
 }
 .register_password_icon{
 	width: 1.2rem;
 	height: 1.25rem;
-	background-image: url(/images/app/mine/mima.png);
+	background-image: url(/images/app/user/mima.png);
 }
 .register_verification_main{
 	position: relative;
@@ -74,7 +74,7 @@
     transform: translateY(-50%);
 	width: 0.7rem;
 	height: 0.7rem;
-	background-image: url(/images/app/mine/register_shanc.png);
+	background-image: url(/images/app/user/register_shanc.png);
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-ms-background-size: cover;

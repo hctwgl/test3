@@ -104,6 +104,7 @@ public class DateUtil {
     public static final Long NO_END_DATE_TIME              = 253402271999000l;
     
     public static final Date NO_END_DATE                   = new Date(NO_END_DATE_TIME);
+    public static final String FINAL_END_DATE_STR		   = "9999-12-31";
 
     private static Logger      logger                      = LoggerFactory.getLogger(DateUtil.class);
     
@@ -152,7 +153,13 @@ public class DateUtil {
         cal.add(Calendar.HOUR, hour);
         return cal.getTime();
     }
-    
+    /**
+     * 返回一个Date默认最大值
+     * @return
+     */
+    public static Date getFinalDate() {
+		return parseDate(FINAL_END_DATE_STR, DEFAULT_PATTERN_WITH_HYPHEN);
+    }
     /**
      * Add specified number of months to the date given.
      * 

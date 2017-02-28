@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.rule.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,17 +15,19 @@ import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfCouponSceneDao;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
@@ -55,7 +58,8 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 	private AfUserAccountDao afUserAccountDao;
 	@Resource
 	protected AfCouponSceneDao afCouponSceneDao;
-	
+	@Resource
+	protected AfResourceDao afResourceDao;
 //	@Resource
 //	protected TransactionTemplate transactionTemplate;
 //	@Resource
@@ -135,39 +139,55 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 	 */
 	//TODO 增加事物处理
 	protected void addUserCoupon(CouponSceneRuleBo item, Long userId, CouponSenceRuleType ruleType, String sourceRef) {
-		AfCouponDo couponDo = afCouponDao.getCouponById(item.getCouponId());
-		if (couponDo == null) {
-			return;
-		}
-		AfUserCouponDo userCoupon = new AfUserCouponDo();
-		userCoupon.setCouponId(item.getCouponId());
-		userCoupon.setGmtStart(new Date());
-		userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
-		userCoupon.setSourceType(ruleType.getCode());
-		userCoupon.setStatus(CouponStatus.NOUSE.getCode());
-		userCoupon.setUserId(userId);
-		afUserCouponDao.addUserCoupon(userCoupon);
-
-		switch (CouponType.getByCode(couponDo.getType())) {
-		case REBATE:
+		if(item.getCouponId()==null&&item.getResourceId()!=null){
+			AfResourceDo afResourceDo =	afResourceDao.getResourceByResourceId(item.getResourceId());
+			if (afResourceDo == null) {
+				return;
+			}
+			
+			AfUserAccountDo userAccountDo =	afUserAccountDao.getUserAccountInfoByUserId(userId);
+			
+			
+			BigDecimal rebateAmount = BigDecimalUtil.add(userAccountDo.getRebateAmount(), new BigDecimal(afResourceDo.getValue()) );
+			
+			
 			// 用户账号金额增加
 			AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-			afUserAccountDo.setUserId(userId);// 邀请人
-			afUserAccountDo.setRebateAmount(couponDo.getAmount());
+			afUserAccountDo.setUserId(userId);
+			afUserAccountDo.setRebateAmount(rebateAmount  );
 			afUserAccountDao.updateUserAccount(afUserAccountDo);
 			
 			//增加account变更日志
 			AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
-			accountLog.setAmount(couponDo.getAmount());
+			accountLog.setAmount(new BigDecimal(afResourceDo.getValue()));
 			accountLog.setUserId(userId);
 			accountLog.setRefId(sourceRef == null?"":sourceRef);
-			accountLog.setType(AccountLogType.REBATE.getCode());
+			accountLog.setType(CouponSenceRuleType.SIGNIN.getCode());
 			afUserAccountLogDao.addUserAccountLog(accountLog);
 			
-			break;
-		default:
-			break;
+		}else if(item.getCouponId()!=null){
+			AfCouponDo couponDo = afCouponDao.getCouponById(item.getCouponId());
+			if (couponDo == null) {
+				return;
+			}
+			AfUserCouponDo userCoupon = new AfUserCouponDo();
+			userCoupon.setCouponId(item.getCouponId());
+			userCoupon.setGmtStart(new Date());
+			if(couponDo.getValidDays()==-1){
+				userCoupon.setGmtEnd(DateUtil.getFinalDate());
+			}else{
+				userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+			}
+			userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+			userCoupon.setSourceType(ruleType.getCode());
+			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
+			userCoupon.setUserId(userId);
+			afUserCouponDao.addUserCoupon(userCoupon);
 		}
+		
+		
+
+		
 	}
 	
 	

@@ -26,7 +26,12 @@ public interface AfResourceDao {
      */
     
     List<AfResourceDo> getConfigByTypes(@Param("type")String type);
-    
+    /**
+     * 根据id获取资源配置
+     * @param rid
+     * @return
+     */
+    AfResourceDo getResourceByResourceId(@Param("rid")Long rid);
     
     /**
      * 获取type类型的配置信息

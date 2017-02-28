@@ -23,6 +23,7 @@ public class UpsRespBo{
 	private String respCode;  //应答码
 	private String respDesc;  //应答码描述
 	private String tppRespCode;  //第三方响应应答码
+	private boolean success;
 	
 
 	
@@ -91,6 +92,12 @@ public class UpsRespBo{
 	}
 	public void setTppRespCode(String tppRespCode) {
 		this.tppRespCode = tppRespCode;
+	}
+	public boolean isSuccess() {
+		return success;
+	}
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 	
 	@Override

@@ -18,7 +18,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.UserCouponSource;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -52,7 +52,7 @@ public class GetInvitationInfoApi implements ApiHandle {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		List<Object> recommendList = new ArrayList<Object>();
-		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(UserCouponSource.INVITE.getCode());
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(AfResourceType.INVITE.getCode());
 		if (afResourceDo == null) {
 			throw new FanbeiException("resource id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 
@@ -64,11 +64,10 @@ public class GetInvitationInfoApi implements ApiHandle {
 
 		List<AfUserInvitationDto> list = afUserService.getRecommendUserByRecommendId(userId);
 		Map<String, Object> invitationInfo = new HashMap<String, Object>();
-		invitationInfo.put("rule", afResourceDo.getDescription());
+		invitationInfo.put("rulesUrl", afResourceDo.getValue());
 		invitationInfo.put("invitationNum", list.size());
 		invitationInfo.put("invitationCode", userDo.getRecommendCode());
 		invitationInfo.put("amount", amount);
-		
 		invitationInfo.put("shareUrl", "http://");
 
 		for (AfUserInvitationDto invitationDto : list) {

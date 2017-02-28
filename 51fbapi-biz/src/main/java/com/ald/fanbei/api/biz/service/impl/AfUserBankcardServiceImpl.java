@@ -48,4 +48,10 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 		return afUserBankcardDao.updateUserBankcard(afUserBankcardDo);
 	}
 
+	
+	@Override
+	public int getUserBankcardCountByUserId(Long userId) {
+		return afUserBankcardDao.getUserBankcardCountByUserId(userId);
+	}
+
 }

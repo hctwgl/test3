@@ -72,5 +72,15 @@
 		WHERE
 			is_delete=0 AND id = #{rid}
 	</select>
-	
+		<select id="getUserBankcardCountByUserId" resultType="java.lang.Integer">
+		SELECT
+			count(id)
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND 
+			user_id = #{userId} 
+
+	</select>
 </mapper>

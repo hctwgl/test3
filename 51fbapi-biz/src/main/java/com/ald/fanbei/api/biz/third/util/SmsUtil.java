@@ -272,9 +272,9 @@ public class SmsUtil extends AbstractThird {
 		Session session = Session.getDefaultInstance(props);
 		session.setDebug(true); // 设置为debug模式, 可以查看详细的发送 log
 		String sendUserName = AesUtil.decrypt(ConfigProperties.get(Constants.EMAIL_SEND_USERNAME),
-				ConfigProperties.get(Constants.EMAIL_SEND_USERNAME));
+				ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		String sendPassword = AesUtil.decrypt(ConfigProperties.get(Constants.EMAIL_SEND_PWD),
-				ConfigProperties.get(Constants.EMAIL_SEND_PWD));
+				ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		// 3. 创建一封邮件
 		MimeMessage message = createMimeMessage(session, sendUserName, email, content);
 
