@@ -27,7 +27,7 @@ public class Page<T> extends AbstractSerial implements Paginable<T> {
 
 	private String timestamp = null; // 查询时间戳
 
-	private boolean full = true; // 是否全量更新 //false 不更新totalcount
+	private boolean full = false; // 是否全量更新 //false 不更新totalcount
 
 	public int getPageNo() {
 		return pageNo;

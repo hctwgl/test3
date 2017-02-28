@@ -33,6 +33,7 @@ public class AfUserCouponDo extends AbstractSerial{
 	private Date	gmtUse;//使用时间
 	
 	private String	sourceType;//获取来源【REGIST：注册， INVITE：邀请 】
+	private String	type;//获取来源【REGIST：注册， INVITE：邀请 】
 
 	public Long getRid() {
 		return rid;
@@ -112,6 +113,20 @@ public class AfUserCouponDo extends AbstractSerial{
 
 	public void setSourceType(String sourceType) {
 		this.sourceType = sourceType;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 }

@@ -30,6 +30,7 @@ public class AfUserCouponVo extends AbstractSerial{
 	private Date		gmtEnd;//截止时间
 	
 	private String		status;//优惠券状态 EXPIRE:过期 ; NOUSE:未使用 ， USED:已使用
+	private String		type;
 
 	public String getName() {
 		return name;
@@ -93,6 +94,20 @@ public class AfUserCouponVo extends AbstractSerial{
 
 	public void setUserCouponId(Long userCouponId) {
 		this.userCouponId = userCouponId;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 }
