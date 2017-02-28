@@ -107,7 +107,6 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 
 		}
 
-		
 		returnData.put("couponList", list);
 		returnData.put("rechargeList", rechargeList);
 		return returnData;
@@ -122,6 +121,7 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 		returnData.put("name", afUserCouponDto.getName());
 		returnData.put("gmtStart", afUserCouponDto.getGmtStart());
 		returnData.put("gmtEnd", afUserCouponDto.getGmtEnd());
+		returnData.put("amount", afUserCouponDto.getAmount());
 
 		return returnData;
 
