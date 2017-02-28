@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
@@ -68,6 +69,8 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
         	String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
         	vo.setYdKey(publicKey);
         	vo.setYdUrl(ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
+        	vo.setRealName(Base64.encodeString(userDto.getRealName()));
+        	vo.setIdNumber(Base64.encodeString(userDto.getIdNumber()));
         }
 		vo.setCurrentAmount(repaymentAmount);
 		vo.setIvsStatus(authDo.getIvsStatus());
