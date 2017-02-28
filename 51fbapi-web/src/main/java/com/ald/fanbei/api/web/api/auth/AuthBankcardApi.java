@@ -5,10 +5,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthYdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -32,11 +35,18 @@ public class AuthBankcardApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-//		String cardNumber = (String)requestDataVo.getParams().get("cardNumber");
-//		String mobile = (String)requestDataVo.getParams().get("mobile");
+		String cardNumber = (String)requestDataVo.getParams().get("cardNumber");
+		String mobile = (String)requestDataVo.getParams().get("mobile");
 //		String verifyCode = (String)requestDataVo.getParams().get("verifyCode");
 		
-//		UpsUtil.authSign(bankCode, realName, mobile, idNumber, cardNumber, "app");
+		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
+		UpsAuthSignRespBo upsResult = UpsUtil.authSign(userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "app");
+		
+		if(!upsResult.isSuccess()){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
+		}
+		
+		
 		
 		//验证短信
 //		smsUtil.checkSmsByMobileAndType(mobile, verifyCode, SmsType.BANK_CARD);

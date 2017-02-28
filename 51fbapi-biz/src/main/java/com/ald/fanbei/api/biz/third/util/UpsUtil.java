@@ -91,6 +91,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_DELEGATE_PAY_ERROR);
@@ -127,6 +128,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		UpsAuthPayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthPayRespBo.class);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_PAY_ERROR);
@@ -157,6 +159,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		UpsAuthPayConfirmRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthPayConfirmRespBo.class);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_PAY_CONFIRM_ERROR);
@@ -185,6 +188,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		UpsQueryTradeRespBo authSignResp = JSONObject.parseObject(reqResult,UpsQueryTradeRespBo.class);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_TRADE_ERROR);
@@ -193,14 +197,21 @@ public class UpsUtil extends AbstractThird {
 	
 	/**
 	 * 签约(包含四要素验证)
+	 * 
+	 * @param realName
+	 * @param mobile
+	 * @param idNumber
+	 * @param cardNumber
+	 * @param clientType
+	 * @return
 	 */
-	public static UpsAuthSignRespBo authSign(String bankCode,String realName,String mobile,String idNumber,String cardNumber,String clientType){
+	public static UpsAuthSignRespBo authSign(String realName,String mobile,String idNumber,String cardNumber,String clientType){
 //		String orderNo = "as"+idNumber.substring(idNumber.length()-15,idNumber.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("asig", mobile.substring(mobile.length()-8,mobile.length()));
 		UpsAuthSignReqBo reqBo = new UpsAuthSignReqBo();
 		setPubParam(reqBo,"authSign",orderNo,clientType);
 		
-		reqBo.setBankCode(bankCode);
+//		reqBo.setBankCode(bankCode);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(mobile);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
@@ -225,6 +236,7 @@ public class UpsUtil extends AbstractThird {
 		UpsAuthSignRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignRespBo.class);
 		logThird(authSignResp, "authSign", reqBo);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
@@ -255,6 +267,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		UpsAuthSignRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignRespBo.class);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
@@ -279,6 +292,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		UpsQueryAuthSignRespBo authSignResp = JSONObject.parseObject(reqResult,UpsQueryAuthSignRespBo.class);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_AUTH_SIGN_ERROR);
@@ -314,6 +328,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		UpsSignDelayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsSignDelayRespBo.class);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_SIGN_DELAY_ERROR);
@@ -351,6 +366,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
