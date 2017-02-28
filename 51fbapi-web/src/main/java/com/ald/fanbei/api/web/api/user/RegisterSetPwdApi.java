@@ -49,7 +49,7 @@ public class RegisterSetPwdApi implements ApiHandle {
         String passwordSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
         String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
-//        String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
+        String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
         if(StringUtils.isBlank(userName) || StringUtils.isBlank(passwordSrc)){
         	logger.error("verifyCode or type is empty userName = " + userName + " password = " + passwordSrc);
         	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.PARAM_ERROR);
@@ -74,7 +74,7 @@ public class RegisterSetPwdApi implements ApiHandle {
         if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
         }
-        
+     
         String salt = UserUtil.getSalt();
         String password = UserUtil.getPassword(passwordSrc, salt);
         
@@ -84,12 +84,17 @@ public class RegisterSetPwdApi implements ApiHandle {
         userDo.setMobile(userName);
         userDo.setNick(nick);
         userDo.setPassword(password);
+     
         afUserService.addUser(userDo);
         
         Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
         //TODO 优化邀请码规则
         String inviteCode = Long.toString(invteLong, 36);
         userDo.setRecommendCode(inviteCode);
+        if(!StringUtils.isBlank(recommendCode) ){
+      	  AfUserDo userRecommendDo =afUserService.getUserByRecommendCode(recommendCode);    	  
+  	       userDo.setRecommendId(userRecommendDo.getRecommendId());;
+          }
         afUserService.updateUser(userDo);
         
         AfUserAccountDo account = new AfUserAccountDo();
