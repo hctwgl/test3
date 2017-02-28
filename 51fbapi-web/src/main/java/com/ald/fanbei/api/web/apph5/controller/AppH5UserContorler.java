@@ -98,6 +98,7 @@ public class AppH5UserContorler extends BaseController {
 		returnData.put("gmtEnd", afCouponDo.getGmtEnd());
 		returnData.put("amount", afCouponDo.getAmount());
 		returnData.put("limitCount", afCouponDo.getLimitCount());
+		returnData.put("type", afCouponDo.getType());
 
 		return returnData;
 
