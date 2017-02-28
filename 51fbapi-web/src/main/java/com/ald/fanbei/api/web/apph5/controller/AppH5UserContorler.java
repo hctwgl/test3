@@ -84,7 +84,7 @@ public class AppH5UserContorler extends BaseController {
 		for (AfCouponDo afCouponDo : afCouponList) {
 			list.add(couponObjectWithAfUserCouponDto(afCouponDo));
 		}
-		model.put("couponList", afCouponList);
+		model.put("couponList", list);
 		logger.info(JSON.toJSONString(model));
 	}
 	public Map<String, Object> couponObjectWithAfUserCouponDto(AfCouponDo afCouponDo){
