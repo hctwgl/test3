@@ -2,25 +2,28 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderSatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.WxOrderSource;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -30,9 +33,12 @@ import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
@@ -76,6 +82,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	
 	@Resource
 	private JpushService pushService;
+	
+	@Resource
+	private UpsUtil upsUtil;
+	
+	@Resource
+	private AfUserDao afUserDao;
 	
 	@Override
 	public int createOrderTrade(String content) {
@@ -139,47 +151,33 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public int createMobileChargeOrder(final String userName,final Long userId, final AfUserCouponDto couponDto,
-			final BigDecimal money, final String mobile,final BigDecimal rebateAmount) {
-		final Date now = new Date();
-		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
-		//TODO  充值支付
+	public void dealMobileChargeOrder(String orderNo,String tradeNo) {
+		//支付成功后
+		AfOrderDo newOrder = new AfOrderDo();
+		newOrder.setOrderNo(orderNo);
+		newOrder.setStatus(OrderSatus.FINISHED.getCode());
+		newOrder.setGmtFinished(new Date());
+		newOrder.setTradeNo(tradeNo);
+		orderDao.updateOrderByOrderNo(newOrder);
+		//查询订单
+		AfOrderDo order = orderDao.getOrderInfoByOrderNo(orderNo);
+		//获取用户信息
+		AfUserDo userDo = afUserDao.getUserById(order.getUserId());
 		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
-			String msg = kaixinUtil.charge(orderNo, mobile, money.setScale(0).toString());
+			String msg = kaixinUtil.charge(orderNo, order.getMobile(), order.getSaleAmount().setScale(0).toString());
 			JSONObject returnMsg = JSON.parseObject(msg);
 			JSONObject result = JSON.parseObject(returnMsg.getString("result"));
 			if(!result.getString("ret_code").equals(MobileStatus.SUCCESS.getCode())){
 				//System.out.println(result.getString("ret_msg"));
 				//TODO 退款 生成退款记录  走微信退款流程，或者银行卡代付
-				pushService.chargeMobileError(userName, mobile, now);
+				pushService.chargeMobileError(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 			}else{
-				pushService.chargeMobileSucc(userName, mobile, now);
+				pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 			}
 		}else{
-			pushService.chargeMobileSucc(userName, mobile, now);
+			pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 		}
 		
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				try {
-					BigDecimal actualAmount = money;
-					if(null != couponDto){
-						//优惠券设置已使用
-						afUserCouponDao.updateUserCouponSatusUsedById(couponDto.getRid());
-						actualAmount = money.subtract(couponDto.getAmount());
-					}
-					//订单创建
-					orderDao.createOrder(buildOrder(now,orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
-							OrderType.MOBILE.getCode(),actualAmount, 0l, "","", "", 1, ""));
-					return 1;
-				} catch (Exception e) {
-					status.setRollbackOnly();
-					logger.error("dealMobileChargeOrder error："+e);
-					return 0;
-				}
-			}
-		});
 	}
 
 	/**
@@ -256,5 +254,34 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		order.setOrderNo(orderNo);
 		order.setUserId(userId);
 		return afUserOrderDao.addUserOrder(order);
+	}
+
+	@Override
+	public Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName, Long userId,
+			AfUserCouponDto couponDto, BigDecimal money, String mobile,
+			BigDecimal rebateAmount,Long bankId) {
+		Date now = new Date();
+		String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
+		BigDecimal actualAmount = money;
+		if(null != couponDto){
+			//优惠券设置已使用
+			afUserCouponDao.updateUserCouponSatusUsedById(couponDto.getRid());
+			actualAmount = money.subtract(couponDto.getAmount());
+		}
+		//订单创建
+		orderDao.createOrder(buildOrder(now,orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
+				OrderType.MOBILE.getCode(),actualAmount, 0l, "",Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, ""));
+		Map<String,Object> map;
+		if(bankId<0){//微信支付
+			map = upsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,WxOrderSource.ORDER.getCode());
+		}else{//银行卡支付
+			map = new HashMap<String,Object>();
+			UpsAuthPayRespBo respBo = new UpsAuthPayRespBo();
+			respBo.setTradeState("0000");
+			respBo.setTradeNo("10000000000000");
+			respBo.setOrderNo(orderNo);
+			map.put("resp", respBo);
+		}
+		return map;
 	}
 }

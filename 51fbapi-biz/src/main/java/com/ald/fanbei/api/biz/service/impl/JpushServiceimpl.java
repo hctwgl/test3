@@ -160,5 +160,22 @@ public class JpushServiceimpl extends BaseService implements JpushService{
 		}
 		
 	}
+
+	@Override
+	public void getSignCycle(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("getSignCycle,pid=",pid));
+			String msgContext = "恭喜您已成功完成一个周期的签到，获得多张优惠券奖励，请再接再厉>";
+			Map<String,String> extras = new HashMap<String,String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis()+"");
+			extras.put(PUSH_JUMP_TYPE, "207");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("签到奖励", msgContext, extras, new String[]{userName});
+		} catch (Exception e) {
+			logger.info("getSignCycle error",e);
+		}
+	}
 	
 }

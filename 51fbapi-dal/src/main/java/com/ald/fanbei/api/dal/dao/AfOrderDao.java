@@ -45,6 +45,13 @@ public interface AfOrderDao {
 	public AfOrderDo getOrderInfoById(@Param("rid")Long rid,@Param("userId")Long userId);
 	
 	/**
+	 * 获取订单详情
+	 * @param rid
+	 * @return
+	 */
+	public AfOrderDo getOrderInfoByOrderNo(@Param("orderNo")String orderNo);
+	
+	/**
 	 * 获取订单列表
 	 * @param query
 	 * @return

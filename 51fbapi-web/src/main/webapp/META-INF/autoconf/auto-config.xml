@@ -63,6 +63,12 @@
 		<property name="fbapi.kxg.password" defaultValue="XmlfLrtI1Xb7QToAbNiIrg==" description="开心果登录密码" />
 		<property name="fbapi.kxg.pay.password" defaultValue="QhSQiFjhoS0U4Mxfr58Sug==" description="开心果支付密码" />
 		<property name="fbapi.kxg.key" defaultValue="2jAzMm3fMGexbK0cNsrSZdCuhgu0QhqoULwmZ+3gTgE=" description="开心果key" />
+		
+		<!-- wx -->
+		<property name="fbapi.wx.appid" defaultValue="4r1JFuNNEHg2RU3jUAOr0IYC9KMPZSbw1S7bhCBACSw=" description="微信appid" />
+		<property name="fbapi.wx.mchid" defaultValue="JX/XgnEq68Xjj63r+MmzIw==" description="weixin mchid" />
+		<property name="fbapi.wx.key" defaultValue="ERz7b1fycFebv+EV0bVbSVOmT9sOHL2QxO/p8da/4uPQroYLtEIaqFC8Jmft4E4B" description="weixin key" />
+		<property name="fbapi.wx.certpath" defaultValue="FY7UXLmqppJQjQUGthJwk4BxZtznhw0LlPyumy3Zpv0=" description="weixin certpath" />
 	</group>
 
 	<script>

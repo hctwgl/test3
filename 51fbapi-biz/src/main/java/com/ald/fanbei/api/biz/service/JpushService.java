@@ -60,4 +60,10 @@ public interface JpushService {
 	 */
 	public void getCashExtracting(String userName);
 	
+	/**
+	 * 签到奖励
+	 * @param userName
+	 */
+	public void getSignCycle(String userName);
+	
 }

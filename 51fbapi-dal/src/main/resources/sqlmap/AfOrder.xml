@@ -152,7 +152,14 @@
 			is_delete=0 AND id = #{rid} AND user_id = #{userId}
 	</select>
 	
-	
+	<select id="getOrderInfoByOrderNo" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_order
+		WHERE
+			is_delete=0 AND order_no = #{orderNo}
+	</select>
 	
 	<select id="getOrderListByStatus" resultType="AfOrderDo" parameterType="AfOrderQuery">
 		SELECT

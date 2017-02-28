@@ -1,11 +1,14 @@
 package com.ald.fanbei.api.web.api.borrow;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -13,9 +16,11 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -48,8 +53,15 @@ public class ApplyCashApi implements ApiHandle{
 		Long userId = context.getUserId();
         logger.info("userId=" + userId + ",money=" + money);
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
+		if (userDto == null) {
+			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
 		BigDecimal useableAmount = userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount());
-		
+		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
+		String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
+		if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+		}
 		if(useableAmount.compareTo(money)==-1){
 			throw new FanbeiException("user cash money error", FanbeiExceptionCode.USER_CASH_MONEY_ERROR);
 		}
@@ -58,7 +70,12 @@ public class ApplyCashApi implements ApiHandle{
 		if(null == card){
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
-		if(afBorrowService.dealCashApply(userDto, money,card.getRid())>0){
+		long result = afBorrowService.dealCashApply(userDto, money,card.getRid());
+		if(result>0){
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("refId", result);
+			map.put("type", UserAccountLogType.CASH.getCode());
+			resp.setResponseData(map);
 			return resp;
 		}
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);

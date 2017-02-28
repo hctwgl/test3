@@ -2,7 +2,6 @@ package com.ald.fanbei.api.web.h5.controller;
 
 import java.io.IOException;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,9 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
