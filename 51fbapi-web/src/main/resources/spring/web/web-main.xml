@@ -56,7 +56,7 @@
 					<bean class="com.ald.fanbei.api.common.util.DateUtil" />
 				</entry>
 				<entry key="priceUtil">
-					<bean class="com.hmly.o2o.app.biz.common.PriceUtil" />
+					<bean class="com.ald.fanbei.api.common.util.PriceUtil" />
 				</entry>
 			</map>
 		</property>
