@@ -30,6 +30,13 @@ public interface AfOrderDao {
 	int updateOrderByOrderNo(AfOrderDo afOrder);
 	
 	/**
+	 * 修改订单
+	 * @param afOrder
+	 * @return
+	 */
+	int updateOrderByOutTradeNo(AfOrderDo afOrder);
+	
+	/**
 	 * @param startDate
 	 * @param endDate
 	 * @param orderType
@@ -50,6 +57,13 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	public AfOrderDo getOrderInfoByOrderNo(@Param("orderNo")String orderNo);
+	
+	/**
+	 * 获取订单详情
+	 * @param rid
+	 * @return
+	 */
+	public AfOrderDo getOrderInfoByPayOrderNo(@Param("payTradeNo")String payTradeNo);
 	
 	/**
 	 * 获取订单列表

@@ -55,6 +55,9 @@ public class Constants {
     public static final int DEFAULT_CASH_DEVIDE					  	  = 2;
     public static final String DEFAULT_BORROW_CASH_NAME				  = "现金借款";
     public static final String DEFAULT_MOBILE_CHARGE_NAME			  = "手机充值";
+    public static final String DEFAULT_BORROW_PURPOSE				  = "借款";
+    public static final String DEFAULT_REFUND_PURPOSE				  = "退款";
+    public static final String DEFAULT_SERVICE_PHONE				  =	"0571-88193918";
     
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
@@ -76,6 +79,7 @@ public class Constants {
     public static final String RES_BORROW_CONSUME					  = "BORROW_CONSUME";
     public static final String RES_BORROW_CASH					  	  = "BORROW_CASH";
     public static final String RES_BORROW_RATE				  	  	  = "BORROW_RATE";
+    public static final String RES_BRAND_SHOP				  	  	  = "BRAND_SHOP";
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";

@@ -51,23 +51,26 @@ public class AuthBankcardApi implements ApiHandle {
 		String cardNumber = ObjectUtils.toString(requestDataVo.getParams().get("cardNumber"));
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
 		String isMain = ObjectUtils.toString(requestDataVo.getParams().get("isMain"),"N");
+		String bankCode = ObjectUtils.toString(requestDataVo.getParams().get("bankCode"));
+		
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if(null ==auth||YesNoStatus.NO.getCode().equals(auth.getFacesStatus())){
 			throw new FanbeiException("user face auth error", FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
 		}
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
-		UpsAuthSignRespBo upsResult = UpsUtil.authSign(userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02","ICBC");
+		UpsAuthSignRespBo upsResult = UpsUtil.authSign(userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 		}
 		
 		//TODO 新建卡
-		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(), "工商银行", cardNumber, mobile, context.getUserId(),isMain);
+		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(), "", cardNumber, mobile, context.getUserId(),isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("bankId", bankDo.getRid());
-		map.put("tradeNo", upsResult.getTradeNo());
+		map.put("tradeNo", upsResult.getOrderNo());
+		resp.setResponseData(map);
 		return resp;
 	}
 

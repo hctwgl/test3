@@ -5,6 +5,11 @@
 		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status
 	</sql>
 	
+	<sql id="queryWithFields">
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.bank_name,b.status,
+		c.real_name,c.id_number
+	</sql>
+	
 	<insert id="addUserBankcard" parameterType="AfUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , status)
 		VALUES (
@@ -19,6 +24,20 @@
     		#{status}
 		)
 	</insert>
+	
+	<select id="getUserBankInfo" resultType="AfUserBankDto">
+		SELECT
+			<include refid="queryWithFields"/>
+		FROM
+			af_user_bankcard b
+		LEFT JOIN
+			af_user_account c
+		ON
+			b.is_delete=0 and b.user_id = c.user_id 
+		WHERE
+			b.is_delete=0 AND b.id=#{bankId}
+	</select>
+	
 	
 	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
 		SELECT
@@ -76,7 +95,7 @@
 		AND 
 			user_id = #{userId} 
 		AND 	
-			is_delete = 1 
+			is_delete = 0 
 	</update>
 	
 	<select id="getUserBankcardById" resultType="AfUserBankcardDo">

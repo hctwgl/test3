@@ -125,6 +125,19 @@
 			id = #{rid}
 	</update>
 	
+	<update id="updateUserCouponSatusNouseById" parameterType="java.lang.Long">
+		UPDATE
+			af_user_coupon
+		SET
+			is_delete = 0,
+			status = 'NOUSE',
+			gmt_use = NOW()
+		WHERE
+			is_delete = 0
+		AND
+			id = #{rid}
+	</update>
+	
 	<select id="getUserCouponByUserIdAndType" resultType="AfUserCouponDto">
 		SELECT 
 			<include refid="queryAllFields" />

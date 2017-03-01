@@ -71,10 +71,14 @@ public class SubmitRepaymentApi implements ApiHandle{
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 
 		}
-		String inputOldPwd = UserUtil.getPassword(payPwd, afUserAccountDo.getSalt());
-		if (!StringUtils.equals(inputOldPwd, afUserAccountDo.getPassword())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+		
+		if(cardId>0){//支付密码验证
+			String inputOldPwd = UserUtil.getPassword(payPwd, afUserAccountDo.getSalt());
+			if (!StringUtils.equals(inputOldPwd, afUserAccountDo.getPassword())) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			}
 		}
+		
 		AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
 		if(billDo.getCount()==0 ||repaymentAmount.compareTo(billDo.getBillAmount())!=0){
 			throw new FanbeiException("borrow bill update error", FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
@@ -94,13 +98,12 @@ public class SubmitRepaymentApi implements ApiHandle{
 			}
 			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
 					cardId,userId,billDo);
-			UpsAuthPayRespBo respBo = (UpsAuthPayRespBo) map.get("resp");
-			if("00".equals(respBo.getTradeState())){//交易成功
-				afRepaymentService.dealRepaymentSucess(respBo.getOrderNo(), respBo.getTradeNo());
-			}else{
-				//返回交易失败信息
+			UpsAuthPayRespBo upsResult = (UpsAuthPayRespBo) map.get("resp");
+			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
+			map.put("outTradeNo", upsResult.getOrderNo());
+			map.put("tradeNo", upsResult.getTradeNo());
 		}
 		resp.setResponseData(map);
 		return resp;

@@ -9,10 +9,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
@@ -23,7 +24,9 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderSatus;
 import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.WxOrderSource;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -39,6 +42,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
@@ -58,9 +62,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	
 	@Resource
 	private KaixinUtil kaixinUtil;
-	
-	@Resource
-	private TransactionTemplate transactionTemplate;
 	
 	@Resource
 	private AfUserCouponDao afUserCouponDao;
@@ -84,11 +85,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	private JpushService pushService;
 	
 	@Resource
-	private UpsUtil upsUtil;
-	
-	@Resource
 	private AfUserDao afUserDao;
 	
+	@Resource
+	private AfUserBankcardService afUserBankcardService;
 	@Override
 	public int createOrderTrade(String content) {
 		logger.info("createOrderTrade_content:"+content);
@@ -114,9 +114,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			goodsId = goods.getRid();
 			orderType = goods.getSource();
 		}
-		AfOrderDo order = buildOrder(null,obj.getString("order_id"), 0l, null, priceAmount, priceAmount, "", BigDecimal.ZERO, 
+		AfOrderDo order = buildOrder(null,obj.getString("order_id"), "",0l, null, priceAmount, priceAmount, "", BigDecimal.ZERO, 
 				orderType, priceAmount, goodsId, goodsObj.getString("auction_id"), 
-				goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, obj.getString("shop_title"));
+				goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, obj.getString("shop_title"),0l);
 		return orderDao.createOrder(order);
 	}
 
@@ -151,25 +151,45 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public void dealMobileChargeOrder(String orderNo,String tradeNo) {
+	public void dealMobileChargeOrder(String payOrderNo,String tradeNo) {
 		//支付成功后
 		AfOrderDo newOrder = new AfOrderDo();
-		newOrder.setOrderNo(orderNo);
+		newOrder.setPayTradeNo(payOrderNo);
 		newOrder.setStatus(OrderSatus.FINISHED.getCode());
 		newOrder.setGmtFinished(new Date());
 		newOrder.setTradeNo(tradeNo);
-		orderDao.updateOrderByOrderNo(newOrder);
+		orderDao.updateOrderByOutTradeNo(newOrder);
 		//查询订单
-		AfOrderDo order = orderDao.getOrderInfoByOrderNo(orderNo);
+		AfOrderDo order = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 		//获取用户信息
 		AfUserDo userDo = afUserDao.getUserById(order.getUserId());
 		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
-			String msg = kaixinUtil.charge(orderNo, order.getMobile(), order.getSaleAmount().setScale(0).toString());
+			String msg = kaixinUtil.charge(order.getOrderNo(), order.getMobile(), order.getSaleAmount().setScale(0).toString());
 			JSONObject returnMsg = JSON.parseObject(msg);
 			JSONObject result = JSON.parseObject(returnMsg.getString("result"));
 			if(!result.getString("ret_code").equals(MobileStatus.SUCCESS.getCode())){
 				//System.out.println(result.getString("ret_msg"));
 				//TODO 退款 生成退款记录  走微信退款流程，或者银行卡代付
+				//设置优惠券为未使用状态
+				afUserCouponDao.updateUserCouponSatusNouseById(order.getUserCouponId());
+				if(order.getBankId()<0){//微信退款
+					try {
+						String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
+						if(!"SUCCESS".equals(refundResult)){
+							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+						}
+					} catch (Exception e) {
+						pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+						logger.info("wxRefund error:",e);
+					}
+				}else{//银行卡代付
+					//TODO 转账处理
+					AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(order.getBankId());
+					UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), Constants.DEFAULT_REFUND_PURPOSE, "02");
+					if(!upsResult.isSuccess()){
+						pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+					}
+				}
 				pushService.chargeMobileError(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 			}else{
 				pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
@@ -199,13 +219,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param shopName --店铺名称
 	 * @return
 	 */
-	private AfOrderDo buildOrder(Date now,String orderNo,Long userId, AfUserCouponDto couponDto,
+	private AfOrderDo buildOrder(Date now,String orderNo,String payTradeNo,Long userId, AfUserCouponDto couponDto,
 			BigDecimal money,BigDecimal saleAmount, String mobile,BigDecimal rebateAmount,String orderType,BigDecimal actualAmount,
-			Long goodsId,String openId,String goodsName,String goodsIcon,int count,String shopName){
+			Long goodsId,String openId,String goodsName,String goodsIcon,int count,String shopName,Long bankId){
 		AfOrderDo orderDo = new AfOrderDo();
 		orderDo.setGmtCreate(now);
 		orderDo.setUserId(userId);
 		orderDo.setOrderNo(orderNo);
+		orderDo.setPayTradeNo(payTradeNo);
 		orderDo.setOrderType(orderType);
 		orderDo.setGoodsId(goodsId);
 		orderDo.setOpenId(openId);
@@ -224,6 +245,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		orderDo.setActualAmount(actualAmount);
 		orderDo.setRebateAmount(rebateAmount);
 		orderDo.setMobile(mobile);
+		orderDo.setBankId(bankId);
 		return orderDo;
 	}
 
@@ -268,18 +290,19 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			afUserCouponDao.updateUserCouponSatusUsedById(couponDto.getRid());
 			actualAmount = money.subtract(couponDto.getAmount());
 		}
-		//订单创建
-		orderDao.createOrder(buildOrder(now,orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
-				OrderType.MOBILE.getCode(),actualAmount, 0l, "",Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, ""));
 		Map<String,Object> map;
 		if(bankId<0){//微信支付
-			map = upsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,WxOrderSource.ORDER.getCode());
+			//订单创建
+			orderDao.createOrder(buildOrder(now,orderNo,orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
+					OrderType.MOBILE.getCode(),actualAmount, 0l, "",Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "",bankId));
+			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,PayOrderSource.ORDER.getCode());
 		}else{//银行卡支付
 			map = new HashMap<String,Object>();
-			UpsAuthPayRespBo respBo = new UpsAuthPayRespBo();
-			respBo.setTradeState("00");
-			respBo.setTradeNo("10000000000000");
-			respBo.setOrderNo(orderNo);
+			AfUserBankDto bank = afUserBankcardService.getUserBankInfo(bankId);
+			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02");
+			//订单创建
+			orderDao.createOrder(buildOrder(now,orderNo,respBo.getOrderNo(),userId, couponDto, money,money, mobile, rebateAmount, 
+					OrderType.MOBILE.getCode(),actualAmount, 0l, "",Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "",bankId));
 			map.put("resp", respBo);
 		}
 		return map;

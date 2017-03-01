@@ -14,15 +14,16 @@ import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.WxOrderSource;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -32,6 +33,7 @@ import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 
 /**
@@ -74,7 +76,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	private AfUserService afUserService;
 	
 	@Resource
-	private UpsUtil upsUtil;
+	private AfUserBankcardService afUserBankcardService;
 	
 	@Override
 	public Map<String,Object> createRepayment(BigDecimal repaymentAmount,
@@ -91,16 +93,16 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}
 		AfRepaymentDo repayment = buildRepayment(repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
-		afRepaymentDao.addRepayment(repayment);
 		Map<String,Object> map;
 		if(cardId<0){//微信支付
-			map = upsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, repaymentAmount, WxOrderSource.REPAYMENT.getCode());
+			afRepaymentDao.addRepayment(repayment);
+			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode());
 		}else{
 			map = new HashMap<String,Object>();
-			UpsAuthPayRespBo respBo = new UpsAuthPayRespBo();
-			respBo.setTradeState("00");
-			respBo.setTradeNo("10000000000000");
-			respBo.setOrderNo(payTradeNo);
+			AfUserBankDto bank = afUserBankcardService.getUserBankInfo(cardId);
+			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02");
+			repayment.setPayTradeNo(respBo.getOrderNo());
+			afRepaymentDao.addRepayment(repayment);
 			map.put("resp", respBo);
 		}
 		map.put("refId", repayment.getRid());
