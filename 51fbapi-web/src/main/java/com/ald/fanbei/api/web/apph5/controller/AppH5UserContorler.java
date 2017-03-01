@@ -149,7 +149,7 @@ public class AppH5UserContorler extends BaseController {
 	@RequestMapping(value = "commitRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
-			String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+			String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
@@ -169,7 +169,7 @@ public class AppH5UserContorler extends BaseController {
 			}
 			// 判断验证码是否一致并且验证码是否已经做过验证
 			String realCode = smsDo.getVerifyCode();
-			if (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 0) {
+			if (!StringUtils.equals(verifyCode, realCode) ||  smsDo.getIsCheck() == 1) {
 				logger.error("verifyCode is invalid");
 				return H5CommonResponse
 						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null)
@@ -188,7 +188,7 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setSalt(salt);
 			userDo.setUserName(mobile);
 			userDo.setMobile(mobile);
-			// userDo.setNick("");
+			 userDo.setNick("");
 			userDo.setPassword(password);
 
 			afUserDao.addUser(userDo);
@@ -209,7 +209,7 @@ public class AppH5UserContorler extends BaseController {
 			account.setUserName(userDo.getUserName());
 			afUserAccountService.addUserAccount(account);
 
-			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", null).toString();
+			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
 
 		} catch (Exception e) {
 			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();

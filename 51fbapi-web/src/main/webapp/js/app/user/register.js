@@ -114,7 +114,9 @@ $(function(){
 
 	// 提交
 	$(".register_submitBtn").click(function(){
-
+		var mobileNum = $(".register_mobile").val();
+		var recommendCode = "1000m";
+console.log(mobileNum);
 		var register_verification=$(".register_verification").val();
 		var register_password=$(".register_password").val();
 
@@ -124,7 +126,7 @@ $(function(){
 			type: 'POST',
 			dataType: 'JSON',
 			data: {
-				moblie: mobileNum,
+				registerMobile: mobileNum,
 				smsCode: register_verification,
 				password: register_password,
 				recommendCode: recommendCode
@@ -132,7 +134,7 @@ $(function(){
 			success: function(returnData){
 				if ( returnData.success ) {
 					// window.location.href = returnData.url;
-					window.location.href = "www.51fanbei.com";
+					window.location.href = "http://www.51fanbei.com";
 				} else {
 					requestMsg(returnData.msg);
 				}
