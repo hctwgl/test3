@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfRepaymentDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,repay_no,repayment_amount,actual_amount,bill_ids,pay_trade_no,trade_no,user_coupon_id,coupon_amount,rebate_amount,card_id
+		id rid,gmt_create,gmt_modified,repay_no,repayment_amount,actual_amount,bill_ids,pay_trade_no,trade_no,user_coupon_id,coupon_amount,rebate_amount,card_id,
+		status,user_id
 	</sql>
 	
 	<insert id="addRepayment" parameterType="AfRepaymentDo" useGeneratedKeys="true" keyProperty="rid">
@@ -15,7 +16,6 @@
 		actual_amount , 
 		bill_ids , 
 		pay_trade_no , 
-		trade_no , 
 		<if test="userCouponId !=null ">
 		user_coupon_id , 
 		</if>
@@ -23,6 +23,8 @@
 		coupon_amount ,
 		</if>
 		rebate_amount , 
+		status,
+		user_id,
 		card_id)
 		VALUES (
     		#{gmtCreate},
@@ -33,7 +35,6 @@
     		#{actualAmount},
     		#{billIds},
     		#{payTradeNo},
-    		#{tradeNo},
     		<if test="userCouponId !=null ">
 			#{userCouponId}, 
 			</if>
@@ -41,6 +42,8 @@
 			#{couponAmount},
 			</if>
     		#{rebateAmount},
+    		#{status},
+    		#{userId},
     		#{cardId}
 		)
 	</insert>
@@ -55,4 +58,13 @@
 		from af_repayment WHERE is_delete=0 and id=#{rid};
 	</select>
 	
+	<select id="getRepaymentByPayTradeNo" resultType="AfRepaymentDo">
+		select 
+			<include refid="queryFields"/> 
+		from af_repayment WHERE is_delete=0 and pay_trade_no=#{payTradeNo};
+	</select>
+	
+	<update id="updateRepayment">
+	update af_repayment set gmt_modified=NOW(),status=#{status},trade_no=#{tradeNo} where id=#{rid}
+	</update>
 </mapper>

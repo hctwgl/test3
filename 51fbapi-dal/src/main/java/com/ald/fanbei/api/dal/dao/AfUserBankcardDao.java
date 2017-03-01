@@ -54,4 +54,11 @@ public interface AfUserBankcardDao {
 	int updateUserBankcard(AfUserBankcardDo afUserBankcardDo);
 	
 	int getUserBankcardCountByUserId(@Param("userId") Long userId);
+	
+	/**
+	 * 新增银行卡
+	 * @param afUserBankcardDo
+	 * @return
+	 */
+	int addUserBankcard(AfUserBankcardDo afUserBankcardDo);
 }

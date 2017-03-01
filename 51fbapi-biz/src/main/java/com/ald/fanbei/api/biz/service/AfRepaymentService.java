@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
@@ -26,8 +27,10 @@ public interface AfRepaymentService {
 	 * @param cardId
 	 * @return
 	 */
-	long createRepayment(String userName,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
+	Map<String,Object> createRepayment(BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo);
+	
+	long dealRepaymentSucess(String outTradeNo,String tradeNo);
 	
 	/**
 	 * 获取最近还款编号

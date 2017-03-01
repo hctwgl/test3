@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.api.repayment;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -11,19 +10,21 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -49,6 +50,9 @@ public class SubmitRepaymentApi implements ApiHandle{
 	
 	@Resource
 	private AfUserAccountService afUserAccountService;
+	
+	@Resource
+	private AfUserBankcardService afUserBankcardService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -79,16 +83,27 @@ public class SubmitRepaymentApi implements ApiHandle{
 		if(null != coupon &&!coupon.getStatus().equals(CouponStatus.NOUSE.getCode())){
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
-		long result = afRepaymentService.createRepayment(context.getUserName(),repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
-				cardId,userId,billDo);
-		if(result>0){
-			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("refId", result);
-			map.put("type", UserAccountLogType.REPAYMENT.getCode());
-			resp.setResponseData(map);
-			return resp;
+		Map<String,Object> map;
+		if(cardId<0){//微信支付
+			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
+					cardId,userId,billDo);
+		}else{//银行卡支付
+			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+			if(null == card){
+				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+			}
+			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
+					cardId,userId,billDo);
+			UpsAuthPayRespBo respBo = (UpsAuthPayRespBo) map.get("resp");
+			if("00".equals(respBo.getTradeState())){//交易成功
+				afRepaymentService.dealRepaymentSucess(respBo.getOrderNo(), respBo.getTradeNo());
+			}else{
+				//返回交易失败信息
+				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			}
 		}
-		throw new FanbeiException(FanbeiExceptionCode.FAILED);
+		resp.setResponseData(map);
+		return resp;
 	}
 	
 }

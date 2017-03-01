@@ -93,7 +93,7 @@ public class PayRoutController{
 	    		if(WxOrderSource.ORDER.getCode().equals(attach)){
 		    		afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
 	    		}else if(WxOrderSource.REPAYMENT.getCode().equals(attach)){
-	    			
+	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		}
     		}
             

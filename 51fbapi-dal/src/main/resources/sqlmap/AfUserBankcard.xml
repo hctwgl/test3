@@ -5,6 +5,21 @@
 		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status
 	</sql>
 	
+	<insert id="addUserBankcard" parameterType="AfUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , status)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{userId},
+    		#{mobile},
+    		#{bankCode},
+    		#{cardNumber},
+    		#{isMain},
+    		#{bankName},
+    		#{status}
+		)
+	</insert>
+	
 	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
 		SELECT
 			<include refid="queryFields"/>
