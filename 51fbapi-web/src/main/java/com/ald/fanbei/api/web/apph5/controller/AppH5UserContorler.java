@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
@@ -164,15 +165,20 @@ public class AppH5UserContorler extends BaseController {
 			AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
 			if (smsDo == null) {
 				logger.error("sms record is empty");
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SMS_MOBILE_ERROR.getDesc(), "", null)
-						.toString();
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SMS_MOBILE_ERROR.getDesc(), "", null).toString();
 			}
-			// 判断验证码是否一致并且验证码是否已经做过验证
+	      
 			String realCode = smsDo.getVerifyCode();
-			if (!StringUtils.equals(verifyCode, realCode) ||  smsDo.getIsCheck() == 1) {
+			if (!StringUtils.equals(verifyCode, realCode)) {
 				logger.error("verifyCode is invalid");
 				return H5CommonResponse
 						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null)
+						.toString();
+			}
+			if(smsDo.getIsCheck() == 1){
+				logger.error("verifyCode is already invalid");
+				return H5CommonResponse
+						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "", null)
 						.toString();
 			}
 			// 判断验证码是否过期
@@ -180,7 +186,12 @@ public class AppH5UserContorler extends BaseController {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
 
 			}
-
+			
+			// 更新为已经验证
+			afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+			
+			
+			
 			String salt = UserUtil.getSalt();
 			String password = UserUtil.getPassword(passwordSrc, salt);
 
