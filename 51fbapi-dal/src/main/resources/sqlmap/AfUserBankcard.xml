@@ -45,7 +45,7 @@
 		FROM
 			af_user_bankcard
 		WHERE
-			is_delete=0 AND user_id = #{userId} AND is_main = 'Y' limit 1
+			is_delete=0 AND user_id = #{userId} AND is_main = 'Y' and status='B' limit 1
 	</select>
 	
 	<select id="getUserBankcardByUserId" resultType="AfUserBankcardDo">

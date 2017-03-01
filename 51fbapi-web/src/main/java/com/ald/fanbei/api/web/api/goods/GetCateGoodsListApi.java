@@ -42,6 +42,7 @@ public class GetCateGoodsListApi implements ApiHandle{
 		AfGoodsQuery query = getCheckParam(requestDataVo);
 		List<AfGoodsDo> goodsList = afGoodsService.getCateGoodsList(query);
 		Map<String,Object> data = getGoodsList(goodsList);
+		data.put("pageNo", query.getPageNo());
 		resp.setResponseData(data);
 		return resp;
 	}
