@@ -2,11 +2,11 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 14:20:33
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-28 10:05:27
+* @Last Modified time: 2017-03-01 10:33:52
 * @title:  领取优惠券
 */
 
-.cardCoupons_main li,.cardCoupons_alreadyReceive{
+.receiveCoupons_main li,.receiveCoupons_alreadyReceive{
 	position: relative;
 	width: 16.35rem;
 	height: 5.7rem;
@@ -17,34 +17,34 @@
 	-ms-background-size: cover;
 	background-size: cover;
 }
-.cardCoupons_main .cardCoupons_alreadyReceive{
+.receiveCoupons_main .receiveCoupons_alreadyReceive{
 	background-image: url(/images/app/user/receiveCoupons_bg2.png);
 }
-.cardCoupons_priceInfo{
+.receiveCoupons_priceInfo{
 	height: 4.05rem;
 	line-height: 4.05rem;
 	margin: 0.075rem 0.3rem 0 0;
 	padding-left: 0.25rem;
 	letter-spacing: -0.15rem;
 }
-.cardCoupons_priceInfo span{
+.receiveCoupons_priceInfo span{
 	margin-left: -0.15rem;
 }
-.cardCoupons_text{
+.receiveCoupons_text{
 	height: 4.05rem;
 }
-.cardCoupons_text p:nth-child(1){
+.receiveCoupons_text p:nth-child(1){
 	margin-top: 0.5rem;
 }
-.cardCoupons_text p:nth-child(2){
+.receiveCoupons_text p:nth-child(2){
 	margin: 0.14rem 0;
 }
-.cardCoupons_date{
+.receiveCoupons_date{
 	height: 1.3rem;
 	line-height: 1.3rem;
 	padding-left: 0.4rem;
 }
-.cardCoupons_btn{
+.receiveCoupons_btn{
 	width: 4.8rem;
 	height: 5.7rem;
 	opacity: 0;
