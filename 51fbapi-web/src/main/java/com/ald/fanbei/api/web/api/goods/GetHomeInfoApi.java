@@ -97,7 +97,7 @@ public class GetHomeInfoApi implements ApiHandle {
 			data.put("titleName", afResourceDo.getName());
 			data.put("type", afResourceDo.getSecType());
 			data.put("content", afResourceDo.getValue2());
-			data.put("sort", afResourceDo.getValue4());
+			data.put("sort", afResourceDo.getSort());
 			if (StringUtil.equals(afResourceDo.getValue1(), AfResourceSecType.ResourceValue1MainImage.getCode())) {
 				oneData = data;
 			} else {

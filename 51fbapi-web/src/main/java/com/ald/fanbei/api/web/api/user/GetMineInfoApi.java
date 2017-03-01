@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -52,7 +53,7 @@ public class GetMineInfoApi implements ApiHandle{
         data.put("jfbAmount", userAccountInfo.getJfbAmount());
 
         String isPay = YesNoStatus.NO.getCode();
-        if(userAccountInfo.getPassword()!=null){
+        if(!StringUtil.isBlank(userAccountInfo.getPassword())){
         	isPay =YesNoStatus.YES.getCode();
         }
         data.put("isPayPwd",isPay);

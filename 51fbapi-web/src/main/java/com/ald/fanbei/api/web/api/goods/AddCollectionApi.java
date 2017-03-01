@@ -50,11 +50,14 @@ public class AddCollectionApi implements ApiHandle {
 		String goodsIcon = ObjectUtils.toString(params.get("goodsIcon"), "").toString();
 		String goodsUrl = ObjectUtils.toString(params.get("goodsUrl"), "").toString();
 
-		Long goodsId = NumberUtil.objToLongDefault(params.get("goodsId"), 1);
+		Long goodsId = NumberUtil.objToLongDefault(params.get("goodsId"), 0);
 		if (StringUtils.isEmpty(name) && StringUtils.isEmpty(openId) && StringUtils.isEmpty(goodsIcon)
 				&& StringUtils.isEmpty(goodsUrl)) {
 			throw new FanbeiException("(name or openId or goodsIcon or goodsUrl ) is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}
+		
+		
+		
 		AfUserCollectionDo afUserCollectionDo = new AfUserCollectionDo();
 		afUserCollectionDo.setActualAmount(actualAmount);
 		afUserCollectionDo.setPriceAmount(priceAmount);
@@ -64,6 +67,10 @@ public class AddCollectionApi implements ApiHandle {
 		afUserCollectionDo.setGoodsIcon(goodsIcon);
 		afUserCollectionDo.setGoodsUrl(goodsUrl);
 		afUserCollectionDo.setUserId(userId);
+		if(afuserCollectionService.getUserCollectionCountByGoodsId(afUserCollectionDo)>0){
+			throw new FanbeiException("goods alreay collection", FanbeiExceptionCode.GOODS_COLLECTION_ALREADY_EXIST_ERROR);
+
+		}
 		if(afuserCollectionService.addUserCollectionGoods(afUserCollectionDo)>0){
 			return resp;
 		}
