@@ -4,7 +4,9 @@
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status
 	</sql>
-	
+	<sql id="queryBankFields">
+		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.mobile,u.bank_code,u.card_number,u.is_main,b.bank_name,u.status,b.bank_icon
+	</sql>
 	<sql id="queryWithFields">
 		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.bank_name,b.status,
 		c.real_name,c.id_number
@@ -48,19 +50,23 @@
 			is_delete=0 AND user_id = #{userId} AND is_main = 'Y' and status='B' limit 1
 	</select>
 	
-	<select id="getUserBankcardByUserId" resultType="AfUserBankcardDo">
+	<select id="getUserBankcardByUserId" resultType="AfBankUserBankDto">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryBankFields"/>
 		FROM
-			af_user_bankcard
+			af_user_bankcard u
+		LEFT JOIN
+			af_bank  b
+		ON
+			u.is_delete=0 and u.bank_code = b.bank_code
+		
 		WHERE
-			is_delete=0 
+			
+		    u.status = 'B'
 		AND 
-		    status = 'B'
-		AND 
-			user_id = #{userId} 
+			u.user_id = #{userId} 
 		ORDER BY
-			is_main 
+			u.is_main 
 		DESC
 	</select>
 	

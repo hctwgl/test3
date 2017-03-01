@@ -19,8 +19,8 @@
 		<property name="fbapi.token.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="cache redis password" />
 		 
 		 <!-- 极光推送 -->
-  		<property name="fbapi.jpush.appkey" defaultValue="lLkCkAa5Ye+VAiwv47qPbzseWbIEl/9QlfV4pgU79t8=" description="极光推送key" />
-		<property name="fbapi.jpush.secret" defaultValue="yLqZuDFxFYfBzGmlz4YfJtV2Qen32sLl/3hvSwMddc0=" description="极光推送secret" />
+  		<property name="fbapi.jpush.appkey" defaultValue="+NiuaeJqIbMOgsO/KrWgfEODa/LLdz98Xnf0QaRNNDY=" description="极光推送key" />
+		<property name="fbapi.jpush.secret" defaultValue="Uiu3g6sVZHdz+SYV0KtqFfCJDZQfI/kJUOOwQ+sA9L0=" description="极光推送secret" />
 		 
 		 <!-- zhima config -->
   		<property name="fbapi.zhima.appid" defaultValue="DbEZOAcvoj6WEnRHs2+tcg==" description="zhima appid" />

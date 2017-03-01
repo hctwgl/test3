@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 
 /**
@@ -26,7 +27,7 @@ public interface AfUserBankcardService {
 	 * @param userId
 	 * @return
 	 */
-	List<AfUserBankcardDo> getUserBankcardByUserId(Long userId);
+	List<AfBankUserBankDto> getUserBankcardByUserId(Long userId);
 	
 	/**
 	 * 删除银行卡

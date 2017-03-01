@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import org.dbunit.util.Base64;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -40,7 +41,9 @@ public class CheckIdNumberApi implements ApiHandle {
 		}
 		
 		Map<String, Object> params = requestDataVo.getParams();
-		String idNumber = ObjectUtils.toString(params.get("idNumber"), "").toString();
+		String idNumber = Base64.decodeToString(ObjectUtils.toString(params.get("idNumber"), "").toString());
+
+		
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 		if(afUserAccountDo==null){
 			throw new FanbeiException("account id is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);

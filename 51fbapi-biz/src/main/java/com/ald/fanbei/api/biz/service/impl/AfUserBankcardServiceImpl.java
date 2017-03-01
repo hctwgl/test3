@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 
 /**
@@ -29,7 +30,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 	}
 
 	@Override
-	public List<AfUserBankcardDo> getUserBankcardByUserId(Long userId) {
+	public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId) {
 		return afUserBankcardDao.getUserBankcardByUserId(userId);
 	}
 

@@ -159,7 +159,7 @@ public class AesUtil {
     }
     
     public static void main(String[] args) {
-        String encryptStr = new String(Base64.encodeBase64(encrypt("Fanbei.2017", "testC1b6x@6aH$2dlw")));
+        String encryptStr = new String(Base64.encodeBase64(encrypt("148eabc32050cfb767512064", "testC1b6x@6aH$2dlw")));
         System.out.println(encryptStr);
 //        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
         String sec = decryptFromBase64("BeSHxmaAFBhNCE2gIdPVRg==", "testC1b6x@6aH$2dlw");
