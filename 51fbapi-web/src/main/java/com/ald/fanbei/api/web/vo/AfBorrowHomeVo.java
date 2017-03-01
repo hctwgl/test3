@@ -28,6 +28,7 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	private String ydUrl;
 	private String realName;
 	private String idNumber;
+	private String zmxyAuthUrl;
 	
 	public BigDecimal getTotalAmount() {
 		return totalAmount;
@@ -113,4 +114,11 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	public void setIdNumber(String idNumber) {
 		this.idNumber = idNumber;
 	}
+	public String getZmxyAuthUrl() {
+		return zmxyAuthUrl;
+	}
+	public void setZmxyAuthUrl(String zmxyAuthUrl) {
+		this.zmxyAuthUrl = zmxyAuthUrl;
+	}
+	
 }
