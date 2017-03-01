@@ -50,7 +50,7 @@ public class GetBrandShopListApi implements ApiHandle {
 			AfBrandShopVo vo = new AfBrandShopVo();
 			vo.setBrandName(brand.getName());
 			vo.setBrandIcon(brand.getValue());
-			vo.setBrandRate(brand.getValue1());
+			vo.setBrandRate(brand.getValue3());
 			vo.setBrandUrl(brand.getValue2());
 			brandList.add(vo);
 		}

@@ -11,12 +11,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -76,11 +73,11 @@ public class ApplyConsumeApi implements ApiHandle{
 		if(null == card){
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
-		//TODO 转账处理
-		UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, userDto.getRealName(), card.getCardNumber(), Constants.DEFAULT_BORROW_PURPOSE, "02");
+		//TODO 转账处理 待调试
+		/*UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, userDto.getRealName(), card.getCardNumber(), Constants.DEFAULT_BORROW_PURPOSE, "02");
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-		}
+		}*/
 		long result = afBorrowService.dealConsumeApply(userDto, amount, card.getRid(), goodsId, openId, name, nper);
 		if(result>0){
 			Map<String,Object> map = new HashMap<String,Object>();

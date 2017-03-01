@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmReqBo;
@@ -44,6 +45,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -81,7 +83,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType 客户端类型
 	 */
 	public static UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String purpose,String clientType){
-		setActualAmount(amount);
+		amount = setActualAmount(amount);
 		String orderNo = getOrderNo("dpay", cardNo.substring(cardNo.length()-8,cardNo.length()));
 //		String orderNo = "dp"+cardNo.substring(cardNo.length()-15,cardNo.length()) + System.currentTimeMillis();
 		UpsDelegatePayReqBo reqBo = new UpsDelegatePayReqBo();
@@ -117,12 +119,15 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl 异步回调地址
 	 * @param clientType 客户端类型
 	 */
-	public static UpsAuthPayRespBo authPay(BigDecimal amount,String userCustNo,String realName,String cardNo,String idNumber,String clientType){
-		setActualAmount(amount);
+	public static UpsAuthPayRespBo authPay(BigDecimal amount,String userCustNo,String realName,String cardNo,String idNumber,String clientType,String clientIp){
+		amount = setActualAmount(amount);
 //		String orderNo = "ap"+cardNo.substring(cardNo.length()-15,cardNo.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("apay", cardNo.substring(cardNo.length()-8,cardNo.length()));
 		UpsAuthPayReqBo reqBo = new UpsAuthPayReqBo();
 		setPubParam(reqBo,"authPay",orderNo,clientType);
+		JSONObject obj = new JSONObject();
+		obj.put("clientIp", clientIp);
+		reqBo.setReqExt(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setAmount(amount.toString());
 		reqBo.setUserCustNo(userCustNo);
 		reqBo.setRealName(realName);
@@ -512,10 +517,11 @@ public class UpsUtil extends AbstractThird {
 		return result;
 	}
 	
-	private static void setActualAmount(BigDecimal amount){
+	private static BigDecimal setActualAmount(BigDecimal amount){
 		if(!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
-			amount = new BigDecimal(0.01);
+			amount = new BigDecimal("0.01").setScale(2);
 		}
+		return amount;
 	}
 	
 	public static void main(String[] args) {

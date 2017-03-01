@@ -281,7 +281,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Override
 	public Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName, Long userId,
 			AfUserCouponDto couponDto, BigDecimal money, String mobile,
-			BigDecimal rebateAmount,Long bankId) {
+			BigDecimal rebateAmount,Long bankId,String clientIp) {
 		Date now = new Date();
 		String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
 		BigDecimal actualAmount = money;
@@ -299,7 +299,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}else{//银行卡支付
 			map = new HashMap<String,Object>();
 			AfUserBankDto bank = afUserBankcardService.getUserBankInfo(bankId);
-			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02");
+			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
 			//订单创建
 			orderDao.createOrder(buildOrder(now,orderNo,respBo.getOrderNo(),userId, couponDto, money,money, mobile, rebateAmount, 
 					OrderType.MOBILE.getCode(),actualAmount, 0l, "",Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "",bankId));

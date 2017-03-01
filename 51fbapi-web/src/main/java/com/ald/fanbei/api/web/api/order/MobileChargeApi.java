@@ -80,14 +80,14 @@ public class MobileChargeApi implements ApiHandle {
 		
 		Map<String,Object> map;
 		if(bankId<0){//微信支付
-			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId);
+			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,"");
 			resp.setResponseData(map);
 		}else{//银行卡支付
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(bankId);
 			if(null == card){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId);
+			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,request.getRemoteAddr());
 			UpsAuthPayRespBo upsResult = (UpsAuthPayRespBo) map.get("resp");
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);

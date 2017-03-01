@@ -90,14 +90,14 @@ public class SubmitRepaymentApi implements ApiHandle{
 		Map<String,Object> map;
 		if(cardId<0){//微信支付
 			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
-					cardId,userId,billDo);
+					cardId,userId,billDo,"");
 		}else{//银行卡支付
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
 			if(null == card){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
 			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
-					cardId,userId,billDo);
+					cardId,userId,billDo,request.getRemoteAddr());
 			UpsAuthPayRespBo upsResult = (UpsAuthPayRespBo) map.get("resp");
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);

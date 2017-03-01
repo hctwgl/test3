@@ -81,7 +81,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Override
 	public Map<String,Object> createRepayment(BigDecimal repaymentAmount,
 			BigDecimal actualAmount,AfUserCouponDto coupon,
-			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo) {
+			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp) {
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRepaymentNo(now);
 		String payTradeNo=repayNo;
@@ -100,7 +100,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}else{
 			map = new HashMap<String,Object>();
 			AfUserBankDto bank = afUserBankcardService.getUserBankInfo(cardId);
-			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02");
+			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
 			repayment.setPayTradeNo(respBo.getOrderNo());
 			afRepaymentDao.addRepayment(repayment);
 			map.put("resp", respBo);
