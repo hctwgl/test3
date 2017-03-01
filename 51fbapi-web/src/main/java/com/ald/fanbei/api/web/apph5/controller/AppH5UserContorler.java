@@ -145,7 +145,7 @@ public class AppH5UserContorler extends BaseController {
 		}
 
 	}
-
+    @ResponseBody
 	@RequestMapping(value = "commitRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
