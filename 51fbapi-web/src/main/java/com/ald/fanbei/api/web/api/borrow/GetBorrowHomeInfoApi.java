@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -81,6 +82,10 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setTotalAmount(userDto.getAuAmount());
 		vo.setUsableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
 		vo.setZmStatus(authDo.getZmStatus());
+		if(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
+			String authParamUrl =  ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
+			vo.setZmxyAuthUrl(authParamUrl);
+		}
 		return vo;
 	}
 }
