@@ -17,6 +17,7 @@ public class UpsAuthSignRespBo extends UpsRespBo {
 	private String bankCardType	;   //卡类型
 	private String tradeDate			;   //订单日期
 	private String contractNo		;   //响应协议号
+	private String tradeNo			;
 	private String tradeState		;   //交易状态
 	private String tradeDesc			;   //交易状态描述
 	private String startDate			;   //协议开始时间
@@ -112,5 +113,11 @@ public class UpsAuthSignRespBo extends UpsRespBo {
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
+	}
+	public String getTradeNo() {
+		return tradeNo;
+	}
+	public void setTradeNo(String tradeNo) {
+		this.tradeNo = tradeNo;
 	}
 }

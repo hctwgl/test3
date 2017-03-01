@@ -63,13 +63,13 @@ public class GetBankCardListApi implements ApiHandle {
         		}
         	}
         }
+    	AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
+    	resp.addResponseData("realName", userAccount.getRealName());
         resp.addResponseData("bankcardStatus", bankcardStatus);
         if(StringUtil.equals(bankcardStatus, YesNoStatus.NO.getCode())){
-        	AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
         	String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
         	resp.addResponseData("ydKey", publicKey);
         	resp.addResponseData("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
-        	resp.addResponseData("realName", Base64.encodeString(userAccount.getRealName()));
         	resp.addResponseData("idNumber", Base64.encodeString(userAccount.getIdNumber()));
         }
 		return resp;

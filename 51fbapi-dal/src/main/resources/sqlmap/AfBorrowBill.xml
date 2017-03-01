@@ -82,7 +82,7 @@
 		  a.gmt_modified = NOW(),
 		  b.gmt_modified = NOW(),
 		  b.status = #{status},
-		  b.repayment_id = #{repaymentId}
+		  b.repayment_id = #{repaymentId},
 		  a.nper_repayment = a.nper_repayment + 1,
 		  a.repay_prin_amount = a.repay_prin_amount + b.principle_amount 
 		WHERE b.is_delete = 0 

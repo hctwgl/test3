@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -65,11 +66,11 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 	private AfBorrowHomeVo getBorrowHomeInfo(BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo){
 		AfBorrowHomeVo vo = new AfBorrowHomeVo();
 		vo.setBankcardStatus(authDo.getBankcardStatus());
+    	vo.setRealName(userDto.getRealName());
         if(StringUtil.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())){
         	String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
         	vo.setYdKey(publicKey);
         	vo.setYdUrl(ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
-        	vo.setRealName(Base64.encodeString(userDto.getRealName()));
         	vo.setIdNumber(Base64.encodeString(userDto.getIdNumber()));
         }
 		vo.setCurrentAmount(repaymentAmount);
@@ -81,6 +82,10 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setTotalAmount(userDto.getAuAmount());
 		vo.setUsableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
 		vo.setZmStatus(authDo.getZmStatus());
+		if(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
+			String authParamUrl =  ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
+			vo.setZmxyAuthUrl(authParamUrl);
+		}
 		return vo;
 	}
 }

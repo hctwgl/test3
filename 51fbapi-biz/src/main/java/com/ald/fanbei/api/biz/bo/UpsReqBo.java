@@ -1,6 +1,6 @@
 package com.ald.fanbei.api.biz.bo;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class UpsReqBo extends HashMap<String, String> {
+public class UpsReqBo extends LinkedHashMap<String, String> {
 
 	private static final long serialVersionUID = -5197302494589757587L;
 
@@ -19,10 +19,11 @@ public class UpsReqBo extends HashMap<String, String> {
 	private String service;  //接口服务名称，此处为 authSign
 	private String merNo;  //UPS商户号    UPS分配给商户的商户号
 	private String orderNo;  //订单号    业务订单号，必须保证唯一
-//	private String payCanal;  //支付渠道     见 附件一 支付渠道
+	private String payCanal;  //支付渠道     见 附件一 支付渠道
 	private String clientType;  //客户端类型
 	private String merPriv;  //私有域     商户自定义参数，响应时原样返回
 	private String reqExt;  //扩展参数
+	private String signInfo;
 	
 
 	
@@ -54,13 +55,13 @@ public class UpsReqBo extends HashMap<String, String> {
 		this.orderNo = orderNo;
 		this.put("orderNo", orderNo);
 	}
-//	public String getPayCanal() {
-//		return payCanal;
-//	}
-//	public void setPayCanal(String payCanal) {
-//		this.payCanal = payCanal;
-//		this.put("payCanal", payCanal);
-//	}
+	public String getPayCanal() {
+		return payCanal;
+	}
+	public void setPayCanal(String payCanal) {
+		this.payCanal = payCanal;
+		this.put("payCanal", payCanal);
+	}
 	public String getClientType() {
 		return clientType;
 	}
@@ -83,6 +84,13 @@ public class UpsReqBo extends HashMap<String, String> {
 		this.put("reqExt", reqExt);
 	}
 	
+	public String getSignInfo() {
+		return signInfo;
+	}
+	public void setSignInfo(String signInfo) {
+		this.signInfo = signInfo;
+		this.put("signInfo", signInfo);
+	}
 	@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);

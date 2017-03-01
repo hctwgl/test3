@@ -277,7 +277,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}else{//银行卡支付
 			map = new HashMap<String,Object>();
 			UpsAuthPayRespBo respBo = new UpsAuthPayRespBo();
-			respBo.setTradeState("0000");
+			respBo.setTradeState("00");
 			respBo.setTradeNo("10000000000000");
 			respBo.setOrderNo(orderNo);
 			map.put("resp", respBo);

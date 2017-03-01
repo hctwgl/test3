@@ -20,6 +20,8 @@ public interface AfRepaymentDao {
     */
     int addRepayment(AfRepaymentDo afRepaymentDo);
     
+    int updateRepayment(@Param("status")String status,@Param("tradeNo")String tradeNo,@Param("rid")Long rid);
+    
     /**
      * 获取最近还款编号
      * @param current
@@ -28,9 +30,11 @@ public interface AfRepaymentDao {
     public String getCurrentLastRepayNo(Date current);
     
     /**
-     * 通过id获取详情
+     * 通过payTradeNo获取详情
      * @param rid
      * @return
      */
     AfRepaymentDo getRepaymentById(@Param("rid")Long rid);
+    
+    AfRepaymentDo getRepaymentByPayTradeNo(@Param("payTradeNo")String payTradeNo);
 }

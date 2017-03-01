@@ -163,8 +163,10 @@
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
 				<entry key="/auth/authRealname" value-ref="authRealnameApi" />
 				<entry key="/auth/authContacts" value-ref="authContactsApi" />
-				<entry key="/auth/authCredit" value-ref="authCreditApi" />
+				<entry key="/auth/authCredit" value-ref="authCreditApi" /> 
 				<entry key="/auth/authZhima" value-ref="authZhimaApi" />
+				<entry key="/auth/authBankcard" value-ref="authBankcardApi" />
+				<entry key="/auth/checkBankcard" value-ref="checkBankcardApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -180,7 +182,6 @@
 				<entry key="/repay/submitRepayment" value-ref="submitRepaymentApi" />
 				<entry key="/bill/getLimitDetailList" value-ref="getLimitDetailListApi" />
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
-				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> -->
 
 			</map>
 		</constructor-arg>

@@ -78,7 +78,6 @@ public class MobileChargeApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
 		
-		//TODO:支付流程
 		Map<String,Object> map;
 		if(bankId<0){//微信支付
 			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId);
@@ -90,7 +89,7 @@ public class MobileChargeApi implements ApiHandle {
 			}
 			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId);
 			UpsAuthPayRespBo respBo = (UpsAuthPayRespBo) map.get("resp");
-			if("0000".equals(respBo.getTradeState())){//交易成功
+			if("00".equals(respBo.getTradeState())){//交易成功
 				afOrderService.dealMobileChargeOrder(respBo.getOrderNo(), respBo.getTradeNo());
 			}else{
 				//返回交易失败信息
