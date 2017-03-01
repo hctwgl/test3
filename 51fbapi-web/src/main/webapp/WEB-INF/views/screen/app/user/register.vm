@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017022801")
+    	#set($version="2017030101")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/user/register.css?version=$version">
     </head>
@@ -23,8 +23,8 @@
 		        </li>
 		        <li class="bdc_cb tal">
 		        	<div class="fl register_password_icon_wrap"><i class="register_password_icon"></i></div>
-		        	<input type="text" class="fs_32 register_password" id="register_password" placeholder="请输入登陆密码" pattern="[0-9]*"  maxlength="11" onkeyup="changeBtn()">
-		        	<i class="register_passwordIcon registerIcon_hide"></i>
+		        	<input type="password" class="fs_32 register_password" id="register_password" placeholder="请输入登陆密码" pattern="[0-9]*"  maxlength="11" onkeyup="changeBtn()">
+		        	<i class="register_passwordEyeClosed"></i>
 		        </li>
 	        </ul>
 	      	<div class="register_submitBtn_wrap"><button class="bdr_4 tac fsc_f bgc_orange register_submitBtn btnC_gray" onkeyup="changeBtn()">完成注册并下载App</button></div>
@@ -33,7 +33,7 @@
 	      		<p class="fl fs_13 clearfix"><span class="fl">阅读并同意</span><a class="fl" href="www.51fanbei.com">《51返呗用户注册协议》</a></p>
 	      	</div>
 		</div>
-		<script type="text/javascript" src="/js/common/layer.js?version=$version"></script>
+		<script type="text/javascript" src="/js/common/layer.js"></script>
 		<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
 		<script type="text/javascript" src="/js/app/user/register.js?version=$version"></script>
     </body>

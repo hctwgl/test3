@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-24 14:32:17
+* @Last Modified time: 2017-03-01 17:51:10
 * @title:  注册
 */
 
@@ -57,26 +57,8 @@ $(function(){
 });
 
 
-
-
-
-
 // 判断手机号、接收验证码
 $(function(){
-
-
-
-
-
-
-
-
-
-
-
-
-	// var mobileNum=$(".register_mobile").val();
-	
 
 	// 60s倒计时
 	var timerInterval ;
@@ -95,20 +77,20 @@ $(function(){
 
 	// 获取验证码
 	$(".register_codeBtn").click(function(){
-		// alert(123)
-		var isState = $(this).attr("isState")
+		
+		var isState = $(this).attr("isState");
 		var mobileNum=$(".register_mobile").val();
 		console.log(mobileNum);
 		if ( (isState==0 || !isState) && mobileNum.length==11 ){	
 	     	$.ajax({
-    			url: '/user/getVerifyCode',
-    			type: 'POST',
-    			dataType: 'JSON',
+    			url: "/app/user/getRegisterSmsCode",
+    			type: "POST",
+    			dataType: "JSON",
     			data: {
-    				type : "R",
     				mobile: mobileNum
     			},
     			success: function(returnData){
+    				alert(111);
     				if (returnData.success) {
     					$(".register_codeBtn").attr("isState",1);
 						$(".register_codeBtn span").text(timerS+" s");
@@ -133,44 +115,23 @@ $(function(){
 		var register_password=$(".register_password").val();
 
 		$.ajax({
-			// 校验验证码
-			url: '/user/checkVerifyCode',
+			// 设置登录密码
+			url: "/app/user/commitRegister",
 			type: 'POST',
 			dataType: 'JSON',
 			data: {
-				type: "R",
+				password: register_password,
 				verifyCode: register_verification
 			},
 			success: function(returnData){
-
 				if ( returnData.success ) {
-					$.ajax({
-						// 设置登录密码
-						url: '/user/setRegisterPwd',
-						type: 'POST',
-						dataType: 'JSON',
-						data: {
-							password: register_password,
-							verifyCode: register_verification
-						},
-						success: function(returnData){
-							if ( returnData.success ) {
-								window.location.href = returnData.url;
-							} else {
-								requestMsg(returnData.msg);
-							}
-						},
-						error: function(){
-					        requestMsg("绑定失败");
-						}
-					})
-
+					window.location.href = returnData.url;
 				} else {
 					requestMsg(returnData.msg);
 				}
 			},
 			error: function(){
-				requestMsg("请求失败");
+		        requestMsg("绑定失败");
 			}
 		})
 	});

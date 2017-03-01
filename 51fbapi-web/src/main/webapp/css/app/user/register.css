@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 15:15:44
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-28 10:07:40
+* @Last Modified time: 2017-02-28 15:57:52
 * @title:  注册
 */
 
@@ -64,7 +64,7 @@
 	width: 6.0rem;
 }
 /*×的样式待定*/
-.register_mobileIcon,.register_verificationIcon,.register_passwordIcon{
+.register_mobileIcon,.register_verificationIcon,.register_passwordEyeClosed,.register_passwordEye{
 	position: absolute;
 	top: 50%;
 	right: 0.5rem;
@@ -72,16 +72,25 @@
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
-	width: 0.7rem;
-	height: 0.7rem;
-	background-image: url(/images/app/user/register_shanc.png);
+	width: 0.6rem;
+	height: 0.6rem;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-ms-background-size: cover;
 	background-size: cover;
 }
-.registerIcon_hide{
-	display: none;
+.register_mobileIcon,.register_verificationIcon{
+	background-image: url(/images/app/user/register_shanc.png);
+}
+.register_passwordEyeClosed{
+	width: 1.1rem;
+	height: 0.4rem;
+	background-image: url(/images/app/user/register_eyeClosed.png);
+}
+.register_passwordEye{
+	width: 1.1rem;
+	height: 0.6rem;
+	background-image: url(/images/app/user/register_eye.png);
 }
 input::-webkit-input-placeholder{
 	color: #BFBFBF;
@@ -121,4 +130,7 @@ input:-ms-input-placeholder{
 }
 .register_checkbox p{
 	margin-left: 1.0rem;
+}
+.registerIcon_hide{
+	display: none;
 }
