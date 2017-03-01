@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 15:15:44
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-28 15:57:52
+* @Last Modified time: 2017-03-01 22:03:44
 * @title:  注册
 */
 
@@ -113,14 +113,23 @@ input:-ms-input-placeholder{
 	line-height: 2.0rem;
 	margin-top: 2.5rem;
 }
+
 .register_checkbox{
 	position: relative;
 	height: 0.9rem;
 	line-height: 0.9rem;
 	margin: 1.1rem 0.6rem 0;
 }
-.register_checkbox input{
-	position: absolute;
+.register_checkbox .input_check {
+    position: absolute;
+    visibility: hidden;
+}
+.register_checkbox .input_check+label {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #fd8845;
+    position: absolute;
 	top: 50%;
 	left: 0;
 	-webkit-transform: translateY(-50%);
@@ -128,9 +137,25 @@ input:-ms-input-placeholder{
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
 }
+.register_checkbox .input_check:checked+label:after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    bottom: 12px;
+    width: 9px;
+    height: 4px;
+    border: 2px solid red;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    -ms-transform: rotate(-60deg);
+    -moz-transform: rotate(-60deg);
+    -webkit-transform: rotate(-60deg);
+    transform: rotate(-45deg);
+}
 .register_checkbox p{
 	margin-left: 1.0rem;
 }
 .registerIcon_hide{
 	display: none;
 }
+

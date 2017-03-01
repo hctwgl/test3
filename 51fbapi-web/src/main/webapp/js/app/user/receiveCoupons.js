@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-14 16:52:58
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-01 17:25:19
+* @Last Modified time: 2017-03-01 21:26:59
 * @title:  领取优惠券
 */
 
@@ -15,54 +15,54 @@ $(function(){
 	});
 });
 
-$(function(){
+// $(function(){
 
-    var couponList = $("#couponList").val();
-    console.log(couponList);
+//     var couponList = $("#couponList").val();
+//     console.log(couponList);
 
-    // var returnJson= JSON.parse(couponList);
-    // console.log(returnJson);
+//     // var returnJson= JSON.parse(couponList);
+//     // console.log(returnJson);
 
-    // var returnJson= couponList.toJSONString();
-    // console.log(returnJson);
+//     // var returnJson= couponList.toJSONString();
+//     // console.log(returnJson);
 
 
-    var returnJson= eval('(' + couponList + ')');
+//     var returnJson= eval('(' + couponList + ')');
 
 
 
     
-    // var returnJson= noescape(couponList);
+//     // var returnJson= noescape(couponList);
     
 
-    // var returnJson= JSON.stringify(couponList);
-    // var returnJson1= JSON.parse(returnJson);
+//     // var returnJson= JSON.stringify(couponList);
+//     // var returnJson1= JSON.parse(returnJson);
     
-    // var returnJson=$number.format("#0", $couponList)
+//     // var returnJson=$number.format("#0", $couponList)
     
 
 
 
-    console.log(returnJson);
+//     console.log(returnJson);
 
 
 
 
 
-    var length=returnJson.length;
-    console.log(length);
+//     var length=returnJson.length;
+//     console.log(length);
 
-    for (var i = 0; i < returnJson.length; i++) {
+//     for (var i = 0; i < returnJson.length; i++) {
 
-        var amountNum = returnJson[i].amount;
-        console.log(amountNum);
+//         var amountNum = returnJson[i].amount;
+//         console.log(amountNum);
 
-        // var index = 2.58;
-        // var j=Math.round(amount);
+//         // var index = 2.58;
+//         // var j=Math.round(amount);
         
-        var j=parseInt(amountNum);
-        $(".box1").eq(i).text(j);
+//         var j=parseInt(amountNum);
+//         $(".box1").eq(i).text(j);
        
-    }
+//     }
 
-});
+// });
