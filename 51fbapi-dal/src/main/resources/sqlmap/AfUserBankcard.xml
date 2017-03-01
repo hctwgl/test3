@@ -56,6 +56,8 @@
 		WHERE
 			is_delete=0 
 		AND 
+		    status = 'B'
+		AND 
 			user_id = #{userId} 
 		ORDER BY
 			is_main 
