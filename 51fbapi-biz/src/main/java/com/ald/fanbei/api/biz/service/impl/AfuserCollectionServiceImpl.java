@@ -51,4 +51,10 @@ public class AfuserCollectionServiceImpl implements AfuserCollectionService {
 		return afUserCollectionDao.deleteUserCollectionGoods(afUserCollectionDo);
 	}
 
+
+	@Override
+	public long getUserCollectionCountByGoodsId(AfUserCollectionDo afUserCollectionDo) {
+		return afUserCollectionDao.getUserCollectionCountByGoodsId(afUserCollectionDo);
+	}
+
 }

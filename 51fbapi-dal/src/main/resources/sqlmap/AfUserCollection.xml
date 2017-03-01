@@ -105,4 +105,21 @@
 			id = #{rid}
 	</select>
 	
+	<select id="getUserCollectionCountByGoodsId" parameterType="AfUserCollectionDo">
+		SELECT
+			count(id)
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND 
+			user_id = #{userId} 
+		AND
+			open_id = #{openId}	
+		AND
+			goods_id = #{goodsId}
+			
+		
+	</select>
+	
 </mapper>
