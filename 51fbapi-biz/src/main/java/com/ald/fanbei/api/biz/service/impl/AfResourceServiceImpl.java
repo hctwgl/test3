@@ -61,4 +61,9 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getResourceByResourceId(rid);
 	}
 
+	@Override
+	public List<AfResourceDo> getOneToManyResourceOrderByBytype(String type) {
+		return afResourceDao.getOneToManyResourceOrderByBytype(type);
+	}
+
 }

@@ -64,5 +64,8 @@ public interface AfResourceService {
 	 */
 	AfResourceDo getSingleResourceBytype(String type);
 	
+	List<AfResourceDo> getOneToManyResourceOrderByBytype(String type);
+
+	
 	
 }

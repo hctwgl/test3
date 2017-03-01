@@ -6,6 +6,11 @@
 		id rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
 		sec_type,value_1,value_2,value_3,value_4,sort
 	</sql>
+	<sql id="queryManyAllFields">
+
+		r2.id rid,r2.gmt_create,r2.gmt_modified,r2.creator,r2.modifier,r2.data_type,r2.type,r2.type_desc,r2.name,r2.value,r2.description,
+		r2.sec_type,r2.value_1,r2.value_2,r2.value_3,r2.value_4,r2.sort
+	</sql>
 <select id="selectHomeConfigByAllTypes" resultType="AfResourceDo">
     SELECT
     <include refid="queryAllFields" />
@@ -92,4 +97,26 @@
 			is_delete = 0
 		LIMIT 1
 	</select>
+	
+	
+	<select id="getOneToManyResourceOrderByBytype" resultType="AfResourceDo">
+		SELECT 
+			<include refid="queryManyAllFields" />
+		FROM
+			 af_resource r1
+		LEFT JOIN 
+			af_resource r2 
+		ON
+			 r1.id = r2.value_4 
+		WHERE 
+			r1.type = #{type}
+		AND 
+			r1.sec_type = '' 
+		AND 
+			r2.value_4 !=''
+		ORDER BY 
+		r1.sort desc, r2.sort desc
+	</select>
+
+	
 </mapper>

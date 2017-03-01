@@ -44,11 +44,11 @@ public class GetHomeInfoApi implements ApiHandle {
 		List<Object> bannerSecList = getObjectWithResourceDolist(
 				afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
 		List<Object> one2OneList = getObjectWithResourceDolist(
-				afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeOneImage.getCode()));
+				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
 		List<Object> one2ManyList = getOne2ManyObjectWithResourceDolist(
-				afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeOneToMany.getCode()));
+				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
 		List<Object> one2TwoList = getOne2ManyObjectWithResourceDolist(
-				afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeOneToTwo.getCode()));
+				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
 
 		data.put("bannerList", bannerList);
 		data.put("bannerSecList", bannerSecList);
@@ -78,18 +78,18 @@ public class GetHomeInfoApi implements ApiHandle {
 
 	private List<Object> getOne2ManyObjectWithResourceDolist(List<AfResourceDo> resclist) {
 		List<Object> bannerList = new ArrayList<Object>();
-		Long sort = -1L;
+		String value4 = "-1";
 		Map<String, Object> oneData = new HashMap<String, Object>();
 		List<Map<String, Object>> manyData = new ArrayList<Map<String, Object>>();
 
 		for (int i = 0; i < resclist.size(); i++) {
 			AfResourceDo afResourceDo = resclist.get(i);
-			if (sort != afResourceDo.getSort()) {
+			if (!StringUtil.equals(value4, afResourceDo.getValue4()) ) {
 				// 将多个对象加入数组中
-				if (sort != -1) {
+				if (!StringUtil.equals(value4, "-1") ) {
 					addListDataWithResource(oneData, manyData, bannerList);
 				}
-				sort = afResourceDo.getSort();
+				value4 = afResourceDo.getValue4();
 			}
 
 			Map<String, Object> data = new HashMap<String, Object>();

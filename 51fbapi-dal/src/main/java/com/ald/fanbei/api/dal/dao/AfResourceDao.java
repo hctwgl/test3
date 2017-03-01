@@ -63,7 +63,12 @@ public interface AfResourceDao {
 	 * @return
 	 */
 	AfResourceDo getSingleResourceBytype(@Param("type")String type);
-	
-	
+	/**
+	 * 根据type查询一对多模块一对一模块一对二模块
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getOneToManyResourceOrderByBytype(@Param("type")String type);
+
 	
 }
