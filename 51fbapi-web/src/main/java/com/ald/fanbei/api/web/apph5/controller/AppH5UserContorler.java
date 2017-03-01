@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -118,7 +119,7 @@ public class AppH5UserContorler extends BaseController {
 		model.put("registerRule", resourceDo.getValue());
 		logger.info(JSON.toJSONString(model));
 	}
-
+    @ResponseBody
 	@RequestMapping(value = "getRegisterSmsCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String getRegisterSmsCode(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
@@ -137,7 +138,7 @@ public class AppH5UserContorler extends BaseController {
 						.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null).toString();
 			}
 
-			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", null).toString();
+			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
 
 		} catch (Exception e) {
 			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
