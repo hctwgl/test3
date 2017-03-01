@@ -65,11 +65,11 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 	private AfBorrowHomeVo getBorrowHomeInfo(BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo){
 		AfBorrowHomeVo vo = new AfBorrowHomeVo();
 		vo.setBankcardStatus(authDo.getBankcardStatus());
+    	vo.setRealName(userDto.getRealName());
         if(StringUtil.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())){
         	String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
         	vo.setYdKey(publicKey);
         	vo.setYdUrl(ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
-        	vo.setRealName(Base64.encodeString(userDto.getRealName()));
         	vo.setIdNumber(Base64.encodeString(userDto.getIdNumber()));
         }
 		vo.setCurrentAmount(repaymentAmount);
