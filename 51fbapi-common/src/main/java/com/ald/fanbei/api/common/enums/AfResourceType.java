@@ -15,11 +15,16 @@ public enum AfResourceType {
 	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
 	
-	MobileRecharge("MIBILE_RECHARGE", "首页平铺模块"),
+	MobileRecharge("MIBILE_RECHARGE", "首页平铺模块充值"),
 
 	SEARCH_HOT("SEARCH_HOT", "热门搜索"),
 	INVITE("INVITE", "邀请"),
 	SIGNIN("SIGNIN", "签到"),
+	
+	PickedCoupon("PICKED_COUPON", "领券专场"),
+	RegisterProtocol("REGISTER_PROTOCOL", "注册协议"),
+
+	
 	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),
 
 	

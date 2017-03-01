@@ -13,7 +13,7 @@ import java.util.Map;
 public enum CouponStatus {
 
 	 EXPIRE("EXPIRE", "过期"), 
-	 NOUSE("NOUSED", "未使用"),
+	 NOUSE("NOUSE", "未使用"),
 	 USED("USED", "已经使用");
     
     private String code;

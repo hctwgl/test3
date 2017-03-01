@@ -13,10 +13,10 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 	<context:annotation-config />
-	<task:annotation-driven /> 
-	<mvc:annotation-driven/>
-	<mvc:default-servlet-handler/>
-	
+	<task:annotation-driven />
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.listener" />
@@ -29,8 +29,8 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.third.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.apph5.controller" />
-	
-	
+
+
 	<!-- velocity configuration -->
 	<bean id="velocityConfigurer"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"
@@ -43,30 +43,38 @@
 		class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver"
 		p:cache="true" p:suffix=".vm" p:layoutUrl="layout/default.vm"
 		p:prefix="screen/" p:dateToolAttribute="dateTool"
-		p:numberToolAttribute="numberTool"
-		p:contentType="text/html;charset=UTF-8" p:allowSessionOverride="false"
-		p:allowRequestOverride="false" p:exposeSessionAttributes="false"
-		p:exposeRequestAttributes="false" p:exposeSpringMacroHelpers="true"
-		p:redirectHttp10Compatible="false">
+		p:numberToolAttribute="numberTool" p:contentType="text/html;charset=UTF-8"
+		p:allowSessionOverride="false" p:allowRequestOverride="false"
+		p:exposeSessionAttributes="false" p:exposeRequestAttributes="false"
+		p:exposeSpringMacroHelpers="true" p:redirectHttp10Compatible="false">
 		<property name="attributesMap">
 			<map>
 				<entry key="stringUtils">
 					<bean class="org.apache.commons.lang.StringUtils" />
 				</entry>
+				<entry key="dateUtil">
+					<bean class="com.ald.fanbei.api.common.util.DateUtil" />
+				</entry>
+				<entry key="priceUtil">
+					<bean class="com.ald.fanbei.api.common.util.PriceUtil" />
+				</entry>
+
 			</map>
 		</property>
 	</bean>
-	
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
 			<list>
-				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
 					<property name="supportedMediaTypes">
 						<list>
 							<bean class="org.springframework.http.MediaType">
-								  <constructor-arg value="text" />
-                    				<constructor-arg value="plain" />
-                    				<constructor-arg value="UTF-8" />
+								<constructor-arg value="text" />
+								<constructor-arg value="plain" />
+								<constructor-arg value="UTF-8" />
 							</bean>
 						</list>
 					</property>
@@ -74,7 +82,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="beforeLoginApiList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
@@ -85,15 +93,15 @@
 				<value>/user/resetPwd</value>
 				<value>/goods/getHomeInfo</value>
 				<value>/good/getSearchHome</value>
-				
+
 			</list>
 		</constructor-arg>
-	</bean>	
-	
+	</bean>
+
 	<bean id="apiHandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">
-			    
+
 				<!-- user -->
 				<entry key="/user/login" value-ref="loginApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
@@ -128,8 +136,8 @@
 				<entry key="/user/addCollection" value-ref="addCollectionApi" />
 				<entry key="/user/getCollectionList" value-ref="getCollectionListApi" />
 				<entry key="/user/getMobileRechargeMoneyList" value-ref="getMobileRechargeMoneyListApi" />
-				
-				
+
+
 				<entry key="/user/signin" value-ref="signinApi" />
 
 				<!-- goods -->
@@ -140,30 +148,29 @@
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
-				
+
 				<!-- 订单Order -->
 				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />
 				<entry key="/order/getOrderDetailInfo" value-ref="getOrderDetailInfoApi" />
 				<entry key="/order/getOrderList" value-ref="getOrderListApi" />
 				<entry key="/order/getOrderNoWithUser" value-ref="getOrderNoWithUserApi" />
-				
+
 				<!-- system模块 -->
-				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" /> 
-				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" /> 
-				
+				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
+				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
+
 				<!-- auth模块 -->
-				<entry key="/auth/authFace" value-ref="authFaceApi" /> 
+				<entry key="/auth/authFace" value-ref="authFaceApi" />
 				<entry key="/auth/authRealname" value-ref="authRealnameApi" />
 				<entry key="/auth/authContacts" value-ref="authContactsApi" />
 				<entry key="/auth/authCredit" value-ref="authCreditApi" /> 
 				<entry key="/auth/authZhima" value-ref="authZhimaApi" />
 				<entry key="/auth/authBankcard" value-ref="authBankcardApi" />
 				<entry key="/auth/checkBankcard" value-ref="checkBankcardApi" />
-				
-				
+
 				<!-- borrow -->
-				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" /> 
-				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" /> 
+				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
+				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />
 				<entry key="/borrow/getConsumeConfirmInfo" value-ref="getConsumeConfirmInfoApi" />
 				<entry key="/borrow/applyCash" value-ref="applyCashApi" />
 				<entry key="/borrow/applyConsume" value-ref="applyConsumeApi" />
@@ -175,19 +182,18 @@
 				<entry key="/repay/submitRepayment" value-ref="submitRepaymentApi" />
 				<entry key="/bill/getLimitDetailList" value-ref="getLimitDetailListApi" />
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
-				<!-- <entry key="/auth/authBankcard" value-ref="authBankcardApi" /> 
-				 -->
-				
+
 			</map>
 		</constructor-arg>
 	</bean>
 
-	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" /> 
-	
-	<bean id="healthCheck" class="com.ald.fanbei.api.biz.bo.common.HealthCheck"/>
+	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" />
+
+	<bean id="healthCheck" class="com.ald.fanbei.api.biz.bo.common.HealthCheck" />
 	<!-- task job -->
 	<task:scheduled-tasks>
-		<task:scheduled ref="healthCheck" method="checkBizCache" cron="0 1/2 * * * *" />
+		<task:scheduled ref="healthCheck" method="checkBizCache"
+			cron="0 1/2 * * * *" />
 	</task:scheduled-tasks>
-	
+
 </beans>
