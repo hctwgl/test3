@@ -38,7 +38,7 @@ public class FanbeiController extends BaseController {
 	
     @RequestMapping(value ={
     	"/goods/getFootMarkList","/goods/addFootMark","/goods/getHomeInfo","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
-    	"/goods/getCateGoodsList"
+    	"/goods/getCateGoodsList","/good/getBrandShopList"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -112,7 +112,7 @@ public class FanbeiController extends BaseController {
      */
     @RequestMapping(value = {
     		"/auth/authRealname","/auth/authContacts","/auth/authCredit","/auth/authZhima","/auth/authBankcard",
-    		"/auth/checkBankcard"
+    		"/auth/checkBankcard","/auth/getBankList","/auth/checkBankcardPay"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

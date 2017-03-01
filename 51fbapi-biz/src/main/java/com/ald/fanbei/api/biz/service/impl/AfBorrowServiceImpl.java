@@ -96,7 +96,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					Date now = new Date();
-					//TODO 转账处理
 					pushService.dealBorrowCashTransfer(userDto.getUserName(), now);
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
@@ -259,7 +258,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					//TODO 转账处理
 					pushService.dealBorrowConsumeTransfer(userDto.getUserName(), name);
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();

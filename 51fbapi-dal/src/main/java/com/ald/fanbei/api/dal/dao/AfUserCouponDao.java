@@ -51,11 +51,18 @@ public interface AfUserCouponDao {
 	AfUserCouponDto getUserCouponById(@Param("rid")Long rid);
 	
 	/**
-	 * 修改优惠券为已使用状态
+	 * 修改优惠券状态
 	 * @param id
 	 * @return
 	 */
 	int updateUserCouponSatusUsedById(@Param("rid")Long rid);
+	
+	/**
+	 * 修改优惠券状态
+	 * @param id
+	 * @return
+	 */
+	int updateUserCouponSatusNouseById(@Param("rid")Long rid);
 	
 	/**
 	 * 获取类型可用优惠券

@@ -66,4 +66,10 @@ public interface JpushService {
 	 */
 	public void getSignCycle(String userName);
 	
+	/**
+	 * 手机充值退款失败
+	 * @param userName
+	 * @param date
+	 */
+	public void refundMobileError(String userName,Date date);
 }

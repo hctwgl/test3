@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.JpushUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 
@@ -175,6 +176,25 @@ public class JpushServiceimpl extends BaseService implements JpushService{
 			jpushUtil.pushNotifyByAlias("签到奖励", msgContext, extras, new String[]{userName});
 		} catch (Exception e) {
 			logger.info("getSignCycle error",e);
+		}
+	}
+
+	@Override
+	public void refundMobileError(String userName, Date date) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("refundMobileError,pid=",pid));
+			String msgContext = "抱歉告诉您，您与{date}的手机充值失败，请联系{phone}进行人工退款";
+			Map<String,String> extras = new HashMap<String,String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis()+"");
+			extras.put(PUSH_JUMP_TYPE, "208");
+			extras.put(DATA, "");
+			msgContext = msgContext.replace("{date}", DateUtil.formatDate(date, DateUtil.DEFAULT_PATTERN_WITH_HYPHEN));
+			msgContext = msgContext.replace("{phone}", Constants.DEFAULT_SERVICE_PHONE); 
+			jpushUtil.pushNotifyByAlias("手机充值失败", msgContext, extras, new String[]{userName});
+		} catch (Exception e) {
+			logger.info("refundMobileError error",e);
 		}
 	}
 	

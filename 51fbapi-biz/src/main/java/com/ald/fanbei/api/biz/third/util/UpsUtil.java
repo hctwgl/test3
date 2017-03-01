@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmReqBo;
@@ -44,6 +45,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -80,7 +82,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
-	public static UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String purpose,String notifyUrl,String clientType){
+	public static UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String purpose,String clientType){
+		amount = setActualAmount(amount);
 		String orderNo = getOrderNo("dpay", cardNo.substring(cardNo.length()-8,cardNo.length()));
 //		String orderNo = "dp"+cardNo.substring(cardNo.length()-15,cardNo.length()) + System.currentTimeMillis();
 		UpsDelegatePayReqBo reqBo = new UpsDelegatePayReqBo();
@@ -89,8 +92,9 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
 		reqBo.setPurpose(purpose);
-		reqBo.setNotifyUrl(notifyUrl);
-		
+		reqBo.setNotifyUrl(notifyHost + "/third/ups/delegatePay");
+		reqBo.setSignInfo(createLinkString(reqBo));
+
 		String reqResult = HttpUtil.httpPost(url, reqBo);
 		logThird(reqResult, "delegatePay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -115,19 +119,23 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl 异步回调地址
 	 * @param clientType 客户端类型
 	 */
-	public static UpsAuthPayRespBo authPay(BigDecimal amount,String userCustNo,String realName,String cardNo,String idNumber,String notifyUrl,String clientType){
+	public static UpsAuthPayRespBo authPay(BigDecimal amount,String userCustNo,String realName,String cardNo,String idNumber,String clientType,String clientIp){
+		amount = setActualAmount(amount);
 //		String orderNo = "ap"+cardNo.substring(cardNo.length()-15,cardNo.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("apay", cardNo.substring(cardNo.length()-8,cardNo.length()));
 		UpsAuthPayReqBo reqBo = new UpsAuthPayReqBo();
 		setPubParam(reqBo,"authPay",orderNo,clientType);
+		JSONObject obj = new JSONObject();
+		obj.put("clientIp", clientIp);
+		reqBo.setReqExt(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setAmount(amount.toString());
 		reqBo.setUserCustNo(userCustNo);
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(idNumber);
-		reqBo.setNotifyUrl(notifyUrl);
-		
+		reqBo.setNotifyUrl(notifyHost + "/third/ups/authPay");
+		reqBo.setSignInfo(createLinkString(reqBo));
 		String reqResult = HttpUtil.httpPost(url, reqBo);
 		logThird(reqResult, "authPay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -150,15 +158,15 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
-	public static UpsAuthPayConfirmRespBo authPayConfirm(String smsCode,String tradeNo,String notifyUrl,String clientType){
+	public static UpsAuthPayConfirmRespBo authPayConfirm(String smsCode,String tradeNo,String clientType){
 //		String orderNo = "apc"+tradeNo.substring(tradeNo.length()-14,tradeNo.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("apco", tradeNo.substring(tradeNo.length()-8,tradeNo.length()));
 		UpsAuthPayConfirmReqBo reqBo = new UpsAuthPayConfirmReqBo();
 		setPubParam(reqBo,"authPayConfirm",orderNo,clientType);
 		reqBo.setSmsCode(smsCode);
 		reqBo.setTradeNo(tradeNo);
-		reqBo.setNotifyUrl(notifyUrl);
-		
+		reqBo.setNotifyUrl(notifyHost + "/third/ups/authPayConfirm");
+		reqBo.setSignInfo(createLinkString(reqBo));
 		String reqResult = HttpUtil.httpPost(url, reqBo);
 		logThird(reqResult, "authPayConfirm", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -233,8 +241,6 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(notifyHost + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(createLinkString(reqBo));
 		
-		//与宝付签约
-//		reqBo.setPayCanal(PAY_CHANL_BF);
 		String reqResult = HttpUtil.httpPost(url, reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -288,10 +294,11 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("asva", tradeNo.substring(tradeNo.length()-8,tradeNo.length()));
 		UpsAuthSignValidReqBo reqBo = new UpsAuthSignValidReqBo();
 		setPubParam(reqBo,"authSignValid",orderNo,clientType);
-		reqBo.setSmsCode(verifyCode);
 		reqBo.setTradeNo(tradeNo);
+		reqBo.setSmsCode(verifyCode);
 		reqBo.setTradeDate(DateUtil.formatDate(new Date(), DateUtil.FULL_PATTERN));//TODO 当前时间 or 订单时间
-		reqBo.setNotifyUrl(notifyHost + "/third/ups/authSignNotify");
+		reqBo.setNotifyUrl(notifyHost + "/third/ups/authSignValidNotify");
+		reqBo.setSignInfo(createLinkString(reqBo));
 		
 		String reqResult = HttpUtil.httpPost(url, reqBo);
 		logThird(reqResult, "authSignValid", reqBo);
@@ -299,6 +306,7 @@ public class UpsUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 		UpsAuthSignValidRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignValidRespBo.class);
+		logThird(authSignResp, "authSignValid", reqBo);
 		if(authSignResp != null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
 			authSignResp.setSuccess(true);
 			return authSignResp;
@@ -478,7 +486,7 @@ public class UpsUtil extends AbstractThird {
 	}
 	
 	//微信支付
-	public Map<String,Object> buildWxpayTradeOrder(String orderNo,Long userId,String goodsName,BigDecimal totalFee,String attach) {
+	public static Map<String,Object> buildWxpayTradeOrder(String orderNo,Long userId,String goodsName,BigDecimal totalFee,String attach) {
 		Map<String,Object> result = new HashMap<String,Object>();
 		try{
 			//构建调用微信需要的参数
@@ -507,6 +515,13 @@ public class UpsUtil extends AbstractThird {
 			throw new FanbeiException("",FanbeiExceptionCode.REQ_WXPAY_ERR);
 		}
 		return result;
+	}
+	
+	private static BigDecimal setActualAmount(BigDecimal amount){
+		if(!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
+			amount = new BigDecimal("0.01").setScale(2);
+		}
+		return amount;
 	}
 	
 	public static void main(String[] args) {

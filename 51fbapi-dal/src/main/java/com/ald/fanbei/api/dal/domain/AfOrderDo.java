@@ -45,6 +45,7 @@ public class AfOrderDo extends AbstractSerial{
 	private Date gmtFinished;
 	private BigDecimal commissionAmount;
 	private String source;
+	private Long bankId;
 	
 	public Long getRid() {
 		return rid;
@@ -213,5 +214,11 @@ public class AfOrderDo extends AbstractSerial{
 	}
 	public void setSource(String source) {
 		this.source = source;
+	}
+	public Long getBankId() {
+		return bankId;
+	}
+	public void setBankId(Long bankId) {
+		this.bankId = bankId;
 	}
 }

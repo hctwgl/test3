@@ -70,6 +70,11 @@ public class ApplyCashApi implements ApiHandle{
 		if(null == card){
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
+		//TODO 转账处理 待调试
+		/*UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), Constants.DEFAULT_BORROW_PURPOSE, "02");
+		if(!upsResult.isSuccess()){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+		}*/
 		long result = afBorrowService.dealCashApply(userDto, money,card.getRid());
 		if(result>0){
 			Map<String,Object> map = new HashMap<String,Object>();

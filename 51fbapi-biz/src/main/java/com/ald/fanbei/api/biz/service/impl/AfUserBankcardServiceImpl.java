@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 
 /**
  *@类现描述：
@@ -52,6 +53,11 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 	@Override
 	public int getUserBankcardCountByUserId(Long userId) {
 		return afUserBankcardDao.getUserBankcardCountByUserId(userId);
+	}
+
+	@Override
+	public AfUserBankDto getUserBankInfo(Long bankId) {
+		return afUserBankcardDao.getUserBankInfo(bankId);
 	}
 
 }

@@ -6,7 +6,7 @@ package com.ald.fanbei.api.common.enums;
  *@author 陈金虎 2017年1月16日 下午11:48:42
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum WxOrderSource {
+public enum PayOrderSource {
 
 	ORDER("ORDER","订单"),
 	BORROW("BORROW","借款"),
@@ -15,7 +15,7 @@ public enum WxOrderSource {
 	public String code;
 	public String name;
 
-	private WxOrderSource(String code,String name) {
+	private PayOrderSource(String code,String name) {
 		this.code = code;
 		this.name = name;
 	}

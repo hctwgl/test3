@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 
 /**
  * @类现描述：
@@ -61,4 +62,9 @@ public interface AfUserBankcardDao {
 	 * @return
 	 */
 	int addUserBankcard(AfUserBankcardDo afUserBankcardDo);
+	
+	/**
+	 * 获取银行身份信息
+	 */
+	AfUserBankDto getUserBankInfo(@Param("bankId")Long bankId);
 }

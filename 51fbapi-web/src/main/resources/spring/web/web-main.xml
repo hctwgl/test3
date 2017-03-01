@@ -148,6 +148,7 @@
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
+				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
 
 				<!-- 订单Order -->
 				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />
@@ -167,6 +168,8 @@
 				<entry key="/auth/authZhima" value-ref="authZhimaApi" />
 				<entry key="/auth/authBankcard" value-ref="authBankcardApi" />
 				<entry key="/auth/checkBankcard" value-ref="checkBankcardApi" />
+				<entry key="/auth/getBankList" value-ref="getBankListApi" />
+				<entry key="/auth/checkBankcardPay" value-ref="checkBankcardPayApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />

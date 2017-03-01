@@ -18,7 +18,7 @@ import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.WxOrderSource;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -58,6 +58,42 @@ public class PayRoutController{
     	return "succ";
     }
     
+    @RequestMapping(value = {"/authSignValidNotify"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String authSignValidNotify(HttpServletRequest request, HttpServletResponse response){
+    	for(String paramKey:request.getParameterMap().keySet()){
+    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    	}
+    	return "succ";
+    }
+    
+    @RequestMapping(value = {"/authPay"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String authPay(HttpServletRequest request, HttpServletResponse response){
+    	for(String paramKey:request.getParameterMap().keySet()){
+    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    	}
+    	return "succ";
+    }
+    
+    @RequestMapping(value = {"/authPayConfirm"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String authPayConfirm(HttpServletRequest request, HttpServletResponse response){
+    	for(String paramKey:request.getParameterMap().keySet()){
+    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    	}
+    	return "succ";
+    }
+    
+    @RequestMapping(value = {"/delegatePay"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String delegatePay(HttpServletRequest request, HttpServletResponse response){
+    	for(String paramKey:request.getParameterMap().keySet()){
+    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    	}
+    	return "succ";
+    }
+    
     /**
      * app中微信支付回调接口
      * @param request
@@ -90,9 +126,9 @@ public class PayRoutController{
 	    		String outTradeNo = properties.getProperty("out_trade_no");
 	    		String transactionId = properties.getProperty("transaction_id");
 	    		String attach = properties.getProperty("attach");
-	    		if(WxOrderSource.ORDER.getCode().equals(attach)){
+	    		if(PayOrderSource.ORDER.getCode().equals(attach)){
 		    		afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
-	    		}else if(WxOrderSource.REPAYMENT.getCode().equals(attach)){
+	    		}else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		}
     		}
