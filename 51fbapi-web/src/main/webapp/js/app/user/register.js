@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-01 17:51:10
+* @Last Modified time: 2017-03-01 18:57:02
 * @title:  注册
 */
 
@@ -75,12 +75,14 @@ $(function(){
         }
 	};
 
+	
+	
+
 	// 获取验证码
 	$(".register_codeBtn").click(function(){
 		
 		var isState = $(this).attr("isState");
-		var mobileNum=$(".register_mobile").val();
-		console.log(mobileNum);
+		var mobileNum = $(".register_mobile").val();
 		if ( (isState==0 || !isState) && mobileNum.length==11 ){	
 	     	$.ajax({
     			url: "/app/user/getRegisterSmsCode",
@@ -90,7 +92,6 @@ $(function(){
     				mobile: mobileNum
     			},
     			success: function(returnData){
-    				alert(111);
     				if (returnData.success) {
     					$(".register_codeBtn").attr("isState",1);
 						$(".register_codeBtn span").text(timerS+" s");
@@ -108,6 +109,9 @@ $(function(){
 		}
 	});
 
+	var mobileNum = $(".register_mobile").val();
+	var recommendCode = "1004";
+
 	// 提交
 	$(".register_submitBtn").click(function(){
 
@@ -120,12 +124,15 @@ $(function(){
 			type: 'POST',
 			dataType: 'JSON',
 			data: {
+				moblie: mobileNum,
+				smsCode: register_verification,
 				password: register_password,
-				verifyCode: register_verification
+				recommendCode: recommendCode
 			},
 			success: function(returnData){
 				if ( returnData.success ) {
-					window.location.href = returnData.url;
+					// window.location.href = returnData.url;
+					window.location.href = "www.51fanbei.com";
 				} else {
 					requestMsg(returnData.msg);
 				}
