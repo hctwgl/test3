@@ -93,7 +93,11 @@
 				<value>/user/resetPwd</value>
 				<value>/goods/getHomeInfo</value>
 				<value>/good/getSearchHome</value>
-
+				<value>/good/getBrandShopList</value>
+				<value>/good/getThirdGoodsList</value>
+				<value>/good/getCategoryList</value>
+				<value>/good/getCateGoodsList</value>
+	
 			</list>
 		</constructor-arg>
 	</bean>
