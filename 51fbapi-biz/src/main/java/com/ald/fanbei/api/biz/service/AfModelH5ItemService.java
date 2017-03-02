@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
 
 /**
  * @类描述：
@@ -37,7 +38,7 @@ public interface AfModelH5ItemService {
 	 * @param end
 	 * @return
 	 */
-	List<AfModelH5ItemDo> getModelH5ItemGoodsListCountByModelIdAndCategory(Long modelId,String category,Integer start, Integer end);
+	List<AfUserH5ItmeGoodsDto> getModelH5ItemGoodsListCountByModelIdAndCategory(Long modelId,String category,Integer start, Integer end);
 
 	
 	List<AfTypeCountDto> getModelH5ItemGoodsCountListCountByModelIdAndSort(Long modelId);

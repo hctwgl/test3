@@ -6,8 +6,10 @@ package com.ald.fanbei.api.dal.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
+
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
 
 /**
  * @类描述：
@@ -30,7 +32,7 @@ public interface AfModelH5ItemDao {
 	 */
 	List<AfModelH5ItemDo> getModelH5ItemCategoryListByModelId(@Param("modelId")Long modelId);
 	
-	List<AfModelH5ItemDo> getModelH5ItemGoodsListCountByModelIdAndCategory(@Param("modelId")Long modelId,@Param("category")String category,@Param("start")Integer start, @Param("end")Integer end);
+	List<AfUserH5ItmeGoodsDto> getModelH5ItemGoodsListCountByModelIdAndCategory(@Param("modelId")Long modelId,@Param("category")String category,@Param("start")Integer start, @Param("end")Integer end);
 	
 	List<AfTypeCountDto> getModelH5ItemGoodsCountListCountByModelIdAndSort(@Param("modelId")Long modelId);
 	

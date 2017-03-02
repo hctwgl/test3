@@ -26,6 +26,7 @@ import com.ald.fanbei.api.common.enums.H5ItemModelType;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -65,12 +66,11 @@ public class AppGoodsControler extends BaseController {
 			AfModelH5ItemDo afModelH5ItemDo = categoryDbList.get(0);
 			type = ObjectUtils.toString(afModelH5ItemDo.getRid(), "").toString();
 		}
-		List<AfModelH5ItemDo> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
+		List<AfUserH5ItmeGoodsDto> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
 				type, 0, pageCount);
 		logger.info("list++++++====" + JSON.toJSONString(list));
 
-		List<Object> goodsList = getH5ItemGoodsListObjectWithAfModelH5ItemDoList(list);
-		model.put("goodsList", goodsList);
+		model.put("goodsList", list);
 		model.put("typeCurrent", type);
 		logger.info(JSON.toJSONString(model));
 	}
@@ -93,11 +93,11 @@ public class AppGoodsControler extends BaseController {
 			String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
 
 			Integer pageCount = 20;// 每一页显示20条数据
-			List<AfModelH5ItemDo> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
+			List<AfUserH5ItmeGoodsDto> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
 					type, (pageCurrent - 1) * pageCount, pageCount * pageCurrent);
-			List<Object> goodsList = getH5ItemGoodsListObjectWithAfModelH5ItemDoList(list);
+//			List<Object> goodsList = getH5ItemGoodsListObjectWithAfModelH5ItemDoList(list);
 			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("goodsList", goodsList);
+			data.put("goodsList", list);
 
 			return H5CommonResponse.getNewInstance(true, "查询成功", "", data).toString();
 
@@ -107,28 +107,7 @@ public class AppGoodsControler extends BaseController {
 
 	}
 
-	private List<Object> getH5ItemGoodsListObjectWithAfModelH5ItemDoList(List<AfModelH5ItemDo> goodslist) {
-		List<Object> list = new ArrayList<Object>();
-		for (AfModelH5ItemDo afModelH5ItemDo : goodslist) {
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("imageIcon", afModelH5ItemDo.getItemIcon());
-			data.put("type", afModelH5ItemDo.getItemType());
-			data.put("content", afModelH5ItemDo.getItemValue());
-			data.put("goodsId", "0");
-			data.put("priceAmount", "140");
-			data.put("numIid", "0");
-			data.put("goodsUrl", "http://item.taobao.com/item.htm?id=544085886371");
-			data.put("rebateAmount", "10");
-			data.put("saleAmount", "130");
-			data.put("title", "商品名称");
 
-			data.put("sort", afModelH5ItemDo.getSort());
-			list.add(data);
-
-		}
-
-		return list;
-	}
 
 	private Map<String, Object> modelH5ItemCategorySortCountWith(List<AfTypeCountDto> sortCountList) {
 		Map<String, Object> data = new HashMap<String, Object>();

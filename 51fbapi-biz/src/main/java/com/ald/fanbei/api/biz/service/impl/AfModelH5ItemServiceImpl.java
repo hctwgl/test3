@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.dal.dao.AfModelH5ItemDao;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
 
 /**
  * @类描述：
@@ -43,7 +44,7 @@ public class AfModelH5ItemServiceImpl implements AfModelH5ItemService {
 
 
 	@Override
-	public List<AfModelH5ItemDo> getModelH5ItemGoodsListCountByModelIdAndCategory(Long modelId,  String category, Integer start,
+	public List<AfUserH5ItmeGoodsDto> getModelH5ItemGoodsListCountByModelIdAndCategory(Long modelId,  String category, Integer start,
 			Integer end) {
 		return afModelH5ItemDao.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId, category, start, end);
 	}
