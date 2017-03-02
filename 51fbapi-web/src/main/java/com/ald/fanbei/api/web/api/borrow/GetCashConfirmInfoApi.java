@@ -65,6 +65,7 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 		data.put("cardNo", StringUtil.getLastString(card.getCardNumber(),4));
 		data.put("cardName",card.getBankName());
 		data.put("cardId", card.getRid());
+		data.put("cardIcon", card.getBankIcon());
 		if(null == resource){
 			data.put("desc", "");
 		}else{
