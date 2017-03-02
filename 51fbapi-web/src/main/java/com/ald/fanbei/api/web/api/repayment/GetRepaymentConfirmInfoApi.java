@@ -79,7 +79,7 @@ public class GetRepaymentConfirmInfoApi implements ApiHandle{
 			List<AfUserCouponVo> couponList = new ArrayList<AfUserCouponVo>();
 			for (AfUserCouponDto afUserCouponDto : couponDto) {
 				AfUserCouponVo userCoupon = new AfUserCouponVo();
-				userCoupon.setUserCouponId(afUserCouponDto.getRid());
+				userCoupon.setRid(afUserCouponDto.getRid());
 				userCoupon.setAmount(afUserCouponDto.getAmount());
 				userCoupon.setGmtEnd(afUserCouponDto.getGmtEnd());
 				userCoupon.setGmtStart(afUserCouponDto.getGmtStart());

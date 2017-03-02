@@ -15,7 +15,7 @@ public class AfUserCouponVo extends AbstractSerial{
 	
 	private static final long serialVersionUID = 3223281017295487747L;
 	
-	private Long		userCouponId;//优惠券id
+	private Long		rid;//优惠券id
 
 	private String 		name;//优惠券名字
 	
@@ -88,14 +88,6 @@ public class AfUserCouponVo extends AbstractSerial{
 		this.status = status;
 	}
 
-	public Long getUserCouponId() {
-		return userCouponId;
-	}
-
-	public void setUserCouponId(Long userCouponId) {
-		this.userCouponId = userCouponId;
-	}
-
 	/**
 	 * @return the type
 	 */
@@ -108,6 +100,14 @@ public class AfUserCouponVo extends AbstractSerial{
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Long getRid() {
+		return rid;
+	}
+
+	public void setRid(Long rid) {
+		this.rid = rid;
 	}
 	
 }
