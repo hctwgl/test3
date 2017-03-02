@@ -21,7 +21,7 @@ public interface AfModelH5ItemDao {
 	 * @param modelType
 	 * @return
 	 */
-	List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelType(@Param("modelId")Long modelId,@Param("modelType")String modelType);
+	List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelType(@Param("modelId")Long modelId,@Param("type")String modelType);
 	
 	/** 
 	 * 获取分类以及分类下面的商品列表

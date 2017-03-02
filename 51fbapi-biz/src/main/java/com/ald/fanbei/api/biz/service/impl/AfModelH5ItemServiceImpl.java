@@ -25,8 +25,8 @@ public class AfModelH5ItemServiceImpl implements AfModelH5ItemService {
 	@Resource
 	AfModelH5ItemDao afModelH5ItemDao;
 	@Override
-	public List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelType(Long modelId, String modelType) {
-		return afModelH5ItemDao.getModelH5ItemListByModelIdAndModelType(modelId, modelType);
+	public List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelType(Long modelId, String type) {
+		return afModelH5ItemDao.getModelH5ItemListByModelIdAndModelType(modelId, type);
 	}
 
 	

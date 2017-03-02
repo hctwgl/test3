@@ -4,7 +4,7 @@
 	<sql id="queryAllFields">
 
 		id
-		rid,gmt_create,gmt_modified,creator,modifier,model_type,model_id,item_icon,item_type,item_value,item_value2,sort
+		rid,gmt_create,gmt_modified,creator,modifier,type,model_id,item_icon,item_type,item_value,item_value2,sort
 	</sql>
 
 
@@ -18,7 +18,7 @@
 		AND
 		is_delete = 0
 		AND
-		model_type =#{modelType}
+		type =#{type}
 		order by
 
 		sort desc
@@ -33,7 +33,7 @@
 		AND
 		is_delete = 0
 		AND
-		model_type in ('CATEGORY','GOODSLIST')
+		type in ('CATEGORY','GOODSLIST')
 		order by
 
 			sort
@@ -49,7 +49,7 @@
 		WHERE
 			model_id = #{modelId}
 		AND
-			model_type ='GOODSLIST'
+			type ='GOODSLIST'
 		AND
 			is_delete = 0	
 		GROUP BY
@@ -64,7 +64,7 @@
 		WHERE
 			model_id = #{modelId}
 		AND
-			model_type ='GOODSLIST'
+			type ='GOODSLIST'
 		AND
 			is_delete = 0	
 		AND 

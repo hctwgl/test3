@@ -24,7 +24,7 @@ public class AfModelH5ItemDo extends AbstractSerial {
 	private Date gmtModified;
 	private String creator;
 	private String modifier;
-	private String modelType;//在模板中的类型 如：【BANNELl,SUBJECT,CATEGORY,IMAGE,GOODSLIST】
+	private String type;//在模板中的类型 如：【BANNELl,SUBJECT,CATEGORY,IMAGE,GOODSLIST】
 	private String itemIcon;//图标
 	private String itemType;//品牌项的类型，如【URL,GOODS】
 	private String itemValue;//品牌项值
@@ -78,18 +78,7 @@ public class AfModelH5ItemDo extends AbstractSerial {
 	public void setGmtModified(Date gmtModified) {
 		this.gmtModified = gmtModified;
 	}
-	/**
-	 * @return the modelType
-	 */
-	public String getModelType() {
-		return modelType;
-	}
-	/**
-	 * @param modelType the modelType to set
-	 */
-	public void setModelType(String modelType) {
-		this.modelType = modelType;
-	}
+
 	/**
 	 * @return the itemIcon
 	 */
@@ -174,6 +163,18 @@ public class AfModelH5ItemDo extends AbstractSerial {
 	 */
 	public void setItemValue2(String itemValue2) {
 		this.itemValue2 = itemValue2;
+	}
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	
