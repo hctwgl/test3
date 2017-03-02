@@ -53,7 +53,7 @@ public class GetBillDetailListApi implements ApiHandle{
 		Integer billMonth = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("billMonth")), 0);
 		Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
 		//还款日期
-		Date repayDate = afBorrowService.getReyLimitDate(new Date());
+		Date repayDate = afBorrowService.getReyLimitDate(billYear,billMonth);
 		AfBillHomeVo homeVo = getBillHomeVo(afBorrowBillService.getMonthlyBillByStatus(userId, billYear, billMonth, YesNoStatus.NO.getCode()), billYear, billMonth,repayDate,pageNo,userId);
 		resp.setResponseData(homeVo);
 		return resp;

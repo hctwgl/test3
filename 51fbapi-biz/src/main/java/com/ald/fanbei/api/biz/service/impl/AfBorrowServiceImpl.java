@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -291,8 +292,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CONSUME,borrow,perAmount.multiply(new BigDecimal(borrow.getNper())),
 								BigDecimal.ZERO,new BigDecimal(obj.getString(borrow.getNper()+"")).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
 										8,BigDecimal.ROUND_HALF_UP),totalPoundage);
-						//TODO 转账处理
-						
 						//新增借款账单
 						afBorrowDao.addBorrowBill(billList);
 						return borrow.getRid();
@@ -338,5 +337,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	@Override
 	public AfBorrowDo getBorrowById(Long id) {
 		return afBorrowDao.getBorrowById(id);
+	}
+
+	@Override
+	public Date getReyLimitDate(int year, int month) {
+		Calendar calendar=Calendar.getInstance();
+		calendar.set(year, month, 1);
+		Date date = DateUtil.getEndOfDate(DateUtil.addDays(DateUtil.getFirstOfMonth(calendar.getTime()), 
+				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_REPAY_TIME), 20)-1));
+		return date;
 	}
 }

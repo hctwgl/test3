@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.order;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -92,8 +93,10 @@ public class MobileChargeApi implements ApiHandle {
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
-			map.put("outTradeNo", upsResult.getOrderNo());
-			map.put("tradeNo", upsResult.getTradeNo());
+			Map<String,Object> newMap = new HashMap<String,Object>();
+			newMap.put("outTradeNo", upsResult.getOrderNo());
+			newMap.put("tradeNo", upsResult.getTradeNo());
+			resp.setResponseData(newMap);
 		}
 		return resp;
 	}

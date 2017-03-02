@@ -34,6 +34,7 @@ public class AfBillDetailInfoVo extends AbstractSerial{
 	private Integer nper;//分期数
 	private Integer billNper;//当前分期
 	private String borrowNo;//借款编号
+	private Date refundDate;//还款时间
 	public Long getBillId() {
 		return billId;
 	}
@@ -147,5 +148,11 @@ public class AfBillDetailInfoVo extends AbstractSerial{
 	}
 	public void setRefId(String refId) {
 		this.refId = refId;
+	}
+	public Date getRefundDate() {
+		return refundDate;
+	}
+	public void setRefundDate(Date refundDate) {
+		this.refundDate = refundDate;
 	}
 }

@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status
+		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status,user_cust_no
 	</sql>
 	
 	<sql id="queryWithFields">
-		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.bank_name,b.status,
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.bank_name,b.status,b.user_cust_no,
 		c.real_name,c.id_number
 	</sql>
 	
@@ -80,6 +80,9 @@
 		
 		<if test="status != null">
 			,status = #{status}
+		</if>
+		<if test="userCustNo != null">
+			,user_cust_no = #{userCustNo}
 		</if>
 		<if test="cardNumber != null">
 			,card_number = #{cardNumber}

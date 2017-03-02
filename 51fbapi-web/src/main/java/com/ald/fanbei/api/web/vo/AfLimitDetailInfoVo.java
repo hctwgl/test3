@@ -30,6 +30,7 @@ public class AfLimitDetailInfoVo extends AbstractSerial{
 	private BigDecimal perAmount;//每期还款金额
 	private Date gmtCreate;//创建时间
 	private String number;//借还款编号
+	private String status;//借还款状态
 	public String getCardName() {
 		return cardName;
 	}
@@ -108,5 +109,10 @@ public class AfLimitDetailInfoVo extends AbstractSerial{
 	public void setNumber(String number) {
 		this.number = number;
 	}
-	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }

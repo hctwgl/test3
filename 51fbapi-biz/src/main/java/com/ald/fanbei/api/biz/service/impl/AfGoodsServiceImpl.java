@@ -58,7 +58,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		goodsInfo.setNumId(bo.getItem_id());
 		goodsInfo.setPriceAmount(bo.getPrice());
 		goodsInfo.setSaleAmount(bo.getPromotion_price());
-		goodsInfo.setGoodsIcon(bo.getImg_urls()[0]);
+		if(null != bo.getImg_urls()){
+			goodsInfo.setGoodsIcon(bo.getImg_urls()[0]);
+		}
 		goodsInfo.setName(bo.getTitle());
 		return goodsInfo;
 	}

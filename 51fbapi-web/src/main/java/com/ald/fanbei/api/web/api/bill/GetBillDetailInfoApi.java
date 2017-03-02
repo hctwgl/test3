@@ -85,6 +85,7 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		vo.setOverdueAmount(billDto.getOverdueInterestAmount());
 		vo.setPoundageAmount(billDto.getPoundageAmount());
 		vo.setOverduePoundageAmount(billDto.getOverduePoundageAmount());
+		vo.setRefundDate(afBorrowService.getReyLimitDate(billDto.getBillYear(),billDto.getBillMonth()));
 		return vo;
 	}
 }
