@@ -24,6 +24,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -49,7 +50,7 @@ public class GetBankCardListApi implements ApiHandle {
         if (userId == null) {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
-        List<AfUserBankcardDo> list = afUserBankcardService.getUserBankcardByUserId(userId);
+        List<AfBankUserBankDto> list = afUserBankcardService.getUserBankcardByUserId(userId);
     
 //        Map<String, Object> data = new HashMap<String, Object>();
 //        data.put("bankCardList", list);

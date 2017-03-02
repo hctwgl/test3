@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 
 /**
@@ -30,7 +31,7 @@ public interface AfUserBankcardDao {
 	 * @param userId
 	 * @return
 	 */
-	List<AfUserBankcardDo> getUserBankcardByUserId(@Param("userId") Long userId);
+	List<AfBankUserBankDto> getUserBankcardByUserId(@Param("userId") Long userId);
 
 	/**
 	 * 删除银行卡

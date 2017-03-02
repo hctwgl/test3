@@ -9,7 +9,7 @@
 		.error404_wrap figure{
 			width: 4.75rem;
 			height: 4.15rem;
-			background-image: url(/images/common/error404.png);
+			background-image: url(/images/common/shibai.png);
 			-webkit-background-size: cover;
 		    -moz-background-size: cover;
 		    -ms-background-size: cover;

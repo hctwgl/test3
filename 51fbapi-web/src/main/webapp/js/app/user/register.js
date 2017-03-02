@@ -2,10 +2,24 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-01 17:51:10
+* @Last Modified time: 2017-03-02 13:35:21
 * @title:  注册
 */
 
+
+// 获取当前页面的URL 对其带的参数进行处理
+// $(function(){
+// 	function getUrl(para){
+// 	    var paraArr = location.search.substring(1).split("&");
+// 	    for(var i = 0;i < paraArr.length;i++){
+// 	        if(para == paraArr[i].split('=')[0]){
+// 	            return paraArr[i].split('=')[1];
+// 	        }
+// 	    }
+// 	    return '';
+// 	}
+// 	var recommendCode = getUrl("recommendCode");
+// });
 
 // 根据判断姓名和验证码来控制按钮的颜色
 function changeBtn() {
@@ -37,8 +51,7 @@ function changeBtn() {
 		$(".register_submitBtn").removeClass("btnC_gray");
 	} else{
 		$(".register_submitBtn").addClass("btnC_gray");
-	};
-		
+	};	
 };
 
 // 点击删除按钮清空vul
@@ -53,9 +66,7 @@ $(function(){
 		$(".mineMoneyPrompt_verification").val("");
 		$(".mineMoneyPrompt_verificationIcon").addClass("registerIcon_hide");
 	});
-
 });
-
 
 // 判断手机号、接收验证码
 $(function(){
@@ -79,8 +90,7 @@ $(function(){
 	$(".register_codeBtn").click(function(){
 		
 		var isState = $(this).attr("isState");
-		var mobileNum=$(".register_mobile").val();
-		console.log(mobileNum);
+		var mobileNum = $("#register_mobile").val();
 		if ( (isState==0 || !isState) && mobileNum.length==11 ){	
 	     	$.ajax({
     			url: "/app/user/getRegisterSmsCode",
@@ -90,7 +100,6 @@ $(function(){
     				mobile: mobileNum
     			},
     			success: function(returnData){
-    				alert(111);
     				if (returnData.success) {
     					$(".register_codeBtn").attr("isState",1);
 						$(".register_codeBtn span").text(timerS+" s");
@@ -110,9 +119,11 @@ $(function(){
 
 	// 提交
 	$(".register_submitBtn").click(function(){
-
-		var register_verification=$(".register_verification").val();
-		var register_password=$(".register_password").val();
+		
+		var recommendCode = getUrl("recommendCode");
+		var mobileNum = $("#register_mobile").val();
+		var register_verification = $("#register_verification").val();
+		var register_password = $("#register_password").val();
 
 		$.ajax({
 			// 设置登录密码
@@ -120,8 +131,10 @@ $(function(){
 			type: 'POST',
 			dataType: 'JSON',
 			data: {
+				registerMobile: mobileNum,
+				smsCode: register_verification,
 				password: register_password,
-				verifyCode: register_verification
+				recommendCode: recommendCode
 			},
 			success: function(returnData){
 				if ( returnData.success ) {
@@ -134,5 +147,23 @@ $(function(){
 		        requestMsg("绑定失败");
 			}
 		})
+
+	});
+});
+
+// 点击眼睛显示密码
+$(function(){
+
+	$(".register_passwordEyeClosed").click(function() {
+		
+		var passwordType = $(".register_password").attr("type");
+		if (passwordType == "password") {
+			$(".register_password").attr("type","text");
+			$(this).addClass("register_passwordEye");
+		} else {
+			$(".register_password").attr("type","password");
+			$(this).removeClass("register_passwordEye");
+		}
+		
 	});
 });

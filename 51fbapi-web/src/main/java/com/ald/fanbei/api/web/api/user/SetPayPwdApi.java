@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -42,14 +43,16 @@ public class SetPayPwdApi implements ApiHandle {
 		}
 		Map<String, Object> params = requestDataVo.getParams();
 		String oldPwd = ObjectUtils.toString(params.get("oldPwd"), "").toString();
-		String idNumber = ObjectUtils.toString(params.get("idNumber"), "").toString();
+		String idNumber1 = ObjectUtils.toString(params.get("idNumber"), "").toString();
 		String type = ObjectUtils.toString(params.get("type"), "").toString();
 		String newPwd = ObjectUtils.toString(params.get("newPwd"), "").toString();
-		if ((StringUtils.isEmpty(oldPwd) && StringUtils.isEmpty(idNumber)) || StringUtils.isEmpty(type)
+		if ((StringUtils.isEmpty(oldPwd) && StringUtils.isEmpty(idNumber1)) || StringUtils.isEmpty(type)
 				|| StringUtils.isEmpty(newPwd)) {
 			throw new FanbeiException("(newPwd or type or( oldPwd and idNumber) ) is  empty",
 					FanbeiExceptionCode.PARAM_ERROR);
 		}
+		String idNumber = Base64.decodeToString(idNumber1);
+
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 		if (afUserAccountDo == null) {
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);

@@ -67,27 +67,28 @@ public class GetSigninInfoApi implements ApiHandle {
 		data.put("cycle", seriesTotal);
     	data.put("ruleSignin",ObjectUtils.toString(afCouponSceneDo.getDescription(), "").toString()  );
 
+    	int seriesCount =0;
         
         if (afSigninDo==null) {
-        	data.put("seriesCount", 0);
+        	data.put("seriesCount",seriesCount);
         	data.put("isSignin", "T");
         	
 		}else{
-        	data.put("seriesCount", afSigninDo.getSeriesCount());
+			seriesCount = afSigninDo.getSeriesCount();
 
 			Date seriesTime = afSigninDo.getGmtSeries();
 			if(DateUtil.isSameDay(new Date(), seriesTime)){
 	        	data.put("isSignin", "F");
 	        	
 			}else{
-				if(!DateUtil.isSameDay(DateUtil.getCertainDay(-1),seriesTime)){
-		        	data.put("seriesCount", 0);
-
+				if(!DateUtil.isSameDay(DateUtil.getCertainDay(-1),seriesTime)||seriesCount == seriesTotal){
+					seriesCount = 0;
 				}
 	        	data.put("isSignin", "T");
 			}
 			
-			
+        	data.put("seriesCount", seriesCount);
+
 		}
 
         resp.setResponseData(data);

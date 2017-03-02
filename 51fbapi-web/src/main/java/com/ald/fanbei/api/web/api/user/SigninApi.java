@@ -15,6 +15,7 @@ import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.AfCouponSceneService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSigninService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
@@ -41,6 +42,10 @@ public class SigninApi implements ApiHandle {
 
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	JpushService jpushService;
+	
+	
 
 	@Resource
 	CouponSceneRuleEnginerUtil activeRuleEngineUtil;
@@ -97,6 +102,7 @@ public class SigninApi implements ApiHandle {
 			if ( afSigninService.changeSignin(afSigninDo) > 0) {
 				if(seriesCount == cycle){
 					activeRuleEngineUtil.signin(userId);
+					jpushService.getSignCycle(context.getUserName());
 				}
 			
 				return resp;
