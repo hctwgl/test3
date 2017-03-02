@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-15 09:59:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-01 21:41:09
+* @Last Modified time: 2017-03-02 19:50:22
 * @title:  公用的
 */
 
@@ -25,4 +25,23 @@ function getUrl(para){
         }
     }
     return '';
+}
+
+// 处理默认的保留二位小数
+function toDecimal2(x) {
+    var f = parseFloat(x);
+    if (isNaN(f)) {
+        return false;
+    }
+    var fM = Math.round(x*100)/100;
+    var s = fM.toString();
+    var rs = s.indexOf('.');
+    if (rs < 0) {
+        rs = s.length;
+        s += '.';
+    }
+    while (s.length <= rs + 2) {
+        s += '0';
+    }
+    return s;
 }

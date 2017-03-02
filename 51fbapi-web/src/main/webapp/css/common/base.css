@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-18 16:32:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-24 15:33:14
+* @Last Modified time: 2017-03-02 16:26:21
 * @title:  公用的样式
 */
 
@@ -14,6 +14,7 @@
 .btnC_gray { background-color: #CFCFCF; }
 
 /*公用的字体大小、公用的字体颜色*/
+.fs_20 { font-size: 0.5rem; }
 .fs_22 { font-size: 0.55rem; }
 .fs_24 { font-size: 0.6rem; }
 .fs_26 { font-size: 0.65rem; }
