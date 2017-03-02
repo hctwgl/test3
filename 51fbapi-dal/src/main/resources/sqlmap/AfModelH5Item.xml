@@ -6,17 +6,19 @@
 		id
 		rid,gmt_create,gmt_modified,creator,modifier,type,model_id,item_icon,item_type,item_value,item_value2,sort
 	</sql>
-
+	<sql id="queryAllFields2">
+	h.id rid,g.thumbnail_icon,g.id goods_id,g.price_amount,g.sale_amount,g.source,g.rebate_amount,g.rebate_rate,g.goods_url,g.num_id,g.name
+	</sql>
 
 	<select id="getModelH5ItemListByModelIdAndModelType" resultType="AfModelH5ItemDo">
 		SELECT
 		<include refid="queryAllFields" />
 		FROM
-		af_model_h5_item
+			af_model_h5_item
 		WHERE
-		model_id = #{modelId}
+			model_id = #{modelId}
 		AND
-		is_delete = 0
+			is_delete = 0
 		AND
 		type =#{type}
 		order by
@@ -56,19 +58,22 @@
 			sort
 	</select>
 	
-	<select id="getModelH5ItemGoodsListCountByModelIdAndCategory" resultType="AfModelH5ItemDo">
+	<select id="getModelH5ItemGoodsListCountByModelIdAndCategory" resultType="AfUserH5ItmeGoodsDto">
 		SELECT	 
-			<include refid="queryAllFields" />
+			<include refid="queryAllFields2" />
 		FROM 
-			af_model_h5_item 
+			af_model_h5_item h
+		LEFT JOIN
+			af_goods g
+		ON
+			h.is_delete = 0 and g.id = h.item_value
 		WHERE
-			model_id = #{modelId}
+			
+			h.model_id = #{modelId}
 		AND
-			type ='GOODSLIST'
-		AND
-			is_delete = 0	
+			h.type ='GOODSLIST'		
 		AND 
-			item_value2 =#{category}
+			h.item_value2 =#{category}
 		LIMIT #{start},#{end}
 	</select>
 	
