@@ -8,7 +8,7 @@
     <body class="bgc_e">
 		#if($!{couponList.size()}==0)
 	   		<div class="nullPrompt">
-	   			<img src="/images/common/wuyouhui.png">
+	   			<img src="/images/common/040101wuyouhui.png">
 				<span class="fsc_6">暂无优惠劵</span>
 	   		</div>
 		#end

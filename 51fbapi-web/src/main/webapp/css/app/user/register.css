@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 15:15:44
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-01 22:03:44
+* @Last Modified time: 2017-03-02 11:42:33
 * @title:  注册
 */
 
@@ -38,17 +38,17 @@
 .register_mobile_icon{
 	width: 0.8rem;
 	height: 1.2rem;
-	background-image: url(/images/app/user/phone.png);
+	background-image: url(/images/app/user/0602phone.png);
 }
 .register_verification_icon{
 	width: 1.2rem;
 	height: 1.2rem;
-	background-image: url(/images/app/user/yzm.png);
+	background-image: url(/images/app/user/0602yzm.png);
 }
 .register_password_icon{
 	width: 1.2rem;
 	height: 1.25rem;
-	background-image: url(/images/app/user/mima.png);
+	background-image: url(/images/app/user/0603mima.png);
 }
 .register_verification_main{
 	position: relative;
@@ -80,17 +80,17 @@
 	background-size: cover;
 }
 .register_mobileIcon,.register_verificationIcon{
-	background-image: url(/images/app/user/register_shanc.png);
+	background-image: url(/images/app/user/shanc.png);
 }
 .register_passwordEyeClosed{
 	width: 1.1rem;
 	height: 0.4rem;
-	background-image: url(/images/app/user/register_eyeClosed.png);
+	background-image: url(/images/app/user/0601eye closed.png);
 }
 .register_passwordEye{
 	width: 1.1rem;
 	height: 0.6rem;
-	background-image: url(/images/app/user/register_eye.png);
+	background-image: url(/images/app/user/0601eye.png);
 }
 input::-webkit-input-placeholder{
 	color: #BFBFBF;
@@ -121,14 +121,28 @@ input:-ms-input-placeholder{
 	margin: 1.1rem 0.6rem 0;
 }
 .register_checkbox .input_check {
-    position: absolute;
+    /*position: absolute;*/
     visibility: hidden;
 }
 .register_checkbox .input_check+label {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	-webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
     display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 1px solid #fd8845;
+    width: 0.7rem;
+    height: 0.6rem;
+    background-image: url(/images/app/user/0604kuangxuanz.png);
+    -webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	background-size: cover;
+}
+.register_checkbox .input_check:checked+label:after {
+    content: "";
     position: absolute;
 	top: 50%;
 	left: 0;
@@ -136,21 +150,14 @@ input:-ms-input-placeholder{
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
-}
-.register_checkbox .input_check:checked+label:after {
-    content: "";
-    position: absolute;
-    left: 2px;
-    bottom: 12px;
-    width: 9px;
-    height: 4px;
-    border: 2px solid red;
-    border-top-color: transparent;
-    border-right-color: transparent;
-    -ms-transform: rotate(-60deg);
-    -moz-transform: rotate(-60deg);
-    -webkit-transform: rotate(-60deg);
-    transform: rotate(-45deg);
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.6rem;
+    background-image: url(/images/app/user/0604kuang.png);
+    -webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	background-size: cover;
 }
 .register_checkbox p{
 	margin-left: 1.0rem;

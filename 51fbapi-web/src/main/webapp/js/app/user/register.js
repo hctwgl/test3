@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-01 21:59:51
+* @Last Modified time: 2017-03-02 13:35:21
 * @title:  注册
 */
 
@@ -118,57 +118,37 @@ $(function(){
 	});
 
 	// 提交
-	// var register_checkbox_input = $("#register_checkbox_input").attr("checked");
-	// console.log(register_checkbox_input);
-	// if (register_checkbox_input) {
+	$(".register_submitBtn").click(function(){
+		
+		var recommendCode = getUrl("recommendCode");
+		var mobileNum = $("#register_mobile").val();
+		var register_verification = $("#register_verification").val();
+		var register_password = $("#register_password").val();
 
-	// } else {
-	// 	requestMsg("请查看51返呗用户注册协议");
-	// }
-	
-	
-		$(".register_submitBtn").click(function(){
-
-			var recommendCode = getUrl("recommendCode");
-			var mobileNum = $("#register_mobile").val();
-			var register_verification = $("#register_verification").val();
-			var register_password = $("#register_password").val();
-
-			$.ajax({
-				// 设置登录密码
-				url: "/app/user/commitRegister",
-				type: 'POST',
-				dataType: 'JSON',
-				data: {
-					registerMobile: mobileNum,
-					smsCode: register_verification,
-					password: register_password,
-					recommendCode: recommendCode
-				},
-				success: function(returnData){
-					if ( returnData.success ) {
-						window.location.href = returnData.url;
-					} else {
-						requestMsg(returnData.msg);
-					}
-				},
-				error: function(){
-			        requestMsg("绑定失败");
+		$.ajax({
+			// 设置登录密码
+			url: "/app/user/commitRegister",
+			type: 'POST',
+			dataType: 'JSON',
+			data: {
+				registerMobile: mobileNum,
+				smsCode: register_verification,
+				password: register_password,
+				recommendCode: recommendCode
+			},
+			success: function(returnData){
+				if ( returnData.success ) {
+					window.location.href = returnData.url;
+				} else {
+					requestMsg(returnData.msg);
 				}
-			})
-		});
+			},
+			error: function(){
+		        requestMsg("绑定失败");
+			}
+		})
 
-
-
-
-
-
-
-
-
-
-
-	
+	});
 });
 
 // 点击眼睛显示密码
