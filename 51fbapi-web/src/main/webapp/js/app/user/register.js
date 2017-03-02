@@ -2,24 +2,10 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-02 13:35:21
+* @Last Modified time: 2017-03-02 14:22:43
 * @title:  注册
 */
 
-
-// 获取当前页面的URL 对其带的参数进行处理
-// $(function(){
-// 	function getUrl(para){
-// 	    var paraArr = location.search.substring(1).split("&");
-// 	    for(var i = 0;i < paraArr.length;i++){
-// 	        if(para == paraArr[i].split('=')[0]){
-// 	            return paraArr[i].split('=')[1];
-// 	        }
-// 	    }
-// 	    return '';
-// 	}
-// 	var recommendCode = getUrl("recommendCode");
-// });
 
 // 根据判断姓名和验证码来控制按钮的颜色
 function changeBtn() {
@@ -119,7 +105,7 @@ $(function(){
 
 	// 提交
 	$(".register_submitBtn").click(function(){
-		
+
 		var recommendCode = getUrl("recommendCode");
 		var mobileNum = $("#register_mobile").val();
 		var register_verification = $("#register_verification").val();
