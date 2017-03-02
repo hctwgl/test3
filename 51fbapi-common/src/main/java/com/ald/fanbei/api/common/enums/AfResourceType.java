@@ -23,6 +23,7 @@ public enum AfResourceType {
 	
 	PickedCoupon("PICKED_COUPON", "领券专场"),
 	RegisterProtocol("REGISTER_PROTOCOL", "注册协议"),
+	ShareInviteCode("SHARE_INVITECODE", "分享邀请码"),
 
 	
 	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),
