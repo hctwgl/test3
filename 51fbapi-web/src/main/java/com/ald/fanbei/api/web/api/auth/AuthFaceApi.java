@@ -48,6 +48,7 @@ public class AuthFaceApi implements ApiHandle {
 			AfUserAuthDo userAuth = new AfUserAuthDo();
 			userAuth.setUserId(context.getUserId());
 			userAuth.setYdStatus(YesNoStatus.YES.getCode());
+			userAuth.setFacesStatus(YesNoStatus.YES.getCode());
 			userAuth.setSimilarDegree(new BigDecimal((String)JSONObject.parseObject(result).get("be_idcard")));
 			afUserAuthService.updateUserAuth(userAuth);
 		}
