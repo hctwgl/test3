@@ -54,8 +54,9 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 			throw new FanbeiException("mobile recharge resource is invalid", FanbeiExceptionCode.PARAM_ERROR);
 
 		}
+		AfResourceDo lastResourceDo = resourceList.get(resourceList.size()-1);
 		List<AfUserCouponDto> couponDtoList = afUserCouponService.getUserCouponByUserIdAndType(userId,
-				CouponType.REPAYMENT.getCode(), new BigDecimal(resourceList.get(0).getValue()));
+				CouponType.MOBILE.getCode(), new BigDecimal(lastResourceDo.getValue()));
 		if(couponDtoList==null){
 			couponDtoList = new ArrayList<AfUserCouponDto>();
 		}
