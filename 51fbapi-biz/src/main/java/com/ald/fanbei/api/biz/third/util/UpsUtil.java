@@ -158,7 +158,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
-	public static UpsAuthPayConfirmRespBo authPayConfirm(String smsCode,String tradeNo,String clientType){
+	public static UpsAuthPayConfirmRespBo authPayConfirm(String payOrderNo,String smsCode,String tradeNo,String clientType){
 //		String orderNo = "apc"+tradeNo.substring(tradeNo.length()-14,tradeNo.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("apco", tradeNo.substring(tradeNo.length()-8,tradeNo.length()));
 		UpsAuthPayConfirmReqBo reqBo = new UpsAuthPayConfirmReqBo();

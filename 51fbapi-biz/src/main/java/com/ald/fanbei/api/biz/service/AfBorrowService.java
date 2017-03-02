@@ -23,6 +23,13 @@ public interface AfBorrowService {
 	Date getReyLimitDate(Date now);
 	
 	/**
+	 * 获取某年某月的还款日
+	 * @param now
+	 * @return
+	 */
+	Date getReyLimitDate(int year,int month);
+	
+	/**
 	 * 现金借款申请
 	 * @param userDto
 	 * @param money

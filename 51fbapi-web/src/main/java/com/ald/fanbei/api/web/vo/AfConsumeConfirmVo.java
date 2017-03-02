@@ -24,6 +24,7 @@ public class AfConsumeConfirmVo extends AbstractSerial{
 	private String 	bankName;
 	private String 	cardNo;
 	private Long 	cardId;
+	private String  cardIcon;
 	
 	public List<Map<String, Object>> getTimeLimitList() {
 		return timeLimitList;
@@ -79,5 +80,10 @@ public class AfConsumeConfirmVo extends AbstractSerial{
 	public void setCardId(Long cardId) {
 		this.cardId = cardId;
 	}
-
+	public String getCardIcon() {
+		return cardIcon;
+	}
+	public void setCardIcon(String cardIcon) {
+		this.cardIcon = cardIcon;
+	}
 }

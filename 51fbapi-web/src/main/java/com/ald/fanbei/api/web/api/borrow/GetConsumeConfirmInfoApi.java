@@ -63,7 +63,7 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 		Long userId = context.getUserId();
 		BigDecimal goodsAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsAmount")), BigDecimal.ZERO);
 		//获取借款分期配置信息
-		AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_BORROW_CONSUME);
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 		JSONObject obj  = JSON.parseObject(resource.getValue());
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		if(null == card){
@@ -144,6 +144,7 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 		vo.setBankName(card.getBankName());
 		vo.setCardId(card.getRid());
 		vo.setCardNo(StringUtil.getLastString(card.getCardNumber(), 4));
+		vo.setCardIcon(card.getBankIcon());
 		vo.setTimeLimitList(list);
 		return vo;
 	}

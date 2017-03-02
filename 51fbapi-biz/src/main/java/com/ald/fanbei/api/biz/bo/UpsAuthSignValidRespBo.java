@@ -11,6 +11,7 @@ public class UpsAuthSignValidRespBo extends UpsRespBo {
 	private String smsCode			;   //短信验证码
 	private String tradeDate		;   //订单日期
 	private String contractNo	;   //签约标识
+	private String userCustNo	;//用户号
 	private String tradeState	;   //交易状态
 	private String tradeDesc		;   //交易状态描述
 	private String notifyUrl		;   //异步通知地址
@@ -56,6 +57,11 @@ public class UpsAuthSignValidRespBo extends UpsRespBo {
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
 	}
-	
+	public String getUserCustNo() {
+		return userCustNo;
+	}
+	public void setUserCustNo(String userCustNo) {
+		this.userCustNo = userCustNo;
+	}
 	
 }

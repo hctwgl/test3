@@ -37,9 +37,8 @@ public class CheckBankcardPayApi implements ApiHandle {
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String outTradeNo = ObjectUtils.toString(requestDataVo.getParams().get("outTradeNo"));
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-
 		
-		UpsAuthPayConfirmRespBo upsResult = UpsUtil.authPayConfirm(verifyCode, outTradeNo, "02");
+		UpsAuthPayConfirmRespBo upsResult = UpsUtil.authPayConfirm(outTradeNo,verifyCode, tradeNo, "02");
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_SMS_ERR);

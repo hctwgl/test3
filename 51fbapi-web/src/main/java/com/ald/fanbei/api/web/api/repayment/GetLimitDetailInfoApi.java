@@ -79,6 +79,7 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 			detailInfo.setCardName(card.getBankName());
 			detailInfo.setCardNo(StringUtil.getLastString(card.getCardNumber(), 4));
 		}
+		detailInfo.setStatus(borrow.getStatus());
 		return detailInfo;
 	}
 	
@@ -98,6 +99,7 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 			detailInfo.setCardName(card.getBankName());
 			detailInfo.setCardNo(StringUtil.getLastString(card.getCardNumber(), 4));
 		}
+		detailInfo.setStatus(repayment.getStatus());
 		return detailInfo;
 	}
 }

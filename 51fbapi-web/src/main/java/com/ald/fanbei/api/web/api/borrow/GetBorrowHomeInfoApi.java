@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -54,16 +55,17 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
+		Date now =new Date();
 		//账户关联信息
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		Map<String,Integer> map = afBorrowService.getCurrentYearAndMonth("",new Date());
-		AfBorrowHomeVo data = getBorrowHomeInfo(afBorrowBillService.getMonthlyBillByStatus(userId, map.get("year"), map.get("month"), YesNoStatus.NO.getCode()),userDto, authDo);
+		Map<String,Integer> map = afBorrowService.getCurrentYearAndMonth("",now);
+		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get("year"), map.get("month"), YesNoStatus.NO.getCode()),userDto, authDo);
 		resp.setResponseData(data);
 		return resp;
 	}
 
-	private AfBorrowHomeVo getBorrowHomeInfo(BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo){
+	private AfBorrowHomeVo getBorrowHomeInfo(Date now,BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo){
 		AfBorrowHomeVo vo = new AfBorrowHomeVo();
 		vo.setBankcardStatus(authDo.getBankcardStatus());
     	vo.setRealName(userDto.getRealName());
@@ -77,7 +79,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setIvsStatus(authDo.getIvsStatus());
 		vo.setMobileStatus(authDo.getMobileStatus());
 		vo.setRealnameStatus(authDo.getRealnameStatus());
-		vo.setRepayLimitTime(afBorrowService.getReyLimitDate(new Date()));
+		vo.setRepayLimitTime(afBorrowService.getReyLimitDate(now));
 		vo.setTeldirStatus(authDo.getTeldirStatus());
 		vo.setTotalAmount(userDto.getAuAmount());
 		vo.setUsableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
@@ -86,6 +88,16 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 			String authParamUrl =  ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
 			vo.setZmxyAuthUrl(authParamUrl);
 		}
+		if(repaymentAmount.compareTo(BigDecimal.ZERO)==0){
+			vo.setStatus(BorrowBillStatus.YES.getCode());
+		}else{
+			if(now.after(vo.getRepayLimitTime())){
+				vo.setStatus(BorrowBillStatus.OVERDUE.getCode());
+			}else{
+				vo.setStatus(BorrowBillStatus.NO.getCode());
+			}
+		}
+		
 		return vo;
 	}
 }

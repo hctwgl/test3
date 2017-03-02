@@ -50,6 +50,7 @@ public class CheckBankcardApi implements ApiHandle {
 		//TODO 绑卡
 		AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(bankId);
 		bank.setStatus(BankcardStatus.BIND.getCode());
+		bank.setUserCustNo(upsResult.getUserCustNo());
 		afUserBankcardService.updateUserBankcard(bank);
 		//更新userAuth记录
 		if(YesNoStatus.YES.getCode().equals(bank.getIsMain())){

@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
@@ -80,31 +82,41 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	
 	@Override
 	public Map<String,Object> createRepayment(BigDecimal repaymentAmount,
-			BigDecimal actualAmount,AfUserCouponDto coupon,
-			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp) {
+			final BigDecimal actualAmount,AfUserCouponDto coupon,
+			BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp) {
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRepaymentNo(now);
-		String payTradeNo=repayNo;
+		final String payTradeNo=repayNo;
 		//新增还款记录
 		String name =billDo.getName();
 		if(billDo.getCount()>1){
-			name=new StringBuffer(billDo.getBillYear()).append("年")
+			name=new StringBuffer(billDo.getBillYear()+"").append("年")
 					.append(billDo.getBillMonth()).append("月账单").toString();
 		}
-		AfRepaymentDo repayment = buildRepayment(repaymentAmount, repayNo, now, actualAmount,coupon, 
+		final AfRepaymentDo repayment = buildRepayment(repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
-		Map<String,Object> map;
+		Map<String,Object> map = new HashMap<String,Object>();
 		if(cardId<0){//微信支付
-			afRepaymentDao.addRepayment(repayment);
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode());
 		}else{
-			map = new HashMap<String,Object>();
 			AfUserBankDto bank = afUserBankcardService.getUserBankInfo(cardId);
-			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
+			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, bank.getUserCustNo(), bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
 			repayment.setPayTradeNo(respBo.getOrderNo());
-			afRepaymentDao.addRepayment(repayment);
 			map.put("resp", respBo);
 		}
+		transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					afRepaymentDao.addRepayment(repayment);
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("createRepayment error:",e);
+				}
+				return null;
+			}
+		});
+		
 		map.put("refId", repayment.getRid());
 		map.put("type", UserAccountLogType.REPAYMENT.getCode());
 		return map;
@@ -152,33 +164,45 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	}
 
 	@Override
-	public long dealRepaymentSucess(String outTradeNo, String tradeNo) {
-		AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
-		//变更还款记录为已还款
-		afRepaymentDao.updateRepayment(RepaymentStatus.YES.getCode(),tradeNo, repayment.getRid());
-		AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(repayment.getBillIds());
-		AfUserDo userDo = afUserService.getUserById(repayment.getUserId());
-		//变更账单 借款表状态
-		afBorrowBillService.updateBorrowBillStatusByIds(repayment.getBillIds(), BorrowBillStatus.YES.getCode(),repayment.getRid());
-		//判断该期是否还清，如已还清，更新total_bill 状态
-		int count = afBorrowBillService.getUserMonthlyBillNotpayCount(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid());
-		if(count==0){
-			afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.YES.getCode());
-			pushService.repayBillSuccess(userDo.getUserName(), billDo.getBillYear()+"", String.format("%02d", billDo.getBillMonth()));
-		}
-		//优惠券设置已使用
-		afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
-		//获取现金借款还款本金
-		AfBorrowBillDo cashBill = afBorrowBillService.getBillAmountByCashIds(repayment.getBillIds());
-		BigDecimal cashAmount = cashBill==null?BigDecimal.ZERO:cashBill.getPrincipleAmount();
-		//授权账户可用金额变更，以及变更日志
-		AfUserAccountDo account = new AfUserAccountDo();
-		account.setUserId(repayment.getUserId());
-		account.setUcAmount(cashAmount.multiply(new BigDecimal(-1)));
-		account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
-		account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
-		afUserAccountDao.updateUserAccount(account);					
-		afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT,billDo.getPrincipleAmount(),repayment.getUserId(), repayment.getRid()));
-		return 0;
+	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
+		return transactionTemplate.execute(new TransactionCallback<Long>() {
+
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				try {
+					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+					//变更还款记录为已还款
+					afRepaymentDao.updateRepayment(RepaymentStatus.YES.getCode(),tradeNo, repayment.getRid());
+					AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(repayment.getBillIds());
+					AfUserDo userDo = afUserService.getUserById(repayment.getUserId());
+					//变更账单 借款表状态
+					afBorrowBillService.updateBorrowBillStatusByIds(repayment.getBillIds(), BorrowBillStatus.YES.getCode(),repayment.getRid());
+					//判断该期是否还清，如已还清，更新total_bill 状态
+					int count = afBorrowBillService.getUserMonthlyBillNotpayCount(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid());
+					if(count==0){
+						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.YES.getCode());
+						pushService.repayBillSuccess(userDo.getUserName(), billDo.getBillYear()+"", String.format("%02d", billDo.getBillMonth()));
+					}
+					//优惠券设置已使用
+					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
+					//获取现金借款还款本金
+					AfBorrowBillDo cashBill = afBorrowBillService.getBillAmountByCashIds(repayment.getBillIds());
+					BigDecimal cashAmount = cashBill==null?BigDecimal.ZERO:cashBill.getPrincipleAmount();
+					//授权账户可用金额变更
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUserId(repayment.getUserId());
+					account.setUcAmount(cashAmount.multiply(new BigDecimal(-1)));
+					account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
+					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
+					afUserAccountDao.updateUserAccount(account);
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT,billDo.getPrincipleAmount(),repayment.getUserId(), repayment.getRid()));
+					return 1l;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("dealRepaymentSucess error",e);
+					return 0l;
+				}
+			}
+		});
 	}
 }

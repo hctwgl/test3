@@ -2,14 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status
+		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status,user_cust_no
 	</sql>
 	<sql id="queryBankFields">
 		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.mobile,u.bank_code,u.card_number,u.is_main,b.bank_name,u.status,b.bank_icon
 	</sql>
 	<sql id="queryWithFields">
-		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.bank_name,b.status,
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.bank_name,b.status,b.user_cust_no,
 		c.real_name,c.id_number
+	</sql>
+	<sql id="queryWithBankFields">
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.status,b.user_cust_no,
+		c.bank_icon,c.bank_name
 	</sql>
 	
 	<insert id="addUserBankcard" parameterType="AfUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
@@ -43,11 +47,13 @@
 	
 	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryWithBankFields"/>
 		FROM
-			af_user_bankcard
+			af_user_bankcard b
+		LEFT JOIN af_bank c
+		ON c.is_delete = 0 and c.bank_code = b.bank_code
 		WHERE
-			is_delete=0 AND user_id = #{userId} AND is_main = 'Y' and status='B' limit 1
+			b.is_delete=0 AND b.user_id = #{userId} AND b.is_main = 'Y' and b.status='B' limit 1
 	</select>
 	
 	<select id="getUserBankcardByUserId" resultType="AfBankUserBankDto">
@@ -88,6 +94,9 @@
 		
 		<if test="status != null">
 			,status = #{status}
+		</if>
+		<if test="userCustNo != null">
+			,user_cust_no = #{userCustNo}
 		</if>
 		<if test="cardNumber != null">
 			,card_number = #{cardNumber}

@@ -65,7 +65,7 @@ public class AuthBankcardApi implements ApiHandle {
 		}
 		
 		//TODO 新建卡
-		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(), "", cardNumber, mobile, context.getUserId(),isMain);
+		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(),"", cardNumber, mobile, context.getUserId(),isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("bankId", bankDo.getRid());

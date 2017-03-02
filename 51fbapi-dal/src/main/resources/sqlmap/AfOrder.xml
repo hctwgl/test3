@@ -18,6 +18,9 @@
 			<if test="userCouponId != null">
 		    	user_coupon_id, 
 			</if>
+			<if test="payTradeNo != null">
+		    	pay_trade_no, 
+			</if>
 			order_type , 
 		    goods_id ,
 		    open_id , 
@@ -47,6 +50,9 @@
 		    #{orderNo},
 		    <if test="userCouponId != null">
 		    	 #{userCouponId},
+			</if>
+			<if test="payTradeNo != null">
+		    	 #{payTradeNo},
 			</if>
 		    #{orderType},
 	    	#{goodsId},

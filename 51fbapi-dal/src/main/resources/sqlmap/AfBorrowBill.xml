@@ -16,7 +16,7 @@
 		SELECT 
 			<include refid="queryFields"/>
 		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId} 
-		AND bill_year = #{billYear} AND bill_month = #{billMonth}
+		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status <![CDATA[<>'F']]>
     </select>
     
     <select id="getMonthlyBillByStatus" resultType="java.math.BigDecimal">
