@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-02 17:02:49
+* @Last Modified time: 2017-03-02 14:22:43
 * @title:  注册
 */
 
@@ -105,10 +105,6 @@ $(function(){
 
 	// 提交
 	$(".register_submitBtn").click(function(){
-
-
-		var passwordLenth=$("#register_password").length；
-		console.log(passwordLenth);
 
 		var recommendCode = getUrl("recommendCode");
 		var mobileNum = $("#register_mobile").val();
