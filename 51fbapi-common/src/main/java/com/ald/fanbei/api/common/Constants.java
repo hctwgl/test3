@@ -57,6 +57,7 @@ public class Constants {
     public static final String DEFAULT_MOBILE_CHARGE_NAME			  = "手机充值";
     public static final String DEFAULT_BORROW_PURPOSE				  = "借款";
     public static final String DEFAULT_REFUND_PURPOSE				  = "退款";
+    public static final String DEFAULT_WX_PAY_NAME					  = "微信";
     public static final String DEFAULT_SERVICE_PHONE				  =	"0571-88193918";
     
     //cache keys
@@ -106,6 +107,7 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
     public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "taobao.tae.item.detail.get.fields";
     public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION	  = "http://img02.taobaocdn.com/bao/uploaded/";
+    public static final String CONFKEY_TAOBAO_TBK_ITEM_DETAIL_FIELDS  = "taobao.tbk.item.detail.fields";
     public static final String CACHEKEY_ORDERNO_LOCK				  = "ala_order_lock";
     public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
     public static final String CACHEKEY_BORROWNO_LOCK				  = "ala_borrow_no_lock";

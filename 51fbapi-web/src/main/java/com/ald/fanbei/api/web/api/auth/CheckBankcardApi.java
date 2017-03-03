@@ -37,20 +37,17 @@ public class CheckBankcardApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		String tradeNo = ObjectUtils.toString(requestDataVo.getParams().get("tradeNo"));
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		Long bankId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("bankId")), 0);
-		
-		UpsAuthSignValidRespBo upsResult = UpsUtil.authSignValid(tradeNo, verifyCode, "02");
+		AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(bankId);
+		UpsAuthSignValidRespBo upsResult = UpsUtil.authSignValid(context.getUserId()+"",bank.getCardNumber(), verifyCode, "02");
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 		}
 		
 		//TODO 绑卡
-		AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(bankId);
 		bank.setStatus(BankcardStatus.BIND.getCode());
-		bank.setUserCustNo(upsResult.getUserCustNo());
 		afUserBankcardService.updateUserBankcard(bank);
 		//更新userAuth记录
 		if(YesNoStatus.YES.getCode().equals(bank.getIsMain())){

@@ -41,7 +41,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -65,9 +64,9 @@ public class UpsUtil extends AbstractThird {
 	private static String SYS_KEY = "01";
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String DEFAULT_CERT_TYPE = "01";  //默认证件类型：身份证
-	private static String DEFAULT_BANK_CARD_TYPE = "10";//默认银行卡类型：储蓄卡
+//	private static String DEFAULT_BANK_CARD_TYPE = "10";//默认银行卡类型：储蓄卡
 //	private static String PAY_CANAL_YSB      = "02";   //银生宝
-	private static String PAY_CHANL_BF       = "07";   //报付
+//	private static String PAY_CHANL_BF       = "07";   //报付
 	
 	
 	//orderNo规则  4位业务码  + 4位接口码  + 11位身份标识（手机号或者身份证后11位） + 13位时间戳
@@ -220,23 +219,18 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType
 	 * @return
 	 */
-	public static UpsAuthSignRespBo authSign(String realName,String mobile,String idNumber,String cardNumber,String clientType,String bankCode){
+	public static UpsAuthSignRespBo authSign(String userNo,String realName,String mobile,String idNumber,String cardNumber,String clientType,String bankCode){
 //		String orderNo = "as"+idNumber.substring(idNumber.length()-15,idNumber.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("sign", mobile.substring(mobile.length()-8,mobile.length()));
 		UpsAuthSignReqBo reqBo = new UpsAuthSignReqBo();
 		setPubParam(reqBo,"authSign",orderNo,clientType);
-		
+		reqBo.setUserNo(userNo);
 		reqBo.setBankCode(bankCode);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(mobile);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(idNumber);
 		reqBo.setCardNo(cardNumber);
-		reqBo.setBankCardType(DEFAULT_BANK_CARD_TYPE);
-		reqBo.setTradeDate(DateUtil.formatDate(new Date(), DateUtil.FULL_PATTERN));
-		reqBo.setClientType(clientType);
-		reqBo.setStartDate(DateUtil.formatDate(new Date(), DateUtil.DEFAULT_PATTERN));
-		reqBo.setEndDate(DateUtil.formatDate(new Date(), DateUtil.DEFAULT_PATTERN));//TODO 多久
 		reqBo.setReturnUrl(notifyHost + "/third/ups/authSignReturn");
 		reqBo.setNotifyUrl(notifyHost + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(createLinkString(reqBo));
@@ -289,14 +283,14 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	public static UpsAuthSignValidRespBo authSignValid(String tradeNo,String verifyCode,String clientType){
+	public static UpsAuthSignValidRespBo authSignValid(String userNo,String cardNo,String verifyCode,String clientType){
 //		String orderNo = "asvd"+tradeNo.substring(tradeNo.length()-15,tradeNo.length()) + System.currentTimeMillis();
-		String orderNo = getOrderNo("asva", tradeNo.substring(tradeNo.length()-8,tradeNo.length()));
+		String orderNo = getOrderNo("asva", cardNo.substring(cardNo.length()-8,cardNo.length()));
 		UpsAuthSignValidReqBo reqBo = new UpsAuthSignValidReqBo();
 		setPubParam(reqBo,"authSignValid",orderNo,clientType);
-		reqBo.setTradeNo(tradeNo);
+		reqBo.setUserNo(userNo);
+		reqBo.setCardNo(cardNo);
 		reqBo.setSmsCode(verifyCode);
-		reqBo.setTradeDate(DateUtil.formatDate(new Date(), DateUtil.FULL_PATTERN));//TODO 当前时间 or 订单时间
 		reqBo.setNotifyUrl(notifyHost + "/third/ups/authSignValidNotify");
 		reqBo.setSignInfo(createLinkString(reqBo));
 		
@@ -439,7 +433,7 @@ public class UpsUtil extends AbstractThird {
 		payRoutBo.setService(service);
 		payRoutBo.setMerNo("01151209000");//TODO what?
 		payRoutBo.setOrderNo(orderNo);
-		payRoutBo.setPayCanal(PAY_CHANL_BF);
+//		payRoutBo.setPayCanal(PAY_CHANL_BF);
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");
 		payRoutBo.setReqExt("");

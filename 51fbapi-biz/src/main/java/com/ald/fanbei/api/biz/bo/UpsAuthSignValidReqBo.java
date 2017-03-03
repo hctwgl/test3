@@ -10,32 +10,17 @@ package com.ald.fanbei.api.biz.bo;
 public class UpsAuthSignValidReqBo extends UpsReqBo{
 	private static final long serialVersionUID = -6762573744930105400L;
 	
-	private String tradeNo		;//签约时的订单号
+	private String userNo		;//用户唯一标识
 	private String smsCode		;//短信验证码
-	private String tradeDate	;//订单日期
+	private String cardNo		;//卡号
 	private String notifyUrl	;//异步通知地址
 	
-
-	public String getTradeNo() {
-		return tradeNo;
-	}
-	public void setTradeNo(String tradeNo) {
-		this.tradeNo = tradeNo;
-		this.put("tradeNo", tradeNo);
-	}
 	public String getSmsCode() {
 		return smsCode;
 	}
 	public void setSmsCode(String smsCode) {
 		this.smsCode = smsCode;
 		this.put("smsCode", smsCode);
-	}
-	public String getTradeDate() {
-		return tradeDate;
-	}
-	public void setTradeDate(String tradeDate) {
-		this.tradeDate = tradeDate;
-		this.put("tradeDate", tradeDate);
 	}
 	public String getNotifyUrl() {
 		return notifyUrl;
@@ -44,6 +29,19 @@ public class UpsAuthSignValidReqBo extends UpsReqBo{
 		this.notifyUrl = notifyUrl;
 		this.put("notifyUrl", notifyUrl);
 	}
-	
+	public String getUserNo() {
+		return userNo;
+	}
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
+		this.put("userNo", userNo);
+	}
+	public String getCardNo() {
+		return cardNo;
+	}
+	public void setCardNo(String cardNo) {
+		this.cardNo = cardNo;
+		this.put("cardNo", cardNo);
+	}
 	
 }

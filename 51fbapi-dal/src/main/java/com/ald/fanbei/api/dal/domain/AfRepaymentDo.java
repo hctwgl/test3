@@ -28,9 +28,10 @@ public class AfRepaymentDo extends AbstractSerial{
 	private Long userCouponId;
 	private BigDecimal couponAmount;
 	private BigDecimal rebateAmount;
-	private Long cardId;
 	private String status;
 	private Long userId;
+	private String cardNo;
+	private String cardName;
 	public Long getRid() {
 		return rid;
 	}
@@ -103,12 +104,6 @@ public class AfRepaymentDo extends AbstractSerial{
 	public void setRebateAmount(BigDecimal rebateAmount) {
 		this.rebateAmount = rebateAmount;
 	}
-	public Long getCardId() {
-		return cardId;
-	}
-	public void setCardId(Long cardId) {
-		this.cardId = cardId;
-	}
 	public String getName() {
 		return name;
 	}
@@ -126,5 +121,17 @@ public class AfRepaymentDo extends AbstractSerial{
 	}
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+	public String getCardNo() {
+		return cardNo;
+	}
+	public void setCardNo(String cardNo) {
+		this.cardNo = cardNo;
+	}
+	public String getCardName() {
+		return cardName;
+	}
+	public void setCardName(String cardName) {
+		this.cardName = cardName;
 	}
 }

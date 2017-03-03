@@ -51,6 +51,7 @@ public class ApplyConsumeApi implements ApiHandle{
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("amount")), BigDecimal.ZERO);
 		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId")), 0l);
 		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
+		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
 		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
 		int nper = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("nper")), 2);
 		Long userId = context.getUserId();
@@ -78,7 +79,7 @@ public class ApplyConsumeApi implements ApiHandle{
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}*/
-		long result = afBorrowService.dealConsumeApply(userDto, amount, card.getRid(), goodsId, openId, name, nper);
+		long result = afBorrowService.dealConsumeApply(userDto, amount, card.getRid(), goodsId, openId,numId, name, nper);
 		if(result>0){
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("refId", result);

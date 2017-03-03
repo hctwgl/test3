@@ -38,7 +38,7 @@ public class FanbeiController extends BaseController {
 	
     @RequestMapping(value ={
     	"/goods/getFootMarkList","/goods/addFootMark","/goods/getHomeInfo","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
-    	"/goods/getCateGoodsList","/good/getBrandShopList"
+    	"/goods/getCateGoodsList","/good/getBrandShopList","/good/getGoodsDetailInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

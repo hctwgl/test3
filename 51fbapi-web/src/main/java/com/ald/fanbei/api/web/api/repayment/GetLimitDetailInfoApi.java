@@ -17,7 +17,6 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -40,7 +39,7 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfUserBankcardService afUserBankcardService;
-
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -74,11 +73,8 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 		detailInfo.setRepayPrinAmount(borrow.getRepayPrinAmount());
 		detailInfo.setNumber(borrow.getBorrowNo());
 		detailInfo.setGmtCreate(borrow.getGmtCreate());
-		AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(borrow.getBankId());
-		if(null!=card){
-			detailInfo.setCardName(card.getBankName());
-			detailInfo.setCardNo(StringUtil.getLastString(card.getCardNumber(), 4));
-		}
+		detailInfo.setCardName(borrow.getCardName());
+		detailInfo.setCardNo(StringUtil.getLastString(borrow.getCardNo(), 4));
 		detailInfo.setStatus(borrow.getStatus());
 		return detailInfo;
 	}
@@ -94,11 +90,8 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 		detailInfo.setName(repayment.getName());
 		detailInfo.setNumber(repayment.getRepayNo());
 		detailInfo.setRebateAmount(repayment.getRebateAmount());
-		AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(repayment.getCardId());
-		if(null!=card){
-			detailInfo.setCardName(card.getBankName());
-			detailInfo.setCardNo(StringUtil.getLastString(card.getCardNumber(), 4));
-		}
+		detailInfo.setCardName(repayment.getCardName());
+		detailInfo.setCardNo(StringUtil.getLastString(repayment.getCardNo(), 4));
 		detailInfo.setStatus(repayment.getStatus());
 		return detailInfo;
 	}

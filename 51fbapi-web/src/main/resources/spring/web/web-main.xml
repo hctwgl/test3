@@ -97,7 +97,7 @@
 				<value>/good/getThirdGoodsList</value>
 				<value>/good/getCategoryList</value>
 				<value>/good/getCateGoodsList</value>
-	
+				<value>/user/logout</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -153,6 +153,7 @@
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
+				<entry key="/good/getGoodsDetailInfo" value-ref="getGoodsDetailInfoApi" />
 
 				<!-- 订单Order -->
 				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />

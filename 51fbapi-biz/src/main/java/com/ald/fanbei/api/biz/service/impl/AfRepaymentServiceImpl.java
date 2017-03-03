@@ -16,12 +16,12 @@ import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
@@ -29,12 +29,14 @@ import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 
@@ -78,7 +80,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	private AfUserService afUserService;
 	
 	@Resource
-	private AfUserBankcardService afUserBankcardService;
+	private AfUserBankcardDao afUserBankcardDao;
 	
 	@Override
 	public Map<String,Object> createRepayment(BigDecimal repaymentAmount,
@@ -99,8 +101,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		if(cardId<0){//微信支付
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode());
 		}else{
-			AfUserBankDto bank = afUserBankcardService.getUserBankInfo(cardId);
-			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, bank.getUserCustNo(), bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
+			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
 			repayment.setPayTradeNo(respBo.getOrderNo());
 			map.put("resp", respBo);
 		}
@@ -132,7 +134,6 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		AfRepaymentDo repay = new AfRepaymentDo();
 		repay.setActualAmount(actualAmount);
 		repay.setBillIds(billIds);
-		repay.setCardId(cardId);
 		repay.setPayTradeNo(payTradeNo);
 		repay.setRebateAmount(rebateAmount);
 		repay.setRepaymentAmount(repaymentAmount);
@@ -145,6 +146,14 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}
 		repay.setName(name);
 		repay.setUserId(userId);
+		if(cardId<0){
+			repay.setCardNo("");
+			repay.setCardName(Constants.DEFAULT_WX_PAY_NAME);
+		}else{
+			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
+			repay.setCardNo(bank.getCardNumber());
+			repay.setCardName(bank.getBankName());
+		}
 		return repay;
 	}
 	

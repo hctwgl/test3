@@ -1,81 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017022701")
+    #set($version="2017030302")
     <title>商品列表模版</title>
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
-    <style>
-
-        /**加载效果旋转**/
-        @-webkit-keyframes rotate {
-            0% {
-                -webkit-transform: rotate(0deg);
-                transform: rotate(0deg);
-            }
-            100% {
-                -webkit-transform: rotate(360deg);
-                transform: rotate(360deg);
-            }
-        }
-        @keyframes rotate {
-            0% {
-                -webkit-transform: rotate(0deg);
-                transform: rotate(0deg);
-            }
-            100% {
-                -webkit-transform: rotate(360deg);
-                transform: rotate(360deg);
-            }
-        }
-        .loadmore {
-            display: block;
-            line-height: 50px;
-            text-align: center;
-            color: #ccc;
-            font-size: 14px;
-        }
-        .loadmore span {
-            height: 20px;
-            width: 20px;
-            border-radius: 100%;
-            display: inline-block;
-            margin: 10px;
-            border: 2px solid #f60;
-            border-bottom-color: transparent;
-            vertical-align: middle;
-            -webkit-animation: rotate 1.1s infinite linear;
-            animation: rotate 1.1s infinite linear;
-        }
-        .loadover {
-            position: relative;
-            margin: 0 12px;
-            padding: 24px 0;
-            height: 20px;
-            line-height: 20px;
-            color: #909090;
-            text-align: center;
-        }
-        .loadover span {
-            position: relative;
-            display: inline-block;
-            padding: 0 6px;
-            height: 20px;
-            background: #F2F2F2;
-            z-index: 2
-        }
-        .loadover:after {
-            content: ''position:absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 1px;
-            background: #DCDCDC;
-            z-index: 1;
-            display: block;
-        }
-    </style>  
-
-
 </head>
 <body>
 
@@ -109,16 +37,23 @@
                 <div class="goodsListModel_main_list goodsListModel_hide">
                     <ul class="goodsListModel_mainContent clearfix">
                         #foreach($item in $!{goodsList})
-                            <li class="fl bdc_cb goodsListModel_item">
-                                <a href="$!{item.goodsUrl}" onclick="">
-                                    <img src="$!{item.imageIcon}" class="goodsListModel_mainContent_img">
+                            <li class="fl goodsListModel_item">
+                                <a href="$!{item.goodsUrl}">
+                                    <img src="$!{item.thumbnailIcon}" class="goodsListModel_mainContent_img">
                                     <div class="goodsListModel_mainContent_main">
                                         <div class="goodsListModel_mainContent_wrap">
-                                            <p class="fs_28 fsc_1">$!{item.title}</p>
-                                            <span class="fs_28 fsc_red">￥$!{item.priceAmount}</span>
+                                            <p class="fs_26 fsc_1">$!{item.name}</p>
+                                            <p class="fs_26 fsc_red">
+                                                <span>￥$priceUtil.bigdecimalToInt($!{item.priceAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.priceAmount})</span>
+                                            </p>
                                         </div>
-                                        <div class="goodsListModel_mainContent_rebate clearfix">
-                                            <span class="fl fs_26 bgc_orange fsc_f tac">返</span><p class="fl fs_26 fsc_orange">￥$!{item.rebateAmount}</p>
+                                        <div class="goodsListModel_mainContent_rebate_wrap">
+                                            <div class="goodsListModel_mainContent_rebate clearfix">
+                                                <span class="fl fs_24 bgc_orange fsc_f tac">返</span>
+                                                <p class="fl fs_24 fsc_orange">
+                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.rebateAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.rebateAmount})</span>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </a>
