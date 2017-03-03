@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 10:58:37
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-03 16:38:38
+* @Last Modified time: 2017-03-03 17:28:09
 * @title:  商品列表模版
 */
 
@@ -82,15 +82,15 @@
 .goodsListModel_mainContent_wrap{
 	padding: 0 0.25rem;
 }
-.goodsListModel_mainContent_wrap p{
+.goodsListModel_mainContent_wrap p:nth-child(1){
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	margin-top: 0.25rem;
 }
-.goodsListModel_mainContent_wrap span{
+.goodsListModel_mainContent_wrap p:nth-child(2){
 	margin-bottom: 0.1rem;
-	padding-top: 0.22rem;
+	padding-top: 0.2rem;
 	margin-left: -0.125rem;
 }
 .goodsListModel_mainContent_rebate_wrap{
