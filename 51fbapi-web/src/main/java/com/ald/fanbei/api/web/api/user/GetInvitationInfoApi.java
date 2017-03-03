@@ -40,8 +40,7 @@ public class GetInvitationInfoApi implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfResourceService afResourceService;
-	
-	
+
 	@Resource
 	AfUserCouponService afUserCouponService;
 
@@ -53,28 +52,31 @@ public class GetInvitationInfoApi implements ApiHandle {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		List<Object> recommendList = new ArrayList<Object>();
-		
-		//获取邀请规则链接地址
+
+		// 获取邀请规则链接地址
 		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(AfResourceType.INVITE.getCode());
 		if (afResourceDo == null) {
 			throw new FanbeiException("resource id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 
 		}
-		//获取邀请分享地址
-		AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.ShareInviteCode.getCode());
+		// 获取邀请分享地址
+		AfResourceDo resourceCodeDo = afResourceService
+				.getSingleResourceBytype(AfResourceType.ShareInviteCode.getCode());
 
 		AfUserDo userDo = afUserService.getUserById(userId);
 
-		BigDecimal  amount = afUserCouponService.getUserCouponByInvite(userId);
-
+		BigDecimal amount = afUserCouponService.getUserCouponByInvite(userId);
+		if (amount == null) {
+			amount = new BigDecimal(0);
+		}
 		List<AfUserInvitationDto> list = afUserService.getRecommendUserByRecommendId(userId);
 		Map<String, Object> invitationInfo = new HashMap<String, Object>();
 		invitationInfo.put("rulesUrl", afResourceDo.getValue());
 		invitationInfo.put("invitationNum", list.size());
-		invitationInfo.put("invitationCode", userDo.getRecommendCode());
-		invitationInfo.put("amount", amount);
-		//邀请分享地址为配置地址+“?userName=”+注册手机号
-		invitationInfo.put("shareUrl", resourceCodeDo.getValue()+"?userName="+context.getUserName());
+		invitationInfo.put("invitationCode", userDo.getRecommendCode()==null?"":userDo.getRecommendCode());
+		invitationInfo.put("amount", amount );
+		// 邀请分享地址为配置地址+“?userName=”+注册手机号
+		invitationInfo.put("shareUrl", resourceCodeDo.getValue() + "?userName=" + context.getUserName());
 
 		for (AfUserInvitationDto invitationDto : list) {
 			recommendList.add(mapWithInvitationDto(invitationDto));
@@ -93,7 +95,7 @@ public class GetInvitationInfoApi implements ApiHandle {
 		data.put("userName", invitationDto.getUserName());
 		data.put("timeStamp", invitationDto.getGmtCreate());
 		data.put("reward", invitationDto.getAmount());
-		data.put("staus", invitationDto.getRealName().length()>0?"T":"F");
+		data.put("staus", invitationDto.getRealName().length() > 0 ? "T" : "F");
 		return data;
 
 	}
