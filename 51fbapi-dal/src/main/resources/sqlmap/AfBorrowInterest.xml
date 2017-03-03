@@ -16,7 +16,7 @@
 		)
 	</insert>
 	
-	<select id="getBorrowInterestCountByBorrowId" >
+	<select id="getBorrowInterestCountByBorrowId" parameterType="java.lang.Long" resultType="java.lang.Integer">
 		select count(1) from af_borrow_interest where is_delete=0 and bill_id=#{billId}
 	</select>
 	
