@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-02-27 20:04:39
+* @Last Modified time: 2017-03-03 16:48:17
 * @title:  商品列表页
 */
 
@@ -76,15 +76,15 @@ $(function(){
                     for (var i = 0; i < goodsList.length; i++) {
                         html+=  '<ul class="goodsListModel_mainContent clearfix">'
                                     +'<li class="fl bdc_cb goodsListModel_item">'
-                                        +'<a href="'+goodsList[i].imageIcon+'">'
-                                            +'<img src="'+goodsList[i].imageIcon+'" class="goodsListModel_mainContent_img">'
+                                        +'<a href="'+goodsList[i].goodsUrl+'">'
+                                            +'<img src="'+goodsList[i].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
                                             +'<div class="goodsListModel_mainContent_main">'
                                                 +'<div class="goodsListModel_mainContent_wrap">'
-                                                    +'<p class="fs_28 fsc_1">'+goodsList[i].title+'</p>'
-                                                    +'<span class="fs_28 fsc_red">'+goodsList[i].priceAmount+'</span>'
+                                                    +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
+                                                    +'<span class="fs_28 fsc_red">￥'+goodsList[i].priceAmount+'</span>'
                                                 +'</div>'
                                                 +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                                    +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span><p class="fl fs_26 fsc_orange">'+goodsList[i].rebateAmount+'</p>'
+                                                    +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span><p class="fl fs_26 fsc_orange">￥'+goodsList[i].rebateAmount+'</p>'
                                                 +'</div>'
                                             +'</div>'
                                         +'</a>'
@@ -93,7 +93,6 @@ $(function(){
                         
                         // var j=0;
                         var index=i+1;
-                        console.log(index);
 
                         $('.goodsListModel_main_list').eq(index).append(html);
                         $('.goodsListModel_main_list').eq(index).removeClass("goodsListModel_hide");
@@ -196,15 +195,15 @@ $(function(){
                                 var goodsList = returnData.data["goodsList"];
                                 for(var i = 0; i < goodsList.length; i++){
                                     html+= '<li class="fl bdc_cb goodsListModel_item">'
-                                                +'<a href="'+goodsList[i].imageIcon+'">'
-                                                    +'<img src="'+goodsList[i].imageIcon+'" class="goodsListModel_mainContent_img">'
+                                                +'<a href="'+goodsList[i].goodsUrl+'">'
+                                                    +'<img src="'+goodsList[i].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
                                                     +'<div class="goodsListModel_mainContent_main">'
                                                         +'<div class="goodsListModel_mainContent_wrap">'
-                                                            +'<p class="fs_28 fsc_1">'+goodsList[i].title+'</p>'
-                                                            +'<span class="fs_28 fsc_red">'+goodsList[i].priceAmount+'</span>'
+                                                            +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
+                                                            +'<span class="fs_28 fsc_red">￥'+toDecimal2(goodsList[i].priceAmount)+'</span>'
                                                         +'</div>'
                                                         +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                                            +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span><p class="fl fs_26 fsc_orange">'+goodsList[i].rebateAmount+'</p>'
+                                                            +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span><p class="fl fs_26 fsc_orange">￥'+toDecimal2(goodsList[i].rebateAmount)+'</p>'
                                                         +'</div>'
                                                     +'</div>'
                                                 +'</a>'
