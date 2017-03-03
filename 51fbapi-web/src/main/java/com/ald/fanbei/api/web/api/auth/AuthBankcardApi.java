@@ -58,7 +58,7 @@ public class AuthBankcardApi implements ApiHandle {
 			throw new FanbeiException("user face auth error", FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
 		}
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
-		UpsAuthSignRespBo upsResult = UpsUtil.authSign(userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
+		UpsAuthSignRespBo upsResult = UpsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);

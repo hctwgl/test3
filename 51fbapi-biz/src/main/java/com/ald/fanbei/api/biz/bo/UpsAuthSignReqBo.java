@@ -10,17 +10,13 @@ package com.ald.fanbei.api.biz.bo;
 public class UpsAuthSignReqBo extends UpsReqBo{
 	private static final long serialVersionUID = 8310455391344267354L;
 	
-	
+	private String userNo		;//用户在商户的唯一标识
 	private String bankCode	    ;//银行代码
 	private String realName			;//真实姓名
 	private String phone					;//手机号码
 	private String certType			;//证件类型
 	private String certNo				;//证件号码
 	private String cardNo				;//卡号
-	private String bankCardType	;//卡类型
-	private String tradeDate			;//订单日期
-	private String startDate			;//协议开始时间
-	private String endDate				;//协议结束时间
 	private String returnUrl			;//同步通知地址
 	private String notifyUrl			;//异步通知地址
 	
@@ -67,34 +63,6 @@ public class UpsAuthSignReqBo extends UpsReqBo{
 		this.cardNo = cardNo;
 		this.put("cardNo", cardNo);
 	}
-	public String getBankCardType() {
-		return bankCardType;
-	}
-	public void setBankCardType(String bankCardType) {
-		this.bankCardType = bankCardType;
-		this.put("bankCardType", bankCardType);
-	}
-	public String getTradeDate() {
-		return tradeDate;
-	}
-	public void setTradeDate(String tradeDate) {
-		this.tradeDate = tradeDate;
-		this.put("tradeDate", tradeDate);
-	}
-	public String getStartDate() {
-		return startDate;
-	}
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
-		this.put("startDate", startDate);
-	}
-	public String getEndDate() {
-		return endDate;
-	}
-	public void setEndDate(String endDate) {
-		this.endDate = endDate;
-		this.put("endDate", endDate);
-	}
 	public String getReturnUrl() {
 		return returnUrl;
 	}
@@ -109,7 +77,12 @@ public class UpsAuthSignReqBo extends UpsReqBo{
 		this.notifyUrl = notifyUrl;
 		this.put("notifyUrl", notifyUrl);
 	}
-	
-	
+	public String getUserNo() {
+		return userNo;
+	}
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
+		this.put("userNo", userNo);
+	}
 
 }

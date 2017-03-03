@@ -310,7 +310,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}else{//银行卡支付
 			map = new HashMap<String,Object>();
 			AfUserBankDto bank = afUserBankcardService.getUserBankInfo(bankId);
-			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, bank.getUserCustNo(), bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
+			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
 			map.put("resp", respBo);
 			payOrderNo = respBo.getOrderNo();
 		}

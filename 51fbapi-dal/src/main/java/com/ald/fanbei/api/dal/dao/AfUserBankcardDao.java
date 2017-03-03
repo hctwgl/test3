@@ -68,4 +68,11 @@ public interface AfUserBankcardDao {
 	 * 获取银行身份信息
 	 */
 	AfUserBankDto getUserBankInfo(@Param("bankId")Long bankId);
+	
+	/**
+	 * 银行查询信息
+	 * @param bankId
+	 * @return
+	 */
+	AfBankUserBankDto getUserBankcardByBankId(@Param("bankId")Long bankId);
 }

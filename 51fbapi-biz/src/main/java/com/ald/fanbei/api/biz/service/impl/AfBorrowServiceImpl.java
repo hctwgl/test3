@@ -31,15 +31,19 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowInterestDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowTempDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowInterestDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -77,6 +81,12 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	@Resource
 	private JpushService pushService;
 	
+	@Resource
+	private AfBorrowTempDao afBorrowTempDao;
+	
+	@Resource
+	private AfUserBankcardDao afUserBankcardDao;
+	
 	@Override
 	public Date getReyLimitDate(Date now){
     	Date startDate = DateUtil.addDays(DateUtil.getFirstOfMonth(now), 
@@ -97,14 +107,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					Date now = new Date();
-					pushService.dealBorrowCashTransfer(userDto.getUserName(), now);
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userDto.getUserId());
 					account.setUcAmount(money);//已取现金额=已取现金额+申请取现金额
 					account.setUsedAmount(money);//授信已使用金额=授信已使用金额+申请取现金额
 					afUserAccountDao.updateUserAccount(account);					
-					AfBorrowDo borrow =  buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,null,null,1,money);
+					AfBorrowDo borrow =  buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money);
 					afBorrowDao.addBorrow(borrow);
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CASH,money, userDto.getUserId(), borrow.getRid()));
 					
@@ -137,6 +146,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							afBorrowDao.addBorrowBillInfo(cashBill);
 							afBorrowInterestDao.addBorrowInterest(buildBorrowInterest(cashBill.getRid(), interestAmount,userDto.getUserName(),money));
 						}
+						pushService.dealBorrowCashTransfer(userDto.getUserName(), now);
 					}
 					return borrow.getRid();
 				} catch (Exception e) {
@@ -154,7 +164,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	 * @param money -- 借款金额
 	 * @return
 	 */
-	private AfBorrowDo buildBorrow(String name,BorrowType type,Long userId,BigDecimal money,Long cardId,Long goodsId,String openId,int nper,BigDecimal perAmount){
+	private AfBorrowDo buildBorrow(String name,BorrowType type,Long userId,BigDecimal money,Long cardId,int nper,BigDecimal perAmount){
 		Date currDate = new Date();
 		AfBorrowDo borrow = new AfBorrowDo();
 		borrow.setGmtCreate(currDate);
@@ -165,10 +175,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		borrow.setName(name);
 		borrow.setUserId(userId);
 		borrow.setNper(nper);
-		borrow.setBankId(cardId);
-		borrow.setGoodsId(goodsId);
-		borrow.setOpenId(openId);
 		borrow.setNperAmount(perAmount);
+		AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
+		borrow.setCardNo(bank.getCardNumber());
+		borrow.setCardName(bank.getBankName());
 		return borrow;
 	}
 	
@@ -254,12 +264,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 
 	@Override
 	public long dealConsumeApply(final AfUserAccountDto userDto,final BigDecimal amount,
-			final Long cardId,final Long goodsId,final String openId,final String name,final int nper) {
+			final Long cardId,final Long goodsId,final String openId,final String numId,final String name,final int nper) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					pushService.dealBorrowConsumeTransfer(userDto.getUserName(), name);
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userDto.getUserId());
@@ -284,8 +293,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, nper, 
 								new BigDecimal(obj.getString(nper+"")).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
 										8,BigDecimal.ROUND_HALF_UP), totalPoundage);//每期账单金额
-						AfBorrowDo borrow =  buildBorrow(name,BorrowType.CONSUME_TEMP,userDto.getUserId(), amount,cardId,goodsId,openId,nper,perAmount);
-						afBorrowDao.addBorrow(borrow);//新增借款信息
+						AfBorrowDo borrow =  buildBorrow(name,BorrowType.CONSUME_TEMP,userDto.getUserId(), amount,cardId,nper,perAmount);
+						//新增借款信息
+						afBorrowDao.addBorrow(borrow);
+						//新增借款商品关联信息
+						afBorrowTempDao.addBorrowTemp(buildBorrowTemp(goodsId,openId,numId,borrow.getRid()));
 						//新增借款日志
 						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userDto.getUserId(), borrow.getRid()));
 						
@@ -294,6 +306,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 										8,BigDecimal.ROUND_HALF_UP),totalPoundage);
 						//新增借款账单
 						afBorrowDao.addBorrowBill(billList);
+						pushService.dealBorrowConsumeTransfer(userDto.getUserName(), name);
 						return borrow.getRid();
 					}
 				} catch (Exception e) {
@@ -346,5 +359,19 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		Date date = DateUtil.getEndOfDate(DateUtil.addDays(DateUtil.getFirstOfMonth(calendar.getTime()), 
 				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_REPAY_TIME), 20)-1));
 		return date;
+	}
+	
+	private AfBorrowTempDo buildBorrowTemp(Long goodsId,String openId,String numId,Long borrowId){
+		AfBorrowTempDo temp = new AfBorrowTempDo();
+		temp.setBorrowId(borrowId);
+		temp.setGoodsId(goodsId);
+		temp.setOpenId(openId);
+		temp.setNumId(numId);
+		return temp;
+	}
+
+	@Override
+	public AfBorrowTempDo getBorrowTempByBorrowId(Long borrowId) {
+		return afBorrowTempDao.getBorrowTempByBorrowId(borrowId);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 
 /**
@@ -49,7 +50,7 @@ public interface AfBorrowService {
 	 * @param nper --分期数
 	 * @return
 	 */
-	public long dealConsumeApply(AfUserAccountDto userDto,BigDecimal amount,Long cardId,Long goodsId,String openId,String name,int nper);
+	public long dealConsumeApply(AfUserAccountDto userDto,BigDecimal amount,Long cardId,Long goodsId,String openId,String numId,String name,int nper);
 	
 	/**
 	 * 获取最近借款号
@@ -78,4 +79,11 @@ public interface AfBorrowService {
      * @return
      */
     AfBorrowDo getBorrowById(Long id);
+    
+    /**
+     * 获取借款商品信息
+     * @param borrowId
+     * @return
+     */
+    AfBorrowTempDo getBorrowTempByBorrowId(Long borrowId);
 }

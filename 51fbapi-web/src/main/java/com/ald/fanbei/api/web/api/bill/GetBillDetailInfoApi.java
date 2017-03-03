@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
@@ -16,6 +17,8 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -39,6 +42,10 @@ public class GetBillDetailInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfBorrowBillService afBorrowBillService;
+	
+	@Resource
+	private AfOrderService afOrderService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -70,6 +77,15 @@ public class GetBillDetailInfoApi implements ApiHandle{
 			vo.setInterestDay(0);
 			vo.setOrderId(billDto.getOrderId());
 			vo.setOrderNo(billDto.getOrderNo());
+			if(billDto.getOrderId()>0){
+				AfOrderDo order = afOrderService.getOrderInfoById(billDto.getOrderId(), billDto.getUserId());
+				vo.setGoodsId(order.getGoodsId());
+			}else{
+				AfBorrowTempDo temp = afBorrowService.getBorrowTempByBorrowId(billDto.getBorrowId());
+				if(null != temp){
+					vo.setGoodsId(temp.getGoodsId());
+				}
+			}
 		}
 		if(billDto.getOverdueStatus().equals(YesNoStatus.YES.getCode())
 				&& billDto.getStatus().equals(BorrowBillStatus.NO.getCode())){
