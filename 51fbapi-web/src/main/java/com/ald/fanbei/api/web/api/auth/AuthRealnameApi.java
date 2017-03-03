@@ -19,6 +19,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthTdDo;
@@ -60,7 +61,7 @@ public class AuthRealnameApi implements ApiHandle {
 		if(StringUtil.isBlank(idNumber) || StringUtil.isBlank(realName)){
 			throw new FanbeiException("authRealnameApi param error",FanbeiExceptionCode.PARAM_ERROR);
 		}
-		
+		idNumber = new String(Base64.decode(idNumber));
 		String reportId = TongdunUtil.applyPreloan(idNumber, realName, context.getMobile(), null);
 		if(StringUtil.isBlank(reportId)){
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
