@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017030101")
+    	#set($version="2017030301")
 		<title>领取优惠劵</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/user/receiveCoupons.css?version=$version">
     </head>
@@ -19,20 +19,28 @@
 				<li>
 					<div class="fl receiveCoupons_mainContent">
 						<div class="receiveCoupons_content clearfix">
-							<span class="fl fs_48 tal fsc_blue receiveCoupons_priceInfo">￥<span class="fs_92 box1">$!{item.amount}</span></span>
-							<div class="fl fs_28 fsc_6 receiveCoupons_text">
-								<p class="fsc_1 fs_36">$!{item.name}</p>
+							<span class="fl fs_50 tal fsc_blue receiveCoupons_priceInfo">￥<span class="fs_92 box1">$priceUtil.bigdecimalToInt($!{item.amount})</span></span>
+							<div class="fl fs_24 fsc_6 receiveCoupons_text">
+								<p class="fsc_1 fs_32">$!{item.name}</p>
 								<p>$!{item.useRule}</p>
 								<p>$!{item.limitCount}</p>
 							</div>
 						</div>
-						<p class="fs_22 tal receiveCoupons_date">$dateUtil.formatDate($!{item.gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
+						<p class="fs_22 fsc_6 tal receiveCoupons_date">$dateUtil.formatDate($!{item.gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
 					</div>
 					<button class="fr receiveCoupons_btn">立即领取</button>
 				</li>
 				#end
 			</ul>
 		</div>
-		<script type="text/javascript" src="/js/app/user/receiveCoupons.js?version=$version"></script>
+		<script type="text/javascript">
+			// 领取优惠劵
+			$(function(){
+				$(".receiveCoupons_btn").click(function(event) {
+					$(this).parent().addClass("receiveCoupons_alreadyReceive");
+					$(this).attr("disabled","true");
+				});
+			});
+		</script>
     </body>
 </html>

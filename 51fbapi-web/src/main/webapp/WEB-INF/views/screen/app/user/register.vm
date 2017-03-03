@@ -4,25 +4,22 @@
     	#set($version="2017030201")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/user/register.css?version=$version">
-		<style type="text/css">
-			
-		</style>
     </head>
     <body>
     	<div class="bgc_white register_main">
 			<ul>
-		        <li class="bdc_cb tal">
+		        <li class="tal bdc_cb">
 		        	<div class="fl register_mobile_icon_wrap"><i class="register_mobile_icon"></i></div>
 			    	<input type="text" class="fs_32 register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号" onkeyup="changeBtn()">
 			    	<i class="register_mobileIcon registerIcon_hide"></i>
 		        </li>
 	    	    <li class="tal clearfix">
-	    	    	<div class="bdc_cb fl register_verification_main">
+	    	    	<div class="fl bdc_cb register_verification_main">
 	    	    		<div class="fl register_verification_icon_wrap"><i class="register_verification_icon"></i></div>
 			        	<input type="text" class="fl fs_32 register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码" onkeyup="changeBtn()">
 			        	<i class="register_verificationIcon registerIcon_hide"></i>
 	    	    	</div>
-		        	<span class="fr bdc_cb tac bdr_4 fs_32 register_codeBtn"><span>获取验证码</span></span>
+		        	<span class="fr fs_32 tac bdc_cb bdr_4 register_codeBtn"><span>获取验证码</span></span>
 		        </li>
 		        <li class="bdc_cb tal">
 		        	<div class="fl register_password_icon_wrap"><i class="register_password_icon"></i></div>
@@ -30,11 +27,11 @@
 		        	<i class="register_passwordEyeClosed"></i>
 		        </li>
 	        </ul>
-	      	<div class="register_submitBtn_wrap"><button class="bdr_4 tac fsc_f bgc_orange register_submitBtn btnC_gray" onkeyup="changeBtn()">完成注册并下载App</button></div>
+	      	<div class="register_submitBtn_wrap"><button class="fs_32 tac bdr_4 fsc_f bgc_orange register_submitBtn btnC_gray" onkeyup="changeBtn()">完成注册并下载App</button></div>
 	      	<div class="tal register_checkbox clearfix">
-	      		<input type="checkbox" class="input_check" id="input_check" checked="checked" disabled="disabled">
+	      		<input type="checkbox" class="input_check" id="input_check">
             	<label for="input_check"></label>
-	      		<p class="fl fs_13 clearfix"><span class="fl">阅读并同意</span><a class="fl" href="www.51fanbei.com">《51返呗用户注册协议》</a></p>
+	      		<p class="fl fs_24 clearfix"><span class="fl">阅读并同意</span><a class="fl" href="http://testapp.51fanbei.com/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
 	      	</div>
 		</div>
 		<script type="text/javascript" src="/js/common/layer.js"></script>
