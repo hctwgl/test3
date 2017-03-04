@@ -67,17 +67,17 @@
 			af_user_coupon uc
 		ON 
 		  	uc.source_ref = u.id
+	    AND
+			uc.is_delete = 0
 		LEFT JOIN 
 			af_coupon c
 		ON 
 		  	uc.coupon_id  =	c.id
-		  	
+		AND
+			c.is_delete = 0	
 		WHERE
 			u.is_delete = 0
-		AND
-			uc.is_delete = 0
-		AND
-			c.is_delete = 0
+
 		AND
 			u.recommend_id = #{recommendId} 
 			
