@@ -2,18 +2,20 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-03 19:26:24
+* @Last Modified time: 2017-03-04 15:59:03
 * @title:  商品列表页
 */
 
 
-var pageTotal = $("#pageTotal").val();
-var modelIdNum = $("#modelId").val();
-var pageNoNum = 1;
-pageNoNum++;
-var typeCurrentNum = $("#typeCurrent").val();
-var categoryListType = $("#categoryListType").val();
+var pageNoNum = 1; // 页码从1开始
+pageNoNum++; 
+var typeCurrentNum = $("#typeCurrent").val(); // 获取当前的type类型
+var modelIdNum = getUrl("modelId"); // 获取modelId参数
+// 获取categoryList数组
+var category = $("#categoryList").val();
+var categoryObj = eval('(' + category + ')');
 
+// 默认goodsList第一个位显示其他的都为隐藏
 $(".goodsListModel_main .goodsListModel_main_list:first-child").removeClass("goodsListModel_hide");
 $(".goodsListModel_main_list:first-child").siblings().html("");
 
@@ -45,6 +47,8 @@ $(function(){
         $(this).siblings().find("span").removeClass("current");
     	$(".goodsListModel_main_item").eq(i).removeClass("goodsListModel_main_hide").siblings().addClass("goodsList_main_hide");
 
+        var categoryListType = categoryObj[i].type;
+
         ulOffsetLeft = $(".goodsListModel_header").offset().left;
         thisLiOffsetUl = liWArr[i].offsetLeft;
         thisLiOffsetDiv = thisLiOffsetUl + ulOffsetLeft; //距离 边框的距离
@@ -74,12 +78,12 @@ $(function(){
                     var html = '';
                     var goodsList = returnData.data["goodsList"];
                     for (var i = 0; i < goodsList.length; i++) {
-
+                        // 售价
                         var priceAmount = toDecimal2(goodsList[i].priceAmount);
                         var amountAmountSplitArr =  priceAmount.split(".");
                         var amountAmountPriceInteger = amountAmountSplitArr[0];
                         var amountAmountPriceDecimal = amountAmountSplitArr[1];
-
+                        // 返利
                         var rebateAmount = toDecimal2(goodsList[i].rebateAmount);
                         var rebateAmountSplitArr =  rebateAmount.split(".");
                         var rebateAmountPriceInteger = rebateAmountSplitArr[0];
@@ -131,11 +135,6 @@ $(function(){
 });
 
 
-
-
-
-
-
 // 下拉加载
 $(function(){
 
@@ -160,6 +159,7 @@ $(function(){
     //加载更多  
     function loadmore(obj){
         if(finished==0 && sover==0){
+
             var scrollTop = $(obj).scrollTop();
             var scrollHeight = $(document).height();
             var windowHeight = $(obj).height();
@@ -167,96 +167,97 @@ $(function(){
                 var txt='<div class="loadmore"><span class="loading"></span>加载中..</div>';
                 $("body").append(txt);
             }
-            //if (scrollTop + windowHeight -scrollHeight<=500 ) { //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
-                finished=1; //防止未加载完再次执行
 
-                $.ajax({
-                    url: "/app/goods/categoryGoodsList",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        modelId : modelIdNum,
-                        pageNo: pageNoNum  ,
-                        type: typeCurrentNum
-                    },
-                    success: function(returnData){
-                        if (returnData.success) {
-                            
-                            console.log(returnData);
+            finished=1; //防止未加载完再次执行
+            var categoryListType = categoryObj[i].type;
+            var pageTotal = categoryObj[i].pageTotal;
+            console.log(categoryListType);
+            $.ajax({
+                url: "/app/goods/categoryGoodsList",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    modelId : modelIdNum,
+                    pageNo: pageNoNum,
+                    type: typeCurrentNum
+                },
+                success: function(returnData){
+                    if (returnData.success) {
 
-                            if(returnData==""){
-                                sover = 1;
-                                loadover();                  
-                                if (page == 1) {
-                                    $(".loadover").remove();
-                                }
-                            }else{
-                                var html = '';
-                                var goodsList = returnData.data["goodsList"];
-                                for(var i = 0; i < goodsList.length; i++){
+                        if(returnData==""){
+                            sover = 1;
+                            loadover();                  
+                            if (page == 1) {
+                                $(".loadover").remove();
+                            }
+                        }else{
+                            var html = '';
+                            var goodsList = returnData.data["goodsList"];
+                            for(var i = 0; i < goodsList.length; i++){
+                                // 售价
+                                var priceAmount = toDecimal2(goodsList[i].priceAmount);
+                                var amountAmountSplitArr =  priceAmount.split(".");
+                                var amountAmountPriceInteger = amountAmountSplitArr[0];
+                                var amountAmountPriceDecimal = amountAmountSplitArr[1];
+                                // 返利
+                                var rebateAmount = toDecimal2(goodsList[i].rebateAmount);
+                                var rebateAmountSplitArr =  rebateAmount.split(".");
+                                var rebateAmountPriceInteger = rebateAmountSplitArr[0];
+                                var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
 
-                                    var priceAmount = toDecimal2(goodsList[i].priceAmount);
-                                    var amountAmountSplitArr =  priceAmount.split(".");
-                                    var amountAmountPriceInteger = amountAmountSplitArr[0];
-                                    var amountAmountPriceDecimal = amountAmountSplitArr[1];
-
-                                    var rebateAmount = toDecimal2(goodsList[i].rebateAmount);
-                                    var rebateAmountSplitArr =  rebateAmount.split(".");
-                                    var rebateAmountPriceInteger = rebateAmountSplitArr[0];
-                                    var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-
-                                    html+= '<li class="fl bdc_cb goodsListModel_item">'
-                                                +'<a href="'+goodsList[i].goodsUrl+'">'
-                                                    +'<img src="'+goodsList[i].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
-                                                    +'<div class="goodsListModel_mainContent_main">'
-                                                        +'<div class="goodsListModel_mainContent_wrap">'
-                                                            +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
+                                html+= '<li class="fl bdc_cb goodsListModel_item">'
+                                            +'<a href="'+goodsList[i].goodsUrl+'">'
+                                                +'<img src="'+goodsList[i].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
+                                                +'<div class="goodsListModel_mainContent_main">'
+                                                    +'<div class="goodsListModel_mainContent_wrap">'
+                                                        +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
+                                                        +'<span class="fs_26 fsc_red">'
                                                             +'<span class="fs_26 fsc_red">'
-                                                                +'<span class="fs_26 fsc_red">'
-                                                                    +'<span>￥'+amountAmountPriceInteger+'</span>'
-                                                                    +'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
-                                                                +'</span>'
+                                                                +'<span>￥'+amountAmountPriceInteger+'</span>'
+                                                                +'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
                                                             +'</span>'
-                                                        +'</div>'
-                                                        +'<div class="goodsListModel_mainContent_rebate_wrap">'
-                                                            +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                                                +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
-                                                                +'<p class="fl fs_24 fsc_orange">'
-                                                                    +'<span>￥'+rebateAmountPriceInteger+'</span>'
-                                                                    +'<span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
-                                                                +'</p>'
-                                                            +'</div>'
+                                                        +'</span>'
+                                                    +'</div>'
+                                                    +'<div class="goodsListModel_mainContent_rebate_wrap">'
+                                                        +'<div class="goodsListModel_mainContent_rebate clearfix">'
+                                                            +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
+                                                            +'<p class="fl fs_24 fsc_orange">'
+                                                                +'<span>￥'+rebateAmountPriceInteger+'</span>'
+                                                                +'<span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
+                                                            +'</p>'
                                                         +'</div>'
                                                     +'</div>'
-                                                +'</a>'
-                                            +'</li>';
-                                }
-                                $(".loadmore").remove();
-                                $('.goodsListModel_mainContent').append(html);
-                                page+=1;
-                                finished=0;
-                                if(page==pageTotal){ //最后一页
-                                    sover=1;
-                                    loadover();
-                                }
+                                                +'</div>'
+                                            +'</a>'
+                                        +'</li>';
                             }
-                        } else {
-                            requestMsg(returnData.msg);
+
+                            $(".loadmore").remove();
+                            $(".goodsListModel_mainContent").append(html);
+                            page+=1;
+                            finished=0;
+                            if(page==pageTotal){ //最后一页
+                                sover=1;
+                                loadover();
+                            }
                         }
-                    },
-                    error: function(){
-                        requestMsg("请求失败");
+                    } else {
+                        requestMsg(returnData.msg);
                     }
-                });
-            //}
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            });
         }
     }
 
+    // 下拉的时候加载
     $(window).scroll(function () {
         var totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());
         var documentheight = parseFloat($(document).height()); // 文本的高度
-        if (documentheight - totalheight <= 200) {
-            loadmore($(this));
+        if (documentheight - totalheight <= 200) { // 下拉的距离小于等于200的调用
+            loadmore($(this)); 
         }
     });
 });

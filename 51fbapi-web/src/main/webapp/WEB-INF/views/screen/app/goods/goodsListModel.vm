@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017030302")
+    #set($version="2017030401")
     <title>商品列表模版</title>
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>
 <body>
-
-    <input type="hidden" id="pageTotal" name="pageTotal" value="0">
+    <!-- <input type="hidden" id="pageTotal" name="pageTotal" value="0"> -->
     <input type="hidden" id="modelId" name="modelId" value="2">
-    <input type="hidden" id="pageNo" name="pageNo" value="1">
-    <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
-    <input type="hidden" id="categoryListType" name="categoryListType" value="3">
+    <!-- <input type="hidden" id="pageNo" name="pageNo" value="1"> -->
+    <!-- <input type="hidden" id="categoryListType" name="categoryListType" value="3"> -->
 
-    
+    <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
+    <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
+
     <div class="goodsListModel_wrap">
         <div class="goodsListModel_header_wrap">
             <ul class="fs_32 fsc_6 bgc_white goodsListModel_header">

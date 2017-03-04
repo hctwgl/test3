@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-03 11:17:55
+* @Last Modified time: 2017-03-04 17:39:45
 * @title:  注册
 */
 
@@ -37,7 +37,7 @@ function changeBtn() {
 		$(".register_submitBtn").removeClass("btnC_gray");
 	} else{
 		$(".register_submitBtn").addClass("btnC_gray");
-	};	
+	};
 };
 
 // 点击删除按钮清空vul
@@ -48,9 +48,9 @@ $(function(){
 		$(".register_mobileIcon").addClass("registerIcon_hide");
 	});
 
-	$(".mineMoneyPrompt_verificationIcon").click(function(){
-		$(".mineMoneyPrompt_verification").val("");
-		$(".mineMoneyPrompt_verificationIcon").addClass("registerIcon_hide");
+	$(".register_verificationIcon").click(function(){
+		$(".register_verification").val("");
+		$(".register_verificationIcon").addClass("registerIcon_hide");
 	});
 });
 
@@ -73,10 +73,11 @@ $(function(){
 
 	
 	$(".register_codeBtn").click(function(){ // 获取验证码
-		
+
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
-		if ( (isState==0 || !isState) && mobileNum.length==11 ){	
+
+		if ( (isState==0 || !isState) && mobileNum.length==11 && !isNaN(mobileNum) ){	
 	     	$.ajax({
     			url: "/app/user/getRegisterSmsCode",
     			type: "POST",
