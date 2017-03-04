@@ -58,7 +58,9 @@
 				<entry key="priceUtil">
 					<bean class="com.ald.fanbei.api.common.util.PriceUtil" />
 				</entry>
-
+				<entry key="jsonUtil">
+					<bean class="com.ald.fanbei.api.common.util.JsonUtil" />
+				</entry>
 			</map>
 		</property>
 	</bean>
