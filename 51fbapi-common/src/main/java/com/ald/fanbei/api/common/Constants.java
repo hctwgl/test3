@@ -81,6 +81,8 @@ public class Constants {
     public static final String RES_BORROW_CASH					  	  = "BORROW_CASH";
     public static final String RES_BORROW_RATE				  	  	  = "BORROW_RATE";
     public static final String RES_BRAND_SHOP				  	  	  = "BRAND_SHOP";
+    public static final String RES_CREDIT_SCORE_AMOUNT				  = "CREDIT_SCORE_AMOUNT";
+    public static final String RES_CREDIT_SCORE				  	  	  = "CREDIT_SCORE";
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
@@ -107,7 +109,6 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
     public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "taobao.tae.item.detail.get.fields";
     public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION	  = "http://img02.taobaocdn.com/bao/uploaded/";
-    public static final String CONFKEY_TAOBAO_TBK_ITEM_DETAIL_FIELDS  = "taobao.tbk.item.detail.fields";
     public static final String CACHEKEY_ORDERNO_LOCK				  = "ala_order_lock";
     public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
     public static final String CACHEKEY_BORROWNO_LOCK				  = "ala_borrow_no_lock";
