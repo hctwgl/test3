@@ -53,7 +53,7 @@ public class AfuserCollectionServiceImpl implements AfuserCollectionService {
 
 
 	@Override
-	public long getUserCollectionCountByGoodsId(AfUserCollectionDo afUserCollectionDo) {
+	public Integer getUserCollectionCountByGoodsId(AfUserCollectionDo afUserCollectionDo) {
 		return afUserCollectionDao.getUserCollectionCountByGoodsId(afUserCollectionDo);
 	}
 

@@ -98,18 +98,18 @@
 		SELECT
 			<include refid="queryFields"/>
 		FROM
-			af_user_bankcard
+			af_user_collection
 		WHERE
 			is_delete=0 
 		AND 
 			id = #{rid}
 	</select>
 	
-	<select id="getUserCollectionCountByGoodsId" parameterType="AfUserCollectionDo">
+	<select id="getUserCollectionCountByGoodsId" parameterType="AfUserCollectionDo" resultType="java.lang.Integer">
 		SELECT
 			count(id)
 		FROM
-			af_user_bankcard
+			af_user_collection
 		WHERE
 			is_delete=0 
 		AND 

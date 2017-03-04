@@ -77,11 +77,10 @@
 			c.is_delete = 0	
 		WHERE
 			u.is_delete = 0
-
+		
 		AND
 			u.recommend_id = #{recommendId} 
-			
-			
+					
 		
 	</select>
 	

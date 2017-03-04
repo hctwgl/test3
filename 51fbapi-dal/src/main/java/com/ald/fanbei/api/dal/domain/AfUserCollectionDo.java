@@ -29,7 +29,7 @@ public class AfUserCollectionDo extends AbstractSerial {
 	private String openId;
 	private String goodsUrl;
 	private BigDecimal priceAmount;
-	private BigDecimal actualAmount;
+	private String actualAmount;
 	/**
 	 * @return the rid
 	 */
@@ -153,15 +153,15 @@ public class AfUserCollectionDo extends AbstractSerial {
 	/**
 	 * @return the actualAmount
 	 */
-	public BigDecimal getActualAmount() {
+	public String getActualAmount() {
 		return actualAmount;
 	}
 	/**
 	 * @param actualAmount the actualAmount to set
 	 */
-	public void setActualAmount(BigDecimal actualAmount) {
+	public void setActualAmount(String actualAmount) {
 		this.actualAmount = actualAmount;
 	}
-	
+
 	
 }

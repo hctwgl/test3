@@ -44,7 +44,7 @@ public class AddCollectionApi implements ApiHandle {
 		Map<String, Object> params = requestDataVo.getParams();
 		String name = ObjectUtils.toString(params.get("name"), "").toString();
 		BigDecimal priceAmount =new  BigDecimal(ObjectUtils.toString(params.get("priceAmount"), "").toString());
-		BigDecimal actualAmount =new  BigDecimal(ObjectUtils.toString(params.get("actualAmount"), "").toString());
+		String actualAmount =ObjectUtils.toString(params.get("actualAmount"), "").toString();
 
 		String openId = ObjectUtils.toString(params.get("openId"), "").toString();
 		String goodsIcon = ObjectUtils.toString(params.get("goodsIcon"), "").toString();
@@ -69,7 +69,6 @@ public class AddCollectionApi implements ApiHandle {
 		afUserCollectionDo.setUserId(userId);
 		if(afuserCollectionService.getUserCollectionCountByGoodsId(afUserCollectionDo)>0){
 			throw new FanbeiException("goods alreay collection", FanbeiExceptionCode.GOODS_COLLECTION_ALREADY_EXIST_ERROR);
-
 		}
 		if(afuserCollectionService.addUserCollectionGoods(afUserCollectionDo)>0){
 			return resp;

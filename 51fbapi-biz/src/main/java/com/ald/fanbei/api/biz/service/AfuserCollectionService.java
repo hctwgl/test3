@@ -40,6 +40,6 @@ public interface AfuserCollectionService {
 	
 	int deleteUserCollectionGoods(AfUserCollectionDo afUserCollectionDo);
 	
-	long getUserCollectionCountByGoodsId(AfUserCollectionDo afUserCollectionDo);
+    Integer getUserCollectionCountByGoodsId(AfUserCollectionDo afUserCollectionDo);
 
 }
