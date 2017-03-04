@@ -8,6 +8,8 @@ package com.ald.fanbei.api.biz.bo;
  */
 public class UpsAuthPayConfirmRespBo extends UpsRespBo {
 	private String amount			;   //交易金额
+	private String cardNo			;	//卡编号
+	private String userNo			;   //用户唯一标识
 	private String smsCode			;   //短信验证码
 	private String tradeNo			;   //原认证支付交易订单号
 	private String tradeState	;   //交易状态
@@ -49,6 +51,16 @@ public class UpsAuthPayConfirmRespBo extends UpsRespBo {
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
 	}
-	
-	
+	public String getCardNo() {
+		return cardNo;
+	}
+	public void setCardNo(String cardNo) {
+		this.cardNo = cardNo;
+	}
+	public String getUserNo() {
+		return userNo;
+	}
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
+	}
 }

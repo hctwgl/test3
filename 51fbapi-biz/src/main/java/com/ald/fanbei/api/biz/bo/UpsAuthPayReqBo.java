@@ -11,7 +11,7 @@ public class UpsAuthPayReqBo extends UpsReqBo{
 	private static final long serialVersionUID = 8310455391344267354L;
 	
 	private String amount				;  //交易金额
-	private String userCustNo		;  //第三方账户号
+	private String userNo		;  //第三方账户号
 	private String realName			;  //真实姓名
 	private String cardNo				;  //银行卡号
 	private String certType			;  //证件类型
@@ -26,12 +26,12 @@ public class UpsAuthPayReqBo extends UpsReqBo{
 		this.amount = amount;
 		this.put("amount", amount);
 	}
-	public String getUserCustNo() {
-		return userCustNo;
+	public String getUserNo() {
+		return userNo;
 	}
-	public void setUserCustNo(String userCustNo) {
-		this.userCustNo = userCustNo;
-		this.put("userCustNo", userCustNo);
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
+		this.put("userNo", userNo);
 	}
 	public String getRealName() {
 		return realName;

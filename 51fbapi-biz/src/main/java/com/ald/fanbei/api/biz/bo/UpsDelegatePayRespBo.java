@@ -10,6 +10,10 @@ public class UpsDelegatePayRespBo extends UpsRespBo{
 	private String amount			;   //交易金额
 	private String realName		;   //收款人名称
 	private String cardNo			;   //银行卡号
+	private String userNo		; //唯一标识
+	private String phone		; //手机号
+	private String bankName		; //银行名称
+	private String bankCode		; //银行代码
 	private String purpose			;   //用途
 	private String tradeState;      //交易状态
 	private String tradeDesc;       //交易描述
@@ -31,6 +35,30 @@ public class UpsDelegatePayRespBo extends UpsRespBo{
 	}
 	public void setCardNo(String cardNo) {
 		this.cardNo = cardNo;
+	}
+	public String getUserNo() {
+		return userNo;
+	}
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getBankName() {
+		return bankName;
+	}
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+	public String getBankCode() {
+		return bankCode;
+	}
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
 	}
 	public String getPurpose() {
 		return purpose;

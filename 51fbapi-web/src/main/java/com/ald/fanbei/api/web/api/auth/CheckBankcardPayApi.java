@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmRespBo;
@@ -37,8 +38,8 @@ public class CheckBankcardPayApi implements ApiHandle {
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String outTradeNo = ObjectUtils.toString(requestDataVo.getParams().get("outTradeNo"));
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-		
-		UpsAuthPayConfirmRespBo upsResult = UpsUtil.authPayConfirm(outTradeNo,verifyCode, tradeNo, "02");
+		String cardNo = ObjectUtils.toString(requestDataVo.getParams().get("cardNo"));
+		UpsAuthPayConfirmRespBo upsResult = UpsUtil.authPayConfirm(tradeNo, Base64.decodeToString(cardNo), context.getUserId()+"", verifyCode, outTradeNo, "02");
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_SMS_ERR);
@@ -50,5 +51,4 @@ public class CheckBankcardPayApi implements ApiHandle {
 		}
 		return resp;
 	}
-
 }

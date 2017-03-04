@@ -8,14 +8,20 @@ package com.ald.fanbei.api.biz.bo;
  */
 public class UpsCollectRespBo extends UpsRespBo {
 	private String amount			;  //交易金额
+	private String userNo			;   //用户唯一标识
+	private String realName			;	//真实姓名
 	private String phone				;  //手机号码
+	private String bankCode			;   //银行编号
+	private String cardNo			;	//卡号
+	private String certType			;	//证件类型
+	private String certNo			;	//证件号
 	private String purpose			;  //用途
 	private String remark			;  //备注
 	private String returnUrl		;  //同步通知地址
 	private String notifyUrl		;  //异步通知地址
+	private String tradeDate		;//交易时间
 	private String tradeState	;  //交易状态
 	private String tradeDesc		;  //交易状态描述
-	private String contractNo	;  //用户协议号
 	
 	public String getAmount() {
 		return amount;
@@ -65,11 +71,46 @@ public class UpsCollectRespBo extends UpsRespBo {
 	public void setTradeDesc(String tradeDesc) {
 		this.tradeDesc = tradeDesc;
 	}
-	public String getContractNo() {
-		return contractNo;
+	public String getUserNo() {
+		return userNo;
 	}
-	public void setContractNo(String contractNo) {
-		this.contractNo = contractNo;
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
 	}
-	
+	public String getRealName() {
+		return realName;
+	}
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+	public String getBankCode() {
+		return bankCode;
+	}
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+	public String getCardNo() {
+		return cardNo;
+	}
+	public void setCardNo(String cardNo) {
+		this.cardNo = cardNo;
+	}
+	public String getCertType() {
+		return certType;
+	}
+	public void setCertType(String certType) {
+		this.certType = certType;
+	}
+	public String getCertNo() {
+		return certNo;
+	}
+	public void setCertNo(String certNo) {
+		this.certNo = certNo;
+	}
+	public String getTradeDate() {
+		return tradeDate;
+	}
+	public void setTradeDate(String tradeDate) {
+		this.tradeDate = tradeDate;
+	}
 }

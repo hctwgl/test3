@@ -108,46 +108,31 @@ public class AuthCreditApi implements ApiHandle {
 		
 		// TODO 计算信用分 更新userAccount
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
-		AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_CREDIT_SCORE);
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_CREDIT_SCORE);
 		int sorce = BigDecimalUtil.getCreditScore(new BigDecimal(auth.getZmScore()), new BigDecimal(auth.getIvsScore()), 
 				new BigDecimal(auth.getRealnameScore()),new BigDecimal(resource.getValue()), 
 				new BigDecimal(resource.getValue1()), new BigDecimal(resource.getValue2()));
-		AfResourceDo creditPz = afResourceService.getSingleResourceBytype(Constants.RES_CREDIT_SCORE_AMOUNT);
+		AfResourceDo creditPz = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_CREDIT_SCORE_AMOUNT);
 		JSONArray arry = JSON.parseArray(creditPz.getValue());
-		BigDecimal creditAmount = BigDecimal.ZERO,maxAmount = BigDecimal.ZERO;
-		int min = 0,max = 0;
-		for (int i = 0; i < arry.size(); i++) {
-			JSONObject obj = arry.getJSONObject(i);
-			int minScore = obj.getInteger("minScore");
-			int maxScore = obj.getInteger("maxScore");
-			BigDecimal amount = obj.getBigDecimal("amount");
-			if(i==0){
-				min = minScore;
-				max = maxScore;
-				maxAmount = amount;
-			}else{
-				if(min>minScore){
-					min = minScore;
-				}
-				if(max<maxScore){
-					max = maxScore;
-					maxAmount = amount;
-				}
-			}
-			if(minScore<=sorce&&maxScore>sorce){
-				creditAmount = amount;
-			}
-		}
-		if(min>sorce){
+		BigDecimal creditAmount = BigDecimal.ZERO;
+		int min = Integer.parseInt(creditPz.getValue1());//最小分数
+		if(sorce<min){
 			resp.addResponseData("tooLow", 'Y');
-			resp.addResponseData("creditAmount", 0);
-		}else if(max>=sorce){
-			resp.addResponseData("tooLow", 'N');
-			resp.addResponseData("creditAmount", maxAmount);
-			creditAmount = maxAmount;
+			resp.addResponseData("creditAmount", creditAmount);
+			resp.addResponseData("allowConsume", 'N');
 		}else{
+			for (int i = 0; i < arry.size(); i++) {
+				JSONObject obj = arry.getJSONObject(i);
+				int minScore = obj.getInteger("minScore");
+				int maxScore = obj.getInteger("maxScore");
+				BigDecimal amount = obj.getBigDecimal("amount");
+				if(minScore<=sorce&&maxScore>sorce){
+					creditAmount = amount;
+				}
+			}
 			resp.addResponseData("tooLow", 'N');
 			resp.addResponseData("creditAmount", creditAmount);
+			resp.addResponseData("allowConsume", 'Y');
 		}
 		AfUserAccountDo account = new AfUserAccountDo();
 		account.setAuAmount(creditAmount);

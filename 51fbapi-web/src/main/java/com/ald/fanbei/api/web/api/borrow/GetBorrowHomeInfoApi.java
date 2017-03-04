@@ -84,6 +84,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setTotalAmount(userDto.getAuAmount());
 		vo.setUsableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
 		vo.setZmStatus(authDo.getZmStatus());
+		vo.setGmtZm(authDo.getGmtZm());
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
 			String authParamUrl =  ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
 			vo.setZmxyAuthUrl(authParamUrl);

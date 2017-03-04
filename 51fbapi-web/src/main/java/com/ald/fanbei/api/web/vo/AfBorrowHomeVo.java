@@ -32,6 +32,7 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	private String billYear;
 	private String billMonth;
 	private String status;
+	private Date gmtZm;
 	
 	public BigDecimal getTotalAmount() {
 		return totalAmount;
@@ -140,5 +141,11 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public Date getGmtZm() {
+		return gmtZm;
+	}
+	public void setGmtZm(Date gmtZm) {
+		this.gmtZm = gmtZm;
 	}
 }

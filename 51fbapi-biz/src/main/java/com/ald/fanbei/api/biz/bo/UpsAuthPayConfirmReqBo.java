@@ -12,6 +12,8 @@ public class UpsAuthPayConfirmReqBo extends UpsReqBo{
 	
 	private static final long serialVersionUID = 437740174293716763L;
 	private String smsCode          ;   //短信验证码
+	private String cardNo			;	//银行卡号
+	private String userNo			;	//用户在商户的唯一标识
 	private String tradeNo			;   //原认证支付交易订单号
 	private String notifyUrl		;   //异步通知地址
 	
@@ -21,6 +23,20 @@ public class UpsAuthPayConfirmReqBo extends UpsReqBo{
 	public void setSmsCode(String smsCode) {
 		this.smsCode = smsCode;
 		this.put("smsCode", smsCode);
+	}
+	public String getCardNo() {
+		return cardNo;
+	}
+	public void setCardNo(String cardNo) {
+		this.cardNo = cardNo;
+		this.put("cardNo", cardNo);
+	}
+	public String getUserNo() {
+		return userNo;
+	}
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
+		this.put("userNo", userNo);
 	}
 	public String getTradeNo() {
 		return tradeNo;

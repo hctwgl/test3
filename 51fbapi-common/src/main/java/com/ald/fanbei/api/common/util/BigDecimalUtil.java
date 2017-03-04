@@ -151,7 +151,7 @@ public class BigDecimalUtil {
 	
 	public static int getCreditScore(BigDecimal zmScore,BigDecimal fqzScore,BigDecimal tdScore,
 			BigDecimal zmRate,BigDecimal fqzRate,BigDecimal tzRate){
-		BigDecimal v1 = zmScore.divide(new BigDecimal(950)).multiply(new BigDecimal(10)).multiply(zmRate);
+		BigDecimal v1 = zmScore.divide(new BigDecimal(950),4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(10)).multiply(zmRate);
 		BigDecimal v2 = fqzScore.multiply(new BigDecimal(0.1)).multiply(fqzRate);
 		BigDecimal v3 = (new BigDecimal(100).subtract(tdScore)).multiply(new BigDecimal(0.1)).multiply(tzRate);
 		return v1.add(v2).add(v3).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();

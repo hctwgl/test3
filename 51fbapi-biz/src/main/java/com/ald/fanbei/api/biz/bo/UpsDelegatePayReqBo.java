@@ -13,6 +13,10 @@ public class UpsDelegatePayReqBo extends UpsReqBo{
 	private String amount		;   //交易金额
 	private String realName	;   //收款人名称
 	private String cardNo		;   //银行卡号
+	private String userNo		; //唯一标识
+	private String phone		; //手机号
+	private String bankName		; //银行名称
+	private String bankCode		; //银行代码
 	private String purpose		;   //用途
 	private String notifyUrl	;   //异步通知地址
 	
@@ -37,11 +41,40 @@ public class UpsDelegatePayReqBo extends UpsReqBo{
 		this.cardNo = cardNo;
 		this.put("cardNo", cardNo);
 	}
+	public String getUserNo() {
+		return userNo;
+	}
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
+		this.put("userNo", userNo);
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+		this.put("phone", phone);
+	}
+	public String getBankName() {
+		return bankName;
+	}
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+		this.put("bankName", bankName);
+	}
+	public String getBankCode() {
+		return bankCode;
+	}
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+		this.put("bankCode", bankCode);
+	}
 	public String getPurpose() {
 		return purpose;
 	}
 	public void setPurpose(String purpose) {
 		this.purpose = purpose;
+		this.put("purpose", purpose);
 	}
 	public String getNotifyUrl() {
 		return notifyUrl;

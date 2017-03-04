@@ -16,7 +16,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
@@ -38,6 +37,7 @@ import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -45,6 +45,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
@@ -91,7 +92,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	private AfUserDao afUserDao;
 	
 	@Resource
-	private AfUserBankcardService afUserBankcardService;
+	private AfUserBankcardDao afUserBankcardDao;
 	
 	@Resource
 	private TransactionTemplate transactionTemplate;
@@ -196,8 +197,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								}
 							}else{//银行卡代付
 								//TODO 转账处理
-								AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(order.getBankId());
-								UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), Constants.DEFAULT_REFUND_PURPOSE, "02");
+								AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
+								UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
+										card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02");
 								if(!upsResult.isSuccess()){
 									pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
 								}
@@ -309,7 +311,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,PayOrderSource.ORDER.getCode());
 		}else{//银行卡支付
 			map = new HashMap<String,Object>();
-			AfUserBankDto bank = afUserBankcardService.getUserBankInfo(bankId);
+			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bankId);
 			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
 			map.put("resp", respBo);
 			payOrderNo = respBo.getOrderNo();

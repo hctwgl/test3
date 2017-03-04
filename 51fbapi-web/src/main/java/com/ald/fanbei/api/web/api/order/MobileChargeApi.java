@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
@@ -96,6 +97,7 @@ public class MobileChargeApi implements ApiHandle {
 			Map<String,Object> newMap = new HashMap<String,Object>();
 			newMap.put("outTradeNo", upsResult.getOrderNo());
 			newMap.put("tradeNo", upsResult.getTradeNo());
+			newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
 			resp.setResponseData(newMap);
 		}
 		return resp;

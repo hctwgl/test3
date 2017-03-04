@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,10 +63,11 @@ public class UpsUtil extends AbstractThird {
 	private static String SYS_KEY = "01";
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String DEFAULT_CERT_TYPE = "01";  //默认证件类型：身份证
+	private static String PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANXSVyvH4C55YKzvTUCN0fvrpKjIC5lBzDe6QlHCeMZaMmnhJpG/O+aao0q7vwnV08nk14woZEEVHbNHCHcfP+gEIQ52kQvWg0L7DUS4JU73pXRQ6MyLREGHKT6jgo/i1SUhBaaWOGI9w5N2aBxj1DErEzI7TA1h/M3Ban6J5GZrAgMBAAECgYAHPIkquCcEK6Nz9t1cc/BJYF5AQBT0aN+qeylHbxd7Tw4puy78+8XhNhaUrun2QUBbst0Ap1VNRpOsv5ivv2UAO1wHqRS8i2kczkZQj8vcCZsRh3jX4cZru6NoBb6QTTFRS6DRh06iFm0NgBPfzl9PSc3VwGpdj9ZhMO+oTYPBwQJBAPApB74XhZG7DZVpCVD2rGmE0pAlO85+Dxr2Vle+CAgGdtw4QBq89cA/0TvqHPC0xZaYWK0N3OOlRmhO/zRZSXECQQDj7JjxrUaKTdbS7gD88qLZBbk8c07ghO0qDCpp8J2U6D9baVBOrkcz+fTh7B8LzyCo5RY8vk61v/rYqcgk1F+bAkEAvYkELUfPCGZBoCsXSSiEhXpn248nFh5yuWq0VecJ25uObtqN7Qw4PxOeg9SOJoHkdqehRGJuc9LaMDQ4QQ4+YQJAJaIaOsVWgV2K2/cKWLmjY9wLEs0jN/Uax7eMhUOCcWTLmUdRSDyEazOZWHhJRATmKpzwyATQMDhLrdySvGoIgwJBALusECkz5zT4lIujwUNO30LlO8PKPCSKiiQJk4pN60pv2AFX4s2xVdZlXsFJh6btIJ9CGrMvEmogZTIGWq1xOFs=";
+//	private static String PUBLIC_KEY ="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDV0lcrx+AueWCs701AjdH766SoyAuZQcw3ukJRwnjGWjJp4SaRvzvmmqNKu78J1dPJ5NeMKGRBFR2zRwh3Hz/oBCEOdpEL1oNC+w1EuCVO96V0UOjMi0RBhyk+o4KP4tUlIQWmljhiPcOTdmgcY9QxKxMyO0wNYfzNwWp+ieRmawIDAQAB";
 //	private static String DEFAULT_BANK_CARD_TYPE = "10";//默认银行卡类型：储蓄卡
 //	private static String PAY_CANAL_YSB      = "02";   //银生宝
 //	private static String PAY_CHANL_BF       = "07";   //报付
-	
 	
 	//orderNo规则  4位业务码  + 4位接口码  + 11位身份标识（手机号或者身份证后11位） + 13位时间戳
 	
@@ -77,11 +77,16 @@ public class UpsUtil extends AbstractThird {
 	 * @param amount 金额
 	 * @param realName 真实姓名
 	 * @param cardNo 银行卡号
+	 * @param userNo 用户在商户的唯一标识
+	 * @param phone 用户在商户的唯一标识
+	 * @param bankName 银行名称
+	 * @param bankCode 银行编号
 	 * @param purpose 用途
 	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
-	public static UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String purpose,String clientType){
+	public static UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String userNo,
+			String phone,String bankName,String bankCode,String purpose,String clientType){
 		amount = setActualAmount(amount);
 		String orderNo = getOrderNo("dpay", cardNo.substring(cardNo.length()-8,cardNo.length()));
 //		String orderNo = "dp"+cardNo.substring(cardNo.length()-15,cardNo.length()) + System.currentTimeMillis();
@@ -90,9 +95,13 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setAmount(amount.toString());
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
+		reqBo.setUserNo(userNo);
+		reqBo.setPhone(phone);
+		reqBo.setBankName(bankName);
+		reqBo.setBankCode(bankCode);
 		reqBo.setPurpose(purpose);
 		reqBo.setNotifyUrl(notifyHost + "/third/ups/delegatePay");
-		reqBo.setSignInfo(createLinkString(reqBo));
+		reqBo.setSignInfo(RSA.sign(createLinkString(reqBo), PRIVATE_KEY, Constants.DEFAULT_ENCODE));
 
 		String reqResult = HttpUtil.httpPost(url, reqBo);
 		logThird(reqResult, "delegatePay", reqBo);
@@ -111,14 +120,14 @@ public class UpsUtil extends AbstractThird {
 	/**
 	 * 认证支付
 	 * @param amount 支付金额
-	 * @param userCustNo 第三方账户号  //TODO 
+	 * @param userNo 第三方唯一标识
 	 * @param realName 真实姓名
 	 * @param cardNo 银行卡号
 	 * @param idNumber 身份证号
 	 * @param notifyUrl 异步回调地址
 	 * @param clientType 客户端类型
 	 */
-	public static UpsAuthPayRespBo authPay(BigDecimal amount,String userCustNo,String realName,String cardNo,String idNumber,String clientType,String clientIp){
+	public static UpsAuthPayRespBo authPay(BigDecimal amount,String userNo,String realName,String cardNo,String idNumber,String clientType,String clientIp){
 		amount = setActualAmount(amount);
 //		String orderNo = "ap"+cardNo.substring(cardNo.length()-15,cardNo.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("apay", cardNo.substring(cardNo.length()-8,cardNo.length()));
@@ -128,7 +137,7 @@ public class UpsUtil extends AbstractThird {
 		obj.put("clientIp", clientIp);
 		reqBo.setReqExt(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setAmount(amount.toString());
-		reqBo.setUserCustNo(userCustNo);
+		reqBo.setUserNo(userNo);
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
@@ -152,17 +161,26 @@ public class UpsUtil extends AbstractThird {
 	/**
 	 * 
 	 * 支付认证确认
+	 * @param payOrderNo 认证支付返回的tradeNo
+	 * @param cardNo 银行卡号码
+	 * @param userNo 第三方唯一标识
 	 * @param smsCode 短信验证码
 	 * @param tradeNo 原认证支付交易订单号
 	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
-	public static UpsAuthPayConfirmRespBo authPayConfirm(String payOrderNo,String smsCode,String tradeNo,String clientType){
+	public static UpsAuthPayConfirmRespBo authPayConfirm(String payOrderNo,String cardNo,String userNo,
+			String smsCode,String tradeNo,String clientType){
 //		String orderNo = "apc"+tradeNo.substring(tradeNo.length()-14,tradeNo.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("apco", tradeNo.substring(tradeNo.length()-8,tradeNo.length()));
 		UpsAuthPayConfirmReqBo reqBo = new UpsAuthPayConfirmReqBo();
 		setPubParam(reqBo,"authPayConfirm",orderNo,clientType);
+		JSONObject obj = new JSONObject();
+		obj.put("authPayOrderNo", payOrderNo);
+		reqBo.setReqExt(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setSmsCode(smsCode);
+		reqBo.setCardNo(cardNo);
+		reqBo.setUserNo(userNo);
 		reqBo.setTradeNo(tradeNo);
 		reqBo.setNotifyUrl(notifyHost + "/third/ups/authPayConfirm");
 		reqBo.setSignInfo(createLinkString(reqBo));
@@ -250,31 +268,6 @@ public class UpsUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 	}
-	
-	/** 
-     * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
-     * @param params 需要排序并参与字符拼接的参数组
-     * @return 拼接后字符串
-     */
-    public static String createLinkString(Map<String, String> params) {
-
-        List<String> keys = new ArrayList<String>(params.keySet());
-
-        String prestr = "";
-
-        for (int i = 0; i < keys.size(); i++) {
-            String key = keys.get(i);
-            String value = params.get(key);
-
-            if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
-                prestr = prestr + key + "=" + value;
-            } else {
-                prestr = prestr + key + "=" + value + "&";
-            }
-        }
-
-        return prestr;
-    }
 	
 	/**
 	 * 签约短信验证
@@ -373,23 +366,33 @@ public class UpsUtil extends AbstractThird {
 	/**
 	 * 单笔代收
 	 * 
-	 * @param amount
-	 * @param phone
-	 * @param purpose
-	 * @param contractNo
-	 * @param remark
+	 * @param amount --交易金额
+	 * @param userNo --用户唯一标识
+	 * @param realName --真实姓名
+	 * @param phone  --预留手机号
+	 * @param bankCode --银行代码
+	 * @param cardNo --银行卡号
+	 * @param certNo --身份证号
+	 * @param purpose --用途
+	 * @param remark --
 	 * @param returnUrl
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	public static UpsCollectRespBo collect(BigDecimal amount,String phone,String purpose,String contractNo,String remark,String returnUrl,String notifyUrl,String clientType){
-		String orderNo = getOrderNo("coll", contractNo.substring(contractNo.length()-8,contractNo.length()));
+	public static UpsCollectRespBo collect(BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+			String cardNo,String certNo,String purpose,String remark,String returnUrl,String notifyUrl,String clientType){
+		String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-8,cardNo.length()));
 		UpsCollectReqBo reqBo = new UpsCollectReqBo();
 		setPubParam(reqBo,"collect",orderNo,clientType);
 		reqBo.setAmount(amount.toString());
+		reqBo.setUserNo(userNo);
+		reqBo.setRealName(realName);
 		reqBo.setPhone(phone);
+		reqBo.setBankCode(bankCode);
+		reqBo.setCardNo(cardNo);
+		reqBo.setCertType(DEFAULT_CERT_TYPE);
+		reqBo.setCertNo(certNo);
 		reqBo.setPurpose(purpose);
-		reqBo.setContractNo(contractNo);
 		reqBo.setRemark(remark);
 		reqBo.setReturnUrl(returnUrl);
 		reqBo.setNotifyUrl(notifyUrl);
@@ -452,14 +455,14 @@ public class UpsUtil extends AbstractThird {
     	
 		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		String mchId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_MCHID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-		String certPath = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_CERTPATH), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String certPath = ConfigProperties.get(Constants.CONFKEY_WX_CERTPATH);
     	
 		 //元转换分
         BigDecimal hundred = new BigDecimal(100);
         //退款金额
-        String order_refund_fee = refund_fee.multiply(hundred).setScale(0)+"";
+        String order_refund_fee = refund_fee.multiply(hundred).intValue()+"";
         //总金额
-        String order_total_fee = total_fee.multiply(hundred).setScale(0)+"";
+        String order_total_fee = total_fee.multiply(hundred).intValue()+"";
        
     	Map<String,Object> param = new HashMap<String,Object>();
     	param.put("appid", appId);
@@ -518,8 +521,29 @@ public class UpsUtil extends AbstractThird {
 		return amount;
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(System.currentTimeMillis());
-		System.out.println(new Date().getTime());
-	}
+
+	/** 
+     * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
+     * @param params 需要排序并参与字符拼接的参数组
+     * @return 拼接后字符串
+     */
+    public static String createLinkString(Map<String, String> params) {
+
+        List<String> keys = new ArrayList<String>(params.keySet());
+
+        String prestr = "";
+
+        for (int i = 0; i < keys.size(); i++) {
+            String key = keys.get(i);
+            String value = params.get(key);
+
+            if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
+                prestr = prestr + key + "=" + value;
+            } else {
+                prestr = prestr + key + "=" + value + "&";
+            }
+        }
+
+        return prestr;
+    }
 }

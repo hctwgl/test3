@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
@@ -22,6 +23,7 @@ import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -80,6 +82,10 @@ public class SubmitRepaymentApi implements ApiHandle{
 			}
 		}
 		
+		if(StringUtil.isEmpty(billIds)){
+			throw new FanbeiException("borrow bill not exist error", FanbeiExceptionCode.BORROW_BILL_NOT_EXIST_ERROR);
+		}
+		
 		AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
 		if(billDo.getCount()==0 ||repaymentAmount.compareTo(billDo.getBillAmount())!=0){
 			throw new FanbeiException("borrow bill update error", FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
@@ -107,6 +113,9 @@ public class SubmitRepaymentApi implements ApiHandle{
 			Map<String,Object> newMap = new HashMap<String,Object>();
 			newMap.put("outTradeNo", upsResult.getOrderNo());
 			newMap.put("tradeNo", upsResult.getTradeNo());
+			newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
+			newMap.put("refId", map.get("refId"));
+			newMap.put("type", map.get("type"));
 			resp.setResponseData(newMap);
 		}
 		return resp;

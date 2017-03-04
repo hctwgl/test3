@@ -50,7 +50,6 @@ public class AuthBankcardApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		String cardNumber = ObjectUtils.toString(requestDataVo.getParams().get("cardNumber"));
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
-		String isMain = ObjectUtils.toString(requestDataVo.getParams().get("isMain"),"N");
 		String bankCode = ObjectUtils.toString(requestDataVo.getParams().get("bankCode"));
 		
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
@@ -63,13 +62,16 @@ public class AuthBankcardApi implements ApiHandle {
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 		}
-		
+		String isMain = YesNoStatus.NO.getCode();
+		//判断是否已绑定主卡
+		if(YesNoStatus.NO.getCode().equals(auth.getBankcardStatus())){
+			isMain = YesNoStatus.YES.getCode();
+		}
 		//TODO 新建卡
 		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(),"", cardNumber, mobile, context.getUserId(),isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("bankId", bankDo.getRid());
-		map.put("tradeNo", upsResult.getOrderNo());
 		resp.setResponseData(map);
 		return resp;
 	}
