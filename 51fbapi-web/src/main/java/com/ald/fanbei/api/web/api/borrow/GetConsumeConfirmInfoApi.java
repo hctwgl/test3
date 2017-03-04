@@ -31,6 +31,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfConsumeConfirmVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.ApiException;
 import com.taobao.api.domain.XItem;
@@ -64,17 +65,17 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 		BigDecimal goodsAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsAmount")), BigDecimal.ZERO);
 		//获取借款分期配置信息
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-		JSONObject obj  = JSON.parseObject(resource.getValue());
+		JSONArray array  = JSON.parseArray(resource.getValue());
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		if(null == card){
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
-		if(obj == null){
+		if(array == null){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
 		Integer goodsNum = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsNum")), 1);
 	    
-		List<Map<String,Object>> list = getConsumeList(obj,goodsNum,goodsAmount,resource);
+		List<Map<String,Object>> list = getConsumeList(array,goodsNum,goodsAmount,resource);
 		if(goodsNum>1){
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("timeLimitList", list);
@@ -91,12 +92,13 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 		return resp;
 	}
 	
-	private List<Map<String,Object>> getConsumeList(JSONObject obj,int goodsNum,BigDecimal goodsAmount,AfResourceDo resource){
+	private List<Map<String,Object>> getConsumeList(JSONArray array,int goodsNum,BigDecimal goodsAmount,AfResourceDo resource){
 		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-		for (Map.Entry<String, Object> entry : obj.entrySet()) {
+		for (int i=0;i<array.size();i++) {
+			JSONObject obj = array.getJSONObject(i);
 			Map<String, Object> attrs = new HashMap<String, Object>();
-			String key = entry.getKey();
-			String value = entry.getValue().toString();
+			String key = obj.getString("nper");
+			String value = obj.getString("rate");
 			if (value != null && !"".equals(value.trim())) {
 				BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
 				BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);

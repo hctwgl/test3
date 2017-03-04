@@ -3,13 +3,13 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAccountDao">
 	<sql id="queryAllFields">
 		id rid,gmt_modified,user_id,user_name,au_amount,used_amount,freeze_amount,score,alipay_account,rebate_amount,id_number,
-		real_name,jfb_amount,password,salt,fail_count,uc_amount,bind_card
+		real_name,jfb_amount,password,salt,fail_count,uc_amount,bind_card,credit_score
 	</sql>
 	
 	<sql id="queryWithUserFields">
 		c.id rid,c.user_id,c.user_name,c.au_amount,c.used_amount,c.freeze_amount,
 		c.score,c.alipay_account,c.rebate_amount,c.id_number,c.jfb_amount,c.uc_amount,u.gender,u.nick,u.avatar,
-		u.real_name,u.mobile,u.recommend_code,c.password,c.salt,c.fail_count
+		u.real_name,u.mobile,u.recommend_code,c.password,c.salt,c.fail_count,c.credit_score
 	</sql>
 	
 	<select id="getUserAccountInfoByUserId" resultType="AfUserAccountDo" >
@@ -43,7 +43,7 @@
     			,user_name=#{userName}
 			</if>
 			<if test="auAmount != null">
-    			,au_amount=au_amount + #{auAmount}
+    			,au_amount=#{auAmount}
 			</if>
 			<if test="usedAmount != null">
     			,used_amount=used_amount + #{usedAmount}
@@ -83,6 +83,9 @@
 			</if>
 			<if test="bindCard != null">
     			,bind_card=#{bindCard}
+			</if>
+			<if test="creditScore != null">
+    			,credit_score=#{creditScore}
 			</if>
 		WHERE user_id = #{userId}
 	</update>

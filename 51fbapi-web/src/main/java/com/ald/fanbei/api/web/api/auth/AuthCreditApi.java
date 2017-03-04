@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.auth;
 
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.Date;
 
@@ -10,21 +11,27 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.ZhimaAuthResultBo;
 import com.ald.fanbei.api.biz.service.AfAuthZmService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthZmDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.antgroup.zmxy.openplatform.api.response.ZhimaCreditIvsDetailGetResponse;
 import com.antgroup.zmxy.openplatform.api.response.ZhimaCreditScoreGetResponse;
 import com.antgroup.zmxy.openplatform.api.response.ZhimaCreditWatchlistiiGetResponse;
@@ -44,6 +51,8 @@ public class AuthCreditApi implements ApiHandle {
 	AfAuthZmService afAuthZmService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -98,8 +107,53 @@ public class AuthCreditApi implements ApiHandle {
 		afUserAuthService.updateUserAuth(userAuth);
 		
 		// TODO 计算信用分 更新userAccount
-		resp.addResponseData("tooLow", 'N');
-		resp.addResponseData("creditAmount", 200);
+		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
+		AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_CREDIT_SCORE);
+		int sorce = BigDecimalUtil.getCreditScore(new BigDecimal(auth.getZmScore()), new BigDecimal(auth.getIvsScore()), 
+				new BigDecimal(auth.getRealnameScore()),new BigDecimal(resource.getValue()), 
+				new BigDecimal(resource.getValue1()), new BigDecimal(resource.getValue2()));
+		AfResourceDo creditPz = afResourceService.getSingleResourceBytype(Constants.RES_CREDIT_SCORE_AMOUNT);
+		JSONArray arry = JSON.parseArray(creditPz.getValue());
+		BigDecimal creditAmount = BigDecimal.ZERO,maxAmount = BigDecimal.ZERO;
+		int min = 0,max = 0;
+		for (int i = 0; i < arry.size(); i++) {
+			JSONObject obj = arry.getJSONObject(i);
+			int minScore = obj.getInteger("minScore");
+			int maxScore = obj.getInteger("maxScore");
+			BigDecimal amount = obj.getBigDecimal("amount");
+			if(i==0){
+				min = minScore;
+				max = maxScore;
+				maxAmount = amount;
+			}else{
+				if(min>minScore){
+					min = minScore;
+				}
+				if(max<maxScore){
+					max = maxScore;
+					maxAmount = amount;
+				}
+			}
+			if(minScore<=sorce&&maxScore>sorce){
+				creditAmount = amount;
+			}
+		}
+		if(min>sorce){
+			resp.addResponseData("tooLow", 'Y');
+			resp.addResponseData("creditAmount", 0);
+		}else if(max>=sorce){
+			resp.addResponseData("tooLow", 'N');
+			resp.addResponseData("creditAmount", maxAmount);
+			creditAmount = maxAmount;
+		}else{
+			resp.addResponseData("tooLow", 'N');
+			resp.addResponseData("creditAmount", creditAmount);
+		}
+		AfUserAccountDo account = new AfUserAccountDo();
+		account.setAuAmount(creditAmount);
+		account.setCreditScore(sorce);
+		account.setUserId(context.getUserId());
+		afUserAccountService.updateUserAccount(account);
 		return resp;
 	}
 }

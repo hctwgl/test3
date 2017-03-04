@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-03 17:37:12
+* @Last Modified time: 2017-03-03 19:26:24
 * @title:  商品列表页
 */
 
@@ -14,7 +14,7 @@ pageNoNum++;
 var typeCurrentNum = $("#typeCurrent").val();
 var categoryListType = $("#categoryListType").val();
 
-$(".goodsListModel_main .goodsListModel_main_list:first-child").removeClass('goodsListModel_hide');
+$(".goodsListModel_main .goodsListModel_main_list:first-child").removeClass("goodsListModel_hide");
 $(".goodsListModel_main_list:first-child").siblings().html("");
 
 

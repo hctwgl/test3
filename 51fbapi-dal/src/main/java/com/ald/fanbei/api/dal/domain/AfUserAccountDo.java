@@ -31,7 +31,7 @@ public class AfUserAccountDo extends AbstractSerial {
 	private BigDecimal ucAmount;//已取现额度
 	private Integer failCount; //密码连续错误次数
 	private String bindCard;//是否绑卡：Y：绑卡：N：未绑卡
-	
+	private Integer creditScore;//信用分
 	
 	/**
 	 * @return the bindCard
@@ -167,5 +167,11 @@ public class AfUserAccountDo extends AbstractSerial {
 	}
 	public void setRealName(String realName) {
 		this.realName = realName;
+	}
+	public Integer getCreditScore() {
+		return creditScore;
+	}
+	public void setCreditScore(Integer creditScore) {
+		this.creditScore = creditScore;
 	}
 }

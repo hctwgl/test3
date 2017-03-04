@@ -4,7 +4,7 @@
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,user_id,order_no,status,user_coupon_id,order_type,goods_id,open_id,goods_name,goods_icon,
 		count,price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,rebate_amount,gmt_rebated,
-		mobile,gmt_finished,commission_amount,bank_id,num_id
+		mobile,gmt_finished,commission_amount,bank_id
 	</sql>
 	
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
@@ -92,9 +92,6 @@
 		</if>
 		<if test="openId != null">
 		    ,open_id=#{openId}
-		</if>
-		<if test="numId != null">
-		    ,num_id=#{numId}
 		</if>
 		<if test="goodsName != null">
 		    ,goods_name=#{goodsName}

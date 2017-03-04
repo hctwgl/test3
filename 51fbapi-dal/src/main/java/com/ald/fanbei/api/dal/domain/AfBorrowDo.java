@@ -43,15 +43,11 @@ public class AfBorrowDo extends AbstractSerial{
 	
 	private Long orderId;//订单id
 
-	private Long goodsId;//商品id
-	
-	private String openId;//商品混淆id
+	private String orderNo;
 	
 	private BigDecimal nperAmount;//每期应还金额
 	
 	private BigDecimal repayPrinAmount;//已还本金
-	
-	private String numId;//商品id
 	
 	private String cardNo;//卡编号
 	
@@ -169,22 +165,6 @@ public class AfBorrowDo extends AbstractSerial{
 		this.orderId = orderId;
 	}
 
-	public Long getGoodsId() {
-		return goodsId;
-	}
-
-	public void setGoodsId(Long goodsId) {
-		this.goodsId = goodsId;
-	}
-
-	public String getOpenId() {
-		return openId;
-	}
-
-	public void setOpenId(String openId) {
-		this.openId = openId;
-	}
-
 	public BigDecimal getNperAmount() {
 		return nperAmount;
 	}
@@ -201,14 +181,6 @@ public class AfBorrowDo extends AbstractSerial{
 		this.repayPrinAmount = repayPrinAmount;
 	}
 
-	public String getNumId() {
-		return numId;
-	}
-
-	public void setNumId(String numId) {
-		this.numId = numId;
-	}
-
 	public String getCardNo() {
 		return cardNo;
 	}
@@ -223,6 +195,14 @@ public class AfBorrowDo extends AbstractSerial{
 
 	public void setCardName(String cardName) {
 		this.cardName = cardName;
+	}
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
 	}
 	
 }
