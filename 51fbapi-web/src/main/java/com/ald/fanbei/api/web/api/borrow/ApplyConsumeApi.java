@@ -1,8 +1,6 @@
 package com.ald.fanbei.api.web.api.borrow;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -14,14 +12,15 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -53,12 +52,9 @@ public class ApplyConsumeApi implements ApiHandle{
 		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
 		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
 		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
-		int nper = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("nper")), 2);
+		int nper = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get(Constants.DEFAULT_NPER)), 2);
 		Long userId = context.getUserId();
-		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);//TODO 可只查询user_account表
-		if (userDto == null) {//TODO 无需判断，用户注册时必须生成记录
-			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-		}
+		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
 		if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
@@ -81,11 +77,9 @@ public class ApplyConsumeApi implements ApiHandle{
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}*/
 		long result = afBorrowService.dealConsumeApply(userDto, amount, card.getRid(), goodsId, openId,numId, name, nper);
-		if(result>0){//TODO 以下4行代码可换成  resp.addResponseData("refId", result); resp.addResponseData("type", UserAccountLogType.CASH.getCode());
-			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("refId", result);
-			map.put("type", UserAccountLogType.CONSUME.getCode());
-			resp.setResponseData(map);
+		if(result>0){//TODO 以下4行代码可换成  
+			resp.addResponseData("refId", result); 
+			resp.addResponseData("type", UserAccountLogType.CASH.getCode());
 			return resp;
 		}
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);

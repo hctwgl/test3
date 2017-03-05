@@ -51,6 +51,7 @@ public class AuthBankcardApi implements ApiHandle {
 		String cardNumber = ObjectUtils.toString(requestDataVo.getParams().get("cardNumber"));
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
 		String bankCode = ObjectUtils.toString(requestDataVo.getParams().get("bankCode"));
+		String bankName = ObjectUtils.toString(requestDataVo.getParams().get("bankName"));
 		
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if(null ==auth||YesNoStatus.NO.getCode().equals(auth.getFacesStatus())){
@@ -68,7 +69,7 @@ public class AuthBankcardApi implements ApiHandle {
 			isMain = YesNoStatus.YES.getCode();
 		}
 		//TODO 新建卡
-		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(),"", cardNumber, mobile, context.getUserId(),isMain);
+		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(),bankName, cardNumber, mobile, context.getUserId(),isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("bankId", bankDo.getRid());

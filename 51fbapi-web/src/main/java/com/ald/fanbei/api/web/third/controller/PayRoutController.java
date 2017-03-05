@@ -142,4 +142,16 @@ public class PayRoutController{
         }
     	return "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
 	}
+    
+    @RequestMapping(value = {"/collect"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String collect(HttpServletRequest request, HttpServletResponse response){
+    	String outTradeNo = request.getParameter("outTradeNo");
+    	String tradeNo = request.getParameter("tradeNo");
+    	if(afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo)>0){
+    		return "succ";
+    	}else{
+    		return "error";
+    	}
+    }
 }

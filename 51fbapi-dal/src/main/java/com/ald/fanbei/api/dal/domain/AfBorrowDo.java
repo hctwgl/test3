@@ -49,7 +49,7 @@ public class AfBorrowDo extends AbstractSerial{
 	
 	private BigDecimal repayPrinAmount;//已还本金
 	
-	private String cardNo;//卡编号
+	private String cardNumber;//卡编号
 	
 	private String cardName;//卡名称
 
@@ -181,12 +181,12 @@ public class AfBorrowDo extends AbstractSerial{
 		this.repayPrinAmount = repayPrinAmount;
 	}
 
-	public String getCardNo() {
-		return cardNo;
+	public String getCardNumber() {
+		return cardNumber;
 	}
 
-	public void setCardNo(String cardNo) {
-		this.cardNo = cardNo;
+	public void setCardNumber(String cardNumber) {
+		this.cardNumber = cardNumber;
 	}
 
 	public String getCardName() {

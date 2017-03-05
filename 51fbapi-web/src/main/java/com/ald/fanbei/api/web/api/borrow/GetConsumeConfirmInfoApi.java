@@ -97,8 +97,8 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 		for (int i=0;i<array.size();i++) {
 			JSONObject obj = array.getJSONObject(i);
 			Map<String, Object> attrs = new HashMap<String, Object>();
-			String key = obj.getString("nper");//TODO nper,rate多处会使用,可放Constants中定义为常量
-			String value = obj.getString("rate");
+			String key = obj.getString(Constants.DEFAULT_NPER);
+			String value = obj.getString(Constants.DEFAULT_RATE);
 			if (value != null && !"".equals(value.trim())) {
 				BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
 				BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);

@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -58,7 +59,11 @@ public class GetMyBillListApi implements ApiHandle{
 			Map<String,Object> dataMap = new HashMap<String,Object>();
 			dataMap.put("billMonth", String.format("%02d", afBorrowBillDo.getBillMonth()));
 			dataMap.put("billAmount", afBorrowBillDo.getBillAmount());
-			dataMap.put("billStatus", afBorrowBillDo.getStatus());
+			String status = afBorrowBillDo.getStatus();
+			if(BorrowBillStatus.PART.getCode().equals(status)){
+				status = BorrowBillStatus.NO.getCode();
+			}
+			dataMap.put("billStatus",status);
 			if(year!=0&&year!=afBorrowBillDo.getBillYear()){
 				Map<String, Object> yearMap = new HashMap<String, Object>();
 				yearMap.put("billYear", year);

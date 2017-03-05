@@ -61,7 +61,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		Map<String,Integer> map = afBorrowService.getCurrentYearAndMonth("",now);
 		//TODO "year","month"在多个类多处用到可放Constants中用常量表示
-		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get("year"), map.get("month"), YesNoStatus.NO.getCode()),userDto, authDo);
+		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()),userDto, authDo);
 		resp.setResponseData(data);
 		return resp;
 	}

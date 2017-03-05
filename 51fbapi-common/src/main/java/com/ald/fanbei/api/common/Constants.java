@@ -45,6 +45,10 @@ public class Constants {
     public static final String YES                                    = "yes";
     public static final String NO                                     = "no";
     public static final String COMMA                                  = ",";
+    public static final String DEFAULT_YEAR                       	  = "year";
+    public static final String DEFAULT_MONTH                       	  = "month";
+    public static final String DEFAULT_NPER                       	  = "nper";
+    public static final String DEFAULT_RATE                       	  = "rate";
     
     public static final Long   INVITE_START_VALUE                     = 1679625L;
     public static final String INVELOMENT_TYPE_TEST                   = "test";
@@ -63,6 +67,8 @@ public class Constants {
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
     public static final String CACHEKEY_APK_NEWEST_VERSION            = "apk_newest_version$";
+    public static final String CACHEKEY_BORROW_CASH                   = "borrow_cash$";
+    public static final String CACHEKEY_BORROW_CONSUME                = "borrow_consume$";
     
     
     //res type
@@ -129,4 +135,6 @@ public class Constants {
     public static final String CONFKEY_WX_MCHID						 = "fbapi.wx.mchid";
     public static final String CONFKEY_WX_KEY						 = "fbapi.wx.key";
     public static final String CONFKEY_WX_CERTPATH					 = "fbapi.wx.certpath";
+    public static final String CONFKEY_NOTIFY_HOST					 = "fbapi.notify.host";
+    public static final String CONFKEY_UPS_URL						 = "fbapi.ups.url";
 }

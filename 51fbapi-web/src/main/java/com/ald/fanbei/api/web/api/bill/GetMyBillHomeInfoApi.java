@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -56,7 +57,8 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		Date now =new Date();
 		Date repayDate = afBorrowService.getReyLimitDate(now);
 		Map<String,Integer> map = afBorrowService.getCurrentYearAndMonth(billType,now);
-		AfBillHomeVo homeVo = getBillHomeVo(afBorrowBillService.getMonthlyBillByStatus(userId, map.get("year"), map.get("month"), YesNoStatus.NO.getCode()), map.get("year"), map.get("month"),repayDate,pageNo,userId);
+		AfBillHomeVo homeVo = getBillHomeVo(afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), 
+				map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()), map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH),repayDate,pageNo,userId);
 		resp.setResponseData(homeVo);
 		return resp;
 	}
