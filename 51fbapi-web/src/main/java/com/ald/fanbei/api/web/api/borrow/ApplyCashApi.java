@@ -52,8 +52,8 @@ public class ApplyCashApi implements ApiHandle{
 		BigDecimal money = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("money")), BigDecimal.ZERO);
 		Long userId = context.getUserId();
         logger.info("userId=" + userId + ",money=" + money);
-		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
-		if (userDto == null) {
+		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);//TODO 可只查询user_account表
+		if (userDto == null) {//TODO 无需判断，用户注册时必须生成记录
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		BigDecimal useableAmount = userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount());
@@ -71,13 +71,12 @@ public class ApplyCashApi implements ApiHandle{
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
 		//TODO 转账处理 待调试
-		/*UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), userId+"", card.getMobile(), card.getBankName(),
-				card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02");
+		/*UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), Constants.DEFAULT_BORROW_PURPOSE, "02");
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}*/
 		long result = afBorrowService.dealCashApply(userDto, money,card.getRid());
-		if(result>0){
+		if(result>0){//TODO 以下4行代码可换成  resp.addResponseData("refId", result); resp.addResponseData("type", UserAccountLogType.CASH.getCode());
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("refId", result);
 			map.put("type", UserAccountLogType.CASH.getCode());

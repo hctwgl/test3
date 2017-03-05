@@ -119,11 +119,12 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CASH,money, userDto.getUserId(), borrow.getRid()));
 					
 					//生成账单
-					AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CASH);
-					if(null == resource){
+					AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CASH);//TODO 走缓存
+					if(null == resource){//TODO 无需对resource判空，上线是必须配置
 						throw new Exception("现金借款利率配置不能为空");
 					}else{
 						BigDecimal money = borrow.getAmount();//借款金额
+						//TODO 现金借款只能是总额度的1/2
 						BigDecimal dayRate = NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO);//取现日利率
 						BigDecimal serviceCharge = NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO);//取现手续费率
 						BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
@@ -276,8 +277,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					account.setUsedAmount(amount);
 					afUserAccountDao.updateUserAccount(account);
 					//获取借款分期配置信息
-					AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME);
-					if(null == resource){
+					AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME);//TODO 走缓存
+					if(null == resource){//TODO 无需对resource判空，上线是必须配置
 						throw new Exception("分期利率配置不能为空");
 					}else{
 						BigDecimal money = amount;//借款金额
@@ -336,8 +337,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			startDate = DateUtil.addMonths(startDate,-1);
 		}
 		if("N".equals(type)){
-			startDate = DateUtil.addMonths(startDate,
-					1);
+			startDate = DateUtil.addMonths(startDate,1);
 		}
 		int billYear=0,billMonth=0;
 		String[] billDay = DateUtil.formatDate(startDate, DateUtil.MONTH_PATTERN).split("-");

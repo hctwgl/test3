@@ -55,8 +55,8 @@ public class ApplyConsumeApi implements ApiHandle{
 		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
 		int nper = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("nper")), 2);
 		Long userId = context.getUserId();
-		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
-		if (userDto == null) {
+		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);//TODO 可只查询user_account表
+		if (userDto == null) {//TODO 无需判断，用户注册时必须生成记录
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
@@ -81,7 +81,7 @@ public class ApplyConsumeApi implements ApiHandle{
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}*/
 		long result = afBorrowService.dealConsumeApply(userDto, amount, card.getRid(), goodsId, openId,numId, name, nper);
-		if(result>0){
+		if(result>0){//TODO 以下4行代码可换成  resp.addResponseData("refId", result); resp.addResponseData("type", UserAccountLogType.CASH.getCode());
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("refId", result);
 			map.put("type", UserAccountLogType.CONSUME.getCode());

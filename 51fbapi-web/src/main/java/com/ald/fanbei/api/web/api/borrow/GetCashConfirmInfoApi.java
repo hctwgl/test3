@@ -54,13 +54,14 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
 		//账户关联信息
-		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
+		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);//TODO 可直接查询account表
 		Map<String, Object> data = getCashInfo(resource, card, userDto);
 		resp.setResponseData(data);
 		return resp;
 	}
 	private Map<String, Object> getCashInfo(AfResourceDo resource,AfUserBankcardDo card,AfUserAccountDto userDto){
 		Map<String, Object> data = new HashMap<String, Object>();
+		//TODO 减去  已经使用的额度/2
 		data.put("usableAmount", userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount()));
 		data.put("cardNo", StringUtil.getLastString(card.getCardNumber(),4));
 		data.put("cardName",card.getBankName());
