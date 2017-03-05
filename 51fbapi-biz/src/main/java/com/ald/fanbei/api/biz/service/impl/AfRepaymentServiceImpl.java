@@ -26,6 +26,7 @@ import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -180,6 +181,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+					if(YesNoStatus.YES.getCode().equals(repayment.getStatus())){
+						return 0l;
+					}
 					//变更还款记录为已还款
 					afRepaymentDao.updateRepayment(RepaymentStatus.YES.getCode(),tradeNo, repayment.getRid());
 					AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(repayment.getBillIds());

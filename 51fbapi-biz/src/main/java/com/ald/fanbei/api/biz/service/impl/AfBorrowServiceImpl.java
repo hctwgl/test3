@@ -338,8 +338,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		if(now.before(startDate)){//账单日前面
 			startDate = DateUtil.addMonths(startDate,-1);
 		}
-		if(!"N".equals(type)){
-			startDate = DateUtil.addMonths(startDate,-1);
+		if("N".equals(type)){
+			startDate = DateUtil.addMonths(startDate,1);
 		}
 		int billYear=0,billMonth=0;
 		String[] billDay = DateUtil.formatDate(startDate, DateUtil.MONTH_PATTERN).split("-");
