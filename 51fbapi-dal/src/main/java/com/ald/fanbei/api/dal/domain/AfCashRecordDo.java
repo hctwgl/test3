@@ -24,10 +24,25 @@ public class AfCashRecordDo extends AbstractSerial {
 	private Date gmtModified;	
 	private Long userId;//用户id
 	private BigDecimal amount;//Type为CASH 时 提现金额   JIFENBAO为集分宝个数
-	private String account;//Type 为CASH时 为 银行卡id；Type为JIFENBAO时 为支付宝账号
+	private String cardNumber;//Type 为CASH时 为 银行卡号；Type为JIFENBAO时 为支付宝账号
+	private String cardName;//卡名称,或者支付宝
+
 	private String type;//类型【CASH：cash 现金提现；JIFENBAO：集分宝提现】
 	private String status;//类型【APPLY:申请,AUTH:审核,REFUSE:拒绝,TRANSED:转账】
 
+
+	/**
+	 * @return the cardName
+	 */
+	public String getCardName() {
+		return cardName;
+	}
+	/**
+	 * @param cardName the cardName to set
+	 */
+	public void setCardName(String cardName) {
+		this.cardName = cardName;
+	}
 	/**
 	 * @return the gmtCreate
 	 */
@@ -65,18 +80,6 @@ public class AfCashRecordDo extends AbstractSerial {
 		this.userId = userId;
 	}
 
-	/**
-	 * @return the account
-	 */
-	public String getAccount() {
-		return account;
-	}
-	/**
-	 * @param account the account to set
-	 */
-	public void setAccount(String account) {
-		this.account = account;
-	}
 	/**
 	 * @return the type
 	 */
@@ -124,6 +127,18 @@ public class AfCashRecordDo extends AbstractSerial {
 	 */
 	public void setRid(Long rid) {
 		this.rid = rid;
+	}
+	/**
+	 * @return the cardNumber
+	 */
+	public String getCardNumber() {
+		return cardNumber;
+	}
+	/**
+	 * @param cardNumber the cardNumber to set
+	 */
+	public void setCardNumber(String cardNumber) {
+		this.cardNumber = cardNumber;
 	}
 
 }

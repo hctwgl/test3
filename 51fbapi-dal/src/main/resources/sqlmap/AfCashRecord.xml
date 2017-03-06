@@ -11,7 +11,8 @@
 			type,
 			status,
 			user_id,
-			account,
+			card_number,
+			card_name,
 			amount
 		)
 		VALUES
@@ -21,7 +22,8 @@
 			#{type},
 			#{status},
 			#{userId},
-			#{account},
+			#{cardNumber},
+			#{cardName},
 			#{amount}
 		)
 	</insert>
