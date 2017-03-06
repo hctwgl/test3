@@ -51,8 +51,8 @@
 		<property name="fbapi.email.pwd" defaultValue="BeSHxmaAFBhNCE2gIdPVRg==" description="邮箱用户名密码" />
 		
 		<!-- db -->
-		<property name="fbapi.db.url" defaultValue="cWMNU0ZWZ9AwQ6Snh5F2U1Mqq/4e2c2tESAQCmThf76D2DF+8TYAj4DcQcI8M3Cc" description="dburl" />
-		<property name="fbapi.db.username" defaultValue="IJHsUz9iDSoqGAr1J3hHQQ==" description="db username" />
+		<property name="fbapi.db.url" defaultValue="OZAtwQcAyH5+BVcIbdZW6euzZCntyUxwH743Udhr9+LU+d0IhGa6JAh4bXHXkgeqEAD/gApVuKDhPmIPoVSEBQ==" description="dburl" />
+		<property name="fbapi.db.username" defaultValue="BGxKtjbfzgi+lr5EB+LU6Q==" description="db username" />
 		<property name="fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
 		
 		<property name="fbapi.aes.password" defaultValue="testC1b6x@6aH$2dlw" description="aes passwd" />
