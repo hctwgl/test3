@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-04 15:59:03
+* @Last Modified time: 2017-03-06 19:00:07
 * @title:  商品列表页
 */
 
@@ -14,6 +14,9 @@ var modelIdNum = getUrl("modelId"); // 获取modelId参数
 // 获取categoryList数组
 var category = $("#categoryList").val();
 var categoryObj = eval('(' + category + ')');
+
+// 获取ip地址
+var notifyUrl = $("#notifyUrl").val();
 
 // 默认goodsList第一个位显示其他的都为隐藏
 $(".goodsListModel_main .goodsListModel_main_list:first-child").removeClass("goodsListModel_hide");
@@ -77,6 +80,7 @@ $(function(){
                 if (returnData.success) {
                     var html = '';
                     var goodsList = returnData.data["goodsList"];
+
                     for (var i = 0; i < goodsList.length; i++) {
                         // 售价
                         var priceAmount = toDecimal2(goodsList[i].priceAmount);
@@ -91,7 +95,8 @@ $(function(){
 
                         html+=  '<ul class="goodsListModel_mainContent clearfix">'
                                     +'<li class="fl bdc_cb goodsListModel_item">'
-                                        +'<a href="'+goodsList[i].goodsUrl+'">'
+                                        // +'<a href="'+goodsList[i].goodsUrl+'">'
+                                        +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[i].goodsId+',openId:'+goodsList[i].openId+'">'
                                             +'<img src="'+goodsList[i].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
                                             +'<div class="goodsListModel_mainContent_main">'
                                                 +'<div class="goodsListModel_mainContent_wrap">'
@@ -158,6 +163,7 @@ $(function(){
 
     //加载更多  
     function loadmore(obj){
+
         if(finished==0 && sover==0){
 
             var scrollTop = $(obj).scrollTop();
@@ -169,86 +175,97 @@ $(function(){
             }
 
             finished=1; //防止未加载完再次执行
-            var categoryListType = categoryObj[i].type;
-            var pageTotal = categoryObj[i].pageTotal;
-            console.log(categoryListType);
-            $.ajax({
-                url: "/app/goods/categoryGoodsList",
-                type: "POST",
-                dataType: "JSON",
-                data: {
-                    modelId : modelIdNum,
-                    pageNo: pageNoNum,
-                    type: typeCurrentNum
-                },
-                success: function(returnData){
-                    if (returnData.success) {
 
-                        if(returnData==""){
-                            sover = 1;
-                            loadover();                  
-                            if (page == 1) {
-                                $(".loadover").remove();
-                            }
-                        }else{
-                            var html = '';
-                            var goodsList = returnData.data["goodsList"];
-                            for(var i = 0; i < goodsList.length; i++){
-                                // 售价
-                                var priceAmount = toDecimal2(goodsList[i].priceAmount);
-                                var amountAmountSplitArr =  priceAmount.split(".");
-                                var amountAmountPriceInteger = amountAmountSplitArr[0];
-                                var amountAmountPriceDecimal = amountAmountSplitArr[1];
-                                // 返利
-                                var rebateAmount = toDecimal2(goodsList[i].rebateAmount);
-                                var rebateAmountSplitArr =  rebateAmount.split(".");
-                                var rebateAmountPriceInteger = rebateAmountSplitArr[0];
-                                var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
+            // $(".goodsListModel_header li").click(function(){
 
-                                html+= '<li class="fl bdc_cb goodsListModel_item">'
-                                            +'<a href="'+goodsList[i].goodsUrl+'">'
-                                                +'<img src="'+goodsList[i].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
-                                                +'<div class="goodsListModel_mainContent_main">'
-                                                    +'<div class="goodsListModel_mainContent_wrap">'
-                                                        +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
-                                                        +'<span class="fs_26 fsc_red">'
+                var i = $(this).index();
+                var categoryListType = categoryObj[i].type;
+                var pageTotal = categoryObj[i].pageTotal;
+                console.log(categoryListType);
+
+
+                $.ajax({
+                    url: "/app/goods/categoryGoodsList",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        modelId : modelIdNum,
+                        pageNo: pageNoNum,
+                        type: categoryListType
+                    },
+                    success: function(returnData){
+                        if (returnData.success) {
+
+                            if(returnData==""){
+                                sover = 1;
+                                loadover();                  
+                                if (page == 1) {
+                                    $(".loadover").remove();
+                                }
+                            }else{
+                                var html = '';
+                                var goodsList = returnData.data["goodsList"];
+                                for(var i = 0; i < goodsList.length; i++){
+                                    // 售价
+                                    var priceAmount = toDecimal2(goodsList[i].priceAmount);
+                                    var amountAmountSplitArr =  priceAmount.split(".");
+                                    var amountAmountPriceInteger = amountAmountSplitArr[0];
+                                    var amountAmountPriceDecimal = amountAmountSplitArr[1];
+                                    // 返利
+                                    var rebateAmount = toDecimal2(goodsList[i].rebateAmount);
+                                    var rebateAmountSplitArr =  rebateAmount.split(".");
+                                    var rebateAmountPriceInteger = rebateAmountSplitArr[0];
+                                    var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
+
+                                    html+= '<li class="fl bdc_cb goodsListModel_item">'
+                                                // +'<a href="'+goodsList[i].goodsUrl+'">'
+                                                +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[i].goodsId+',openId:'+goodsList[i].openId+'">'
+                                                    +'<img src="'+goodsList[i].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
+                                                    +'<div class="goodsListModel_mainContent_main">'
+                                                        +'<div class="goodsListModel_mainContent_wrap">'
+                                                            +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
                                                             +'<span class="fs_26 fsc_red">'
-                                                                +'<span>￥'+amountAmountPriceInteger+'</span>'
-                                                                +'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
+                                                                +'<span class="fs_26 fsc_red">'
+                                                                    +'<span>￥'+amountAmountPriceInteger+'</span>'
+                                                                    +'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
+                                                                +'</span>'
                                                             +'</span>'
-                                                        +'</span>'
-                                                    +'</div>'
-                                                    +'<div class="goodsListModel_mainContent_rebate_wrap">'
-                                                        +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                                            +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
-                                                            +'<p class="fl fs_24 fsc_orange">'
-                                                                +'<span>￥'+rebateAmountPriceInteger+'</span>'
-                                                                +'<span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
-                                                            +'</p>'
+                                                        +'</div>'
+                                                        +'<div class="goodsListModel_mainContent_rebate_wrap">'
+                                                            +'<div class="goodsListModel_mainContent_rebate clearfix">'
+                                                                +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
+                                                                +'<p class="fl fs_24 fsc_orange">'
+                                                                    +'<span>￥'+rebateAmountPriceInteger+'</span>'
+                                                                    +'<span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
+                                                                +'</p>'
+                                                            +'</div>'
                                                         +'</div>'
                                                     +'</div>'
-                                                +'</div>'
-                                            +'</a>'
-                                        +'</li>';
-                            }
+                                                +'</a>'
+                                            +'</li>';
+                                }
 
-                            $(".loadmore").remove();
-                            $(".goodsListModel_mainContent").append(html);
-                            page+=1;
-                            finished=0;
-                            if(page==pageTotal){ //最后一页
-                                sover=1;
-                                loadover();
+                                $(".loadmore").remove();
+                                $(".goodsListModel_mainContent").append(html);
+                                // page+=1;
+                                // var page;
+                                // finished=0;
+                                if(page==pageTotal){ //最后一页
+                                    sover=1;
+                                    loadover();
+                                }
                             }
+                        } else {
+                            requestMsg(returnData.msg);
                         }
-                    } else {
-                        requestMsg(returnData.msg);
+                    },
+                    error: function(){
+                        requestMsg("请求失败");
                     }
-                },
-                error: function(){
-                    requestMsg("请求失败");
-                }
-            });
+                });
+
+            // });
+
         }
     }
 
