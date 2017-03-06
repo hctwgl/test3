@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-		<title>返利教程</title>
+		<title>搜呗详细教程</title>
 	    <style type="text/css">
 	    	.rebateTutorial li:nth-child(1){
 				width: 18.75rem;
-				height: 20.975rem;
+				height: 20.75rem;
 				background-image: url(/images/app/sys/rebateTutorial_bg1.png);
 				-webkit-background-size: cover;
 				-moz-background-size: cover;
@@ -23,7 +23,7 @@
 	    	}
 	    	.rebateTutorial li:nth-child(3){
 				width: 18.75rem;
-				height: 18.3rem;
+				height: 18.25rem;
 				background-image: url(/images/app/sys/rebateTutorial_bg3.png);
 				-webkit-background-size: cover;
 				-moz-background-size: cover;
@@ -31,6 +31,7 @@
 				background-size: cover;
 	    	}
 	    </style>
+
     </head>
     <body>
 		<ul class="rebateTutorial">
