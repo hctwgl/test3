@@ -18,6 +18,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -45,6 +46,7 @@ public class WithdrawCashApi implements ApiHandle {
 		String account = ObjectUtils.toString(requestDataVo.getParams().get("account"));
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
 		BigDecimal amount = new BigDecimal(ObjectUtils.toString(requestDataVo.getParams().get("amount")));
+		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 
 		if (userId == null || StringUtils.isEmpty(account) || StringUtils.isEmpty(type)) {
 			throw new FanbeiException("user id or account or type is  empty", FanbeiExceptionCode.PARAM_ERROR);
@@ -67,6 +69,12 @@ public class WithdrawCashApi implements ApiHandle {
 				&& userAccountDo.getJfbAmount().compareTo(amount) < 0) {
 			throw new FanbeiException("apply cash amount more than account money",
 					FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
+		}
+		
+		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountDo.getSalt());
+		if (!StringUtils.equals(inputOldPwd, userAccountDo.getPassword())) {
+
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
 		AfCashRecordDo afCashRecordDo = new AfCashRecordDo();
 		afCashRecordDo.setType(type);

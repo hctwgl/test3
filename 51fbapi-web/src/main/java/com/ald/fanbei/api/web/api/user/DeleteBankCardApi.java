@@ -9,13 +9,17 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -28,7 +32,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("deleteBankCardApi")
 public class DeleteBankCardApi implements ApiHandle {
-
+	@Resource
+	AfUserAccountService afUserAccountService;
 
 	@Resource
 	AfUserBankcardService afUserBankcardService;
@@ -38,6 +43,16 @@ public class DeleteBankCardApi implements ApiHandle {
         Long userId = context.getUserId();
         if (userId == null) {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
+		}
+		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"), "").toString();
+		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+		if (afUserAccountDo == null) {
+			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		String inputOldPwd = UserUtil.getPassword(payPwd, afUserAccountDo.getSalt());
+		if (!StringUtils.equals(inputOldPwd, afUserAccountDo.getPassword())) {
+
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
         Map<String, Object> params = requestDataVo.getParams();
         Long bankId = NumberUtil.objToLongDefault(ObjectUtils.toString(params.get("bankId")), 0);
