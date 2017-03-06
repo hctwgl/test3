@@ -21,8 +21,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.H5ItemModelType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
@@ -41,7 +44,7 @@ import com.alibaba.fastjson.JSON;
 @Controller
 @RequestMapping("/app/goods/")
 public class AppGoodsControler extends BaseController {
-
+    String  opennative = "/web/opennative?name=";
 	@Resource
 	AfModelH5ItemService afModelH5ItemService;
 
@@ -59,6 +62,10 @@ public class AppGoodsControler extends BaseController {
 				sortCountList);
 		model.put("bannerList", bannerList);
 		model.put("categoryList", categoryList);
+		
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+		model.put("notifyUrl", notifyUrl);
+
 		Integer pageCount = 20;// 每一页显示20条数据
 		String type = "0";
 
