@@ -36,9 +36,7 @@
                     <ul class="goodsListModel_mainContent clearfix">
                         #foreach($item in $!{goodsList})
                             <li class="fl goodsListModel_item">
-                                <!-- <a href="$!{item.goodsUrl}"> -->
-                                <!-- <a href=" http://testapp.51fanbei.com/web/opennative?name=GOODS_INFO&params={goodsId:'$!{item.goodsUrl}',openId:'$!{item.openId}'}"> -->
-                                <a href="$!{notifyUrl}&params={goodsId:'$!{item.goodsId}',openId:'$!{item.openId}'}">
+    							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}","openId":"$!{item.openId}"}'>
                                     <img src="$!{item.thumbnailIcon}" class="goodsListModel_mainContent_img">
                                     <div class="goodsListModel_mainContent_main">
                                         <div class="goodsListModel_mainContent_wrap">
