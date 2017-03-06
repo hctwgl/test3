@@ -54,16 +54,18 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 
 					AfUserAccountDo updateAccountDo = new AfUserAccountDo();
 					updateAccountDo.setRid(afUserAccountDo.getRid());
-					BigDecimal amount =null;
-					if(StringUtils.equals(afCashRecordDo.getType(), UserAccountLogType.REBATE_JFB.getCode())){
-						amount = BigDecimalUtil.multiply(afUserAccountDo.getJfbAmount(), afCashRecordDo.getAmount());
-						updateAccountDo.setJfbAmount(amount);
+					updateAccountDo.setUserId(afCashRecordDo.getUserId());
+					BigDecimal amount =afCashRecordDo.getAmount();
+
+					if(StringUtils.equals(afCashRecordDo.getType(), UserAccountLogType.JIFENBAO.getCode())){
+						updateAccountDo.setJfbAmount(amount.multiply(new BigDecimal(-1)));
 
 					}else{
-						amount = BigDecimalUtil.multiply(afUserAccountDo.getRebateAmount(), afCashRecordDo.getAmount());
-						updateAccountDo.setRebateAmount(amount);
+						updateAccountDo.setRebateAmount(amount.multiply(new BigDecimal(-1)));
 					}
-					afUserAccountDao.updateUserAccount(updateAccountDo);
+					if(afUserAccountDao.updateUserAccount(updateAccountDo)==0){
+						return 0;
+					}
 					afCashRecordDao.addCashRecord(afCashRecordDo);
 					AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
 					afUserAccountLogDo.setRefId( afCashRecordDo.getRid()+"");

@@ -13,6 +13,8 @@ import java.util.Map;
 public enum UserAccountLogType {
 
 	CASH("CASH", "取现"), 
+	JIFENBAO("JIFENBAO", "集分宝取现"), 
+
 	AU_SCORE("AU_SCORE", "授权分数"),
 	AU_AMOUNT("AU_AMOUNT", "授权金额"),
 	FREEZE("FREEZE", "冻结金额"),
@@ -21,8 +23,8 @@ public enum UserAccountLogType {
 	REGIST("REGIST", "新注册"),
 	CONSUME("CONSUME", "分期"),
 	REPAYMENT("REPAYMENT", "还款"),
-	REBATE_CASH("REBATE_CASH", "现金提现"),
-	REBATE_JFB("REBATE_JFB", "集分宝提现");
+	REBATE_CASH("REBATE_CASH", "返利现金"),
+	REBATE_JFB("REBATE_JFB", "返利集分宝");
     private String code;
     private String name;
 
