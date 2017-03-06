@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -81,7 +83,7 @@ public class UpsUtil extends AbstractThird {
 	
 	private static String getUpsUrl(){
 		if(url==null){
-			url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+			url = ConfigProperties.get(Constants.CONFKEY_UPS_URL);
 			return url;
 		}
 		return url;
@@ -105,7 +107,6 @@ public class UpsUtil extends AbstractThird {
 			String phone,String bankName,String bankCode,String purpose,String clientType){
 		amount = setActualAmount(amount);
 		String orderNo = getOrderNo("dpay", cardNo.substring(cardNo.length()-8,cardNo.length()));
-//		String orderNo = "dp"+cardNo.substring(cardNo.length()-15,cardNo.length()) + System.currentTimeMillis();
 		UpsDelegatePayReqBo reqBo = new UpsDelegatePayReqBo();
 		setPubParam(reqBo,"delegatePay",orderNo,clientType);
 		reqBo.setAmount(amount.toString());
@@ -117,7 +118,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setBankCode(bankCode);
 		reqBo.setPurpose(purpose);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
-		reqBo.setSignInfo(RSA.sign(createLinkString(reqBo), PRIVATE_KEY, Constants.DEFAULT_ENCODE));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "delegatePay", reqBo);
@@ -159,7 +160,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(idNumber);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authPay");
-		reqBo.setSignInfo(createLinkString(reqBo));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "authPay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -267,8 +268,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCardNo(cardNumber);
 		reqBo.setReturnUrl(getNotifyHost() + "/third/ups/authSignReturn");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
-		reqBo.setSignInfo(createLinkString(reqBo));
-		
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -546,18 +546,18 @@ public class UpsUtil extends AbstractThird {
     public static String createLinkString(Map<String, String> params) {
 
         List<String> keys = new ArrayList<String>(params.keySet());
-
+        Collections.sort(keys);
         String prestr = "";
 
         for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
             String value = params.get(key);
-
-            if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
+            prestr = prestr+value;
+            /*if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
                 prestr = prestr + key + "=" + value;
             } else {
                 prestr = prestr + key + "=" + value + "&";
-            }
+            }*/
         }
 
         return prestr;

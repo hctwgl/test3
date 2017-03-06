@@ -26,7 +26,7 @@ public class AfOrderVo extends AbstractSerial {
 	private Integer goodsCount;
 	private BigDecimal orderAmount;
 	private BigDecimal rebateAmount;
-	private BigDecimal acutalAmount;
+	private BigDecimal actualAmount;
 	private BigDecimal couponAmount;
 	private String mobile;
 	public String getOrderNo() {
@@ -101,11 +101,11 @@ public class AfOrderVo extends AbstractSerial {
 	public void setGmtClosed(Date gmtClosed) {
 		this.gmtClosed = gmtClosed;
 	}
-	public BigDecimal getAcutalAmount() {
-		return acutalAmount;
+	public BigDecimal getActualAmount() {
+		return actualAmount;
 	}
-	public void setAcutalAmount(BigDecimal acutalAmount) {
-		this.acutalAmount = acutalAmount;
+	public void setActualAmount(BigDecimal actualAmount) {
+		this.actualAmount = actualAmount;
 	}
 	public BigDecimal getCouponAmount() {
 		return couponAmount;

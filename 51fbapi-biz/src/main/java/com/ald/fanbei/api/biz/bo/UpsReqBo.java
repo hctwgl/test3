@@ -1,6 +1,6 @@
 package com.ald.fanbei.api.biz.bo;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class UpsReqBo extends LinkedHashMap<String, String> {
+public class UpsReqBo extends HashMap<String, String> {
 
 	private static final long serialVersionUID = -5197302494589757587L;
 

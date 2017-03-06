@@ -54,7 +54,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setGoodsName(order.getGoodsName());
 		vo.setOrderAmount(order.getSaleAmount());
 		vo.setCouponAmount(order.getSaleAmount().subtract(order.getActualAmount()));
-		vo.setAcutalAmount(order.getActualAmount());
+		vo.setActualAmount(order.getActualAmount());
 		vo.setOrderNo(order.getOrderNo());
 		vo.setOrderStatus(order.getStatus());
 		vo.setRebateAmount(order.getRebateAmount());
