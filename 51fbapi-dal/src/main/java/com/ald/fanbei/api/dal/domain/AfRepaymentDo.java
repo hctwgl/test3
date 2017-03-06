@@ -30,7 +30,7 @@ public class AfRepaymentDo extends AbstractSerial{
 	private BigDecimal rebateAmount;
 	private String status;
 	private Long userId;
-	private String cardNo;
+	private String cardNumber;
 	private String cardName;
 	public Long getRid() {
 		return rid;
@@ -122,11 +122,11 @@ public class AfRepaymentDo extends AbstractSerial{
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	public String getCardNo() {
-		return cardNo;
+	public String getCardNumber() {
+		return cardNumber;
 	}
-	public void setCardNo(String cardNo) {
-		this.cardNo = cardNo;
+	public void setCardNumber(String cardNumber) {
+		this.cardNumber = cardNumber;
 	}
 	public String getCardName() {
 		return cardName;

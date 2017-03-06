@@ -18,8 +18,8 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -54,14 +54,18 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
 		//账户关联信息
-		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
+		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 		Map<String, Object> data = getCashInfo(resource, card, userDto);
 		resp.setResponseData(data);
 		return resp;
 	}
-	private Map<String, Object> getCashInfo(AfResourceDo resource,AfUserBankcardDo card,AfUserAccountDto userDto){
+	private Map<String, Object> getCashInfo(AfResourceDo resource,AfUserBankcardDo card,AfUserAccountDo userDto){
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("usableAmount", userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount()));
+		BigDecimal usableAmount = userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount());
+		if((userDto.getAuAmount().subtract(userDto.getUsedAmount())).compareTo(usableAmount)==-1){
+			usableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount());
+		}
+		data.put("usableAmount",usableAmount);
 		data.put("cardNo", StringUtil.getLastString(card.getCardNumber(),4));
 		data.put("cardName",card.getBankName());
 		data.put("cardId", card.getRid());

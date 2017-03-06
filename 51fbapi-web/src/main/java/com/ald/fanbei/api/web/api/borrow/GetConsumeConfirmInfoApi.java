@@ -97,8 +97,8 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 		for (int i=0;i<array.size();i++) {
 			JSONObject obj = array.getJSONObject(i);
 			Map<String, Object> attrs = new HashMap<String, Object>();
-			String key = obj.getString("nper");
-			String value = obj.getString("rate");
+			String key = obj.getString(Constants.DEFAULT_NPER);
+			String value = obj.getString(Constants.DEFAULT_RATE);
 			if (value != null && !"".equals(value.trim())) {
 				BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
 				BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
@@ -130,7 +130,7 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 	    	List<XItem> itemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
 	    	if(null == itemList ||itemList.size()==0){
 				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
-	    	}else{
+	    	}else{//TODO ,不需要else
 	    		XItem item= itemList.get(0);
 	    		vo.setGoodsIcon(item.getPicUrl());
 	    		vo.setGoodsName(item.getTitle());

@@ -26,6 +26,7 @@ import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -147,11 +148,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		repay.setName(name);
 		repay.setUserId(userId);
 		if(cardId<0){
-			repay.setCardNo("");
+			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_WX_PAY_NAME);
 		}else{
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
-			repay.setCardNo(bank.getCardNumber());
+			repay.setCardNumber(bank.getCardNumber());
 			repay.setCardName(bank.getBankName());
 		}
 		return repay;
@@ -180,6 +181,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+					if(YesNoStatus.YES.getCode().equals(repayment.getStatus())){
+						return 0l;
+					}
 					//变更还款记录为已还款
 					afRepaymentDao.updateRepayment(RepaymentStatus.YES.getCode(),tradeNo, repayment.getRid());
 					AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(repayment.getBillIds());
@@ -191,6 +195,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					if(count==0){
 						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.YES.getCode());
 						pushService.repayBillSuccess(userDo.getUserName(), billDo.getBillYear()+"", String.format("%02d", billDo.getBillMonth()));
+					}else{
+						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.PART.getCode());
 					}
 					//优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());

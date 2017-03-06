@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
-import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
  * 
@@ -37,7 +37,7 @@ public interface AfBorrowService {
 	 * @param cardId
 	 * @return
 	 */
-	public long dealCashApply(final AfUserAccountDto userDto,final BigDecimal money,final Long cardId);
+	public long dealCashApply(final AfUserAccountDo userDto,final BigDecimal money,final Long cardId);
 	
 	/**
 	 * 消费分期申请
@@ -50,7 +50,7 @@ public interface AfBorrowService {
 	 * @param nper --分期数
 	 * @return
 	 */
-	public long dealConsumeApply(AfUserAccountDto userDto,BigDecimal amount,Long cardId,Long goodsId,String openId,String numId,String name,int nper);
+	public long dealConsumeApply(AfUserAccountDo userDto,BigDecimal amount,Long cardId,Long goodsId,String openId,String numId,String name,int nper);
 	
 	/**
 	 * 获取最近借款号

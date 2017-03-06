@@ -56,9 +56,9 @@ import com.alibaba.fastjson.JSONObject;
 @Component("upsUtil")
 public class UpsUtil extends AbstractThird {
 	
-	private static String url = "http://60.190.230.35:52637/ups/main.html";
+	private static String url = null;
 //	private static String notifyHost = "http://192.168.96.67";
-	private static String notifyHost = "http://testapp.51fanbei.com";
+	private static String notifyHost = null;
 	
 	private static String SYS_KEY = "01";
 	private static String TRADE_STATUE_SUCC = "00";
@@ -70,6 +70,22 @@ public class UpsUtil extends AbstractThird {
 //	private static String PAY_CHANL_BF       = "07";   //报付
 	
 	//orderNo规则  4位业务码  + 4位接口码  + 11位身份标识（手机号或者身份证后11位） + 13位时间戳
+	
+	private static String getNotifyHost(){
+		if(notifyHost==null){
+			notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+			return notifyHost;
+		}
+		return notifyHost;
+	}
+	
+	private static String getUpsUrl(){
+		if(url==null){
+			url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+			return url;
+		}
+		return url;
+	}
 	
 	/**
 	 * 单笔代付
@@ -100,10 +116,10 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setBankName(bankName);
 		reqBo.setBankCode(bankCode);
 		reqBo.setPurpose(purpose);
-		reqBo.setNotifyUrl(notifyHost + "/third/ups/delegatePay");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
 		reqBo.setSignInfo(RSA.sign(createLinkString(reqBo), PRIVATE_KEY, Constants.DEFAULT_ENCODE));
 
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "delegatePay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_DELEGATE_PAY_ERROR);
@@ -142,9 +158,9 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCardNo(cardNo);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(idNumber);
-		reqBo.setNotifyUrl(notifyHost + "/third/ups/authPay");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authPay");
 		reqBo.setSignInfo(createLinkString(reqBo));
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "authPay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_PAY_ERROR);
@@ -182,9 +198,9 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCardNo(cardNo);
 		reqBo.setUserNo(userNo);
 		reqBo.setTradeNo(tradeNo);
-		reqBo.setNotifyUrl(notifyHost + "/third/ups/authPayConfirm");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authPayConfirm");
 		reqBo.setSignInfo(createLinkString(reqBo));
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "authPayConfirm", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_PAY_CONFIRM_ERROR);
@@ -213,7 +229,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setTradeNo(tradeNo);
 		reqBo.setTradeType(tradeType);
 		
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "queryTrade", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_TRADE_ERROR);
@@ -249,11 +265,11 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(idNumber);
 		reqBo.setCardNo(cardNumber);
-		reqBo.setReturnUrl(notifyHost + "/third/ups/authSignReturn");
-		reqBo.setNotifyUrl(notifyHost + "/third/ups/authSignNotify");
+		reqBo.setReturnUrl(getNotifyHost() + "/third/ups/authSignReturn");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(createLinkString(reqBo));
 		
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
@@ -284,10 +300,10 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setUserNo(userNo);
 		reqBo.setCardNo(cardNo);
 		reqBo.setSmsCode(verifyCode);
-		reqBo.setNotifyUrl(notifyHost + "/third/ups/authSignValidNotify");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignValidNotify");
 		reqBo.setSignInfo(createLinkString(reqBo));
 		
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSignValid", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
@@ -313,7 +329,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setStartDate(startDate);
 		reqBo.setEndDate(endDate);
 		
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "queryAuthSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_AUTH_SIGN_ERROR);
@@ -349,7 +365,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(notifyUrl);
 		reqBo.setRemark(remark);
 		
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "signDelay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_SIGN_DELAY_ERROR);
@@ -397,7 +413,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setReturnUrl(returnUrl);
 		reqBo.setNotifyUrl(notifyUrl);
 		
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "collect", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
@@ -487,7 +503,7 @@ public class UpsUtil extends AbstractThird {
 		Map<String,Object> result = new HashMap<String,Object>();
 		try{
 			//构建调用微信需要的参数
-			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, notifyHost+"/third/ups/wxpayNotify",attach);
+			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, getNotifyHost()+"/third/ups/wxpayNotify",attach);
 			String url = WxpayConfig.WX_UNIFIEDORDER_API;
 			String buildStr = WxpayCore.buildXMLBody(orderData);
 			

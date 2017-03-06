@@ -8,6 +8,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +35,8 @@ import com.ald.fanbei.api.common.util.StringUtil;
 @Controller
 @RequestMapping("/third/ups")
 public class PayRoutController{
+	
+    protected static Logger   logger = LoggerFactory.getLogger(PayRoutController.class);
 	
 	@Resource
 	private AfOrderService afOrderService;
@@ -134,6 +138,7 @@ public class PayRoutController{
     		}
             
         } catch (Exception e) {
+        	logger.error("wxpayNotify",e);
             return "<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
         } finally {
             if (out != null) {
@@ -142,4 +147,16 @@ public class PayRoutController{
         }
     	return "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
 	}
+    
+    @RequestMapping(value = {"/collect"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String collect(HttpServletRequest request, HttpServletResponse response){
+    	String outTradeNo = request.getParameter("outTradeNo");
+    	String tradeNo = request.getParameter("tradeNo");
+    	if(afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo)>0){
+    		return "succ";
+    	}else{
+    		return "error";
+    	}
+    }
 }

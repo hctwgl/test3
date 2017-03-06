@@ -15,6 +15,7 @@ public enum BorrowBillStatus {
 	YES("Y", "已还款"), 
 	NO("N", "未还款"),
 	FORBIDDEN("F", "冻结"),
+	PART("P", "部分还款"), 
 	OVERDUE("O","逾期");
     
     private String code;

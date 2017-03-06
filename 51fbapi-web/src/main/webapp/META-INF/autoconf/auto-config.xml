@@ -69,6 +69,9 @@
 		<property name="fbapi.wx.mchid" defaultValue="JX/XgnEq68Xjj63r+MmzIw==" description="weixin mchid" />
 		<property name="fbapi.wx.key" defaultValue="ERz7b1fycFebv+EV0bVbSVOmT9sOHL2QxO/p8da/4uPQroYLtEIaqFC8Jmft4E4B" description="weixin key" />
 		<property name="fbapi.wx.certpath" defaultValue="D:/cert/apiclient_cert.p12" description="weixin certpath" />
+		
+		<property name="fbapi.notify.host" defaultValue="http://testapp.51fanbei.com" description="异步回调地址" />
+		<property name="fbapi.ups.url" defaultValue="http://60.190.230.35:52637/ups/main.html" description="ups请求地址" />
 	</group>
 
 	<script>
