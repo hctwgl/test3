@@ -22,6 +22,13 @@ public interface AfModelH5ItemService {
 	 * @return
 	 */
 	List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelType(Long modelId,String type);
+	/**
+	 * 获取类目类型的modelH5Item对象列表
+	 * @param modelId
+	 * @param modelType
+	 * @return
+	 */
+	List<AfModelH5ItemDo> getModelH5ItemCategoryListByModelIdAndModelType(Long modelId);
 	
 	/**
 	 * 获取分类以及分类下面的商品列表

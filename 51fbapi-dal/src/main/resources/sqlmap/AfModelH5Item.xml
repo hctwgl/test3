@@ -6,6 +6,12 @@
 		id
 		rid,gmt_create,gmt_modified,creator,modifier,type,model_id,item_icon,item_type,item_value,item_value2,sort
 	</sql>
+	
+		<sql id="queryCategoryFields">
+
+		a1.id rid,a1.is_delete,a1.gmt_create,a1.gmt_modified,a1.creator,a1.modifier,a1.type,a1.model_id,a1.item_icon,count(a2.id) item_type,a1.item_value, a1.item_value2,a1.sort
+	</sql>
+	
 	<sql id="queryAllFields2">
 	h.id rid,g.thumbnail_icon,g.id goods_id,g.price_amount,g.sale_amount,g.source,g.rebate_amount,g.rebate_rate,g.goods_url,g.num_id,g.name
 	</sql>
@@ -24,6 +30,28 @@
 		order by
 
 		sort desc
+	</select>
+	
+		<select id="getModelH5ItemCategoryListByModelIdAndModelType" resultType="AfModelH5ItemDo">
+		SELECT
+		<include refid="queryCategoryFields" />
+		FROM
+			af_model_h5_item a1
+		LEFT JOIN  
+			af_model_h5_item a2 
+		ON 
+			a1.id = a2.item_value2  
+		GROUP BY a1.id
+		HAVING
+			 a1.type ='CATEGORY' 
+		AND 
+			a1.model_id=#{modelId}
+		AND
+			a1.is_delete = 0
+		
+		order by
+			a1.sort 
+		desc
 	</select>
 	<select id="getModelH5ItemCategoryListByModelId" resultType="AfModelH5ItemDo">
 		SELECT

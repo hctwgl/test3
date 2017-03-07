@@ -88,7 +88,7 @@ public class GetInvitationInfoApi implements ApiHandle {
 			invitationInfo.put("invitationCode", userDo.getRecommendCode() == null ? "" : userDo.getRecommendCode());
 			invitationInfo.put("amount", amount);
 			// 邀请分享地址为配置地址+“?userName=”+注册手机号
-			invitationInfo.put("shareUrl", resourceCodeDo.getValue() + "?userName=" + context.getUserName());
+			invitationInfo.put("shareUrl",ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + resourceCodeDo.getValue() + "?userName=" + context.getUserName());
 			data.put("invitationInfo", invitationInfo);
 		}
 		for (AfUserInvitationDto invitationDto : list) {

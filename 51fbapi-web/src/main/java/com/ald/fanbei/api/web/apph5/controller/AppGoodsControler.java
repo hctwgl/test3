@@ -54,8 +54,7 @@ public class AppGoodsControler extends BaseController {
 
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
 				.getModelH5ItemListByModelIdAndModelType(modelId, H5ItemModelType.BANNER.getCode()));
-		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(modelId,
-				H5ItemModelType.CATEGORY.getCode());
+		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService.getModelH5ItemCategoryListByModelIdAndModelType(modelId);
 		List<AfTypeCountDto> sortCountList = afModelH5ItemService
 				.getModelH5ItemGoodsCountListCountByModelIdAndSort(modelId);
 		List<Object> categoryList = getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(categoryDbList,
@@ -102,7 +101,6 @@ public class AppGoodsControler extends BaseController {
 			Integer pageCount = 20;// 每一页显示20条数据
 			List<AfUserH5ItmeGoodsDto> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
 					type, (pageCurrent - 1) * pageCount, pageCount * pageCurrent);
-//			List<Object> goodsList = getH5ItemGoodsListObjectWithAfModelH5ItemDoList(list);
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("goodsList", list);
 
@@ -141,9 +139,9 @@ public class AppGoodsControler extends BaseController {
 			itemData.put("sort", afModelH5ItemDo.getSort());
 			itemData.put("type", afModelH5ItemDo.getRid());
 
-			String sort = ObjectUtils.toString(afModelH5ItemDo.getSort(), "0");
+			String sort = ObjectUtils.toString(afModelH5ItemDo.getItemType(), "0");
 
-			int count = NumberUtil.objToIntDefault(data.get(sort), 0);
+			int count = NumberUtil.objToIntDefault(sort, 0);
 			Integer pageTotal = count / pageCount;
 			Integer pageM = count % pageCount;
 			itemData.put("pageTotal", pageM == 0 ? pageTotal : (pageTotal + 1));
