@@ -25,7 +25,7 @@
 	</context-param>
 	<context-param>
 		<param-name>webAppRootKey</param-name>
-		<param-value>o2oapp</param-value>
+		<param-value>51fbapi</param-value>
 	</context-param>
 	<context-param>
 		<param-name>useJndiDataSource</param-name>

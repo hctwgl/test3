@@ -2,6 +2,9 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -19,12 +22,14 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  *@类现描述：
@@ -98,6 +103,20 @@ public class PayRoutController{
     	return "succ";
     }
     
+    @RequestMapping(value = {"/batchDelegatePay"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String batchDelegatePay(HttpServletRequest request, HttpServletResponse response){
+    	List<JSONObject> list = new ArrayList<JSONObject>();
+    	JSONObject obj = new JSONObject();
+    	obj.put("tradeNo", "dele100000000");
+    	obj.put("amount", "0.01");
+    	obj.put("certNo", "33018319901101383X");
+    	obj.put("bankName", "工商银行");
+    	list.add(obj);
+    	UpsUtil.batchDelegatePay(new BigDecimal(0.01), "17767117022", "1", "代收", list.toString(), "02");
+    	return "succ";
+    }
+    
     /**
      * app中微信支付回调接口
      * @param request
@@ -153,10 +172,15 @@ public class PayRoutController{
 	public String collect(HttpServletRequest request, HttpServletResponse response){
     	String outTradeNo = request.getParameter("outTradeNo");
     	String tradeNo = request.getParameter("tradeNo");
-    	if(afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo)>0){
-    		return "succ";
-    	}else{
-    		return "error";
-    	}
+    	try {
+    		if(afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo)>0){
+        		return "succ";
+        	}else{
+        		return "error";
+        	}
+		} catch (Exception e) {
+			logger.error("collect",e);
+			return "error";
+		}
     }
 }

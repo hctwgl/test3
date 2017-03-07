@@ -69,35 +69,41 @@ public class UpsCollectReqBo extends UpsReqBo {
 	}
 	public void setUserNo(String userNo) {
 		this.userNo = userNo;
+		this.put("userNo", userNo);
 	}
 	public String getRealName() {
 		return realName;
 	}
 	public void setRealName(String realName) {
 		this.realName = realName;
+		this.put("realName", realName);
 	}
 	public String getBankCode() {
 		return bankCode;
 	}
 	public void setBankCode(String bankCode) {
 		this.bankCode = bankCode;
+		this.put("bankCode", bankCode);
 	}
 	public String getCardNo() {
 		return cardNo;
 	}
 	public void setCardNo(String cardNo) {
 		this.cardNo = cardNo;
+		this.put("cardNo", cardNo);
 	}
 	public String getCertType() {
 		return certType;
 	}
 	public void setCertType(String certType) {
 		this.certType = certType;
+		this.put("certType", certType);
 	}
 	public String getCertNo() {
 		return certNo;
 	}
 	public void setCertNo(String certNo) {
 		this.certNo = certNo;
+		this.put("certNo", certNo);
 	}
 }
