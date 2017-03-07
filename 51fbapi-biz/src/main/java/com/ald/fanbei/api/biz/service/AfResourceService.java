@@ -54,7 +54,12 @@ public interface AfResourceService {
 	 * @return
 	 */
 	List<AfResourceDo> getResourceListByTypeOrderBy(String type);
-	
+	/**
+	 * 根据type获取资源排序列表
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getResourceHomeListByTypeOrderBy(String type);
 	
 	
 	/**

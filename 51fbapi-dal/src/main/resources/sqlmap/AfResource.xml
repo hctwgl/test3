@@ -86,6 +86,21 @@
 			sort desc 
 	</select>
 	
+	<select id="getResourceHomeListByTypeOrderBy" resultType="AfResourceDo">
+		SELECT 
+			<include refid="queryAllFields" />
+		FROM
+			af_resource
+		WHERE 
+			type = #{type}
+		AND
+			value_4 = 'O'
+		AND
+			is_delete = 0
+		order by 
+			sort desc 
+	</select>
+	
 	<select id="getSingleResourceBytype" resultType="AfResourceDo">
 		SELECT 
 			<include refid="queryAllFields" />
@@ -111,7 +126,7 @@
 		WHERE 
 			r1.type = #{type}
 		AND 
-			r1.sec_type = '' 
+			r1.sec_type = ''  
 		AND 
 			r2.value_4 !=''
 		ORDER BY 

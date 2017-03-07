@@ -58,6 +58,13 @@ public interface AfResourceDao {
 	List<AfResourceDo> getResourceListByTypeOrderBy(@Param("type")String type);
 	
 	/**
+	 * 根据type获取资源排序列表首页
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getResourceHomeListByTypeOrderBy(@Param("type")String type);
+	
+	/**
 	 * 根据type获取一个资源信息
 	 * @param type
 	 * @return
