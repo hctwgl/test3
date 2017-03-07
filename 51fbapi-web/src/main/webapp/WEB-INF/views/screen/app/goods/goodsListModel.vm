@@ -6,12 +6,9 @@
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>
 <body>
-    <!-- <input type="hidden" id="modelId" name="modelId" value="2"> -->
     <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
-
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
-
     <div class="goodsListModel_wrap">
         <div class="goodsListModel_header_wrap">
             <ul class="fs_32 fsc_6 bgc_white goodsListModel_header">
@@ -32,8 +29,8 @@
             #end
             <div class="goodsListModel_main">
                 #foreach($item in $!{categoryList})
-                <div class="goodsListModel_main_list goodsListModel_hide">
-                    <ul class="goodsListModel_mainContent clearfix">
+                <div class="goodsListModel_main_list goodsListModel_hide content">
+                    <ul class="goodsListModel_mainContent clearfix lists">
                         #foreach($item in $!{goodsList})
                             <li class="fl goodsListModel_item">
     							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}","openId":"$!{item.openId}"}'>
@@ -65,6 +62,7 @@
     </div>
     <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/js/common/layer.js"></script>
+    <script type="text/javascript" src="/js/common/dropload.min.js"></script>
     <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>
