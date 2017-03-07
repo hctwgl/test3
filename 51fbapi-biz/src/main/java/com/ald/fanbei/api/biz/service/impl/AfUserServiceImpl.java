@@ -58,8 +58,8 @@ public class AfUserServiceImpl implements AfUserService {
 
 	
 	@Override
-	public List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId) {
-		return afUserDao.getRecommendUserByRecommendId(recommendId);
+	public List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId,Integer start,Integer end ) {
+		return afUserDao.getRecommendUserByRecommendId(recommendId,start,end );
 	}
 
 }

@@ -46,5 +46,6 @@ public interface AfUserService {
 	 */
 	int updateUser(AfUserDo afUserDo);
 	
-	List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId);
+	List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId,Integer start,Integer end);
+
 }

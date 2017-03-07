@@ -12,15 +12,19 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
@@ -51,7 +55,10 @@ public class GetInvitationInfoApi implements ApiHandle {
 		if (userId == null) {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
+
 		List<Object> recommendList = new ArrayList<Object>();
+		Map<String, Object> params = requestDataVo.getParams();
+		Integer pageNum = NumberUtil.objToIntDefault(ObjectUtils.toString(params.get("pageNum"), "").toString(), 1);
 
 		// 获取邀请规则链接地址
 		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(AfResourceType.INVITE.getCode());
@@ -69,21 +76,26 @@ public class GetInvitationInfoApi implements ApiHandle {
 		if (amount == null) {
 			amount = new BigDecimal(0);
 		}
-		List<AfUserInvitationDto> list = afUserService.getRecommendUserByRecommendId(userId);
-		Map<String, Object> invitationInfo = new HashMap<String, Object>();
-		invitationInfo.put("rulesUrl", afResourceDo.getValue());
-		invitationInfo.put("invitationNum", list.size());
-		invitationInfo.put("invitationCode", userDo.getRecommendCode()==null?"":userDo.getRecommendCode());
-		invitationInfo.put("amount", amount );
-		// 邀请分享地址为配置地址+“?userName=”+注册手机号
-		invitationInfo.put("shareUrl", resourceCodeDo.getValue() + "?userName=" + context.getUserName());
+		Map<String, Object> data = new HashMap<String, Object>();
 
+		List<AfUserInvitationDto> list = afUserService.getRecommendUserByRecommendId(userId, (pageNum - 1) * 20,
+				pageNum * 20);
+		if (pageNum == 1) {
+			Map<String, Object> invitationInfo = new HashMap<String, Object>();
+			invitationInfo.put("rulesUrl",
+					ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + afResourceDo.getValue());
+			invitationInfo.put("invitationNum", list.size());
+			invitationInfo.put("invitationCode", userDo.getRecommendCode() == null ? "" : userDo.getRecommendCode());
+			invitationInfo.put("amount", amount);
+			// 邀请分享地址为配置地址+“?userName=”+注册手机号
+			invitationInfo.put("shareUrl", resourceCodeDo.getValue() + "?userName=" + context.getUserName());
+			data.put("invitationInfo", invitationInfo);
+		}
 		for (AfUserInvitationDto invitationDto : list) {
 			recommendList.add(mapWithInvitationDto(invitationDto));
 		}
-		Map<String, Object> data = new HashMap<String, Object>();
+
 		data.put("recommendList", recommendList);
-		data.put("invitationInfo", invitationInfo);
 		resp.setResponseData(data);
 
 		return resp;

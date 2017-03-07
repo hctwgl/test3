@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.auth;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +33,9 @@ public class GetBankListApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		List<AfBankDo> list = afBankDao.getBankList();
-		resp.setResponseData(list);
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("bankList", list);
+		resp.setResponseData(data);
 		return resp;
 	}
 }

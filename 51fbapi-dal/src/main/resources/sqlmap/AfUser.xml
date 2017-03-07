@@ -80,7 +80,8 @@
 		
 		AND
 			u.recommend_id = #{recommendId} 
-					
+		LIMIT
+		 	#{start},#{end}			
 		
 	</select>
 	
