@@ -9,11 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -33,7 +36,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class AuthContactsApi implements ApiHandle {
 
 	private static final int ADD_CONTRACT_PER_PAGE = 2;
-	
+	@Resource
+	private AfUserAuthService afUserAuthService;
 	@Resource
 	AfAuthContactsService afAuthContactsService;
 	
@@ -56,6 +60,11 @@ public class AuthContactsApi implements ApiHandle {
 				afAuthContactsDos = new ArrayList<AfAuthContactsDo>();
 			}
 		}
+		AfUserAuthDo authDo  = new AfUserAuthDo();
+		authDo.setUserId(context.getUserId());
+		authDo.setTeldirStatus(YesNoStatus.YES.getCode());
+		afUserAuthService.updateUserAuth(authDo);
+		
 		return resp;
 	}
 	

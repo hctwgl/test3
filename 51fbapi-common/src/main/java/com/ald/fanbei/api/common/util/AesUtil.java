@@ -159,10 +159,10 @@ public class AesUtil {
     }
     
     public static void main(String[] args) {
-        String encryptStr = new String(Base64.encodeBase64(encrypt("f96804bd151c12114fa51ddb1bff91b6", "testC1b6x@6aH$2dlw")));
+        String encryptStr = new String(Base64.encodeBase64(encrypt("cWMNU0ZWZ9AwQ6Snh5F2U1Mqq/4e2c2tESAQCmThf76D2DF+8TYAj4DcQcI8M3Cc", "testC1b6x@6aH$2dlw")));
         System.out.println(encryptStr);
 //        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
-        String sec = decryptFromBase64("BeSHxmaAFBhNCE2gIdPVRg==", "testC1b6x@6aH$2dlw");
+        String sec = decryptFromBase64("cWMNU0ZWZ9AwQ6Snh5F2U1Mqq/4e2c2tESAQCmThf76D2DF+8TYAj4DcQcI8M3Cc/4e2c2tESAQCmThf76D2DF+8TYAj4DcQcI8M3Cc", "testC1b6x@6aH$2dlw");
         System.out.println(sec);
 //    	AesUtil.decryptFromBase64("", "testC1b6x");
         System.out.println(new String(Base64.encodeBase64(encrypt("wpD1QcUHaXY0aydcRw4X", "testC1b6x@6aH$2dlw"))));
