@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-08 10:41:15
+* @Last Modified time: 2017-03-08 10:51:22
 * @title:  注册
 */
 
@@ -107,16 +107,24 @@ $(function(){
 	$(".register_submitBtn").click(function(){ // 完成注册提交
 
 		// md5加密
-		var register_password = $("#register_password").val();		
-		var hash = String(CryptoJS.MD5(register_password));
+		var register_password = $("#register_password").val();
+		console.log(register_password);
+
+		var password_md5 = String(CryptoJS.MD5(register_password));
+		console.log(password_md5);
 
 		if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
-			var recommendCode = getUrl("recommendCode");
-			var mobileNum = $("#register_mobile").val();
-			var register_verification = $("#register_verification").val();
-			var passwordLength = register_password.length;
+			var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
+			console.log(recommendCode);
 
+			var mobileNum = $("#register_mobile").val();
+			console.log(mobileNum);
+
+			var register_verification = $("#register_verification").val();
+			console.log(register_verification);
+
+			var passwordLength = register_password.length;
 			if (passwordLength >= 6) {
 
 				$.ajax({ // 设置登录密码
@@ -126,7 +134,7 @@ $(function(){
 					data: {
 						registerMobile: mobileNum,
 						smsCode: register_verification,
-						password: hash,
+						password: password_md5,
 						recommendCode: recommendCode
 					},
 					success: function(returnData){
