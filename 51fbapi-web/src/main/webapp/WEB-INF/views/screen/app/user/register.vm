@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017030401")
+    	#set($version="2017030801")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/user/register.css?version=$version">
     </head>
@@ -29,12 +29,14 @@
 	        </ul>
 	      	<div class="register_submitBtn_wrap"><button class="fs_32 tac bdr_4 fsc_f bgc_orange register_submitBtn btnC_gray" onkeyup="changeBtn()">完成注册并下载App</button></div>
 	      	<div class="tal register_checkbox clearfix">
-	      		<input type="checkbox" class="input_check" id="input_check">
+	      		<input type="checkbox" class="input_check" id="input_check"　onkeyup="changeBtn()">
             	<label for="input_check"></label>
 	      		<p class="fl fs_24 clearfix"><span class="fl">阅读并同意</span><a class="fl" href="http://testapp.51fanbei.com/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
 	      	</div>
 		</div>
 		<script type="text/javascript" src="/js/common/layer.js"></script>
+		<script type="text/javascript" src="/js/common/core.js"></script>
+		<script type="text/javascript" src="/js/common/md5.js"></script>
 		<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
 		<script type="text/javascript" src="/js/app/user/register.js?version=$version"></script>
     </body>

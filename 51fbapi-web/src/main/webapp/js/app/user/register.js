@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-04 17:39:45
+* @Last Modified time: 2017-03-08 10:41:15
 * @title:  注册
 */
 
@@ -33,7 +33,7 @@ function changeBtn() {
 	};
 
 	// 默认状态下提交按钮的样式
-	if ( mobileNum != "" && verificationNum != "" && passwordNum != "" ) {
+	if ( mobileNum != "" && verificationNum != "" && passwordNum != ""　) {
 		$(".register_submitBtn").removeClass("btnC_gray");
 	} else{
 		$(".register_submitBtn").addClass("btnC_gray");
@@ -106,14 +106,16 @@ $(function(){
 	
 	$(".register_submitBtn").click(function(){ // 完成注册提交
 
+		// md5加密
+		var register_password = $("#register_password").val();		
+		var hash = String(CryptoJS.MD5(register_password));
+
 		if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
 			var recommendCode = getUrl("recommendCode");
 			var mobileNum = $("#register_mobile").val();
 			var register_verification = $("#register_verification").val();
-			var register_password = $("#register_password").val();
 			var passwordLength = register_password.length;
-			console.log(passwordLength);
 
 			if (passwordLength >= 6) {
 
@@ -124,7 +126,7 @@ $(function(){
 					data: {
 						registerMobile: mobileNum,
 						smsCode: register_verification,
-						password: register_password,
+						password: hash,
 						recommendCode: recommendCode
 					},
 					success: function(returnData){
