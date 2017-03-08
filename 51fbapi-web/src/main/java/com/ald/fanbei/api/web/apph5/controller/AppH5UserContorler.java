@@ -210,7 +210,7 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setRecommendCode(inviteCode);
 			if (!StringUtils.isBlank(recommendCode)) {
 				AfUserDo userRecommendDo = afUserDao.getUserByRecommendCode(recommendCode);
-				userDo.setRecommendId(userRecommendDo.getRecommendId());
+				userDo.setRecommendId(userRecommendDo.getRid());
 				;
 			}
 			afUserDao.updateUser(userDo);
