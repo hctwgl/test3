@@ -264,7 +264,6 @@
 			a.is_delete=0 and a.user_id = #{userId} 
 		<if test="orderStatus == 'WC'" >
 			and (a.status = 'NEW' or a.status = 'PAID')
-			and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.order_type='MOBILE' AND b.status='NEW' AND a.id=b.id)
 		</if>
 		<if test="orderStatus == 'WR'">
 			and a.status = 'FINISHED'
@@ -272,5 +271,6 @@
 		<if test="orderStatus == 'AR'">
 			and a.status = 'REBATED'
 		</if>
+		and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.order_type='MOBILE' AND b.status='NEW' AND a.id=b.id)
 	</select>
 </mapper>
