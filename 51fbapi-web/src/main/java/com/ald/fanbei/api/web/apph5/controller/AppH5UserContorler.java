@@ -89,6 +89,7 @@ public class AppH5UserContorler extends BaseController {
 		for (AfCouponDo afCouponDo : afCouponList) {
 			list.add(couponObjectWithAfUserCouponDto(afCouponDo));
 		}
+		model.put("notifyUrl", "http://192.168.96.35:8088/app/user/ala-web/pickCoupon");
 		model.put("couponList", list);
 		logger.info(JSON.toJSONString(model));
 	}
@@ -154,10 +155,12 @@ public class AppH5UserContorler extends BaseController {
 
 	}
     @ResponseBody
-   	@RequestMapping(value = "pickCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+   	@RequestMapping(value = "ala-web/opennative/pickCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
    	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
    		try {
    			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
+   			
+   			
    			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
    			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
 
