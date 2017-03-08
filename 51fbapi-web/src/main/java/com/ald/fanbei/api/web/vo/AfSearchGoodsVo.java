@@ -14,7 +14,7 @@ public class AfSearchGoodsVo extends AbstractSerial {
 
 	private static final long serialVersionUID = 7350723172877682162L;
 	
-	private Long numIid;//淘宝商品id
+	private Long numId;//淘宝商品id
 	private BigDecimal saleAmount;//商品价格
 	private String realAmount;//到手价
 	private String rebateAmount;//返利金额
@@ -22,11 +22,11 @@ public class AfSearchGoodsVo extends AbstractSerial {
 	private String goodsIcon;//商品图片
 	private String thumbnailIcon;//商品缩略图
 	private String goodsUrl;//商品链接
-	public Long getNumIid() {
-		return numIid;
+	public Long getNumId() {
+		return numId;
 	}
-	public void setNumIid(Long numIid) {
-		this.numIid = numIid;
+	public void setNumId(Long numId) {
+		this.numId = numId;
 	}
 	public BigDecimal getSaleAmount() {
 		return saleAmount;
