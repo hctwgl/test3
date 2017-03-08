@@ -60,7 +60,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		try {
 			List<NTbkItem> list = taobaoApiUtil.executeTaobaokeSearch(buildParams).getResults();
 			String keyword = ObjectUtils.toString(requestDataVo.getParams().get("keywords"), null);
-			if(StringUtil.isNotBlank(keyword)){
+			if(StringUtil.isNotBlank(keyword) && null != context.getUserId()){
 				afUserSearchService.addUserSearch(getUserSearchDo(context.getUserId(), keyword));
 			}
 			final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);

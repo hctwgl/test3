@@ -29,8 +29,8 @@
             #end
             <div class="goodsListModel_main">
                 #foreach($item in $!{categoryList})
-                <div class="goodsListModel_main_list goodsListModel_hide content">
-                    <ul class="goodsListModel_mainContent clearfix lists">
+                <div class="goodsListModel_main_list">
+                    <ul class="goodsListModel_mainContent clearfix">
                         #foreach($item in $!{goodsList})
                             <li class="fl goodsListModel_item">
     							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}","openId":"$!{item.openId}"}'>
@@ -62,7 +62,7 @@
     </div>
     <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/js/common/layer.js"></script>
-    <script type="text/javascript" src="/js/common/dropload.min.js"></script>
+    <!-- <script type="text/javascript" src="/js/common/dropload.min.js"></script> -->
     <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>

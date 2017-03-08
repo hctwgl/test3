@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-08 10:51:22
+* @Last Modified time: 2017-03-08 11:53:26
 * @title:  注册
 */
 
@@ -108,21 +108,13 @@ $(function(){
 
 		// md5加密
 		var register_password = $("#register_password").val();
-		console.log(register_password);
-
 		var password_md5 = String(CryptoJS.MD5(register_password));
-		console.log(password_md5);
 
 		if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
 			var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
-			console.log(recommendCode);
-
 			var mobileNum = $("#register_mobile").val();
-			console.log(mobileNum);
-
 			var register_verification = $("#register_verification").val();
-			console.log(register_verification);
 
 			var passwordLength = register_password.length;
 			if (passwordLength >= 6) {

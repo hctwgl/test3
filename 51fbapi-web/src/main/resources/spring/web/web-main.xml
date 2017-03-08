@@ -96,9 +96,9 @@
 				<value>/goods/getHomeInfo</value>
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
-				<value>/good/getThirdGoodsList</value>
-				<value>/good/getCategoryList</value>
-				<value>/good/getCateGoodsList</value>
+				<value>/goods/getThirdGoodsList</value>
+				<value>/goods/getCategoryList</value>
+				<value>/goods/getCateGoodsList</value>
 				<value>/user/logout</value>
 			</list>
 		</constructor-arg>

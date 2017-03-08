@@ -132,7 +132,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_DELEGATE_PAY_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 	}
 	
@@ -173,7 +173,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_PAY_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 	}
 	
@@ -213,7 +213,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_PAY_CONFIRM_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 	}
 	
@@ -242,7 +242,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_TRADE_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 	}
 	
@@ -283,7 +283,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 	}
 	
@@ -316,7 +316,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 	}
 	
@@ -341,7 +341,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_AUTH_SIGN_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 		
 	}
@@ -377,7 +377,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_SIGN_DELAY_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 	}
 	
@@ -427,7 +427,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 		
 	}
@@ -467,7 +467,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_BATCH_DELEGATE_ERR);
+			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 		
 	}
