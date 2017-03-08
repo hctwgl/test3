@@ -61,7 +61,9 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 		List<CouponSceneRuleBo> ruleList = rules.get(REGISTKEY);
 		for(CouponSceneRuleBo item:ruleList){
 			//邀请人获取优惠券
-			this.addUserCoupon(item, userId,CouponSenceRuleType.REGIST,null);
+			if(null != userId){
+				this.addUserCoupon(item, userId,CouponSenceRuleType.REGIST,null);
+			}
 		}
 	}
 

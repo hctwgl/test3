@@ -2,9 +2,6 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -22,14 +19,12 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.alibaba.fastjson.JSONObject;
 
 /**
  *@类现描述：
