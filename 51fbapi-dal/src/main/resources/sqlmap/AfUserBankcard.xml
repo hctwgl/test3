@@ -137,7 +137,7 @@
 		WHERE
 			is_delete=0 AND id = #{rid}
 	</select>
-		<select id="getUserBankcardCountByUserId" resultType="java.lang.Integer">
+	<select id="getUserBankcardCountByUserId" resultType="java.lang.Integer">
 		SELECT
 			count(id)
 		FROM
@@ -147,5 +147,18 @@
 		AND 
 			user_id = #{userId} 
 
+	</select>
+	
+	<select id="getUserBankByCardNo" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND 
+			card_number = #{cardNumber} 
+		AND
+			status = 'B'
 	</select>
 </mapper>

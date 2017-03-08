@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
@@ -64,12 +64,8 @@ public class MobileChargeApi implements ApiHandle {
 		BigDecimal money = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("amount")),BigDecimal.ZERO);
 		BigDecimal rebateAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
+		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 		if(bankId>0){
-			AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
-			if (afUserAccountDo == null) {
-				throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-
-			}
 			String inputOldPwd = UserUtil.getPassword(payPwd, afUserAccountDo.getSalt());
 			if (!StringUtils.equals(inputOldPwd, afUserAccountDo.getPassword())) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
@@ -82,18 +78,19 @@ public class MobileChargeApi implements ApiHandle {
 		
 		Map<String,Object> map;
 		if(bankId<0){//微信支付
-			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,"");
+			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,"",afUserAccountDo);
 			resp.setResponseData(map);
-		}else{//银行卡支付
+		}else{//银行卡支付 代收
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(bankId);
 			if(null == card){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,request.getRemoteAddr());
-			UpsAuthPayRespBo upsResult = (UpsAuthPayRespBo) map.get("resp");
+			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,request.getRemoteAddr(),afUserAccountDo);
+			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
+			afOrderService.dealMobileChargeOrder(upsResult.getOrderNo(), upsResult.getTradeNo());
 			Map<String,Object> newMap = new HashMap<String,Object>();
 			newMap.put("outTradeNo", upsResult.getOrderNo());
 			newMap.put("tradeNo", upsResult.getTradeNo());

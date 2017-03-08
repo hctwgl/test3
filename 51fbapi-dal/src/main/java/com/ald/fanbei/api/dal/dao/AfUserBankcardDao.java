@@ -75,4 +75,11 @@ public interface AfUserBankcardDao {
 	 * @return
 	 */
 	AfBankUserBankDto getUserBankcardByBankId(@Param("bankId")Long bankId);
+	
+	/**
+	 * 查询银行卡是否已被人绑定
+	 * @param cardNo
+	 * @return
+	 */
+	int getUserBankByCardNo(@Param("cardNumber")String cardNumber);
 }

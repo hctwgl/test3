@@ -12,7 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
@@ -86,7 +86,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Override
 	public Map<String,Object> createRepayment(BigDecimal repaymentAmount,
 			final BigDecimal actualAmount,AfUserCouponDto coupon,
-			BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp) {
+			BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp,
+			final AfUserAccountDo afUserAccountDo) {
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRepaymentNo(now);
 		final String payTradeNo=repayNo;
@@ -103,7 +104,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode());
 		}else{
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
+			UpsCollectRespBo respBo = UpsUtil.collect(actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
+					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02");
 			repayment.setPayTradeNo(respBo.getOrderNo());
 			map.put("resp", respBo);
 		}

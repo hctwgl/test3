@@ -17,6 +17,7 @@ public class UpsAuthSignRespBo extends UpsRespBo {
 	private String cardNo				;   //卡号
 	private String tradeDate			;   //订单日期
 	private String tradeNo			;
+	private String needCode				;//是否需要验证码
 	private String tradeState		;   //交易状态
 	private String tradeDesc			;   //交易状态描述
 	private String returnUrl			;   //同步通知地址
@@ -98,5 +99,11 @@ public class UpsAuthSignRespBo extends UpsRespBo {
 	}
 	public void setUserNo(String userNo) {
 		this.userNo = userNo;
+	}
+	public String getNeedCode() {
+		return needCode;
+	}
+	public void setNeedCode(String needCode) {
+		this.needCode = needCode;
 	}
 }
