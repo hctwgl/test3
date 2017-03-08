@@ -27,17 +27,22 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -63,6 +68,9 @@ public class AppH5UserContorler extends BaseController {
 
 	@Resource
 	AfCouponDao afCouponDao;
+	
+	@Resource
+	AfUserCouponDao afUserCouponDao;
 
 	@Resource
 	AfResourceDao afResourceDao;
@@ -145,6 +153,60 @@ public class AppH5UserContorler extends BaseController {
 		}
 
 	}
+    @ResponseBody
+   	@RequestMapping(value = "pickCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+   	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
+   		try {
+   			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
+   			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+   			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+
+   			if (afUserDo != null) {
+   				return H5CommonResponse
+   						.getNewInstance(false, FanbeiExceptionCode.USER_HAS_REGIST_ERROR.getDesc(), "", null)
+   						.toString();
+   			}
+
+   			AfCouponDo couponDo = afCouponDao.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
+   			
+   			
+   			if (couponDo == null) {
+   				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(), "", null)
+   						.toString();
+   			}
+   			
+   			Integer limitCount = couponDo.getLimitCount();
+   			
+   		   int myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUserDo.getRid(), NumberUtil.objToLongDefault(couponId, 1l));
+   			if(limitCount<=myCount){
+   				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", null)
+   						.toString();
+   			}
+   		
+   			
+   			AfUserCouponDo userCoupon = new AfUserCouponDo();
+			userCoupon.setCouponId(NumberUtil.objToLongDefault(couponId, 1l));
+			userCoupon.setGmtStart(new Date());
+			if(couponDo.getValidDays()==-1){
+				userCoupon.setGmtEnd(DateUtil.getFinalDate());
+			}else{
+				userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+			}
+			userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+			userCoupon.setSourceType(CouponSenceRuleType.PICK.getCode());
+			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
+			userCoupon.setUserId(afUserDo.getRid());
+			afUserCouponDao.addUserCoupon(userCoupon);
+   			
+   			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
+
+   		} catch (Exception e) {
+   			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+   		}
+
+   	}
+    
+    
     @ResponseBody
 	@RequestMapping(value = "commitRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {

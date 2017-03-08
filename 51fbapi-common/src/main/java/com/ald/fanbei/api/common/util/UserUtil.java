@@ -1,7 +1,11 @@
 package com.ald.fanbei.api.common.util;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Random;
 import java.util.UUID;
+
+import com.mysql.jdbc.Connection;
 
 /**
  * 
@@ -22,19 +26,18 @@ public class UserUtil {
         return salt;
 	}
 	
+	
+	
+	
     public static String generateToken(String userName){
     	StringBuffer sb = new StringBuffer();
     	sb.append(userName).append("_").append(UUID.randomUUID().toString()).append(DigestUtil.MD5_16(userName+random.nextInt(Integer.MAX_VALUE))).append(System.currentTimeMillis());
         return CommonUtil.calculateSha256(sb.toString());
     }
     
-    public static void main(String[] args) {
-    	String salt = UserUtil.getSalt();
-		String password = UserUtil.getPassword("c98954a476fbad043a0118d0a53318b8", salt);
-    	
-    	
-    	
-    	System.out.println("salt="+salt+"$$$$$$$$$$$$$$password="+password);
-	}
+    
+	
+    
+  
     
 }
