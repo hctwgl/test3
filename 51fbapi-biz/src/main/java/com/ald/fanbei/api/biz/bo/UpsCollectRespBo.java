@@ -22,6 +22,7 @@ public class UpsCollectRespBo extends UpsRespBo {
 	private String tradeDate		;//交易时间
 	private String tradeState	;  //交易状态
 	private String tradeDesc		;  //交易状态描述
+	private String tradeNo			;//交易号
 	
 	public String getAmount() {
 		return amount;
@@ -112,5 +113,11 @@ public class UpsCollectRespBo extends UpsRespBo {
 	}
 	public void setTradeDate(String tradeDate) {
 		this.tradeDate = tradeDate;
+	}
+	public String getTradeNo() {
+		return tradeNo;
+	}
+	public void setTradeNo(String tradeNo) {
+		this.tradeNo = tradeNo;
 	}
 }

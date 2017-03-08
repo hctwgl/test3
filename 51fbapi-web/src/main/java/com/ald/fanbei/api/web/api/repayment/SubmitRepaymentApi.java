@@ -12,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -97,7 +97,7 @@ public class SubmitRepaymentApi implements ApiHandle{
 		Map<String,Object> map;
 		if(cardId<0){//微信支付
 			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
-					cardId,userId,billDo,"");
+					cardId,userId,billDo,"",afUserAccountDo);
 			resp.setResponseData(map);
 		}else{//银行卡支付
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
@@ -105,11 +105,13 @@ public class SubmitRepaymentApi implements ApiHandle{
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
 			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
-					cardId,userId,billDo,request.getRemoteAddr());
-			UpsAuthPayRespBo upsResult = (UpsAuthPayRespBo) map.get("resp");
+					cardId,userId,billDo,request.getRemoteAddr(),afUserAccountDo);
+			//认证支付 换成代收
+			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
+			afRepaymentService.dealRepaymentSucess(upsResult.getOrderNo(), upsResult.getTradeNo());
 			Map<String,Object> newMap = new HashMap<String,Object>();
 			newMap.put("outTradeNo", upsResult.getOrderNo());
 			newMap.put("tradeNo", upsResult.getTradeNo());

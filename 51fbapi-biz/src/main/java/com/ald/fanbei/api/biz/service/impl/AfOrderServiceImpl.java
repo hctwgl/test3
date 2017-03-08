@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -43,6 +44,7 @@ import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
@@ -301,7 +303,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Override
 	public Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,final Long userId,
 			final AfUserCouponDto couponDto,final BigDecimal money,final String mobile,
-			final BigDecimal rebateAmount,final Long bankId,String clientIp) {
+			final BigDecimal rebateAmount,final Long bankId,String clientIp,AfUserAccountDo afUserAccountDo) {
 		final Date now = new Date();
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
 		final BigDecimal actualAmount = couponDto==null?money:money.subtract(couponDto.getAmount());
@@ -309,10 +311,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		String payOrderNo = orderNo;
 		if(bankId<0){//微信支付
 			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,PayOrderSource.ORDER.getCode());
-		}else{//银行卡支付
+		}else{//银行卡支付 代收
 			map = new HashMap<String,Object>();
-			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bankId);
-			UpsAuthPayRespBo respBo = UpsUtil.authPay(actualAmount, userId+"", bank.getRealName(), bank.getCardNumber(), bank.getIdNumber(), "02",clientIp);
+			UpsCollectRespBo respBo = UpsUtil.collect(actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
+					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02");
 			map.put("resp", respBo);
 			payOrderNo = respBo.getOrderNo();
 		}

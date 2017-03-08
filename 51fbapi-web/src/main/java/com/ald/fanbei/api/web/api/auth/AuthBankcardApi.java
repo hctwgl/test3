@@ -57,15 +57,22 @@ public class AuthBankcardApi implements ApiHandle {
 		if(null ==auth||YesNoStatus.NO.getCode().equals(auth.getFacesStatus())){
 			throw new FanbeiException("user face auth error", FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
 		}
+		//判断该卡是否已被绑定
+		if(afUserBankcardDao.getUserBankByCardNo(cardNumber)>0){
+			throw new FanbeiException("user bankcard exist error", FanbeiExceptionCode.USER_BANKCARD_EXIST_ERROR);
+		}
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
 		UpsAuthSignRespBo upsResult = UpsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
+		}else if(!"10".equals(upsResult.getNeedCode())){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR);
 		}
 		String isMain = YesNoStatus.NO.getCode();
 		//判断是否已绑定主卡
-		if(YesNoStatus.NO.getCode().equals(auth.getBankcardStatus())){
+		AfUserBankcardDo bank = afUserBankcardDao.getUserMainBankcardByUserId(context.getUserId());
+		if(null == bank){
 			isMain = YesNoStatus.YES.getCode();
 		}
 		//TODO 新建卡
