@@ -161,9 +161,9 @@ public class AppH5UserContorler extends BaseController {
    			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
    			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
 
-   			if (afUserDo != null) {
+   			if (afUserDo == null) {
    				return H5CommonResponse
-   						.getNewInstance(false, FanbeiExceptionCode.USER_HAS_REGIST_ERROR.getDesc(), "", null)
+   						.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", null)
    						.toString();
    			}
 
@@ -177,7 +177,7 @@ public class AppH5UserContorler extends BaseController {
    			
    			Integer limitCount = couponDo.getLimitCount();
    			
-   		   int myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUserDo.getRid(), NumberUtil.objToLongDefault(couponId, 1l));
+   			Integer myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUserDo.getRid(), NumberUtil.objToLongDefault(couponId, 1l));
    			if(limitCount<=myCount){
    				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", null)
    						.toString();

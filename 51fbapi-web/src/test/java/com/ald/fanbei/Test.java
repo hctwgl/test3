@@ -19,6 +19,7 @@ public class Test {
 //		System.out.println("salt=" + salt + "$$$$$$$$$$$$$$password=" + password);
 		
 		System.out.println("============================");
+		Connection conn = getConn();
 
 //		try {
 //			afUserInfo(1L);
