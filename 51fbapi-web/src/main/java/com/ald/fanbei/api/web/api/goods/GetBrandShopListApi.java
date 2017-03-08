@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -47,12 +48,14 @@ public class GetBrandShopListApi implements ApiHandle {
 		List<AfBrandShopVo> brandList = new ArrayList<AfBrandShopVo>();
 		Map<String,Object> map = new HashMap<String,Object>();
 		for (AfResourceDo brand : list) {
-			AfBrandShopVo vo = new AfBrandShopVo();
-			vo.setBrandName(brand.getName());
-			vo.setBrandIcon(brand.getValue());
-			vo.setBrandRate(brand.getValue3());
-			vo.setBrandUrl(brand.getValue2());
-			brandList.add(vo);
+			if(StringUtil.isNotBlank(brand.getValue4())){
+				AfBrandShopVo vo = new AfBrandShopVo();
+				vo.setBrandName(brand.getName());
+				vo.setBrandIcon(brand.getValue());
+				vo.setBrandRate(brand.getValue3());
+				vo.setBrandUrl(brand.getValue2());
+				brandList.add(vo);
+			}
 		}
 		map.put("brandList", brandList);
 		return map;
