@@ -44,7 +44,7 @@ import com.alibaba.fastjson.JSON;
 @Controller
 @RequestMapping("/app/goods/")
 public class AppGoodsControler extends BaseController {
-    String  opennative = "/ala-web/opennative?name=";
+    String  opennative = "/fanbei-web/opennative?name=";
 	@Resource
 	AfModelH5ItemService afModelH5ItemService;
 
