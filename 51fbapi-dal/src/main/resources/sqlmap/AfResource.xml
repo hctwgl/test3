@@ -129,6 +129,13 @@
 			r1.sec_type = ''  
 		AND 
 			r2.value_4 !=''
+		AND
+		    r1.is_delete =0
+		AND
+		   r2.is_delete =0
+		   
+		AND
+		 r1.value_4 = 'O'
 		ORDER BY 
 		r1.sort desc, r2.sort desc
 	</select>
