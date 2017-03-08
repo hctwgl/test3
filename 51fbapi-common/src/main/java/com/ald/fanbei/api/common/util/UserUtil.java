@@ -28,4 +28,13 @@ public class UserUtil {
         return CommonUtil.calculateSha256(sb.toString());
     }
     
+    public static void main(String[] args) {
+    	String salt = UserUtil.getSalt();
+		String password = UserUtil.getPassword("c98954a476fbad043a0118d0a53318b8", salt);
+    	
+    	
+    	
+    	System.out.println("salt="+salt+"$$$$$$$$$$$$$$password="+password);
+	}
+    
 }
