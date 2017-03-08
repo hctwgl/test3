@@ -65,18 +65,18 @@
 					<div class="receiveCoupons_content clearfix">
 						<span class="fl fs_50 tac fsc_blue receiveCoupons_priceInfo">￥<span class="fs_92 box1">$priceUtil.bigdecimalToInt($!{item.amount})</span></span>
 						<div class="fl fs_24 fsc_6 receiveCoupons_text">
-							<p class="fsc_1 fs_32">$!{item.name}</p>
+							<p class="fsc_1 fs_32"><a href="http://192.168.96.35:8088/ala-web/user/ala-web/pickCoupon" style="width: 100%; height: 100%;">$!{item.name}</a></p>
 							<p>$!{item.useRule}</p>
 							<p>$!{item.limitCount}</p>
 						</div>
 					</div>
 					<p class="fs_22 fsc_6 tal receiveCoupons_date">$dateUtil.formatDate($!{item.gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
 				</div>
-				<button class="fr receiveCoupons_btn">立即领取</button>
+				<button class="fr receiveCoupons_btn"><a href="http://192.168.96.35:8088/ala-web/user/ala-web/pickCoupon" style="width: 100%; height: 100%;">立即领取</a></button>
 			</li>
 			#end
 		</ul>
 		<script type="text/javascript" src="/js/common/layer.js"></script>
-		<script type="text/javascript" src="/js/app/user/receiveCoupons.js?version=$version"></script>
+		<!-- <script type="text/javascript" src="/js/app/user/receiveCoupons.js?version=$version"></script> -->
     </body>
 </html>

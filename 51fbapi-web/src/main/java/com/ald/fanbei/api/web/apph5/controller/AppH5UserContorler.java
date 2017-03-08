@@ -56,7 +56,7 @@ import com.alibaba.fastjson.JSON;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/app/user/")
+@RequestMapping("/ala-web/user/")
 public class AppH5UserContorler extends BaseController {
 
 	// @Resource
@@ -155,7 +155,7 @@ public class AppH5UserContorler extends BaseController {
 
 	}
     @ResponseBody
-   	@RequestMapping(value = "ala-web/opennative/pickCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+   	@RequestMapping(value = "/pickCoupon", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
    	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
    		try {
    			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();

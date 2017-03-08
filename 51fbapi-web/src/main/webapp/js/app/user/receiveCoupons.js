@@ -22,8 +22,8 @@ $(function(){
 		}
 
 		$.ajax({
-            url: "/app/user/pickCoupon",
-            type: "POST",
+            url: "http://192.168.96.35:8088/app/user/ala-web/pickCoupon",
+            type: "GET",
             dataType: "JSON",
             data: {
                 couponId: couponIdNum,
