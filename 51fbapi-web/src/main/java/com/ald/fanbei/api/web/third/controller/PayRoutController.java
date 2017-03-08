@@ -106,14 +106,16 @@ public class PayRoutController{
     @RequestMapping(value = {"/batchDelegatePay"}, method = RequestMethod.POST)
     @ResponseBody
 	public String batchDelegatePay(HttpServletRequest request, HttpServletResponse response){
-    	List<JSONObject> list = new ArrayList<JSONObject>();
+    	/*List<JSONObject> list = new ArrayList<JSONObject>();
     	JSONObject obj = new JSONObject();
-    	obj.put("tradeNo", "dele100000000");
+    	obj.put("tradeNo", "dele200000000111");
     	obj.put("amount", "0.01");
-    	obj.put("certNo", "33018319901101383X");
+    	obj.put("certNo", "330330330330");
     	obj.put("bankName", "工商银行");
+    	obj.put("realName", "张三");
+    	obj.put("cardNo", "6222222222222");
     	list.add(obj);
-    	UpsUtil.batchDelegatePay(new BigDecimal(0.01), "17767117022", "1", "代收", list.toString(), "02");
+    	UpsUtil.batchDelegatePay(new BigDecimal(0.01), "1377777777", "1", "代收", list.toString(), "02");*/
     	return "succ";
     }
     
