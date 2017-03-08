@@ -56,7 +56,7 @@ import com.alibaba.fastjson.JSON;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/ala-web/user/")
+@RequestMapping("/app/user/")
 public class AppH5UserContorler extends BaseController {
 
 	// @Resource
@@ -79,36 +79,7 @@ public class AppH5UserContorler extends BaseController {
 	@Resource
 	AfSmsRecordService afSmsRecordService;
 
-	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
-	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
-		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 
-		String ids = resourceDo.getValue();
-		List<AfCouponDo> afCouponList = afCouponDao.selectCouponByCouponIds(ids);
-		List<Object> list = new ArrayList<Object>();
-		for (AfCouponDo afCouponDo : afCouponList) {
-			list.add(couponObjectWithAfUserCouponDto(afCouponDo));
-		}
-		model.put("notifyUrl", "http://192.168.96.35:8088/app/user/ala-web/pickCoupon");
-		model.put("couponList", list);
-		logger.info(JSON.toJSONString(model));
-	}
-	public Map<String, Object> couponObjectWithAfUserCouponDto(AfCouponDo afCouponDo){
-		
-		Map<String, Object> returnData = new HashMap<String, Object>();
-		returnData.put("rid", afCouponDo.getRid());
-		returnData.put("useRule", afCouponDo.getUseRule());
-		returnData.put("limitAmount", afCouponDo.getLimitAmount());
-		returnData.put("name", afCouponDo.getName());
-		returnData.put("gmtStart", afCouponDo.getGmtStart());
-		returnData.put("gmtEnd", afCouponDo.getGmtEnd());
-		returnData.put("amount", afCouponDo.getAmount());
-		returnData.put("limitCount", afCouponDo.getLimitCount());
-		returnData.put("type", afCouponDo.getType());
-
-		return returnData;
-
-	}
 
 	@RequestMapping(value = { "invitationGift" }, method = RequestMethod.GET)
 	public void invitationGift(HttpServletRequest request, ModelMap model) throws IOException {
@@ -154,60 +125,7 @@ public class AppH5UserContorler extends BaseController {
 		}
 
 	}
-    @ResponseBody
-   	@RequestMapping(value = "/pickCoupon", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-   	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
-   		try {
-   			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
-   			
-   			
-   			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-   			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
-
-   			if (afUserDo == null) {
-   				return H5CommonResponse
-   						.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", null)
-   						.toString();
-   			}
-
-   			AfCouponDo couponDo = afCouponDao.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
-   			
-   			
-   			if (couponDo == null) {
-   				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(), "", null)
-   						.toString();
-   			}
-   			
-   			Integer limitCount = couponDo.getLimitCount();
-   			
-   			Integer myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUserDo.getRid(), NumberUtil.objToLongDefault(couponId, 1l));
-   			if(limitCount<=myCount){
-   				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", null)
-   						.toString();
-   			}
-   		
-   			
-   			AfUserCouponDo userCoupon = new AfUserCouponDo();
-			userCoupon.setCouponId(NumberUtil.objToLongDefault(couponId, 1l));
-			userCoupon.setGmtStart(new Date());
-			if(couponDo.getValidDays()==-1){
-				userCoupon.setGmtEnd(DateUtil.getFinalDate());
-			}else{
-				userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
-			}
-			userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
-			userCoupon.setSourceType(CouponSenceRuleType.PICK.getCode());
-			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
-			userCoupon.setUserId(afUserDo.getRid());
-			afUserCouponDao.addUserCoupon(userCoupon);
-   			
-   			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
-
-   		} catch (Exception e) {
-   			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
-   		}
-
-   	}
+   
     
     
     @ResponseBody
