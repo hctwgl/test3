@@ -137,7 +137,7 @@
 		AND
 		 r1.value_4 = 'O'
 		ORDER BY 
-		r1.sort desc, r2.sort desc
+		r1.sort desc,r1.id desc, r2.sort desc
 	</select>
 
 	
