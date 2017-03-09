@@ -26,6 +26,6 @@ public abstract class AbstractThird {
 		for (Object item : param) {
 			sb = sb.append("|").append(item);
 		}
-		thirdLog.info(StringUtil.appendStrs("methodName=", methodName,",params=", sb.toString() + ",resp=" + resp==null?"":resp));
+		thirdLog.info(StringUtil.appendStrs("methodName=", methodName,";params=", sb.toString() , ";resp=" , resp==null?"":resp));
 	}
 }
