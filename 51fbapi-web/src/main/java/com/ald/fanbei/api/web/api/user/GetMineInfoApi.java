@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -16,6 +17,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -35,6 +37,8 @@ public class GetMineInfoApi implements ApiHandle {
 	private AfUserCouponService afUserCouponService;
 	@Resource
 	private AfUserService afUserService;
+	@Resource
+	private AfUserAuthService afUserAuthService;
 
 	@Resource
 	private AfUserAccountService afUserAccountService;
@@ -55,7 +59,8 @@ public class GetMineInfoApi implements ApiHandle {
 		int coupleCount = afUserCouponService.getUserCouponByUserNouse(userId);
 		// 账户关联信息
 		AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
-
+		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("avata", userAccountInfo.getAvatar());
 		data.put("nick", userAccountInfo.getNick());
@@ -72,6 +77,7 @@ public class GetMineInfoApi implements ApiHandle {
 		data.put("rebateAmount", userAccountInfo.getRebateAmount());
 		data.put("couponCount", coupleCount);
 		data.put("recommendCode", userAccountInfo.getRecommendCode());
+		data.put("isRealName", afUserAuthDo.getRealnameStatus());
 		resp.setResponseData(data);
 		return resp;
 	}

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserCollectionDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,goods_id,goods_name,goods_icon,open_id,goods_url,price_amount,actual_amount
+		id rid,gmt_create,gmt_modified,user_id,goods_id,goods_name,goods_icon,open_id,goods_url,price_amount,actual_amount,rebate_amount
 	</sql>
 	
 	<insert id="addUserCollectionGoods" keyProperty="id" useGeneratedKeys="true" parameterType="AfUserCollectionDo">
@@ -16,7 +16,8 @@
 			open_id,
 			goods_url,
 			price_amount,
-			actual_amount		
+			actual_amount,
+			rebate_amount		
 			)
 			VALUES
 			(
@@ -29,7 +30,8 @@
 			#{openId},
 			#{goodsUrl},			
 			#{priceAmount},
-			#{actualAmount}
+			#{actualAmount},
+			#{rebateAmount}
 			)
 	</insert>
 	
@@ -75,6 +77,9 @@
 		</if>
 		<if test="actualAmount != null">
 			,actual_amount = #{actualAmount}
+		</if>
+		<if test="rebateAmount != null">
+			,rebate_amount = #{rebateAmount}
 		</if>
 		WHERE 
 			id=#{rid} 

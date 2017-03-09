@@ -45,7 +45,9 @@ public class AddCollectionApi implements ApiHandle {
 		String name = ObjectUtils.toString(params.get("name"), "").toString();
 		BigDecimal priceAmount =new  BigDecimal(ObjectUtils.toString(params.get("priceAmount"), "").toString());
 		String actualAmount =ObjectUtils.toString(params.get("actualAmount"), "").toString();
+		String rebateAmount =ObjectUtils.toString(params.get("rebateAmount"), "").toString();
 
+		
 		String openId = ObjectUtils.toString(params.get("openId"), "").toString();
 		String goodsIcon = ObjectUtils.toString(params.get("goodsIcon"), "").toString();
 		String goodsUrl = ObjectUtils.toString(params.get("goodsUrl"), "").toString();
@@ -61,6 +63,8 @@ public class AddCollectionApi implements ApiHandle {
 		AfUserCollectionDo afUserCollectionDo = new AfUserCollectionDo();
 		afUserCollectionDo.setActualAmount(actualAmount);
 		afUserCollectionDo.setPriceAmount(priceAmount);
+		afUserCollectionDo.setRebateAmount(rebateAmount);
+
 		afUserCollectionDo.setOpenId(openId);
 		afUserCollectionDo.setGoodsName(name);
 		afUserCollectionDo.setGoodsId(goodsId);

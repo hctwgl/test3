@@ -28,6 +28,8 @@ public class AfUserCollectionDo extends AbstractSerial {
 	private String goodsIcon;
 	private String openId;
 	private String goodsUrl;
+	private String rebateAmount;
+
 	private BigDecimal priceAmount;
 	private String actualAmount;
 	/**
@@ -161,6 +163,18 @@ public class AfUserCollectionDo extends AbstractSerial {
 	 */
 	public void setActualAmount(String actualAmount) {
 		this.actualAmount = actualAmount;
+	}
+	/**
+	 * @return the rebateAmount
+	 */
+	public String getRebateAmount() {
+		return rebateAmount;
+	}
+	/**
+	 * @param rebateAmount the rebateAmount to set
+	 */
+	public void setRebateAmount(String rebateAmount) {
+		this.rebateAmount = rebateAmount;
 	}
 
 	
