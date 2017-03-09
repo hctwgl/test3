@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserSearchService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -63,9 +65,11 @@ public class AppH5UserContorler extends BaseController {
 	// AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	
 	@Resource
-	AfUserDao afUserDao;
+	AfUserService afUserService;
 
+	
 	@Resource
 	AfCouponDao afCouponDao;
 	
@@ -85,7 +89,7 @@ public class AppH5UserContorler extends BaseController {
 	public void invitationGift(HttpServletRequest request, ModelMap model) throws IOException {
 
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		model.put("avatar", afUserDo.getAvatar());
 		model.put("userName", afUserDo.getUserName());
 		model.put("recommendCode", afUserDo.getRecommendCode());
@@ -105,7 +109,7 @@ public class AppH5UserContorler extends BaseController {
 		try {
 			String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
 
-			AfUserDo afUserDo = afUserDao.getUserByUserName(mobile);
+			AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
 
 			if (afUserDo != null) {
 				return H5CommonResponse
@@ -137,7 +141,7 @@ public class AppH5UserContorler extends BaseController {
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 
-			AfUserDo eUserDo = afUserDao.getUserByUserName(mobile);
+			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
 			if (eUserDo != null) {
 				return H5CommonResponse
 						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null)
@@ -184,23 +188,20 @@ public class AppH5UserContorler extends BaseController {
 			 userDo.setNick("");
 			userDo.setPassword(password);
 
-			afUserDao.addUser(userDo);
+			afUserService.addUser(userDo);
 
 			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 			// TODO 优化邀请码规则
 			String inviteCode = Long.toString(invteLong, 36);
 			userDo.setRecommendCode(inviteCode);
 			if (!StringUtils.isBlank(recommendCode)) {
-				AfUserDo userRecommendDo = afUserDao.getUserByRecommendCode(recommendCode);
+				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 				userDo.setRecommendId(userRecommendDo.getRid());
 				;
 			}
-			afUserDao.updateUser(userDo);
+			afUserService.updateUser(userDo);
 
-			AfUserAccountDo account = new AfUserAccountDo();
-			account.setUserId(userDo.getRid());
-			account.setUserName(userDo.getUserName());
-			afUserAccountService.addUserAccount(account);
+			
 
 			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
 

@@ -76,8 +76,9 @@ public class GetMineInfoApi implements ApiHandle {
 		data.put("vipLevel", userAccountInfo.getVipLevel());
 		data.put("rebateAmount", userAccountInfo.getRebateAmount());
 		data.put("couponCount", coupleCount);
-		data.put("recommendCode", userAccountInfo.getRecommendCode());
 		data.put("isRealName", afUserAuthDo.getRealnameStatus());
+
+		data.put("recommendCode", userAccountInfo.getRecommendCode());
 		resp.setResponseData(data);
 		return resp;
 	}

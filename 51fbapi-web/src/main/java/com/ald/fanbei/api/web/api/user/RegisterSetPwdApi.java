@@ -97,10 +97,7 @@ public class RegisterSetPwdApi implements ApiHandle {
           }
         afUserService.updateUser(userDo);
         
-        AfUserAccountDo account = new AfUserAccountDo();
-        account.setUserId(userDo.getRid());
-        account.setUserName(userDo.getUserName());
-        afUserAccountService.addUserAccount(account);
+   
         return resp;
     }
     

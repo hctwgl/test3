@@ -50,6 +50,7 @@ public class SmsUtil extends AbstractThird {
 	private static String FORGET_TEMPLATE = "验证码为:&param1;您正在找回51返呗的账户密码，请在30分钟内完成";
 	private static String BIND_TEMPLATE = "验证码为:&param1;您正在51返呗绑定手机号，请在30分钟内完成";
 	private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
+	private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
 
 	private static String TEST_VERIFY_CODE = "888888";
 
@@ -150,7 +151,7 @@ public class SmsUtil extends AbstractThird {
 	public boolean sendEmailVerifyCode(String email, Long userId) {
 
 		String verifyCode = CommonUtil.getRandomNumber(6);
-		String content = SETPAY_TEMPLATE.replace("&param1", verifyCode);
+		String content = EMAIL_TEMPLATE.replace("&param1", verifyCode);
 		SmsResult emailResult = new SmsResult();
 		emailResult.setResultStr("email send");
 		try {
