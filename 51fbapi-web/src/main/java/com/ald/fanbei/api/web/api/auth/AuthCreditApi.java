@@ -63,7 +63,7 @@ public class AuthCreditApi implements ApiHandle {
 		String respBody = (String)requestDataVo.getParams().get("respBody");
 		String sign = (String)requestDataVo.getParams().get("sign");
 		
-		ZhimaAuthResultBo zarb = ZhimaUtil.decryptAndVerifySign(URLDecoder.decode(respBody), URLDecoder.decode(sign));
+		ZhimaAuthResultBo zarb = ZhimaUtil.decryptAndVerifySign(respBody, sign);
 		if(!zarb.isSuccess()){
 			throw new FanbeiException(FanbeiExceptionCode.ZM_AUTH_ERROR);
 		}
