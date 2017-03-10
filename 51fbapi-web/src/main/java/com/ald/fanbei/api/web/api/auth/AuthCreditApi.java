@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.api.auth;
 
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -54,7 +53,6 @@ public class AuthCreditApi implements ApiHandle {
 	@Resource
 	AfResourceService afResourceService;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 

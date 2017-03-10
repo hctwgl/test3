@@ -98,7 +98,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		vo.setRebateAmount(new StringBuffer("").append(minRebateAmount).append("~").append(maxRebateAmount).toString());
 		vo.setSaleAmount(saleAmount);
 		List<String> icons = item.getSmallImages();
-		if(icons.size()>0){
+		if(icons!=null && icons.size()>0){
 			vo.setThumbnailIcon(icons.get(0));
 		}else{
 			vo.setThumbnailIcon(item.getPictUrl());
