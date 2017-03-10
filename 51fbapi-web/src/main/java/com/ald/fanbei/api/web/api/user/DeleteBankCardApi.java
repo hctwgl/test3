@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -59,10 +60,10 @@ public class DeleteBankCardApi implements ApiHandle {
         AfUserBankcardDo afUserBankcardDo = new AfUserBankcardDo();
         afUserBankcardDo.setRid(bankId);
        afUserBankcardDo.setUserId(userId);
-       afUserBankcardDo.setStatus("U");
+       afUserBankcardDo.setStatus(BankcardStatus.UNBIND.getCode());
         if(afUserBankcardService.updateUserBankcard(afUserBankcardDo)>0){
        		return resp;
-          }
+         }
         
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);
 	}

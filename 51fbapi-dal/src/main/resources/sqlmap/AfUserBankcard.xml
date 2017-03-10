@@ -135,7 +135,11 @@
 		FROM
 			af_user_bankcard
 		WHERE
-			is_delete=0 AND id = #{rid}
+			is_delete=0 
+		AND
+			status = 'B'
+		AND 
+			id = #{rid}
 	</select>
 	<select id="getUserBankcardCountByUserId" resultType="java.lang.Integer">
 		SELECT
@@ -144,6 +148,8 @@
 			af_user_bankcard
 		WHERE
 			is_delete=0 
+		AND
+			status = 'B'
 		AND 
 			user_id = #{userId} 
 
