@@ -172,9 +172,15 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			}
 			AfUserCouponDo userCoupon = new AfUserCouponDo();
 			userCoupon.setCouponId(item.getCouponId());
+			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
+
 			if(StringUtils.equals(couponDo.getExpiryType(), "R")   ){
 				userCoupon.setGmtStart(couponDo.getGmtStart());
 				userCoupon.setGmtEnd(couponDo.getGmtEnd());
+				if(DateUtil.afterDay(new Date(), couponDo.getGmtEnd())){
+					userCoupon.setStatus(CouponStatus.EXPIRE.getCode());
+				}
+
 			}else{
 				userCoupon.setGmtStart(new Date());
 				if(couponDo.getValidDays()==-1){
@@ -186,7 +192,6 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			}
 
 			userCoupon.setSourceType(ruleType.getCode());
-			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
 			userCoupon.setUserId(userId);
 			afUserCouponDao.addUserCoupon(userCoupon);
 		}
