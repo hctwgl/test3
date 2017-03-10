@@ -32,7 +32,10 @@
 		FROM
 			af_goods
 		WHERE
-			is_delete=0 and category_id = #{categoryId}  and status = 'PUBLISH'
+			is_delete=0  and status = 'PUBLISH'
+			<if test="categoryId != null and categoryId !=0">
+				and category_id = #{categoryId}
+			</if>
 			<if test="keywords != null and keywords !=''">
 				AND name LIKE CONCAT('%',#{keywords}, '%')
 			</if>

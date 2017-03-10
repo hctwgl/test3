@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017030401")
+    #set($version="2017031002")
     <title>商品列表模版</title>
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>
@@ -9,13 +9,14 @@
     <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
-    <div class="goodsListModel_wrap">
-        <div class="goodsListModel_header_wrap">
-            <ul class="fs_32 fsc_6 bgc_white goodsListModel_header">
+
+    <div class="goodsListModel_wrap wrap">
+        <div class="goodsListModel_header_wrap swiper-pagination clearfix">
+            <ul class="fs_32 fsc_6 bgc_white goodsListModel_header tabs">
                 #foreach($item in $!{categoryList})
-                    <li>
+                    <li id="">
                         #if(${item.type} == ${typeCurrent})
-                            <span class="current">$!{item.name}</span>
+                            <span class="current active">$!{item.name}</span>
                         #else
                             <span>$!{item.name}</span>
                         #end
@@ -23,15 +24,16 @@
                 #end
             </ul>
         </div>
-        <div class="goodsListModel_main_wrap clearfix">
+        <div class="goodsListModel_main_wrap clearfix swiper-container">
             #foreach($item in $!{bannerList})
                 <img class="goodsListModel_banner" src="$!{item.imageIcon}">
             #end
-            <div class="goodsListModel_main">
+            <div class="goodsListModel_main swiper-wrapper">
                 #foreach($item in $!{categoryList})
-                <div class="goodsListModel_main_list">
-                    <ul class="goodsListModel_mainContent clearfix">
-                        #foreach($item in $!{goodsList})
+                <div class="goodsListModel_main_list swiper-slide goodsListModel_$!{item.type}">
+                    #if(${item.type} == ${typeCurrent})
+                        <ul class="goodsListModel_mainContent clearfix content-slide goodsListModel_mainContent_$!{item.type}">
+                            #foreach($item in $!{goodsList})
                             <li class="fl goodsListModel_item">
     							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}","openId":"$!{item.openId}"}'>
                                     <img src="$!{item.thumbnailIcon}" class="goodsListModel_mainContent_img">
@@ -53,16 +55,17 @@
                                     </div>
                                 </a>
                             </li>
-                        #end
-                    </ul>
+                            #end
+                        </ul>
+                    #end
                 </div>
-                #end
+             #end
             </div>
         </div>
     </div>
     <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/js/common/layer.js"></script>
-    <!-- <script type="text/javascript" src="/js/common/dropload.min.js"></script> -->
+    <script type="text/javascript" src="/js/common/swiper-2.7.0.min.js"></script>
     <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>

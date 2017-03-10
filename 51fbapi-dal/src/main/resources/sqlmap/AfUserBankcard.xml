@@ -139,8 +139,6 @@
 			af_user_bankcard
 		WHERE
 			is_delete=0 
-		AND
-			status = 'B'
 		AND 
 			id = #{rid}
 	</select>
