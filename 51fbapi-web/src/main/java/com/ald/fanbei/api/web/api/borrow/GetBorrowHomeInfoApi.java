@@ -22,7 +22,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -60,7 +59,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		//账户关联信息
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		Map<String,Integer> map = afBorrowService.getCurrentYearAndMonth("",DateUtil.addMonths(now, -1));
+		Map<String,Integer> map = afBorrowService.getCurrentTermYearAndMonth("",now);
 		//TODO "year","month"在多个类多处用到可放Constants中用常量表示
 		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()),userDto, authDo);
 		resp.setResponseData(data);

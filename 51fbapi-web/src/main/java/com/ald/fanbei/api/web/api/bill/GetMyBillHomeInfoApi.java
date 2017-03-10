@@ -20,7 +20,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
@@ -57,7 +56,7 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		//还款日期
 		Date now =new Date();
 		Date repayDate = afBorrowService.getReyLimitDate(now);
-		Map<String,Integer> map = afBorrowService.getCurrentYearAndMonth(billType,DateUtil.addMonths(now, -1));
+		Map<String,Integer> map = afBorrowService.getCurrentTermYearAndMonth(billType,now);
 		AfBillHomeVo homeVo = getBillHomeVo(afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), 
 				map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()), map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH),repayDate,pageNo,userId);
 		resp.setResponseData(homeVo);
