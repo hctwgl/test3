@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
@@ -35,7 +36,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	AfUserAuthDao afUserAuthDao;
 	@Resource
 	TransactionTemplate transactionTemplate;
-
+	@Resource
+	CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
 	@Override
 	public int addUser(final AfUserDo afUserDo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -51,6 +53,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserId(afUserDo.getRid());
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
+			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid());
+
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();

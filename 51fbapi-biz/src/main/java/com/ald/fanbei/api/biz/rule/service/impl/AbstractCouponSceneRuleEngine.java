@@ -161,7 +161,7 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			accountLog.setAmount(new BigDecimal(afResourceDo.getValue()));
 			accountLog.setUserId(userId);
 			accountLog.setRefId(sourceRef == null?"":sourceRef);
-			accountLog.setType(CouponSenceRuleType.SIGNIN.getCode());
+			accountLog.setType(ruleType.getCode());
 			afUserAccountLogDao.addUserAccountLog(accountLog);
 			
 		}else if(item.getCouponId()!=null){
