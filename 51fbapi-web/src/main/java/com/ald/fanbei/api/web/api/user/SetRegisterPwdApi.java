@@ -91,7 +91,6 @@ public class SetRegisterPwdApi implements ApiHandle {
         userDo.setUserName(userName);
         userDo.setMobile(userName);
         userDo.setNick(nick);
-
         userDo.setPassword(password);
         afUserService.addUser(userDo);
         
@@ -100,12 +99,7 @@ public class SetRegisterPwdApi implements ApiHandle {
         userDo.setRecommendCode(inviteCode);
         afUserService.updateUser(userDo);
         
-        AfUserAccountDo account = new AfUserAccountDo();
-        account.setUserId(userDo.getRid());
-        account.setUserName(userDo.getUserName());
-        afUserAccountService.addUserAccount(account);
-        
-        couponSceneRuleEnginerUtil.regist(context.getUserId());
+    
         
         return resp;
     }
