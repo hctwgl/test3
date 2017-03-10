@@ -30,6 +30,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
+import com.alibaba.druid.util.StringUtils;
 
 
 /**
@@ -171,13 +172,19 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			}
 			AfUserCouponDo userCoupon = new AfUserCouponDo();
 			userCoupon.setCouponId(item.getCouponId());
-			userCoupon.setGmtStart(new Date());
-			if(couponDo.getValidDays()==-1){
-				userCoupon.setGmtEnd(DateUtil.getFinalDate());
+			if(StringUtils.equals(couponDo.getExpiryType(), "R")   ){
+				userCoupon.setGmtStart(couponDo.getGmtStart());
+				userCoupon.setGmtEnd(couponDo.getGmtEnd());
 			}else{
-				userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+				userCoupon.setGmtStart(new Date());
+				if(couponDo.getValidDays()==-1){
+					userCoupon.setGmtEnd(DateUtil.getFinalDate());
+				}else{
+					userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+				}
+
 			}
-			userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+
 			userCoupon.setSourceType(ruleType.getCode());
 			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
 			userCoupon.setUserId(userId);

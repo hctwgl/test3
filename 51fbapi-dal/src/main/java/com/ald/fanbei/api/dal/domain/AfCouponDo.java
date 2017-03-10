@@ -30,6 +30,8 @@ public class AfCouponDo extends AbstractSerial {
 	private Integer limitCount;
 	private String status;	
 	private String type;
+	private String expiryType;
+	
 	
 	/**
 	 * @return the rid
@@ -188,6 +190,18 @@ public class AfCouponDo extends AbstractSerial {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	/**
+	 * @return the expiryType
+	 */
+	public String getExpiryType() {
+		return expiryType;
+	}
+	/**
+	 * @param expiryType the expiryType to set
+	 */
+	public void setExpiryType(String expiryType) {
+		this.expiryType = expiryType;
 	}
 
 }
