@@ -93,9 +93,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	
 	@Override
 	public Date getReyLimitDate(Date now){
-    	Date startDate = DateUtil.addDays(DateUtil.getFirstOfMonth(now), 
+		Date start = DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now));
+    	Date startDate = DateUtil.addDays(start, 
 				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10)-1);
-		Date limitTime = DateUtil.getEndOfDate(DateUtil.addDays(DateUtil.getFirstOfMonth(now), 
+		Date limitTime = DateUtil.getEndOfDate(DateUtil.addDays(start, 
 				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_REPAY_TIME), 20)-1));
 		if(startDate.after(now)){
 			limitTime = DateUtil.addMonths(limitTime, -1);
@@ -207,7 +208,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			bill.setBorrowNo(borrow.getBorrowNo());
 			bill.setName(borrow.getName());
 			bill.setGmtBorrow(borrow.getGmtCreate());
-			Map<String,Integer> timeMap = getCurrentYearAndMonth("", now);
+			Map<String,Integer> timeMap = getCurrentYearAndMonth(now);
 			bill.setBillYear(timeMap.get(Constants.DEFAULT_YEAR));
 			bill.setBillMonth(timeMap.get(Constants.DEFAULT_MONTH));
 			bill.setNper(borrow.getNper());
@@ -330,16 +331,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	}
 
 	@Override
-	public Map<String,Integer> getCurrentYearAndMonth(String type,Date now) {
+	public Map<String,Integer> getCurrentYearAndMonth(Date now) {
 		Map<String,Integer> map = new HashMap<String,Integer>();
 		//账单日
-		Date startDate = DateUtil.addDays(DateUtil.getFirstOfMonth(now), 
+		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)), 
 				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10)-1);
 		if(now.before(startDate)){//账单日前面
 			startDate = DateUtil.addMonths(startDate,-1);
-		}
-		if("N".equals(type)){
-			startDate = DateUtil.addMonths(startDate,1);
 		}
 		int billYear=0,billMonth=0;
 		String[] billDay = DateUtil.formatDate(startDate, DateUtil.MONTH_PATTERN).split("-");
@@ -347,8 +345,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			billYear = NumberUtil.objToIntDefault(billDay[0], 0);
 			billMonth = NumberUtil.objToIntDefault(billDay[1], 0);
 		}
-		map.put("year", billYear);
-		map.put("month", billMonth);
+		map.put(Constants.DEFAULT_YEAR, billYear);
+		map.put(Constants.DEFAULT_MONTH, billMonth);
 		return map;
 	}
 
@@ -383,5 +381,29 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	@Override
 	public AfBorrowTempDo getBorrowTempByBorrowId(Long borrowId) {
 		return afBorrowTempDao.getBorrowTempByBorrowId(borrowId);
+	}
+
+	@Override
+	public Map<String, Integer> getCurrentTermYearAndMonth(String type, Date now) {
+		Map<String,Integer> map = new HashMap<String,Integer>();
+		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)), 
+				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10)-1);
+		if(now.before(startDate)){//账单日前面
+			startDate = DateUtil.addMonths(startDate,-2);
+		}else{
+			startDate = DateUtil.addMonths(startDate,-1);
+		}
+		if("N".equals(type)){
+			startDate = DateUtil.addMonths(startDate,1);
+		}
+		int billYear=0,billMonth=0;
+		String[] billDay = DateUtil.formatDate(startDate, DateUtil.MONTH_PATTERN).split("-");
+		if(billDay.length==2){
+			billYear = NumberUtil.objToIntDefault(billDay[0], 0);
+			billMonth = NumberUtil.objToIntDefault(billDay[1], 0);
+		}
+		map.put(Constants.DEFAULT_YEAR, billYear);
+		map.put(Constants.DEFAULT_MONTH, billMonth);
+		return map;
 	}
 }

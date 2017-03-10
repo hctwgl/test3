@@ -65,6 +65,7 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 					if(afUserAccountDao.updateUserAccount(updateAccountDo)==0){
 						return 0;
 					}
+					//TODO ？
 					afCashRecordDao.addCashRecord(afCashRecordDo);
 					AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
 					afUserAccountLogDo.setRefId( afCashRecordDo.getRid()+"");

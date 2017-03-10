@@ -60,11 +60,18 @@ public interface AfBorrowService {
 	String getCurrentLastBorrowNo(Date current);
 	
 	/**
-	 * 获取本月账单 year month 
+	 * 获取当前账单 year month 
+	 * @param now 当前时间
+	 * @return
+	 */
+	Map<String,Integer> getCurrentYearAndMonth(Date now);
+	
+	/**
+	 * 获取本期下期年月 year month 
 	 * @param type C-本月 N-next
 	 * @return
 	 */
-	Map<String,Integer> getCurrentYearAndMonth(String type,Date now);
+	Map<String,Integer> getCurrentTermYearAndMonth(String type,Date now);
 	
 	/**
      * 获取利息总天数
