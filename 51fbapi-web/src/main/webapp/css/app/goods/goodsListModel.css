@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 10:58:37
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-10 15:21:06
+* @Last Modified time: 2017-03-10 16:37:03
 * @title:  商品列表模版
 */
 
@@ -68,19 +68,20 @@
 }
 .goodsListModel_mainContent .goodsListModel_item{
 	width: 8.5rem;
-	height: 11.3rem;
-	background-image: url(/images/app/goods/03kuang.png);
+	/*height: 11.3rem;*/
+	/*background-image: url(/images/app/goods/03kuang.png);*/
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-ms-background-size: cover;
 	background-size: cover;
+    /*border: 1px solid #cfcfcf;*/
 }
 .goodsListModel_mainContent .goodsListModel_item:nth-child(2n+1){
 	margin: 0 0.5rem 0.5rem 0.625rem;
 }
 .goodsListModel_mainContent_img{
 	width: 100%;
-	height: 7.35rem;
+    height: 7.35rem;
     border: 0;
 }
 .goodsListModel_mainContent_wrap{
@@ -90,18 +91,21 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	margin-top: 0.25rem;
+    line-height: 1.4rem;
 }
 .goodsListModel_mainContent_wrap p:nth-child(2){
-	margin-bottom: 0.1rem;
-	padding-top: 0.2rem;
+    line-height: 1.1rem;
 	margin-left: -0.125rem;
 }
 .goodsListModel_mainContent_rebate_wrap{
 	position: relative;
-	width: 8.45rem;
+    /*width: 8.4rem;*/
+    width: 8.5rem;
 	height: 1.45rem;
-	margin-left: 0.025rem;
+	/*margin-left: 0.025rem;*/
+    padding-left: 0.025rem;
+    -webkit-box-sizing: border-box;
+    /*box-sizing: border-box;*/
 	background-color: #FFF7F7;
 }
 .goodsListModel_mainContent_rebate{

@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-10 15:11:08
+* @Last Modified time: 2017-03-10 17:12:40
 * @title:  商品列表页
 */
 
@@ -51,18 +51,29 @@ $(function(){
         }
     });
 
+
+
+
+    
+
     $(".goodsListModel_header li").on('touchstart mousedown',function(e){
         e.preventDefault();
-        $(".tabs .active").removeClass('active');
-        $(this).addClass('active');
+        // $(".tabs .active").removeClass('active');
+        // $(this).addClass('active');
         tabsSwiper.swipeTo($(this).index());
+
+
+
+
+
+
 
         var i = $(this).index();
         $(this).find("span").addClass("current");
         $(this).siblings().find("span").removeClass("current");
 
         typeCurrentNum =  categoryObj[i].type;
-
+        console.log(typeCurrentNum);
         ulOffsetLeft = $(".goodsListModel_header").offset().left;
         thisLiOffsetUl = liWArr[i].offsetLeft;
         thisLiOffsetDiv = thisLiOffsetUl + ulOffsetLeft; //距离 边框的距离
@@ -91,7 +102,7 @@ $(function(){
                 type: typeCurrentNum
             },
             success: function(returnData){
-
+                console.log(returnData);
                 if (returnData.success) {
 
                     var html = '';
@@ -114,7 +125,7 @@ $(function(){
                             var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
 
                               
-                            html+=  '<li class="fl goodsListModel_item">'
+                            html+=  '<li class="fl goodsListModel_item bgc_white">'
                                         +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[j].goodsId+',openId:'+goodsList[j].openId+'">'
                                             +'<img src="'+goodsList[j].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
                                             +'<div class="goodsListModel_mainContent_main">'
@@ -179,7 +190,7 @@ $(function(){
     function loadover(){
         if(sover==1){
             var overtext="没有更多了...";
-            // $(".loadmore").remove();
+            $(".loadmore").remove();
             if($(".loadover").length>0){
                 $(".loadover span").eq(0).html(overtext);
             }else{
