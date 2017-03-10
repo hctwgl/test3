@@ -30,7 +30,7 @@
             #end
             <div class="goodsListModel_main swiper-wrapper">
                 #foreach($item in $!{categoryList})
-                <div class="goodsListModel_main_list swiper-slide goodsListModel_$!{item.type}">
+                <div class="goodsListModel_main_list swiper-slide goodsListModel_$!{item.type} goodsListModel_main_hide">
                     #if(${item.type} == ${typeCurrent})
                         <ul class="goodsListModel_mainContent clearfix content-slide goodsListModel_mainContent_$!{item.type}">
                             #foreach($item in $!{goodsList})
@@ -65,7 +65,7 @@
     </div>
     <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/js/common/layer.js"></script>
-    <script type="text/javascript" src="/js/common/swiper-2.7.0.min.js"></script>
+    <!-- <script type="text/javascript" src="/js/common/swiper-2.7.0.min.js"></script> -->
     <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>
