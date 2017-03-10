@@ -68,12 +68,13 @@ public class WithdrawCashApi implements ApiHandle {
 		if (userAccountDo == null) {
 			throw new FanbeiException("account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
+		AfUserBankcardDo afUserBankcardDo = null;
 		if (StringUtils.equals(type, UserAccountLogType.CASH.getCode())) {
 			if (userAccountDo.getRebateAmount().compareTo(amount) < 0) {
 				throw new FanbeiException("apply cash amount more than account money",
 						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
 			} else {
-				AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
+				afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 				Long bankId = NumberUtil.objToLong(account);
 				// 判断是否是本人主卡
 				if (bankId != afUserBankcardDo.getRid()) {
@@ -107,7 +108,7 @@ public class WithdrawCashApi implements ApiHandle {
 		afCashRecordDo.setUserId(userId);
 		afCashRecordDo.setStatus(status);
 
-		if (afCashRecordService.addCashRecord(afCashRecordDo) > 0) {
+		if (afCashRecordService.addCashRecord(afCashRecordDo,afUserBankcardDo) > 0) {
 			return resp;
 		}
 

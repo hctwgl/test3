@@ -7,6 +7,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -15,6 +16,8 @@ import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -34,6 +37,8 @@ public class CheckBankcardApi implements ApiHandle {
 	private AfUserBankcardService afUserBankcardService;
 	@Resource
 	private AfUserAuthService afUserAuthService;
+	@Resource
+	private AfUserAccountService afUserAccountService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -46,7 +51,7 @@ public class CheckBankcardApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 		}
 		
-		//TODO 绑卡
+		//绑卡
 		bank.setStatus(BankcardStatus.BIND.getCode());
 		afUserBankcardService.updateUserBankcard(bank);
 		//更新userAuth记录
@@ -56,6 +61,13 @@ public class CheckBankcardApi implements ApiHandle {
 			authDo.setBankcardStatus(YesNoStatus.YES.getCode());
 			afUserAuthService.updateUserAuth(authDo);
 		}
+		//判断是否需要设置支付密码
+		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
+		String allowPayPwd = YesNoStatus.YES.getCode();
+		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){
+			allowPayPwd = YesNoStatus.NO.getCode();
+		}
+		resp.addResponseData("allowPayPwd", allowPayPwd);
 		return resp;
 	}
 

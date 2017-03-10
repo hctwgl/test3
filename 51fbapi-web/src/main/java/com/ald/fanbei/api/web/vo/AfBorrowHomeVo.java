@@ -33,6 +33,9 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	private String billMonth;
 	private String status;
 	private Date gmtZm;
+	private Integer zmScore;
+	private Integer ivsScore;
+	private Integer realNameScore;
 	
 	public BigDecimal getTotalAmount() {
 		return totalAmount;
@@ -147,5 +150,23 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	}
 	public void setGmtZm(Date gmtZm) {
 		this.gmtZm = gmtZm;
+	}
+	public Integer getZmScore() {
+		return zmScore;
+	}
+	public void setZmScore(Integer zmScore) {
+		this.zmScore = zmScore;
+	}
+	public Integer getIvsScore() {
+		return ivsScore;
+	}
+	public void setIvsScore(Integer ivsScore) {
+		this.ivsScore = ivsScore;
+	}
+	public Integer getRealNameScore() {
+		return realNameScore;
+	}
+	public void setRealNameScore(Integer realNameScore) {
+		this.realNameScore = realNameScore;
 	}
 }

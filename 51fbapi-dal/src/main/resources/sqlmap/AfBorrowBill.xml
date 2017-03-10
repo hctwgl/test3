@@ -106,6 +106,12 @@
 		SELECT count(1)
 		FROM af_borrow_bill
 		WHERE is_delete=0  AND STATUS ='N' AND user_id=#{userId} AND bill_year=#{year} AND bill_month=#{month}
+    </select> 
+    
+    <select id="getUserMonthlyBillTotalCount" resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM af_borrow_bill
+		WHERE is_delete=0 AND user_id=#{userId} AND bill_year=#{year} AND bill_month=#{month} AND STATUS !='F'
     </select>
     
     <select id="getBillAmountByCashIds" resultType="AfBorrowBillDo">

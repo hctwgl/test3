@@ -99,7 +99,9 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 				vo.setStatus(BorrowBillStatus.NO.getCode());
 			}
 		}
-		
+		vo.setZmScore(authDo.getZmScore());
+		vo.setIvsScore(authDo.getIvsScore());
+		vo.setRealNameScore(authDo.getRealnameScore());
 		return vo;
 	}
 }

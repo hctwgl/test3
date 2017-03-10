@@ -30,4 +30,11 @@ public interface AfUserAuthService {
 	 * @return
 	 */
 	AfUserAuthDo getUserAuthInfoByUserId(Long userId);
+	
+	/**
+	 * 判断是否可以分期
+	 * @param userId
+	 * @return
+	 */
+	String getConsumeStatus(Long userId);
 }

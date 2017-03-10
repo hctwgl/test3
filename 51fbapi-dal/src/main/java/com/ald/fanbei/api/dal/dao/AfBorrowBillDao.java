@@ -107,4 +107,13 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	AfBorrowBillDo getBillAmountByCashIds(@Param("ids")List<String> ids);
+	
+	/**
+	 * 获取账单数量
+	 * @param year
+	 * @param month
+	 * @param userId
+	 * @return
+	 */
+	int getUserMonthlyBillTotalCount(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId);
 }

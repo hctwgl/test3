@@ -13,15 +13,21 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfCashRecordService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 /**
  * @类描述：
@@ -41,7 +47,7 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 	AfUserAccountLogDao afUserAccountLogDao;
 	
 	@Override
-	public int addCashRecord(final AfCashRecordDo afCashRecordDo) {
+	public int addCashRecord(final AfCashRecordDo afCashRecordDo,final AfUserBankcardDo card) {
 
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 
@@ -65,7 +71,15 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 					if(afUserAccountDao.updateUserAccount(updateAccountDo)==0){
 						return 0;
 					}
-					//TODO ？
+					if(null == card){//集分宝提现
+						
+					}else{//银行卡提现
+						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
+								card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02");
+						if(!upsResult.isSuccess()){
+							throw new FanbeiException("bank card pay error",FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+						}
+					}
 					afCashRecordDao.addCashRecord(afCashRecordDo);
 					AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
 					afUserAccountLogDo.setRefId( afCashRecordDo.getRid()+"");

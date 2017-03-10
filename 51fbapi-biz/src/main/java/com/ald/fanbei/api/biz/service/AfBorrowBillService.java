@@ -81,6 +81,12 @@ public interface AfBorrowBillService {
 	int getUserMonthlyBillNotpayCount(int year,int month,Long userId);
 	
 	/**
+	 * 获取账单总数量
+	 * @return
+	 */
+	int getUserMonthlyBillTotalCount(int year,int month,Long userId);
+	
+	/**
 	 * 修改总账单状态
 	 * @param year
 	 * @param month

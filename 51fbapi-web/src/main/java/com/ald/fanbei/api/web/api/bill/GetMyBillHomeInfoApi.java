@@ -46,6 +46,7 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfBorrowBillService afBorrowBillService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -97,7 +98,7 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		vo.setRepayAmount(repaymentAmount);
 		vo.setBillMonth(String.format("%02d", billMonth));
 		vo.setBillYear(billYear+"");
-		vo.setBillCount(query.getTotalCount());
+		vo.setBillCount(afBorrowBillService.getUserMonthlyBillTotalCount(billYear, billMonth, userId));
 		vo.setPageNo(pageNo);
 		vo.setRepayDay(repayDate);
 		if(repaymentAmount.compareTo(BigDecimal.ZERO)==0){

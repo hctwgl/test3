@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 /**
  * @类描述：
@@ -17,6 +18,6 @@ public interface AfCashRecordService {
 	 * @return
 	 */
 	
-	int addCashRecord(AfCashRecordDo afCashRecordDo);
+	int addCashRecord(AfCashRecordDo afCashRecordDo,AfUserBankcardDo card);
 
 }

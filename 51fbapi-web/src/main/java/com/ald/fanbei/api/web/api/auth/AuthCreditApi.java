@@ -117,7 +117,6 @@ public class AuthCreditApi implements ApiHandle {
 		if(sorce<min){
 			resp.addResponseData("tooLow", 'Y');
 			resp.addResponseData("creditAmount", creditAmount);
-			resp.addResponseData("allowConsume", 'N');
 		}else{
 			for (int i = 0; i < arry.size(); i++) {
 				JSONObject obj = arry.getJSONObject(i);
@@ -130,13 +129,15 @@ public class AuthCreditApi implements ApiHandle {
 			}
 			resp.addResponseData("tooLow", 'N');
 			resp.addResponseData("creditAmount", creditAmount);
-			resp.addResponseData("allowConsume", 'Y');
 		}
 		AfUserAccountDo account = new AfUserAccountDo();
 		account.setAuAmount(creditAmount);
 		account.setCreditScore(sorce);
 		account.setUserId(context.getUserId());
 		afUserAccountService.updateUserAccount(account);
+		resp.addResponseData("zmScore", auth.getZmScore());
+		resp.addResponseData("isvScore", auth.getIvsScore());
+		resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
 		return resp;
 	}
 }

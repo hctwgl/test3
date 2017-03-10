@@ -70,7 +70,6 @@ public class ApplyCashApi implements ApiHandle{
 		if(null == card){
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
-		//TODO 转账处理 待调试
 		UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), userId+"",
 				card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02");
 		if(!upsResult.isSuccess()){

@@ -13,18 +13,17 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -53,6 +52,8 @@ public class LoginApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAuthService afUserAuthService;
 	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -130,21 +131,12 @@ public class LoginApi implements ApiHandle {
         tokenBo.setToken(token);
         tokenBo.setUserId(userName);
         tokenCacheUtil.saveToken(userName, tokenBo);
-        String allowConsume = YesNoStatus.NO.getCode();
-        //获取信用分数
-        AfResourceDo scoreResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_CREDIT_SCORE_AMOUNT);
-        if(null != scoreResource){
-        	AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
-        	if(null != account && account.getCreditScore()>=Integer.parseInt(scoreResource.getValue1())){
-        		allowConsume = YesNoStatus.YES.getCode();
-        	}
-        }
         //set return user info and generate token
         AfUserVo userVo = parseUserVo(afUserDo);
         JSONObject jo = new JSONObject();
         jo.put("user", userVo);
         jo.put("token", token);
-        jo.put("allowConsume", allowConsume);
+        jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid()));
 //        jo.put("firstLogin", afUserDo.getFailCount() ==  -1?1:0);
         resp.setResponseData(jo);
         

@@ -86,4 +86,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService{
 		return afBorrowBillDao.getBorrowBillDtoById(rid);
 	}
 
+	@Override
+	public int getUserMonthlyBillTotalCount(int year, int month, Long userId) {
+		return afBorrowBillDao.getUserMonthlyBillTotalCount(year, month, userId);
+	}
+
 }
