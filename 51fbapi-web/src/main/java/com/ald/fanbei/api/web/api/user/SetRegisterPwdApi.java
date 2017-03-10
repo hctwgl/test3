@@ -43,8 +43,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 	AfSmsRecordService afSmsRecordService;
 	@Resource
 	AfUserAccountService afUserAccountService;
-	@Resource
-	CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
+
 	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -91,21 +90,22 @@ public class SetRegisterPwdApi implements ApiHandle {
         userDo.setUserName(userName);
         userDo.setMobile(userName);
         userDo.setNick(nick);
-
         userDo.setPassword(password);
         afUserService.addUser(userDo);
+
         
-        Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
-        String inviteCode = Long.toString(invteLong, 36);
-        userDo.setRecommendCode(inviteCode);
-        afUserService.updateUser(userDo);
+    	Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+		// TODO 优化邀请码规则
+		String inviteCode = Long.toString(invteLong, 36);
+		userDo.setRecommendCode(inviteCode);
+		if (!StringUtils.isBlank(recommendCode)) {
+			AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
+			userDo.setRecommendId(userRecommendDo.getRid());
+			;
+		}
+		afUserService.updateUser(userDo);
         
-        AfUserAccountDo account = new AfUserAccountDo();
-        account.setUserId(userDo.getRid());
-        account.setUserName(userDo.getUserName());
-        afUserAccountService.addUserAccount(account);
-        
-        couponSceneRuleEnginerUtil.regist(context.getUserId());
+    
         
         return resp;
     }

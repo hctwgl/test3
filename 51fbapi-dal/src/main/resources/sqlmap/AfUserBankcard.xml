@@ -41,7 +41,10 @@
 		ON
 			b.is_delete=0 and b.user_id = c.user_id 
 		WHERE
-			b.is_delete=0 AND b.id=#{bankId}
+			b.is_delete=0 
+		AND b.id=#{bankId}
+		AND
+			b.status='B'
 	</select>
 	
 	
