@@ -19,5 +19,7 @@ public interface AfCouponDao {
 	List<AfCouponDo> selectCouponByCouponIds(@Param("ids")String ids);
 	
 	AfCouponDo getCouponById(@Param("couponId")Long couponId);
+	
+	int updateCouponquotaAlreadyById(AfCouponDo couponDo);
 
 }

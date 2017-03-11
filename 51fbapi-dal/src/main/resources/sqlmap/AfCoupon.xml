@@ -26,5 +26,17 @@
 	    AND
 			id = #{couponId}
 	</select>
-
+	<update id="updateCouponquotaAlreadyById" parameterType="AfCouponDo">
+		UPDATE
+			af_coupon
+		SET
+			gmt_modified = NOW()
+		<if test="quotaAlready != null">
+    	  ,quota_already=quota_already + #{quotaAlready}
+	   </if>
+		WHERE
+			is_delete = 0
+		AND
+			id = #{rid}
+	</update>
 </mapper>

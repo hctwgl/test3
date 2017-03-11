@@ -193,7 +193,13 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 
 			userCoupon.setSourceType(ruleType.getCode());
 			userCoupon.setUserId(userId);
+			
 			afUserCouponDao.addUserCoupon(userCoupon);
+			AfCouponDo couponDoT = new AfCouponDo();
+			couponDoT.setRid(couponDo.getRid());
+			couponDoT.setQuotaAlready(1);
+			afCouponDao.updateCouponquotaAlreadyById(couponDoT);
+			
 		}
 		
 		
