@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -21,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -107,7 +109,7 @@ public class GetInvitationInfoApi implements ApiHandle {
 		data.put("userName", invitationDto.getUserName());
 		data.put("timeStamp", invitationDto.getGmtCreate());
 		data.put("reward", invitationDto.getAmount());
-		data.put("staus", invitationDto.getRealName().length() > 0 ? "T" : "F");
+		data.put("staus", StringUtils.equals(invitationDto.getRealnameStatus(), YesNoStatus.YES.getCode())?"T":"F" );
 		return data;
 
 	}

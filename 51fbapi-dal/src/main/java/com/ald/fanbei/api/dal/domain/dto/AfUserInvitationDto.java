@@ -24,6 +24,9 @@ public class AfUserInvitationDto extends AbstractSerial {
 	private String realName;//真实姓名
 	private Date gmtCreate;
 	private BigDecimal amount;//奖励金额
+	private String realnameStatus;//实名认证状态【Y:已认证,N:未认证】
+
+	
 	/**
 	 * @return the rid
 	 */
@@ -83,6 +86,18 @@ public class AfUserInvitationDto extends AbstractSerial {
 	 */
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
+	}
+	/**
+	 * @return the realnameStatus
+	 */
+	public String getRealnameStatus() {
+		return realnameStatus;
+	}
+	/**
+	 * @param realnameStatus the realnameStatus to set
+	 */
+	public void setRealnameStatus(String realnameStatus) {
+		this.realnameStatus = realnameStatus;
 	}
 
 	
