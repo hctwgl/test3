@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-11 13:36:32
+* @Last Modified time: 2017-03-11 17:39:39
 * @title:  商品列表页
 */
 
@@ -36,7 +36,7 @@ $(function(){
         ulW += thisLiW;
     });
 
-    $(".goodsListModel_header").css("width", ulW+0.5+"px");
+    $(".goodsListModel_header").css("width", ulW+2.5+"px");
 
     // 默认goodsList第一个位显示其他的都为隐藏
     $(".goodsListModel_main .goodsListModel_main_list:first-child").removeClass("goodsListModel_main_hide");
@@ -80,6 +80,8 @@ $(function(){
             },
             success: function(returnData){
 
+                console.log(returnData);
+
                 if (returnData.success) {
 
                     var html = '';
@@ -102,22 +104,20 @@ $(function(){
                             var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
     
                             html+=  '<li class="fl goodsListModel_item bgc_white">'
-                                        +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[j].goodsId+',openId:'+goodsList[j].openId+'">'
+                                        +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[j].goodsId+'}">'
                                             +'<img src="'+goodsList[j].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                             +'<div class="goodsListModel_mainContent_main">'
                                                 +'<div class="goodsListModel_mainContent_wrap">'
                                                     +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
                                                     +'<p class="fs_26 fsc_red">'
-                                                        +'<span>￥'+amountAmountPriceInteger+'</span>'
-                                                        +'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
+                                                        +'<span>￥'+amountAmountPriceInteger+'</span>'+'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
                                                     +'</p>'
                                                 +'</div>'
                                                 +'<div class="goodsListModel_mainContent_rebate_wrap">'
                                                     +'<div class="goodsListModel_mainContent_rebate clearfix">'
                                                         +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
                                                         +'<p class="fl fs_24 fsc_orange">'
-                                                            +'<span>￥'+rebateAmountPriceInteger+'</span>'
-                                                            +'<span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
+                                                            +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
                                                         +'</p>'
                                                     +'</div>'
                                                 +'</div>'
@@ -231,15 +231,14 @@ $(function(){
                                     var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
 
                                     html+= '<li class="fl goodsListModel_item bgc_white">'
-                                                +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[i].goodsId+',openId:'+goodsList[i].openId+'">'
+                                                +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[i].goodsId+'}">'
                                                     +'<img src="'+goodsList[i].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                                     +'<div class="goodsListModel_mainContent_main">'
                                                         +'<div class="goodsListModel_mainContent_wrap">'
                                                             +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
                                                             +'<span class="fs_26 fsc_red">'
                                                                 +'<span class="fs_26 fsc_red">'
-                                                                    +'<span>￥'+amountAmountPriceInteger+'</span>'
-                                                                    +'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
+                                                                    +'<span>￥'+amountAmountPriceInteger+'</span>'+'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
                                                                 +'</span>'
                                                             +'</span>'
                                                         +'</div>'
@@ -247,8 +246,7 @@ $(function(){
                                                             +'<div class="goodsListModel_mainContent_rebate clearfix">'
                                                                 +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
                                                                 +'<p class="fl fs_24 fsc_orange">'
-                                                                    +'<span>￥'+rebateAmountPriceInteger+'</span>'
-                                                                    +'<span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
+                                                                    +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
                                                                 +'</p>'
                                                             +'</div>'
                                                         +'</div>'

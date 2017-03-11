@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 10:58:37
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-10 20:11:10
+* @Last Modified time: 2017-03-11 17:16:07
 * @title:  商品列表模版
 */
 
@@ -11,7 +11,7 @@
 	position: relative;
 	overflow: hidden;
     height: 2.3rem;
-    border-bottom: 1px solid #CBCBCB;
+    /*border-bottom: 1px solid #CBCBCB;*/
     /*left: 0;
     top: 0;
     z-index: 10;*/
@@ -39,13 +39,14 @@
     top: 0;
     z-index: 10;
     padding-top: 0.3rem;
+    border-bottom: 1px solid #CBCBCB;
 }
 .goodsListModel_header li{
     float: left;
     padding: 0 0.6rem;
 }
 .goodsListModel_header .current{
-	height: 1.9rem;
+	height: 1.85rem;
 	border-bottom: 3px solid #FE963B;
     color: #111;
 }
@@ -106,7 +107,7 @@
 	/*margin-left: 0.025rem;*/
     padding-left: 0.025rem;
     -webkit-box-sizing: border-box;
-    /*box-sizing: border-box;*/
+    box-sizing: border-box;
 	background-color: #FFF7F7;
 }
 .goodsListModel_mainContent_rebate{
@@ -119,7 +120,7 @@
     transform: translateY(-50%);
 }
 .goodsListModel_mainContent_rebate span{
-	width: 0.9rem;
+	/*width: 0.9rem;*/
 	height: 0.9rem;
 	line-height: 0.9rem;
 }
