@@ -10,7 +10,9 @@ import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -20,6 +22,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -39,6 +42,10 @@ public class CheckBankcardApi implements ApiHandle {
 	private AfUserAuthService afUserAuthService;
 	@Resource
 	private AfUserAccountService afUserAccountService;
+	@Resource
+	private CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
+	@Resource
+	private AfUserService afUserService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -60,6 +67,12 @@ public class CheckBankcardApi implements ApiHandle {
 			authDo.setUserId(context.getUserId());
 			authDo.setBankcardStatus(YesNoStatus.YES.getCode());
 			afUserAuthService.updateUserAuth(authDo);
+			
+			//触发邀请人获得奖励规则
+			AfUserDo userDo = afUserService.getUserById(context.getUserId());
+			if(userDo.getRecommendId() > 0l){
+				couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
+			}
 		}
 		//判断是否需要设置支付密码
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());

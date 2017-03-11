@@ -103,9 +103,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		final AfRepaymentDo repayment = buildRepayment(repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
 		Map<String,Object> map = new HashMap<String,Object>();
-		if(cardId<0){//微信支付
+		if(cardId==-1){//微信支付
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode());
-		}else{
+		}else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			UpsCollectRespBo respBo = UpsUtil.collect(actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02");
@@ -117,6 +117,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					afRepaymentDao.addRepayment(repayment);
+					if(cardId==-2){//余额支付
+						dealRepaymentSucess(repayment.getPayTradeNo(), "");
+					}
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.info("createRepayment error:",e);
