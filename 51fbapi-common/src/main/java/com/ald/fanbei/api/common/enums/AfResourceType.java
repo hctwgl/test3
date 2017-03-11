@@ -25,7 +25,8 @@ public enum AfResourceType {
 	RegisterProtocol("REGISTER_PROTOCOL", "注册协议"),
 	ShareInviteCode("SHARE_INVITECODE", "分享邀请码"),
 
-	
+	AppDownloadUrl("APP_DOWNLOAD_URL", "app下载地址"),
+
 	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),
 
 	

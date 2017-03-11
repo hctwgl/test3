@@ -4,11 +4,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -21,30 +17,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserSearchService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
-import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -77,11 +65,12 @@ public class AppH5UserContorler extends BaseController {
 	AfUserCouponDao afUserCouponDao;
 
 	@Resource
-	AfResourceDao afResourceDao;
+	AfResourceService afResourceService;
 	@Resource
 	SmsUtil smsUtil;
 	@Resource
 	AfSmsRecordService afSmsRecordService;
+	
 
 
 
@@ -99,7 +88,7 @@ public class AppH5UserContorler extends BaseController {
 
 	@RequestMapping(value = { "register" }, method = RequestMethod.GET)
 	public void register(HttpServletRequest request, ModelMap model) throws IOException {
-		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.RegisterProtocol.getCode());
+		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(AfResourceType.RegisterProtocol.getCode());
 		model.put("registerRule", resourceDo.getValue());
 		logger.info(JSON.toJSONString(model));
 	}
@@ -201,9 +190,14 @@ public class AppH5UserContorler extends BaseController {
 			}
 			afUserService.updateUser(userDo);
 
-			
-
-			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
+			// 获取邀请分享地址
+			AfResourceDo resourceCodeDo = afResourceService
+					.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
+			String appDownLoadUrl ="";
+            if(resourceCodeDo!=null){
+            	appDownLoadUrl = resourceCodeDo.getValue();
+            }
+			return H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
 
 		} catch (Exception e) {
 			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
