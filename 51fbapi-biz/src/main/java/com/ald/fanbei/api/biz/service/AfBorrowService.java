@@ -21,7 +21,7 @@ public interface AfBorrowService {
 	 * @param now
 	 * @return
 	 */
-	Date getReyLimitDate(Date now);
+	Date getReyLimitDate(String billType,Date now);
 	
 	/**
 	 * 获取某年某月的还款日

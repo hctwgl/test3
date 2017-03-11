@@ -56,7 +56,7 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
 		//还款日期
 		Date now =new Date();
-		Date repayDate = afBorrowService.getReyLimitDate(now);
+		Date repayDate = afBorrowService.getReyLimitDate(billType,now); 
 		Map<String,Integer> map = afBorrowService.getCurrentTermYearAndMonth(billType,now);
 		AfBillHomeVo homeVo = getBillHomeVo(afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), 
 				map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()), map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH),repayDate,pageNo,userId);
