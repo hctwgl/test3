@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-10 20:28:58
+* @Last Modified time: 2017-03-11 13:36:32
 * @title:  商品列表页
 */
 
@@ -38,7 +38,6 @@ $(function(){
 
     $(".goodsListModel_header").css("width", ulW+0.5+"px");
 
-
     // 默认goodsList第一个位显示其他的都为隐藏
     $(".goodsListModel_main .goodsListModel_main_list:first-child").removeClass("goodsListModel_main_hide");
 
@@ -50,9 +49,8 @@ $(function(){
         $(this).find("span").addClass("current");
         $(this).siblings().find("span").removeClass("current");
 
-
         $(".goodsListModel_main_list").eq(i).removeClass("goodsListModel_main_hide").siblings().addClass("goodsList_main_hide");
-
+        
         typeCurrentNum =  categoryObj[i].type;
         ulOffsetLeft = $(".goodsListModel_header").offset().left;
         thisLiOffsetUl = liWArr[i].offsetLeft;
@@ -102,11 +100,10 @@ $(function(){
                             var rebateAmountSplitArr =  rebateAmount.split(".");
                             var rebateAmountPriceInteger = rebateAmountSplitArr[0];
                             var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-
-                              
+    
                             html+=  '<li class="fl goodsListModel_item bgc_white">'
                                         +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[j].goodsId+',openId:'+goodsList[j].openId+'">'
-                                            +'<img src="'+goodsList[j].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
+                                            +'<img src="'+goodsList[j].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                             +'<div class="goodsListModel_mainContent_main">'
                                                 +'<div class="goodsListModel_mainContent_wrap">'
                                                     +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
@@ -126,8 +123,7 @@ $(function(){
                                                 +'</div>'
                                             +'</div>'
                                         +'</a>'
-                                    +'</li>';
-                                    
+                                    +'</li>';                                   
                         }
 
                         var ulCurrent = $(".goodsListModel_mainContent").html('');
@@ -135,7 +131,6 @@ $(function(){
 
                         var divCurrent = $('.goodsListModel_'+typeCurrentNum+'').html('');
                         $(divCurrent).append(ulCurrent);
-
                     }
 
                 } else {
@@ -146,6 +141,7 @@ $(function(){
                 requestMsg("请求失败");
             }
         });
+
     });
 });
 
@@ -234,9 +230,9 @@ $(function(){
                                     var rebateAmountPriceInteger = rebateAmountSplitArr[0];
                                     var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
 
-                                    html+= '<li class="fl goodsListModel_item">'
+                                    html+= '<li class="fl goodsListModel_item bgc_white">'
                                                 +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[i].goodsId+',openId:'+goodsList[i].openId+'">'
-                                                    +'<img src="'+goodsList[i].thumbnailIcon+'" class="goodsListModel_mainContent_img">'
+                                                    +'<img src="'+goodsList[i].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                                     +'<div class="goodsListModel_mainContent_main">'
                                                         +'<div class="goodsListModel_mainContent_wrap">'
                                                             +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
