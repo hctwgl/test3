@@ -22,12 +22,15 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -49,6 +52,8 @@ public class GetInvitationInfoApi implements ApiHandle {
 
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -73,11 +78,19 @@ public class GetInvitationInfoApi implements ApiHandle {
 				.getSingleResourceBytype(AfResourceType.ShareInviteCode.getCode());
 
 		AfUserDo userDo = afUserService.getUserById(userId);
-
-		BigDecimal amount = afUserCouponService.getUserCouponByInvite(userId);
-		if (amount == null) {
-			amount = new BigDecimal(0);
+		AfUserAccountLogDo userAccountLogDo = new AfUserAccountLogDo();
+		userAccountLogDo.setUserId(userId);
+		userAccountLogDo.setType(UserAccountLogType.AUTHNAME.getCode());
+		BigDecimal amount = new BigDecimal(0);
+		if(userAccountLogDo !=null ){
+			BigDecimal amountTem= afUserAccountLogDao.getUserAmountByType(userAccountLogDo);
+			if( amountTem !=null){
+				amount = amountTem;
+			}
+		
 		}
+		
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		List<AfUserInvitationDto> list = afUserService.getRecommendUserByRecommendId(userId, (pageNum - 1) * 20,

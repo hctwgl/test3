@@ -24,7 +24,9 @@ public enum UserAccountLogType {
 	CONSUME("CONSUME", "分期"),
 	REPAYMENT("REPAYMENT", "还款"),
 	REBATE_CASH("REBATE_CASH", "返利现金"),
-	REBATE_JFB("REBATE_JFB", "返利集分宝");
+	REBATE_JFB("REBATE_JFB", "返利集分宝"),
+    AUTHNAME("AUTHNAME", "实名认证");
+
     private String code;
     private String name;
 

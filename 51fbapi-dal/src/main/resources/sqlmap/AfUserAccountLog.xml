@@ -43,4 +43,17 @@
 		  AND l.type IN ('CASH', 'CONSUME', 'REPAYMENT') 
 		ORDER BY l.gmt_create DESC 
 	</select>
+	
+	<select id="getUserAmountByType" resultType="java.math.BigDecimal" parameterType="AfUserAccountLogDo">
+		SELECT 
+		 	 sum(al.amount)
+		FROM
+		  af_user_account_log al
+		WHERE 
+			al.user_id = #{userId}
+		AND 
+		  	al.is_delete = 0 
+		AND 
+			al.type=#{type} 
+	</select>
 </mapper>

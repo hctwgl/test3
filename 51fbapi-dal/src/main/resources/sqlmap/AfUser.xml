@@ -8,7 +8,7 @@
 	</sql>
 	
 	<sql id="queryRecommendAllFields">
-		u.id rid,u.gmt_create,u.user_name,u.nick,u.avatar,u.real_name,c.amount,ua.realname_status
+		u.id rid,u.gmt_create,u.user_name,u.nick,u.avatar,u.real_name,ual.amount,ua.realname_status
 		
 	</sql>
 
@@ -66,19 +66,18 @@
 			af_user_auth ua
 		ON 
 		  	ua.user_id = u.id
+		AND
+			ua.is_delete = 0	
 	
 		LEFT JOIN 
-			af_user_coupon uc
+			af_user_account_log ual
 		ON 
-		  	uc.source_ref = u.id
+		  	ual.ref_id = u.id
 	    AND
-			uc.is_delete = 0
-		LEFT JOIN 
-			af_coupon c
-		ON 
-		  	uc.coupon_id  =	c.id
+			ual.is_delete = 0
 		AND
-			c.is_delete = 0	
+			ual.type = 'AUTHNAME'
+		
 		WHERE
 			u.is_delete = 0
 		
