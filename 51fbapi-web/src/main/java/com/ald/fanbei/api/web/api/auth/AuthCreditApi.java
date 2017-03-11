@@ -136,7 +136,7 @@ public class AuthCreditApi implements ApiHandle {
 		account.setUserId(context.getUserId());
 		afUserAccountService.updateUserAccount(account);
 		resp.addResponseData("zmScore", auth.getZmScore());
-		resp.addResponseData("isvScore", auth.getIvsScore());
+		resp.addResponseData("ivsScore", auth.getIvsScore());
 		resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
 		return resp;
 	}
