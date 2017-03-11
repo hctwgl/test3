@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017030801")
+    	#set($version="2017031101")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/user/register.css?version=$version">
     </head>
-    <body>
+    <body style="background-color: #fff;">
     	<div class="bgc_white register_main">
 			<ul>
 		        <li class="tal bdc_cb">

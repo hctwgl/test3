@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017030901")
+    	#set($version="2017031101")
 		<title>领取优惠劵</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/user/receiveCoupons.css?version=$version">
     </head>
-    <body class="bgc_e">
+    <body>
 		<input type="hidden" id="couponList" name="couponList" value=$jsonUtil.toJSONString($!{couponList})>
 		<input type="hidden" id="userName" name="userName" value="$!{userName}">
 		#if($!{couponList.size()}==0)

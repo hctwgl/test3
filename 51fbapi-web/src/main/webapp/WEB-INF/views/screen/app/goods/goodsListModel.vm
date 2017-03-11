@@ -14,7 +14,7 @@
         <div class="goodsListModel_header_wrap swiper-pagination clearfix">
             <ul class="fs_32 fsc_6 bgc_white goodsListModel_header tabs">
                 #foreach($item in $!{categoryList})
-                    <li id="">
+                    <li id="goodsListModel_$!{item.type}">
                         #if(${item.type} == ${typeCurrent})
                             <span class="current active">$!{item.name}</span>
                         #else

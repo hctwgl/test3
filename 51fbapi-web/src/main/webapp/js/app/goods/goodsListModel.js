@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-11 13:36:32
+* @Last Modified time: 2017-03-11 16:27:55
 * @title:  商品列表页
 */
 
@@ -80,6 +80,8 @@ $(function(){
             },
             success: function(returnData){
 
+                console.log(returnData);
+
                 if (returnData.success) {
 
                     var html = '';
@@ -108,16 +110,14 @@ $(function(){
                                                 +'<div class="goodsListModel_mainContent_wrap">'
                                                     +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
                                                     +'<p class="fs_26 fsc_red">'
-                                                        +'<span>￥'+amountAmountPriceInteger+'</span>'
-                                                        +'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
+                                                        +'<span>￥'+amountAmountPriceInteger+'</span>'+'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
                                                     +'</p>'
                                                 +'</div>'
                                                 +'<div class="goodsListModel_mainContent_rebate_wrap">'
                                                     +'<div class="goodsListModel_mainContent_rebate clearfix">'
                                                         +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
                                                         +'<p class="fl fs_24 fsc_orange">'
-                                                            +'<span>￥'+rebateAmountPriceInteger+'</span>'
-                                                            +'<span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
+                                                            +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
                                                         +'</p>'
                                                     +'</div>'
                                                 +'</div>'
@@ -238,8 +238,7 @@ $(function(){
                                                             +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
                                                             +'<span class="fs_26 fsc_red">'
                                                                 +'<span class="fs_26 fsc_red">'
-                                                                    +'<span>￥'+amountAmountPriceInteger+'</span>'
-                                                                    +'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
+                                                                    +'<span>￥'+amountAmountPriceInteger+'</span>'+'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
                                                                 +'</span>'
                                                             +'</span>'
                                                         +'</div>'
@@ -247,8 +246,7 @@ $(function(){
                                                             +'<div class="goodsListModel_mainContent_rebate clearfix">'
                                                                 +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
                                                                 +'<p class="fl fs_24 fsc_orange">'
-                                                                    +'<span>￥'+rebateAmountPriceInteger+'</span>'
-                                                                    +'<span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
+                                                                    +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
                                                                 +'</p>'
                                                             +'</div>'
                                                         +'</div>'
