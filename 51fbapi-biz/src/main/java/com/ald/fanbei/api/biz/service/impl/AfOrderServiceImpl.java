@@ -269,7 +269,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			orderDo.setUserCouponId(0l);
 			
 		}else{
-			orderDo.setUserCouponId(couponDto.getCouponId());
+			orderDo.setUserCouponId(couponDto.getRid());
 		}
 		orderDo.setActualAmount(actualAmount);
 		orderDo.setRebateAmount(rebateAmount);
