@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-11 16:27:55
+* @Last Modified time: 2017-03-11 17:39:39
 * @title:  商品列表页
 */
 
@@ -36,7 +36,7 @@ $(function(){
         ulW += thisLiW;
     });
 
-    $(".goodsListModel_header").css("width", ulW+0.5+"px");
+    $(".goodsListModel_header").css("width", ulW+2.5+"px");
 
     // 默认goodsList第一个位显示其他的都为隐藏
     $(".goodsListModel_main .goodsListModel_main_list:first-child").removeClass("goodsListModel_main_hide");
@@ -104,7 +104,7 @@ $(function(){
                             var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
     
                             html+=  '<li class="fl goodsListModel_item bgc_white">'
-                                        +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[j].goodsId+',openId:'+goodsList[j].openId+'">'
+                                        +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[j].goodsId+'}">'
                                             +'<img src="'+goodsList[j].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                             +'<div class="goodsListModel_mainContent_main">'
                                                 +'<div class="goodsListModel_mainContent_wrap">'
@@ -231,7 +231,7 @@ $(function(){
                                     var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
 
                                     html+= '<li class="fl goodsListModel_item bgc_white">'
-                                                +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[i].goodsId+',openId:'+goodsList[i].openId+'">'
+                                                +'<a href="'+notifyUrl+'&params={goodsId:'+goodsList[i].goodsId+'}">'
                                                     +'<img src="'+goodsList[i].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                                     +'<div class="goodsListModel_mainContent_main">'
                                                         +'<div class="goodsListModel_mainContent_wrap">'

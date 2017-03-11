@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017031101")
+    #set($version="2017031102")
     <title>商品列表模版</title>
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>
@@ -35,7 +35,7 @@
                         <ul class="goodsListModel_mainContent clearfix content-slide goodsListModel_mainContent_$!{item.type}">
                             #foreach($item in $!{goodsList})
                             <li class="fl goodsListModel_item bgc_white">
-    							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}","openId":"$!{item.openId}"}'>
+    							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}"}'>
                                     <img src="$!{item.goodsIcon}" class="goodsListModel_mainContent_img">
                                     <div class="goodsListModel_mainContent_main">
                                         <div class="goodsListModel_mainContent_wrap">
