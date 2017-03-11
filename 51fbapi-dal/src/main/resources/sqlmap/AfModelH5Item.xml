@@ -94,10 +94,12 @@
 		LEFT JOIN
 			af_goods g
 		ON
-			h.is_delete = 0 and g.id = h.item_value
+			 g.id = h.item_value
 		WHERE
 			
 			h.model_id = #{modelId}
+		AND
+		    h.is_delete = 0 
 		AND
 			h.type ='GOODSLIST'		
 		AND 
