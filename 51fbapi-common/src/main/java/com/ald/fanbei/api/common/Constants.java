@@ -64,6 +64,7 @@ public class Constants {
     public static final String DEFAULT_PAY_PURPOSE				  	  = "付款";
     public static final String DEFAULT_WX_PAY_NAME					  = "微信";
     public static final String DEFAULT_SERVICE_PHONE				  =	"0571-88193918";
+    public static final String DEFAULT_REPAYMENT_NAME				  =	"主动还款-";
     
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";

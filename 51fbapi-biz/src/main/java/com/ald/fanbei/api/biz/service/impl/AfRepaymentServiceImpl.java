@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -92,10 +93,12 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		String repayNo = generatorClusterNo.getRepaymentNo(now);
 		final String payTradeNo=repayNo;
 		//新增还款记录
-		String name =billDo.getName();
+		String name =Constants.DEFAULT_REPAYMENT_NAME+billDo.getName();
 		if(billDo.getCount()>1){
-			name=new StringBuffer(billDo.getBillYear()+"").append("年")
+			name=new StringBuffer(Constants.DEFAULT_REPAYMENT_NAME).append(billDo.getBillYear()+"").append("年")
 					.append(billDo.getBillMonth()).append("月账单").toString();
+		}else if(BorrowType.CASH.getCode().equals(billDo.getType())){
+			name +=billDo.getBorrowNo();
 		}
 		final AfRepaymentDo repayment = buildRepayment(repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
