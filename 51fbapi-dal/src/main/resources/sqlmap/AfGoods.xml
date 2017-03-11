@@ -7,6 +7,12 @@
 		(sale_amount-rebate_amount) real_amount
 	</sql>
 	
+	<sql id="queryWithFields">
+		g.id rid,g.gmt_create,g.gmt_modified,g.creator,g.modifier,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,g.open_id,g.num_id,g.price_amount,
+		g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_id,g.shop_name,
+		(g.sale_amount-g.rebate_amount) real_amount
+	</sql>
+	
 	<select id="getGoodsById" resultType="AfGoodsDo">
 		SELECT
 			<include refid="queryFields"/>
@@ -28,22 +34,25 @@
 	
 	<select id="getCateGoodsList" resultType="AfGoodsDo" parameterType="AfGoodsQuery">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryWithFields"/>
 		FROM
-			af_goods
+			af_goods g
+		left join
+			af_category c
+		on c.is_delete=0 and c.id=g.category_id
 		WHERE
-			is_delete=0  and status = 'PUBLISH'
+			g.is_delete=0  and g.status = 'PUBLISH'
 			<if test="categoryId != null and categoryId !=0">
-				and category_id = #{categoryId}
+				and (c.id = #{categoryId} or c.parent_id=#{categoryId})
 			</if>
 			<if test="keywords != null and keywords !=''">
-				AND name LIKE CONCAT('%',#{keywords}, '%')
+				AND g.name LIKE CONCAT('%',#{keywords}, '%')
 			</if>
 			<if test="minAmount != null and minAmount !=0">
-				AND (sale_amount-rebate_amount)>=#{minAmount}
+				AND (g.sale_amount-g.rebate_amount)>=#{minAmount}
 			</if>
 			<if test="maxAmount != null and maxAmount !=0">
-				AND (sale_amount-rebate_amount)<![CDATA[  <=  ]]> #{maxAmount}
+				AND (g.sale_amount-g.rebate_amount)<![CDATA[  <=  ]]> #{maxAmount}
 			</if>
 	</select>
 	

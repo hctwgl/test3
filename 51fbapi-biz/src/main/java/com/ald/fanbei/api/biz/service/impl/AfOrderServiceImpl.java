@@ -176,6 +176,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					AfOrderDo order = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 					//优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(order.getUserCouponId());
+					//返利金额
+					AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(order.getUserId());
+					account.setRebateAmount(order.getRebateAmount());
+					afUserAccountDao.updateUserAccount(account);
 					//获取用户信息
 					AfUserDo userDo = afUserDao.getUserById(order.getUserId());
 					if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
@@ -187,6 +191,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							//TODO 退款 生成退款记录  走微信退款流程，或者银行卡代付
 							//设置优惠券为未使用状态
 							afUserCouponDao.updateUserCouponSatusNouseById(order.getUserCouponId());
+							//返利金额
+							account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
+							afUserAccountDao.updateUserAccount(account);
 							if(order.getBankId()<0){//微信退款
 								try {
 									String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
