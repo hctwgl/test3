@@ -92,7 +92,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	private BizCacheUtil bizCacheUtil;
 	
 	@Override
-	public Date getReyLimitDate(Date now){
+	public Date getReyLimitDate(String billType,Date now){
 		Date start = DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now));
     	Date startDate = DateUtil.addDays(start, 
 				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10)-1);
@@ -100,6 +100,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_REPAY_TIME), 20)-1));
 		if(startDate.after(now)){
 			limitTime = DateUtil.addMonths(limitTime, -1);
+		}
+		if("N".equals(billType)){
+			limitTime = DateUtil.addMonths(limitTime, 1);
 		}
 		return limitTime;
     }
