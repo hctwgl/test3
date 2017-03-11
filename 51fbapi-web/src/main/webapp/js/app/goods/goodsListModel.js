@@ -108,9 +108,10 @@ $(function(){
                             var rebateAmountSplitArr =  rebateAmount.split(".");
                             var rebateAmountPriceInteger = rebateAmountSplitArr[0];
                             var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-    
+                            var goodInfoUrl = notifyUrl+'&params={"goodsId":"'+goodsList[j].goodsId+'"}';
+                            
                             html+=  '<li class="fl goodsListModel_item bgc_white">'
-                                        +'<a href="'+notifyUrl+'&params={"goodsId:"'+goodsList[j].goodsId+'}">'
+                                        +'<a href='+goodInfoUrl+'>'
                                             +'<img src="'+goodsList[j].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                             +'<div class="goodsListModel_mainContent_main">'
                                                 +'<div class="goodsListModel_mainContent_wrap">'
@@ -235,9 +236,10 @@ $(function(){
                                     var rebateAmountSplitArr =  rebateAmount.split(".");
                                     var rebateAmountPriceInteger = rebateAmountSplitArr[0];
                                     var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-
+                                    var goodInfoUrl = notifyUrl+'&params={"goodsId":"'+goodsList[j].goodsId+'"}';
+                                    
                                     html+= '<li class="fl goodsListModel_item bgc_white">'
-                                                +'<a href="'+notifyUrl+'&params={"goodsId:"'+goodsList[i].goodsId+'}">'
+                                                +'<a href='+goodInfoUrl+'>'
                                                     +'<img src="'+goodsList[i].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                                     +'<div class="goodsListModel_mainContent_main">'
                                                         +'<div class="goodsListModel_mainContent_wrap">'
