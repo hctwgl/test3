@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.UserStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -73,6 +74,9 @@ public class LoginApi implements ApiHandle {
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if(afUserDo == null){
         	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+        }
+        if(StringUtils.equals( afUserDo.getStatus(), UserStatus.FROZEN.getCode())  ){
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
         }
         
         //add user login record

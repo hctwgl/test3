@@ -36,7 +36,7 @@ public enum FanbeiExceptionCode {
     USER_REGIST_ACCOUNT_EXIST("USER_REGIST_ACCOUNT_EXIST",1108,"user regist account exist","用户已存在"),
 
     USER_SEND_SMS_ERROR("USER_SEND_SMS_ERROR",1109,"user send sms error","用户发送验证码失败"),
-    
+  
     USER_DUPLICATE_INVITE_CODE("USER_DUPLICATE_INVITE_CODE",1111,"user duplicate commit invite code","用户已经重复输入邀请码"),
     COMMIT_INVITE_CODE_EXPIRE_TIME("COMMIT_INVITE_CODE_EXPIRE_TIME",1112,"commit invite code expire time","输入邀请码时限已经超过72小时"),
     LIMIT_INVITE_EACH_OTHER("LIMIT_INVITE_EACH_OTHER",1113,"limit invite each other","限制互相推荐"),
@@ -46,11 +46,12 @@ public enum FanbeiExceptionCode {
     APPLY_CASHED_AMOUNT_ERROR("APPLY_CASHED_AMOUNT_ERROR",1117,"apply cashed amount invalid","申请的金额无效"),
     USER_ACCOUNT_NOT_EXIST_ERROR("USER_ACCOUNT_NOT_EXIST_ERROR",1118,"user not exist error","账户不存在"),
     USER_ACCOUNT_IDNUMBER_INVALID_ERROR("USER_ACCOUNT_IDNUMBER_INVALID_ERROR",1119,"id number error","身份证输入有误"),
-    USER_PAY_PASSWORD_INVALID_ERROR("USER_PAY_PASSWORD_INVALID_ERROR",1110,"pay password error","支付密码输入有误"),
-    APPLY_CASHED_AMOUNT_MORE_ACCOUNT("APPLY_CASHED_AMOUNT_MORE_ACCOUNT",1111,"apply cash amount more than account money","申请金额大于账户可提现金额"),
-    APPLY_CASHED_BANK_ERROR("APPLY_CASHED_BANK_ERROR",1111,"apply cash bank id error","该卡不支持提现"),
+    USER_PAY_PASSWORD_INVALID_ERROR("USER_PAY_PASSWORD_INVALID_ERROR",1120,"pay password error","支付密码输入有误"),
+    APPLY_CASHED_AMOUNT_MORE_ACCOUNT("APPLY_CASHED_AMOUNT_MORE_ACCOUNT",1121,"apply cash amount more than account money","申请金额大于账户可提现金额"),
+    APPLY_CASHED_BANK_ERROR("APPLY_CASHED_BANK_ERROR",1122,"apply cash bank id error","该卡不支持提现"),
 
-    
+    USER_FROZEN_ERROR("USER_FROZEN_ERROR",1123,"user frozen error","用户冻结中"),
+
     USER_PASSWORD_ERROR_FIRST("USER_PASSWORD_ERROR_FIRST",1131,"user password error first","密码输入有误,剩余次数(5)"),
     USER_PASSWORD_ERROR_SECOND("USER_PASSWORD_ERROR_SECOND",1132,"user password error second","密码输入有误,剩余次数(4)"),
     USER_PASSWORD_ERROR_THIRD("USER_PASSWORD_ERROR_THIRD",1133,"user password error third","密码输入有误,剩余次数(3)"),

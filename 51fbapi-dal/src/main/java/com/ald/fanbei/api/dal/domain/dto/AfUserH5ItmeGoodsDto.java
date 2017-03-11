@@ -19,6 +19,7 @@ public class AfUserH5ItmeGoodsDto extends AbstractSerial {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long rid;
+	private String goodsIcon;
 
 	private String thumbnailIcon;
 	private String goodsUrl;
@@ -34,6 +35,7 @@ public class AfUserH5ItmeGoodsDto extends AbstractSerial {
 	private BigDecimal rebateAmount;
 	private BigDecimal rebateRate;
 	private String name;
+	
 	/**
 	 * @return the rid
 	 */
@@ -177,6 +179,18 @@ public class AfUserH5ItmeGoodsDto extends AbstractSerial {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+	/**
+	 * @return the goodsIcon
+	 */
+	public String getGoodsIcon() {
+		return goodsIcon;
+	}
+	/**
+	 * @param goodsIcon the goodsIcon to set
+	 */
+	public void setGoodsIcon(String goodsIcon) {
+		this.goodsIcon = goodsIcon;
 	}
 
 }

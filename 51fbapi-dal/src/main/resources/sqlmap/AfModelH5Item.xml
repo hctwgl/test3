@@ -13,7 +13,7 @@
 	</sql>
 	
 	<sql id="queryAllFields2">
-	h.id rid,g.thumbnail_icon,g.id goods_id,g.price_amount,g.sale_amount,g.source,g.rebate_amount,g.rebate_rate,g.goods_url,g.num_id,g.name
+	h.id rid,g.thumbnail_icon,g.id goods_id,g.price_amount,g.sale_amount,g.source,g.rebate_amount,g.rebate_rate,g.goods_url,g.num_id,g.name,g.goods_icon
 	</sql>
 
 	<select id="getModelH5ItemListByModelIdAndModelType" resultType="AfModelH5ItemDo">

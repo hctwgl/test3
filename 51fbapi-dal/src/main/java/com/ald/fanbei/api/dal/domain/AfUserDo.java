@@ -34,6 +34,7 @@ public class AfUserDo extends AbstractSerial{
 	private Long recommendId;//邀请人id
 	private Integer failCount;//登录失败次数
 	private String recommendCode;//邀请码
+	private String status;//NORMAL:正常使用，FROZEN：表示冻结
 	
 	public Long getRid() {
 		return rid;
@@ -154,6 +155,18 @@ public class AfUserDo extends AbstractSerial{
 	}
 	public void setGmtModified(Date gmtModified) {
 		this.gmtModified = gmtModified;
+	}
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	
