@@ -12,9 +12,11 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -64,13 +66,19 @@ public class DeleteBankCardApi implements ApiHandle {
 		Map<String, Object> params = requestDataVo.getParams();
 		Long bankId = NumberUtil.objToLongDefault(ObjectUtils.toString(params.get("bankId")), 0);
 		
-		
 		AfUserBankcardDo bankcardDo=afUserBankcardService.getUserBankInfo(bankId);
 		if(YesNoStatus.YES.getCode().equals(bankcardDo.getIsMain())){
 			AfUserAuthDo authDo = new AfUserAuthDo();
 			authDo.setUserId(context.getUserId());
 			authDo.setBankcardStatus(YesNoStatus.NO.getCode());
 			afUserAuthService.updateUserAuth(authDo);
+		}
+		//解绑
+		UpsSignReleaseRespBo upsResult = UpsUtil.signRelease(userId+"", bankcardDo.getBankCode(), 
+				afUserAccountDo.getRealName(), bankcardDo.getMobile(), afUserAccountDo.getIdNumber(), 
+				bankcardDo.getCardNumber(), "02");
+		if(!upsResult.isSuccess()){
+			throw new FanbeiException("sign release error",FanbeiExceptionCode.SIGN_RELEASE_ERROR);
 		}
 		AfUserBankcardDo afUserBankcardDo = new AfUserBankcardDo();
 		afUserBankcardDo.setRid(bankId);

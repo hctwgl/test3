@@ -98,6 +98,15 @@ public class PayRoutController{
     	return "succ";
     }
     
+    @RequestMapping(value = {"/signRelease"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String signRelease(HttpServletRequest request, HttpServletResponse response){
+    	for(String paramKey:request.getParameterMap().keySet()){
+    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    	}
+    	return "succ";
+    }
+    
     @RequestMapping(value = {"/batchDelegatePay"}, method = RequestMethod.POST)
     @ResponseBody
 	public String batchDelegatePay(HttpServletRequest request, HttpServletResponse response){

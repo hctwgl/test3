@@ -106,7 +106,8 @@ public enum FanbeiExceptionCode {
     BANK_CARD_PAY_SMS_ERR("BANK_CARD_PAY_SMS_ERR",1564,"bank card pay sms error","银行卡支付短信验证失败"),
     REFUND_ERR("REFUND_ERR",1565,"refund error","退款失败"),
     UPS_BATCH_DELEGATE_ERR("UPS_BATCH_DELEGATE_ERR",1566,"ups batch delegate error","批量代付失败"),
-    AUTH_BINDCARD_SMS_ERROR("AUTH_BINDCARD_SMS_ERROR",1567,"auth bindcard sms error","短信验证码获取失败"),
+    AUTH_BINDCARD_SMS_ERROR("AUTH_BINDCARD_SMS_ERROR",1567,"auth bindcard sms error","短信验证码获取失败,请重试"),
+    SIGN_RELEASE_ERROR("SIGN_RELEASE_ERROR",1568,"sign release error","银行卡解绑失败"),
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1601,"goods not exist error","商品不存在"),
