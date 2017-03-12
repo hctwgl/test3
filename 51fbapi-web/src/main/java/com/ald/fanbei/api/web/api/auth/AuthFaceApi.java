@@ -16,7 +16,6 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
-import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -58,8 +57,6 @@ public class AuthFaceApi implements ApiHandle {
 	private AfUserService afUserService;
 	@Resource
 	private AfUserAccountService afUserAccountService;
-	@Resource
-	private CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -107,12 +104,6 @@ public class AuthFaceApi implements ApiHandle {
 		afUserDo.setRid(context.getUserId());
 		afUserDo.setRealName(realName);
 		afUserService.updateUser(afUserDo);
-		
-		//触发邀请人获得奖励规则
-		AfUserDo userDo = afUserService.getUserById(context.getUserId());
-		if(userDo.getRecommendId() > 0l){
-			couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
-		}
 		
 		//人脸识别
 		if(StringUtil.equals(resultAuth, RESULT_AUTH_TRUE)){

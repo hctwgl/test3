@@ -33,6 +33,8 @@ import com.ald.fanbei.api.biz.bo.UpsQueryTradeRespBo;
 import com.ald.fanbei.api.biz.bo.UpsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
+import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
@@ -472,6 +474,35 @@ public class UpsUtil extends AbstractThird {
 		
 	}
 	
+	public static UpsSignReleaseRespBo signRelease(String userNo,String bankCode,String realName,String phone,
+			String certNo,String cardNo,String clientType){
+		String orderNo = getOrderNo("sire", phone.substring(phone.length()-4,phone.length()));
+		UpsSignReleaseReqBo reqBo = new UpsSignReleaseReqBo();
+		setPubParam(reqBo,"signRelease",orderNo,clientType);
+		reqBo.setUserNo(userNo);
+		reqBo.setBankCode(bankCode);
+		reqBo.setRealName(realName);
+		reqBo.setPhone(phone);
+		reqBo.setCertType(DEFAULT_CERT_TYPE);
+		reqBo.setCertNo(certNo);
+		reqBo.setCardNo(cardNo);
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/signRelease");
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		logThird(reqResult, "signRelease", reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new FanbeiException(FanbeiExceptionCode.SIGN_RELEASE_ERROR);
+		}
+		UpsSignReleaseRespBo authSignResp = JSONObject.parseObject(reqResult,UpsSignReleaseRespBo.class);
+		if(authSignResp != null && authSignResp.getTradeState()!=null  && TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())){
+			authSignResp.setSuccess(true);
+			return authSignResp;
+		}else{
+			throw new FanbeiException(FanbeiExceptionCode.SIGN_RELEASE_ERROR);
+		}
+	}
+	
 	/**
 	 * 获取订单号
 	 * @param method 接口标识（固定4位）
@@ -483,6 +514,8 @@ public class UpsUtil extends AbstractThird {
 		}
 		return StringUtil.appendStrs(SYS_KEY,method,identity,System.currentTimeMillis());
 	}
+	
+	
 	
 	/**
 	 * 设置公共参数

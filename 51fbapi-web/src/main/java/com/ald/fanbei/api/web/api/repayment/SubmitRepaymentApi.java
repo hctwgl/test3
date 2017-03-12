@@ -72,7 +72,6 @@ public class SubmitRepaymentApi implements ApiHandle{
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 		if (afUserAccountDo == null) {
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-
 		}
 		
 		if(cardId>0){//支付密码验证
@@ -95,11 +94,16 @@ public class SubmitRepaymentApi implements ApiHandle{
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
 		Map<String,Object> map;
-		if(cardId<0){//微信支付
+		if(cardId==-2){//余额支付
+			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
+					cardId,userId,billDo,"",afUserAccountDo);
+			resp.addResponseData("refId", map.get("refId"));
+			resp.addResponseData("type", map.get("type"));
+		}else if(cardId==-1){//微信支付
 			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
 					cardId,userId,billDo,"",afUserAccountDo);
 			resp.setResponseData(map);
-		}else{//银行卡支付
+		}else if(cardId>0){//银行卡支付
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
 			if(null == card){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
