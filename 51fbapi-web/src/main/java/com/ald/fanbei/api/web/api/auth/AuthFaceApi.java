@@ -71,27 +71,6 @@ public class AuthFaceApi implements ApiHandle {
 		}
 		
 		idNumber = new String(Base64.decode(idNumber));
-		String reportId = TongdunUtil.applyPreloan(idNumber, realName, context.getMobile(), null);
-		if(StringUtil.isBlank(reportId)){
-			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
-		}
-		CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
-		TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
-		while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
-			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
-			authResult = TongdunUtil.queryPreloan(reportId);
-		}
-		
-		//存库，更新userAuth状态
-		AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
-		afAuthTdDo.setReportId(reportId);
-		afAuthTdDo.setAuthResult(authResult.getResultStr());
-		afAuthTdDo.setUserId(context.getUserId());
-		afAuthTdService.addAuthTd(afAuthTdDo);
-		
-		if(!authResult.isSuccess()){
-			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
-		}
 		
 		//TODO 更新user_account中身份证号和真实姓名
 		AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
@@ -106,7 +85,36 @@ public class AuthFaceApi implements ApiHandle {
 		afUserService.updateUser(afUserDo);
 		
 		//人脸识别
+		//新增有盾数据
+		AfAuthYdDo afAuthYdDo = new AfAuthYdDo(); 
+		afAuthYdDo.setType("FACE_APP");
+		afAuthYdDo.setUserId(context.getUserId());
+		afAuthYdDo.setAuthParam("");
+		afAuthYdDo.setAuthResult(result);
+		afAuthYdService.addAuthYd(afAuthYdDo);
 		if(StringUtil.equals(resultAuth, RESULT_AUTH_TRUE)){
+			//实名认证
+			String reportId = TongdunUtil.applyPreloan(idNumber, realName, context.getMobile(), null);
+			if(StringUtil.isBlank(reportId)){
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
+			}
+			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+			TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
+			while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
+				CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+				authResult = TongdunUtil.queryPreloan(reportId);
+			}
+			
+			//存库，更新userAuth状态
+			AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
+			afAuthTdDo.setReportId(reportId);
+			afAuthTdDo.setAuthResult(authResult.getResultStr());
+			afAuthTdDo.setUserId(context.getUserId());
+			afAuthTdService.addAuthTd(afAuthTdDo);
+			
+			if(!authResult.isSuccess()){
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
+			}
 			AfUserAuthDo userAuth = new AfUserAuthDo();
 			userAuth.setUserId(context.getUserId());
 			userAuth.setYdStatus(YesNoStatus.YES.getCode());
@@ -116,25 +124,11 @@ public class AuthFaceApi implements ApiHandle {
 			userAuth.setRealnameStatus(YesNoStatus.YES.getCode());
 			userAuth.setGmtRealname(new Date());
 			afUserAuthService.updateUserAuth(userAuth);
-		}else{
-			AfUserAuthDo userAuthDo = new AfUserAuthDo();
-			userAuthDo.setUserId(context.getUserId());
-			userAuthDo.setRealnameScore(authResult.getFinalScore());
-			userAuthDo.setRealnameStatus(YesNoStatus.YES.getCode());
-			userAuthDo.setGmtRealname(new Date());
-			afUserAuthService.updateUserAuth(userAuthDo);
+			resp.addResponseData("realNameScore", authResult.getFinalScore());
 		}
 		
-		//新增有盾数据
-		AfAuthYdDo afAuthYdDo = new AfAuthYdDo(); 
-		afAuthYdDo.setType("FACE_APP");
-		afAuthYdDo.setUserId(context.getUserId());
-		afAuthYdDo.setAuthParam("");
-		afAuthYdDo.setAuthResult(result);
-		afAuthYdService.addAuthYd(afAuthYdDo);
 		String authParamUrl =  ZhimaUtil.authorize(idNumber, realName);
 		resp.addResponseData("zmxyAuthUrl", authParamUrl);
-		resp.addResponseData("realNameScore", authResult.getFinalScore());
 		return resp;
 	}
 

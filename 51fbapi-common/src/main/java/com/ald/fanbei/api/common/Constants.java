@@ -60,9 +60,11 @@ public class Constants {
     public static final String DEFAULT_BORROW_CASH_NAME				  = "现金借款";
     public static final String DEFAULT_MOBILE_CHARGE_NAME			  = "手机充值";
     public static final String DEFAULT_BORROW_PURPOSE				  = "借款";
+    public static final String DEFAULT_CASH_PURPOSE				  	  = "提现";
     public static final String DEFAULT_REFUND_PURPOSE				  = "退款";
     public static final String DEFAULT_PAY_PURPOSE				  	  = "付款";
     public static final String DEFAULT_WX_PAY_NAME					  = "微信";
+    public static final String DEFAULT_USER_ACCOUNT					  = "账户余额";
     public static final String DEFAULT_SERVICE_PHONE				  =	"0571-88193918";
     public static final String DEFAULT_REPAYMENT_NAME				  =	"主动还款-";
     

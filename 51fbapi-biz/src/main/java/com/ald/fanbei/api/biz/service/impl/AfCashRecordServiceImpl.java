@@ -75,7 +75,7 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 						
 					}else{//银行卡提现
 						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
-								card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02");
+								card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_CASH_PURPOSE, "02");
 						if(!upsResult.isSuccess()){
 							throw new FanbeiException("bank card pay error",FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}

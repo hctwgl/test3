@@ -155,7 +155,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}
 		repay.setName(name);
 		repay.setUserId(userId);
-		if(cardId<0){
+		if(cardId==-2){
+			repay.setCardNumber("");
+			repay.setCardName(Constants.DEFAULT_USER_ACCOUNT);
+		}else if(cardId==-1){
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_WX_PAY_NAME);
 		}else{
