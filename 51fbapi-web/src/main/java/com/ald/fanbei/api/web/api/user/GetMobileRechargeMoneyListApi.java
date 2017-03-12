@@ -37,6 +37,9 @@ import com.alibaba.fastjson.JSONArray;
  */
 @Component("getMobileRechargeMoneyListApi")
 public class GetMobileRechargeMoneyListApi implements ApiHandle {
+	
+	String UNKNOW = "UNKNOW";
+	
 	@Resource
 	AfUserCouponService afUserCouponService;
 	@Resource
@@ -56,7 +59,7 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 
 		AfMoblieChargeDo afMoblieChargeDo = afMobileChargeService.getMoblieChargeByTypeAndCompany(province,company);
 		if(afMoblieChargeDo==null){
-			afMoblieChargeDo = afMobileChargeService.getMoblieChargeByTypeAndCompany("未知","未知");
+			afMoblieChargeDo = afMobileChargeService.getMoblieChargeByTypeAndCompany(UNKNOW,UNKNOW);
 		}
 
 		//500是充值金额里面最大充值金额
@@ -77,10 +80,7 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 	
 
 		List<Object> list = new ArrayList<Object>();
-		String priceJson = afMoblieChargeDo.getPriceJson();
-		
-		JSONArray array = JSONArray.parseArray(priceJson);
-		
+	
 		for (AfUserCouponDto afUserCouponDto : couponList) {
 		
 			list.add(couponObjectWithAfUserCouponDto(afUserCouponDto));
@@ -88,7 +88,17 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 		}
 
 		returnData.put("couponList", list);
-		returnData.put("rechargeList", array);
+	    if(afMoblieChargeDo==null)	{
+	    	JSONArray array = new JSONArray();
+	   		returnData.put("rechargeList", array);	
+
+	    }else{
+	    	   String priceJson = afMoblieChargeDo.getPriceJson();		
+	   		JSONArray array = JSONArray.parseArray(priceJson);
+	   		
+	   		returnData.put("rechargeList", array);	
+	    }
+	 
 		return returnData;
 		
 	}

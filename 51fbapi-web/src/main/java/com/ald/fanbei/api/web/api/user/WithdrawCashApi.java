@@ -19,6 +19,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
@@ -90,7 +91,11 @@ public class WithdrawCashApi implements ApiHandle {
 			if (userAccountDo.getJfbAmount().compareTo(amount) < 0) {
 				throw new FanbeiException("apply cash amount more than account money",
 						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
-			}else{
+			}else if(!CommonUtil.isMobile(account)&&!CommonUtil.isEmail(account)){
+				throw new FanbeiException("apply zhifubao account error",
+						FanbeiExceptionCode.APPLY_CASHED_ZHIFUBAO_ERROR);
+			}else
+			{
 				afCashRecordDo.setCardNumber(account);
 				afCashRecordDo.setCardName(zhifubao);
 			}

@@ -49,8 +49,9 @@ public enum FanbeiExceptionCode {
     USER_PAY_PASSWORD_INVALID_ERROR("USER_PAY_PASSWORD_INVALID_ERROR",1120,"pay password error","支付密码输入有误"),
     APPLY_CASHED_AMOUNT_MORE_ACCOUNT("APPLY_CASHED_AMOUNT_MORE_ACCOUNT",1121,"apply cash amount more than account money","申请金额大于账户可提现金额"),
     APPLY_CASHED_BANK_ERROR("APPLY_CASHED_BANK_ERROR",1122,"apply cash bank id error","该卡不支持提现"),
+    APPLY_CASHED_ZHIFUBAO_ERROR("APPLY_CASHED_ZHIFUBAO_ERROR",1123,"apply cash zhifubao error","支付宝账号输入有误"),
 
-    USER_FROZEN_ERROR("USER_FROZEN_ERROR",1123,"user frozen error","用户冻结中"),
+    USER_FROZEN_ERROR("USER_FROZEN_ERROR",1124,"user frozen error","用户冻结中"),
 
     USER_PASSWORD_ERROR_FIRST("USER_PASSWORD_ERROR_FIRST",1131,"user password error first","密码输入有误,剩余次数(5)"),
     USER_PASSWORD_ERROR_SECOND("USER_PASSWORD_ERROR_SECOND",1132,"user password error second","密码输入有误,剩余次数(4)"),

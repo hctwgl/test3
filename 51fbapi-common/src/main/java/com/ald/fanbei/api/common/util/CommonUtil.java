@@ -137,6 +137,24 @@ public class CommonUtil {
         return b;
     }
     
+    /**
+     * 正则表达式校验邮箱
+     * @param emaile 待匹配的邮箱
+     * @return 匹配成功返回true 否则返回false;
+     */
+    public static boolean isEmail(String email){
+        boolean b = false; 
+
+        String RULE_EMAIL = "^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
+        //正则表达式的模式
+        Pattern p = Pattern.compile(RULE_EMAIL);
+        //正则表达式的匹配器
+        Matcher m = p.matcher(email);
+        b = m.matches();
+        //进行正则匹配
+        return b;
+    }
+    
     public static int getRandomNum(int num){
         return random.nextInt(num);
     }
@@ -199,8 +217,9 @@ public class CommonUtil {
     
     
     public static void main(String[] args) {
-        System.out.println(getRandomCharacter(200));
-        System.out.println(isMobile("14948572856"));
+//        System.out.println(getRandomCharacter(200));
+//        System.out.println(isMobile("14948572856"));
+        System.out.println(isEmail("2323@qq.com"));
 //        System.out.println(isMobileMa("18672349815"));
 //        System.out.println(getRandomNum(2));
 //        System.out.println(filterEmoji("This is a smiley \uD83C\uDFA6 face\uD860\uDD5D \uD860\uDE07 \uD860\uDEE2 \uD863\uDCCA \uD863\uDCCD \uD863\uDCD2 \uD867\uDD98 "));
