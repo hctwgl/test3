@@ -29,20 +29,87 @@ public class Test {
 		// System.out.println("salt=" + salt + "$$$$$$$$$$$$$$password=" +
 		// password);
 		
+		getUserAccount();
 		
 		
-		 try {
-	
-		
-
-		 for (int i = 8; i < 9; i++) {
-			afUserInfo(i);
-		}
-		 } catch (SQLException e) {
-		 // TODO Auto-generated catch block
-		 e.printStackTrace();
-		 }
 	}
+	
+	private static Integer getUserAccount(){
+		Connection conn = getConn();
+		String sql = "SELECT password ,id  from  af_user_account where  `password` != ''";
+		PreparedStatement pstmt;
+
+		try {
+			pstmt = (PreparedStatement) conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			int col = rs.getMetaData().getColumnCount();
+			System.out.println("============================");
+			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+			while (rs.next()) {
+
+				
+				Map<String, Object> data = new HashMap<String, Object>();
+				
+				for (int i = 1; i <= col; i++) {
+					String columnLabel = rs.getMetaData().getColumnLabel(i);
+					
+					String tem = rs.getString(i) == null ? "" : rs.getString(i);
+					
+					
+					switch (columnLabel) {
+					case "id":
+						Long id = NumberUtil.objToLongDefault(tem, 0L);
+					
+						data.put("id", id);
+
+						break;
+					case "password":
+						String salt = UserUtil.getSalt();
+						String password = UserUtil.getPassword(tem, salt);
+						data.put("password", password);
+						data.put("salt", salt);
+
+						break;
+				
+
+					default:
+						break;
+					}
+					
+					
+				}
+				
+				list.add(data);
+			}
+			
+			
+			 String sql2="";
+				for (Map<String, Object> temDate : list) {
+					
+					String salt= temDate.get("salt").toString();
+					String id= temDate.get("id").toString();
+					String password = temDate.get("password").toString();
+
+					 sql2 =sql2+ "update 51fanbei_app.af_user_account set  `salt`='"+salt+"', `password`='"+password+"' where salt='' and `id`="+id+";"
+					 		+ "";
+
+			            
+				}
+				
+				String textSql = "/Users/suweili/Desktop/sql"+1+".txt";
+				
+				 writeTxtFile(sql2,new File(textSql));
+				
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+			
+			return 1;
+	}
+	
 	
 	private static Integer getUserInfoPage(){
 		Connection conn = getConn();

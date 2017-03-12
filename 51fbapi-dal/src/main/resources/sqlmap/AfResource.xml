@@ -81,6 +81,8 @@
 		WHERE 
 			type = #{type}
 		AND
+		    value_4 = 'O'
+		AND
 			is_delete = 0
 		order by 
 			sort desc 
