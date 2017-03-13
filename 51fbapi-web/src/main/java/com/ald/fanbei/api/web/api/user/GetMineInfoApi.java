@@ -65,7 +65,7 @@ public class GetMineInfoApi implements ApiHandle {
 		data.put("avata", userAccountInfo.getAvatar());
 		data.put("nick", userAccountInfo.getNick());
 		data.put("userName", userAccountInfo.getUserName());
-		data.put("realName", userAccountInfo.getRealName());
+//		data.put("realName", userAccountInfo.getRealName());
 		data.put("jfbAmount", userAccountInfo.getJfbAmount());
 		data.put("mobile", afUserDo.getMobile());
 		String isPay = YesNoStatus.NO.getCode();
@@ -76,7 +76,8 @@ public class GetMineInfoApi implements ApiHandle {
 		data.put("vipLevel", userAccountInfo.getVipLevel());
 		data.put("rebateAmount", userAccountInfo.getRebateAmount());
 		data.put("couponCount", coupleCount);
-		data.put("isRealName", afUserAuthDo.getRealnameStatus());
+		
+		data.put("bankcardStatus", afUserAuthDo.getBankcardStatus());
 
 		data.put("recommendCode", userAccountInfo.getRecommendCode());
 		resp.setResponseData(data);

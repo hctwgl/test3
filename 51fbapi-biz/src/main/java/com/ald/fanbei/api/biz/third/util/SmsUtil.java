@@ -208,6 +208,11 @@ public class SmsUtil extends AbstractThird {
 		if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
 			throw new FanbeiException("invalid Sms or email", FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
 		}
+		if(smsDo.getIsCheck() == 1){
+		
+			throw new FanbeiException("invalid Sms or email", FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR);
+
+		}
 		// 更新为已经验证
 		afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 	}

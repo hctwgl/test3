@@ -180,6 +180,7 @@
 				<entry key="/auth/checkBankcard" value-ref="checkBankcardApi" />
 				<entry key="/auth/getBankList" value-ref="getBankListApi" />
 				<entry key="/auth/checkBankcardPay" value-ref="checkBankcardPayApi" />
+				<entry key="/auth/authYdInfo" value-ref="authYdInfoApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
