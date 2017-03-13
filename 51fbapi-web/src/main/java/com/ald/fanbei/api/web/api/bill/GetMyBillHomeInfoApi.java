@@ -74,7 +74,6 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		List<AfBorrowBillDo> billList =  afBorrowBillService.getMonthBillList(query);
 		AfBillHomeVo vo = new AfBillHomeVo();
 		List<AfBillHomeListVo> list =new ArrayList<AfBillHomeListVo>();
-		boolean flag = false;//是否逾期
 		for (AfBorrowBillDo afBorrowBillDo : billList) {
 			AfBillHomeListVo listVo = new AfBillHomeListVo();
 			listVo.setBiilId(afBorrowBillDo.getRid());
@@ -83,7 +82,6 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 			if(afBorrowBillDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())
 					&&afBorrowBillDo.getStatus().equals(BorrowBillStatus.NO.getCode())){
 				listVo.setBillStatus(BorrowBillStatus.OVERDUE.getCode());
-				flag = true;
 			}else{
 				listVo.setBillStatus(afBorrowBillDo.getStatus());
 			}
@@ -104,7 +102,7 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		if(repaymentAmount.compareTo(BigDecimal.ZERO)==0){
 			vo.setRepayStatus(BorrowBillStatus.YES.getCode());
 		}else{
-			if(flag){
+			if(new Date().after(vo.getRepayDay())){
 				vo.setRepayStatus(BorrowBillStatus.OVERDUE.getCode());
 			}else{
 				vo.setRepayStatus(BorrowBillStatus.NO.getCode());

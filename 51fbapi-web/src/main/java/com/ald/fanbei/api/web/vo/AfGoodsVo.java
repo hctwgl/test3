@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.web.vo;
 
-import java.math.BigDecimal;
-
 import com.ald.fanbei.api.common.AbstractSerial;
 
 /**
@@ -17,9 +15,9 @@ public class AfGoodsVo extends AbstractSerial{
 	private Long goodsId;
 	private String numId;
 	private String openId;
-	private BigDecimal saleAmount;
-	private BigDecimal realAmount;
-	private BigDecimal rebateAmount;
+	private String saleAmount;
+	private String realAmount;
+	private String rebateAmount;
 	private String goodsName;
 	private String goodsIcon;
 	private String thumbnailIcon;
@@ -36,22 +34,22 @@ public class AfGoodsVo extends AbstractSerial{
 	public void setOpenId(String openId) {
 		this.openId = openId;
 	}
-	public BigDecimal getSaleAmount() {
+	public String getSaleAmount() {
 		return saleAmount;
 	}
-	public void setSaleAmount(BigDecimal saleAmount) {
+	public void setSaleAmount(String saleAmount) {
 		this.saleAmount = saleAmount;
 	}
-	public BigDecimal getRealAmount() {
+	public String getRealAmount() {
 		return realAmount;
 	}
-	public void setRealAmount(BigDecimal realAmount) {
+	public void setRealAmount(String realAmount) {
 		this.realAmount = realAmount;
 	}
-	public BigDecimal getRebateAmount() {
+	public String getRebateAmount() {
 		return rebateAmount;
 	}
-	public void setRebateAmount(BigDecimal rebateAmount) {
+	public void setRebateAmount(String rebateAmount) {
 		this.rebateAmount = rebateAmount;
 	}
 	public String getGoodsName() {

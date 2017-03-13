@@ -170,6 +170,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					newOrder.setPayTradeNo(payOrderNo);
 					newOrder.setStatus(OrderSatus.REBATED.getCode());
 					newOrder.setGmtFinished(new Date());
+					newOrder.setGmtRebated(new Date());
 					newOrder.setTradeNo(tradeNo);
 					orderDao.updateOrderByOutTradeNo(newOrder);
 					//查询订单

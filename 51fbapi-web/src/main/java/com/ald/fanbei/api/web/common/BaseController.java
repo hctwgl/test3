@@ -274,7 +274,7 @@ public abstract class BaseController {
     private void compareSign(String signStrBefore,String sign){
         String sha256Value = DigestUtil.getDigestStr(signStrBefore);
         if(logger.isDebugEnabled())
-            logger.debug("signStrBefore=" + signStrBefore + ",sha256Value=" + sha256Value);
+            logger.debug("signStrBefore=" + signStrBefore + ",sha256Value=" + sha256Value+",sign="+sign);
         if(!StringUtils.equals(sign, sha256Value)){
             throw new FanbeiException("sign is error",FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
         }
