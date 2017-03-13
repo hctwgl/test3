@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017031102")
+    #set($version="2017031301")
     <title>商品列表模版</title>
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>
@@ -10,6 +10,7 @@
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
 
+    <!-- <p class="baseP">网页由www.51fanbei.com提供</p> -->
     <div class="goodsListModel_wrap wrap">
         <div class="goodsListModel_header_wrap swiper-pagination clearfix">
             <ul class="fs_32 fsc_6 bgc_white goodsListModel_header tabs">
