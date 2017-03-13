@@ -11,7 +11,7 @@
 		FROM
 			af_category
 		WHERE
-			is_delete=0 AND level=2 AND is_show='Y'
+			is_delete=0 AND level=1 AND is_show='Y'
 		order by gmt_create desc
 	</select>
 </mapper>

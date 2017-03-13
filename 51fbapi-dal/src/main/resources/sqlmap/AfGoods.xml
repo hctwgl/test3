@@ -37,13 +37,10 @@
 			<include refid="queryWithFields"/>
 		FROM
 			af_goods g
-		left join
-			af_category c
-		on c.is_delete=0 and c.id=g.category_id
 		WHERE
 			g.is_delete=0  and g.status = 'PUBLISH'
 			<if test="categoryId != null and categoryId !=0">
-				and (c.id = #{categoryId} or c.parent_id=#{categoryId})
+				and g.primary_category_id=#{categoryId}
 			</if>
 			<if test="keywords != null and keywords !=''">
 				AND g.name LIKE CONCAT('%',#{keywords}, '%')

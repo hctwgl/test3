@@ -1,24 +1,32 @@
 package com.ald.fanbei.api.web.api.auth;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.TongdunResultBo;
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
+import com.ald.fanbei.api.biz.service.AfAuthTdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAuthTdDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -36,6 +44,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("checkBankcardApi")
 public class CheckBankcardApi implements ApiHandle {
 
+	private static final String TONGDUN_CODE_WAIT_FOR_REPORT = "204";//还未出报告
+
 	@Resource
 	private AfUserBankcardService afUserBankcardService;
 	@Resource
@@ -46,6 +56,8 @@ public class CheckBankcardApi implements ApiHandle {
 	private CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
 	@Resource
 	private AfUserService afUserService;
+	@Resource
+	private AfAuthTdService afAuthTdService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -57,25 +69,59 @@ public class CheckBankcardApi implements ApiHandle {
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 		}
-		
+		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
+
 		//绑卡
 		bank.setStatus(BankcardStatus.BIND.getCode());
 		afUserBankcardService.updateUserBankcard(bank);
 		//更新userAuth记录
 		if(YesNoStatus.YES.getCode().equals(bank.getIsMain())){
-			AfUserAuthDo authDo = new AfUserAuthDo();
-			authDo.setUserId(context.getUserId());
-			authDo.setBankcardStatus(YesNoStatus.YES.getCode());
-			afUserAuthService.updateUserAuth(authDo);
+			//实名认证
+			String reportId = TongdunUtil.applyPreloan(account.getIdNumber(), account.getRealName(), context.getMobile(), null);
+			if(StringUtil.isBlank(reportId)){
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
+			}
+			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+			TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
+			while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
+				CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+				authResult = TongdunUtil.queryPreloan(reportId);
+			}
 			
-			//触发邀请人获得奖励规则
-			AfUserDo userDo = afUserService.getUserById(context.getUserId());
-			if(userDo.getRecommendId() > 0l){
-				couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
+			//存库，更新userAuth状态
+			AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
+			afAuthTdDo.setReportId(reportId);
+			afAuthTdDo.setAuthResult(authResult.getResultStr());
+			afAuthTdDo.setUserId(context.getUserId());
+			afAuthTdService.addAuthTd(afAuthTdDo);
+			
+			if(!authResult.isSuccess()){
+				AfUserAuthDo authDo = new AfUserAuthDo();
+				authDo.setUserId(context.getUserId());
+				authDo.setBankcardStatus(YesNoStatus.YES.getCode());
+				afUserAuthService.updateUserAuth(authDo);
+				resp.addResponseData("realNameStatus", YesNoStatus.NO.getCode());
+			}else{
+				AfUserAuthDo authDo = new AfUserAuthDo();
+				authDo.setUserId(context.getUserId());
+				authDo.setBankcardStatus(YesNoStatus.YES.getCode());
+				authDo.setRealnameScore(authResult.getFinalScore());
+				authDo.setRealnameStatus(YesNoStatus.YES.getCode());
+				authDo.setGmtRealname(new Date());
+				afUserAuthService.updateUserAuth(authDo);
+				resp.addResponseData("realNameStatus", YesNoStatus.YES.getCode());
+				resp.addResponseData("realNameScore", authResult.getFinalScore());
+				//触发邀请人获得奖励规则
+				AfUserDo userDo = afUserService.getUserById(context.getUserId());
+				if(userDo.getRecommendId() > 0l){
+					couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
+				}
 			}
 		}
+		
+		String authParamUrl =  ZhimaUtil.authorize(account.getIdNumber(), account.getRealName());
+		resp.addResponseData("zmxyAuthUrl", authParamUrl);
 		//判断是否需要设置支付密码
-		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
 		String allowPayPwd = YesNoStatus.YES.getCode();
 		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){
 			allowPayPwd = YesNoStatus.NO.getCode();
