@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 10:58:37
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-11 17:16:07
+* @Last Modified time: 2017-03-13 11:26:05
 * @title:  商品列表模版
 */
 
@@ -108,7 +108,7 @@
     padding-left: 0.025rem;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-	background-color: #FFF7F7;
+	/*background-color: #FFF7F7;*/
 }
 .goodsListModel_mainContent_rebate{
 	position: absolute;
@@ -178,17 +178,18 @@
 }
 .loadover {
     position: relative;
-    height: 2.0rem;
-    line-height: 2.0rem;
+    /*height: 2.0rem;*/
+    /*line-height: 2.0rem;*/
+    margin: 1.5rem 0 1.0rem;
     text-align: center;
     background-color: #eee;
 }
-.loadover span {
+/*.loadover span {
     position: relative;
     display: inline-block;
     height: 2.0rem;
     z-index: 2
-}
+}*/
 .loadover:after {
     content: ''position:absolute;
     left: 0;

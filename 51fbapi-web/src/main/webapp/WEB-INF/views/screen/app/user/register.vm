@@ -23,7 +23,7 @@
 		        </li>
 		        <li class="bdc_cb tal">
 		        	<div class="fl register_password_icon_wrap"><i class="register_password_icon"></i></div>
-		        	<input type="password" class="fs_32 register_password" id="register_password" placeholder="请输入登陆密码" pattern="[0-9]*" name="words" maxlength="18" onkeyup="changeBtn()">
+		        	<input type="password" class="fs_32 register_password" id="register_password" placeholder="请输入登陆密码" name="words" maxlength="18" onkeyup="changeBtn()">
 		        	<i class="register_passwordEyeClosed"></i>
 		        </li>
 	        </ul>
