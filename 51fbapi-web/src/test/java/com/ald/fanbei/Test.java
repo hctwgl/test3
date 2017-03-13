@@ -29,8 +29,15 @@ public class Test {
 		// System.out.println("salt=" + salt + "$$$$$$$$$$$$$$password=" +
 		// password);
 		
-		getUserAccount();
-		
+//		getUserAccount();
+		try {
+			for (int i = 1; i <9; i++) {
+				afUserInfo(i);
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 	}
 	

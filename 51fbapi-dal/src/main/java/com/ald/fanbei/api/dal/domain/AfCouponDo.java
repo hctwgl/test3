@@ -32,6 +32,7 @@ public class AfCouponDo extends AbstractSerial {
 	private String type;
 	private String expiryType;
 	private Integer quotaAlready;
+	private Long quota;
 
 	
 	
@@ -216,6 +217,18 @@ public class AfCouponDo extends AbstractSerial {
 	 */
 	public void setQuotaAlready(Integer quotaAlready) {
 		this.quotaAlready = quotaAlready;
+	}
+	/**
+	 * @return the quota
+	 */
+	public Long getQuota() {
+		return quota;
+	}
+	/**
+	 * @param quota the quota to set
+	 */
+	public void setQuota(Long quota) {
+		this.quota = quota;
 	}
 
 

@@ -136,6 +136,8 @@ public class AppH5FanBeiWebController extends BaseController {
 				return H5CommonResponse.getNewInstance(false,
 						FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", null).toString();
 			}
+//			Long totalCount = couponDo.getQuota();
+//			if(totalCount!=0&&)
 
 			AfUserCouponDo userCoupon = new AfUserCouponDo();
 			userCoupon.setCouponId(NumberUtil.objToLongDefault(couponId, 1l));

@@ -25,8 +25,10 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
@@ -89,7 +91,9 @@ public class AppH5UserContorler extends BaseController {
 	@RequestMapping(value = { "register" }, method = RequestMethod.GET)
 	public void register(HttpServletRequest request, ModelMap model) throws IOException {
 		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(AfResourceType.RegisterProtocol.getCode());
-		model.put("registerRule", resourceDo.getValue());
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+resourceDo.getValue();
+		
+		model.put("registerRule", notifyUrl);
 		logger.info(JSON.toJSONString(model));
 	}
     @ResponseBody
