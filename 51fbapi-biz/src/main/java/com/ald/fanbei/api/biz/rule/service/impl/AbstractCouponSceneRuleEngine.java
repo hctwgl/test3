@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
+import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -170,10 +171,16 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			if (couponDo == null) {
 				return;
 			}
+			if(StringUtils.equals(couponDo.getStatus(), AfCounponStatus.C.getCode())){
+				logger.error("coupon close");
+
+				return;
+
+			}
 			
 			Long totalCount = couponDo.getQuota();
 			if(totalCount!=0&&totalCount<=couponDo.getQuotaAlready()){
-				logger.error("pick coupon over");
+				logger.error(" coupon over");
 				return ;
 			}
 			

@@ -13,6 +13,9 @@
 	    WHERE
 	    	is_delete = 0
 	     AND
+	         status ='O'
+	     
+	     AND
 			 id in (${ids})
 		 AND
 	   		 ( expiry_type='R'and gmt_end >NOW())
