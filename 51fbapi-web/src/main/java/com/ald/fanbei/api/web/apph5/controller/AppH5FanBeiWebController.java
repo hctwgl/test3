@@ -71,8 +71,8 @@ public class AppH5FanBeiWebController extends BaseController {
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 		JSONObject appInfo = JSON.parseObject(appInfotext);
-		String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
-//		String userName ="13500000405";
+//		String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
+		String userName ="13500000405";
 
 		String ids = resourceDo.getValue();
 		List<AfCouponDo> afCouponList = afCouponDao.selectCouponByCouponIds(ids);
@@ -136,8 +136,11 @@ public class AppH5FanBeiWebController extends BaseController {
 				return H5CommonResponse.getNewInstance(false,
 						FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", null).toString();
 			}
-//			Long totalCount = couponDo.getQuota();
-//			if(totalCount!=0&&)
+			Long totalCount = couponDo.getQuota();
+			if(totalCount!=0&&totalCount<=couponDo.getQuotaAlready()){
+				return H5CommonResponse.getNewInstance(false,
+						FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(), "", null).toString();
+			}
 
 			AfUserCouponDo userCoupon = new AfUserCouponDo();
 			userCoupon.setCouponId(NumberUtil.objToLongDefault(couponId, 1l));

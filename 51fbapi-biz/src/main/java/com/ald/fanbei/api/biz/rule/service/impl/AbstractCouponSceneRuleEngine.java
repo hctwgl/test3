@@ -170,6 +170,13 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			if (couponDo == null) {
 				return;
 			}
+			
+			Long totalCount = couponDo.getQuota();
+			if(totalCount!=0&&totalCount<=couponDo.getQuotaAlready()){
+				logger.error("pick coupon over");
+				return ;
+			}
+			
 			AfUserCouponDo userCoupon = new AfUserCouponDo();
 			userCoupon.setCouponId(item.getCouponId());
 			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
@@ -193,7 +200,7 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 
 			userCoupon.setSourceType(ruleType.getCode());
 			userCoupon.setUserId(userId);
-			
+		
 			afUserCouponDao.addUserCoupon(userCoupon);
 			AfCouponDo couponDoT = new AfCouponDo();
 			couponDoT.setRid(couponDo.getRid());
