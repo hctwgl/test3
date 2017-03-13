@@ -116,8 +116,8 @@
     
     <select id="getBillAmountByCashIds" resultType="AfBorrowBillDo">
 		SELECT SUM(b.bill_amount) bill_amount,SUM(b.principle_amount) principle_amount
-		FROM af_borrow_bill b,af_borrow w
-		WHERE b.is_delete=0 and w.is_delete=0 and b.borrow_id=w.id and (w.type = 'CASH' or w.type = 'TOCASH')
+		FROM af_borrow_bill b
+		WHERE b.is_delete=0 and b.type='CASH'
 		AND b.id in (
 		<foreach collection="ids" item="item" index="index" separator="," >
 			#{item}
