@@ -4,7 +4,7 @@
 		<title>邀请奖励规则</title>
 	    <style type="text/css">
 	    	.invitationRewardRule{
-	    		padding: 1.0rem;
+	    		padding: 3.0rem 1.0rem 1.0rem;
 	    		text-align: Justify;
 				text-justify: inter-ideograph;
 	    	}
