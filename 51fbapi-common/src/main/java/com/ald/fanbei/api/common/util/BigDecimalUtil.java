@@ -129,6 +129,23 @@ public class BigDecimalUtil {
 	}
 	
 	/**
+	 * 计算总账单金额
+	 * @param v1 --借款本金
+	 * @param num --分期数
+	 * @param monthRate --月利率
+	 * @param poundage --总还款手续费
+	 * @return
+	 */
+	public static BigDecimal getConsumeTotalAmount(BigDecimal amount,int num,BigDecimal monthRate,BigDecimal poundage){
+		amount = amount==null?new BigDecimal(0):amount;
+		monthRate = monthRate ==null?new BigDecimal(0):monthRate;
+		poundage = poundage ==null?new BigDecimal(0):poundage;
+		BigDecimal v1 = (new BigDecimal(num).multiply(amount).multiply(monthRate).multiply((BigDecimal.ONE.add(monthRate)).pow(num)))
+				.divide((BigDecimal.ONE.add(monthRate)).pow(num).subtract(BigDecimal.ONE),6,RoundingMode.HALF_UP).add(poundage);
+		return v1;
+	}
+	
+	/**
 	 * 获取总手续费
 	 * @param amount --借款本金
 	 * @param num --分期期数

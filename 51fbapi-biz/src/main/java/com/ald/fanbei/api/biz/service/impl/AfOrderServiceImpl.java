@@ -170,6 +170,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					newOrder.setPayTradeNo(payOrderNo);
 					newOrder.setStatus(OrderSatus.REBATED.getCode());
 					newOrder.setGmtFinished(new Date());
+					newOrder.setGmtRebated(new Date());
 					newOrder.setTradeNo(tradeNo);
 					orderDao.updateOrderByOutTradeNo(newOrder);
 					//查询订单
@@ -177,7 +178,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					//优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(order.getUserCouponId());
 					//返利金额
-					AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(order.getUserId());
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUserId(order.getUserId());
 					account.setRebateAmount(order.getRebateAmount());
 					afUserAccountDao.updateUserAccount(account);
 					//获取用户信息

@@ -120,8 +120,6 @@
 		AND 
 			user_id = #{userId} 
 		AND
-			open_id = #{openId}	
-		AND
 			goods_id = #{goodsId}
 			
 		
