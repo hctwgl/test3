@@ -79,7 +79,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setCurrentAmount(repaymentAmount);
 		vo.setIvsStatus(authDo.getIvsStatus());
 		vo.setMobileStatus(authDo.getMobileStatus());
-		vo.setRealnameStatus(authDo.getRealnameStatus());
+		vo.setRealNameStatus(authDo.getRealnameStatus());
 		vo.setRepayLimitTime(afBorrowService.getReyLimitDate("",now));
 		vo.setTeldirStatus(authDo.getTeldirStatus());
 		vo.setTotalAmount(userDto.getAuAmount());

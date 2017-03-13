@@ -18,7 +18,7 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	private BigDecimal usableAmount;
 	private BigDecimal currentAmount;
 	private Date repayLimitTime;
-	private String realnameStatus;
+	private String realNameStatus;
 	private String zmStatus;
 	private String ivsStatus;
 	private String bankcardStatus;
@@ -61,11 +61,11 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	public void setRepayLimitTime(Date repayLimitTime) {
 		this.repayLimitTime = repayLimitTime;
 	}
-	public String getRealnameStatus() {
-		return realnameStatus;
+	public String getRealNameStatus() {
+		return realNameStatus;
 	}
-	public void setRealnameStatus(String realnameStatus) {
-		this.realnameStatus = realnameStatus;
+	public void setRealNameStatus(String realNameStatus) {
+		this.realNameStatus = realNameStatus;
 	}
 	public String getZmStatus() {
 		return zmStatus;
