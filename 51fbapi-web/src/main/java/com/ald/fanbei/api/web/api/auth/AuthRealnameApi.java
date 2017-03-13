@@ -13,13 +13,10 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
-import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthTdDo;
@@ -55,14 +52,8 @@ public class AuthRealnameApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		
-		String idNumber = (String)requestDataVo.getParams().get("idNumber");
-		String realName = (String)requestDataVo.getParams().get("realName");
-		if(StringUtil.isBlank(idNumber) || StringUtil.isBlank(realName)){
-			throw new FanbeiException("authRealnameApi param error",FanbeiExceptionCode.PARAM_ERROR);
-		}
-		idNumber = new String(Base64.decode(idNumber));
-		String reportId = TongdunUtil.applyPreloan(idNumber, realName, context.getMobile(), null);
+		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
+		String reportId = TongdunUtil.applyPreloan(account.getIdNumber(), account.getRealName(), context.getMobile(), null);
 		if(StringUtil.isBlank(reportId)){
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
 		}
@@ -91,26 +82,13 @@ public class AuthRealnameApi implements ApiHandle {
 		userAuthDo.setGmtRealname(new Date());
 		afUserAuthService.updateUserAuth(userAuthDo);
 		
-		//TODO 更新user_account中身份证号和真实姓名
-		AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-		afUserAccountDo.setUserId(context.getUserId());
-		afUserAccountDo.setRealName(realName);
-		afUserAccountDo.setIdNumber(idNumber);
-		afUserAccountService.updateUserAccount(afUserAccountDo);
-		
-		AfUserDo afUserDo = new AfUserDo();
-		afUserDo.setRid(context.getUserId());
-		afUserDo.setRealName(realName);
-		afUserService.updateUser(afUserDo);
-		
 		//触发邀请人获得奖励规则
 		AfUserDo userDo = afUserService.getUserById(context.getUserId());
 		if(userDo.getRecommendId() > 0l){
 			couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
 		}
-		String authParamUrl =  ZhimaUtil.authorize(idNumber, realName);
-		resp.addResponseData("zmxyAuthUrl", authParamUrl);
-		
+		resp.addResponseData("realNameScore", userAuthDo.getRealnameScore());
+		resp.addResponseData("realNameStatus", userAuthDo.getRealnameStatus());
 		return resp;
 	}
 	

@@ -165,10 +165,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					//支付成功后
+					//支付成功后,直接返利
 					AfOrderDo newOrder = new AfOrderDo();
 					newOrder.setPayTradeNo(payOrderNo);
-					newOrder.setStatus(OrderSatus.FINISHED.getCode());
+					newOrder.setStatus(OrderSatus.REBATED.getCode());
 					newOrder.setGmtFinished(new Date());
 					newOrder.setTradeNo(tradeNo);
 					orderDao.updateOrderByOutTradeNo(newOrder);
