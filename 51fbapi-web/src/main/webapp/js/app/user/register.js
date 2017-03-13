@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-08 11:53:26
+* @Last Modified time: 2017-03-13 13:41:08
 * @title:  注册
 */
 
@@ -108,46 +108,54 @@ $(function(){
 
 		// md5加密
 		var register_password = $("#register_password").val();
-		var password_md5 = String(CryptoJS.MD5(register_password));
+		// 正则判断密码为6-18位字母+字符的组合
+		var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;			  
+		var password = pwdReg.test(register_password);
+		
+		if ( password ) {
+			var password_md5 = String(CryptoJS.MD5(register_password));
 
-		if ($("#input_check").is(":checked")) { // 判断当前是否选中
+			if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
-			var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
-			var mobileNum = $("#register_mobile").val();
-			var register_verification = $("#register_verification").val();
+				var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
+				var mobileNum = $("#register_mobile").val();
+				var register_verification = $("#register_verification").val();
 
-			var passwordLength = register_password.length;
-			if (passwordLength >= 6) {
+				var passwordLength = register_password.length;
+				if (passwordLength >= 6) {
 
-				$.ajax({ // 设置登录密码
-					url: "/app/user/commitRegister",
-					type: 'POST',
-					dataType: 'JSON',
-					data: {
-						registerMobile: mobileNum,
-						smsCode: register_verification,
-						password: password_md5,
-						recommendCode: recommendCode
-					},
-					success: function(returnData){
-						if ( returnData.success ) {
-							window.location.href = returnData.url;
-						} else {
-							requestMsg(returnData.msg);
+					$.ajax({ // 设置登录密码
+						url: "/app/user/commitRegister",
+						type: 'POST',
+						dataType: 'JSON',
+						data: {
+							registerMobile: mobileNum,
+							smsCode: register_verification,
+							password: password_md5,
+							recommendCode: recommendCode
+						},
+						success: function(returnData){
+							if ( returnData.success ) {
+								window.location.href = returnData.url;
+							} else {
+								requestMsg(returnData.msg);
+							}
+						},
+						error: function(){
+					        requestMsg("绑定失败");
 						}
-					},
-					error: function(){
-				        requestMsg("绑定失败");
-					}
-				})
+					})
+				} else {
+					requestMsg("请填写6-18位的数字、字母、字符组成的密码");
+				}
+
 			} else {
-				requestMsg("请填写6-18位的数字、字母、字符组成的密码");
+				requestMsg("请阅读并同意《51返呗用户注册协议》");
 			}
 
-		} else {
-			requestMsg("请阅读并同意《51返呗用户注册协议》");
+		}else{
+			requestMsg("请输入数字和字符组合的密码");
 		}
-
 	});
 });
 
