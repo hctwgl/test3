@@ -33,6 +33,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -55,10 +56,8 @@ public class AppGoodsControler extends BaseController {
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
 				.getModelH5ItemListByModelIdAndModelType(modelId, H5ItemModelType.BANNER.getCode()));
 		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService.getModelH5ItemCategoryListByModelIdAndModelType(modelId);
-		List<AfTypeCountDto> sortCountList = afModelH5ItemService
-				.getModelH5ItemGoodsCountListCountByModelIdAndSort(modelId);
-		List<Object> categoryList = getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(categoryDbList,
-				sortCountList);
+		
+		List<Object> categoryList = getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(categoryDbList);
 		model.put("bannerList", bannerList);
 		model.put("categoryList", categoryList);
 		
@@ -66,18 +65,12 @@ public class AppGoodsControler extends BaseController {
 		model.put("notifyUrl", notifyUrl);
 
 		Integer pageCount = 20;// 每一页显示20条数据
-		String type = "0";
 
-		if (categoryDbList.size() > 0) {
-			AfModelH5ItemDo afModelH5ItemDo = categoryDbList.get(0);
-			type = ObjectUtils.toString(afModelH5ItemDo.getRid(), "").toString();
-		}
-		List<AfUserH5ItmeGoodsDto> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
-				type, 0, pageCount);
+		List<AfUserH5ItmeGoodsDto> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelId(modelId, 0, pageCount);
 		logger.info("list++++++====" + JSON.toJSONString(list));
 
 		model.put("goodsList", list);
-		model.put("typeCurrent", type);
+		model.put("typeCurrent", "0");
 		logger.info(JSON.toJSONString(model));
 	}
 
@@ -97,10 +90,14 @@ public class AppGoodsControler extends BaseController {
 			Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
 			Integer pageCurrent = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
 			String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-
+			List<AfUserH5ItmeGoodsDto> list ;
 			Integer pageCount = 20;// 每一页显示20条数据
-			List<AfUserH5ItmeGoodsDto> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
-					type, (pageCurrent - 1) * pageCount, pageCount * pageCurrent);
+			if(StringUtils.equals(type, "0")){
+				list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelId(modelId, 0, pageCount);
+			}else{
+				list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
+						type, (pageCurrent - 1) * pageCount, pageCount * pageCurrent);
+			}
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("goodsList", list);
 
@@ -116,27 +113,40 @@ public class AppGoodsControler extends BaseController {
 
 
 	private List<Object> getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(
-			List<AfModelH5ItemDo> categoryList, List<AfTypeCountDto> sortCountList) {
+			List<AfModelH5ItemDo> categoryList) {
 
 		List<Object> list = new ArrayList<Object>();
 		int pageCount = 20;
+		int allCount = 0;
+		
 		for (AfModelH5ItemDo afModelH5ItemDo : categoryList) {
 			Map<String, Object> itemData = new HashMap<String, Object>();
-			itemData.put("imageIcon", afModelH5ItemDo.getItemIcon());
-			itemData.put("imageIcon2", afModelH5ItemDo.getItemValue2());
 			itemData.put("name", afModelH5ItemDo.getItemValue());
 			itemData.put("sort", afModelH5ItemDo.getSort());
 			itemData.put("type", afModelH5ItemDo.getRid());
 
-			String sort = ObjectUtils.toString(afModelH5ItemDo.getItemType(), "0");
+			String type = ObjectUtils.toString(afModelH5ItemDo.getItemType(), "0");
 
-			int count = NumberUtil.objToIntDefault(sort, 0);
+			int count = NumberUtil.objToIntDefault(type, 0);
 			Integer pageTotal = count / pageCount;
 			Integer pageM = count % pageCount;
 			itemData.put("pageTotal", pageM == 0 ? pageTotal : (pageTotal + 1));
 			list.add(itemData);
+			allCount +=count;
+		}
+		if(categoryList.size()>0){
+			Map<String, Object> itemData = new HashMap<String, Object>();
+			itemData.put("name", "全部");
+			itemData.put("sort", "0");
+			itemData.put("type", "0");
+			Integer pageTotal = allCount / pageCount;
+			Integer pageM = allCount % pageCount;
+			itemData.put("pageTotal", pageM == 0 ? pageTotal : (pageTotal + 1));
+
+			list.add(0, itemData);
 
 		}
+		
 
 		return list;
 	}

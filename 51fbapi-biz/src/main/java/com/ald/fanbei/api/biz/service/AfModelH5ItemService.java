@@ -49,4 +49,15 @@ public interface AfModelH5ItemService {
 
 	
 	List<AfTypeCountDto> getModelH5ItemGoodsCountListCountByModelIdAndSort(Long modelId);
+	
+	/**
+	 * 获取该类型的商品
+	 * @param modelId
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	List<AfUserH5ItmeGoodsDto> getModelH5ItemGoodsListCountByModelId(Long modelId,Integer start, Integer end);
+
+	
 }

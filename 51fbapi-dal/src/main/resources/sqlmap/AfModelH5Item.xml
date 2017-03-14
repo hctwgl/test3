@@ -13,7 +13,7 @@
 	</sql>
 	
 	<sql id="queryAllFields2">
-	h.id rid,g.thumbnail_icon,g.id goods_id,g.price_amount,g.sale_amount,g.source,g.rebate_amount,g.rebate_rate,g.goods_url,g.num_id,g.name,g.goods_icon
+	h.id rid,h.gmt_create,g.thumbnail_icon,g.id goods_id,g.price_amount,g.sale_amount,g.source,g.rebate_amount,g.rebate_rate,g.goods_url,g.num_id,g.name,g.goods_icon
 	</sql>
 
 	<select id="getModelH5ItemListByModelIdAndModelType" resultType="AfModelH5ItemDo">
@@ -106,5 +106,28 @@
 			h.item_value2 =#{category}
 		LIMIT #{start},#{end}
 	</select>
+		
+	<select id="getModelH5ItemGoodsListCountByModelId" resultType="AfUserH5ItmeGoodsDto">
+		SELECT	 
+			<include refid="queryAllFields2" />
+		FROM 
+			af_model_h5_item h
+		LEFT JOIN
+			af_goods g
+		ON
+			 g.id = h.item_value
+		WHERE
+			
+			h.model_id = #{modelId}
+		AND
+		    h.is_delete = 0 
+		AND
+			h.type ='GOODSLIST'	
+		order by
+			h.gmt_create
+		desc	
+		LIMIT #{start},#{end}
+	</select>
+	
 	
 </mapper>

@@ -40,4 +40,8 @@ public interface AfModelH5ItemDao {
 	
 	List<AfTypeCountDto> getModelH5ItemGoodsCountListCountByModelIdAndSort(@Param("modelId")Long modelId);
 	
+	List<AfUserH5ItmeGoodsDto> getModelH5ItemGoodsListCountByModelId(@Param("modelId")Long modelId,@Param("start")Integer start, @Param("end")Integer end);
+
+	
+	
 }
