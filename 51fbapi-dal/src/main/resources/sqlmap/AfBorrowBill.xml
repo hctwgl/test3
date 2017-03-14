@@ -63,8 +63,8 @@
     </select>
     
     <select id="getBillAmountByIds" resultType="AfBorrowBillDo">
-		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount,min(bill_year) bill_year,min(bill_month) bill_month,
-		min(name) name,count(1) count
+		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount,min(bill_year) bill_year,min(bill_month) bill_month,min(type) type,
+		min(borrow_no) borrow_no,min(name) name,count(1) count
 		FROM af_borrow_bill
 		WHERE is_delete=0  AND STATUS ='N'
 		AND id in (
