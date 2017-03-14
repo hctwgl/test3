@@ -88,7 +88,7 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 			detailInfo.setBorrowDay((int) ((DateUtil.getStartOfDate(DateUtil.addDays(new Date(), 1)).getTime() - DateUtil.getStartOfDate(borrow.getGmtCreate()).getTime()) / (1000*3600*24)));
 			detailInfo.setPayAmount(afBorrowBillService.getBorrowBillByBorrowId(borrow.getRid()));
 		}else{
-			detailInfo.setBorrowDetail(new StringBuffer(borrow.getName()).append(borrow.getBorrowNo()).toString());
+			detailInfo.setBorrowDetail(new StringBuffer(borrow.getName()).append(borrow.getOrderNo()).toString());
 		}
 		
 		return detailInfo;
