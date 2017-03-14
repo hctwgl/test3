@@ -114,20 +114,9 @@ public class AppGoodsControler extends BaseController {
 
 
 
-	private Map<String, Object> modelH5ItemCategorySortCountWith(List<AfTypeCountDto> sortCountList) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		for (AfTypeCountDto afTypeCountDto : sortCountList) {
-			String sort = ObjectUtils.toString(afTypeCountDto.getSort(), "0");
-			data.put(sort, afTypeCountDto.getCount());
-
-		}
-		return data;
-	}
 
 	private List<Object> getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(
 			List<AfModelH5ItemDo> categoryList, List<AfTypeCountDto> sortCountList) {
-
-		Map<String, Object> data = modelH5ItemCategorySortCountWith(sortCountList);
 
 		List<Object> list = new ArrayList<Object>();
 		int pageCount = 20;
