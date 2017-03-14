@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-14 17:16:43
+* @Last Modified time: 2017-03-14 18:17:24
 * @title:  商品列表页
 */
 
@@ -232,7 +232,7 @@ $(function(){
                                     var rebateAmountSplitArr =  rebateAmount.split(".");
                                     var rebateAmountPriceInteger = rebateAmountSplitArr[0];
                                     var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-                                    var goodInfoUrl = notifyUrl+'&params={"goodsId":"'+goodsList[j].goodsId+'"}';
+                                    var goodInfoUrl = notifyUrl+'&params={"goodsId":"'+goodsList[i].goodsId+'"}';
                                     
                                     html+= '<li class="fl goodsListModel_item bgc_white">'
                                                 +'<a href='+goodInfoUrl+'>'
