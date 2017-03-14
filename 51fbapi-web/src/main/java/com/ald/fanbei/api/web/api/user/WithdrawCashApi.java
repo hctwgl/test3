@@ -40,6 +40,8 @@ public class WithdrawCashApi implements ApiHandle {
 
 	String zhifubao = "支付宝";
 	String status ="TRANSED";
+	String zhifubaostatus ="AUTH";
+
 	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
@@ -98,6 +100,7 @@ public class WithdrawCashApi implements ApiHandle {
 			{
 				afCashRecordDo.setCardNumber(account);
 				afCashRecordDo.setCardName(zhifubao);
+				status = zhifubaostatus;
 			}
 		}
 
