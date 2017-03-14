@@ -74,7 +74,7 @@ public class JpushServiceimpl extends BaseService implements JpushService{
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("chargeMobileSucc,pid=",pid,",mobile=",mobile));
-			String msgContext = "您好，您与{date}为【{mobile}】的话费充值成功，感谢您使用51返呗";
+			String msgContext = "您好，您于{date}为【{mobile}】的话费充值成功，感谢您使用51返呗";
 			Map<String,String> extras = new HashMap<String,String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis()+"");
