@@ -3,9 +3,6 @@
  */
 package com.ald.fanbei.api.common.enums;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @类描述：
  * @author suweili 2017年3月13日下午9:58:57

@@ -102,6 +102,7 @@
 				<value>/user/logout</value>
 				<value>/good/getBrandShopList</value>
 				<value>/good/getGoodsDetailInfo</value>
+				<value>/user/updateUserInfo</value>
 				
 			</list>
 		</constructor-arg>

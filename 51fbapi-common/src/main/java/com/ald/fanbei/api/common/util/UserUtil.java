@@ -1,11 +1,9 @@
 package com.ald.fanbei.api.common.util;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
+
 import java.util.Random;
 import java.util.UUID;
 
-import com.mysql.jdbc.Connection;
 
 /**
  * 
