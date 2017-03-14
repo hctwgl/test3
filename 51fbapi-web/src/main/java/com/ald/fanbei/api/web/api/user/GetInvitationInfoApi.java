@@ -94,7 +94,7 @@ public class GetInvitationInfoApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		List<AfUserInvitationDto> list = afUserService.getRecommendUserByRecommendId(userId, (pageNum - 1) * 20,
-				pageNum * 20);
+				 20);
 		if (pageNum == 1) {
 			Map<String, Object> invitationInfo = new HashMap<String, Object>();
 			invitationInfo.put("rulesUrl",
