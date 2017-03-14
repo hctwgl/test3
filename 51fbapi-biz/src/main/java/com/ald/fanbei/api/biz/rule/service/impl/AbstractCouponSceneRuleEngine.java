@@ -145,17 +145,10 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			if (afResourceDo == null) {
 				return;
 			}
-			
-			AfUserAccountDo userAccountDo =	afUserAccountDao.getUserAccountInfoByUserId(userId);
-			
-			
-			BigDecimal rebateAmount = BigDecimalUtil.add(userAccountDo.getRebateAmount(), new BigDecimal(afResourceDo.getValue()) );
-			
-			
 			// 用户账号金额增加
 			AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
 			afUserAccountDo.setUserId(userId);
-			afUserAccountDo.setRebateAmount(rebateAmount  );
+			afUserAccountDo.setRebateAmount(new BigDecimal(afResourceDo.getValue())  );
 			afUserAccountDao.updateUserAccount(afUserAccountDo);
 			
 			//增加account变更日志
