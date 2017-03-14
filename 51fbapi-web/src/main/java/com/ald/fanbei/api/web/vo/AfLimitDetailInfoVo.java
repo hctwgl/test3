@@ -31,6 +31,9 @@ public class AfLimitDetailInfoVo extends AbstractSerial{
 	private Date gmtCreate;//创建时间
 	private String number;//借还款编号
 	private String status;//借还款状态
+	private String borrowDetail;//借款明细
+	private Integer borrowDay;//借款天数
+	private BigDecimal payAmount;//当前需还
 	public String getCardName() {
 		return cardName;
 	}
@@ -114,5 +117,23 @@ public class AfLimitDetailInfoVo extends AbstractSerial{
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getBorrowDetail() {
+		return borrowDetail;
+	}
+	public void setBorrowDetail(String borrowDetail) {
+		this.borrowDetail = borrowDetail;
+	}
+	public Integer getBorrowDay() {
+		return borrowDay;
+	}
+	public void setBorrowDay(Integer borrowDay) {
+		this.borrowDay = borrowDay;
+	}
+	public BigDecimal getPayAmount() {
+		return payAmount;
+	}
+	public void setPayAmount(BigDecimal payAmount) {
+		this.payAmount = payAmount;
 	}
 }

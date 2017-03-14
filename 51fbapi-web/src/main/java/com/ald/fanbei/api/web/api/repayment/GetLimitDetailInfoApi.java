@@ -1,18 +1,23 @@
 package com.ald.fanbei.api.web.api.repayment;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
@@ -33,6 +38,9 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 
 	@Resource
 	private AfBorrowService afBorrowService;
+	
+	@Resource
+	private AfBorrowBillService afBorrowBillService;
 	
 	@Resource
 	private AfRepaymentService afRepaymentService;
@@ -76,6 +84,13 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 		detailInfo.setCardName(borrow.getCardName());
 		detailInfo.setCardNo(StringUtil.getLastString(borrow.getCardNumber(), 4));
 		detailInfo.setStatus(borrow.getStatus());
+		if(BorrowType.CASH.getCode().equals(borrow.getType())||BorrowType.TOCASH.getCode().equals(borrow.getType())){
+			detailInfo.setBorrowDay((int) ((DateUtil.getStartOfDate(DateUtil.addDays(new Date(), 1)).getTime() - DateUtil.getStartOfDate(borrow.getGmtCreate()).getTime()) / (1000*3600*24)));
+			detailInfo.setPayAmount(afBorrowBillService.getBorrowBillByBorrowId(borrow.getRid()));
+		}else{
+			detailInfo.setBorrowDetail(new StringBuffer(borrow.getName()).append(borrow.getBorrowNo()).toString());
+		}
+		
 		return detailInfo;
 	}
 	

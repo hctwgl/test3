@@ -42,6 +42,9 @@
 			<if test="categoryId != null and categoryId !=0">
 				and g.primary_category_id=#{categoryId}
 			</if>
+			<if test="categoryId == null or categoryId ==0">
+				and exists(select 1 from af_category c where c.is_delete=0 and c.level=1 and g.primary_category_id=c.id) 
+			</if>
 			<if test="keywords != null and keywords !=''">
 				AND g.name LIKE CONCAT('%',#{keywords}, '%')
 			</if>

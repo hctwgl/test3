@@ -100,4 +100,11 @@ public interface AfBorrowBillService {
 	 * 获取现金借款的账单金额
 	 */
 	AfBorrowBillDo getBillAmountByCashIds(String ids);
+	
+	/**
+	 * 借款账单总额
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal getBorrowBillByBorrowId(Long borrowId);
 }

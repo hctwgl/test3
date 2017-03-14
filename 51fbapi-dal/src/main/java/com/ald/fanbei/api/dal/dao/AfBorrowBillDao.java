@@ -52,6 +52,13 @@ public interface AfBorrowBillDao {
 	public AfBorrowBillDo getBorrowBillById(@Param("rid")Long rid);
 	
 	/**
+	 * 获取借款账单总额
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal getBorrowBillByBorrowId(@Param("borrowId")Long borrowId);
+	
+	/**
 	 * 获取借款账单关联信息
 	 * @param rid
 	 * @return
