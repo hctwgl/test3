@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017031301")
+    #set($version="2017031401")
     <title>商品列表模版</title>
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>
@@ -42,12 +42,12 @@
                                         <div class="goodsListModel_mainContent_wrap">
                                             <p class="fs_26 fsc_1">$!{item.name}</p>
                                             <p class="fs_26 fsc_red">
-                                                <span>￥$priceUtil.bigdecimalToInt($!{item.priceAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.priceAmount})</span>
+                                                <span>￥$priceUtil.bigdecimalToInt($!{item.saleAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.priceAmount})</span>
                                             </p>
                                         </div>
                                         <div class="goodsListModel_mainContent_rebate_wrap">
                                             <div class="goodsListModel_mainContent_rebate clearfix">
-                                                <span class="fl fs_24 bgc_orange fsc_f tac">返</span>
+                                                <span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>
                                                 <p class="fl fs_24 fsc_orange">
                                                     <span>￥$priceUtil.bigdecimalToInt($!{item.rebateAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.rebateAmount})</span>
                                                 </p>
@@ -66,7 +66,6 @@
     </div>
     <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/js/common/layer.js"></script>
-    <!-- <script type="text/javascript" src="/js/common/swiper-2.7.0.min.js"></script> -->
     <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>

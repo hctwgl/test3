@@ -2,12 +2,12 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-11 18:17:21
+* @Last Modified time: 2017-03-14 17:16:43
 * @title:  商品列表页
 */
 
 
-// var categoryType = $("#typeCurrent").val() ;
+
 var typeCurrentNum = $("#typeCurrent").val(); // 获取当前的type类型
 var modelIdNum = getUrl("modelId"); // 获取modelId参数
 // 获取categoryList数组
@@ -99,8 +99,8 @@ $(function(){
 
                         for (var j = 0; j < goodsList.length; j++) {
                             // 售价
-                            var priceAmount = toDecimal2(goodsList[j].priceAmount);
-                            var amountAmountSplitArr =  priceAmount.split(".");
+                            var saleAmount = toDecimal2(goodsList[j].saleAmount);
+                            var amountAmountSplitArr =  saleAmount.split(".");
                             var amountAmountPriceInteger = amountAmountSplitArr[0];
                             var amountAmountPriceDecimal = amountAmountSplitArr[1];
                             // 返利
@@ -122,7 +122,7 @@ $(function(){
                                                 +'</div>'
                                                 +'<div class="goodsListModel_mainContent_rebate_wrap">'
                                                     +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                                        +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
+                                                        +'<span class="goodsListModel_rebate fl fs_26 bgc_orange fsc_f tac">返</span>'
                                                         +'<p class="fl fs_24 fsc_orange">'
                                                             +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
                                                         +'</p>'
@@ -153,13 +153,9 @@ $(function(){
 });
 
 
-
-
-
 // 上拉加载
 $(function(){
 
-    
     var finished = 0; 
     var sover = 0;
     
@@ -227,8 +223,8 @@ $(function(){
                                 for(var i = 0; i < goodsList.length; i++){
 
                                     // 售价
-                                    var priceAmount = toDecimal2(goodsList[i].priceAmount);
-                                    var amountAmountSplitArr =  priceAmount.split(".");
+                                    var saleAmount = toDecimal2(goodsList[i].saleAmount);
+                                    var amountAmountSplitArr =  saleAmount.split(".");
                                     var amountAmountPriceInteger = amountAmountSplitArr[0];
                                     var amountAmountPriceDecimal = amountAmountSplitArr[1];
                                     // 返利
@@ -252,7 +248,7 @@ $(function(){
                                                         +'</div>'
                                                         +'<div class="goodsListModel_mainContent_rebate_wrap">'
                                                             +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                                                +'<span class="fl fs_26 bgc_orange fsc_f tac">返</span>'
+                                                                +'<span class="goodsListModel_rebate fl fs_26 bgc_orange fsc_f tac">返</span>'
                                                                 +'<p class="fl fs_24 fsc_orange">'
                                                                     +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
                                                                 +'</p>'
@@ -281,33 +277,4 @@ $(function(){
     $(window).scroll(function () {
         loadmore($(this));
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // $(window).scroll(function () {
-    //     var totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());
-    //     var documentheight = parseFloat($(document).height()); // 文本的高度
-    //     if (documentheight - totalheight <= 10) { // 下拉的距离小于等于200的调用
-    //         loadmore($(this)); 
-    //     }
-    // });
 });
-
-
-
-
-
