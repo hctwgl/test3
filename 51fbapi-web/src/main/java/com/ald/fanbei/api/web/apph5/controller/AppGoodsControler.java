@@ -100,7 +100,7 @@ public class AppGoodsControler extends BaseController {
 
 			Integer pageCount = 20;// 每一页显示20条数据
 			List<AfUserH5ItmeGoodsDto> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
-					type, (pageCurrent - 1) * pageCount, pageCount * pageCurrent);
+					type, (pageCurrent - 1) * pageCount, pageCount);
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("goodsList", list);
 
