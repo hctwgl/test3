@@ -159,14 +159,15 @@ public class SmsUtil extends AbstractThird {
 
 			emailResult.setSucc(true);
 			this.addEmailRecord(SmsType.EMAIL_BIND, email, verifyCode, userId, emailResult);
+			return emailResult.isSucc();
 
 		} catch (Exception e) {
 			emailResult.setSucc(false);
 			logger.info(StringUtil.appendStrs("sendEmail params=|", email, "|", content, "|", emailResult));
+			return emailResult.isSucc();
 
 		}
 
-		return emailResult.isSucc();
 	}
 
 	/**
@@ -271,9 +272,11 @@ public class SmsUtil extends AbstractThird {
 		// 1. 创建参数配置, 用于连接邮件服务器的参数配置
 		Properties props = new Properties(); // 参数配置
 		props.setProperty("mail.transport.protocol", "smtp"); // 使用的协议（JavaMail规范要求）
-		props.setProperty("mail.host", sendHostAddress); // 发件人的邮箱的 SMTP 服务器地址
+//		props.setProperty("mail.host", sendHostAddress); // 发件人的邮箱的 SMTP 服务器地址
 		props.setProperty("mail.smtp.auth", "true"); // 请求认证，参数名称与具体实现有关
+		props.setProperty("mail.smtp.host", sendHostAddress); // 发件人的邮箱的 SMTP 服务器地址
 
+		
 		// 2. 根据配置创建会话对象, 用于和邮件服务器交互
 		Session session = Session.getDefaultInstance(props);
 		session.setDebug(true); // 设置为debug模式, 可以查看详细的发送 log
