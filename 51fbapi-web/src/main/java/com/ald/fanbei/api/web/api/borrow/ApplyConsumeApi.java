@@ -81,7 +81,7 @@ public class ApplyConsumeApi implements ApiHandle{
 		long result = afBorrowService.dealConsumeApply(userDto, amount, card.getRid(), goodsId, openId,numId, name, nper);
 		if(result>0){//TODO 以下4行代码可换成  
 			resp.addResponseData("refId", result); 
-			resp.addResponseData("type", UserAccountLogType.CASH.getCode());
+			resp.addResponseData("type", UserAccountLogType.CONSUME.getCode());
 			return resp;
 		}
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);
