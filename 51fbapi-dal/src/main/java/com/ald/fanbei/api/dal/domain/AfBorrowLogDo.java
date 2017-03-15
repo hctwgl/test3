@@ -17,19 +17,13 @@ public class AfBorrowLogDo extends AbstractSerial{
 	 */
 	private static final long serialVersionUID = 5562230249386736340L;
 	
-	private Long id;
+	private Long rid;
 	private Date gmtCreate;
 	private String creator;
 	private String type;//状态【APPLY:申请/未审核 , AGREE:同意/审核通过 ,REFUSE:拒绝 , TRANSED:已经打款 , CLOSED:关闭】
 	private Long borrowId;
 	private Long userId;
-
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+	
 	public Date getGmtCreate() {
 		return gmtCreate;
 	}
@@ -71,6 +65,18 @@ public class AfBorrowLogDo extends AbstractSerial{
 	 */
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+	/**
+	 * @return the rid
+	 */
+	public Long getRid() {
+		return rid;
+	}
+	/**
+	 * @param rid the rid to set
+	 */
+	public void setRid(Long rid) {
+		this.rid = rid;
 	}
 	
 }
