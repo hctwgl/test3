@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
 
 /**
@@ -16,5 +18,12 @@ public interface AfOrderTempDao {
     * @return
     */
     int addUserOrder(AfOrderTempDo afUserOrderDo);
+    
+    /**
+     * 通过订单编号查询临时订单
+     * @param orderNo
+     * @return
+     */
+    AfOrderTempDo getByOrderNo(@Param("orderNo")String orderNo);
     
 }

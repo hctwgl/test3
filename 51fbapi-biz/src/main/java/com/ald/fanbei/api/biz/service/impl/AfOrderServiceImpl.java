@@ -97,6 +97,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Resource
 	private TransactionTemplate transactionTemplate;
 	
+	@Resource
+	private AfOrderTempDao afOrderTempDao;
+	
 	@Override
 	public int createOrderTrade(String content) {
 		logger.info("createOrderTrade_content:"+content);
@@ -141,8 +144,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Override
 	public int updateOrderTradePaidDone(String content) {
 		logger.info("updateOrderTradePaidDone_content:"+content);
+		String orderNo = JSON.parseObject(content).getString("order_id");
+		AfOrderTempDo orderTemp = afOrderTempDao.getByOrderNo(orderNo);
 		AfOrderDo order = new AfOrderDo();
-		order.setOrderNo(JSON.parseObject(content).getString("order_id"));
+		order.setOrderNo(orderNo);
+		if(orderTemp != null){
+			order.setUserId(orderTemp.getUserId());
+		}
 		order.setStatus(OrderSatus.PAID.getCode());
 		order.setGmtPay(new Date());
 		return orderDao.updateOrderByOrderNo(order);

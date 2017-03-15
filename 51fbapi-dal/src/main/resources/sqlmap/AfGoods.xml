@@ -64,7 +64,7 @@
 			modifier = 'system',
 			subscribe = #{status}
 		WHERE
-			num_id = ${numId}
+			num_id = #{numId}
 	</update>
 	
 	<update id="updateTaobaoGoodsInfo" parameterType="AfGoodsDo" >
@@ -97,7 +97,7 @@
 			modifier = 'system',
 			status = 'CANCEL'
 		WHERE
-			num_id = ${numId}
+			num_id = #{numId}
 	</update>
 	
 	
