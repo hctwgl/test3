@@ -162,10 +162,11 @@ public class SmsUtil extends AbstractThird {
 			return emailResult.isSucc();
 
 		} catch (Exception e) {
+			logger.error("sendEmailVerifyCode",e);
 			emailResult.setSucc(false);
-			logger.info(StringUtil.appendStrs("sendEmail params=|", email, "|", content, "|", emailResult));
 			return emailResult.isSucc();
-
+		}finally{
+			logger.info(StringUtil.appendStrs("sendEmail params=|", email, "|", content, "|", emailResult));
 		}
 
 	}
