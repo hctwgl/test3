@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowLogStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -29,12 +30,14 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowInterestDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowLogDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowTempDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLogDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -86,6 +89,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	@Resource
 	AfBorrowInterestDao afBorrowInterestDao;
 	
+	@Resource
+	AfBorrowLogDao afBorrowLogDao;
+	
 	@Override
 	public Date getReyLimitDate(String billType,Date now){
 		Date start = DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now));
@@ -117,6 +123,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					afUserAccountDao.updateUserAccount(account);					
 					AfBorrowDo borrow =  buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money);
 					afBorrowDao.addBorrow(borrow);
+					//新增审核日志
+					afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName()));
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CASH,money, userDto.getUserId(), borrow.getRid()));
 					
 					return borrow.getRid();
@@ -127,6 +135,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				}
 			}
 		});
+	}
+	
+	private AfBorrowLogDo buildBorrowLog(String userName){
+		AfBorrowLogDo log = new AfBorrowLogDo();
+		log.setCreator(userName);
+		log.setType(BorrowLogStatus.CREATE.getCode());
+		return log;
 	}
 	
 	/**
@@ -142,7 +157,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		borrow.setAmount(money);
 		borrow.setType(type.getCode());
 		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
-		borrow.setStatus(BorrowStatus.AGREE.getCode());//默认转账成功
+		borrow.setStatus(BorrowStatus.APPLY.getCode());//默认转账成功
 		borrow.setName(name);
 		borrow.setUserId(userId);
 		borrow.setNper(nper);
@@ -210,6 +225,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							afBorrowDao.addBorrow(borrow);
 							//新增借款商品关联信息
 							afBorrowTempDao.addBorrowTemp(buildBorrowTemp(goodsId,openId,numId,borrow.getRid()));
+							//新增审核日志
+							afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName()));
 							//新增借款日志
 							afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userDto.getUserId(), borrow.getRid()));
 							return borrow.getRid();

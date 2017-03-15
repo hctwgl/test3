@@ -60,9 +60,9 @@ public class BillTest {
 	
 	public static void main(String[] args) {
 		//创建账单
-		createBill();
+		//createBill();
 		//创建类目
-		//createCate();
+		createCate();
 	}
 	
 	private static void createBill(){
@@ -208,7 +208,7 @@ public class BillTest {
 	 }
 	
 	private static void createCate(){
-		String sql = "SELECT id,NOW() gmt_create,NOW() gmt_modified,'init' creator,'init' `modifier`,catename `name`,lv `level`,pid parent_id,CASE show_type WHEN 1 THEN 'Y' WHEN 0 THEN 'N' END AS is_show, show_sort sort FROM `www.91ala.com`.`fnuo_lighteshopbe_category` where lv=0";
+		String sql = "SELECT id,lv,pid FROM `www.91ala.com`.`fnuo_lighteshopbe_category` where lv=0";
 		PreparedStatement pstmt =null;
 		PreparedStatement pstmt1 =null;
 		ResultSet rs;
@@ -219,31 +219,36 @@ public class BillTest {
 			StringBuffer sb = new StringBuffer("");
 			int i=0;
 			while (rs.next()) {  
-				int pId = rs.getInt(8);
-				int id = rs.getInt(1);
-				while(true){
-					String sql1 = "SELECT id,NOW() gmt_create,NOW() gmt_modified,'init' creator,'init' `modifier`,catename `name`,lv `level`,pid parent_id,CASE show_type WHEN 1 THEN 'Y' WHEN 0 THEN 'N' END AS is_show, show_sort sort FROM `www.91ala.com`.`fnuo_lighteshopbe_category` where id=?";
-					pstmt1 = (PreparedStatement) conn.prepareStatement(sql1);
-					pstmt1.setInt(1, pId);
-					ResultSet rs1 = pstmt1.executeQuery();
-					if(rs1.next()){
-						int lv = rs1.getInt(7);
-						int id1 = rs1.getInt(7);
-						if(lv>0){//已匹配
-							sb.append("update af_category set level = ").append(lv+1).append(" where id =").append(id).append(";\n");
+				int pId = rs.getInt(3);//5028
+				int id = rs.getInt(1);//5083
+				if(pId==0){
+					sb.append("update af_category set level =1 ").append(" where id =").append(id).append(";\n");
+					System.out.println("第"+i+"条提交");
+					i++;
+				}else{
+					while(true){
+						String sql1 = "SELECT id,lv,pid FROM `www.91ala.com`.`fnuo_lighteshopbe_category` where id=?";
+						pstmt1 = (PreparedStatement) conn.prepareStatement(sql1);
+						pstmt1.setInt(1, pId);
+						ResultSet rs1 = pstmt1.executeQuery();
+						if(rs1.next()){
+							int lv = rs1.getInt(2);
+							if(lv>0){//已匹配
+								sb.append("update af_category set level = ").append(lv+1).append(" where id =").append(id).append(";\n");
+								System.out.println("第"+i+"条提交");
+								i++;
+								break;
+							}else{
+								pId = rs1.getInt(3);
+							}
+						}else{
+							sb.append("update af_category set level =2 ").append(" where id =").append(id).append(";\n");
 							System.out.println("第"+i+"条提交");
 							i++;
 							break;
-						}else{
-							pId = rs1.getInt(8);
 						}
-					}else if(pId==0){
-						sb.append("update af_category set level =1 ").append(" where id =").append(id).append(";\n");
-						System.out.println("第"+i+"条提交");
-						i++;
-						break;
+						
 					}
-					
 				}
 			}
 			String textSql = "C:/Users/Administrator/Desktop/billsql/category.sql";
