@@ -59,6 +59,13 @@ public class BillTest {
 	}
 	
 	public static void main(String[] args) {
+		//创建账单
+		createBill();
+		//创建类目
+		//createCate();
+	}
+	
+	private static void createBill(){
 		int pageSize = 100;
 		int pageCount = getPageCount(pageSize);
 		for (int i = 1; i <=pageCount; i++) {
@@ -199,4 +206,51 @@ public class BillTest {
 		   e.printStackTrace();
 		  }
 	 }
+	
+	private static void createCate(){
+		String sql = "SELECT id,NOW() gmt_create,NOW() gmt_modified,'init' creator,'init' `modifier`,catename `name`,lv `level`,pid parent_id,CASE show_type WHEN 1 THEN 'Y' WHEN 0 THEN 'N' END AS is_show, show_sort sort FROM `www.91ala.com`.`fnuo_lighteshopbe_category` where lv=0";
+		PreparedStatement pstmt =null;
+		PreparedStatement pstmt1 =null;
+		ResultSet rs;
+		Connection conn = getConn();
+		try {
+			pstmt = (PreparedStatement) conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			StringBuffer sb = new StringBuffer("");
+			int i=0;
+			while (rs.next()) {  
+				int pId = rs.getInt(8);
+				int id = rs.getInt(1);
+				while(true){
+					String sql1 = "SELECT id,NOW() gmt_create,NOW() gmt_modified,'init' creator,'init' `modifier`,catename `name`,lv `level`,pid parent_id,CASE show_type WHEN 1 THEN 'Y' WHEN 0 THEN 'N' END AS is_show, show_sort sort FROM `www.91ala.com`.`fnuo_lighteshopbe_category` where id=?";
+					pstmt1 = (PreparedStatement) conn.prepareStatement(sql1);
+					pstmt1.setInt(1, pId);
+					ResultSet rs1 = pstmt1.executeQuery();
+					if(rs1.next()){
+						int lv = rs1.getInt(7);
+						int id1 = rs1.getInt(7);
+						if(lv>0){//已匹配
+							sb.append("update af_category set level = ").append(lv+1).append(" where id =").append(id).append(";\n");
+							System.out.println("第"+i+"条提交");
+							i++;
+							break;
+						}else{
+							pId = rs1.getInt(8);
+						}
+					}else if(pId==0){
+						sb.append("update af_category set level =1 ").append(" where id =").append(id).append(";\n");
+						System.out.println("第"+i+"条提交");
+						i++;
+						break;
+					}
+					
+				}
+			}
+			String textSql = "C:/Users/Administrator/Desktop/billsql/category.sql";
+			writeTxtFile(sb.toString(),new File(textSql));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

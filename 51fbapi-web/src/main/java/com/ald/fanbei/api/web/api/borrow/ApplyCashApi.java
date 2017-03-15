@@ -9,11 +9,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -69,11 +67,6 @@ public class ApplyCashApi implements ApiHandle{
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		if(null == card){
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
-		}
-		UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), userId+"",
-				card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02");
-		if(!upsResult.isSuccess()){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 		long result = afBorrowService.dealCashApply(userDto, money,card.getRid());
 		if(result>0){

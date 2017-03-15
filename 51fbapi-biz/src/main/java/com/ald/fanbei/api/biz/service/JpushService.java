@@ -33,20 +33,6 @@ public interface JpushService {
 	public void chargeMobileSucc(String userName,String mobile,Date date);
 	
 	/**
-	 * 【淘宝消费借款打款中】温馨提示
-	 * @param userName
-	 * @param name
-	 */
-	public void dealBorrowConsumeTransfer(String userName,String name);
-	
-	/**
-	 * 【现金借款打款中】温馨提示
-	 * @param userName
-	 * @param date
-	 */
-	public void dealBorrowCashTransfer(String userName,Date date);
-	
-	/**
 	 * 【账单已还清】温馨提示
 	 * @param userName
 	 * @param year
@@ -72,4 +58,5 @@ public interface JpushService {
 	 * @param date
 	 */
 	public void refundMobileError(String userName,Date date);
+	
 }

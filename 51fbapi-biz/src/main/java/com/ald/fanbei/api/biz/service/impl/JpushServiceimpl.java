@@ -90,42 +90,6 @@ public class JpushServiceimpl extends BaseService implements JpushService{
 	}
 
 	@Override
-	public void dealBorrowConsumeTransfer(String userName, String name) {
-		try {
-			String pid = userName + "_" + System.currentTimeMillis();
-			logger.info(StringUtil.appendStrs("dealBorrowConsumeTransfer,pid=",pid,",name=",name));
-			String msgContext = "您好，您申请购买【{name}】的消费借款，已经打款，请耐心等待资金到账";
-			Map<String,String> extras = new HashMap<String,String>();
-			extras.put(PID, pid);
-			extras.put(TIMESTAMP, System.currentTimeMillis()+"");
-			extras.put(PUSH_JUMP_TYPE, "203");
-			extras.put(DATA, "");
-			msgContext = msgContext.replace("{name}", name); 
-			jpushUtil.pushNotifyByAlias("消费借款打款中", msgContext, extras, new String[]{userName});
-		} catch (Exception e) {
-			logger.info("dealBorrowConsumeTransfer error:",e);
-		}
-	}
-
-	@Override
-	public void dealBorrowCashTransfer(String userName, Date date) {
-		try {
-			String pid = userName + "_" + System.currentTimeMillis();
-			logger.info(StringUtil.appendStrs("dealBorrowCashTransfer,pid=",pid,",date=",date));
-			String msgContext = "您好，您与{date}申请的现金借款，已打款；请耐心等待资金到账";
-			Map<String,String> extras = new HashMap<String,String>();
-			extras.put(PID, pid);
-			extras.put(TIMESTAMP, System.currentTimeMillis()+"");
-			extras.put(PUSH_JUMP_TYPE, "204");
-			extras.put(DATA, "");
-			msgContext = msgContext.replace("{date}", DateUtil.formatDate(date, DateUtil.DEFAULT_PATTERN_WITH_DOT)); 
-			jpushUtil.pushNotifyByAlias("现金打款中", msgContext, extras, new String[]{userName});
-		} catch (Exception e) {
-			logger.info("dealBorrowCashTransfer error",e);
-		}
-	}
-
-	@Override
 	public void repayBillSuccess(String userName, String year, String month) {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
