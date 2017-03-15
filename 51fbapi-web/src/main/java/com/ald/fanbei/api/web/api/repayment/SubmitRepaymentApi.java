@@ -87,6 +87,7 @@ public class SubmitRepaymentApi implements ApiHandle{
 		
 		AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
 		if(billDo.getCount()==0 ||repaymentAmount.compareTo(billDo.getBillAmount())!=0){
+			logger.info("repaymentAmount="+repaymentAmount+",billDo="+billDo);
 			throw new FanbeiException("borrow bill update error", FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
 		}
 		AfUserCouponDto coupon = afUserCouponService.getUserCouponById(couponId);

@@ -48,7 +48,7 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		//获取利率说明信息
-		AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_BORROW_CASH_RATE_DESC);
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH);
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		if(null == card){
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
@@ -73,7 +73,7 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 		if(null == resource){
 			data.put("desc", "");
 		}else{
-			data.put("desc", resource.getValue());
+			data.put("desc", new StringBuffer("日利率").append(new BigDecimal(resource.getValue()).multiply(new BigDecimal(100)).stripTrailingZeros().toPlainString()).append("%"));
 		}
 		return data;
 	}
