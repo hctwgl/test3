@@ -38,7 +38,10 @@ import com.alibaba.fastjson.JSONArray;
 @Component("getMobileRechargeMoneyListApi")
 public class GetMobileRechargeMoneyListApi implements ApiHandle {
 	
-	String UNKNOW = "UNKNOW";
+	String UNKNOWCode = "UNKNOW";
+	
+	String UNKNOW = "未知";
+
 	
 	@Resource
 	AfUserCouponService afUserCouponService;
@@ -59,7 +62,7 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 
 		AfMoblieChargeDo afMoblieChargeDo = afMobileChargeService.getMoblieChargeByTypeAndCompany(province,company);
 		if(afMoblieChargeDo==null){
-			afMoblieChargeDo = afMobileChargeService.getMoblieChargeByTypeAndCompany(UNKNOW,UNKNOW);
+			afMoblieChargeDo = afMobileChargeService.getMoblieChargeByTypeAndCompany(UNKNOW,UNKNOWCode);
 		}
 
 		//500是充值金额里面最大充值金额
