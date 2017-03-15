@@ -8,11 +8,6 @@
 	    		text-align: Justify;
 				text-justify: inter-ideograph;
 	    	}
-            .invitationRewardRule h2{
-                font-weight: bold;
-                text-align: center;
-                margin-bottom: 0.5rem;
-            }
             .invitationRewardRule p{
                 line-height: 1.2rem;
             }
@@ -23,7 +18,6 @@
     </head>
     <body style="background-color: #fff;">
     	<div class="invitationRewardRule">
-            <h2>邀请好友活动规则</h2>
             <p>
                 1.被邀请人：未注册51返呗的用户。<br>
                 2.邀请人在邀请好友时，好友注册时需要填写邀请人的邀请id，且注册后被邀请人需要完成信用认证，才算完成一个好友邀请；<br>

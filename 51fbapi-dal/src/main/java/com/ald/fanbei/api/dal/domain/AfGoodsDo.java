@@ -38,7 +38,6 @@ public class AfGoodsDo extends AbstractSerial{
 	private String source;
 	private BigDecimal rebateAmount;
 	private BigDecimal rebateRate;
-	private String shopId;
 	private String shopName;
 	private BigDecimal realAmount;//到手价
 	public Long getRid() {
@@ -160,12 +159,6 @@ public class AfGoodsDo extends AbstractSerial{
 	}
 	public void setRebateRate(BigDecimal rebateRate) {
 		this.rebateRate = rebateRate;
-	}
-	public String getShopId() {
-		return shopId;
-	}
-	public void setShopId(String shopId) {
-		this.shopId = shopId;
 	}
 	public String getShopName() {
 		return shopName;
