@@ -66,7 +66,6 @@ public class JpushUtil extends AbstractThird{
 		try{
 			extras.put(EXTRAS_KEY_TITLE, title);
 			extras.put(EXTRAS_KEY_CONTENT, msgContent);
-			thirdLog.info(StringUtil.appendStrs("pushMessageByAlias title=",title,",msgContent=",msgContent,",extras=",extras,"alias=",StringUtil.turnArrayToStr(null,alias),";result=",result));
 			cn.jpush.api.push.model.PushPayload.Builder pushBuilder = PushPayload.newBuilder();
 			Message.Builder message = Message.newBuilder();
 			message.setTitle(title);
@@ -80,6 +79,7 @@ public class JpushUtil extends AbstractThird{
 			pushBuilder.setPlatform(Platform.all());
 			PushPayload ppl = pushBuilder.build();
 			result = getPushClient().sendPush(ppl);
+			thirdLog.info(StringUtil.appendStrs("pushMessageByAlias title=",title,",msgContent=",msgContent,",extras=",extras,"alias=",StringUtil.turnArrayToStr(null,alias),";result=",result));
 		}catch(APIConnectionException | APIRequestException e){
 			e.printStackTrace();
 			thirdLog.error(StringUtil.appendStrs("pushMessageByAlias error title=",title,",msgContent=",msgContent,",extras=",extras,"alias=",StringUtil.turnArrayToStr(null,alias),";result=",result),e);
@@ -99,7 +99,6 @@ public class JpushUtil extends AbstractThird{
 		try{
 			extras.put(EXTRAS_KEY_TITLE, title);
 			extras.put(EXTRAS_KEY_CONTENT, msgContent);
-			thirdLog.info(StringUtil.appendStrs("pushMessageByRegistIds title=",title,",msgContent=",msgContent,",extras=",extras,"registIds=",StringUtil.turnArrayToStr(null,registIds),";result=",result));
 			cn.jpush.api.push.model.PushPayload.Builder pushBuilder = PushPayload.newBuilder();
 			Message.Builder message = Message.newBuilder();
 			message.setTitle(title);
@@ -114,6 +113,7 @@ public class JpushUtil extends AbstractThird{
 			pushBuilder.setPlatform(Platform.all());
 			PushPayload ppl = pushBuilder.build();
 			result = getPushClient().sendPush(ppl);
+			thirdLog.info(StringUtil.appendStrs("pushMessageByRegistIds title=",title,",msgContent=",msgContent,",extras=",extras,"registIds=",StringUtil.turnArrayToStr(null,registIds),";result=",result));
 		}catch(APIConnectionException | APIRequestException e){
 			e.printStackTrace();
 			thirdLog.error(StringUtil.appendStrs("pushMessageByRegistIds error title=",title,",msgContent=",msgContent,",extras=",extras,"registIds=",StringUtil.turnArrayToStr(null,registIds),";result=",result),e);
@@ -130,7 +130,6 @@ public class JpushUtil extends AbstractThird{
 	 */
 	public void pushNotifyByAlias(String title,String msgContent,Map<String,String> extras,String[] alias){
 		PushResult result = null;
-		thirdLog.info(StringUtil.appendStrs("pushNotifyByAlias title=",title,",msgContent=",msgContent,",extras=",extras,"alias=",StringUtil.turnArrayToStr(null,alias),";result=",result));
 		try{
 			extras.put(EXTRAS_KEY_TITLE, title);
 			extras.put(EXTRAS_KEY_CONTENT, msgContent);
@@ -144,6 +143,7 @@ public class JpushUtil extends AbstractThird{
 			pushBuilder.setPlatform(Platform.all());
 			PushPayload ppl = pushBuilder.build();
 			result = getPushClient().sendPush(ppl);
+			thirdLog.info(StringUtil.appendStrs("pushNotifyByAlias title=",title,",msgContent=",msgContent,",extras=",extras,"alias=",StringUtil.turnArrayToStr(null,alias),";result=",result));
 		}catch(APIConnectionException | APIRequestException e){
 			e.printStackTrace();
 			thirdLog.error(StringUtil.appendStrs("pushNotifyByRegistIds error title=",title,",msgContent=",msgContent,",extras=",extras,"alias=",StringUtil.turnArrayToStr(null,alias),";result=",result),e);
@@ -160,7 +160,6 @@ public class JpushUtil extends AbstractThird{
 	 */
 	public void pushNotifyByRegistIds(String title,String msgContent,Map<String,String> extras,String[] registIds){
 		PushResult result = null;
-		thirdLog.info(StringUtil.appendStrs("pushNotifyByRegistIds title=",title,",msgContent=",msgContent,",extras=",extras,"registIds=",StringUtil.turnArrayToStr(null,registIds),";result=",result));
 		try{
 			extras.put(EXTRAS_KEY_TITLE, title);
 			extras.put(EXTRAS_KEY_CONTENT, msgContent);
@@ -174,6 +173,7 @@ public class JpushUtil extends AbstractThird{
 			pushBuilder.setPlatform(Platform.all());
 			PushPayload ppl = pushBuilder.build();
 			result = getPushClient().sendPush(ppl);
+			thirdLog.info(StringUtil.appendStrs("pushNotifyByRegistIds title=",title,",msgContent=",msgContent,",extras=",extras,"registIds=",StringUtil.turnArrayToStr(null,registIds),";result=",result));
 		}catch(APIConnectionException | APIRequestException e){
 			e.printStackTrace();
 			thirdLog.error(StringUtil.appendStrs("pushNotifyByRegistIds error title=",title,",msgContent=",msgContent,",extras=",extras,"registIds=",StringUtil.turnArrayToStr(null,registIds),";result=",result),e);
