@@ -14,10 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -46,7 +48,7 @@ public class GetSearchHomeApi implements ApiHandle {
 		}
 	
 		data.put("tipIcon", afResourceDo.getValue());
-		data.put("tipUrl", afResourceDo.getValue1());
+		data.put("tipUrl",ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) +  afResourceDo.getValue1());
 		data.put("rebate", afResourceDo.getValue2());
 		data.put("searchList", list);
 
