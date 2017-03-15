@@ -41,6 +41,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -145,12 +146,24 @@ public class AppH5FanBeiWebController extends BaseController {
 			AfUserCouponDo userCoupon = new AfUserCouponDo();
 			userCoupon.setCouponId(NumberUtil.objToLongDefault(couponId, 1l));
 			userCoupon.setGmtStart(new Date());
-			if (couponDo.getValidDays() == -1) {
-				userCoupon.setGmtEnd(DateUtil.getFinalDate());
-			} else {
-				userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+			if(StringUtils.equals(couponDo.getExpiryType(), "R")   ){
+				userCoupon.setGmtStart(couponDo.getGmtStart());
+				userCoupon.setGmtEnd(couponDo.getGmtEnd());
+				if(DateUtil.afterDay(new Date(), couponDo.getGmtEnd())){
+					userCoupon.setStatus(CouponStatus.EXPIRE.getCode());
+				}
+
+			}else{
+				userCoupon.setGmtStart(new Date());
+				if(couponDo.getValidDays()==-1){
+					userCoupon.setGmtEnd(DateUtil.getFinalDate());
+				}else{
+					userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+				}
 			}
-			userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+			
+			
+			
 			userCoupon.setSourceType(CouponSenceRuleType.PICK.getCode());
 			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
 			userCoupon.setUserId(afUserDo.getRid());
