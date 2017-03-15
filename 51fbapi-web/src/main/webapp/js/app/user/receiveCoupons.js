@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-03-08 17:42:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-09 11:13:12
+* @Last Modified time: 2017-03-15 15:09:55
 * @title:  领取优惠劵
 */
 
@@ -39,6 +39,7 @@ $(function(){
                         window.location.href = returnData.url;
                     }else{
                         requestMsg(returnData.msg);
+                        $(".receiveCoupons_main li").eq(i).addClass("receiveCoupons_alreadyReceive");
                     }
                 }
             },
@@ -46,7 +47,6 @@ $(function(){
                 requestMsg("请求失败");
             }
         });
-
-        $(this).unbind("click");
+        $(this).unbind("click"); // 移除当前元素的点击时间(禁止重复点击)
     });
 });
