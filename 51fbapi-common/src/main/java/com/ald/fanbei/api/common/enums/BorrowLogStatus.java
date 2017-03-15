@@ -11,11 +11,11 @@ import java.util.Map;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum BorrowLogStatus {
-
-	 CREATE("CREATE", "创建"), 
-	 AUTH("AUTH", "审核"),
-	 TRANSED("TRANSED", "转账"),
-	 REFUSE("REFUSE", "拒绝");
+	 APPLY("APPLY", "申请"), 
+	 AGREE("AGREE", "审核通过"),
+	 REFUSE("REFUSE", "拒绝"),
+	 TRANSED("TRANSED", "已经打款"),
+	 CLOSED("CLOSED", "关闭");
     
     private String code;
     private String name;

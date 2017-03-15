@@ -9,9 +9,12 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -19,6 +22,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -42,6 +46,9 @@ public class ApplyCashApi implements ApiHandle{
 	
 	@Resource
 	private AfBorrowService afBorrowService;
+	
+	@Resource
+	AfResourceService afResourceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -69,7 +76,21 @@ public class ApplyCashApi implements ApiHandle{
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
 		long result = afBorrowService.dealCashApply(userDto, money,card.getRid());
+		
 		if(result>0){
+			//信用分大于指定值
+			AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
+			//直接打款
+			if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
+				UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), userId+"",
+						card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02");
+				if(!upsResult.isSuccess()){
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+				}
+				resp.addResponseData("directTrans", "T");
+			} else {
+				resp.addResponseData("directTrans", "F");
+			}
 			resp.addResponseData("refId", result);
 			resp.addResponseData("type", UserAccountLogType.CASH.getCode());
 			return resp;

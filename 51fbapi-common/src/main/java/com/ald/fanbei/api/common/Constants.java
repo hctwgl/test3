@@ -93,6 +93,8 @@ public class Constants {
     public static final String RES_BRAND_SHOP				  	  	  = "BRAND_SHOP";
     public static final String RES_CREDIT_SCORE_AMOUNT				  = "CREDIT_SCORE_AMOUNT";
     public static final String RES_CREDIT_SCORE				  	  	  = "CREDIT_SCORE";
+    //免审核信用分
+    public static final String RES_DIRECT_TRANS_CREDIT_SCORE		  = "DIRECT_TRANS_CREDIT_SCORE";
     
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";

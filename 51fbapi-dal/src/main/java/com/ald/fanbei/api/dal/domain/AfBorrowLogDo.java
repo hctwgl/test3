@@ -20,7 +20,7 @@ public class AfBorrowLogDo extends AbstractSerial{
 	private Long id;
 	private Date gmtCreate;
 	private String creator;
-	private String type;
+	private String type;//状态【APPLY:申请/未审核 , AGREE:同意/审核通过 ,REFUSE:拒绝 , TRANSED:已经打款 , CLOSED:关闭】
 	private Long borrowId;
 	private Long userId;
 

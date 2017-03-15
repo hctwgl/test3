@@ -116,15 +116,25 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					//修改用户账户信息
-					AfUserAccountDo account = new AfUserAccountDo();
+					AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(userDto.getUserId());
 					account.setUserId(userDto.getUserId());
 					account.setUcAmount(money);//已取现金额=已取现金额+申请取现金额
 					account.setUsedAmount(money);//授信已使用金额=授信已使用金额+申请取现金额
 					afUserAccountDao.updateUserAccount(account);					
-					AfBorrowDo borrow =  buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money);
-					afBorrowDao.addBorrow(borrow);
-					//新增审核日志
-					afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid()));
+					AfBorrowDo borrow = null;
+					//信用分大于指定值
+					AfResourceDo resourceInfo = afResourceDao.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
+					if (account.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
+						borrow = buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money,BorrowStatus.TRANSED.getCode());
+						//直接打款
+						afBorrowDao.addBorrow(borrow);
+						afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid(),BorrowLogStatus.TRANSED.getCode()));
+					} else {
+						//进行申请
+						borrow = buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money,BorrowStatus.APPLY.getCode());
+						afBorrowDao.addBorrow(borrow);
+						afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid(),BorrowLogStatus.APPLY.getCode()));
+					}
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CASH,money, userDto.getUserId(), borrow.getRid()));
 					
 					return borrow.getRid();
@@ -137,12 +147,12 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		});
 	}
 	
-	private AfBorrowLogDo buildBorrowLog(String userName,Long userId,Long borrowId){
+	private AfBorrowLogDo buildBorrowLog(String userName,Long userId,Long borrowId, String type){
 		AfBorrowLogDo log = new AfBorrowLogDo();
 		log.setCreator(userName);
 		log.setBorrowId(borrowId);
 		log.setUserId(userId);
-		log.setType(BorrowLogStatus.CREATE.getCode());
+		log.setType(type);
 		return log;
 	}
 	
@@ -152,14 +162,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	 * @param money -- 借款金额
 	 * @return
 	 */
-	private AfBorrowDo buildBorrow(String name,BorrowType type,Long userId,BigDecimal money,Long cardId,int nper,BigDecimal perAmount){
+	private AfBorrowDo buildBorrow(String name,BorrowType type,Long userId,BigDecimal money,Long cardId,int nper,BigDecimal perAmount, String status){
 		Date currDate = new Date();
 		AfBorrowDo borrow = new AfBorrowDo();
 		borrow.setGmtCreate(currDate);
 		borrow.setAmount(money);
 		borrow.setType(type.getCode());
 		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
-		borrow.setStatus(BorrowStatus.APPLY.getCode());//默认转账成功
+		borrow.setStatus(status);//默认转账成功
 		borrow.setName(name);
 		borrow.setUserId(userId);
 		borrow.setNper(nper);
@@ -194,8 +204,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					//修改用户账户信息
-					AfUserAccountDo account = new AfUserAccountDo();
-					account.setUserId(userDto.getUserId());
+					AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(userDto.getUserId());
 					account.setUsedAmount(amount);
 					afUserAccountDao.updateUserAccount(account);
 					//获取借款分期配置信息
@@ -222,15 +231,25 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, nper, 
 									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
 											8,BigDecimal.ROUND_HALF_UP), totalPoundage);//每期账单金额
-							AfBorrowDo borrow =  buildBorrow(name,BorrowType.CONSUME_TEMP,userDto.getUserId(), amount,cardId,nper,perAmount);
-							//新增借款信息
-							afBorrowDao.addBorrow(borrow);
+							AfBorrowDo borrow =  null;
+							//信用分大于指定值
+							AfResourceDo resourceInfo = afResourceDao.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
+							if (account.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
+								borrow =  buildBorrow(name,BorrowType.CONSUME_TEMP,userDto.getUserId(), amount,cardId,nper,perAmount, BorrowStatus.TRANSED.getCode());
+								//新增借款信息
+								afBorrowDao.addBorrow(borrow);
+								//直接打款
+								afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid(),BorrowLogStatus.TRANSED.getCode()));
+							} else {
+								borrow =  buildBorrow(name,BorrowType.CONSUME_TEMP,userDto.getUserId(), amount,cardId,nper,perAmount, BorrowStatus.APPLY.getCode());
+								//新增借款信息
+								afBorrowDao.addBorrow(borrow);
+								//进行申请
+								afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid(),BorrowLogStatus.APPLY.getCode()));
+							}
 							//新增借款商品关联信息
 							afBorrowTempDao.addBorrowTemp(buildBorrowTemp(goodsId,openId,numId,borrow.getRid()));
 							
-							
-							//新增审核日志
-							afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid()));
 							//新增借款日志
 							afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userDto.getUserId(), borrow.getRid()));
 							return borrow.getRid();
