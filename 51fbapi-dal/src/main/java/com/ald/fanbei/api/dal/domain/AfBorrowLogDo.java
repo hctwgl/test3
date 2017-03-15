@@ -21,6 +21,9 @@ public class AfBorrowLogDo extends AbstractSerial{
 	private Date gmtCreate;
 	private String creator;
 	private String type;
+	private Long borrowId;
+	private Long userId;
+
 	public Long getId() {
 		return id;
 	}
@@ -44,6 +47,30 @@ public class AfBorrowLogDo extends AbstractSerial{
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	/**
+	 * @return the borrowId
+	 */
+	public Long getBorrowId() {
+		return borrowId;
+	}
+	/**
+	 * @param borrowId the borrowId to set
+	 */
+	public void setBorrowId(Long borrowId) {
+		this.borrowId = borrowId;
+	}
+	/**
+	 * @return the userId
+	 */
+	public Long getUserId() {
+		return userId;
+	}
+	/**
+	 * @param userId the userId to set
+	 */
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 	
 }

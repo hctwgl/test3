@@ -124,7 +124,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					AfBorrowDo borrow =  buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money);
 					afBorrowDao.addBorrow(borrow);
 					//新增审核日志
-					afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName()));
+					afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid()));
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CASH,money, userDto.getUserId(), borrow.getRid()));
 					
 					return borrow.getRid();
@@ -137,9 +137,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		});
 	}
 	
-	private AfBorrowLogDo buildBorrowLog(String userName){
+	private AfBorrowLogDo buildBorrowLog(String userName,Long userId,Long borrowId){
 		AfBorrowLogDo log = new AfBorrowLogDo();
 		log.setCreator(userName);
+		log.setBorrowId(borrowId);
+		log.setUserId(userId);
 		log.setType(BorrowLogStatus.CREATE.getCode());
 		return log;
 	}
@@ -225,8 +227,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							afBorrowDao.addBorrow(borrow);
 							//新增借款商品关联信息
 							afBorrowTempDao.addBorrowTemp(buildBorrowTemp(goodsId,openId,numId,borrow.getRid()));
+							
+							
 							//新增审核日志
-							afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName()));
+							afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid()));
 							//新增借款日志
 							afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userDto.getUserId(), borrow.getRid()));
 							return borrow.getRid();
