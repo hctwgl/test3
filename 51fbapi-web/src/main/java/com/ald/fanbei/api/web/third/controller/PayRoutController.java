@@ -140,7 +140,7 @@ public class PayRoutController{
             while ((line = reader.readLine()) != null) {
                 xmlStr.append(line);
             }   
-            
+            logger.info("wxpayNotify="+xmlStr.toString());
             //验证通知是否是微信的通知
     		Properties properties = WxXMLParser.parseXML(xmlStr.toString());
 			String resultStr = WxSignBase.checkWxSign(properties, AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)));

@@ -13,4 +13,15 @@
     		#{orderNo}
 		)
 	</insert>
+	
+	<select id="getByOrderNo" resultType="AfOrderTempDo">
+	    SELECT
+	    	<include refid="queryFields" />
+	    FROM
+	   		 af_order_temp
+	    WHERE
+	    	is_delete = 0
+	     AND
+	         order_no =#{orderNo}
+	</select>
 </mapper>
