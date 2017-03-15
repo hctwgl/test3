@@ -1,5 +1,8 @@
 package com.ald.fanbei;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -58,21 +61,22 @@ public class BillTest {
 	public static void main(String[] args) {
 		int pageSize = 100;
 		int pageCount = getPageCount(pageSize);
-		for (int i = 0; i <pageCount; i++) {
-			int begin = pageSize*i;
+		for (int i = 1; i <=pageCount; i++) {
+			int begin = pageSize*(i-1);
 			String sql = "SELECT  id,nper,nper_amount,borrow_no,user_id,gmt_create,name,amount from  af_borrow where is_delete=0 and type='CONSUME' and status='TRANSED' limit ?,?";
 			PreparedStatement pstmt =null;
 			PreparedStatement pstmt1 =null;
 			PreparedStatement pstmt2 =null;
 			Connection conn = getConn();
+			StringBuffer sb = new StringBuffer("");
 			try {
+				conn.setAutoCommit(false);
 				pstmt = (PreparedStatement) conn.prepareStatement(sql);
 				pstmt.setInt(1,begin);
 				pstmt.setInt(2,pageSize);
 				ResultSet rs = pstmt.executeQuery();
 				System.out.println(pstmt.asSql());
 				while (rs.next()) {  
-					conn.setAutoCommit(false);
 					int nper = rs.getInt(2);
 					Long borrowId = rs.getLong(1);
 					BigDecimal nperAmount = rs.getBigDecimal(3);
@@ -154,9 +158,13 @@ public class BillTest {
 							pstmt2.setBigDecimal(17, interestAmount);
 							pstmt2.setBigDecimal(18, poundageAmount);
 							pstmt2.executeUpdate();
+							System.out.println(pstmt2.asSql());
+							sb.append(pstmt2.asSql()).append(";\n");
 						}
 					}
 	            }
+				String textSql = "C:/Users/Administrator/Desktop/billsql/page_"+i+".sql";
+				 //writeTxtFile(sb.toString(),new File(textSql));
 				conn.commit();
 				System.out.println("第"+i+"次提交");
 				
@@ -166,4 +174,29 @@ public class BillTest {
 			}
 		}
 	}
+	
+	public static void writeTxtFile(String content,File  file){  
+//		 File file = new File("c:/newfile.txt");
+//		  String content = "This is the text content";
+
+		  try (FileOutputStream fop = new FileOutputStream(file)) {
+
+		   // if file doesn't exists, then create it
+		   if (!file.exists()) {
+		    file.createNewFile();
+		   }
+
+		   // get the content in bytes
+		   byte[] contentInBytes = content.getBytes();
+
+		   fop.write(contentInBytes);
+		   fop.flush();
+		   fop.close();
+
+		   System.out.println("Done");
+
+		  } catch (IOException e) {
+		   e.printStackTrace();
+		  }
+	 }
 }

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 
@@ -28,7 +30,8 @@ public class TestController {
 	CouponSceneRuleEnginer authRealnameRuleEngine;
 	@Resource
 	CouponSceneRuleEnginer signinRuleEngine;
-
+	@Resource
+	JpushService jpushService;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -54,7 +57,7 @@ public class TestController {
 //		inputData.put("seriesCount", 5);
 //		signinRuleEngine.executeRule(inputData);
 		
-		
+		jpushService.chargeMobileSucc("13607665702", "13607665702", new Date());
 		
 		// String reportId = TongdunUtil.applyPreloan("362525198601022112",
 		// "陈金虎", "15958119936", "410228573@qq.com");
