@@ -122,7 +122,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					//修改用户账户信息
-					AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(userDto.getUserId());
+					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userDto.getUserId());
 					account.setUcAmount(money);//已取现金额=已取现金额+申请取现金额
 					account.setUsedAmount(money);//授信已使用金额=授信已使用金额+申请取现金额
@@ -130,7 +130,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					AfBorrowDo borrow = null;
 					//信用分大于指定值
 					AfResourceDo resourceInfo = afResourceDao.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
-					if (account.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
+					if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 						borrow = buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money,BorrowStatus.TRANSED.getCode());
 						//直接打款
 						afBorrowDao.addBorrow(borrow);
@@ -210,7 +210,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					//修改用户账户信息
-					AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(userDto.getUserId());
+					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUsedAmount(amount);
 					afUserAccountDao.updateUserAccount(account);
 					//获取借款分期配置信息
@@ -227,7 +227,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
 						rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
 					}
-					
 					JSONArray array = JSON.parseArray(resource.getValue());
 					for (int i = 0; i < array.size(); i++) {
 						JSONObject obj = array.getJSONObject(i);
@@ -240,7 +239,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							AfBorrowDo borrow =  null;
 							//信用分大于指定值
 							AfResourceDo resourceInfo = afResourceDao.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
-							if (account.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
+							if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 								borrow =  buildBorrow(name,BorrowType.CONSUME_TEMP,userDto.getUserId(), amount,cardId,nper,perAmount, BorrowStatus.TRANSED.getCode());
 								//新增借款信息
 								afBorrowDao.addBorrow(borrow);
