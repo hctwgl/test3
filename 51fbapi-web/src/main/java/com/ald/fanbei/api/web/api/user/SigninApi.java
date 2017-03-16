@@ -73,7 +73,7 @@ public class SigninApi implements ApiHandle {
 	 	   
 		Integer seriesCount =  1;
 		Integer totalCount =  0;
-		if (afSigninDo == null) {
+		if (afSigninDo == null||afSigninDo.getGmtSeries()==null) {
 			afSigninDo = new AfSigninDo();
 			totalCount += 1;
 			afSigninDo.setSeriesCount(seriesCount);
