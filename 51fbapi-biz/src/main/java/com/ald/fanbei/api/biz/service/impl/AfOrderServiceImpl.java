@@ -198,7 +198,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						JSONObject result = JSON.parseObject(returnMsg.getString("result"));
 						if(!result.getString("ret_code").equals(MobileStatus.SUCCESS.getCode())){
 							//System.out.println(result.getString("ret_msg"));
-							//TODO 退款 生成退款记录  走微信退款流程，或者银行卡代付
+							//退款 生成退款记录  走微信退款流程，或者银行卡代付
 							//设置优惠券为未使用状态
 							afUserCouponDao.updateUserCouponSatusNouseById(order.getUserCouponId());
 							//返利金额
@@ -223,6 +223,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 									pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
 								}
 							}
+							newOrder.setStatus(OrderSatus.CLOSED.getCode());
+							orderDao.updateOrderByOutTradeNo(newOrder);
 							pushService.chargeMobileError(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 						}else{
 							pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());

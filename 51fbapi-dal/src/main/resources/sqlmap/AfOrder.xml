@@ -271,7 +271,7 @@
 		<if test="orderStatus == 'AR'">
 			and a.status = 'REBATED'
 		</if>
-		and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.order_type='MOBILE' AND b.status='NEW' AND a.id=b.id)
+		and NOT EXISTS (SELECT 1 FROM af_order b WHERE AND b.status='NEW' AND a.id=b.id)
 		order by a.gmt_create desc
 	</select>
 </mapper>

@@ -1,9 +1,11 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -19,6 +21,7 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowLogStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
@@ -36,12 +39,15 @@ import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowInterestDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLogDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -340,5 +346,167 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		map.put(Constants.DEFAULT_YEAR, billYear);
 		map.put(Constants.DEFAULT_MONTH, billMonth);
 		return map;
+	}
+	
+	@Override
+	public void cashBillTransfer(final AfBorrowDo borrow,final AfUserAccountDo userDto,final AfUserBankcardDo card) {
+		transactionTemplate.execute(new TransactionCallback<Object>() {@Override
+			public Long doInTransaction(TransactionStatus status) {
+				try {
+					//生成账单
+					AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CASH);
+					if(null == resource){
+						resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CASH);
+						bizCacheUtil.saveObject(Constants.CACHEKEY_BORROW_CASH, resource, Constants.SECOND_OF_HALF_HOUR);
+					}
+					BigDecimal money = borrow.getAmount();//借款金额
+					BigDecimal dayRate = NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO);//取现日利率
+					BigDecimal serviceCharge = NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO);//取现手续费率
+					BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
+					BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
+					String[] range = StringUtil.split(resource.getValue2(), ",");
+					if(null != range && range.length==2){
+						rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
+						rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
+					}
+					BigDecimal chargeAmount = money.multiply(serviceCharge);//计算手续费
+					if(rangeBegin.compareTo(chargeAmount)>0){
+						chargeAmount = rangeBegin;
+					}else if(rangeEnd.compareTo(chargeAmount)==-1){
+						chargeAmount = rangeEnd;
+					}
+					BigDecimal interestAmount = money.multiply(dayRate);//日利息
+					List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CASH,borrow,money.add(interestAmount).add(chargeAmount),BigDecimal.ZERO,interestAmount,BigDecimal.ZERO,chargeAmount);
+					if(null!=billList&&billList.size()>0){
+						AfBorrowBillDo cashBill = billList.get(0);
+						//生成利息日志
+						afBorrowDao.addBorrowBillInfo(cashBill);
+						afBorrowInterestDao.addBorrowInterest(buildBorrowInterest(cashBill.getRid(), interestAmount,userDto.getUserName(),money));
+					}
+					pushService.dealBorrowCashTransfer(userDto.getUserName(),borrow.getGmtCreate());
+				} catch (Exception e) {
+					logger.info("create cashBill error:",e);
+					status.setRollbackOnly();
+				}
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * 借款分期账单
+	 * @param borrow --借款信息
+	 * @param totalAmount --本息手续费总计
+	 * @param interestAmount --利息总计
+	 * @param poundageAmount --手续费总计
+	 * @param monthRate --月利率
+	 * @return
+	 */
+	private List<AfBorrowBillDo> buildBorrowBill(BorrowType borrowType,AfBorrowDo borrow,BigDecimal perAmount,BigDecimal totalAmount,
+			BigDecimal interestAmount,BigDecimal monthRate,BigDecimal poundageAmount){
+		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
+		Date now = new Date();//当前时间
+		BigDecimal billAmount = perAmount;
+		BigDecimal money = borrow.getAmount();//借款金额
+		//计算本息总计
+		for (int i = 1; i <= borrow.getNper(); i++) {
+			AfBorrowBillDo bill = new AfBorrowBillDo();
+			bill.setUserId(borrow.getUserId());
+			bill.setBorrowId(borrow.getRid());
+			bill.setBorrowNo(borrow.getBorrowNo());
+			bill.setName(borrow.getName());
+			bill.setGmtBorrow(borrow.getGmtCreate());
+			Map<String,Integer> timeMap = getCurrentYearAndMonth(now);
+			bill.setBillYear(timeMap.get(Constants.DEFAULT_YEAR));
+			bill.setBillMonth(timeMap.get(Constants.DEFAULT_MONTH));
+			bill.setNper(borrow.getNper());
+			bill.setBillNper(i);
+			if(borrowType.equals(BorrowType.CASH)){
+				bill.setPrincipleAmount(borrow.getAmount());
+				bill.setInterestAmount(interestAmount);
+				bill.setPoundageAmount(poundageAmount);
+				bill.setStatus(BorrowBillStatus.NO.getCode());
+				bill.setType(BorrowType.CASH.getCode());
+				bill.setBillAmount(billAmount);
+			}else{
+				BigDecimal perPoundageAmount = poundageAmount.divide(new BigDecimal(borrow.getNper()),2,BigDecimal.ROUND_HALF_UP);//当月手续费
+				BigDecimal perInterest = money.multiply(monthRate).setScale(2, BigDecimal.ROUND_HALF_UP);//本月利息
+				bill.setInterestAmount(perInterest);
+				bill.setPoundageAmount(perPoundageAmount);
+				if(i<bill.getNper()){
+					bill.setBillAmount(billAmount);
+				}else{
+					bill.setBillAmount(totalAmount);
+				}
+				totalAmount = totalAmount.subtract(billAmount);
+				bill.setPrincipleAmount(bill.getBillAmount().subtract(perInterest).subtract(perPoundageAmount));//本金 = 账单金额 -本月利息 -手续费
+				money = money.subtract(bill.getPrincipleAmount());//期初余额-本金
+				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
+				bill.setType(BorrowType.CONSUME.getCode());
+			}
+			list.add(bill);
+			now = DateUtil.addMonths(now, 1);
+		}
+		return list;
+	}
+	
+	private AfBorrowInterestDo buildBorrowInterest(Long billId,BigDecimal interest,String creator,BigDecimal money){
+		AfBorrowInterestDo borrow = new AfBorrowInterestDo();
+		//利息日志
+		borrow.setGmtCreate(new Date());
+		borrow.setBillId(billId);
+		borrow.setInterest(interest);
+		borrow.setCreator(creator);
+		borrow.setPrincipleAmount(money);
+		return borrow;
+	}
+
+	@Override
+	public void consumeBillTransfer(final AfBorrowDo borrow,final AfUserAccountDo userDto,final AfUserBankcardDo card) {
+		transactionTemplate.execute(new TransactionCallback<Object>() {@Override
+			public Long doInTransaction(TransactionStatus status) {
+				try {
+					//获取借款分期配置信息
+					AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME);
+					if(null == resource){
+						resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME);
+						bizCacheUtil.saveObject(Constants.CACHEKEY_BORROW_CONSUME, resource, Constants.SECOND_OF_HALF_HOUR);
+					}
+					BigDecimal money = borrow.getAmount();//借款金额
+					BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
+					BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
+					String[] range = StringUtil.split(resource.getValue2(), ",");
+					if(null != range && range.length==2){
+						rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
+						rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
+					}
+					
+					JSONArray array = JSON.parseArray(resource.getValue());
+					for (int i = 0; i < array.size(); i++) {
+						JSONObject obj = array.getJSONObject(i);
+						if(obj.getInteger(Constants.DEFAULT_NPER)==borrow.getNper()){
+							BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, 
+									borrow.getNper(),new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd);//总手续费
+							BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, borrow.getNper(), 
+									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
+											8,BigDecimal.ROUND_HALF_UP), totalPoundage);//每期账单金额
+							//总账单金额
+							BigDecimal totalBillAMount = BigDecimalUtil.getConsumeTotalAmount(money, borrow.getNper(), 
+									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
+											8,BigDecimal.ROUND_HALF_UP), totalPoundage);
+							List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CONSUME,borrow,perAmount,totalBillAMount,
+									BigDecimal.ZERO,new BigDecimal(obj.getString("rate")).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
+											8,BigDecimal.ROUND_HALF_UP),totalPoundage);
+							//新增借款账单
+							afBorrowDao.addBorrowBill(billList);
+							pushService.dealBorrowConsumeTransfer(userDto.getUserName(), borrow.getName());
+						}
+					}
+				} catch (Exception e) {
+					logger.info("create consume bill error:",e);
+				}
+				return null;
+			}
+		});
 	}
 }

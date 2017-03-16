@@ -87,6 +87,8 @@ public class ApplyCashApi implements ApiHandle{
 				if(!upsResult.isSuccess()){
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				}
+				//生成账单
+				afBorrowService.cashBillTransfer(afBorrowService.getBorrowById(result), userDto, card);
 				resp.addResponseData("directTrans", "T");
 			} else {
 				resp.addResponseData("directTrans", "F");

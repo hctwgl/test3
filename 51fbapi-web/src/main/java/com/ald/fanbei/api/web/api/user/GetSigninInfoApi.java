@@ -69,7 +69,7 @@ public class GetSigninInfoApi implements ApiHandle {
 
     	int seriesCount =0;
         
-        if (afSigninDo==null) {
+        if (afSigninDo==null||null==afSigninDo.getGmtSeries()) {
         	data.put("seriesCount",seriesCount);
         	data.put("isSignin", "T");
         	
