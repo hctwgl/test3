@@ -31,13 +31,12 @@ public class Test {
 		
 //		getUserAccount();
 		try {
-			for (int i = 1; i <9; i++) {
-				afUserInfo(i);
-			}
-			
-		} catch (Exception e) {
-			// TODO: handle exception
+			afUserInfo(1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 		
 	}
 	
@@ -149,7 +148,7 @@ public class Test {
 	
 //获取分页用户信息
 	private static Integer afUserInfo(int page) throws SQLException {
-		int pageCount = 10000;
+		int pageCount = 80000;
 		Connection conn = getConn();
 		
 		int start = (page - 1) * pageCount;
