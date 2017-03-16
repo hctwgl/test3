@@ -27,6 +27,7 @@ import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderSatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -150,6 +151,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		order.setOrderNo(orderNo);
 		if(orderTemp != null){
 			order.setUserId(orderTemp.getUserId());
+			orderTemp.setStatus(YesNoStatus.YES.getCode());
+			afOrderTempDao.updateUserOrderTemp(orderTemp);
 		}
 		order.setStatus(OrderSatus.PAID.getCode());
 		order.setGmtPay(new Date());

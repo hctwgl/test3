@@ -24,4 +24,16 @@
 	     AND
 	         order_no =#{orderNo}
 	</select>
+	
+	
+	<update id="updateUserOrderTemp" parameterType="AfOrderTempDo" >
+		update af_order_temp  set gmt_modified=NOW()
+		<if test="status != null">
+		    ,status=#{status}
+		</if>
+		<if test="userId != null">
+		    ,user_id=#{userId}
+		</if>
+		where is_delete=0 and id = #{rid}
+	</update>
 </mapper>

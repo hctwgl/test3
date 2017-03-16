@@ -26,4 +26,10 @@ public interface AfOrderTempDao {
      */
     AfOrderTempDo getByOrderNo(@Param("orderNo")String orderNo);
     
+    /**
+     * 增加记录
+     * @param afUserOrderDo
+     * @return
+     */
+     int updateUserOrderTemp(AfOrderTempDo afUserOrderDo);
 }
