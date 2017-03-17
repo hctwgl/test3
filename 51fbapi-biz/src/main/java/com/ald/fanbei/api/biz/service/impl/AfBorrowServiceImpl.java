@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -51,6 +52,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.taobao.api.domain.XItem;
 
 /**
  * 
@@ -96,6 +98,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	
 	@Resource
 	AfBorrowLogDao afBorrowLogDao;
+	
+	@Resource
+	TaobaoApiUtil taobaoApiUtil;
 	
 	@Override
 	public Date getReyLimitDate(String billType,Date now){
@@ -252,8 +257,19 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 								//进行申请
 								afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid(),BorrowLogStatus.APPLY.getCode()));
 							}
+							String openiId = "";
 							//新增借款商品关联信息
-							afBorrowTempDao.addBorrowTemp(buildBorrowTemp(goodsId,openId,numId,borrow.getRid()));
+							if(StringUtil.isBlank(openId)&&StringUtil.isNotBlank(numId)) {
+								Map<String, Object> params = new HashMap<String, Object>();
+								params.put("numIid", numId);
+								List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+								if(null !=nTbkItemList && nTbkItemList.size()>0){
+									openiId = nTbkItemList.get(0).getOpenIid();
+								}
+							}else{
+								openiId = openId;
+							}
+							afBorrowTempDao.addBorrowTemp(buildBorrowTemp(goodsId,openiId,numId,borrow.getRid()));
 							
 							//新增借款日志
 							afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userDto.getUserId(), borrow.getRid()));
