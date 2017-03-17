@@ -67,6 +67,10 @@
 	</select>
 	
 	<update id="updateRepayment">
-	update af_repayment set gmt_modified=NOW(),status=#{status},trade_no=#{tradeNo} where id=#{rid}
+	update af_repayment set gmt_modified=NOW(),status=#{status}
+	<if test="tradeNo != null">
+	  ,trade_no=#{tradeNo} 
+	</if>
+	where id=#{rid}
 	</update>
 </mapper>

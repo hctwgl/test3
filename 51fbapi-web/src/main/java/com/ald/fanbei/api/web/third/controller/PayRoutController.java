@@ -15,16 +15,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
  *@类现描述：
@@ -36,13 +46,24 @@ import com.ald.fanbei.api.common.util.StringUtil;
 @RequestMapping("/third/ups")
 public class PayRoutController{
 	
-    protected static Logger   logger = LoggerFactory.getLogger(PayRoutController.class);
+    protected final Logger   logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Resource
 	private AfOrderService afOrderService;
 	
 	@Resource
 	private AfRepaymentService afRepaymentService;
+	
+	@Resource
+	private AfBorrowService afBorrowService;
+	
+	@Resource
+	private AfUserAccountService afUserAccountService;
+	
+	@Resource
+	private AfCashRecordDao afCashRecordDao;
+	
+	private static String TRADE_STATUE_SUCC = "00";
 
     @RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
     @ResponseBody
@@ -92,10 +113,63 @@ public class PayRoutController{
     @RequestMapping(value = {"/delegatePay"}, method = RequestMethod.POST)
     @ResponseBody
 	public String delegatePay(HttpServletRequest request, HttpServletResponse response){
-    	for(String paramKey:request.getParameterMap().keySet()){
-    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
-    	}
-    	return "succ";
+    	String merPriv = request.getParameter("merPriv");
+    	String tradeState = request.getParameter("tradeState");
+    	long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
+    	logger.info("delegatePay begin merPriv="+merPriv+",tradeState="+tradeState+",reqExt="+result);
+    	try {
+    		if(TRADE_STATUE_SUCC.equals(tradeState)){//代付成功
+    			if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
+    				//生成账单
+    				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
+    				afBorrowService.cashBillTransfer(borrow, afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
+        		}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
+        			//生成账单
+        			AfBorrowDo borrow = afBorrowService.getBorrowById(result);
+    				afBorrowService.consumeBillTransfer(afBorrowService.getBorrowById(result), afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
+        		}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
+        			AfCashRecordDo record = new AfCashRecordDo();
+        			record.setRid(result);
+        			record.setStatus("TRANSED");
+        			afCashRecordDao.updateCashRecord(record);
+        		}
+    			return "SUCCESS";
+			}else{//代付失败
+				if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
+					//借款关闭
+					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSE.getCode());
+					//账户还原
+    				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUcAmount(borrow.getAmount());
+					account.setUsedAmount(borrow.getAmount());
+					account.setUserId(borrow.getUserId());
+        			afUserAccountService.updateUserAccount(account);
+				}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
+					//借款关闭
+					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSE.getCode());
+					//账户还原
+    				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUsedAmount(borrow.getAmount());
+					account.setUserId(borrow.getUserId());
+        			afUserAccountService.updateUserAccount(account);
+				}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
+        			AfCashRecordDo record = afCashRecordDao.getCashRecordById(result);
+        			record.setStatus("REFUSE");
+        			afCashRecordDao.updateCashRecord(record);
+        			//
+        			AfUserAccountDo updateAccountDo = new AfUserAccountDo();
+        			updateAccountDo.setRebateAmount(record.getAmount());
+        			updateAccountDo.setUserId(record.getUserId());
+        			afUserAccountService.updateUserAccount(updateAccountDo);
+        		}
+			}
+    		return "ERROR";
+		} catch (Exception e) {
+			logger.error("delegatePay",e);
+			return "ERROR";
+		}
     }
     
     @RequestMapping(value = {"/signRelease"}, method = RequestMethod.POST)
@@ -176,17 +250,26 @@ public class PayRoutController{
     @RequestMapping(value = {"/collect"}, method = RequestMethod.POST)
     @ResponseBody
 	public String collect(HttpServletRequest request, HttpServletResponse response){
-    	String outTradeNo = request.getParameter("outTradeNo");
+    	String outTradeNo = request.getParameter("orderNo");
+    	String merPriv = request.getParameter("merPriv");
     	String tradeNo = request.getParameter("tradeNo");
+    	String tradeState = request.getParameter("tradeState");
+    	logger.info("collect begin merPriv="+merPriv+",tradeState="+tradeState+",outTradeNo="+outTradeNo+",tradeNo="+tradeNo);
     	try {
-    		if(afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo)>0){
-        		return "succ";
-        	}else{
-        		return "error";
-        	}
+    		if(TRADE_STATUE_SUCC.equals(tradeState)){//代收成功
+    			if(OrderType.MOBILE.getCode().equals(merPriv)){//手机充值订单处理
+    				afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
+        		}else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){//还款成功处理
+        			afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+        		}
+    			return "SUCCESS";
+			}else{//代收失败
+				
+			}
+    		return "ERROR";
 		} catch (Exception e) {
 			logger.error("collect",e);
-			return "error";
+			return "ERROR";
 		}
     }
 }

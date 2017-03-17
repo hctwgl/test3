@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>  
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfCashRecordDao">
-
-
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,status,user_id,amount,type,card_number,card_name
+	</sql>
 	<insert id="addCashRecord" parameterType="AfCashRecordDo" keyProperty="rid" useGeneratedKeys="true">
 		INSERT INTO af_cash_record
 		(
@@ -28,4 +29,23 @@
 		)
 	</insert>
 	
+	<update id="updateCashRecord" parameterType="AfCashRecordDo">
+		UPDATE
+			af_cash_record
+		SET
+			gmt_modified = NOW()
+		<if test="status != null">
+    	  ,status=#{status}
+	   </if>
+		WHERE
+			is_delete = 0
+		AND
+			id = #{rid}
+	</update>
+	
+	<select id="getCashRecordById" parameterType="java.lang.Long" resultType="AfCashRecordDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_cash_record WHERE is_delete = 0 AND id = #{id}
+	</select>
 </mapper>

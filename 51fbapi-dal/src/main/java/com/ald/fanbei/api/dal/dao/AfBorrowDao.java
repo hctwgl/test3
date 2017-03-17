@@ -50,4 +50,6 @@ public interface AfBorrowDao {
 	 * @return
 	 */
 	public String getCurrentLastBorrowNo(Date current);
+	
+	int updateBorrowStatus(@Param("id")Long id,@Param("status")String status);
 }

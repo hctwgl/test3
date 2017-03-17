@@ -111,12 +111,11 @@ public class SubmitRepaymentApi implements ApiHandle{
 			}
 			map = afRepaymentService.createRepayment(repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
 					cardId,userId,billDo,request.getRemoteAddr(),afUserAccountDo);
-			//认证支付 换成代收
+			//代收
 			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
-			afRepaymentService.dealRepaymentSucess(upsResult.getOrderNo(), upsResult.getTradeNo());
 			Map<String,Object> newMap = new HashMap<String,Object>();
 			newMap.put("outTradeNo", upsResult.getOrderNo());
 			newMap.put("tradeNo", upsResult.getTradeNo());

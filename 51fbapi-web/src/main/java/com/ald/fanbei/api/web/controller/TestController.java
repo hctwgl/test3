@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

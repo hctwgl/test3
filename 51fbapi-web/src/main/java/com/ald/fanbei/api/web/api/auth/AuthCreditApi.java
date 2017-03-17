@@ -134,6 +134,7 @@ public class AuthCreditApi implements ApiHandle {
 		account.setAuAmount(creditAmount);
 		account.setCreditScore(sorce);
 		account.setUserId(context.getUserId());
+		logger.info("auAmount="+creditAmount+",creditScore="+sorce+",userId="+account.getUserId());
 		afUserAccountService.updateUserAccount(account);
 		resp.addResponseData("zmScore", auth.getZmScore());
 		resp.addResponseData("ivsScore", auth.getIvsScore());
