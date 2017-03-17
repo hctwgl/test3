@@ -16,59 +16,61 @@
             <span class="fsc_6">暂无商品</span>
         </div>
     #end
-    <div class="goodsListModel_wrap wrap">
-        <div class="goodsListModel_header_wrap swiper-pagination clearfix">
-            <ul class="fs_32 fsc_6 bgc_white goodsListModel_header tabs">
-                #foreach($item in $!{categoryList})
-                    <li id="goodsListModel_$!{item.type}">
-                        #if(${item.type} == ${typeCurrent})
-                            <span class="current active">$!{item.name}</span>
-                        #else
-                            <span>$!{item.name}</span>
-                        #end
-                    </li>
+    #if($!{categoryList.size()}!=0 || $!{goodsList.size()}!=0)
+        <div class="goodsListModel_wrap wrap">
+            <div class="goodsListModel_header_wrap swiper-pagination clearfix">
+                <ul class="fs_32 fsc_6 bgc_white goodsListModel_header tabs">
+                    #foreach($item in $!{categoryList})
+                        <li id="goodsListModel_$!{item.type}">
+                            #if(${item.type} == ${typeCurrent})
+                                <span class="current active">$!{item.name}</span>
+                            #else
+                                <span>$!{item.name}</span>
+                            #end
+                        </li>
+                    #end
+                </ul>
+            </div>
+            <div class="goodsListModel_main_wrap clearfix swiper-container bgc_e">
+                #foreach($item in $!{bannerList})
+                    <img class="goodsListModel_banner" src="$!{item.imageIcon}">
                 #end
-            </ul>
-        </div>
-        <div class="goodsListModel_main_wrap clearfix swiper-container bgc_e">
-            #foreach($item in $!{bannerList})
-                <img class="goodsListModel_banner" src="$!{item.imageIcon}">
-            #end
-            <div class="goodsListModel_main swiper-wrapper">
-                #foreach($item in $!{categoryList})
-                <div class="goodsListModel_main_list swiper-slide goodsListModel_$!{item.type} goodsListModel_main_hide">
-                    #if(${item.type} == ${typeCurrent})
-                        <ul class="goodsListModel_mainContent clearfix content-slide goodsListModel_mainContent_$!{item.type}">
-                            #foreach($item in $!{goodsList})
-                            <li class="fl goodsListModel_item bgc_white">
-    							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}"}'>
-                                    <img src="$!{item.goodsIcon}" class="goodsListModel_mainContent_img">
-                                    <div class="goodsListModel_mainContent_main">
-                                        <div class="goodsListModel_mainContent_wrap">
-                                            <p class="fs_26 fsc_1">$!{item.name}</p>
-                                            <p class="fs_26 fsc_red">
-                                                <span>￥$priceUtil.bigdecimalToInt($!{item.saleAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.priceAmount})</span>
-                                            </p>
-                                        </div>
-                                        <div class="goodsListModel_mainContent_rebate_wrap">
-                                            <div class="goodsListModel_mainContent_rebate clearfix">
-                                                <span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>
-                                                <p class="fl fs_24 fsc_orange">
-                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.rebateAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.rebateAmount})</span>
+                <div class="goodsListModel_main swiper-wrapper">
+                    #foreach($item in $!{categoryList})
+                    <div class="goodsListModel_main_list swiper-slide goodsListModel_$!{item.type} goodsListModel_main_hide">
+                        #if(${item.type} == ${typeCurrent})
+                            <ul class="goodsListModel_mainContent clearfix content-slide goodsListModel_mainContent_$!{item.type}">
+                                #foreach($item in $!{goodsList})
+                                <li class="fl goodsListModel_item bgc_white">
+        							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}"}'>
+                                        <img src="$!{item.goodsIcon}" class="goodsListModel_mainContent_img">
+                                        <div class="goodsListModel_mainContent_main">
+                                            <div class="goodsListModel_mainContent_wrap">
+                                                <p class="fs_26 fsc_1">$!{item.name}</p>
+                                                <p class="fs_26 fsc_red">
+                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.saleAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.priceAmount})</span>
                                                 </p>
                                             </div>
+                                            <div class="goodsListModel_mainContent_rebate_wrap">
+                                                <div class="goodsListModel_mainContent_rebate clearfix">
+                                                    <span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>
+                                                    <p class="fl fs_24 fsc_orange">
+                                                        <span>￥$priceUtil.bigdecimalToInt($!{item.rebateAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.rebateAmount})</span>
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
-                            </li>
-                            #end
-                        </ul>
-                    #end
+                                    </a>
+                                </li>
+                                #end
+                            </ul>
+                        #end
+                    </div>
+                 #end
                 </div>
-             #end
             </div>
         </div>
-    </div>
+    #end
     <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/js/common/layer.js"></script>
     <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>

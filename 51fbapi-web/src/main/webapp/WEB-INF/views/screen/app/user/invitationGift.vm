@@ -17,7 +17,6 @@
 	    		left: 0;
 	    		bottom: 0;
 	    		width: 100%;
-	    		/*height: 7.0rem;*/
 	    		background-color: rgba(0,0,0,.9);
 	    		-webkit-box-sizing: border-box;
 				box-sizing: border-box;
@@ -55,7 +54,11 @@
     		<div class="invitationGift_footer_wrap">
 	    		<div class="invitationGift_footer clearfix">
 	    			<div class="invitationGift_text clearfix">
-	    				<img class="fl" src="$!{avatar}">
+	    				#if($!{avatar}=='')
+							<img class="fl" src="/images/app/user/icon120.png">
+						#else
+	    					<img class="fl" src="$!{avatar}">
+	    				#end
 	    				<p class="fl fs_28">亲，您的好友<span>$!{userName}</span>邀你来51返呗购物省钱，请注册的时候填写推荐人的ID<span class="fsc_orange">$!{recommendCode}</span>，立即开启省钱之旅</p>
 	    			</div>
 	    			<div class="tac fs_32 bgc_orange bdr_4 fsc_f invitationGift_btn">马上注册拿返利</div>
