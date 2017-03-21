@@ -144,4 +144,14 @@
 	<select id="getCurrentLastBorrowNo" resultType="java.lang.String">
 		select borrow_no from af_borrow WHERE gmt_create=#{currentDate} ORDER BY id DESC LIMIT 1;
 	</select>
+	
+	<update id="updateBorrowStatus">
+		UPDATE
+			af_borrow
+		SET
+			gmt_modified = NOW(),
+			status = #{status}
+		WHERE
+			id = #{id}
+	</update>
 </mapper>

@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -47,11 +48,11 @@ import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.taobao.api.domain.XItem;
 
 /**
  * 
@@ -98,6 +99,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	@Resource
 	AfBorrowLogDao afBorrowLogDao;
 	
+	@Resource
+	TaobaoApiUtil taobaoApiUtil;
+	
 	@Override
 	public Date getReyLimitDate(String billType,Date now){
 		Date start = DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now));
@@ -122,7 +126,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					//修改用户账户信息
-					AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(userDto.getUserId());
+					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(userDto.getUserId());
 					account.setUcAmount(money);//已取现金额=已取现金额+申请取现金额
 					account.setUsedAmount(money);//授信已使用金额=授信已使用金额+申请取现金额
@@ -130,7 +134,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					AfBorrowDo borrow = null;
 					//信用分大于指定值
 					AfResourceDo resourceInfo = afResourceDao.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
-					if (account.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
+					if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 						borrow = buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money,BorrowStatus.TRANSED.getCode());
 						//直接打款
 						afBorrowDao.addBorrow(borrow);
@@ -210,8 +214,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					//修改用户账户信息
-					AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(userDto.getUserId());
+					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUsedAmount(amount);
+					account.setUserId(userDto.getUserId());
 					afUserAccountDao.updateUserAccount(account);
 					//获取借款分期配置信息
 					AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME);
@@ -227,7 +232,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
 						rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
 					}
-					
 					JSONArray array = JSON.parseArray(resource.getValue());
 					for (int i = 0; i < array.size(); i++) {
 						JSONObject obj = array.getJSONObject(i);
@@ -240,7 +244,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							AfBorrowDo borrow =  null;
 							//信用分大于指定值
 							AfResourceDo resourceInfo = afResourceDao.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
-							if (account.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
+							if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 								borrow =  buildBorrow(name,BorrowType.CONSUME_TEMP,userDto.getUserId(), amount,cardId,nper,perAmount, BorrowStatus.TRANSED.getCode());
 								//新增借款信息
 								afBorrowDao.addBorrow(borrow);
@@ -253,8 +257,19 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 								//进行申请
 								afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid(),BorrowLogStatus.APPLY.getCode()));
 							}
+							String openiId = "";
 							//新增借款商品关联信息
-							afBorrowTempDao.addBorrowTemp(buildBorrowTemp(goodsId,openId,numId,borrow.getRid()));
+							if(StringUtil.isBlank(openId)&&StringUtil.isNotBlank(numId)) {
+								Map<String, Object> params = new HashMap<String, Object>();
+								params.put("numIid", numId);
+								List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+								if(null !=nTbkItemList && nTbkItemList.size()>0){
+									openiId = nTbkItemList.get(0).getOpenIid();
+								}
+							}else{
+								openiId = openId;
+							}
+							afBorrowTempDao.addBorrowTemp(buildBorrowTemp(goodsId,openiId,numId,borrow.getRid()));
 							
 							//新增借款日志
 							afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userDto.getUserId(), borrow.getRid()));
@@ -349,7 +364,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	}
 	
 	@Override
-	public void cashBillTransfer(final AfBorrowDo borrow,final AfUserAccountDo userDto,final AfUserBankcardDo card) {
+	public void cashBillTransfer(final AfBorrowDo borrow,final AfUserAccountDo userDto) {
 		transactionTemplate.execute(new TransactionCallback<Object>() {@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
@@ -383,6 +398,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						afBorrowDao.addBorrowBillInfo(cashBill);
 						afBorrowInterestDao.addBorrowInterest(buildBorrowInterest(cashBill.getRid(), interestAmount,userDto.getUserName(),money));
 					}
+					afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
 					pushService.dealBorrowCashTransfer(userDto.getUserName(),borrow.getGmtCreate());
 				} catch (Exception e) {
 					logger.info("create cashBill error:",e);
@@ -462,7 +478,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	}
 
 	@Override
-	public void consumeBillTransfer(final AfBorrowDo borrow,final AfUserAccountDo userDto,final AfUserBankcardDo card) {
+	public void consumeBillTransfer(final AfBorrowDo borrow,final AfUserAccountDo userDto) {
 		transactionTemplate.execute(new TransactionCallback<Object>() {@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
@@ -499,6 +515,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 											8,BigDecimal.ROUND_HALF_UP),totalPoundage);
 							//新增借款账单
 							afBorrowDao.addBorrowBill(billList);
+							afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
 							pushService.dealBorrowConsumeTransfer(userDto.getUserName(), borrow.getName());
 						}
 					}
@@ -508,5 +525,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				return null;
 			}
 		});
+	}
+
+	@Override
+	public int updateBorrowStatus(Long id, String status) {
+		return afBorrowDao.updateBorrowStatus(id, status);
 	}
 }

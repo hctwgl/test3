@@ -90,7 +90,6 @@ public class MobileChargeApi implements ApiHandle {
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
-			afOrderService.dealMobileChargeOrder(upsResult.getOrderNo(), upsResult.getTradeNo());
 			Map<String,Object> newMap = new HashMap<String,Object>();
 			newMap.put("outTradeNo", upsResult.getOrderNo());
 			newMap.put("tradeNo", upsResult.getTradeNo());

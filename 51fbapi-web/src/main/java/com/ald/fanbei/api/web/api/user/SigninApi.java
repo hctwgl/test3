@@ -73,7 +73,7 @@ public class SigninApi implements ApiHandle {
 	 	   
 		Integer seriesCount =  1;
 		Integer totalCount =  0;
-		if (afSigninDo == null||afSigninDo.getGmtSeries()==null) {
+		if (afSigninDo == null) {
 			afSigninDo = new AfSigninDo();
 			totalCount += 1;
 			afSigninDo.setSeriesCount(seriesCount);
@@ -84,22 +84,29 @@ public class SigninApi implements ApiHandle {
 			}
 
 		} else {
-			Date seriesTime = afSigninDo.getGmtSeries();
-			if (DateUtil.isSameDay(new Date(), seriesTime)) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SIGNIN_AGAIN_ERROR);
+			Date seriesTime =null;
+			if(afSigninDo.getGmtSeries()==null){
+				seriesCount =1;
+			}else{
+				seriesTime = afSigninDo.getGmtSeries();
+				if (DateUtil.isSameDay(new Date(), seriesTime)) {
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SIGNIN_AGAIN_ERROR);
+				}
+				// 当连续签到天数小于循环周期时
+				if (DateUtil.isSameDay(DateUtil.getCertainDay(-1), seriesTime) && cycle != afSigninDo.getSeriesCount()) {
+					seriesCount = afSigninDo.getSeriesCount() + 1;
+				}
 			}
-
-			// 当连续签到天数小于循环周期时
-			if (DateUtil.isSameDay(DateUtil.getCertainDay(-1), seriesTime) && cycle != afSigninDo.getSeriesCount()) {
-				seriesCount = afSigninDo.getSeriesCount() + 1;
-			}
-																																																																																																																							
+																																																																																																																						
 			totalCount = afSigninDo.getTotalCount() + 1;
-			afSigninDo.setSeriesCount(seriesCount);
-			afSigninDo.setTotalCount(totalCount);
-			afSigninDo.setUserId(userId);
+			
+			AfSigninDo signinDo =new AfSigninDo();
+			signinDo.setSeriesCount(seriesCount);
+			signinDo.setTotalCount(totalCount);
+			signinDo.setUserId(userId);
+			signinDo.setRid(afSigninDo.getRid());
 
-			if ( afSigninService.changeSignin(afSigninDo) > 0) {
+			if ( afSigninService.changeSignin(signinDo) > 0) {
 				if(seriesCount == cycle){
 					activeRuleEngineUtil.signin(userId);
 					jpushService.getSignCycle(context.getUserName());

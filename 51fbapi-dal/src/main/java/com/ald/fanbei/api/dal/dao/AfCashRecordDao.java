@@ -3,6 +3,8 @@
  */
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 
 /**
@@ -18,4 +20,7 @@ public interface AfCashRecordDao {
 	 */
 	int addCashRecord(AfCashRecordDo afCashRecordDo);
 
+	int updateCashRecord(AfCashRecordDo afCashRecordDo);
+	
+	AfCashRecordDo getCashRecordById(@Param("id")Long id);
 }

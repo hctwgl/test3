@@ -71,15 +71,6 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 					if(afUserAccountDao.updateUserAccount(updateAccountDo)==0){
 						return 0;
 					}
-					if(null == card){//集分宝提现
-						
-					}else{//银行卡提现
-						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
-								card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_CASH_PURPOSE, "02");
-						if(!upsResult.isSuccess()){
-							throw new FanbeiException("bank card pay error",FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-						}
-					}
 					afCashRecordDao.addCashRecord(afCashRecordDo);
 					AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
 					afUserAccountLogDo.setRefId( afCashRecordDo.getRid()+"");
@@ -87,6 +78,15 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 					afUserAccountLogDo.setUserId(afCashRecordDo.getUserId());
 					afUserAccountLogDo.setAmount(amount);
 					afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+					if(null == card){//集分宝提现
+						
+					}else{//银行卡提现
+						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
+								card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_CASH_PURPOSE, "02",UserAccountLogType.REBATE_CASH.getCode(),afCashRecordDo.getRid()+"");
+						if(!upsResult.isSuccess()){
+							throw new FanbeiException("bank card pay error",FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+						}
+					}
 					return 1;
 				} catch (Exception e) {
 					logger.info("dealWithTransferSuccess error:"+e);

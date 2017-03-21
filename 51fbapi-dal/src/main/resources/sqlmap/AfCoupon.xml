@@ -18,9 +18,9 @@
 	     AND
 			 id in (${ids})
 		 AND
-	   		 ( expiry_type='R'and gmt_end >NOW())
-	     OR 
-	     	expiry_type='D'
+	   		( ( expiry_type='R'and gmt_end >NOW())
+	    		 OR 
+	     	expiry_type='D')
 	</select>
 	
 	<select id="getCouponById" resultType="AfCouponDo">

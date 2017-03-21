@@ -15,7 +15,6 @@ public class UpsDelegatePayRespBo extends UpsRespBo{
 	private String bankName		; //银行名称
 	private String bankCode		; //银行代码
 	private String purpose			;   //用途
-	private String tradeState;      //交易状态
 	private String tradeDesc;       //交易描述
 	private String notifyUrl		;   //异步通知地址
 	public String getAmount() {
@@ -71,12 +70,6 @@ public class UpsDelegatePayRespBo extends UpsRespBo{
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
-	}
-	public String getTradeState() {
-		return tradeState;
-	}
-	public void setTradeState(String tradeState) {
-		this.tradeState = tradeState;
 	}
 	public String getTradeDesc() {
 		return tradeDesc;

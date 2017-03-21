@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +56,7 @@ public class TestController {
 //		inputData.put("seriesCount", 5);
 //		signinRuleEngine.executeRule(inputData);
 		
-		jpushService.chargeMobileSucc("13607665702", "13607665702", new Date());
+//		jpushService.chargeMobileSucc("13607665702", "13607665702", new Date());
 		
 		// String reportId = TongdunUtil.applyPreloan("362525198601022112",
 		// "陈金虎", "15958119936", "410228573@qq.com");

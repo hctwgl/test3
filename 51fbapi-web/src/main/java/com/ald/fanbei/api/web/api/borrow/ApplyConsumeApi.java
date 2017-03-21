@@ -87,12 +87,10 @@ public class ApplyConsumeApi implements ApiHandle{
 			if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 				//转账处理
 				UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, userDto.getRealName(), card.getCardNumber(), userId+"", card.getMobile(), card.getBankName(),
-						card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02");
+						card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",UserAccountLogType.CONSUME.getCode(),result+"");
 				if(!upsResult.isSuccess()){
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				}
-				//生成账单
-				afBorrowService.cashBillTransfer(afBorrowService.getBorrowById(result), userDto, card);
 				resp.addResponseData("directTrans", "T");
 			} else {
 				resp.addResponseData("directTrans", "F");

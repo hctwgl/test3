@@ -221,7 +221,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								//TODO 转账处理
 								AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
 								UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
-										card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02");
+										card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
 								if(!upsResult.isSuccess()){
 									pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
 								}
@@ -330,32 +330,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
 		final BigDecimal actualAmount = couponDto==null?money:money.subtract(couponDto.getAmount());
 		Map<String,Object> map;
-		String payOrderNo = orderNo;
+		//订单创建
+		orderDao.createOrder(buildOrder(now,orderNo,orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
+				OrderType.MOBILE.getCode(),actualAmount, 0l, "",Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "",bankId));
 		if(bankId<0){//微信支付
 			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,PayOrderSource.ORDER.getCode());
 		}else{//银行卡支付 代收
 			map = new HashMap<String,Object>();
-			UpsCollectRespBo respBo = UpsUtil.collect(actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
-					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02");
+			UpsCollectRespBo respBo = UpsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
+					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02",OrderType.MOBILE.getCode());
 			map.put("resp", respBo);
-			payOrderNo = respBo.getOrderNo();
 		}
-		final String finalPayOrderNo = payOrderNo;
-		transactionTemplate.execute(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				try {
-					//订单创建
-					orderDao.createOrder(buildOrder(now,orderNo,finalPayOrderNo,userId, couponDto, money,money, mobile, rebateAmount, 
-							OrderType.MOBILE.getCode(),actualAmount, 0l, "",Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "",bankId));
-				} catch (Exception e) {
-					status.setRollbackOnly();
-					logger.info("createMobileChargeOrder error",e);
-				}
-				return null;
-			}
-			
-		});
 		return map;
 	}
 }

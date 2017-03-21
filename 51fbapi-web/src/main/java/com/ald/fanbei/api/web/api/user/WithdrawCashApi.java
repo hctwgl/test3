@@ -39,7 +39,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class WithdrawCashApi implements ApiHandle {
 
 	String zhifubao = "支付宝";
-	String status ="TRANSED";
+	String status ="AUTH";
 	String zhifubaostatus ="AUTH";
 
 	@Resource

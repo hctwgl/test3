@@ -7,7 +7,6 @@ import java.util.Map;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 /**
  * 
@@ -102,7 +101,7 @@ public interface AfBorrowService {
 	 * @param bank
 	 */
 	
-	void cashBillTransfer(AfBorrowDo borrow,AfUserAccountDo userDto,AfUserBankcardDo bank);
+	void cashBillTransfer(AfBorrowDo borrow,AfUserAccountDo userDto);
 	
 	/**
 	 * 分期打款
@@ -110,5 +109,13 @@ public interface AfBorrowService {
 	 * @param userDto
 	 * @param bank
 	 */
-	void consumeBillTransfer(AfBorrowDo borrow,AfUserAccountDo userDto,AfUserBankcardDo bank);
+	void consumeBillTransfer(AfBorrowDo borrow,AfUserAccountDo userDto);
+	
+	/**
+	 * 修改借款表状态
+	 * @param id
+	 * @param status
+	 * @return
+	 */
+	int updateBorrowStatus(Long id,String status);
 }

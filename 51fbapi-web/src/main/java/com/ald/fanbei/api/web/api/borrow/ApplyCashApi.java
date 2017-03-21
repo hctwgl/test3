@@ -83,12 +83,11 @@ public class ApplyCashApi implements ApiHandle{
 			//直接打款
 			if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 				UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), userId+"",
-						card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02");
+						card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02",
+						UserAccountLogType.CASH.getCode(),result+"");
 				if(!upsResult.isSuccess()){
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				}
-				//生成账单
-				afBorrowService.cashBillTransfer(afBorrowService.getBorrowById(result), userDto, card);
 				resp.addResponseData("directTrans", "T");
 			} else {
 				resp.addResponseData("directTrans", "F");
