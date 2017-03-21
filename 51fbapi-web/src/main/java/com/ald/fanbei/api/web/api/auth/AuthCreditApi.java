@@ -83,7 +83,7 @@ public class AuthCreditApi implements ApiHandle {
 		authZm.setScoreResult(JSON.toJSONString(scoreGetResp));
 		authZm.setIvsResult(JSON.toJSONString(ivsDetailResp));
 		authZm.setWatchlistResult(JSON.toJSONString(watchListResp));
-		scoreGetResp.isSuccess();
+		afAuthZmService.addAuthZm(authZm);
 		
 		AfUserAuthDo userAuth = new AfUserAuthDo();
 		userAuth.setUserId(context.getUserId());
@@ -134,6 +134,7 @@ public class AuthCreditApi implements ApiHandle {
 		account.setAuAmount(creditAmount);
 		account.setCreditScore(sorce);
 		account.setUserId(context.getUserId());
+		account.setOpenId(openId);
 		logger.info("auAmount="+creditAmount+",creditScore="+sorce+",userId="+account.getUserId());
 		afUserAccountService.updateUserAccount(account);
 		resp.addResponseData("zmScore", auth.getZmScore());
