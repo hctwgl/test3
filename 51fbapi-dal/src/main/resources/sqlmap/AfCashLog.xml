@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfCashLogDao">
+	<sql id="queryAllFields">
+		id,gmt_create,gmt_modified,creator,status,cash_record_id,user_id,content,gmt_auth,auth_user,gmt_deliver,deliver_user
+	</sql>
+	
+	<insert id="addCashLog" parameterType="AfCashLogDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_cash_log(gmt_create , gmt_modified , status , cash_record_id , user_id )
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{status},
+    		#{cashRecordId},
+    		#{userId}
+		)
+	</insert>
+	<update id="updateCashLog" parameterType="AfCashLogDo" >
+		UPDATE af_cash_log SET gmt_modified = NOW()
+			<if test="isDelete != null">
+    			,is_delete=#{isDelete}
+			</if>
+			<if test="gmtModifier != null">
+    			,gmt_modifier=#{gmtModifier}
+			</if>
+			<if test="creator != null">
+    			,creator=#{creator}
+			</if>
+			<if test="status != null">
+    			,status=#{status}
+			</if>
+			<if test="cashRecordId != null">
+    			,cash_record_id=#{cashRecordId}
+			</if>
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="content != null">
+    			,content=#{content}
+			</if>
+			<if test="gmtAuth != null">
+    			,gmt_auth=#{gmtAuth}
+			</if>
+			<if test="authUser != null">
+    			,auth_user=#{authUser}
+			</if>
+			<if test="gmtDeliver != null">
+    			,gmt_deliver=#{gmtDeliver}
+			</if>
+			<if test="deliverUser != null">
+    			,deliver_user=#{deliverUser}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
+	
+</mapper>
