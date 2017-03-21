@@ -23,6 +23,7 @@ public class AfSmsRecordDo extends AbstractSerial{
 	private String sendAccount;//发送手机号码或者邮箱
 	private Integer isCheck;//是否已经验证,0:未验证 1：已经验证
 	private String result;//返回结果
+	private Integer failCount;
 	
 	public Integer getRid() {
 		return rid;
@@ -84,6 +85,18 @@ public class AfSmsRecordDo extends AbstractSerial{
 	 */
 	public void setSendAccount(String sendAccount) {
 		this.sendAccount = sendAccount;
+	}
+	/**
+	 * @return the failCount
+	 */
+	public Integer getFailCount() {
+		return failCount;
+	}
+	/**
+	 * @param failCount the failCount to set
+	 */
+	public void setFailCount(Integer failCount) {
+		this.failCount = failCount;
 	}
 	
 }

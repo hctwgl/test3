@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfSmsRecordDao">
 	<sql id="queryFields">
-		id as rid,gmt_create,user_id,gmt_modified,verify_code,type,send_account,result,is_check
+		id as rid,gmt_create,user_id,gmt_modified,verify_code,type,send_account,result,is_check,fail_count
 	</sql>
 
 	<insert id="addSmsRecord" parameterType="AfSmsRecordDo" useGeneratedKeys="true" keyProperty="rid">
@@ -24,5 +24,13 @@
 	
 	<update id="updateSmsIsCheck">
 		UPDATE af_code_record SET gmt_modified = NOW(),is_check = 1 WHERE id=#{rid}
+	</update>
+	
+	<update id="updateSmsFailCount">
+		UPDATE af_code_record SET gmt_modified = NOW()
+		<if test="failCount != null">
+    			,fail_count=fail_count + #{failCount}
+			</if>
+		 WHERE id=#{rid}
 	</update>
 </mapper>

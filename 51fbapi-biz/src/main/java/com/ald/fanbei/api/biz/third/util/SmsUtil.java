@@ -15,9 +15,11 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -28,7 +30,10 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -61,6 +66,11 @@ public class SmsUtil extends AbstractThird {
 
 	@Resource
 	AfSmsRecordService afSmsRecordService;
+	
+	@Resource
+	AfResourceService afResourceService;
+	
+	
 
 	/**
 	 * 发送注册短信验证码
@@ -196,15 +206,27 @@ public class SmsUtil extends AbstractThird {
 	public void checkSmsByMobileAndType(String mobile, String verifyCode, SmsType type) {
 
 		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, type.getCode());
-
+		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(AfResourceType.CodeMaxFail.getCode());
 		if (smsDo == null) {
 			throw new FanbeiException("invalid Sms or email", FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
 		}
 
 		// 判断验证码是否一致
 		String realCode = smsDo.getVerifyCode();
+		if(resourceDo!=null){
+			Integer fail = NumberUtil.objToIntDefault(resourceDo.getValue(), 6);
+			if(fail<=smsDo.getFailCount()){
+				throw new FanbeiException("invalid Sms or email fail max", FanbeiExceptionCode.USER_SMS_FAIL_MAX_ERROR);
+
+			}
+		}
+		
 		if (!StringUtils.equals(verifyCode, realCode)) {
-			throw new FanbeiException("invalid Sms or email", FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
+			AfSmsRecordDo smsFailDo  = new AfSmsRecordDo();
+			smsFailDo.setRid(smsDo.getRid());
+			smsFailDo.setFailCount(1);
+			afSmsRecordService.updateSmsFailCount(smsFailDo);
+			throw new FanbeiException("invalid Sms or email fail", FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
 		}
 		// 判断验证码是否过期
 		if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {

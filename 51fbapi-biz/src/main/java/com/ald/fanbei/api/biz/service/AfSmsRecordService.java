@@ -31,4 +31,6 @@ public interface AfSmsRecordService {
 	 *@return
 	 */
 	int updateSmsIsCheck(Integer id);
+	
+	int updateSmsFailCount(AfSmsRecordDo afSmsRecordDo);
 }

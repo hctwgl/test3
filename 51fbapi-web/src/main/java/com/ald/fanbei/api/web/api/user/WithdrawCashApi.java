@@ -39,8 +39,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class WithdrawCashApi implements ApiHandle {
 
 	String zhifubao = "支付宝";
-	String status ="AUTH";
-	String zhifubaostatus ="AUTH";
+	String status ="APPLY";
+	String zhifubaostatus ="APPLY";
 
 	@Resource
 	AfUserAccountService afUserAccountService;
@@ -117,6 +117,7 @@ public class WithdrawCashApi implements ApiHandle {
 		afCashRecordDo.setStatus(status);
 
 		if (afCashRecordService.addCashRecord(afCashRecordDo,afUserBankcardDo) > 0) {
+			
 			return resp;
 		}
 

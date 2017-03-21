@@ -15,7 +15,7 @@ public enum AfResourceType {
 	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
 	
-	MobileRecharge("MIBILE_RECHARGE", "首页平铺模块充值"),
+	CodeMaxFail("CODE_MAX_FAIL", "验证码失败次数"),
 
 	SEARCH_HOT("SEARCH_HOT", "热门搜索"),
 	INVITE("INVITE", "邀请"),

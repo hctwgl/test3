@@ -35,4 +35,10 @@ public class AfSmsRecordServiceImpl implements AfSmsRecordService{
 		return afSmsRecordDao.updateSmsIsCheck(id);
 	}
 
+
+	@Override
+	public int updateSmsFailCount(AfSmsRecordDo afSmsRecordDo) {
+		return afSmsRecordDao.updateSmsFailCount(afSmsRecordDo);
+	}
+
 }

@@ -18,12 +18,15 @@ import com.ald.fanbei.api.biz.service.AfCashRecordService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.dao.AfCashLogDao;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.domain.AfCashLogDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -45,6 +48,9 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 	AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	
+	@Resource
+	AfCashLogDao afCashLogDao;
 	
 	@Override
 	public int addCashRecord(final AfCashRecordDo afCashRecordDo,final AfUserBankcardDo card) {
@@ -79,6 +85,12 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 					afUserAccountLogDo.setAmount(amount);
 					afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
 					if(null == card){//集分宝提现
+						AfCashLogDo cashLog = new AfCashLogDo();
+						cashLog.setCashRecordId(afCashRecordDo.getRid());
+						cashLog.setStatus(BorrowStatus.APPLY.getCode());
+						cashLog.setUserId(afCashRecordDo.getUserId());
+						afCashLogDao.addCashLog(cashLog);
+
 						
 					}else{//银行卡提现
 						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
