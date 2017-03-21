@@ -148,7 +148,7 @@ public class JpushServiceimpl extends BaseService implements JpushService{
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("refundMobileError,pid=",pid));
-			String msgContext = "抱歉告诉您，您与{date}的手机充值失败，请联系{phone}进行人工退款";
+			String msgContext = "抱歉告诉您，您于{date}的手机充值失败，请联系{phone}进行人工退款";
 			Map<String,String> extras = new HashMap<String,String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis()+"");

@@ -82,7 +82,7 @@ public class MessageListener implements ApplicationListener<ContextRefreshedEven
 		            			afGoodsService.updateTaobaoInfo(message.getContent());
 		            			break;
 		            		case "taobao_tae_ItemImageChange":
-		            			//商品title变化
+		            			//商品主图变化
 		            			afGoodsService.updateTaobaoInfo(message.getContent());
 		            			break;
 		            		case "taobao_tae_ItemPriceChange":
