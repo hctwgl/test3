@@ -41,7 +41,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	}
 	@Override
 	public int unSubscribeGoods(String messageContent) {
-		logger.info("subscribeGoods begin, messageContent = {}", messageContent);
+		logger.info("unSubscribeGoods begin, messageContent = {}", messageContent);
 		TaobaoResultBo bo = JSONObject.parseObject(messageContent, TaobaoResultBo.class);
 		return afGoodsDao.updateSubscribeStatus(bo.getItem_id(), "N");
 	}
