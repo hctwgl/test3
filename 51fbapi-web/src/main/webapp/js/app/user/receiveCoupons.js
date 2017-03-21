@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-03-08 17:42:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-15 15:09:55
+* @Last Modified time: 2017-03-21 19:22:08
 * @title:  领取优惠劵
 */
 
@@ -31,7 +31,7 @@ $(function(){
 
                 if (returnData.success) {
 
-                    $(".receiveCoupons_main li").eq(i).addClass("receiveCoupons_alreadyReceive");
+                    $(".receiveCoupons_main li").eq(i).addClass("receiveCoupons_ylq");
 
                 } else {
                     
@@ -39,7 +39,7 @@ $(function(){
                         window.location.href = returnData.url;
                     }else{
                         requestMsg(returnData.msg);
-                        $(".receiveCoupons_main li").eq(i).addClass("receiveCoupons_alreadyReceive");
+                        $(".receiveCoupons_main li").eq(i).addClass("receiveCoupons_ylw");
                     }
                 }
             },
