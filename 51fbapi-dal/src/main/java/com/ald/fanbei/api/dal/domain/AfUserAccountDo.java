@@ -32,7 +32,8 @@ public class AfUserAccountDo extends AbstractSerial {
 	private Integer failCount; //密码连续错误次数
 	private String bindCard;//是否绑卡：Y：绑卡：N：未绑卡
 	private Integer creditScore;//信用分
-	
+	private String openId;//芝麻信用openId
+
 	/**
 	 * @return the bindCard
 	 */
@@ -173,5 +174,11 @@ public class AfUserAccountDo extends AbstractSerial {
 	}
 	public void setCreditScore(Integer creditScore) {
 		this.creditScore = creditScore;
+	}
+	public String getOpenId() {
+		return openId;
+	}
+	public void setOpenId(String openId) {
+		this.openId = openId;
 	}
 }

@@ -90,7 +90,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		BigDecimal minRebateAmount = saleAmount.multiply(minRate).setScale(2,BigDecimal.ROUND_HALF_UP);
 		BigDecimal maxRebateAmount = saleAmount.multiply(maxRate).setScale(2,BigDecimal.ROUND_HALF_UP);
 		AfSearchGoodsVo vo = new AfSearchGoodsVo();
-		vo.setNumId(item.getNumIid());
+		vo.setNumId(item.getNumIid()+"");
 		vo.setGoodsIcon(item.getPictUrl());
 		vo.setGoodsName(item.getTitle());
 		vo.setGoodsUrl(item.getItemUrl());
