@@ -195,11 +195,17 @@ public abstract class BaseController {
         //是否登录之前接口，若登录之前的接口不需要验证用户，否则需要验证用户
         boolean beforeLogin = true;
         beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
-        
+        String borrowMethodName ="/borrow/getBorrowHomeInfo";
         //TODO 设置上下文
         if(!beforeLogin){//需要登录的接口
 	        AfUserDo userInfo = afUserService.getUserByUserName(userName);
-	        if (userInfo == null) {
+	        String methodString = requestDataVo.getMethod();
+	        System.out.println(methodString);
+	        if(userInfo ==null&&StringUtils.equals(borrowMethodName, methodString)){
+	        	throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR);
+
+	        }else  if (userInfo == null) {
+	        	
 	        	throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 	        }
 	        context.setUserId(userInfo.getRid());
