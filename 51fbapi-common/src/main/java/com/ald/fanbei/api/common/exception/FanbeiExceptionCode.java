@@ -133,6 +133,7 @@ public enum FanbeiExceptionCode {
     //1901-1999
     RISK_REGISTER_ERROR("RISK_REGISTER_ERROR",1901,"risk register error","用户信息同步失败"),
     RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控审批失败"),
+    RISK_MODIFY_ERROR("RISK_VERIFY_ERROR",1903,"risk modify error","用户信息修改失败"),
     
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");

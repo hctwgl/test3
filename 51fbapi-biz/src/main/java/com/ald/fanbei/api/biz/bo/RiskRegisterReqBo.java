@@ -16,6 +16,7 @@ public class RiskRegisterReqBo extends HashMap<String, String>{
 	private String phone;
 	private String idNo;
 	private String email;
+	private String qq;
 	private String alipayNo;
 	private String openId;
 	private String address;
@@ -99,5 +100,11 @@ public class RiskRegisterReqBo extends HashMap<String, String>{
 		this.signInfo = signInfo;
 		this.put("signInfo", signInfo);
 	}
-
+	public String getQq() {
+		return qq;
+	}
+	public void setQq(String qq) {
+		this.qq = qq;
+		this.put("qq", qq);
+	}
 }
