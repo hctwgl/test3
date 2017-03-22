@@ -107,4 +107,6 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	BigDecimal getBorrowBillByBorrowId(Long borrowId);
+	
+	int getBorrowBillWithNoPayByUserId(Long userId);
 }

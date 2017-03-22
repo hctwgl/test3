@@ -123,4 +123,6 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	int getUserMonthlyBillTotalCount(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId);
+	
+	int getBorrowBillWithNoPayByUserId(@Param("userId")Long userId);
 }

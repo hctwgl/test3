@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.ZhimaAuthResultBo;
 import com.ald.fanbei.api.biz.service.AfAuthZmService;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -52,6 +53,8 @@ public class AuthCreditApi implements ApiHandle {
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -106,6 +109,16 @@ public class AuthCreditApi implements ApiHandle {
 		
 		// TODO 计算信用分 更新userAccount
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
+		Long userId = context.getUserId();
+		if(userId<90000 && afBorrowBillService.getBorrowBillWithNoPayByUserId(userId)>0){
+			resp.addResponseData("zmScore", auth.getZmScore());
+			resp.addResponseData("ivsScore", auth.getIvsScore());
+			resp.addResponseData("gmtZm", auth.getGmtZm());
+			resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
+			return resp;
+		}
+		
+		
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_CREDIT_SCORE);
 		int sorce = BigDecimalUtil.getCreditScore(new BigDecimal(auth.getZmScore()), new BigDecimal(auth.getIvsScore()), 
 				new BigDecimal(auth.getRealnameScore()),new BigDecimal(resource.getValue()), 
