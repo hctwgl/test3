@@ -17,22 +17,28 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
- * @类描述：开心果手机充值工具类
- * @author 何鑫 2017年2月16日 11:20:23
+ * @类描述：风控审批工具类
+ * @author 何鑫 2017年3月22日 11:20:23
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * 需加密参数 真实姓名 ， 身份证号， 手机号，邮箱，银行卡号
  */
 @Component("riskUtil")
 public class RiskUtil extends AbstractThird{
 	private static String url = "http://60.190.230.35:52637";
 	private static String notifyHost = null;
 	private static String PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANXSVyvH4C55YKzvTUCN0fvrpKjIC5lBzDe6QlHCeMZaMmnhJpG/O+aao0q7vwnV08nk14woZEEVHbNHCHcfP+gEIQ52kQvWg0L7DUS4JU73pXRQ6MyLREGHKT6jgo/i1SUhBaaWOGI9w5N2aBxj1DErEzI7TA1h/M3Ban6J5GZrAgMBAAECgYAHPIkquCcEK6Nz9t1cc/BJYF5AQBT0aN+qeylHbxd7Tw4puy78+8XhNhaUrun2QUBbst0Ap1VNRpOsv5ivv2UAO1wHqRS8i2kczkZQj8vcCZsRh3jX4cZru6NoBb6QTTFRS6DRh06iFm0NgBPfzl9PSc3VwGpdj9ZhMO+oTYPBwQJBAPApB74XhZG7DZVpCVD2rGmE0pAlO85+Dxr2Vle+CAgGdtw4QBq89cA/0TvqHPC0xZaYWK0N3OOlRmhO/zRZSXECQQDj7JjxrUaKTdbS7gD88qLZBbk8c07ghO0qDCpp8J2U6D9baVBOrkcz+fTh7B8LzyCo5RY8vk61v/rYqcgk1F+bAkEAvYkELUfPCGZBoCsXSSiEhXpn248nFh5yuWq0VecJ25uObtqN7Qw4PxOeg9SOJoHkdqehRGJuc9LaMDQ4QQ4+YQJAJaIaOsVWgV2K2/cKWLmjY9wLEs0jN/Uax7eMhUOCcWTLmUdRSDyEazOZWHhJRATmKpzwyATQMDhLrdySvGoIgwJBALusECkz5zT4lIujwUNO30LlO8PKPCSKiiQJk4pN60pv2AFX4s2xVdZlXsFJh6btIJ9CGrMvEmogZTIGWq1xOFs=";
+	//private static String PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDV0lcrx+AueWCs701AjdH766SoyAuZQcw3ukJRwnjGWjJp4SaRvzvmmqNKu78J1dPJ5NeMKGRBFR2zRwh3Hz/oBCEOdpEL1oNC+w1EuCVO96V0UOjMi0RBhyk+o4KP4tUlIQWmljhiPcOTdmgcY9QxKxMyO0wNYfzNwWp+ieRmawIDAQAB";
 	private static String TRADE_RESP_SUCC = "0000";
+	private static String CHANNEL = "51fb";
+	private static String SYS_KEY = "01";
 	
 	private static String getNotifyHost(){
 		if(notifyHost==null){
@@ -63,9 +69,13 @@ public class RiskUtil extends AbstractThird{
 		reqBo.setEmail(email);
 		reqBo.setAlipayNo(alipayNo);
 		reqBo.setAddress(address);
-		reqBo.setChannel("");
+		reqBo.setChannel(CHANNEL);
 		reqBo.setReqExt("");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		reqBo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, realName));
+		reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, phone));
+		reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, idNo));
+		reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, email));
 		String reqResult = HttpUtil.httpPost(url+"/modules/api/user/register.htm", reqBo);
 		logThird(reqResult, "register", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -81,7 +91,7 @@ public class RiskUtil extends AbstractThird{
 	}
 	
 	/**
-	 * 用户信息同步
+	 * 用户信息修改
 	 * @param consumerNo --用户在业务系统中的唯一标识
 	 * @param realName --真实姓名
 	 * @param phone --手机号
@@ -92,7 +102,7 @@ public class RiskUtil extends AbstractThird{
 	 * @return
 	 */
 	public static RiskRespBo modify(String consumerNo,String realName,String phone,String idNo,
-			String email,String alipayNo,String address){
+			String email,String alipayNo,String address,String openId){
 		RiskModifyReqBo reqBo = new RiskModifyReqBo();
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setRealName(realName);
@@ -101,9 +111,14 @@ public class RiskUtil extends AbstractThird{
 		reqBo.setEmail(email);
 		reqBo.setAlipayNo(alipayNo);
 		reqBo.setAddress(address);
-		reqBo.setChannel("");
+		reqBo.setOpenId(openId);
+		reqBo.setChannel(CHANNEL);
 		reqBo.setReqExt("");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		reqBo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, realName));
+		reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, phone));
+		reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, idNo));
+		reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, email));
 		String reqResult = HttpUtil.httpPost(url+"/modules/api/user/modify.htm", reqBo);
 		logThird(reqResult, "modify", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -119,19 +134,21 @@ public class RiskUtil extends AbstractThird{
 	}
 	
 	/**
-	 * 用户信息修改
+	 * 风控审批
 	 * @param orderNo
 	 * @param consumerNo
 	 * @param scene
 	 * @return
 	 */
-	public static RiskRespBo verify(String orderNo,String consumerNo,String scene){
+	public static RiskRespBo verify(String consumerNo,String scene,String cardNo){
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
-		reqBo.setOrderNo(orderNo);
+		reqBo.setOrderNo(getOrderNo("vefy", cardNo.substring(cardNo.length()-4,cardNo.length())));
 		reqBo.setConsumerNo(consumerNo);
-		reqBo.setChannel("");
+		reqBo.setChannel(CHANNEL);
 		reqBo.setScene(scene);
-		reqBo.setDatas("");
+		JSONObject obj = new JSONObject();
+		obj.put("cardNo", cardNo);
+		reqBo.setDatas(JSON.toJSONString(obj));
 		reqBo.setReqExt("");
 		reqBo.setNotifyUrl(getNotifyHost());
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
@@ -143,6 +160,8 @@ public class RiskUtil extends AbstractThird{
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult,RiskRespBo.class);
 		if(riskResp!=null && TRADE_RESP_SUCC.equals(riskResp.getCode())){
 			riskResp.setSuccess(true);
+			JSONObject dataObj = JSON.parseObject(riskResp.getData());
+			riskResp.setResult(dataObj.getString("result"));
 			return riskResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -173,4 +192,16 @@ public class RiskUtil extends AbstractThird{
 
         return prestr;
     }
+    
+    /**
+	 * 获取订单号
+	 * @param method 接口标识（固定4位）
+	 * @param identity 身份标识（固定4位）
+	 */
+	private static String getOrderNo(String method,String identity){
+		if(StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity) || identity.length() != 4){
+			throw new FanbeiException(FanbeiExceptionCode.UPS_ORDERNO_BUILD_ERROR);
+		}
+		return StringUtil.appendStrs(SYS_KEY,method,identity,System.currentTimeMillis());
+	}
 }

@@ -20,6 +20,7 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 	private String reqExt;
 	private String notifyUrl;
 	private String signInfo;
+	
 	public String getOrderNo() {
 		return orderNo;
 	}
@@ -76,5 +77,4 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 		this.signInfo = signInfo;
 		this.put("signInfo", signInfo);
 	}
-	
 }

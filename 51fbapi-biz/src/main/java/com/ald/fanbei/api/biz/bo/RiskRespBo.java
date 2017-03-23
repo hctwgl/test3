@@ -6,6 +6,7 @@ public class RiskRespBo {
 	private String msg;
 	private String data;
 	private boolean success;
+	private String result;
 	
 	public String getCode() {
 		return code;
@@ -31,5 +32,10 @@ public class RiskRespBo {
 	public void setSuccess(boolean success) {
 		this.success = success;
 	}
-	
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
 }
