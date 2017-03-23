@@ -17,7 +17,7 @@
 		FROM
 			af_coupon c
 		LEFT JOIN 
-			af_user_coupon uc ON c.id =uc.coupon_id AND uc.is_delete = 0 AND uc.user_id =#{userId}
+			af_user_coupon uc ON c.id =uc.coupon_id   AND uc.user_id =#{userId}
 		WHERE
 			c.is_delete = 0
 		AND
@@ -29,6 +29,7 @@
 			( ( c.expiry_type='R'and c.gmt_end >NOW())
 			OR
 			c.expiry_type='D')
+		GROUP BY c.id
 	</select>
 	
 	<select id="getCouponById" resultType="AfCouponDo">
