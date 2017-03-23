@@ -77,8 +77,8 @@ public class AppH5FanBeiWebController extends BaseController {
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 		JSONObject appInfo = JSON.parseObject(appInfotext);
-//		String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
-		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
+//		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 
 		AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
 		Long userId= -1L;
