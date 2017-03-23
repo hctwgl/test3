@@ -126,8 +126,6 @@
 				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
 				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
-				<entry key="/user/getCouponList" value-ref="getCouponListApi" />
-				<entry key="/user/pickCoupon" value-ref="pickCouponApi" />
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
 				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
 				<entry key="/user/changeMobile" value-ref="changeMobileApi" />

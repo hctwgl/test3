@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 
 /**
  * @类描述：
@@ -26,8 +27,8 @@ public class AfCouponServiceImpl implements AfCouponService {
 	AfCouponDao afCouponDao;
 
 	@Override
-	public List<AfCouponDo> selectCouponByCouponIds(String ids) {
-		return afCouponDao.selectCouponByCouponIds(ids);
+	public List<AfCouponDto> selectCouponByCouponIds(String ids,Long userId) {
+		return afCouponDao.selectCouponByCouponIds(ids,userId);
 	}
 
 	@Override

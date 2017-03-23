@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 
 /**
  * @类描述：
@@ -16,7 +17,7 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
  */
 public interface AfCouponDao {
 	
-	List<AfCouponDo> selectCouponByCouponIds(@Param("ids")String ids);
+	List<AfCouponDto> selectCouponByCouponIds(@Param("ids")String ids, @Param("userId")Long userId);
 	
 	AfCouponDo getCouponById(@Param("couponId")Long couponId);
 	

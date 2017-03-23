@@ -20,17 +20,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
@@ -38,6 +40,7 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -60,25 +63,33 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfUserDao afUserDao;
 
 	@Resource
-	AfCouponDao afCouponDao;
+	AfCouponService afCouponService;
 
 	@Resource
 	AfUserCouponDao afUserCouponDao;
 	@Resource
 	AfResourceDao afResourceDao;
+	@Resource
+    TokenCacheUtil tokenCacheUtil;
 
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 		JSONObject appInfo = JSON.parseObject(appInfotext);
-		String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
-//		String userName ="13500000405";
+//		String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
+		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 
+		AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+		Long userId= -1L;
+		if(afUserDo!=null){
+			
+			userId = afUserDo.getRid();
+		}
 		String ids = resourceDo.getValue();
-		List<AfCouponDo> afCouponList = afCouponDao.selectCouponByCouponIds(ids);
+		List<AfCouponDto> afCouponList = afCouponService.selectCouponByCouponIds(ids,userId);
 		List<Object> list = new ArrayList<Object>();
-		for (AfCouponDo afCouponDo : afCouponList) {
+		for (AfCouponDto afCouponDo : afCouponList) {
 			list.add(couponObjectWithAfUserCouponDto(afCouponDo));
 		}
 		model.put("couponList", list);
@@ -86,7 +97,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		logger.info(JSON.toJSONString(model));
 	}
 
-	public Map<String, Object> couponObjectWithAfUserCouponDto(AfCouponDo afCouponDo) {
+	public Map<String, Object> couponObjectWithAfUserCouponDto(AfCouponDto afCouponDo) {
 
 		Map<String, Object> returnData = new HashMap<String, Object>();
 		returnData.put("rid", afCouponDo.getRid());
@@ -98,6 +109,9 @@ public class AppH5FanBeiWebController extends BaseController {
 		returnData.put("amount", afCouponDo.getAmount());
 		returnData.put("limitCount", afCouponDo.getLimitCount());
 		returnData.put("type", afCouponDo.getType());
+		returnData.put("quota", afCouponDo.getQuota());
+		returnData.put("quotaAlready", afCouponDo.getQuotaAlready());
+		returnData.put("userAlready", afCouponDo.getUserAlready());
 
 		return returnData;
 
@@ -111,21 +125,23 @@ public class AppH5FanBeiWebController extends BaseController {
 
 			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			Map<String, Object> returnData = new HashMap<String, Object>();
 
 			if (afUserDo == null) {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
-
+				returnData.put("status", CouponWebFailStatus.UserNotexist.getCode());
 				return H5CommonResponse
-						.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), notifyUrl,null )
+						.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), notifyUrl,returnData )
 						.toString();
 			}
 
-			AfCouponDo couponDo = afCouponDao.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
+			AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
 
 			if (couponDo == null) {
+				returnData.put("status", CouponWebFailStatus.CouponNotExist.getCode());
 
 				return H5CommonResponse
-						.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(), "", null)
+						.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(), "", returnData)
 						.toString();
 			}
 
@@ -134,13 +150,17 @@ public class AppH5FanBeiWebController extends BaseController {
 			Integer myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUserDo.getRid(),
 					NumberUtil.objToLongDefault(couponId, 1l));
 			if (limitCount <= myCount) {
+				returnData.put("status", CouponWebFailStatus.CouponOver.getCode());
+
 				return H5CommonResponse.getNewInstance(false,
-						FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", null).toString();
+						FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", returnData).toString();
 			}
 			Long totalCount = couponDo.getQuota();
 			if(totalCount!=0&&totalCount<=couponDo.getQuotaAlready()){
+				returnData.put("status", CouponWebFailStatus.MoreThanCoupon.getCode());
+
 				return H5CommonResponse.getNewInstance(false,
-						FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(), "", null).toString();
+						FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(), "", returnData).toString();
 			}
 
 			AfUserCouponDo userCoupon = new AfUserCouponDo();
@@ -171,7 +191,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			AfCouponDo couponDoT = new AfCouponDo();
 			couponDoT.setRid(couponDo.getRid());
 			couponDoT.setQuotaAlready(1);
-			afCouponDao.updateCouponquotaAlreadyById(couponDoT);
+			afCouponService.updateCouponquotaAlreadyById(couponDoT);
 			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
 
 		} catch (Exception e) {
