@@ -64,6 +64,13 @@ public class AuthFaceApi implements ApiHandle {
 		
 		idNumber = new String(Base64.decode(idNumber));
 		
+        //实名信息，如果与之前的实名信息不一致时报错
+        AfUserAccountDo oldAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
+        if(!(StringUtil.isNotBlank(oldAccount.getIdNumber())&&StringUtil.equals(idNumber, oldAccount.getIdNumber()))
+                || !(StringUtil.isNotBlank(oldAccount.getRealName())&&StringUtil.equals(realName, oldAccount.getRealName()))){
+            throw new FanbeiException("user realname auth error",FanbeiExceptionCode.USER_REALNAME_AUTH_ERROR);
+        }
+        
 		//TODO 更新user_account中身份证号和真实姓名
 		AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
 		afUserAccountDo.setUserId(context.getUserId());
