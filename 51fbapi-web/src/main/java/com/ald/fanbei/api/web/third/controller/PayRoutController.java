@@ -146,6 +146,7 @@ public class PayRoutController{
 					account.setUsedAmount(borrow.getAmount());
 					account.setUserId(borrow.getUserId());
         			afUserAccountService.updateUserAccount(account);
+        			return "SUCCESS";
 				}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
 					//借款关闭
 					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSE.getCode());
@@ -155,6 +156,7 @@ public class PayRoutController{
 					account.setUsedAmount(borrow.getAmount());
 					account.setUserId(borrow.getUserId());
         			afUserAccountService.updateUserAccount(account);
+        			return "SUCCESS";
 				}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
         			AfCashRecordDo record = afCashRecordDao.getCashRecordById(result);
         			record.setStatus("REFUSE");
@@ -164,6 +166,7 @@ public class PayRoutController{
         			updateAccountDo.setRebateAmount(record.getAmount());
         			updateAccountDo.setUserId(record.getUserId());
         			afUserAccountService.updateUserAccount(updateAccountDo);
+        			return "SUCCESS";
         		}
 			}
     		return "ERROR";
