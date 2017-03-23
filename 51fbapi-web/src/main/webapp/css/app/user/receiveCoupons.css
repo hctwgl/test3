@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 14:20:33
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-21 19:22:01
+* @Last Modified time: 2017-03-23 15:10:43
 * @title:  领取优惠券
 */
 
@@ -28,7 +28,7 @@
 	background-image: url(/images/app/user/0206yhqylw.png);
 }
 .receiveCoupons_priceInfo{
-	width: 6.3rem;
+	width: 6.5rem;
 	height: 4.25rem;
 	line-height: 4.25rem;
 	margin-left: -0.15rem;
