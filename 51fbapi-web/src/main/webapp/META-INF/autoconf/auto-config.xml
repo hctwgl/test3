@@ -72,6 +72,10 @@
 		
 		<property name="fbapi.notify.host" defaultValue="http://testapp.51fanbei.com" description="异步回调地址" />
 		<property name="fbapi.ups.url" defaultValue="http://payrout.51fanbei.com/ups/main.html" description="ups请求地址" />
+		<!-- 菠萝觅 -->
+		<property name="fbapi.boluome.appkey" defaultValue="6aSsbSMMhKBe8+bH5wmhBw==" description="菠萝觅 key" />
+		<property name="fbapi.boluome.secret" defaultValue="OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B" description="菠萝觅 certpath" />
+		
 	</group>
 
 	<script>

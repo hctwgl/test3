@@ -77,7 +77,7 @@ public class BaseControllerTest extends AbstractJUnit4SpringContextTests {
     	jo.put("id", "1asdfasdf");
     	
     	Map<String, String> system = new HashMap<String, String>();
-    	system.put("appVersion", "1.0-1");
+    	system.put("appVersion", "1.0.1");
     	system.put("userId", "1437");
     	system.put("sign", "ss");
     	system.put("time", Long.toString(System.currentTimeMillis()));
