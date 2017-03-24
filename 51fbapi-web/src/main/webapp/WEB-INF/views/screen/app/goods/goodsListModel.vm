@@ -42,7 +42,13 @@
                                 #foreach($item in $!{goodsList})
                                 <li class="fl goodsListModel_item bgc_white">
         							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}"}'>
-                                        <img src="$!{item.goodsIcon}" class="goodsListModel_mainContent_img">
+                                        <img class="goodsListModel_mainContent_img" src="
+                                            #if($!{item.goodsIcon.length()} <= 0)
+                                                /images/goods/0205zhanwei.png
+                                            #else
+                                                $!{item.goodsIcon}
+                                            #end
+                                        ">
                                         <div class="goodsListModel_mainContent_main">
                                             <div class="goodsListModel_mainContent_wrap">
                                                 <p class="fs_26 fsc_1">$!{item.name}</p>

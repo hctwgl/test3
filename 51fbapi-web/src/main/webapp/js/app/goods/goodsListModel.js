@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-14 18:17:24
+* @Last Modified time: 2017-03-24 09:55:52
 * @title:  商品列表页
 */
 
@@ -176,8 +176,7 @@ $(function(){
     function pageNumber(page){
         for (var i = 0; i < categoryObj.length; i++) {
             pageNum = categoryObj[i].pageTotal;
-            pageNum = pageNum+1;
-            console.log(pageNum);
+            pageNum = pageNum-1;
             if(page==pageNum){ //最后一页
                 sover=1;
                 loadover();
