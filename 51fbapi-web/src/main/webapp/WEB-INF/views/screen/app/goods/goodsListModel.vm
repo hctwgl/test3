@@ -10,19 +10,23 @@
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
     <div class="goodsListModel_wrap wrap">
-        <div class="goodsListModel_header_wrap swiper-pagination clearfix">
-            <ul class="fs_32 fsc_6 bgc_white goodsListModel_header tabs">
-                #foreach($item in $!{categoryList})
-                    <li id="goodsListModel_$!{item.type}">
-                        #if(${item.type} == ${typeCurrent})
-                            <span class="current active">$!{item.name}</span>
-                        #else
-                            <span>$!{item.name}</span>
-                        #end
-                    </li>
-                #end
-            </ul>
-        </div>
+        #if($!{categoryList.size()}==0)
+            <div class="goodsListModel_header_wrap bgc_e"></div>
+        #else
+            <div class="goodsListModel_header_wrap swiper-pagination clearfix">
+                <ul class="fs_32 fsc_6 bgc_white goodsListModel_header tabs">
+                    #foreach($item in $!{categoryList})
+                        <li id="goodsListModel_$!{item.type}">
+                            #if(${item.type} == ${typeCurrent})
+                                <span class="current active">$!{item.name}</span>
+                            #else
+                                <span>$!{item.name}</span>
+                            #end
+                        </li>
+                    #end
+                </ul>
+            </div>
+        #end
         #if($!{goodsList.size()}==0)
             <div class="nullPrompt">
                 <img src="/images/common/040101wuyouhui.png">
