@@ -6,30 +6,32 @@ import java.util.Map;
 /**
  * 
  * @类描述：
- * @author hexin 2017年2月16日下午16:26:26
+ * @author xiaotianjian 2017年3月24日下午9:19:19
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum OrderType {
-
-	MOBILE("MOBILE", "话费充值","MB"), 
-	TAOBAO("TAOBAO", "淘宝订单","TB"),
-	TMALL("TMALL", "天猫订单","TM"),
-	BOLUOME("BOLUOME", "菠萝觅","BLM");
-    
+public enum PayStatus {
+	
+	N("NEW", "新建/待付款"),
+	PAID("PAID", "已支付/待收货"),
+	FINISHED("FINISHED", "已收货/订单完成"),
+	REBATED("REBATED", "返利成功"),
+	CLOSED("CLOSED", "订单关闭(未付款或退款成功)"),
+	WAITING_REFUND("WAITING_REFUND", "等待退款"),
+	DEAL_REFUNDING("DEAL_REFUNDING", "退款中"),
+	REFUND_COMPLETE("REFUND_COMPLETE", "退款完成");
+	
     private String code;
     private String name;
-    private String shortName;
 
-    private static Map<String,InterestType> codeRoleTypeMap = null;
+    private static Map<String,MobileStatus> codeRoleTypeMap = null;
 
-    OrderType(String code, String name,String shortName) {
+    PayStatus(String code, String name) {
         this.code = code;
         this.name = name;
-        this.shortName = shortName;
     }
 
-    public static InterestType findRoleTypeByCode(String code) {
-        for (InterestType roleType : InterestType.values()) {
+    public static MobileStatus findRoleTypeByCode(String code) {
+        for (MobileStatus roleType : MobileStatus.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
@@ -38,12 +40,12 @@ public enum OrderType {
     }
 
     
-    public static Map<String,InterestType> getCodeRoleTypeMap(){
+    public static Map<String,MobileStatus> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
             return codeRoleTypeMap;
         }
-        codeRoleTypeMap = new HashMap<String, InterestType>();
-        for(InterestType item:InterestType.values()){
+        codeRoleTypeMap = new HashMap<String, MobileStatus>();
+        for(MobileStatus item:MobileStatus.values()){
             codeRoleTypeMap.put(item.getCode(), item);
         }
         return codeRoleTypeMap;
@@ -64,13 +66,4 @@ public enum OrderType {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getShortName() {
-		return shortName;
-	}
-
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
-	}
-	
 }

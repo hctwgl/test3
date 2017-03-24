@@ -9,20 +9,23 @@ import java.util.Map;
  * @author hexin 2017年2月17日下午15:31:23
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum OrderSatus {
-
-	NEW("NEW", "待付款"),
-	PAID("PAID", "待收货"),
-	FINISHED("FINISHED", "订单完成"),
+public enum OrderStatus {
+	
+	NEW("NEW", "新建/待付款"),
+	PAID("PAID", "已支付/待收货"),
+	FINISHED("FINISHED", "已收货/订单完成"),
 	REBATED("REBATED", "返利成功"),
-	CLOSED("CLOSED", "订单关闭");
-    
+	CLOSED("CLOSED", "订单关闭(未付款或退款成功)"),
+	WAITING_REFUND("WAITING_REFUND", "等待退款"),
+	DEAL_REFUNDING("DEAL_REFUNDING", "退款中"),
+	REFUND_COMPLETE("REFUND_COMPLETE", "退款完成");
+	
     private String code;
     private String name;
 
     private static Map<String,MobileStatus> codeRoleTypeMap = null;
 
-    OrderSatus(String code, String name) {
+    OrderStatus(String code, String name) {
         this.code = code;
         this.name = name;
     }

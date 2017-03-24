@@ -24,7 +24,7 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.MobileStatus;
-import com.ald.fanbei.api.common.enums.OrderSatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -137,7 +137,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		logger.info("updateOrderTradeSuccess_content:"+content);
 		AfOrderDo order = new AfOrderDo();
 		order.setOrderNo(JSON.parseObject(content).getString("order_id"));
-		order.setStatus(OrderSatus.FINISHED.getCode());
+		order.setStatus(OrderStatus.FINISHED.getCode());
 		order.setGmtFinished(new Date());
 		return orderDao.updateOrderByOrderNo(order);
 	}
@@ -154,7 +154,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			orderTemp.setStatus(YesNoStatus.YES.getCode());
 			afOrderTempDao.updateUserOrderTemp(orderTemp);
 		}
-		order.setStatus(OrderSatus.PAID.getCode());
+		order.setStatus(OrderStatus.PAID.getCode());
 		order.setGmtPay(new Date());
 		return orderDao.updateOrderByOrderNo(order);
 	}
@@ -164,7 +164,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		logger.info("updateOrderTradeClosed_content:"+content);
 		AfOrderDo order = new AfOrderDo();
 		order.setOrderNo(JSON.parseObject(content).getString("order_id"));
-		order.setStatus(OrderSatus.CLOSED.getCode());
+		order.setStatus(OrderStatus.CLOSED.getCode());
 		
 		return orderDao.updateOrderByOrderNo(order);
 	}
@@ -179,7 +179,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					//支付成功后,直接返利
 					AfOrderDo newOrder = new AfOrderDo();
 					newOrder.setPayTradeNo(payOrderNo);
-					newOrder.setStatus(OrderSatus.REBATED.getCode());
+					newOrder.setStatus(OrderStatus.REBATED.getCode());
 					newOrder.setGmtFinished(new Date());
 					newOrder.setGmtRebated(new Date());
 					newOrder.setTradeNo(tradeNo);
@@ -226,7 +226,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 									pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
 								}
 							}
-							newOrder.setStatus(OrderSatus.CLOSED.getCode());
+							newOrder.setStatus(OrderStatus.CLOSED.getCode());
 							orderDao.updateOrderByOutTradeNo(newOrder);
 							pushService.chargeMobileError(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 						}else{
