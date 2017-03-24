@@ -16,6 +16,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -55,11 +56,11 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 		}
 		//账户关联信息
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
-		Map<String, Object> data = getCashInfo(resource, card, userDto);
+		Map<String, Object> data = getCashInfo(resource, card, userDto,context);
 		resp.setResponseData(data);
 		return resp;
 	}
-	private Map<String, Object> getCashInfo(AfResourceDo resource,AfUserBankcardDo card,AfUserAccountDo userDto){
+	private Map<String, Object> getCashInfo(AfResourceDo resource,AfUserBankcardDo card,AfUserAccountDo userDto,FanbeiContext context){
 		Map<String, Object> data = new HashMap<String, Object>();
 		BigDecimal usableAmount = userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount());
 		if((userDto.getAuAmount().subtract(userDto.getUsedAmount())).compareTo(usableAmount)==-1){
@@ -70,11 +71,20 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 		data.put("cardName",card.getBankName());
 		data.put("cardId", card.getRid());
 		data.put("cardIcon", card.getBankIcon());
-		if(null == resource){
-			data.put("desc", "");
-		}else{
-			data.put("desc", new StringBuffer("日利率").append(new BigDecimal(resource.getValue()).multiply(new BigDecimal(100)).stripTrailingZeros().toPlainString()).append("%"));
+		if(context.getAppVersion()>330){
+			String[] range = StringUtil.split(resource.getValue2(), ",");
+			BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
+			BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
+			if(null != range && range.length==2){
+				rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
+				rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
+			}
+			data.put("cashRate", new BigDecimal(resource.getValue()));
+			data.put("poundageRate",new BigDecimal(resource.getValue1()));
+			data.put("minPoundage", rangeBegin);
+			data.put("maxPoundage", rangeEnd);
 		}
+		data.put("desc", new StringBuffer("日利率").append(new BigDecimal(resource.getValue()).multiply(new BigDecimal(100)).stripTrailingZeros().toPlainString()).append("%"));
 		return data;
 	}
 }

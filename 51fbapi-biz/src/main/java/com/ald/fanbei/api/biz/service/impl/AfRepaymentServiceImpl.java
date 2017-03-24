@@ -84,6 +84,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Resource
 	private AfUserBankcardDao afUserBankcardDao;
 	
+	@Resource
+	UpsUtil upsUtil;
+	
 	@Override
 	public Map<String,Object> createRepayment(BigDecimal repaymentAmount,
 			final BigDecimal actualAmount,AfUserCouponDto coupon,
@@ -108,7 +111,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode());
 		}else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-			UpsCollectRespBo respBo = UpsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
+			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), 
 					Constants.DEFAULT_PAY_PURPOSE, name, "02",UserAccountLogType.REPAYMENT.getCode());
 			map.put("resp", respBo);

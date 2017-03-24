@@ -52,6 +52,9 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 	@Resource
 	AfCashLogDao afCashLogDao;
 	
+	@Resource
+	UpsUtil upsUtil;
+	
 	@Override
 	public int addCashRecord(final AfCashRecordDo afCashRecordDo,final AfUserBankcardDo card) {
 
@@ -93,7 +96,7 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 
 						
 					}else{//银行卡提现
-						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
+						UpsDelegatePayRespBo upsResult =upsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
 								card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_CASH_PURPOSE, "02",UserAccountLogType.REBATE_CASH.getCode(),afCashRecordDo.getRid()+"");
 						if(!upsResult.isSuccess()){
 							//代付失败处理

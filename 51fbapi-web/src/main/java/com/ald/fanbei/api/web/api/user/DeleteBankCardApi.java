@@ -45,6 +45,8 @@ public class DeleteBankCardApi implements ApiHandle {
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
+	@Resource
+	UpsUtil upsUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -74,7 +76,7 @@ public class DeleteBankCardApi implements ApiHandle {
 			afUserAuthService.updateUserAuth(authDo);
 		}
 		//解绑
-		UpsSignReleaseRespBo upsResult = UpsUtil.signRelease(userId+"", bankcardDo.getBankCode(), 
+		UpsSignReleaseRespBo upsResult = upsUtil.signRelease(userId+"", bankcardDo.getBankCode(), 
 				afUserAccountDo.getRealName(), bankcardDo.getMobile(), afUserAccountDo.getIdNumber(), 
 				bankcardDo.getCardNumber(), "02");
 		if(!upsResult.isSuccess()){

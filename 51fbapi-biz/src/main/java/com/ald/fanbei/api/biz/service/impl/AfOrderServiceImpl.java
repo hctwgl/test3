@@ -101,6 +101,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Resource
 	private AfOrderTempDao afOrderTempDao;
 	
+	@Resource
+	private UpsUtil upsUtil;
+	
 	@Override
 	public int createOrderTrade(String content) {
 		logger.info("createOrderTrade_content:"+content);
@@ -220,7 +223,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							}else{//银行卡代付
 								//TODO 转账处理
 								AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
-								UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
+								UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
 										card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
 								if(!upsResult.isSuccess()){
 									pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
@@ -337,7 +340,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,PayOrderSource.ORDER.getCode());
 		}else{//银行卡支付 代收
 			map = new HashMap<String,Object>();
-			UpsCollectRespBo respBo = UpsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
+			UpsCollectRespBo respBo = upsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
 					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02",OrderType.MOBILE.getCode());
 			map.put("resp", respBo);
 		}

@@ -44,6 +44,8 @@ public class AuthBankcardApi implements ApiHandle {
 	private AfUserBankcardDao afUserBankcardDao;
 	@Resource
 	private AfUserAuthService afUserAuthService;
+	@Resource
+	private UpsUtil upsUtil;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -62,7 +64,7 @@ public class AuthBankcardApi implements ApiHandle {
 			throw new FanbeiException("user bankcard exist error", FanbeiExceptionCode.USER_BANKCARD_EXIST_ERROR);
 		}
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
-		UpsAuthSignRespBo upsResult = UpsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
+		UpsAuthSignRespBo upsResult = upsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
