@@ -1,16 +1,24 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
+import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfLimitDetailDto;
@@ -37,6 +45,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	
+	@Resource
+	private AfCashRecordDao afCashRecordDao;
 	
 	@Override
 	public AfUserAccountDo getUserAccountByUserId(Long userId) {
@@ -66,6 +77,51 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	@Override
 	public List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query) {
 		return afUserAccountLogDao.getLimitDetailList(query);
+	}
+
+	@Override
+	public int dealUserDelegatePayError(final String merPriv,final Long result) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
+						//借款关闭
+						afBorrowDao.updateBorrowStatus(result, BorrowStatus.CLOSED.getCode());
+						//账户还原
+						AfBorrowDo borrow = afBorrowDao.getBorrowById(result);
+						AfUserAccountDo account = new AfUserAccountDo();
+						account.setUcAmount(borrow.getAmount().multiply(new BigDecimal(-1)));
+						account.setUsedAmount(borrow.getAmount().multiply(new BigDecimal(-1)));
+						account.setUserId(borrow.getUserId());
+						afUserAccountDao.updateUserAccount(account);
+					}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
+						//借款关闭
+						afBorrowDao.updateBorrowStatus(result, BorrowStatus.CLOSED.getCode());
+						//账户还原
+						AfBorrowDo borrow = afBorrowDao.getBorrowById(result);
+						AfUserAccountDo account = new AfUserAccountDo();
+						account.setUsedAmount(borrow.getAmount().multiply(new BigDecimal(-1)));
+						account.setUserId(borrow.getUserId());
+						afUserAccountDao.updateUserAccount(account);
+					}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
+						AfCashRecordDo record = afCashRecordDao.getCashRecordById(result);
+						record.setStatus("REFUSE");
+						afCashRecordDao.updateCashRecord(record);
+						//
+						AfUserAccountDo updateAccountDo = new AfUserAccountDo();
+						updateAccountDo.setRebateAmount(record.getAmount());
+						updateAccountDo.setUserId(record.getUserId());
+						afUserAccountDao.updateUserAccount(updateAccountDo);
+					}
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					return 0;
+				}
+			}
+		});
 	}
 
 }

@@ -89,6 +89,8 @@ public class ApplyConsumeApi implements ApiHandle{
 				UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, userDto.getRealName(), card.getCardNumber(), userId+"", card.getMobile(), card.getBankName(),
 						card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",UserAccountLogType.CONSUME.getCode(),result+"");
 				if(!upsResult.isSuccess()){
+					//代付失败处理
+					afUserAccountService.dealUserDelegatePayError(UserAccountLogType.CONSUME.getCode(), result);
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				}
 				resp.addResponseData("directTrans", "T");

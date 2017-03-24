@@ -59,4 +59,10 @@ public interface AfUserAccountService {
 	 */
 	List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query);
 	
+	/**
+	 * 代付失败处理
+	 * @param merPriv
+	 * @return
+	 */
+	int dealUserDelegatePayError(String merPriv,Long result);
 }

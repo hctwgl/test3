@@ -129,17 +129,27 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
-		logThird(reqResult, "delegatePay", reqBo);
-		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_DELEGATE_PAY_ERROR);
-		}
-		UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
-		if(authSignResp != null && authSignResp.getRespCode()!=null && StringUtil.equals(authSignResp.getRespCode(), TRADE_RESP_SUCC)){
-			authSignResp.setSuccess(true);
+		try {
+			String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+			logThird(reqResult, "delegatePay", reqBo);
+			if(StringUtil.isBlank(reqResult)){
+				UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
+				authSignResp.setSuccess(false);
+				return authSignResp;
+			}
+			UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
+			if(authSignResp != null && authSignResp.getRespCode()!=null && StringUtil.equals(authSignResp.getRespCode(), TRADE_RESP_SUCC)){
+				authSignResp.setSuccess(true);
+				return authSignResp;
+			}else{
+				UpsDelegatePayRespBo authSignResp1 = new UpsDelegatePayRespBo();
+				authSignResp1.setSuccess(false);
+				return authSignResp1;
+			}
+		} catch (Exception e) {
+			UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
+			authSignResp.setSuccess(false);
 			return authSignResp;
-		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_DELEGATE_PAY_ERROR);
 		}
 	}
 	

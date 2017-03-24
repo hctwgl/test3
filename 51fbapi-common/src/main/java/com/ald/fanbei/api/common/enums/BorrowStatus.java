@@ -16,7 +16,7 @@ public enum BorrowStatus {
 	AGREE("AGREE", "审核通过"),
 	CANCEL("CANCEL", "审核取消"),
 	TRANSED("TRANSED","转账成功"),
-	CLOSE("CLOSE", "审核关闭");
+	CLOSED("CLOSED", "审核关闭");
     
     private String code;
     private String name;

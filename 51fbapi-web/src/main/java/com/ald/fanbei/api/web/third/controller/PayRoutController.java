@@ -22,7 +22,6 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -34,7 +33,6 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
  *@类现描述：
@@ -136,38 +134,9 @@ public class PayRoutController{
         		}
     			return "SUCCESS";
 			}else{//代付失败
-				if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
-					//借款关闭
-					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSE.getCode());
-					//账户还原
-    				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
-					AfUserAccountDo account = new AfUserAccountDo();
-					account.setUcAmount(borrow.getAmount());
-					account.setUsedAmount(borrow.getAmount());
-					account.setUserId(borrow.getUserId());
-        			afUserAccountService.updateUserAccount(account);
-        			return "SUCCESS";
-				}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
-					//借款关闭
-					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSE.getCode());
-					//账户还原
-    				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
-					AfUserAccountDo account = new AfUserAccountDo();
-					account.setUsedAmount(borrow.getAmount());
-					account.setUserId(borrow.getUserId());
-        			afUserAccountService.updateUserAccount(account);
-        			return "SUCCESS";
-				}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
-        			AfCashRecordDo record = afCashRecordDao.getCashRecordById(result);
-        			record.setStatus("REFUSE");
-        			afCashRecordDao.updateCashRecord(record);
-        			//
-        			AfUserAccountDo updateAccountDo = new AfUserAccountDo();
-        			updateAccountDo.setRebateAmount(record.getAmount());
-        			updateAccountDo.setUserId(record.getUserId());
-        			afUserAccountService.updateUserAccount(updateAccountDo);
-        			return "SUCCESS";
-        		}
+				if(afUserAccountService.dealUserDelegatePayError(merPriv, result)>0){
+					return "SUCCESS";
+				}
 			}
     		return "ERROR";
 		} catch (Exception e) {
@@ -268,7 +237,6 @@ public class PayRoutController{
         		}
     			return "SUCCESS";
 			}else{//代收失败
-				
 			}
     		return "ERROR";
 		} catch (Exception e) {

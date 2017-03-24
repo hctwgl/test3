@@ -86,6 +86,8 @@ public class ApplyCashApi implements ApiHandle{
 						card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02",
 						UserAccountLogType.CASH.getCode(),result+"");
 				if(!upsResult.isSuccess()){
+					//代付失败处理
+					afUserAccountService.dealUserDelegatePayError(UserAccountLogType.CASH.getCode(), result);
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				}
 				resp.addResponseData("directTrans", "T");
