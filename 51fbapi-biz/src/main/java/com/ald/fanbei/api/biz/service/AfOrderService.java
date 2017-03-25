@@ -95,4 +95,34 @@ public interface AfOrderService {
 	 * @return
 	 */
 	int syncOrderNoWithUser(Long userId,String orderNo);
+	
+	/**
+	 * 根据第三方订单类型和订单编号获取订单信息
+	 * @param orderType
+	 * @param thirdOrderNo
+	 * @return
+	 */
+	AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(String orderType, String thirdOrderNo);
+	
+	/**
+	 * 新增订单
+	 * @param afOrder
+	 * @return
+	 */
+	int createOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 修改订单信息
+	 * @param afOrder
+	 * @return
+	 */
+	int updateOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 处理菠萝么订单
+	 * @param afOrder
+	 * @return
+	 */
+	int dealBoluomeOrder(AfOrderDo afOrder);
+	
 }

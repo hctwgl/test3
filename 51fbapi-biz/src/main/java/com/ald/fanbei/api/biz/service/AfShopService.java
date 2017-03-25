@@ -11,4 +11,6 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 public interface AfShopService {
 	
 	AfShopDo getShopById(Long shopId);
+	
+	AfShopDo getShopByPlantNameAndType(String platformName, String type);
 }

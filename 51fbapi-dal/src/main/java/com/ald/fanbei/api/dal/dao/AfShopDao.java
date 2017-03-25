@@ -13,4 +13,6 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 public interface AfShopDao {
 	
 	AfShopDo getShopById(@Param("shopId")Long shopId);
+	
+	AfShopDo getShopByPlantNameAndType(@Param("platformName")String platformName, @Param("type")String type);
 }

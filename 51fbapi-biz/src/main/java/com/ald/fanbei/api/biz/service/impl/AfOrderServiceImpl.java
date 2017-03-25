@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -38,6 +40,7 @@ import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
@@ -45,6 +48,7 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
@@ -85,21 +89,18 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	
 	@Resource
 	private AfOrderTempDao afUserOrderDao;
-	
 	@Resource
 	private JpushService pushService;
-	
 	@Resource
 	private AfUserDao afUserDao;
-	
 	@Resource
 	private AfUserBankcardDao afUserBankcardDao;
-	
 	@Resource
 	private TransactionTemplate transactionTemplate;
-	
 	@Resource
 	private AfOrderTempDao afOrderTempDao;
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
 	
 	@Override
 	public int createOrderTrade(String content) {
@@ -342,5 +343,75 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			map.put("resp", respBo);
 		}
 		return map;
+	}
+
+	@Override
+	public AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(String orderType,
+			String thirdOrderNo) {
+		return orderDao.getThirdOrderInfoByOrderTypeAndOrderNo(orderType, thirdOrderNo);
+	}
+
+	@Override
+	public int createOrder(AfOrderDo afOrder) {
+		logger.info("createOrder begin orderInfo = {}" , afOrder);
+		return orderDao.createOrder(afOrder);
+	}
+
+	@Override
+	public int updateOrder(AfOrderDo afOrder) {
+		logger.info("updateOrder begin orderInfo = {}" , afOrder);
+		return orderDao.updateOrder(afOrder);
+	}
+
+	@Override
+	public int dealBoluomeOrder(final AfOrderDo afOrder) {
+		logger.info("dealBoluomeOrder begin , afOrder = {}"+afOrder);
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					OrderStatus orderStatus = OrderStatus.findRoleTypeByCode(afOrder.getStatus());
+					switch (orderStatus) {
+					case PAID:
+						logger.info("status is paid");
+						afOrder.setGmtPay(new Date());
+						afOrder.setActualAmount(afOrder.getSaleAmount());
+						orderDao.updateOrder(afOrder);
+					case FINISHED:
+						logger.info("status is finished");
+						Long userId = afOrder.getUserId();
+						afOrder.setStatus(OrderStatus.REBATED.getCode());
+						afOrder.setGmtRebated(new Date());
+						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+						accountInfo.setRebateAmount(BigDecimalUtil.add(accountInfo.getRebateAmount(), afOrder.getRebateAmount()));
+						AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userId, afOrder.getRid(), AccountLogType.REBATE);
+						afUserAccountDao.updateOriginalUserAccount(accountInfo);
+						afUserAccountLogDao.addUserAccountLog(accountLog);
+						orderDao.updateOrder(afOrder);
+						break;
+					default:
+						logger.info("else status");
+						orderDao.updateOrder(afOrder);
+						break;
+					}
+					logger.info("dealBoluomeOrder complete!");
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("dealBoluomeOrder error:",e);
+					return 0;
+				}
+			}
+		});
+	}
+	
+	private AfUserAccountLogDo buildUserAccount(BigDecimal amount,Long userId,Long orderId, AccountLogType logType){
+		//增加account变更日志
+		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+		accountLog.setAmount(amount);
+		accountLog.setUserId(userId);
+		accountLog.setRefId(orderId+"");
+		accountLog.setType(logType.getCode());
+		return accountLog;
 	}
 }

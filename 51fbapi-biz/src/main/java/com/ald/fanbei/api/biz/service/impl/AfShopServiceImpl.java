@@ -24,4 +24,9 @@ public class AfShopServiceImpl implements AfShopService {
 		return afShopDao.getShopById(shopId);
 	}
 
+	@Override
+	public AfShopDo getShopByPlantNameAndType(String platformName, String type) {
+		return afShopDao.getShopByPlantNameAndType(platformName, type);
+	}
+
 }

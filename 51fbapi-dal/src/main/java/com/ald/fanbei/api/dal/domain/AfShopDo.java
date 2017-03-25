@@ -30,6 +30,7 @@ public class AfShopDo extends AbstractSerial {
 	private BigDecimal rebateAmount;//用户返利
 	private String rebateUnit;//用户返利单位【RMB人民币,PERCENTAGE百分比】
 	private String status;//状态【O开启,C关闭】
+	private String platformName;//平台名称 BOLUOME
 	/**
 	 * @return the rid
 	 */
@@ -221,6 +222,18 @@ public class AfShopDo extends AbstractSerial {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	/**
+	 * @return the platformName
+	 */
+	public String getPlatformName() {
+		return platformName;
+	}
+	/**
+	 * @param platformName the platformName to set
+	 */
+	public void setPlatformName(String platformName) {
+		this.platformName = platformName;
 	}
 
 }

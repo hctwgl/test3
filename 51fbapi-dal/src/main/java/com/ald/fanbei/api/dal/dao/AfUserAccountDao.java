@@ -27,11 +27,18 @@ public interface AfUserAccountDao {
 	int addUserAccount(AfUserAccountDo afUserAccountDo);
 	
 	/**
-	 * 修改账户信息
+	 * 修改账户信息,有相关的加减
 	 * @param accountDo
 	 * @return
 	 */
 	int updateUserAccount(AfUserAccountDo afUserAccountDo);
+	
+	/**
+	 *  只按照传参进行修改值
+	 * @param accountDo
+	 * @return
+	 */
+	int updateOriginalUserAccount(AfUserAccountDo afUserAccountDo);
 	
 	/**
 	 * 获取账户关联信息
