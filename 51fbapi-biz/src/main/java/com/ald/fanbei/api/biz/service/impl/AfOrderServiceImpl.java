@@ -414,4 +414,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		accountLog.setType(logType.getCode());
 		return accountLog;
 	}
+
+	@Override
+	public AfOrderDo getOrderById(Long id) {
+		return orderDao.getOrderById(id);
+	}
 }

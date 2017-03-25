@@ -81,6 +81,13 @@ public interface AfOrderService {
 	AfOrderDo getOrderInfoById(Long id,Long userId);
 	
 	/**
+	 * 获取订单详情
+	 * @param id
+	 * @return
+	 */
+	AfOrderDo getOrderById(Long id);
+	
+	/**
 	 * 获取订单列表
 	 * @param pageNo
 	 * @param status

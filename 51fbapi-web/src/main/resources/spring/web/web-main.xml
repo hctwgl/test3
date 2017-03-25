@@ -201,6 +201,8 @@
 				
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
+				<entry key="/brand/getOrderDetailUrl" value-ref="getOrderDetailUrlApi" />
+				
 				<!--borrowCash  -->
 				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />
 				<entry key="/borrowCash/getBowCashLogInInfo" value-ref="getBowCashLogInInfoApi" />

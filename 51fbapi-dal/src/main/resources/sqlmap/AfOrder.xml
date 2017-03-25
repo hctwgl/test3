@@ -407,4 +407,15 @@
 			</if>
 		WHERE id = #{rid}
 	</update>
+	
+	<select id="getOrderById" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_order 
+		WHERE
+			is_delete=0 
+		AND
+			id = #{orderId}
+	</select>
 </mapper>

@@ -87,4 +87,11 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	int updateOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 获取订单详情
+	 * @param id
+	 * @return
+	 */
+	AfOrderDo getOrderById(@Param("orderId") Long id);
 }
