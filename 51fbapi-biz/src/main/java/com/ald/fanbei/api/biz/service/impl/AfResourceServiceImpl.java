@@ -72,4 +72,11 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getResourceHomeListByTypeOrderBy(type);
 	}
 
+
+	
+	@Override
+	public List<AfResourceDo> selectBorrowHomeConfigByAllTypes() {
+		return afResourceDao.selectBorrowHomeConfigByAllTypes();
+	}
+
 }
