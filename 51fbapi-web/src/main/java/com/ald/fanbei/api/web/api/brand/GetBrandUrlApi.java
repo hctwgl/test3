@@ -3,7 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfShopService;
-import com.ald.fanbei.api.biz.service.boluome.BoluoMeCore;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -57,13 +56,13 @@ public class GetBrandUrlApi implements ApiHandle {
 		}
 		String shopUrl = shopInfo.getShopUrl() + "/" + shopInfo.getType() + "?";
 		
-		buildParams.put(BoluoMeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
-		buildParams.put(BoluoMeCore.CUSTOMER_USER_PHONE, context.getMobile());
-		buildParams.put(BoluoMeCore.TIME_STAMP, requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_TIME) + StringUtils.EMPTY);
+		buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
+		buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, context.getMobile());
+		buildParams.put(BoluomeCore.TIME_STAMP, requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_TIME) + StringUtils.EMPTY);
 		
-		String sign =  BoluoMeCore.buildSignStr(buildParams);
-		buildParams.put(BoluoMeCore.SIGN, sign);
-		String paramsStr = BoluoMeCore.createLinkString(buildParams);
+		String sign =  BoluomeCore.buildSignStr(buildParams);
+		buildParams.put(BoluomeCore.SIGN, sign);
+		String paramsStr = BoluomeCore.createLinkString(buildParams);
 		
 		resp.addResponseData("shopUrl", shopUrl + paramsStr);
 		return resp;

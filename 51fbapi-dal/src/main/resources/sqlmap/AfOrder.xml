@@ -34,6 +34,18 @@
 			rebate_amount , 
 			mobile,
 			bank_id
+			<if test="gmtPayEnd != null" >
+				,gmt_pay_end
+			</if>
+			<if test="secType != null" >
+				,sec_type
+			</if>
+			<if test="thirdOrderNo != null" >
+				,third_order_no
+			</if>
+			<if test="thirdDetailUrl != null" >
+				,third_detail_url
+			</if>
 		)
 		VALUES (
 			<if test="gmtCreate != null">
@@ -67,6 +79,18 @@
 		    #{rebateAmount},
 		    #{mobile},
 		    #{bankId}
+		    <if test="gmtPayEnd != null">
+		    	,#{gmtPayEnd}
+		    </if>
+		    <if test="secType != null">
+		    	,#{secType}
+		    </if>
+		    <if test="thirdOrderNo != null" >
+				,#{thirdOrderNo}
+			</if>
+			<if test="thirdDetailUrl != null" >
+				,#{thirdDetailUrl}
+			</if>
 		)
 	</insert>
 	

@@ -22,6 +22,9 @@ public class AfOrderDo extends AbstractSerial{
 	private Date gmtModified;
 	private Long userId;
 	private String orderNo;
+	private String thirdOrderNo;//第三方订单编号
+	private String thirdDetailUrl;//第三方订单详情地址
+	private String secType;//二级分类
 	private String status;
 	private Long userCouponId;
 	private String orderType;
@@ -46,6 +49,7 @@ public class AfOrderDo extends AbstractSerial{
 	private BigDecimal commissionAmount;
 	private String source;
 	private Long bankId;
+	private Date gmtPayEnd;//截止支付时间
 	
 	public Long getRid() {
 		return rid;
@@ -220,5 +224,53 @@ public class AfOrderDo extends AbstractSerial{
 	}
 	public void setBankId(Long bankId) {
 		this.bankId = bankId;
+	}
+	/**
+	 * @return the thirdOrderNo
+	 */
+	public String getThirdOrderNo() {
+		return thirdOrderNo;
+	}
+	/**
+	 * @param thirdOrderNo the thirdOrderNo to set
+	 */
+	public void setThirdOrderNo(String thirdOrderNo) {
+		this.thirdOrderNo = thirdOrderNo;
+	}
+	/**
+	 * @return the thirdDetailUrl
+	 */
+	public String getThirdDetailUrl() {
+		return thirdDetailUrl;
+	}
+	/**
+	 * @param thirdDetailUrl the thirdDetailUrl to set
+	 */
+	public void setThirdDetailUrl(String thirdDetailUrl) {
+		this.thirdDetailUrl = thirdDetailUrl;
+	}
+	/**
+	 * @return the gmtPayEnd
+	 */
+	public Date getGmtPayEnd() {
+		return gmtPayEnd;
+	}
+	/**
+	 * @param gmtPayEnd the gmtPayEnd to set
+	 */
+	public void setGmtPayEnd(Date gmtPayEnd) {
+		this.gmtPayEnd = gmtPayEnd;
+	}
+	/**
+	 * @return the secType
+	 */
+	public String getSecType() {
+		return secType;
+	}
+	/**
+	 * @param secType the secType to set
+	 */
+	public void setSecType(String secType) {
+		this.secType = secType;
 	}
 }
