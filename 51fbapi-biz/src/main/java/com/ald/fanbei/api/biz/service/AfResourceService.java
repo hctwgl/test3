@@ -71,6 +71,10 @@ public interface AfResourceService {
 	
 	List<AfResourceDo> getOneToManyResourceOrderByBytype(String type);
 
-	
+	  /**借钱模块配置信息
+     * 
+     * @return
+     */
+    List<AfResourceDo> selectBorrowHomeConfigByAllTypes();
 	
 }

@@ -89,7 +89,13 @@ public class GeneratorClusterNo {
   		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowSequenceNum(currDate)));
   		return orderSb.toString();
   	}
-  	
+    //获取借	钱号
+  	public String getBorrowCashNo(Date currDate){//订单号规则：6位日期_2位订单类型_5位订单序号
+  		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+  		StringBuffer orderSb = new StringBuffer("jq");
+  		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowSequenceNum(currDate)));
+  		return orderSb.toString();
+  	}
       private int getBorrowSequenceNum(Date currentDate) {//加锁，防止并发
           Integer channelNum = 1;
           String lockKey = Constants.CACHEKEY_BORROWNO_LOCK;
