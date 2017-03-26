@@ -42,6 +42,7 @@ public class GetOrderDetailUrlApi implements ApiHandle {
 		
 		Map<String, Object> params = requestDataVo.getParams();
 		
+		
 		Long orderId = NumberUtil.objToLongDefault(params.get("orderId"), null);
 		
 		if (orderId ==  null) {

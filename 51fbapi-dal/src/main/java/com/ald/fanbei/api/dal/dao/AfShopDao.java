@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
 
 /**
  * 
@@ -15,4 +18,6 @@ public interface AfShopDao {
 	AfShopDo getShopById(@Param("shopId")Long shopId);
 	
 	AfShopDo getShopByPlantNameAndType(@Param("platformName")String platformName, @Param("type")String type);
+	
+	List<AfShopDo> getShopList(AfShopQuery query);
 }

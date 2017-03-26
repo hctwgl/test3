@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.dal.dao.AfShopDao;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
 
 /**
  *@类描述：
@@ -27,6 +30,11 @@ public class AfShopServiceImpl implements AfShopService {
 	@Override
 	public AfShopDo getShopByPlantNameAndType(String platformName, String type) {
 		return afShopDao.getShopByPlantNameAndType(platformName, type);
+	}
+
+	@Override
+	public List<AfShopDo> getShopList(AfShopQuery query) {
+		return afShopDao.getShopList(query);
 	}
 
 }

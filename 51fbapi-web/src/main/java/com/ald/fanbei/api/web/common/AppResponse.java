@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.common;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 
 
 
@@ -23,6 +24,11 @@ public class AppResponse extends AbstractSerial implements BaseResponse {
     public AppResponse(int code,String msg){
         this.code = code;
         this.msg = msg;
+    }
+    
+    public AppResponse(FanbeiExceptionCode excCode){
+        this.code = excCode.getErrorCode();
+        this.msg = excCode.getDesc();
     }
     
     public int getCode() {

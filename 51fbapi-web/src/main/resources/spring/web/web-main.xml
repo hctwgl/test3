@@ -203,6 +203,9 @@
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
 				<entry key="/brand/getOrderDetailUrl" value-ref="getOrderDetailUrlApi" />
 				<entry key="/brand/getConfirmOrder" value-ref="getConfirmOrderApi" />
+				<entry key="/brand/getBrandList" value-ref="getBrandListApi" />
+				<entry key="/brand/getPayAmount" value-ref="getPayAmountApi" />
+				
 				
 				
 				<!--borrowCash  -->

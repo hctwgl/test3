@@ -29,4 +29,15 @@
 			type = #{type}
 	</select>
 	
+	<select id="getShopList" parameterType="AfShopQuery"  resultType="AfShopDo">
+		SELECT
+			<include refid="queryFields" />
+		FROM
+			af_shop
+		WHERE
+			is_delete = 0
+		AND
+			status = 'O'
+	</select>
+	
 </mapper>

@@ -19,15 +19,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.web.common.AppResponse;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 菠萝觅第三方接口
@@ -40,20 +45,6 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 public class BoluomeController{
 	
     protected final Logger   logger = LoggerFactory.getLogger(this.getClass());
-    
-    private static final String ORDER_ID = "orderId";
-    private static final String ORDER_TYPE = "orderType";
-    private static final String ORDER_TITLE = "orderTitle";
-    private static final String USER_ID = "userId";
-    private static final String USER_PHONE = "userPhone";
-    private static final String PRICE = "price";
-    private static final String STATUS = "status";
-    private static final String DISPLAY_STATUS = "displayStatus";
-    private static final String CREATED_TIME = "createdTime";
-    private static final String EXPIRED_TIME = "expiredTime";
-    private static final String DETAIL_URL = "detailUrl";
-    private static final String TIMES_TAMP = "timestamp";
-    private static final String SIGN = "sign";
 	
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
@@ -62,7 +53,7 @@ public class BoluomeController{
 	@Resource
 	AfShopService afShopService;
 	
-    @RequestMapping(value = {"/synchOrder","/synchOrderStatus"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/synchOrder","/synchOrderStatus"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
 	public String synchOrder(HttpServletRequest request, HttpServletResponse response) throws Exception{
     	String uri = StringUtils.EMPTY;
@@ -98,51 +89,91 @@ public class BoluomeController{
     	return retunStr;
     }
     
+    @RequestMapping(value = {"/getOrderId"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+	public String getOrderId(HttpServletRequest request, HttpServletResponse response) throws Exception{
+    	Map<String, String> params = buildOrderParamMap(request);
+    	logger.info("getOrderId begin params = {}", params);
+    	AppResponse result = null;
+    	try {
+    		result = getOrderIdcheckSignAndParam(params);
+    		Map<String, Object> resultData = new HashMap<String, Object>();
+    		String orderId = request.getParameter(BoluomeCore.ORDER_ID);
+        	String plantform = request.getParameter(BoluomeCore.PLANT_FORM);
+        	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
+        	if (orderInfo == null) {
+        		result = new AppResponse(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
+        	}
+        	resultData.put("orderId", orderInfo.getRid());
+        	result.setData(resultData);
+    	} catch (FanbeiException e) {
+    		result = new AppResponse(e.getErrorCode());
+    	} catch (Exception e) {
+    		result = new AppResponse(FanbeiExceptionCode.SYSTEM_ERROR);
+		}
+    	logger.info("result is {}", JSONObject.toJSONString(result));
+    	return JSONObject.toJSONString(result);
+    }
+    
+    private AppResponse getOrderIdcheckSignAndParam(Map<String, String> params) {
+    	AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
+    	if (StringUtils.isEmpty(params.get(BoluomeCore.ORDER_ID)) || StringUtils.isEmpty(params.get(BoluomeCore.PLANT_FORM))) {
+    		throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+    	}
+    	boolean sign = BoluomeNotify.verify(params);
+    	if (!sign) {
+    		throw new FanbeiException(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+    	} 
+		return result;
+    }
+    
     private Map<String, String> buildOrderParamMap(HttpServletRequest request) {
     	Map<String, String> params = new HashMap<String, String>();
-    	String orderId = request.getParameter(ORDER_ID);
-    	String orderType = request.getParameter(ORDER_TYPE);
-    	String orderTitle = request.getParameter(ORDER_TITLE);
-    	String userId = request.getParameter(USER_ID);
-    	String userPhone = request.getParameter(USER_PHONE);
-    	String price = request.getParameter(PRICE);
-    	String status = request.getParameter(STATUS);
-    	String displayStatus = request.getParameter(DISPLAY_STATUS);
-    	String createdTime = request.getParameter(CREATED_TIME);
-    	String expiredTime = request.getParameter(EXPIRED_TIME);
-    	String detailUrl = request.getParameter(DETAIL_URL);
-    	String timestamp = request.getParameter(TIMES_TAMP);
-    	String sign = request.getParameter(SIGN);
+    	String orderId = request.getParameter(BoluomeCore.ORDER_ID);
+    	String orderType = request.getParameter(BoluomeCore.ORDER_TYPE);
+    	String orderTitle = request.getParameter(BoluomeCore.ORDER_TITLE);
+    	String userId = request.getParameter(BoluomeCore.USER_ID);
+    	String userPhone = request.getParameter(BoluomeCore.USER_PHONE);
+    	String price = request.getParameter(BoluomeCore.PRICE);
+    	String status = request.getParameter(BoluomeCore.STATUS);
+    	String displayStatus = request.getParameter(BoluomeCore.DISPLAY_STATUS);
+    	String createdTime = request.getParameter(BoluomeCore.CREATED_TIME);
+    	String expiredTime = request.getParameter(BoluomeCore.EXPIRED_TIME);
+    	String detailUrl = request.getParameter(BoluomeCore.DETAIL_URL);
+    	String timestamp = request.getParameter(BoluomeCore.TIME_STAMP);
+    	String plantform = request.getParameter(BoluomeCore.PLANT_FORM);
+    	String sign = request.getParameter(BoluomeCore.SIGN);
     	
-    	params.put(ORDER_ID, orderId);
-    	params.put(ORDER_TYPE, orderType);
-    	params.put(ORDER_TITLE, orderTitle);
-    	params.put(USER_ID, userId);
-    	params.put(USER_PHONE, userPhone);
-    	params.put(PRICE, price);
-    	params.put(STATUS, status);
-    	params.put(DISPLAY_STATUS, displayStatus);
-    	params.put(CREATED_TIME, createdTime);
-    	params.put(EXPIRED_TIME, expiredTime);
-    	params.put(DETAIL_URL, detailUrl);
-    	params.put(TIMES_TAMP, timestamp);
-    	params.put(SIGN, sign);
+    	params.put(BoluomeCore.ORDER_ID, orderId);
+    	params.put(BoluomeCore.ORDER_TYPE, orderType);
+    	params.put(BoluomeCore.ORDER_TITLE, orderTitle);
+    	params.put(BoluomeCore.USER_ID, userId);
+    	params.put(BoluomeCore.USER_PHONE, userPhone);
+    	params.put(BoluomeCore.PRICE, price);
+    	params.put(BoluomeCore.STATUS, status);
+    	params.put(BoluomeCore.DISPLAY_STATUS, displayStatus);
+    	params.put(BoluomeCore.CREATED_TIME, createdTime);
+    	params.put(BoluomeCore.EXPIRED_TIME, expiredTime);
+    	params.put(BoluomeCore.DETAIL_URL, detailUrl);
+    	params.put(BoluomeCore.TIME_STAMP, timestamp);
+    	params.put(BoluomeCore.PLANT_FORM, plantform);
+    	params.put(BoluomeCore.SIGN, sign);
     	return params;
     }
     
     private AfOrderDo buildOrderInfo(Map<String, String> params) {
     	
-    	String orderId = params.get(ORDER_ID);
+    	String orderId = params.get(BoluomeCore.ORDER_ID);
     	//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.已经退款 8.已取消 9.处理中 11.等待退款
-    	String orderType = params.get(ORDER_TYPE);
-    	String orderTitle = params.get(ORDER_TITLE);
-    	String userId = params.get(USER_ID);
-    	String userPhone = params.get(USER_PHONE);
-    	String price = params.get(PRICE);
-    	String status = params.get(STATUS);
-    	String createdTime = params.get(CREATED_TIME);
-    	String expiredTime = params.get(EXPIRED_TIME);
-    	String detailUrl = params.get(DETAIL_URL);
+    	String orderType = params.get(BoluomeCore.ORDER_TYPE);
+    	String orderTitle = params.get(BoluomeCore.ORDER_TITLE);
+    	String userId = params.get(BoluomeCore.USER_ID);
+    	String userPhone = params.get(BoluomeCore.USER_PHONE);
+    	String price = params.get(BoluomeCore.PRICE);
+    	String status = params.get(BoluomeCore.STATUS);
+    	String createdTime = params.get(BoluomeCore.CREATED_TIME);
+    	String expiredTime = params.get(BoluomeCore.EXPIRED_TIME);
+    	String detailUrl = params.get(BoluomeCore.DETAIL_URL);
     	
     	if (StringUtils.isNotBlank(orderType)) {
     		orderType = orderType.toUpperCase();

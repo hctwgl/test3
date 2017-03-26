@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
+
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
 
 /**
  * 
@@ -13,4 +17,6 @@ public interface AfShopService {
 	AfShopDo getShopById(Long shopId);
 	
 	AfShopDo getShopByPlantNameAndType(String platformName, String type);
+	
+	List<AfShopDo> getShopList(AfShopQuery query);
 }
