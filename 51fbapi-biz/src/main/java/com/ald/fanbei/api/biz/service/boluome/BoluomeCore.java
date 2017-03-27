@@ -19,6 +19,19 @@ public class BoluomeCore {
 	public static final String CUSTOMER_USER_ID = "customerUserId";
 	public static final String CUSTOMER_USER_PHONE = "customerUserPhone";
 	public static final String TIME_STAMP = "timestamp";
+	
+	public static final String ORDER_ID = "orderId";
+	public static final String PLANT_FORM = "plantform";
+	public static final String ORDER_TYPE = "orderType";
+	public static final String ORDER_TITLE = "orderTitle";
+	public static final String USER_ID = "userId";
+	public static final String USER_PHONE = "userPhone";
+	public static final String PRICE = "price";
+	public static final String STATUS = "status";
+	public static final String DISPLAY_STATUS = "displayStatus";
+	public static final String CREATED_TIME = "createdTime";
+	public static final String EXPIRED_TIME = "expiredTime";
+	public static final String DETAIL_URL = "detailUrl";
 	public static final String SIGN = "sign";
 
     /** 

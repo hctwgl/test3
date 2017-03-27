@@ -39,11 +39,12 @@ public class BoluomeNotify {
      * @return 生成的签名结果
      */
 	private static boolean getSignVeryfy(Map<String, String> Params, String sign) {
+		logger.info("getSignVeryfy begin sign = {}", sign);
     	//过滤空值、sign与sign_type参数
     	Map<String, String> sParaNew = BoluomeCore.paraFilter(Params);
         //获取待签名字符串
         String preSignStr = BoluomeCore.buildSignStr(sParaNew);
-        
-        return sParaNew.equals(preSignStr);
+        logger.info("getSignVeryfy begin preSignStr = {}", preSignStr);
+        return sign.equals(preSignStr);
     }
 }

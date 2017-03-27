@@ -24,8 +24,8 @@ import java.util.Map;
  */
 public class SqlmapDomainTest {
 	
-    String url = "jdbc:mysql://192.168.101.69:3306/51fanbei_app" ;    
-    String username = "root" ;   
+    String url = "jdbc:mysql://192.168.101.85:3306/51fanbei_app" ;    
+    String username = "51fanbei" ;   
     String password = "Hello1234" ;   
     private static String tableName = "af_shop";
     private static String beanName = "";

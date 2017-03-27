@@ -23,15 +23,15 @@ public enum OrderStatus {
     private String code;
     private String name;
 
-    private static Map<String,MobileStatus> codeRoleTypeMap = null;
+    private static Map<String,OrderStatus> codeRoleTypeMap = null;
 
     OrderStatus(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static MobileStatus findRoleTypeByCode(String code) {
-        for (MobileStatus roleType : MobileStatus.values()) {
+    public static OrderStatus findRoleTypeByCode(String code) {
+        for (OrderStatus roleType : OrderStatus.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
@@ -40,12 +40,12 @@ public enum OrderStatus {
     }
 
     
-    public static Map<String,MobileStatus> getCodeRoleTypeMap(){
+    public static Map<String,OrderStatus> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
             return codeRoleTypeMap;
         }
-        codeRoleTypeMap = new HashMap<String, MobileStatus>();
-        for(MobileStatus item:MobileStatus.values()){
+        codeRoleTypeMap = new HashMap<String, OrderStatus>();
+        for(OrderStatus item:OrderStatus.values()){
             codeRoleTypeMap.put(item.getCode(), item);
         }
         return codeRoleTypeMap;

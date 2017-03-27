@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.boluome;
 
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.PayStatus;
 
 
 /**
@@ -30,4 +31,17 @@ public class BoluomeUtil {
 		}
 		return status;
 	}
+	
+	public static PayStatus parsePayStatus(String orderStatusStr) {
+		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.已经退款 8.已取消 9.处理中 11.等待退款
+		int orderStatus = Integer.parseInt(orderStatusStr);
+		PayStatus status = PayStatus.NOTPAY;
+		if (orderStatus == 3) {
+			status = PayStatus.PAYED;
+		} else if (orderStatus == 6 || orderStatus == 11 || orderStatus == 7) {
+			status = PayStatus.REFUND;
+		}
+		return status;
+	}
+
 } 

@@ -92,6 +92,67 @@
 			</if>
 		WHERE user_id = #{userId}
 	</update>
+	
+	<update id="updateOriginalUserAccount" parameterType="AfUserAccountDo" >
+		UPDATE 
+			af_user_account 
+		SET gmt_modified = NOW()
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="userName != null">
+    			,user_name=#{userName}
+			</if>
+			<if test="auAmount != null">
+    			,au_amount=#{auAmount}
+			</if>
+			<if test="usedAmount != null">
+    			,used_amount=#{usedAmount}
+			</if>
+			<if test="freezeAmount != null">
+    			,freeze_amount=#{freezeAmount}
+			</if>
+			<if test="score != null">
+    			,score=#{score}
+			</if>
+			<if test="alipayAccount != null">
+    			,alipay_account=#{alipayAccount}
+			</if>
+			<if test="rebateAmount != null">
+    			,rebate_amount=#{rebateAmount}
+			</if>
+			<if test="idNumber != null">
+    			,id_number=#{idNumber}
+			</if>
+			<if test="realName != null">
+    			,real_name=#{realName}
+			</if>
+			<if test="jfbAmount != null">
+    			,jfb_amount=#{jfbAmount}
+			</if>
+			<if test="password != null">
+    			,password=#{password}
+			</if>
+			<if test="salt != null">
+    			,salt=#{salt}
+			</if>
+			<if test="failCount != null">
+    			,fail_count=#{failCount}
+			</if>
+			<if test="ucAmount != null">
+    			,uc_amount=#{ucAmount}
+			</if>
+			<if test="bindCard != null">
+    			,bind_card=#{bindCard}
+			</if>
+			<if test="creditScore != null">
+    			,credit_score=#{creditScore}
+			</if>
+			<if test="openId != null">
+    			,open_id=#{openId}
+			</if>
+		WHERE id = #{rid}
+	</update>
 
 	<select id="getUserAndAccountByUserId" parameterType="java.lang.Long" resultType="AfUserAccountDto">
 		SELECT 
