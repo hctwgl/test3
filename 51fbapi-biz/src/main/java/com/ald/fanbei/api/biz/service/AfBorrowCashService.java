@@ -5,6 +5,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 
 /**
@@ -38,6 +40,11 @@ public interface AfBorrowCashService {
 	     * @return
 	     */
 	    List<AfBorrowCashDo> getBorrowCashListByUserId(Long userId,Integer start); 
-	    
+	    /**
+	     * 根据rid获取借款信息
+	     * @param rid
+	     * @return
+	     */
+	    AfBorrowCashDo getBorrowCashByrid(Long rid); 
 	   
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
@@ -32,6 +33,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -60,6 +62,10 @@ public class PayRoutController{
 	@Resource
 	private AfUserAccountService afUserAccountService;
 	
+	@Resource
+
+	private AfBorrowCashService afBorrowCashService;
+
 	@Resource
 	private AfCashRecordDao afCashRecordDao;
 	
@@ -134,6 +140,12 @@ public class PayRoutController{
         			record.setStatus("TRANSED");
         			afCashRecordDao.updateCashRecord(record);
         		}
+        		else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){//提现
+        			Long rid = NumberUtil.objToLong(result);
+        			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
+        			afBorrowCashDo.setStatus("TRANSED");
+        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+        		}
     			return "SUCCESS";
 			}else{//代付失败
 				if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
@@ -164,6 +176,12 @@ public class PayRoutController{
         			updateAccountDo.setRebateAmount(record.getAmount());
         			updateAccountDo.setUserId(record.getUserId());
         			afUserAccountService.updateUserAccount(updateAccountDo);
+        		}else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){
+        			//借钱
+        			Long rid = NumberUtil.objToLong(result);
+        			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
+        			afBorrowCashDo.setStatus("TRANSEDFAIL");
+        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
         		}
 			}
     		return "ERROR";
