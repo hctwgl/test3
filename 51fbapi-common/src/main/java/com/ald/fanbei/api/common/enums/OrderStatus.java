@@ -16,9 +16,9 @@ public enum OrderStatus {
 	FINISHED("FINISHED", "已收货/订单完成"),
 	REBATED("REBATED", "返利成功"),
 	CLOSED("CLOSED", "订单关闭(未付款或退款成功)"),
-	WAITING_REFUND("WAITING_REFUND", "等待退款"),
-	DEAL_REFUNDING("DEAL_REFUNDING", "退款中"),
-	REFUND_COMPLETE("REFUND_COMPLETE", "退款完成");
+	WAITING_REFUND("WAIT REFUND", "等待退款"),
+	DEAL_REFUNDING("REFUNDING", "退款中"),
+	REFUND_COMPLETE("REFUND COMPLETE", "退款完成");
 	
     private String code;
     private String name;

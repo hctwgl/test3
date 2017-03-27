@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -15,12 +16,16 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
@@ -28,6 +33,7 @@ import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -40,6 +46,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
@@ -87,7 +94,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	
 	@Resource
 	private TaobaoApiUtil taobaoApiUtil;
+	@Resource
+	private BizCacheUtil bizCacheUtil;
 	
+	@Resource
+	AfResourceDao afResourceDao;
 	@Resource
 	private AfOrderTempDao afUserOrderDao;
 	@Resource
@@ -102,6 +113,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	private AfOrderTempDao afOrderTempDao;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserBankcardService afUserBankcardService;
+	@Resource
+	AfBorrowService afBorrowService;
 	
 	@Override
 	public int createOrderTrade(String content) {
@@ -373,11 +390,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				try {
 					OrderStatus orderStatus = OrderStatus.findRoleTypeByCode(afOrder.getStatus());
 					switch (orderStatus) {
-					case PAID:
-						logger.info("status is paid");
-						afOrder.setGmtPay(new Date());
-						afOrder.setActualAmount(afOrder.getSaleAmount());
-						orderDao.updateOrder(afOrder);
 					case FINISHED:
 						logger.info("status is finished");
 						Long userId = afOrder.getUserId();
@@ -391,7 +403,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderDao.updateOrder(afOrder);
 						break;
 					default:
-						logger.info("else status");
+						logger.info(" status is {} ",afOrder.getStatus());
 						orderDao.updateOrder(afOrder);
 						break;
 					}
@@ -422,47 +434,90 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public Map<String, Object> payBrandOrder(Long payId,
-			AfOrderDo orderInfo, AfUserBankcardDo cardInfo,
-			AfUserAccountDo userAccountInfo) {
-		Map<String,Object> map = null;
-		
-		if(payId < 0 ){
-			//微信支付
-			return UpsUtil.buildWxpayTradeOrder(orderInfo.getOrderNo(), orderInfo.getUserId(), Constants.DEFAULT_BRAND_SHOP, orderInfo.getSaleAmount(),PayOrderSource.BRAND_ORDER.getCode());
-		} else if (payId == 0) {
-			//代付
-			
-		} else {
-			//银行卡支付 代收
-			map = new HashMap<String,Object>();
-			UpsCollectRespBo respBo = UpsUtil.collect(orderInfo.getOrderNo(),orderInfo.getSaleAmount(), orderInfo.getUserId()+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
-					cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
-			map.put("resp", respBo);
-		}
- 		return map;
+	public Map<String, Object> payBrandOrder(final AfOrderDo orderInfo, final Integer nper) {
+		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+			@Override
+			public Map<String, Object> doInTransaction(TransactionStatus status) {
+				try {
+					Map<String,Object> resultMap = new HashMap<String,Object>();
+					orderInfo.setGmtPay(new Date());
+					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					
+					Long payId = orderInfo.getBankId();
+					if(payId < 0 ){
+						orderInfo.setPayType(PayType.WECHAT.getCode());
+						//微信支付
+						return UpsUtil.buildWxpayTradeOrder(orderInfo.getOrderNo(), orderInfo.getUserId(), orderInfo.getGoodsName(), orderInfo.getSaleAmount(),PayOrderSource.BRAND_ORDER.getCode());
+					} else if (payId == 0) {
+						//代付
+						orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+						if (useableAmount.compareTo(orderInfo.getSaleAmount()) < 0) {
+							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+						}
+						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper);
+						
+					} else {
+						orderInfo.setPayType(PayType.BANK.getCode());
+						
+						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+						
+						AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+						
+						resultMap = new HashMap<String,Object>();
+						
+						if(null == cardInfo){
+							throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+						}
+						//银行卡支付 代收
+						UpsCollectRespBo respBo = UpsUtil.collect(orderInfo.getOrderNo(),orderInfo.getSaleAmount(), orderInfo.getUserId()+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
+								cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
+						if(!respBo.isSuccess()) {
+							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+						}
+						Map<String,Object> newMap = new HashMap<String,Object>();
+						newMap.put("outTradeNo", respBo.getOrderNo());
+						newMap.put("tradeNo", respBo.getTradeNo());
+						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
+						resultMap.put("resp", respBo);
+					}
+					orderDao.updateOrder(orderInfo);
+			 		return resultMap;
+				} catch (FanbeiException exception) {
+					status.setRollbackOnly();
+					throw new FanbeiException("bank card pay error", exception.getErrorCode());
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("payBrandOrder faied e = {}", e );
+					return null;
+				}
+			}
+		});
 	}
 
 	@Override
-	public int dealBrandOrder(final String payOrderNo, final String tradeNo) {
+	public int dealBrandOrder(final String payOrderNo, final String tradeNo, final String payType) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {}", payOrderNo, tradeNo);
+					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
 					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
-					orderInfo.setPayType(PayType.WECHAT.getCode());
+					orderInfo.setPayType(payType);
 					orderInfo.setGmtPay(new Date());
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
+					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.error("dealBrandOrder error:",e);
+					return 0;
 				}
-				return null;
 			}
 		});
 	}

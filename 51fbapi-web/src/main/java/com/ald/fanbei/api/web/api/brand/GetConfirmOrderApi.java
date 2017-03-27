@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -80,6 +81,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 		vo.setSaleAmount(orderInfo.getSaleAmount());
 		vo.setRebateAmount(orderInfo.getRebateAmount());
 		vo.setGmtPayEnd(orderInfo.getGmtPayEnd());
+		vo.setCurrentTime(new Date());
 		vo.setBankcardStatus(authDo.getBankcardStatus());
     	vo.setRealName(userDto.getRealName());
         if(StringUtil.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())){

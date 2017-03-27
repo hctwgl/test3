@@ -3,7 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -11,25 +10,19 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -62,6 +55,8 @@ public class PayOrderApi implements ApiHandle {
 		
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"),null);
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"),null);
+		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"),null);
+		  
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		
 		if (orderId == null || payId == null || StringUtils.isEmpty(payPwd)) {
@@ -82,29 +77,15 @@ public class PayOrderApi implements ApiHandle {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
 		}
-		
-		Map<String,Object> map;
-		if(payId < 0 ){//微信支付
-			map = afOrderService.payBrandOrder(payId, orderInfo, null, null);
-			resp.setResponseData(map);
-		} else if (payId > 0){//银行卡支付 代收
-			//TODO 获取用户银行卡
-			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
-			if(null == cardInfo){
-				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
-			}
-			
-			map = afOrderService.payBrandOrder(payId, orderInfo, cardInfo, userAccountInfo);
-			
-			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
-			if(!upsResult.isSuccess()){
-				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-			}
-			Map<String,Object> newMap = new HashMap<String,Object>();
-			newMap.put("outTradeNo", upsResult.getOrderNo());
-			newMap.put("tradeNo", upsResult.getTradeNo());
-			newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
-			resp.setResponseData(newMap);
+		try {
+			orderInfo.setBankId(payId);
+			Map<String,Object> result = afOrderService.payBrandOrder(orderInfo, nper);
+			resp.setResponseData(result);
+		} catch (FanbeiException exception) {
+			throw new FanbeiException("pay order failed", exception.getErrorCode());
+		} catch (Exception e) {
+			logger.error("pay order failed e = {}", e);
+			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 		return resp;
 	}

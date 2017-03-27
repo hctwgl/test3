@@ -137,13 +137,13 @@ public interface AfOrderService {
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(Long payId, AfOrderDo orderInfo, AfUserBankcardDo cardInfo, AfUserAccountDo userAccountInfo);
+	Map<String,Object> payBrandOrder(AfOrderDo orderInfo, Integer nper);
 	
 	/**
 	 * 处理菠萝觅回调订单 
 	 * @param payOrderNo
 	 * @param tradeNo
 	 */
-	int dealBrandOrder(String payOrderNo, String tradeNo);
+	int dealBrandOrder(String payOrderNo, String tradeNo, String payType);
 	
 }

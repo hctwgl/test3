@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum PayType {
 	
-    ALIPAY("ALI", "支付宝"), WECHAT("WX", "微信"), DAIPAY("DF","代付");
+    ALIPAY("ALI", "支付宝"), WECHAT("WX", "微信"), AGENT_PAY("AP","代付"), BANK("BANK","银行卡");
 
     private String    code;
 

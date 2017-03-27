@@ -25,6 +25,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -235,7 +236,7 @@ public class PayRoutController{
 	    		}else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
-	    			afOrderService.dealBrandOrder(outTradeNo, transactionId);
+	    			afOrderService.dealBrandOrder(outTradeNo, transactionId, PayType.WECHAT.getCode());
 	    		}
     		}
             
@@ -265,7 +266,7 @@ public class PayRoutController{
         		}else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){//还款成功处理
         			afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
         		} else if (OrderType.BOLUOME.getCode().equals(merPriv)) {
-        			afOrderService.dealBrandOrder(outTradeNo, tradeNo);
+        			afOrderService.dealBrandOrder(outTradeNo, tradeNo, PayType.AGENT_PAY.getCode());
         		}
     			return "SUCCESS";
 			}else{//代收失败
