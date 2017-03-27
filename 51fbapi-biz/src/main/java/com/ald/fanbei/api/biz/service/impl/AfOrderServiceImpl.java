@@ -395,6 +395,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						Long userId = afOrder.getUserId();
 						afOrder.setStatus(OrderStatus.REBATED.getCode());
 						afOrder.setGmtRebated(new Date());
+						afOrder.setGmtFinished(new Date());
 						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						accountInfo.setRebateAmount(BigDecimalUtil.add(accountInfo.getRebateAmount(), afOrder.getRebateAmount()));
 						AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userId, afOrder.getRid(), AccountLogType.REBATE);
@@ -443,7 +444,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setGmtPay(new Date());
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
-					
+					orderInfo.setActualAmount(orderInfo.getSaleAmount());
 					Long payId = orderInfo.getBankId();
 					if(payId < 0 ){
 						orderInfo.setPayType(PayType.WECHAT.getCode());
@@ -457,7 +458,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if (useableAmount.compareTo(orderInfo.getSaleAmount()) < 0) {
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 						}
-						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper);
+						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper, orderInfo.getRid(), orderInfo.getOrderNo());
 						
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());

@@ -186,8 +186,38 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		borrow.setNper(nper);
 		borrow.setNperAmount(perAmount);
 		AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
-		borrow.setCardNumber(bank != null ? bank.getCardNumber() : StringUtils.EMPTY);
-		borrow.setCardName(bank != null ? bank.getBankName() : StringUtils.EMPTY);
+		borrow.setCardNumber(bank.getCardNumber());
+		borrow.setCardName(bank.getBankName());
+		
+		borrow.setRemark(StringUtils.EMPTY);
+		borrow.setOrderId(0l);
+		borrow.setOrderNo(StringUtils.EMPTY);
+		return borrow;
+	}
+	
+	/**
+	 * 
+	 * @param userId
+	 * @param money -- 借款金额
+	 * @return
+	 */
+	private AfBorrowDo buildAgentPayBorrow(String name,BorrowType type,Long userId,BigDecimal money,int nper,BigDecimal perAmount, String status, Long orderId, String orderNo){
+		Date currDate = new Date();
+		AfBorrowDo borrow = new AfBorrowDo();
+		borrow.setGmtCreate(currDate);
+		borrow.setAmount(money);
+		borrow.setType(type.getCode());
+		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
+		borrow.setStatus(status);//默认转账成功
+		borrow.setName(BorrowType.CONSUME.getName());
+		borrow.setUserId(userId);
+		borrow.setNper(nper);
+		borrow.setNperAmount(perAmount);
+		borrow.setCardNumber(StringUtils.EMPTY);
+		borrow.setCardName("代付");
+		borrow.setRemark(name);
+		borrow.setOrderId(orderId);
+		borrow.setOrderNo(orderNo);
 		return borrow;
 	}
 	
@@ -535,7 +565,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 
 	@Override
 	public long dealBrandConsumeApply(final AfUserAccountDo userDto,
-			final BigDecimal amount, final String name, final int nper) {
+			final BigDecimal amount, final String name, final int nper, final Long orderId, final String orderNo) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -568,7 +598,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, nper, 
 									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
 											8,BigDecimal.ROUND_HALF_UP), totalPoundage);//每期账单金额
-							AfBorrowDo borrow =  buildBorrow(name,BorrowType.TOCONSUME,userDto.getUserId(), amount, 0l, nper,perAmount, BorrowStatus.TRANSED.getCode());
+							AfBorrowDo borrow =  buildAgentPayBorrow(name,BorrowType.TOCONSUME,userDto.getUserId(), amount, nper,perAmount, BorrowStatus.TRANSED.getCode(), orderId, orderNo);
 							//新增借款信息
 							afBorrowDao.addBorrow(borrow);
 							//直接打款

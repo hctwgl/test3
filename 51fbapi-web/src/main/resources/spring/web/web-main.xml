@@ -206,6 +206,7 @@
 				<entry key="/brand/getConfirmOrder" value-ref="getConfirmOrderApi" />
 				<entry key="/brand/getBrandList" value-ref="getBrandListApi" />
 				<entry key="/brand/getPayAmount" value-ref="getPayAmountApi" />
+				<entry key="/brand/payOrder" value-ref="payOrderApi" />
 				
 				
 				
