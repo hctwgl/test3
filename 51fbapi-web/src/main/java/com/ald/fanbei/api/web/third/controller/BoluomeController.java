@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,6 +33,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.web.common.AppResponse;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -55,15 +57,19 @@ public class BoluomeController{
 	
     @RequestMapping(value = {"/synchOrder","/synchOrderStatus"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
-	public String synchOrder(HttpServletRequest request, HttpServletResponse response) throws Exception{
+	public String synchOrder(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) throws Exception{
+    	
     	String uri = StringUtils.EMPTY;
     	if (request.getRequestURI().contains("synchOrder")) {
     		uri = "synchOrder";
     	} else {
     		uri = "synchOrderStatus";
     	}
-    	logger.info(uri + "begin params = {}",request.getParameterMap());
-    	Map<String, String> params = buildOrderParamMap(request);
+    	
+    	logger.info(uri + "begin requestParams = {}",requestData);
+    	JSONObject requestParams = JSON.parseObject(requestData);
+        
+    	Map<String, String> params = buildOrderParamMap(requestParams);
     	
     	boolean sign = BoluomeNotify.verify(params);
     	
@@ -91,15 +97,18 @@ public class BoluomeController{
     
     @RequestMapping(value = {"/getOrderId"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
-	public String getOrderId(HttpServletRequest request, HttpServletResponse response) throws Exception{
-    	Map<String, String> params = buildOrderParamMap(request);
-    	logger.info("getOrderId begin params = {}", params);
+	public String getOrderId(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception{
+    	logger.info("getOrderId begin requestData = {}", requestData);
+    	JSONObject requestParams = JSON.parseObject(requestData);
+    	
+    	Map<String, String> params = buildOrderParamMap(requestParams);
+    	
     	AppResponse result = null;
     	try {
     		result = getOrderIdcheckSignAndParam(params);
     		Map<String, Object> resultData = new HashMap<String, Object>();
-    		String orderId = request.getParameter(BoluomeCore.ORDER_ID);
-        	String plantform = request.getParameter(BoluomeCore.PLANT_FORM);
+    		String orderId = params.get(BoluomeCore.ORDER_ID);
+        	String plantform = params.get(BoluomeCore.PLANT_FORM);
         	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
         	if (orderInfo == null) {
         		result = new AppResponse(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
@@ -127,22 +136,22 @@ public class BoluomeController{
 		return result;
     }
     
-    private Map<String, String> buildOrderParamMap(HttpServletRequest request) {
+    private Map<String, String> buildOrderParamMap(JSONObject requestParams) {
     	Map<String, String> params = new HashMap<String, String>();
-    	String orderId = request.getParameter(BoluomeCore.ORDER_ID);
-    	String orderType = request.getParameter(BoluomeCore.ORDER_TYPE);
-    	String orderTitle = request.getParameter(BoluomeCore.ORDER_TITLE);
-    	String userId = request.getParameter(BoluomeCore.USER_ID);
-    	String userPhone = request.getParameter(BoluomeCore.USER_PHONE);
-    	String price = request.getParameter(BoluomeCore.PRICE);
-    	String status = request.getParameter(BoluomeCore.STATUS);
-    	String displayStatus = request.getParameter(BoluomeCore.DISPLAY_STATUS);
-    	String createdTime = request.getParameter(BoluomeCore.CREATED_TIME);
-    	String expiredTime = request.getParameter(BoluomeCore.EXPIRED_TIME);
-    	String detailUrl = request.getParameter(BoluomeCore.DETAIL_URL);
-    	String timestamp = request.getParameter(BoluomeCore.TIME_STAMP);
-    	String plantform = request.getParameter(BoluomeCore.PLANT_FORM);
-    	String sign = request.getParameter(BoluomeCore.SIGN);
+    	String orderId = requestParams.getString(BoluomeCore.ORDER_ID);
+    	String orderType = requestParams.getString(BoluomeCore.ORDER_TYPE);
+    	String orderTitle = requestParams.getString(BoluomeCore.ORDER_TITLE);
+    	String userId = requestParams.getString(BoluomeCore.USER_ID);
+    	String userPhone = requestParams.getString(BoluomeCore.USER_PHONE);
+    	String price = requestParams.getString(BoluomeCore.PRICE);
+    	String status = requestParams.getString(BoluomeCore.STATUS);
+    	String displayStatus = requestParams.getString(BoluomeCore.DISPLAY_STATUS);
+    	String createdTime = requestParams.getString(BoluomeCore.CREATED_TIME);
+    	String expiredTime = requestParams.getString(BoluomeCore.EXPIRED_TIME);
+    	String detailUrl = requestParams.getString(BoluomeCore.DETAIL_URL);
+    	String timestamp = requestParams.getString(BoluomeCore.TIME_STAMP);
+    	String plantform = requestParams.getString(BoluomeCore.PLANT_FORM);
+    	String sign = requestParams.getString(BoluomeCore.SIGN);
     	
     	params.put(BoluomeCore.ORDER_ID, orderId);
     	params.put(BoluomeCore.ORDER_TYPE, orderType);

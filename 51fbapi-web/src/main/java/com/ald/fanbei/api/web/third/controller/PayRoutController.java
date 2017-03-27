@@ -252,6 +252,8 @@ public class PayRoutController{
 		    		afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
 	    		}else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
+	    		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
+	    			afOrderService.dealBrandOrder(outTradeNo, transactionId);
 	    		}
     		}
             
@@ -280,6 +282,8 @@ public class PayRoutController{
     				afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
         		}else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){//还款成功处理
         			afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+        		} else if (OrderType.BOLUOME.getCode().equals(merPriv)) {
+        			afOrderService.dealBrandOrder(outTradeNo, tradeNo);
         		}
     			return "SUCCESS";
 			}else{//代收失败

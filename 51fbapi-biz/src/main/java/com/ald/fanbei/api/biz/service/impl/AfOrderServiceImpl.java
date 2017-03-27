@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -418,5 +419,51 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Override
 	public AfOrderDo getOrderById(Long id) {
 		return orderDao.getOrderById(id);
+	}
+
+	@Override
+	public Map<String, Object> payBrandOrder(Long payId,
+			AfOrderDo orderInfo, AfUserBankcardDo cardInfo,
+			AfUserAccountDo userAccountInfo) {
+		Map<String,Object> map = null;
+		
+		if(payId < 0 ){
+			//微信支付
+			return UpsUtil.buildWxpayTradeOrder(orderInfo.getOrderNo(), orderInfo.getUserId(), Constants.DEFAULT_BRAND_SHOP, orderInfo.getSaleAmount(),PayOrderSource.BRAND_ORDER.getCode());
+		} else if (payId == 0) {
+			//代付
+			
+		} else {
+			//银行卡支付 代收
+			map = new HashMap<String,Object>();
+			UpsCollectRespBo respBo = UpsUtil.collect(orderInfo.getOrderNo(),orderInfo.getSaleAmount(), orderInfo.getUserId()+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
+					cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
+			map.put("resp", respBo);
+		}
+ 		return map;
+	}
+
+	@Override
+	public int dealBrandOrder(final String payOrderNo, final String tradeNo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {}", payOrderNo, tradeNo);
+					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+					orderInfo.setPayTradeNo(payOrderNo);
+					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					orderInfo.setPayType(PayType.WECHAT.getCode());
+					orderInfo.setGmtPay(new Date());
+					orderInfo.setTradeNo(tradeNo);
+					orderDao.updateOrder(orderInfo);
+					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealBrandOrder error:",e);
+				}
+				return null;
+			}
+		});
 	}
 }

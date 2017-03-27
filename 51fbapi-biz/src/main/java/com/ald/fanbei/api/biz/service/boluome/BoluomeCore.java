@@ -21,6 +21,7 @@ public class BoluomeCore {
 	public static final String TIME_STAMP = "timestamp";
 	
 	public static final String ORDER_ID = "orderId";
+	public static final String ORDER_NO = "orderNo";//第三方订单编号
 	public static final String PLANT_FORM = "plantform";
 	public static final String ORDER_TYPE = "orderType";
 	public static final String ORDER_TITLE = "orderTitle";
@@ -117,6 +118,5 @@ public class BoluomeCore {
     	
         return DigestUtil.MD5(beforeSign);
     }
-    
 
 }
