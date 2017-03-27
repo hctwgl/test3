@@ -183,6 +183,7 @@
 				<entry key="/auth/getBankList" value-ref="getBankListApi" />
 				<entry key="/auth/checkBankcardPay" value-ref="checkBankcardPayApi" />
 				<entry key="/auth/authYdInfo" value-ref="authYdInfoApi" />
+				<entry key="/auth/authMobile" value-ref="authMobileApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />

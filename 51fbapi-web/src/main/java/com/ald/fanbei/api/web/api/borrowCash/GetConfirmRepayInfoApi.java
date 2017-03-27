@@ -3,11 +3,21 @@
  */
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import java.math.BigDecimal;
+
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -20,13 +30,28 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("getConfirmRepayInfoApi")
 public class GetConfirmRepayInfoApi implements ApiHandle {
 
-	/* (non-Javadoc)
-	 * @see com.ald.fanbei.api.web.common.ApiHandle#process(com.ald.fanbei.api.web.common.RequestDataVo, com.ald.fanbei.api.common.FanbeiContext, javax.servlet.http.HttpServletRequest)
-	 */
+	@Resource
+	 AfUserCouponService afUserCouponService;
+	@Resource
+	 AfUserAccountService afUserAccountService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+		Long userId = context.getUserId();
+		BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("amount")), BigDecimal.ZERO);
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), BigDecimal.ZERO);
+		Long couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), 0l);
+		BigDecimal userAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("userAmount")), BigDecimal.ZERO);
+		Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
+		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
+		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+		if (afUserAccountDo == null) {
+			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		
+		
+		return resp;
 	}
 
 }
