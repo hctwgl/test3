@@ -20,7 +20,7 @@ public class AfBorrowCashDo extends AbstractSerial {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Long id;
+	private Long rid;
 	private Date gmtCreate;
 	private Date gmtModified;
 	private String borrowNo;
@@ -48,18 +48,7 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String city;
 	private String county;
 	
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+
 	/**
 	 * @return the gmtCreate
 	 */
@@ -371,6 +360,18 @@ public class AfBorrowCashDo extends AbstractSerial {
 	 */
 	public void setCounty(String county) {
 		this.county = county;
+	}
+	/**
+	 * @return the rid
+	 */
+	public Long getRid() {
+		return rid;
+	}
+	/**
+	 * @param rid the rid to set
+	 */
+	public void setRid(Long rid) {
+		this.rid = rid;
 	}
 
 	
