@@ -62,7 +62,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 		}
 		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
 		if (orderInfo ==  null) {
-			logger.error("shopId is invalid");
+			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		Long userId = orderInfo.getUserId();

@@ -9,6 +9,7 @@ package com.ald.fanbei.api.common.enums;
 public enum PayOrderSource {
 
 	ORDER("ORDER","订单"),
+	BRAND_ORDER("BRAND_ORDER","品牌订单"),
 	BORROW("BORROW","借款"),
 	REPAYMENT("REPAYMENT","还款");
 

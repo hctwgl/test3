@@ -132,4 +132,11 @@ public interface AfOrderService {
 	 */
 	int dealBoluomeOrder(AfOrderDo afOrder);
 	
+	/**
+	 * 支付菠萝觅订单
+	 * @param afOrder
+	 * @return
+	 */
+	Map<String,Object> payBrandOrder(Long payId, AfOrderDo orderInfo, AfUserBankcardDo cardInfo, AfUserAccountDo userAccountInfo);
+	
 }

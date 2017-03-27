@@ -419,4 +419,26 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public AfOrderDo getOrderById(Long id) {
 		return orderDao.getOrderById(id);
 	}
+
+	@Override
+	public Map<String, Object> payBrandOrder(Long payId,
+			AfOrderDo orderInfo, AfUserBankcardDo cardInfo,
+			AfUserAccountDo userAccountInfo) {
+		Map<String,Object> map = null;
+		
+		if(payId < 0 ){
+			//微信支付
+			return UpsUtil.buildWxpayTradeOrder(orderInfo.getOrderNo(), orderInfo.getUserId(), Constants.DEFAULT_BRAND_SHOP, orderInfo.getSaleAmount(),PayOrderSource.BRAND_ORDER.getCode());
+		} else if (payId == 0) {
+			//代付
+			
+		} else {
+			//银行卡支付 代收
+			map = new HashMap<String,Object>();
+			UpsCollectRespBo respBo = UpsUtil.collect(orderInfo.getOrderNo(),orderInfo.getSaleAmount(), orderInfo.getUserId()+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
+					cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
+			map.put("resp", respBo);
+		}
+ 		return map;
+	}
 }

@@ -234,6 +234,8 @@ public class PayRoutController{
 		    		afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
 	    		}else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
+	    		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
+	    			
 	    		}
     		}
             
