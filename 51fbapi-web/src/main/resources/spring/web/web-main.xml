@@ -103,6 +103,7 @@
 				<value>/good/getBrandShopList</value>
 				<value>/good/getGoodsDetailInfo</value>
 				<value>/system/appUpgrade</value>
+				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				
 			</list>
 		</constructor-arg>
@@ -201,6 +202,22 @@
 				
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
+				<entry key="/brand/getOrderDetailUrl" value-ref="getOrderDetailUrlApi" />
+				<entry key="/brand/getConfirmOrder" value-ref="getConfirmOrderApi" />
+				<entry key="/brand/getBrandList" value-ref="getBrandListApi" />
+				<entry key="/brand/getPayAmount" value-ref="getPayAmountApi" />
+				
+				
+				
+				<!--borrowCash  -->
+				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />
+				<entry key="/borrowCash/getBowCashLogInInfo" value-ref="getBowCashLogInInfoApi" />
+				<entry key="/borrowCash/getConfirmBorrowInfo" value-ref="getConfirmBorrowInfoApi" />
+				<entry key="/borrowCash/applyBorrowCash" value-ref="applyBorrowCashApi" />
+				<entry key="/borrowCash/getBorrowCashDetail" value-ref="getBorrowCashDetailApi" />
+				<entry key="/borrowCash/getBorrowCashList" value-ref="getBorrowCashListApi" />
+				<entry key="/borrowCash/getBorrowOverdueList" value-ref="getBorrowOverdueListApi" />
+				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
 
 			</map>
 		</constructor-arg>

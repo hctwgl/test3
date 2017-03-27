@@ -41,7 +41,11 @@ public interface AfResourceDao {
     
     AfResourceDo getConfigByTypesAndSecType(@Param("type")String type,@Param("secType")String secType);
     
-    
+    /**借钱模块配置信息
+     * 
+     * @return
+     */
+    List<AfResourceDo> selectBorrowHomeConfigByAllTypes();
     
 
 	/**

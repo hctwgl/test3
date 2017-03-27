@@ -6,23 +6,21 @@ import java.util.Map;
 /**
  * 
  * @类描述：
- * @author hexin 2017年2月17日下午15:31:23
+ * @author xiaotianjian 2017年3月24日下午9:19:19
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum OrderSatus {
-
-	NEW("NEW", "待付款"),
-	PAID("PAID", "待收货"),
-	FINISHED("FINISHED", "订单完成"),
-	REBATED("REBATED", "返利成功"),
-	CLOSED("CLOSED", "订单关闭");
-    
+public enum PayStatus {
+	
+	NOTPAY("N", "未支付"),
+	PAYED("P", "已支付"),
+	REFUND("R", "退款");
+	
     private String code;
     private String name;
 
     private static Map<String,MobileStatus> codeRoleTypeMap = null;
 
-    OrderSatus(String code, String name) {
+    PayStatus(String code, String name) {
         this.code = code;
         this.name = name;
     }

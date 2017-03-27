@@ -81,6 +81,13 @@ public interface AfOrderService {
 	AfOrderDo getOrderInfoById(Long id,Long userId);
 	
 	/**
+	 * 获取订单详情
+	 * @param id
+	 * @return
+	 */
+	AfOrderDo getOrderById(Long id);
+	
+	/**
 	 * 获取订单列表
 	 * @param pageNo
 	 * @param status
@@ -95,4 +102,34 @@ public interface AfOrderService {
 	 * @return
 	 */
 	int syncOrderNoWithUser(Long userId,String orderNo);
+	
+	/**
+	 * 根据第三方订单类型和订单编号获取订单信息
+	 * @param orderType
+	 * @param thirdOrderNo
+	 * @return
+	 */
+	AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(String orderType, String thirdOrderNo);
+	
+	/**
+	 * 新增订单
+	 * @param afOrder
+	 * @return
+	 */
+	int createOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 修改订单信息
+	 * @param afOrder
+	 * @return
+	 */
+	int updateOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 处理菠萝么订单
+	 * @param afOrder
+	 * @return
+	 */
+	int dealBoluomeOrder(AfOrderDo afOrder);
+	
 }

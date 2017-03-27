@@ -2,9 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,order_no,status,user_coupon_id,order_type,goods_id,open_id,goods_name,goods_icon,
-		count,price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,rebate_amount,gmt_rebated,
-		mobile,gmt_finished,commission_amount,bank_id
+		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
+		status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,
+		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end
 	</sql>
 	
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
@@ -34,6 +35,18 @@
 			rebate_amount , 
 			mobile,
 			bank_id
+			<if test="gmtPayEnd != null" >
+				,gmt_pay_end
+			</if>
+			<if test="secType != null" >
+				,sec_type
+			</if>
+			<if test="thirdOrderNo != null" >
+				,third_order_no
+			</if>
+			<if test="thirdDetailUrl != null" >
+				,third_detail_url
+			</if>
 		)
 		VALUES (
 			<if test="gmtCreate != null">
@@ -67,6 +80,18 @@
 		    #{rebateAmount},
 		    #{mobile},
 		    #{bankId}
+		    <if test="gmtPayEnd != null">
+		    	,#{gmtPayEnd}
+		    </if>
+		    <if test="secType != null">
+		    	,#{secType}
+		    </if>
+		    <if test="thirdOrderNo != null" >
+				,#{thirdOrderNo}
+			</if>
+			<if test="thirdDetailUrl != null" >
+				,#{thirdDetailUrl}
+			</if>
 		)
 	</insert>
 	
@@ -255,6 +280,19 @@
 			is_delete=0 AND pay_trade_no = #{payTradeNo}
 	</select>
 	
+	<select id="getThirdOrderInfoByOrderTypeAndOrderNo" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_order
+		WHERE
+			is_delete=0 
+		AND 
+			order_type = #{orderType}
+		AND	
+			third_order_no = #{thirdOrderNo}
+	</select>
+	
 	<select id="getOrderListByStatus" resultType="AfOrderDo" parameterType="AfOrderQuery">
 		SELECT
 			<include refid="queryFields"/>
@@ -273,5 +311,111 @@
 		</if>
 		and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.status='NEW' AND a.id=b.id)
 		order by a.gmt_create desc
+	</select>
+	
+	<update id="updateOrder" parameterType="AfOrderDo" >
+		UPDATE 
+			af_order 
+		SET 
+			gmt_modified = NOW()
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="orderNo != null">
+    			,order_no=#{orderNo}
+			</if>
+			<if test="thirdOrderNo != null">
+    			,third_order_no=#{thirdOrderNo}
+			</if>
+			<if test="thirdDetailUrl != null">
+    			,third_detail_url=#{thirdDetailUrl}
+			</if>
+			<if test="status != null">
+    			,status=#{status}
+			</if>
+			<if test="userCouponId != null">
+    			,user_coupon_id=#{userCouponId}
+			</if>
+			<if test="orderType != null">
+    			,order_type=#{orderType}
+			</if>
+			<if test="secType != null">
+    			,sec_type=#{secType}
+			</if>
+			<if test="goodsId != null">
+    			,goods_id=#{goodsId}
+			</if>
+			<if test="openId != null">
+    			,open_id=#{openId}
+			</if>
+			<if test="goodsName != null">
+    			,goods_name=#{goodsName}
+			</if>
+			<if test="goodsIcon != null">
+    			,goods_icon=#{goodsIcon}
+			</if>
+			<if test="count != null">
+    			,count=#{count}
+			</if>
+			<if test="priceAmount != null">
+    			,price_amount=#{priceAmount}
+			</if>
+			<if test="saleAmount != null">
+    			,sale_amount=#{saleAmount}
+			</if>
+			<if test="actualAmount != null">
+    			,actual_amount=#{actualAmount}
+			</if>
+			<if test="shopName != null">
+    			,shop_name=#{shopName}
+			</if>
+			<if test="payStatus != null">
+    			,pay_status=#{payStatus}
+			</if>
+			<if test="payType != null">
+    			,pay_type=#{payType}
+			</if>
+			<if test="payTradeNo != null">
+    			,pay_trade_no=#{payTradeNo}
+			</if>
+			<if test="gmtPay != null">
+    			,gmt_pay=#{gmtPay}
+			</if>
+			<if test="tradeNo != null">
+    			,trade_no=#{tradeNo}
+			</if>
+			<if test="gmtRebated != null">
+    			,gmt_rebated=#{gmtRebated}
+			</if>
+			<if test="mobile != null">
+    			,mobile=#{mobile}
+			</if>
+			<if test="gmtFinished != null">
+    			,gmt_finished=#{gmtFinished}
+			</if>
+			<if test="rebateAmount != null">
+    			,rebate_amount=#{rebateAmount}
+			</if>
+			<if test="commissionAmount != null">
+    			,commission_amount=#{commissionAmount}
+			</if>
+			<if test="bankId != null">
+    			,bank_id=#{bankId}
+			</if>
+			<if test="gmtPayEnd != null">
+    			,gmt_pay_end=#{gmtPayEnd}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
+	<select id="getOrderById" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_order 
+		WHERE
+			is_delete=0 
+		AND
+			id = #{orderId}
 	</select>
 </mapper>

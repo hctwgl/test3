@@ -3,11 +3,10 @@ package com.ald.fanbei;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
-import com.taobao.api.request.BaichuanItemSubscribeRelationsQueryRequest;
-import com.taobao.api.request.BaichuanItemSubscribeRelationsQueryRequest.Condition;
 import com.taobao.api.request.BaichuanItemsUnsubscribeRequest;
-import com.taobao.api.response.BaichuanItemSubscribeRelationsQueryResponse;
+import com.taobao.api.request.TbkItemGetRequest;
 import com.taobao.api.response.BaichuanItemsUnsubscribeResponse;
+import com.taobao.api.response.TbkItemGetResponse;
 
 
 
@@ -85,23 +84,23 @@ public class TaobaoTest {
 		
 		
 //		//淘宝客，搜索商品，没有返利
-//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-//		TbkItemGetRequest req = new TbkItemGetRequest();
-//		req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick");
-//		req.setQ("南极人");
-//		req.setSort("total_sales_des");
-//		req.setIsOverseas(false);
-//		req.setStartPrice(0L);
-//		req.setEndPrice(100000L);
-//		req.setStartTkRate(123L);
-//		req.setEndTkRate(1000L);
-//		req.setPageSize(100L);
-//		TbkItemGetResponse rsp = client.execute(req);
-//		System.out.println(rsp.getBody());
-//		System.out.println(rsp.getResults());
-//		System.out.println(rsp.getTotalResults());
-//		System.out.println(rsp.getErrorCode());
-//		System.out.println(rsp.getParams());
+		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+		TbkItemGetRequest req = new TbkItemGetRequest();
+		req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick");
+		req.setQ("2017新款春季男士运动休闲鞋韩版潮流板鞋男鞋子阿甘帆");
+		req.setSort("total_sales_des");
+		req.setIsOverseas(false);
+		req.setStartPrice(0L);
+		req.setEndPrice(100000L);
+		req.setStartTkRate(123L);
+		req.setEndTkRate(1000L);
+		req.setPageSize(100L);
+		TbkItemGetResponse rsp = client.execute(req);
+		System.out.println(rsp.getBody());
+		System.out.println(rsp.getResults());
+		System.out.println(rsp.getTotalResults());
+		System.out.println(rsp.getErrorCode());
+		System.out.println(rsp.getParams());
 		
 		//获取淘宝客返利
 //		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
@@ -202,13 +201,13 @@ public class TaobaoTest {
 		
 		
 		//按条件查询订阅关系，最多100
-		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-		BaichuanItemSubscribeRelationsQueryRequest req = new BaichuanItemSubscribeRelationsQueryRequest();
-		Condition obj1 = new Condition();
-		obj1.setLimit(100L);
-		req.setCondition(obj1);
-		BaichuanItemSubscribeRelationsQueryResponse rsp = client.execute(req);
-		System.out.println(rsp.getBody());
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		BaichuanItemSubscribeRelationsQueryRequest req = new BaichuanItemSubscribeRelationsQueryRequest();
+//		Condition obj1 = new Condition();
+//		obj1.setLimit(100L);
+//		req.setCondition(obj1);
+//		BaichuanItemSubscribeRelationsQueryResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
 //		obj1.setStartTime(StringUtils.parseDateTime("2015-11-23 12:00:32"));
 //		obj1.setStartId(0L);
 //		obj1.setItemStatus(0L);

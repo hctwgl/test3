@@ -129,7 +129,8 @@ public class FanbeiController extends BaseController {
      * @return
      * @throws IOException
      */
-    @RequestMapping(value = {"/brand/getBrandUrl"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @RequestMapping(value = {"/brand/getBrandUrl","/brand/getOrderDetailUrl","/brand/getConfirmOrder","/brand/getBrandList"
+    		,"/brand/getPayAmount"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String brandShopRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -137,7 +138,22 @@ public class FanbeiController extends BaseController {
         return this.processRequest(body, request, false);
     }
     
-    
+    /**
+     * 借钱相关
+     * @param body
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = {"/borrowCash/getBorrowCashHomeInfo","/borrowCash/getBowCashLogInInfo","/borrowCash/getConfirmBorrowInfo","/borrowCash/applyBorrowCash",
+    		"/borrowCash/getBorrowCashDetail","/borrowCash/getBorrowCashList","/borrowCash/getBorrowOverdueList","/repayCash/getConfirmRepayInfo"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @ResponseBody
+    public String borrowCashRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        return this.processRequest(body, request, false);
+    }
     @Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		if (StringUtils.isBlank(reqData)) {

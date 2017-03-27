@@ -3,33 +3,35 @@ package com.ald.fanbei.api.common.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * 
  * @类描述：
- * @author hexin 2017年2月16日下午16:26:26
+ * @author xiaotianjian 2017年3月25日下午4:53:49
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum OrderType {
+public enum OrderSecType {
 
-	MOBILE("MOBILE", "话费充值","MB"), 
-	TAOBAO("TAOBAO", "淘宝订单","TB"),
-	TMALL("TMALL", "天猫订单","TM"),
-	BOLUOME("BOLUOME", "菠萝觅","BLM");
+	JIU_DIAN("JIUDIAN", "酒店"), 
+	WAI_MAI("WAIMAI", "外卖"),
+	DAI_JIA("DAIJIA", "代驾"),
+	DIAN_YING("DIANYING", "电影"),
+	PAO_TUI("PAOTUI", "随意购"),
+	JIA_DIAN_QING_XI("JIADIANQINGXI", "家电清洗"),
+	JIA_DIAN_WEI_XIU("JIADIANWEIXIU", "家电维修");
     
     private String code;
     private String name;
-    private String shortName;
 
-    private static Map<String,InterestType> codeRoleTypeMap = null;
+    private static Map<String,OrderSecType> codeRoleTypeMap = null;
 
-    OrderType(String code, String name,String shortName) {
+    OrderSecType(String code, String name) {
         this.code = code;
         this.name = name;
-        this.shortName = shortName;
     }
 
-    public static InterestType findRoleTypeByCode(String code) {
-        for (InterestType roleType : InterestType.values()) {
+    public static OrderSecType findRoleTypeByCode(String code) {
+        for (OrderSecType roleType : OrderSecType.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
@@ -38,12 +40,12 @@ public enum OrderType {
     }
 
     
-    public static Map<String,InterestType> getCodeRoleTypeMap(){
+    public static Map<String,OrderSecType> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
             return codeRoleTypeMap;
         }
-        codeRoleTypeMap = new HashMap<String, InterestType>();
-        for(InterestType item:InterestType.values()){
+        codeRoleTypeMap = new HashMap<String, OrderSecType>();
+        for(OrderSecType item:OrderSecType.values()){
             codeRoleTypeMap.put(item.getCode(), item);
         }
         return codeRoleTypeMap;
@@ -64,13 +66,4 @@ public enum OrderType {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getShortName() {
-		return shortName;
-	}
-
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
-	}
-	
 }
