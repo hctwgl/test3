@@ -40,6 +40,12 @@ public interface AfBorrowCashDao {
 	     * @return
 	     */
 	    List<AfBorrowCashDo> getBorrowCashListByUserId(@Param("userId")Long userId,@Param("start")Integer start); 
-	    
+	    /**
+	     * 根据rid获取借款信息
+	     * @param rid
+	     * @return
+	     */
+	    AfBorrowCashDo getBorrowCashByrid(@Param("rid")Long rid); 
+
 	    
 }

@@ -28,9 +28,7 @@ id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_
 	</insert>
 		<update id="updateBorrowCash" parameterType="AfBorrowCashDo" >
 		UPDATE af_borrow_cash SET gmt_modified = NOW()
-			<if test="isDelete != null">
-    			,is_delete=#{isDelete}
-			</if>
+		
 			<if test="borrowNo != null">
     			,borrow_no=#{borrowNo}
 			</if>
@@ -108,6 +106,17 @@ id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_
 			gmt_create DESC
 		LIMIT 
 			1
+	</select>
+	
+	<select id="getBorrowCashByrid" parameterType="java.lang.Long"  resultType="AfBorrowCashDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_borrow_cash 
+		WHERE 
+			is_delete = 0 
+		AND 
+			id = #{rid}
 	</select>
 	<select id="getBorrowCashListByUserId" resultType="AfBorrowCashDo">
 		SELECT 

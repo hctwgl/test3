@@ -14,6 +14,7 @@ public enum UserAccountLogType {
 
 	CASH("CASH", "取现"), 
 	JIFENBAO("JIFENBAO", "集分宝取现"), 
+	BorrowCash("BORROWCASH", "借钱"), 
 
 	AU_SCORE("AU_SCORE", "授权分数"),
 	AU_AMOUNT("AU_AMOUNT", "授权金额"),
