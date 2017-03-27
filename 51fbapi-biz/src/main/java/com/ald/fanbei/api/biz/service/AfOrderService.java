@@ -139,4 +139,11 @@ public interface AfOrderService {
 	 */
 	Map<String,Object> payBrandOrder(Long payId, AfOrderDo orderInfo, AfUserBankcardDo cardInfo, AfUserAccountDo userAccountInfo);
 	
+	/**
+	 * 处理菠萝觅回调订单 
+	 * @param payOrderNo
+	 * @param tradeNo
+	 */
+	int dealBrandOrder(String payOrderNo, String tradeNo);
+	
 }

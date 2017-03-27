@@ -75,10 +75,10 @@ public class PayOrderApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		if(payId >= 0){
-			String inputOldPwd = UserUtil.getPassword(payPwd, afUserAccountDo.getSalt());
-			if (!StringUtils.equals(inputOldPwd, afUserAccountDo.getPassword())) {
+			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
+			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
 		}
@@ -89,14 +89,12 @@ public class PayOrderApi implements ApiHandle {
 			resp.setResponseData(map);
 		} else if (payId > 0){//银行卡支付 代收
 			//TODO 获取用户银行卡
-			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(payId);
-			if(null == card){
+			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+			if(null == cardInfo){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map = afOrderService.payBrandOrder(payId, orderInfo, null, null);
 			
-			UpsUtil.collect(orderInfo.getOrderNo(),orderInfo.getSaleAmount(), userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
-					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "手机充值", "02",OrderType.BOLUOME.getCode());
+			map = afOrderService.payBrandOrder(payId, orderInfo, cardInfo, userAccountInfo);
 			
 			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
 			if(!upsResult.isSuccess()){

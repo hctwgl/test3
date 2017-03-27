@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -440,5 +441,29 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			map.put("resp", respBo);
 		}
  		return map;
+	}
+
+	@Override
+	public int dealBrandOrder(final String payOrderNo, final String tradeNo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {}", payOrderNo, tradeNo);
+					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+					orderInfo.setPayTradeNo(payOrderNo);
+					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					orderInfo.setPayType(PayType.WECHAT.getCode());
+					orderInfo.setGmtPay(new Date());
+					orderInfo.setTradeNo(tradeNo);
+					orderDao.updateOrder(orderInfo);
+					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealBrandOrder error:",e);
+				}
+				return null;
+			}
+		});
 	}
 }

@@ -8,13 +8,13 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * 
- *@类描述：支付类型枚举
- *@author 陈金虎 2017年1月16日 下午11:48:42
- *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @类描述：
+ * @author xiaotianjian 2017年3月27日下午5:00:34
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum PayType {
-
-    ALIPAY("ALIPAY", "支付宝"), WECHAT("WECHAT", "微信");
+	
+    ALIPAY("ALI", "支付宝"), WECHAT("WX", "微信"), DAIPAY("DF","代付");
 
     private String    code;
 
