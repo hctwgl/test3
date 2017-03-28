@@ -284,7 +284,7 @@ public class PayRoutController{
         		}else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){//还款成功处理
         			afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
         		} else if (OrderType.BOLUOME.getCode().equals(merPriv)) {
-        			afOrderService.dealBrandOrder(outTradeNo, tradeNo, PayType.AGENT_PAY.getCode());
+        			afOrderService.dealBrandOrder(outTradeNo, tradeNo, PayType.BANK.getCode());
         		}
     			return "SUCCESS";
 			}else{//代收失败
