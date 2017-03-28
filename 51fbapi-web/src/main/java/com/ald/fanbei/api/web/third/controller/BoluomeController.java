@@ -105,7 +105,7 @@ public class BoluomeController{
     	
     	AppResponse result = null;
     	try {
-    		result = getOrderIdcheckSignAndParam(params);
+    		result = getOrderIdAndRefundcheckSignAndParam(params);
     		Map<String, Object> resultData = new HashMap<String, Object>();
     		String orderId = params.get(BoluomeCore.ORDER_ID);
         	String plantform = params.get(BoluomeCore.PLANT_FORM);
@@ -124,7 +124,37 @@ public class BoluomeController{
     	return JSONObject.toJSONString(result);
     }
     
-    private AppResponse getOrderIdcheckSignAndParam(Map<String, String> params) {
+    @RequestMapping(value = {"/orderRefund"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+	public String orderRefund(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception{
+    	logger.info("orderRefund begin requestData = {}", requestData);
+    	JSONObject requestParams = JSON.parseObject(requestData);
+    	
+    	Map<String, String> params = buildOrderParamMap(requestParams);
+    	
+    	AppResponse result = null;
+    	try {
+    		result = getOrderIdAndRefundcheckSignAndParam(params);
+    		Map<String, Object> resultData = new HashMap<String, Object>();
+    		String orderId = params.get(BoluomeCore.ORDER_ID);
+        	String plantform = params.get(BoluomeCore.PLANT_FORM);
+        	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
+        	if (orderInfo == null) {
+        		result = new AppResponse(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
+        	}
+        	afOrderService.dealBrandOrderRefund(orderInfo);
+        	resultData.put("orderId", orderInfo.getRid());
+        	result.setData(resultData);
+    	} catch (FanbeiException e) {
+    		result = new AppResponse(e.getErrorCode());
+    	} catch (Exception e) {
+    		result = new AppResponse(FanbeiExceptionCode.SYSTEM_ERROR);
+		}
+    	logger.info("result is {}", JSONObject.toJSONString(result));
+    	return JSONObject.toJSONString(result);
+    }
+    
+    private AppResponse getOrderIdAndRefundcheckSignAndParam(Map<String, String> params) {
     	AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
     	if (StringUtils.isEmpty(params.get(BoluomeCore.ORDER_ID)) || StringUtils.isEmpty(params.get(BoluomeCore.PLANT_FORM))) {
     		throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);

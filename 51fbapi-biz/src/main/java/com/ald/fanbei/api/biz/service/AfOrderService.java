@@ -146,4 +146,11 @@ public interface AfOrderService {
 	 */
 	int dealBrandOrder(String payOrderNo, String tradeNo, String payType);
 	
+	/**
+	 * 处理菠萝觅退款
+	 * @param orderInfo
+	 * @return
+	 */
+	int dealBrandOrderRefund(AfOrderDo orderInfo);
+	
 }
