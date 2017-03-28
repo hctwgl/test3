@@ -12,11 +12,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -54,6 +56,14 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("status", "DEFAULT");
 		} else {
 			data.put("status", afBorrowCashDo.getStatus());
+
+			if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.noFinsh.getCode())){
+				data.put("status", AfBorrowCashStatus.transed.getCode());
+
+			}else if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())){
+				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
+
+			}
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());
@@ -63,7 +73,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
 			data.put("overdueDay", afBorrowCashDo.getOverdueDay());
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
+//			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
 			data.put("rid", afBorrowCashDo.getRid());
 		}

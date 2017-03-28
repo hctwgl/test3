@@ -62,6 +62,8 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		data.put("borrowNo", afBorrowCashDo.getBorrowNo());
 		data.put("bankCard", afBorrowCashDo.getCardNumber());
 		data.put("bankName", afBorrowCashDo.getCardName());
+		
+		
 //		data.put("gmtClose", value)
 		return data;
 
