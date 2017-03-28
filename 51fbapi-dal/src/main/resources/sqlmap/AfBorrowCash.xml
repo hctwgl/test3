@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowCashDao">
 	<sql id="queryFields">
-id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county
+		id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address
 	</sql>	
 		
 		<insert id="addBorrowCash" parameterType="AfBorrowCashDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type , amount , status , card_number , card_name ,  poundage , rate_amount , latitude , longitude , province , city , county)
+		INSERT INTO af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type , amount , status , card_number , card_name ,  poundage , rate_amount , latitude , longitude , province , city , county,address)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -23,7 +23,8 @@ id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_
     		#{longitude},
     		#{province},
     		#{city},
-    		#{county}
+    		#{county},
+    		#{address}
 		)
 	</insert>
 		<update id="updateBorrowCash" parameterType="AfBorrowCashDo" >
@@ -80,11 +81,18 @@ id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_
 			<if test="poundage != null">
     			,poundage=#{poundage}
 			</if>
+			<if test="overdueStatus != null">
+    			,overdue_status=#{overdueStatus}
+			</if>
+				<if test="reviewStatus != null">
+    			,review_status=#{reviewStatus}
+			</if>
 			<if test="rateAmount != null">
     			,rate_amount=#{rateAmount}
 			</if>
 			<if test="repayAmount != null">
-    			,repay_amount=#{repayAmount}
+    			,repay_amount=repay_amount + #{repayAmount}
+    			
 			</if>
 		WHERE id = #{rid}
 	</update>

@@ -68,6 +68,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		String province = ObjectUtils.toString(requestDataVo.getParams().get("province"));
 		String city = ObjectUtils.toString(requestDataVo.getParams().get("city"));
 		String county = ObjectUtils.toString(requestDataVo.getParams().get("county"));
+		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
+
 		if (StringUtils.equals(amountStr, "") ||  AfBorrowCashType.findRoleTypeByCode(type)==null|| StringUtils.equals(pwd, "")||
 				StringUtils.equals(latitude, "")|| StringUtils.equals(longitude, "")||
 				StringUtils.equals(province, "")|| StringUtils.equals(city, "")|| StringUtils.equals(county, "")) {
@@ -77,8 +79,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
 		AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-		if(borrowCashDo!=null&&( !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())||!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()) ||
-				!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.refuse.getCode()))){
+		if(borrowCashDo!=null&&( !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())||
+				!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 
 		}
@@ -119,6 +121,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		afBorrowCashDo.setUserId(userId);
 		afBorrowCashDo.setRateAmount(rateAmount);
 		afBorrowCashDo.setPoundage(poundageBig);
+		afBorrowCashDo.setAddress(address);
+		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(BigDecimalUtil.subtract(amount, rateAmount), poundageBig) );
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 		
 		return resp;

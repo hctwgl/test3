@@ -11,6 +11,9 @@ public enum PayOrderSource {
 	ORDER("ORDER","订单"),
 	BRAND_ORDER("BRAND_ORDER","品牌订单"),
 	BORROW("BORROW","借款"),
+	BORROWCASH("BORROWCASH","借钱"),
+	REPAYMENTCASH("REPAYMENTCASH","借钱还款"),
+
 	REPAYMENT("REPAYMENT","还款");
 
 	public String code;

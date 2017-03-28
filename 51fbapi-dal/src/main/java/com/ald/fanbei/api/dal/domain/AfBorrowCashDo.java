@@ -47,7 +47,9 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String province;
 	private String city;
 	private String county;
-	
+	private String overdueStatus;
+	private String reviewStatus;
+	private String address;
 
 	/**
 	 * @return the gmtCreate
@@ -372,6 +374,42 @@ public class AfBorrowCashDo extends AbstractSerial {
 	 */
 	public void setRid(Long rid) {
 		this.rid = rid;
+	}
+	/**
+	 * @return the overdueStatus
+	 */
+	public String getOverdueStatus() {
+		return overdueStatus;
+	}
+	/**
+	 * @param overdueStatus the overdueStatus to set
+	 */
+	public void setOverdueStatus(String overdueStatus) {
+		this.overdueStatus = overdueStatus;
+	}
+	/**
+	 * @return the reviewStatus
+	 */
+	public String getReviewStatus() {
+		return reviewStatus;
+	}
+	/**
+	 * @param reviewStatus the reviewStatus to set
+	 */
+	public void setReviewStatus(String reviewStatus) {
+		this.reviewStatus = reviewStatus;
+	}
+	/**
+	 * @return the address
+	 */
+	public String getAddress() {
+		return address;
+	}
+	/**
+	 * @param address the address to set
+	 */
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	

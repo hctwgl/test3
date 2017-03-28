@@ -78,8 +78,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-		if(afBorrowCashDo!=null&&( !StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())||!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()) ||
-				!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.refuse.getCode()))){
+		if(afBorrowCashDo!=null&&( !StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())||
+				!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()) )){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 
 		}
@@ -95,7 +95,6 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService =bankRate.multiply(bankDouble).divide(new BigDecimal( 360),6,RoundingMode.HALF_UP);
 		BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
-
 
 		BigDecimal serviceRate =bankService.add(poundageRate).divide(new BigDecimal(100));
 

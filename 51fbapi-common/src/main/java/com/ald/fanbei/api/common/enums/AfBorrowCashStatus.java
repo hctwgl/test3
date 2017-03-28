@@ -12,14 +12,12 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum AfBorrowCashStatus {
 	apply("APPLY","APPLY", "申请/未审核 "), 
-	agree("AGREE", "AGREE","同意/审核通过"),
-	refuse("REFUSE","REFUSE", "拒绝 "), 
+	waitTransed("WAITTRANSED", "WAITTRANSED","待打款"),
+	transed("TRANSED","TRANSED", "已经打款/待还款"), 
 	finsh("FINSH", "FINSH","已结清"),
-	transed("TRANSED", "TRANSED","已经打款"),
-	transedfail("TRANSEDFAIL","TRANSEDFAIL", "贷款失败 "), 
-
-	closed("CLOSED","CLOSED", "拒绝 ")
-	;
+	noFinsh("NOFINSH", "NOFINSH","待结清"),
+	transedfail("TRANSEDFAIL","TRANSEDFAIL", "打款失败"), 
+	closed("CLOSED","CLOSED", "拒绝 ");
 	
 	
 	private String code;

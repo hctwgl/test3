@@ -63,6 +63,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
 			data.put("overdueDay", afBorrowCashDo.getOverdueDay());
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
+			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
+			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
 			data.put("rid", afBorrowCashDo.getRid());
 		}
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());

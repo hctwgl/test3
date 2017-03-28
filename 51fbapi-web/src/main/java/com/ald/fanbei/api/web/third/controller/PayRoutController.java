@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
@@ -55,7 +56,9 @@ public class PayRoutController{
 	
 	@Resource
 	private AfRepaymentService afRepaymentService;
-	
+	@Resource
+	private AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+
 	@Resource
 	private AfBorrowService afBorrowService;
 	
@@ -254,6 +257,8 @@ public class PayRoutController{
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
 	    			afOrderService.dealBrandOrder(outTradeNo, transactionId);
+	    		}else if(PayOrderSource.REPAYMENTCASH.getCode().equals(attach)){
+	    			afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		}
     		}
             
@@ -284,6 +289,9 @@ public class PayRoutController{
         			afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
         		} else if (OrderType.BOLUOME.getCode().equals(merPriv)) {
         			afOrderService.dealBrandOrder(outTradeNo, tradeNo);
+        		} else if(UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)){
+	    			afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
+
         		}
     			return "SUCCESS";
 			}else{//代收失败

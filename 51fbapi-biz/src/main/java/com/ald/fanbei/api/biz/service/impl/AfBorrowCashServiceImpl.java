@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -74,9 +75,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 Long borrowId = afBorrowCashDo.getRid();
 					 RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, "") , "20", afBorrowCashDo.getCardNumber());
 					 AfBorrowCashDo borrowCashDo = new AfBorrowCashDo();
-					 borrowCashDo.setRid(borrowId);
-					 
-					 
+					 borrowCashDo.setRid(borrowId);	 
 					 if(StringUtils.equals("10", result.getResult())){
 						//审核通过
 						 borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
@@ -88,15 +87,19 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 							UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), afBorrowCashDo.getUserId()+"",
 									card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02",
 									UserAccountLogType.BorrowCash.getCode(),borrowId+"");
+							borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
 							if(!upsResult.isSuccess()){
 								logger.info("upsResult error:"+FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 								 borrowCashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
-
+								 
 							}
 							afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
 						 
 					 }else if(StringUtils.equals("30", result.getResult())){
 						 borrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+						 borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+					 }else{
+						 borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
 					 }
 					 afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
 					return 1;
