@@ -257,10 +257,11 @@ public class PayRoutController{
 	    		}else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
-	    			afOrderService.dealBrandOrder(outTradeNo, transactionId);
+//	    			afOrderService.dealBrandOrder(outTradeNo, transactionId);
+	    			afOrderService.dealBrandOrder(outTradeNo, transactionId, PayType.WECHAT.getCode());
+
 	    		}else if(PayOrderSource.REPAYMENTCASH.getCode().equals(attach)){
 	    			afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, transactionId);
-	    			afOrderService.dealBrandOrder(outTradeNo, transactionId, PayType.WECHAT.getCode());
 
 	    		}
     		}
