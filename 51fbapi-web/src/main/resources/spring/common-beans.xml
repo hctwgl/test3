@@ -16,4 +16,8 @@
 			<value>props/config.properties</value>
 		</property>
 	</bean>
+	
+	<bean id="thirdConfigProperties" class="com.ald.fanbei.api.common.util.ThirdConfigProperties"
+		init-method="init">
+	</bean>
 </beans>

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -601,5 +602,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		accountLog.setRefId(orderId+"");
 		accountLog.setType(logType.getCode());
 		return accountLog;
+	}
+	
+	
+	public static void main(String[] args) {
+		System.out.println(UUID.randomUUID());
 	}
 }
