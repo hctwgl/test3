@@ -52,6 +52,18 @@ public interface AfBorrowService {
 	 */
 	public long dealConsumeApply(AfUserAccountDo userDto,BigDecimal amount,Long cardId,Long goodsId,String openId,String numId,String name,int nper);
 	
+	
+	/**
+	 * 品牌分期代付
+	 * @param userDto --
+	 * @param amount --金额
+	 * @param cardId --银行卡id
+	 * @param name --借款名称
+	 * @param nper --分期数
+	 * @return
+	 */
+	public long dealBrandConsumeApply(AfUserAccountDo userDto,BigDecimal amount,String name,int nper, Long orderId, String orderNo);
+	
 	/**
 	 * 获取最近借款号
 	 * @param current

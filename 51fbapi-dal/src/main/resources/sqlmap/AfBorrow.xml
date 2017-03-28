@@ -20,12 +20,15 @@
 			type,
 			borrow_no,
 			name,
+			remark,
 			amount,
 			status,
 			nper,
 			nper_amount,
 			card_number,
-			card_name
+			card_name,
+			order_id,
+			order_no
 			)
 			VALUES
 			(
@@ -35,12 +38,15 @@
 			#{type},
 			#{borrowNo},
 			#{name},
+			#{remark},
 			#{amount},
 			#{status},
 			#{nper},
 			#{nperAmount},
 			#{cardNumber},
-			#{cardName}
+			#{cardName},
+			#{orderId},
+			#{orderNo}
 			)
 	</insert>
 	

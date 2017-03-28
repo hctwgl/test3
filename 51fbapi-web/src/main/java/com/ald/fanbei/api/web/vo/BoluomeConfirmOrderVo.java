@@ -19,6 +19,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private BigDecimal saleAmount;//应付金额
 	private BigDecimal rebateAmount;//返利金额
 	private Date gmtPayEnd;//截止支付时间
+	private Date currentTime;//当前时间
 	private String mobileStatus;//手机运营商认证
 	private String teldirStatus;//通讯录匹配
 	
@@ -305,6 +306,18 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	 */
 	public void setUsableAmount(BigDecimal usableAmount) {
 		this.usableAmount = usableAmount;
+	}
+	/**
+	 * @return the currentTime
+	 */
+	public Date getCurrentTime() {
+		return currentTime;
+	}
+	/**
+	 * @param currentTime the currentTime to set
+	 */
+	public void setCurrentTime(Date currentTime) {
+		this.currentTime = currentTime;
 	}
 	
 	
