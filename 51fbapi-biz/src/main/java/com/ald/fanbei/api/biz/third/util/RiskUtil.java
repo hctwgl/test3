@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class RiskUtil extends AbstractThird{
 	 * @param address --地址
 	 * @return
 	 */
-	public static RiskRespBo register(String consumerNo,String realName,String phone,String idNo,
+	public RiskRespBo register(String consumerNo,String realName,String phone,String idNo,
 			String email,String alipayNo,String address){
 		RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
 		reqBo.setConsumerNo(consumerNo);
@@ -134,14 +135,14 @@ public class RiskUtil extends AbstractThird{
 		String reqResult = HttpUtil.httpPost(url+"/modules/api/user/modify.htm", reqBo);
 		logThird(reqResult, "modify", reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
 		}
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult,RiskRespBo.class);
 		if(riskResp!=null && TRADE_RESP_SUCC.equals(riskResp.getCode())){
 			riskResp.setSuccess(true);
 			return riskResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
 		}
 	}
 	
@@ -264,6 +265,7 @@ public class RiskUtil extends AbstractThird{
 				AfUserAuthDo auth = new AfUserAuthDo();
 				auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 				auth.setMobileStatus(YesNoStatus.YES.getCode());
+				auth.setGmtMobile(new Date());
 				return afUserAuthService.updateUserAuth(auth);
 			}
 		}
