@@ -628,4 +628,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			}
 		});
 	}
+
+	@Override
+	public AfBorrowDo getBorrowByOrderId(Long orderId) {
+		return afBorrowDao.getBorrowByOrderId(orderId);
+	}
 }

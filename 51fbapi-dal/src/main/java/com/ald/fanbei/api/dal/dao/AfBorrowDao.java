@@ -52,4 +52,11 @@ public interface AfBorrowDao {
 	public String getCurrentLastBorrowNo(Date current);
 	
 	int updateBorrowStatus(@Param("id")Long id,@Param("status")String status);
+	
+	/**
+     * 通过订单id获取借款信息
+     * @param id
+     * @return
+     */
+    AfBorrowDo getBorrowByOrderId(Long orderId);
 }

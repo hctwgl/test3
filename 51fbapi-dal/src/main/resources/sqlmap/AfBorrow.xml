@@ -11,6 +11,12 @@
 			<include refid="queryFields"/>
 		FROM af_borrow WHERE is_delete = 0 AND id = #{id}
     </select>
+    
+    <select id="getBorrowByOrderId" resultType="AfBorrowDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_borrow WHERE is_delete = 0 AND order_id = #{orderId}
+    </select>
 
 	<insert id="addBorrow" keyProperty="rid" useGeneratedKeys="true" parameterType="AfBorrowDo">
 		INSERT INTO af_borrow (

@@ -100,6 +100,13 @@ public interface AfBorrowService {
     AfBorrowDo getBorrowById(Long id);
     
     /**
+     * 通过订单id获取借款信息
+     * @param id
+     * @return
+     */
+    AfBorrowDo getBorrowByOrderId(Long orderId);
+    
+    /**
      * 获取借款商品信息
      * @param borrowId
      * @return

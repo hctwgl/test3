@@ -23,6 +23,7 @@ public enum UserAccountLogType {
 	SIGN("SIGN", "签到"),
 	REGIST("REGIST", "新注册"),
 	CONSUME("CONSUME", "分期"),
+	AP_REFUND("AP_REFUND", "代付退款"),
 	REPAYMENT("REPAYMENT", "还款"),
 	REBATE_CASH("REBATE_CASH", "返利现金"),
 	REBATE_JFB("REBATE_JFB", "返利集分宝"),

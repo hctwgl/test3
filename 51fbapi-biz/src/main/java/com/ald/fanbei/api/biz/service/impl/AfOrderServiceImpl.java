@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -43,6 +45,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
@@ -119,6 +122,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfBorrowService afBorrowService;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AfBorrowBillDao afBorrowBillDao;
 	
 	@Override
 	public int createOrderTrade(String content) {
@@ -521,5 +528,78 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+	}
+
+	@Override
+	public int dealBrandOrderRefund(final AfOrderDo orderInfo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					logger.info("dealBrandOrderRefund begin , orderInfo = {} ", orderInfo);
+					
+					PayType payType = PayType.findRoleTypeByCode(orderInfo.getPayType());
+					switch (payType) {
+					case WECHAT:
+						String refundResult = UpsUtil.wxRefund(orderInfo.getOrderNo(), orderInfo.getPayTradeNo(), orderInfo.getActualAmount(), orderInfo.getActualAmount());
+						logger.info("wx refund  , refundResult = {} ", refundResult);
+						if(!"SUCCESS".equals(refundResult)){
+							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+						}
+						break;
+					case AGENT_PAY:
+						logger.info("agent pay refund  , refundResult = {} ");
+//						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+//						
+//						BigDecimal usedAmount = BigDecimalUtil.add(accountInfo.getUsedAmount(), orderInfo.getActualAmount());
+//						accountInfo.setUsedAmount(usedAmount);
+//						afUserAccountDao.updateOriginalUserAccount(accountInfo);
+//						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+//						afBorrowBillDao.getBorrowBillByBorrowId(borrowId)
+//						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.AP_REFUND, orderInfo.getActualAmount(), orderInfo.getUserId(), orderInfo.getRid()));
+						
+						break;
+					case BANK:
+						Long userId = orderInfo.getUserId();
+						Long bankId = orderInfo.getBankId();
+						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
+						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
+						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(orderInfo.getActualAmount(), userAccount.getRealName(), card.getCardNumber(), orderInfo.getUserId()+"", 
+								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.BOLUOME.getCode(),"");
+						logger.info("bank refund upsResult = {}", upsResult);
+						if(!upsResult.isSuccess()){
+							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+						}
+						break;
+					default:
+						break;
+					}
+					
+					orderInfo.setStatus(OrderStatus.DEAL_REFUNDING.getCode());
+					orderDao.updateOrder(orderInfo);
+					
+					logger.info("dealBrandOrderRefund comlete , orderInfo = {} ", orderInfo);
+					return 1;
+				} catch (FanbeiException e) {
+					status.setRollbackOnly();
+					logger.error("dealBrandOrderRefund error = {}", e);
+					throw new FanbeiException("reund error", e.getErrorCode());
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealBrandOrderRefund error:",e);
+					return 0;
+				}
+			}
+		});
+	}
+	
+	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType logType,BigDecimal amount,Long userId,Long orderId){
+		//增加account变更日志
+		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+		accountLog.setAmount(amount);
+		accountLog.setUserId(userId);
+		accountLog.setRefId(orderId+"");
+		accountLog.setType(logType.getCode());
+		return accountLog;
 	}
 }
