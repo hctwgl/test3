@@ -7,11 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthTdService;
 import com.ald.fanbei.api.biz.service.AfAuthYdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -22,6 +24,7 @@ import com.ald.fanbei.api.dal.domain.AfAuthYdDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -49,6 +52,8 @@ public class AuthFaceApi implements ApiHandle {
 	private AfUserService afUserService;
 	@Resource
 	private AfUserAccountService afUserAccountService;
+	@Resource
+	private RiskUtil riskUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -64,8 +69,19 @@ public class AuthFaceApi implements ApiHandle {
 		
 		idNumber = new String(Base64.decode(idNumber));
 		
-        //实名信息，如果与之前的实名信息不一致时报错
-        AfUserAccountDo oldAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
+        AfUserAccountDto oldAccount = afUserAccountService.getUserAndAccountByUserId(context.getUserId());
+		
+        //第一次实名认证
+      	if(StringUtil.isBlank(oldAccount.getIdNumber())&&StringUtil.isBlank(oldAccount.getRealName())){
+      		//同步实名信息到融都
+      		RiskRespBo riskResp = riskUtil.register(oldAccount.getUserId()+"", realName, oldAccount.getMobile(), idNumber, 
+      				oldAccount.getEmail(), oldAccount.getAlipayAccount(), oldAccount.getAddress());
+      		if(!riskResp.isSuccess()){
+      			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+      		}
+      	}
+      	
+		//实名信息，如果与之前的实名信息不一致时报错
         if(!(StringUtil.isNotBlank(oldAccount.getIdNumber())&&StringUtil.equals(idNumber, oldAccount.getIdNumber()))
                 || !(StringUtil.isNotBlank(oldAccount.getRealName())&&StringUtil.equals(realName, oldAccount.getRealName()))){
             throw new FanbeiException("user realname auth error",FanbeiExceptionCode.USER_REALNAME_AUTH_ERROR);

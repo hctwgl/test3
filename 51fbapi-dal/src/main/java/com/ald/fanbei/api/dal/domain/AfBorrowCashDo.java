@@ -47,7 +47,6 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String province;
 	private String city;
 	private String county;
-	
 
 	/**
 	 * @return the gmtCreate
@@ -373,6 +372,4 @@ public class AfBorrowCashDo extends AbstractSerial {
 	public void setRid(Long rid) {
 		this.rid = rid;
 	}
-
-	
 }

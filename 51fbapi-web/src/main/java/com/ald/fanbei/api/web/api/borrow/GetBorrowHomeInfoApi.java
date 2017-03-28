@@ -22,6 +22,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -78,7 +79,15 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
         }
 		vo.setCurrentAmount(repaymentAmount);
 		vo.setIvsStatus(authDo.getIvsStatus());
-		vo.setMobileStatus(authDo.getMobileStatus());
+		if(null == authDo.getGmtMobile()){
+			vo.setMobileStatus(authDo.getMobileStatus());
+		}else{
+			if(DateUtil.afterDay(authDo.getGmtMobile(), DateUtil.addMonths(new Date(), 2))){//超过两个月
+				vo.setMobileStatus(YesNoStatus.NO.getCode());
+			}else{
+				vo.setMobileStatus(authDo.getMobileStatus());
+			}
+		}
 		vo.setRealNameStatus(authDo.getRealnameStatus());
 		vo.setRepayLimitTime(afBorrowService.getReyLimitDate("",now));
 		vo.setTeldirStatus(authDo.getTeldirStatus());
@@ -102,6 +111,11 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setZmScore(authDo.getZmScore());
 		vo.setIvsScore(authDo.getIvsScore());
 		vo.setRealNameScore(authDo.getRealnameScore());
+		vo.setContactorStatus(authDo.getContactorStatus());
+		vo.setContactorName(authDo.getContactorName());
+		vo.setContactorMobile(authDo.getContactorMobile());
+		vo.setLocationAddress(authDo.getLocationAddress());
+		vo.setLocationStatus(authDo.getLocationStatus());
 		return vo;
 	}
 }

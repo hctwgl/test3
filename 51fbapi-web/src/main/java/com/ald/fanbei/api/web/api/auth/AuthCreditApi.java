@@ -8,12 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.ZhimaAuthResultBo;
 import com.ald.fanbei.api.biz.service.AfAuthZmService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -26,6 +28,7 @@ import com.ald.fanbei.api.dal.domain.AfAuthZmDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -55,6 +58,8 @@ public class AuthCreditApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	private RiskUtil riskUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -70,9 +75,15 @@ public class AuthCreditApi implements ApiHandle {
 		}
 		String openId = zarb.getOpenId();
 		
-		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
+		AfUserAccountDto userAccount = afUserAccountService.getUserAndAccountByUserId(context.getUserId());
 		String idNumber = userAccount.getIdNumber();
 		String realName = userAccount.getRealName();
+		//同步openId到融都
+		RiskRespBo riskResp = riskUtil.modify(userAccount.getUserId()+"", realName, userAccount.getMobile(),idNumber, userAccount.getEmail(),
+				userAccount.getAlipayAccount(), userAccount.getAddress(), openId);
+		if(!riskResp.isSuccess()){
+			throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
+		}
 		ZhimaCreditScoreGetResponse scoreGetResp = ZhimaUtil.scoreGet(openId);
 		ZhimaCreditIvsDetailGetResponse ivsDetailResp =  ZhimaUtil.ivsDetailGet(idNumber, realName, null, null, null);
 		ZhimaCreditWatchlistiiGetResponse watchListResp = ZhimaUtil.watchlistiiGet(openId);
