@@ -19,9 +19,12 @@ import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -72,8 +75,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
 			data.put("overdueDay", afBorrowCashDo.getOverdueDay());
+			Integer day = NumberUtil.objToIntDefault( AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());			
+			data.put("repaymentDay", DateUtil.addDays(afBorrowCashDo.getGmtArrival(), day));
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-//			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
+			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
 			data.put("rid", afBorrowCashDo.getRid());
 		}

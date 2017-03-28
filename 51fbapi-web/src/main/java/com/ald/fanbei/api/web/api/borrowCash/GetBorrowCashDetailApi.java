@@ -55,6 +55,13 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		data.put("amount", afBorrowCashDo.getAmount());
 		data.put("gmtCreate", afBorrowCashDo.getGmtCreate());
 		data.put("status", afBorrowCashDo.getStatus());
+		
+		if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.noFinsh.getCode())){
+			data.put("status", AfBorrowCashStatus.transed.getCode());
+
+		}else if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())){
+			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
+		}
 		data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 		data.put("rejectReason", afBorrowCashDo.getReviewDetails());
 		data.put("serviceAmount", BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), afBorrowCashDo.getPoundage()));
@@ -62,6 +69,10 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		data.put("borrowNo", afBorrowCashDo.getBorrowNo());
 		data.put("bankCard", afBorrowCashDo.getCardNumber());
 		data.put("bankName", afBorrowCashDo.getCardName());
+		data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
+		if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())){
+			data.put("gmtClose", afBorrowCashDo.getGmtModified());
+		}
 		
 		
 //		data.put("gmtClose", value)

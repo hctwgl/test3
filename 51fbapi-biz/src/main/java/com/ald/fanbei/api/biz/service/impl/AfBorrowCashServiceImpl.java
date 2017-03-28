@@ -98,6 +98,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 }else if(StringUtils.equals("30", result.getResult())){
 						 borrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 						 borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+						 borrowCashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
 					 }else{
 						 borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
 					 }

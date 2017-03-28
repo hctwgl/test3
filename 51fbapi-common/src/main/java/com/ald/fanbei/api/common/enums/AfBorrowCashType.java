@@ -35,6 +35,14 @@ public enum AfBorrowCashType {
         }
         return null;
     }
+    public static AfBorrowCashType findRoleTypeByName(String name) {
+        for (AfBorrowCashType roleType : AfBorrowCashType.values()) {
+            if (StringUtils.equals(name, roleType.getName())) {
+                return roleType;
+            }
+        }
+        return null;
+    }
 	public String getCode() {
 		return code;
 	}

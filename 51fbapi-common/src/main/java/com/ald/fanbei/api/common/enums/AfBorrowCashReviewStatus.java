@@ -12,7 +12,7 @@ public enum AfBorrowCashReviewStatus {
 	
 	apply("APPLY", "申请/待风控审核"), 
 	waitfbReview("WAITFBREVIEW", ":待返呗审核通过"),
-	refuse("REFUSE", "风控拒绝"),
+	refuse("REFUSE", "风控拒绝审核不通过"),
 	
 	agree("AGREE", "风控审核同意"),
 
