@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -81,8 +82,8 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		if(null == authDo.getGmtMobile()){
 			vo.setMobileStatus(authDo.getMobileStatus());
 		}else{
-			if(DateUtil.afterDay(authDo.getGmtMobile(), DateUtil.addMonths(new Date(), 2))){//超过两个月
-				vo.setMobileStatus(YesNoStatus.NO.getCode());
+			if(StringUtil.equals(MobileStatus.YES.getCode(), authDo.getMobileStatus())&&DateUtil.afterDay(authDo.getGmtMobile(), DateUtil.addMonths(new Date(), 2))){//超过两个月
+				vo.setMobileStatus(MobileStatus.EXPIRE.getCode());
 			}else{
 				vo.setMobileStatus(authDo.getMobileStatus());
 			}
