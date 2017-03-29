@@ -78,8 +78,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 borrowCashDo.setRid(borrowId);	 
 					 if(StringUtils.equals("10", result.getResult())){
 						//审核通过
+						 borrowCashDo.setGmtArrival(currDate);
+
 						 borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
-						 
 						 AfUserAccountDto userDto = afUserAccountDao.getUserAndAccountByUserId(userId);
 							AfUserBankcardDo card = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 
@@ -90,10 +91,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 							borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
 							if(!upsResult.isSuccess()){
 								logger.info("upsResult error:"+FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-								 borrowCashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
-								 
+								 borrowCashDo.setStatus(AfBorrowCashStatus.transedfail.getCode()); 
 							}
-							afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+							afBorrowCashDao.updateBorrowCash(borrowCashDo);
 						 
 					 }else if(StringUtils.equals("30", result.getResult())){
 						 borrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
@@ -102,7 +102,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 }else{
 						 borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
 					 }
-					 afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+					 afBorrowCashDao.updateBorrowCash(borrowCashDo);
 					return 1;
 				} catch (Exception e) {
 					logger.info("dealWithTransferSuccess error:"+e);

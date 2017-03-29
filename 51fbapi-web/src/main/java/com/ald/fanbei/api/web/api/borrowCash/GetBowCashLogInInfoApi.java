@@ -86,20 +86,22 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			Integer day = NumberUtil
 					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
-			Date repaymentDay = DateUtil.addDays(afBorrowCashDo.getGmtArrival(), day);
-			data.put("repaymentDay", repaymentDay);
-
 			Date now = new Date();
-			if (DateUtil.beforeDay(now, repaymentDay)) {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(now);
-				Calendar calendarRepay = Calendar.getInstance();
-				calendarRepay.setTime(repaymentDay);
-				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
-				data.put("deadlineDay", chaTime);
 
+			if(afBorrowCashDo.getGmtArrival()!=null){
+				Date repaymentDay = DateUtil.addDays(afBorrowCashDo.getGmtArrival(), day);
+				data.put("repaymentDay", repaymentDay);
+				if (DateUtil.beforeDay(now, repaymentDay)) {
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(now);
+					Calendar calendarRepay = Calendar.getInstance();
+					calendarRepay.setTime(repaymentDay);
+					Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
+					data.put("deadlineDay", chaTime);
+
+				}
 			}
-
+			
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
