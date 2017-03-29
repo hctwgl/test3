@@ -47,6 +47,9 @@ public class GetBrandCouponListApi implements ApiHandle {
 	private static final String AVAILABLE_COUPON = "availableCoupons";
 	private static final String USED_COUPON = "usedCoupons";
 	private static final String EXPIRED_COUPON = "expiredCoupons";
+	private static final String DATA = "data";
+	private static final String NEXT_PAGE_INDEX = "nextPageIndex";
+	
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -56,7 +59,7 @@ public class GetBrandCouponListApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		
 		Integer type = NumberUtil.objToIntDefault(requestDataVo.getParams().get("type"), null);
-		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
+		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), null);
 		Integer pageSize = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageSize"), 20);
 		
 		if (type == null) {
@@ -66,9 +69,9 @@ public class GetBrandCouponListApi implements ApiHandle {
 		
 		BrandCouponRequestBo bo = new BrandCouponRequestBo();
 		bo.setUserId(context.getUserId() + StringUtils.EMPTY);
-		bo.setType(type+StringUtils.EMPTY);
-		bo.setPageIndex(pageNo+StringUtils.EMPTY);
-		bo.setPageSize(pageSize+StringUtils.EMPTY);
+		bo.setType(1);
+		bo.setPageIndex(50);
+		bo.setPageSize(pageSize);
 		try {
 			String resultString = HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/api/promotion/get_coupon_list", JSONObject.toJSONString(bo));
 			JSONObject resultJson = JSONObject.parseObject(resultString);
@@ -87,28 +90,52 @@ public class GetBrandCouponListApi implements ApiHandle {
 	private List<AfBrandCouponVo> parseBrandCoupon(JSONObject resultJson, Integer type) {
 		List<AfBrandCouponVo> voList = new ArrayList<AfBrandCouponVo>();
 		if (type == 1) {
-			String availableCouponStr = resultJson.getString(AVAILABLE_COUPON);
+			JSONObject data = resultJson.getJSONObject(DATA);
+			String availableCouponStr = data.getString(AVAILABLE_COUPON);
 			List<BrandCouponResponseBo> availabeCouponlList = JSONObject.parseArray(availableCouponStr, BrandCouponResponseBo.class);
-			voList.addAll(parseBrandCouponVo(availabeCouponlList, "NOUSE"));
+			List<AfBrandCouponVo> availabeCouponVolList = parseBrandCouponVo(availabeCouponlList, "NOUSE");
+			if (CollectionUtils.isNotEmpty(availabeCouponVolList)) {
+				voList.addAll(availabeCouponVolList);
+			}
 		} else if (type == 2){
-			String usedCouponStr = resultJson.getString(USED_COUPON);
-			List<BrandCouponResponseBo> usedCouponList = JSONObject.parseArray(usedCouponStr, BrandCouponResponseBo.class);
-			voList.addAll(parseBrandCouponVo(usedCouponList, "USED"));
-		} else if (type == 3) {
-			String expiredCouponStr = resultJson.getString(EXPIRED_COUPON);
-			List<BrandCouponResponseBo> expiredCouponList = JSONObject.parseArray(expiredCouponStr, BrandCouponResponseBo.class);
-			voList.addAll(parseBrandCouponVo(expiredCouponList, "EXPIRE"));
-		} else if (type == 4) {
-			String availableCouponStr = resultJson.getString(AVAILABLE_COUPON);
-			String usedCouponStr = resultJson.getString(USED_COUPON);
-			String expiredCouponStr = resultJson.getString(EXPIRED_COUPON);
+			JSONObject data = resultJson.getJSONObject(DATA);
+			String usedCouponStr = data.getString(USED_COUPON);
 			
-			List<BrandCouponResponseBo> availabeCouponlList = JSONObject.parseArray(availableCouponStr, BrandCouponResponseBo.class);
-			voList.addAll(parseBrandCouponVo(availabeCouponlList, "NOUSE"));
 			List<BrandCouponResponseBo> usedCouponList = JSONObject.parseArray(usedCouponStr, BrandCouponResponseBo.class);
-			voList.addAll(parseBrandCouponVo(usedCouponList, "USED"));
+			List<AfBrandCouponVo> usedCouponVoList = parseBrandCouponVo(usedCouponList, "USED");
+			if (CollectionUtils.isNotEmpty(usedCouponVoList)) {
+				voList.addAll(usedCouponVoList);
+			}
+		} else if (type == 3) {
+			JSONObject data = resultJson.getJSONObject(DATA);
+			String expiredCouponStr = data.getString(EXPIRED_COUPON);
 			List<BrandCouponResponseBo> expiredCouponList = JSONObject.parseArray(expiredCouponStr, BrandCouponResponseBo.class);
-			voList.addAll(parseBrandCouponVo(expiredCouponList, "EXPIRE"));
+			List<AfBrandCouponVo> expiredCouponVoList = parseBrandCouponVo(expiredCouponList, "EXPIRE");
+			if (CollectionUtils.isNotEmpty(expiredCouponVoList)) {
+				voList.addAll(expiredCouponVoList);
+			}
+		} else if (type == 4) {
+			JSONObject data = resultJson.getJSONObject(DATA);
+			String availableCouponStr = data.getString(AVAILABLE_COUPON);
+			String usedCouponStr = data.getString(USED_COUPON);
+			String expiredCouponStr = data.getString(EXPIRED_COUPON);
+			List<BrandCouponResponseBo> availabeCouponlList = JSONObject.parseArray(availableCouponStr, BrandCouponResponseBo.class);
+			List<AfBrandCouponVo> availabeCouponVolList = parseBrandCouponVo(availabeCouponlList, "NOUSE");
+			
+			if (CollectionUtils.isNotEmpty(availabeCouponVolList)) {
+				voList.addAll(availabeCouponVolList);
+			}
+			List<BrandCouponResponseBo> usedCouponList = JSONObject.parseArray(usedCouponStr, BrandCouponResponseBo.class);
+			List<AfBrandCouponVo> usedCouponVoList = parseBrandCouponVo(usedCouponList, "USED");
+			if (CollectionUtils.isNotEmpty(usedCouponVoList)) {
+				voList.addAll(usedCouponVoList);
+			}
+			
+			List<BrandCouponResponseBo> expiredCouponList = JSONObject.parseArray(expiredCouponStr, BrandCouponResponseBo.class);
+			List<AfBrandCouponVo> expiredCouponVoList = parseBrandCouponVo(expiredCouponList, "EXPIRE");
+			if (CollectionUtils.isNotEmpty(expiredCouponVoList)) {
+				voList.addAll(expiredCouponVoList);
+			}
 		}
 		return voList;
 	}

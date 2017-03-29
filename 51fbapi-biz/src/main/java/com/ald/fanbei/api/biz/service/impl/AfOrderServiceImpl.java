@@ -547,6 +547,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if(!"SUCCESS".equals(refundResult)){
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						}
+						
 						break;
 					case AGENT_PAY:
 						logger.info("agent pay refund  , refundResult = {} ");
