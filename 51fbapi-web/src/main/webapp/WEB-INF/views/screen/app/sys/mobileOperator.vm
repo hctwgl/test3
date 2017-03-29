@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<title>提交成功</title>
+	    <style type="text/css">
+	    	.mobileOperator{
+	    		margin-top: 6.0rem;
+                text-align: center;
+	    	}
+            .mobileOperator span{
+                width: 100px;
+                height: 100px;
+                background-color: red;
+                margin: 0 auto;
+            }
+            .mobileOperator p{
+                margin-top: 3.0rem;
+            }
+            .mobileOperator_btn{
+                width: 17.5rem;
+                height: 2.5rem;
+                line-height: 2.5rem;
+                color: #fff;
+                margin: 5.0rem auto 0;
+            }
+	    </style>
+    </head>
+    <body>
+    	<div class="tac fs_14 mobileOperator">
+            <span></span>
+            <p>运营商认证申请已提交<br>请耐心等待审核结果</p>
+            <div class="tac fsc_f bdr_4 bgc_orange mobileOperator_btn">返回征信</div>
+        </div>
+    </body>
+</html>
