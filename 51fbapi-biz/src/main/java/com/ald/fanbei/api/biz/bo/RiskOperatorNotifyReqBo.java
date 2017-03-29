@@ -21,18 +21,21 @@ public class RiskOperatorNotifyReqBo extends HashMap<String, String>{
 	}
 	public void setCode(String code) {
 		this.code = code;
+		this.put("code", code);
 	}
 	public String getData() {
 		return data;
 	}
 	public void setData(String data) {
 		this.data = data;
+		this.put("data", data);
 	}
 	public String getMsg() {
 		return msg;
 	}
 	public void setMsg(String msg) {
 		this.msg = msg;
+		this.put("msg", msg);
 	}
 	public String getSignInfo() {
 		return signInfo;
