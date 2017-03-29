@@ -15,6 +15,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 
 	private static final long serialVersionUID = 8312782486382699082L;
 	
+	private Long rid;//订单id
 	private String goodsName;//商品名称
 	private BigDecimal saleAmount;//应付金额
 	private BigDecimal rebateAmount;//返利金额
@@ -318,6 +319,18 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	 */
 	public void setCurrentTime(Date currentTime) {
 		this.currentTime = currentTime;
+	}
+	/**
+	 * @return the rid
+	 */
+	public Long getRid() {
+		return rid;
+	}
+	/**
+	 * @param rid the rid to set
+	 */
+	public void setRid(Long rid) {
+		this.rid = rid;
 	}
 	
 	

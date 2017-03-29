@@ -3,12 +3,14 @@
  */
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -38,7 +41,10 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();	
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+//		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+		Long rid = NumberUtil.objToLongDefault(requestDataVo.getParams().get("borrowId"),0l) ;
+
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 		if(afBorrowCashDo==null){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 
@@ -70,12 +76,18 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		data.put("bankCard", afBorrowCashDo.getCardNumber());
 		data.put("bankName", afBorrowCashDo.getCardName());
 		data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-		if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())){
-			data.put("gmtClose", afBorrowCashDo.getGmtModified());
-		}
+		data.put("gmtClose", afBorrowCashDo.getGmtClose());
+		data.put("paidAmount",afBorrowCashDo.getRepayAmount());
+		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());
+		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 		
-		
-//		data.put("gmtClose", value)
+		data.put("returnAmount", showAmount);
+
+		data.put("overdueDay", afBorrowCashDo.getOverdueDay());
+		data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
+		data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
+		data.put("rid", afBorrowCashDo.getRid());
+
 		return data;
 
 	}

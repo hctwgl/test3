@@ -5,6 +5,8 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +62,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else {
 			data.put("status", afBorrowCashDo.getStatus());
 
-			if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.noFinsh.getCode())){
+			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.noFinsh.getCode())) {
 				data.put("status", AfBorrowCashStatus.transed.getCode());
 
-			}else if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())){
+			} else if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
 			}
@@ -75,9 +77,23 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
 			data.put("overdueDay", afBorrowCashDo.getOverdueDay());
-			Integer day = NumberUtil.objToIntDefault( AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());			
-			data.put("repaymentDay", DateUtil.addDays(afBorrowCashDo.getGmtArrival(), day));
+			Integer day = NumberUtil
+					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
+			Date repaymentDay = DateUtil.addDays(afBorrowCashDo.getGmtArrival(), day);
+			data.put("repaymentDay", repaymentDay);
+
+			Date now = new Date();
+			if (DateUtil.beforeDay(now, repaymentDay)) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(now);
+				Calendar calendarRepay = Calendar.getInstance();
+				calendarRepay.setTime(repaymentDay);
+				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
+				data.put("deadlineDay", chaTime);
+
+			}
+
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
@@ -85,15 +101,15 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		}
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
-		BigDecimal bankService =bankRate.multiply(bankDouble).divide(new BigDecimal( 360),6,RoundingMode.HALF_UP);
+		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 
-		data.put("bankDoubleRate",bankService.toString());
-		data.put("poundageRate",rate.get("poundage"));
-		data.put("overdueRate",rate.get("overduePoundage"));
+		data.put("bankDoubleRate", bankService.toString());
+		data.put("poundageRate", rate.get("poundage"));
+		data.put("overdueRate", rate.get("overduePoundage"));
 		data.put("maxAmount", rate.get("maxAmount"));
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
-		data.put("bannerList",bannerList);
+		data.put("bannerList", bannerList);
 
 		resp.setResponseData(data);
 		return resp;

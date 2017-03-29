@@ -85,7 +85,7 @@
 		WHERE 
 			is_delete = 0 
 		AND 
-			borrow_cash_id = #{borrowCashId} 
+			borrow_id = #{borrowCashId} 
 		ORDER BY
 			gmt_create DESC
 

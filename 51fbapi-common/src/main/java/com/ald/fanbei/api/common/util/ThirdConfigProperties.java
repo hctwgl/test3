@@ -5,13 +5,15 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.UUID;
 
+import com.ald.fanbei.api.common.Constants;
+
 /**
  * 
- *@类描述：配置属性
- *@author 陈金虎 2017年1月17日 下午6:14:21
- *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @类描述：第三方APPkey配置
+ * @author xiaotianjian 2017年3月28日下午11:44:28
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class ConfigProperties {
+public class ThirdConfigProperties {
 
     private static Properties config     = new Properties();
 
@@ -27,7 +29,13 @@ public class ConfigProperties {
 
     public void init() {
         try {
-            config.load(ConfigProperties.class.getClassLoader().getResourceAsStream(configPath));
+        	if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)) {
+        		configPath = "props/appKey_online.properties";
+        	} else {
+        		configPath = "props/appKey_test.properties";
+        	}
+        	
+            config.load(ThirdConfigProperties.class.getClassLoader().getResourceAsStream(configPath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

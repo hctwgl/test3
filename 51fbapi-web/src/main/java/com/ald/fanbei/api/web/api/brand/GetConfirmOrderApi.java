@@ -77,6 +77,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 	
 	private BoluomeConfirmOrderVo buildConfirmOrderVo(AfOrderDo orderInfo, AfUserAccountDto userDto, AfUserAuthDo authDo, AfUserBankcardDo bankInfo){
 		BoluomeConfirmOrderVo vo = new BoluomeConfirmOrderVo();
+		vo.setRid(orderInfo.getRid());
 		vo.setGoodsName(orderInfo.getGoodsName());
 		vo.setSaleAmount(orderInfo.getSaleAmount());
 		vo.setRebateAmount(orderInfo.getRebateAmount());

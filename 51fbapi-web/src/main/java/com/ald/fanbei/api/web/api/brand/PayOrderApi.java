@@ -59,8 +59,8 @@ public class PayOrderApi implements ApiHandle {
 		  
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		
-		if (orderId == null || payId == null || StringUtils.isEmpty(payPwd)) {
-			logger.error("orderId is empty or payId is empty or payId is empty");
+		if (orderId == null || payId == null) {
+			logger.error("orderId is empty or payId is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		//TODO获取用户订单

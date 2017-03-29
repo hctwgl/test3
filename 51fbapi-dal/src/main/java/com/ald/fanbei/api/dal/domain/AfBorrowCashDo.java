@@ -39,6 +39,8 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String reviewUserName;
 	private String reviewDetails;
 	private Date gmtReview;
+	private Date gmtClose;
+
 	private BigDecimal poundage;
 	private BigDecimal rateAmount;
 	private BigDecimal repayAmount;
@@ -51,6 +53,18 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String reviewStatus;
 	private String address;
 
+	/**
+	 * @return the gmtClose
+	 */
+	public Date getGmtClose() {
+		return gmtClose;
+	}
+	/**
+	 * @param gmtClose the gmtClose to set
+	 */
+	public void setGmtClose(Date gmtClose) {
+		this.gmtClose = gmtClose;
+	}
 	/**
 	 * @return the gmtCreate
 	 */

@@ -148,4 +148,6 @@ public class Constants {
     //菠萝觅
     public static final String CONFKEY_BOLUOME_APPKEY                = "fbapi.boluome.appkey";
     public static final String CONFKEY_BOLUOME_SECRET                = "fbapi.boluome.secret";
+    public static final String CONFKEY_BOLUOME_API_URL               = "fbapi.boluome.api.url";
+    
 }

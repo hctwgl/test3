@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowCashDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address
+		id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address,gmt_close
 	</sql>	
 		
 		<insert id="addBorrowCash" parameterType="AfBorrowCashDo" useGeneratedKeys="true" keyProperty="rid">
@@ -78,9 +78,15 @@
 			<if test="gmtReview != null">
     			,gmt_review=#{gmtReview}
 			</if>
+			<if test="gmtClose != null">
+    			,gmt_close=#{gmtClose}
+			</if>
+			
 			<if test="poundage != null">
     			,poundage=#{poundage}
 			</if>
+			
+			
 			<if test="overdueStatus != null">
     			,overdue_status=#{overdueStatus}
 			</if>
