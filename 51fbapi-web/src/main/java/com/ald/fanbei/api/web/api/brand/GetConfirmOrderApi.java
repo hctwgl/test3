@@ -9,8 +9,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -56,12 +58,15 @@ public class GetConfirmOrderApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> params = requestDataVo.getParams();
-		Long orderId = NumberUtil.objToLongDefault(params.get("orderId"), null);
-		if (orderId == null) {
-			logger.error("orderId is empty");
+		//第三方订单编号
+		String orderId = ObjectUtils.toString(params.get("orderId"), null);
+		String plantform = ObjectUtils.toString(params.get("plantform"), null);
+		
+		if (StringUtils.isEmpty(orderId) || StringUtils.isEmpty(plantform)) {
+			logger.error("orderId or plantform is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
+		AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
 		if (orderInfo ==  null) {
 			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);

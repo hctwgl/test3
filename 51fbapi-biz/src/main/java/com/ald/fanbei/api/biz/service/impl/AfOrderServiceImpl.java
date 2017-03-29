@@ -44,6 +44,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
@@ -519,6 +520,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setPayType(payType);
 					orderInfo.setGmtPay(new Date());
 					orderInfo.setTradeNo(tradeNo);
+					
+					
+					
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 					return 1;
