@@ -94,8 +94,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
 
 
-		BigDecimal serviceRate =bankService.divide(new BigDecimal(100));
-		BigDecimal poundageRate =poundage.divide(new BigDecimal(100)) ;
+		BigDecimal serviceRate =bankService;
+		BigDecimal poundageRate =poundage ;
 		BigDecimal serviceAmountDay =serviceRate.multiply(amount) ;
 		BigDecimal poundageAmountDay =poundageRate.multiply(amount);
 		

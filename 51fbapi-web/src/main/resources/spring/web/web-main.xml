@@ -147,6 +147,7 @@
 				<entry key="/user/addCollection" value-ref="addCollectionApi" />
 				<entry key="/user/getCollectionList" value-ref="getCollectionListApi" />
 				<entry key="/user/getMobileRechargeMoneyList" value-ref="getMobileRechargeMoneyListApi" />
+				<entry key="/user/getUserCounponListType" value-ref="getUserCounponListTypeApi" />
 
 
 				<entry key="/user/signin" value-ref="signinApi" />

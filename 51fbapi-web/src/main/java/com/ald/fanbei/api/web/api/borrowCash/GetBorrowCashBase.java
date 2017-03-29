@@ -24,31 +24,34 @@ public class GetBorrowCashBase {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		for (AfResourceDo afResourceDo : list) {
-			 if(StringUtils.equals(afResourceDo.getType(), AfResourceType.BaseBankRate.getCode())){
-				 
-				 data.put("bankRate", afResourceDo.getValue());
-			}
-			else if(StringUtils.equals(afResourceDo.getType(), AfResourceType.BorrowCashRange.getCode())){
+			if(StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())){
+			  if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashRange.getCode())){
 				
 				 data.put("maxAmount", afResourceDo.getValue());
 				 data.put("minAmount", afResourceDo.getValue1());
 
 			}	
-			else if(StringUtils.equals(afResourceDo.getType(), AfResourceType.BorrowCashBaseBankDouble.getCode())){
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashBaseBankDouble.getCode())){
 				 data.put("bankDouble", afResourceDo.getValue());
 
 			}
-			else if(StringUtils.equals(afResourceDo.getType(), AfResourceType.BorrowCashPoundage.getCode())){
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashPoundage.getCode())){
 				 data.put("poundage", afResourceDo.getValue());
 
 			}
-			else if(StringUtils.equals(afResourceDo.getType(), AfResourceType.BorrowCashOverduePoundage.getCode())){
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashOverduePoundage.getCode())){
 				 data.put("overduePoundage", afResourceDo.getValue());
 
 			}
-			else if(StringUtils.equals(afResourceDo.getType(), AfResourceType.BorrowCashDay.getCode())){
-				 data.put("borrowCashDay", afResourceDo.getValue());
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BaseBankRate.getCode())){
+				 data.put("bankRate", afResourceDo.getValue());
+			}
+			 }else{
+				 if(StringUtils.equals(afResourceDo.getType(), AfResourceType.BorrowCashDay.getCode())){
+					 data.put("borrowCashDay", afResourceDo.getValue());
 
+					 
+				}
 			}
 		}
 	

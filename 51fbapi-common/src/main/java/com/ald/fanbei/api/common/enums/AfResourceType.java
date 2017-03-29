@@ -35,6 +35,7 @@ public enum AfResourceType {
 	BorrowCashPoundage("BORROW_CASH_POUNDAGE", "借钱手续费率（日）"),
 	BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
 	BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
+	borrowRate("BORROW_RATE", "疯分期设置"),
 
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
 

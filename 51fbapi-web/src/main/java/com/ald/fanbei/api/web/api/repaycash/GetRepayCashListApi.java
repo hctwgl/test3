@@ -54,7 +54,7 @@ public class GetRepayCashListApi implements ApiHandle {
 		data.put("amount", afBorrowCashDo.getRepaymentAmount());
 		data.put("gmtCreate", afBorrowCashDo.getGmtCreate());
 		data.put("repayDec", afBorrowCashDo.getName());
-
+		data.put("status", afBorrowCashDo.getStatus());
 		return data;
 
 	}

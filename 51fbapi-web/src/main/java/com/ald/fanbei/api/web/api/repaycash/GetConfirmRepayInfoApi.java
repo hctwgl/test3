@@ -67,9 +67,11 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		if (userDto == null) {
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
-		String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
-		if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+		if(cardId!=-1){
+			String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
+			if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			}
 		}
 		
 		AfUserCouponDto coupon = afUserCouponService.getUserCouponById(couponId);

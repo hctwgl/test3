@@ -10,17 +10,18 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -36,6 +37,8 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 	
 	@Resource
 	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -43,7 +46,11 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		Long userId = context.getUserId();	
 //		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 		Long rid = NumberUtil.objToLongDefault(requestDataVo.getParams().get("borrowId"),0l) ;
+		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 
+		if(account==null){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
+		}
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 		if(afBorrowCashDo==null){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
@@ -51,7 +58,8 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		}
 		
 		Map<String, Object>  data = objectWithAfBorrowCashDo(afBorrowCashDo);
-		resp.setResponseData(data);;
+		data.put("rebateAmount", account.getRebateAmount());
+		resp.setResponseData(data);
 		
 		return resp;
 	}

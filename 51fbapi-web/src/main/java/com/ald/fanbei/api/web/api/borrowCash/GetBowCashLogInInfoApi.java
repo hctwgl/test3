@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
@@ -29,6 +30,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -46,7 +48,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfResourceService afResourceService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
-
+	@Resource
+	AfUserAccountService afUserAccountService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -61,6 +64,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("status", "DEFAULT");
 		} else {
 			data.put("status", afBorrowCashDo.getStatus());
+			AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.noFinsh.getCode())) {
 				data.put("status", AfBorrowCashStatus.transed.getCode());
@@ -69,6 +73,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
 			}
+			data.put("rebateAmount", account.getRebateAmount());
+
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());

@@ -61,54 +61,64 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		Long userId = context.getUserId();
 
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if (StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
-
-		}
-		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
-		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-
-		
-		
-		
-		if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type)==null) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
-		}
-		
-		AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
-		
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-		if(afBorrowCashDo!=null&&( !StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())||
-				!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()) )){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
-
-		}
-		
-		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
-
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
-     
 		Map<String, Object> data = new HashMap<String, Object>();
 
-		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
-		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
-		BigDecimal bankService =bankRate.multiply(bankDouble).divide(new BigDecimal( 360),6,RoundingMode.HALF_UP);
-		BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
+		//判断是否绑定主卡
+		data.put("isBind", authDo.getBankcardStatus());
+		Boolean isPromote = true;
+		if (StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getRealnameStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getYdStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {
+			isPromote = false;
+			
+		}
+		data.put("isPromote", isPromote? YesNoStatus.YES.getCode(): YesNoStatus.NO.getCode());
 
-		BigDecimal serviceRate =bankService.add(poundageRate).divide(new BigDecimal(100));
+		if(isPromote == true || StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.YES.getCode())){
+			//可以借钱
+			String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
+			String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
+			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type)==null) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
+			}
+			
+			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
+			
+			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+			if(afBorrowCashDo!=null&&( !StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())||
+					!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()) )){
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+			}
+			
+			BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
 
-		BigDecimal serviceAmountDay = serviceRate.multiply(amount);
-		
-		Integer day = NumberUtil.objToIntDefault(type, 0);
+			List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+			Map<String, Object> rate = getObjectWithResourceDolist(list);
+			BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
+			BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
+			BigDecimal bankService =bankRate.multiply(bankDouble).divide(new BigDecimal( 360),6,RoundingMode.HALF_UP);
+			BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
 
-		BigDecimal serviceAmount =serviceAmountDay.multiply(new BigDecimal(day));
-		data.put("serviceAmount", serviceAmount);
-		data.put("amount", amount);
-		data.put("arrivalAmount", BigDecimalUtil.subtract(amount, serviceAmount));
-		data.put("banKName", afUserBankcardDo.getBankName());
-		data.put("bankCard", afUserBankcardDo.getCardNumber());
-		data.put("type", type);
+			BigDecimal serviceRate =bankService.add(poundageRate);
+
+			BigDecimal serviceAmountDay = serviceRate.multiply(amount);
+			
+			Integer day = NumberUtil.objToIntDefault(type, 0);
+
+			BigDecimal serviceAmount =serviceAmountDay.multiply(new BigDecimal(day));
+			data.put("serviceAmount", serviceAmount);
+			data.put("amount", amount);
+			data.put("arrivalAmount", BigDecimalUtil.subtract(amount, serviceAmount));
+			data.put("banKName", afUserBankcardDo.getBankName());
+			data.put("bankCard", afUserBankcardDo.getCardNumber());
+			data.put("type", type);
+		}
 		resp.setResponseData(data);
 		return resp;
 	}
