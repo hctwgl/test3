@@ -144,7 +144,7 @@ public interface AfOrderService {
 	 * @param payOrderNo
 	 * @param tradeNo
 	 */
-	int dealBrandOrder(String payOrderNo, String tradeNo, String payType);
+	int dealBrandOrder(Long orderId, String payOrderNo, String tradeNo, String payType);
 	
 	/**
 	 * 处理菠萝觅退款

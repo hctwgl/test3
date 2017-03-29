@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -43,6 +45,8 @@ public class ThirdController{
 	AfOrderService afOrderService;
 	@Resource
 	AfShopService afShopService;
+	@Resource
+	BoluomeUtil boluomeUtil;
 	
     @RequestMapping(value = {"/orderRefund"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -63,6 +67,8 @@ public class ThirdController{
         		throw new FanbeiException(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
         	} 
 //    		afOrderService.dealBrandOrderRefund(orderInfo);
+        	
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
         	result.setData(resultData);
     	} catch (FanbeiException e) {
     		result = new AppResponse(e.getErrorCode());

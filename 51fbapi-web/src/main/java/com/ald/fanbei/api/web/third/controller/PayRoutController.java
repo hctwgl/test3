@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.common.Constants;
@@ -28,6 +29,7 @@ import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -35,9 +37,11 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
@@ -54,6 +58,8 @@ public class PayRoutController{
 	
 	@Resource
 	private AfOrderService afOrderService;
+	@Resource
+	AfOrderDao afOrderDao;
 	
 	@Resource
 	private AfRepaymentService afRepaymentService;
@@ -72,6 +78,8 @@ public class PayRoutController{
 
 	@Resource
 	private AfCashRecordDao afCashRecordDao;
+	@Resource
+	BoluomeUtil boluomeUtil;
 	
 	private static String TRADE_STATUE_SUCC = "00";
 
@@ -257,7 +265,8 @@ public class PayRoutController{
 	    		}else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
-	    			afOrderService.dealBrandOrder(outTradeNo, transactionId, PayType.WECHAT.getCode());
+	    			AfOrderDo orderInfo = afOrderDao.getOrderInfoByPayOrderNo(outTradeNo);
+	    			afOrderService.dealBrandOrder(orderInfo.getRid(), outTradeNo, transactionId, PayType.WECHAT.getCode());
 	    		}else if(PayOrderSource.REPAYMENTCASH.getCode().equals(attach)){
 	    			afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, transactionId);
 
@@ -290,7 +299,9 @@ public class PayRoutController{
         		}else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){//还款成功处理
         			afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
         		} else if (OrderType.BOLUOME.getCode().equals(merPriv)) {
-        			afOrderService.dealBrandOrder(outTradeNo, tradeNo, PayType.BANK.getCode());
+        			AfOrderDo orderInfo = afOrderDao.getOrderInfoByPayOrderNo(outTradeNo);
+        			afOrderService.dealBrandOrder(orderInfo.getRid(), outTradeNo, tradeNo, PayType.BANK.getCode());
+        			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
         		} else if(UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)){
 	    			afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
 

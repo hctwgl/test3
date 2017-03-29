@@ -1,7 +1,26 @@
 package com.ald.fanbei.api.biz.service.boluome;
 
+import java.math.BigDecimal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.bo.BoluomePushPayRequestBo;
+import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
+import com.ald.fanbei.api.biz.bo.BoluomePushRefundRequestBo;
+import com.ald.fanbei.api.biz.bo.BoluomePushRefundResponseBo;
+import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PayStatus;
+import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -10,7 +29,79 @@ import com.ald.fanbei.api.common.enums.PayStatus;
  * @author xiaotianjian 2017年3月24日下午9:07:55
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class BoluomeUtil {
+@Component("boluomeUtil")
+public class BoluomeUtil extends AbstractThird{
+	
+	protected static Logger   logger = LoggerFactory.getLogger(BoluomeUtil.class);
+	
+	private static String pushPayUrl = null;
+	private static String pushRefundUrl = null;
+	private static Long SUCCESS_CODE = 1000L;
+	
+	public BoluomePushPayResponseBo pushPayStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
+		//TODO 增加失败记录
+		BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
+		reqBo.setOrderId(thirdOrderNo);
+		reqBo.setStatus(pushStatus.getCode());
+		reqBo.setAmount(amount);
+		reqBo.setUserId(userId);
+		reqBo.setTimestamp(System.currentTimeMillis());
+		reqBo.setSign(BoluomeCore.builSign(reqBo));
+		logger.info("pushPayStatus begin, reqBo = {}", reqBo);
+		String reqResult = HttpUtil.doHttpPost(getPushPayUrl(), JSONObject.toJSONString(reqBo));
+		logThird(reqResult, "pushPayStatus", reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
+		}
+		BoluomePushPayResponseBo responseBo = JSONObject.parseObject(reqResult,BoluomePushPayResponseBo.class);
+		logger.info("pushPayStatus result , responseBo = {}", responseBo);
+		if(responseBo != null && responseBo.getCode().equals(SUCCESS_CODE) ){
+			responseBo.setSuccess(true);
+			return responseBo;
+		}else{
+			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
+		}
+	}
+	
+	public BoluomePushRefundResponseBo pushRefundStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
+		BoluomePushRefundRequestBo reqBo = new BoluomePushRefundRequestBo();
+		reqBo.setOrderId(thirdOrderNo);
+		reqBo.setStatus(pushStatus.getCode());
+		reqBo.setAmount(amount);
+		reqBo.setUserId(userId);
+		reqBo.setTimestamp(System.currentTimeMillis());
+		reqBo.setSign(BoluomeCore.builSign(reqBo));
+		logger.info("pushRefundStatus begin, reqBo = {}", reqBo);
+		String reqResult = HttpUtil.doHttpPost(getPushRefundUrl(), JSONObject.toJSONString(reqBo));
+		logThird(reqResult, "pushRefundStatus", reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
+		}
+		BoluomePushRefundResponseBo responseBo = JSONObject.parseObject(reqResult,BoluomePushRefundResponseBo.class);
+		logger.info("pushRefundStatus result , responseBo = {}", responseBo);
+		if(responseBo != null && responseBo.getCode().equals(SUCCESS_CODE) ){
+			responseBo.setSuccess(true);
+			return responseBo;
+		}else{
+			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
+		}
+	}
+	
+	private static String getPushPayUrl(){
+		if(pushPayUrl==null){
+			pushPayUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_PUSH_PAY_URL);
+			return pushPayUrl;
+		}
+		return pushPayUrl;
+	}
+	
+	private static String getPushRefundUrl(){
+		if(pushRefundUrl==null){
+			pushRefundUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_PUSH_REFUND_URL);
+			return pushRefundUrl;
+		}
+		return pushRefundUrl;
+	}
 
 	public static OrderStatus parseOrderType(String orderStatusStr) {
 		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.已经退款 8.已取消 9.处理中 11.等待退款

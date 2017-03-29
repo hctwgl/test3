@@ -33,6 +33,7 @@ public class BoluomeCore {
 	public static final String CREATED_TIME = "createdTime";
 	public static final String EXPIRED_TIME = "expiredTime";
 	public static final String DETAIL_URL = "detailUrl";
+	public static final String AMOUNT = "amount";
 	public static final String SIGN = "sign";
 
     /** 
@@ -118,5 +119,17 @@ public class BoluomeCore {
     	
         return DigestUtil.MD5(beforeSign);
     }
+    
+    /**
+     * 获取签名,先过滤，再签名
+     * @return
+     */
+    public static String builSign(Map<String, String> params) {
+    	//过滤空值、sign与sign_type参数
+    	Map<String, String> sParaNew = BoluomeCore.paraFilter(params);
+        //获取待签名字符串
+        return BoluomeCore.buildSignStr(sParaNew);
+    }
+    
 
 }

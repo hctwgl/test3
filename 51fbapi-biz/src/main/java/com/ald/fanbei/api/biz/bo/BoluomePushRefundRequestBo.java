@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.biz.bo;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 
-import com.ald.fanbei.api.common.AbstractSerial;
+import org.apache.commons.lang.StringUtils;
+
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 
 /**
  * 
@@ -10,10 +13,9 @@ import com.ald.fanbei.api.common.AbstractSerial;
  * @author xiaotianjian 2017年3月29日下午8:46:39
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class BoluomePushRefundRequestBo extends AbstractSerial {
+public class BoluomePushRefundRequestBo extends HashMap<String, String> {
 	
-	private static final long serialVersionUID = -4326788124985759843L;
-	
+	private static final long serialVersionUID = 6353705002749893987L;
 	private String orderId;//订单Id
 	private Long userId;//51返呗用户id
 	private BigDecimal amount;//成功支付金额
@@ -31,6 +33,7 @@ public class BoluomePushRefundRequestBo extends AbstractSerial {
 	 */
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+		this.put(BoluomeCore.ORDER_ID, orderId);
 	}
 	/**
 	 * @return the userId
@@ -43,6 +46,7 @@ public class BoluomePushRefundRequestBo extends AbstractSerial {
 	 */
 	public void setUserId(Long userId) {
 		this.userId = userId;
+		this.put(BoluomeCore.USER_ID, orderId);
 	}
 	/**
 	 * @return the amount
@@ -55,6 +59,7 @@ public class BoluomePushRefundRequestBo extends AbstractSerial {
 	 */
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
+		this.put(BoluomeCore.AMOUNT, amount+StringUtils.EMPTY);
 	}
 	/**
 	 * @return the status
@@ -67,6 +72,7 @@ public class BoluomePushRefundRequestBo extends AbstractSerial {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
+		this.put(BoluomeCore.STATUS, status);
 	}
 	/**
 	 * @return the timestamp
@@ -79,6 +85,7 @@ public class BoluomePushRefundRequestBo extends AbstractSerial {
 	 */
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
+		this.put(BoluomeCore.TIME_STAMP, timestamp + StringUtils.EMPTY);
 	}
 	/**
 	 * @return the sign
@@ -91,5 +98,6 @@ public class BoluomePushRefundRequestBo extends AbstractSerial {
 	 */
 	public void setSign(String sign) {
 		this.sign = sign;
+		this.put(BoluomeCore.SIGN, sign);
 	}
 }

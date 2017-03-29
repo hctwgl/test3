@@ -24,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -37,6 +38,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -44,7 +46,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
@@ -128,6 +129,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfBorrowBillService afBorrowBillService;
 	@Resource
 	AfBorrowBillDao afBorrowBillDao;
+	@Resource
+	BoluomeUtil boluomeUtil;
 	
 	@Override
 	public int createOrderTrade(String content) {
@@ -469,6 +472,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}
 						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper, orderInfo.getRid(), orderInfo.getOrderNo());
 						
+						boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+						
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
 						
@@ -508,21 +513,19 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public int dealBrandOrder(final String payOrderNo, final String tradeNo, final String payType) {
+	public int dealBrandOrder(final Long orderId, final String payOrderNo, final String tradeNo, final String payType) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
-					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+					AfOrderDo orderInfo = new AfOrderDo();
+					orderInfo.setRid(orderId);
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
 					orderInfo.setPayType(payType);
 					orderInfo.setGmtPay(new Date());
 					orderInfo.setTradeNo(tradeNo);
-					
-					
-					
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 					return 1;
