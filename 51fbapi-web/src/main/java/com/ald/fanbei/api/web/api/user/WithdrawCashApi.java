@@ -73,6 +73,10 @@ public class WithdrawCashApi implements ApiHandle {
 		}
 		AfUserBankcardDo afUserBankcardDo = null;
 		if (StringUtils.equals(type, UserAccountLogType.CASH.getCode())) {
+			if(amount.compareTo(new BigDecimal(20))<0){
+				throw new FanbeiException("apply cash amount too samll",
+						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_TOO_SMALL);
+			}else
 			if (userAccountDo.getRebateAmount().compareTo(amount) < 0) {
 				throw new FanbeiException("apply cash amount more than account money",
 						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
@@ -90,6 +94,10 @@ public class WithdrawCashApi implements ApiHandle {
 
 			}
 		} else if (StringUtils.equals(type, UserAccountLogType.JIFENBAO.getCode())) {
+			if(amount.compareTo(new BigDecimal(2000))<0){
+				throw new FanbeiException("apply cash amount too samll",
+						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_TOO_SMALL_JFB);
+			}else
 			if (userAccountDo.getJfbAmount().compareTo(amount) < 0) {
 				throw new FanbeiException("apply cash amount more than account money",
 						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
