@@ -158,12 +158,12 @@ public class GetBrandCouponListApi implements ApiHandle {
 		int type = bo.getType();
 		
 		if (type == 2 || type == 4) {
-			vo.setMaxAmount(new BigDecimal(bo.getValue()).setScale(2));
-			vo.setAmount(new BigDecimal(bo.getDiscount()).setScale(2));
+			vo.setMaxAmount(bo.getValue());
+			vo.setAmount(bo.getDiscount());
 		} else if (type == 1 || type == 3) {
-			vo.setAmount(new BigDecimal(bo.getValue()).setScale(2));
+			vo.setAmount(bo.getValue());
 		}
-		vo.setLimitAmount(new BigDecimal(bo.getThreshold()).setScale(2));
+		vo.setLimitAmount(bo.getThreshold());
 		vo.setGmtStart(new Date(bo.getSts().longValue()));
 		vo.setGmtEnd(new Date(bo.getEts().longValue()));
 		vo.setType(bo.getType());

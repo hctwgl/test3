@@ -15,9 +15,9 @@ public class AfBrandCouponVo extends AbstractSerial {
 	private static final long serialVersionUID = -1278526599458583341L;
 	
 	private String name;//优惠券名称
-	private BigDecimal amount;//使用优惠券抵用的现金价值或者是折扣
-	private BigDecimal maxAmount;//当为折扣时可抵用的最大现金价值
-	private BigDecimal limitAmount;//优惠券使用阈值, 期含义跟type 类型有关 type = 1,2是表示满足的金额, type = 3.4表示满足的数量
+	private Float amount;//使用优惠券抵用的现金价值或者是折扣
+	private Float maxAmount;//当为折扣时可抵用的最大现金价值
+	private Float limitAmount;//优惠券使用阈值, 期含义跟type 类型有关 type = 1,2是表示满足的金额, type = 3.4表示满足的数量
 	private Date gmtStart;//开始时间
 	private Date gmtEnd;//截止时间
 	private Integer type;//优惠券类型. 1金额满减 2.金额满折 3.数量满减 4.数量满折
@@ -37,14 +37,38 @@ public class AfBrandCouponVo extends AbstractSerial {
 	/**
 	 * @return the amount
 	 */
-	public BigDecimal getAmount() {
+	public Float getAmount() {
 		return amount;
 	}
 	/**
 	 * @param amount the amount to set
 	 */
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(Float amount) {
 		this.amount = amount;
+	}
+	/**
+	 * @return the maxAmount
+	 */
+	public Float getMaxAmount() {
+		return maxAmount;
+	}
+	/**
+	 * @param maxAmount the maxAmount to set
+	 */
+	public void setMaxAmount(Float maxAmount) {
+		this.maxAmount = maxAmount;
+	}
+	/**
+	 * @return the limitAmount
+	 */
+	public Float getLimitAmount() {
+		return limitAmount;
+	}
+	/**
+	 * @param limitAmount the limitAmount to set
+	 */
+	public void setLimitAmount(Float limitAmount) {
+		this.limitAmount = limitAmount;
 	}
 	/**
 	 * @return the gmtStart
@@ -94,30 +118,7 @@ public class AfBrandCouponVo extends AbstractSerial {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	/**
-	 * @return the limitAmount
-	 */
-	public BigDecimal getLimitAmount() {
-		return limitAmount;
-	}
-	/**
-	 * @param limitAmount the limitAmount to set
-	 */
-	public void setLimitAmount(BigDecimal limitAmount) {
-		this.limitAmount = limitAmount;
-	}
-	/**
-	 * @return the maxAmount
-	 */
-	public BigDecimal getMaxAmount() {
-		return maxAmount;
-	}
-	/**
-	 * @param maxAmount the maxAmount to set
-	 */
-	public void setMaxAmount(BigDecimal maxAmount) {
-		this.maxAmount = maxAmount;
-	}
+
 	
 	
 	
