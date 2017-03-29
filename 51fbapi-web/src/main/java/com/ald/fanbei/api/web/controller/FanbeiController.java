@@ -112,7 +112,8 @@ public class FanbeiController extends BaseController {
      */
     @RequestMapping(value = {
     		"/auth/authRealname","/auth/authContacts","/auth/authCredit","/auth/authZhima","/auth/authBankcard",
-    		"/auth/checkBankcard","/auth/getBankList","/auth/checkBankcardPay","/auth/authFace","/auth/authMobile"
+    		"/auth/checkBankcard","/auth/getBankList","/auth/checkBankcardPay","/auth/authFace","/auth/authMobile","/auth/authContactor"
+    		,"/auth/authLocation"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

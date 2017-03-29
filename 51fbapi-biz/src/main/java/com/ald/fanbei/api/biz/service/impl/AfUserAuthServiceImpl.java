@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -51,7 +53,11 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		if(account.getAuAmount().compareTo(BigDecimal.ZERO)>0){
 			if(StringUtil.equals(YesNoStatus.YES.getCode(), auth.getIvsStatus())//反欺诈分已验证
 					&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())//反欺诈分已验证
-						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())){//通讯录匹配状态
+						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())//通讯录匹配状态
+						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getMobileStatus())//手机运营商
+						&&(null!=auth.getGmtMobile()&&DateUtil.beforeDay(auth.getGmtMobile(), DateUtil.addMonths(new Date(), 2)))//手机运营商认证时间小于两个月
+						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getContactorStatus())//紧急联系人
+						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getLocationStatus())){//定位
 				status = YesNoStatus.YES.getCode();
 			}
 		}

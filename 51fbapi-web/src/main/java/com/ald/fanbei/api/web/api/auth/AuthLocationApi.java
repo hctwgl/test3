@@ -41,6 +41,7 @@ public class AuthLocationApi implements ApiHandle {
 		authDo.setLocationAddress(locationAddress);
 		authDo.setUserId(context.getUserId());
 		if(afUserAuthService.updateUserAuth(authDo)>0){
+			resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
 			return resp;
 		}
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);

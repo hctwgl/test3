@@ -39,8 +39,10 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	private String contactorStatus;
 	private String contactorName;
 	private String contactorMobile;
+	private String contactorType;
 	private String locationStatus;
 	private String locationAddress;
+	private String allowConsume;
 	
 	public BigDecimal getTotalAmount() {
 		return totalAmount;
@@ -203,5 +205,17 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	}
 	public void setLocationAddress(String locationAddress) {
 		this.locationAddress = locationAddress;
+	}
+	public String getContactorType() {
+		return contactorType;
+	}
+	public void setContactorType(String contactorType) {
+		this.contactorType = contactorType;
+	}
+	public String getAllowConsume() {
+		return allowConsume;
+	}
+	public void setAllowConsume(String allowConsume) {
+		this.allowConsume = allowConsume;
 	}
 }

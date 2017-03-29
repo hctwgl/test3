@@ -34,15 +34,18 @@ public class AuthContactorApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		String contactorName = ObjectUtils.toString(requestDataVo.getParams().get("contactorName"));
 		String contactorMobile = ObjectUtils.toString(requestDataVo.getParams().get("contactorMobile"));
-		if(StringUtil.isBlank(contactorName)||StringUtil.isBlank(contactorMobile)){
+		String contactorType = ObjectUtils.toString(requestDataVo.getParams().get("contactorType"));
+		if(StringUtil.isBlank(contactorName)||StringUtil.isBlank(contactorMobile)||StringUtil.isBlank(contactorType)){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		AfUserAuthDo authDo = new AfUserAuthDo();
 		authDo.setContactorStatus(YesNoStatus.YES.getCode());
 		authDo.setContactorName(contactorName);
 		authDo.setContactorMobile(contactorMobile);
+		authDo.setContactorType(contactorType);
 		authDo.setUserId(context.getUserId());
 		if(afUserAuthService.updateUserAuth(authDo)>0){
+			resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
 			return resp;
 		}
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);

@@ -25,6 +25,7 @@ public class AuthMobileApi implements ApiHandle {
 	@Resource
 	RiskUtil riskUtil;
 	
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);

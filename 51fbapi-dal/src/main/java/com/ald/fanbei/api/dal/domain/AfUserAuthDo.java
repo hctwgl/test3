@@ -38,6 +38,7 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String contactorStatus;
 	private String contactorName;
 	private String contactorMobile;
+	private String contactorType;
 	private String locationStatus;
 	private String locationAddress;
 	
@@ -203,5 +204,11 @@ public class AfUserAuthDo extends AbstractSerial {
 	}
 	public void setLocationAddress(String locationAddress) {
 		this.locationAddress = locationAddress;
+	}
+	public String getContactorType() {
+		return contactorType;
+	}
+	public void setContactorType(String contactorType) {
+		this.contactorType = contactorType;
 	}
 }
