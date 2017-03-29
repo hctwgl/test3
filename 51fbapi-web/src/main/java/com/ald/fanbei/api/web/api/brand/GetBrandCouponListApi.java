@@ -48,8 +48,6 @@ public class GetBrandCouponListApi implements ApiHandle {
 	private static final String USED_COUPON = "usedCoupons";
 	private static final String EXPIRED_COUPON = "expiredCoupons";
 	private static final String DATA = "data";
-	private static final String NEXT_PAGE_INDEX = "nextPageIndex";
-	
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -69,8 +67,8 @@ public class GetBrandCouponListApi implements ApiHandle {
 		
 		BrandCouponRequestBo bo = new BrandCouponRequestBo();
 		bo.setUserId(context.getUserId() + StringUtils.EMPTY);
-		bo.setType(1);
-		bo.setPageIndex(50);
+		bo.setType(type);
+		bo.setPageIndex(pageNo);
 		bo.setPageSize(pageSize);
 		try {
 			String resultString = HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/api/promotion/get_coupon_list", JSONObject.toJSONString(bo));

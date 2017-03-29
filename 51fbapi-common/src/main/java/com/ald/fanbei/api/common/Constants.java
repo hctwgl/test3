@@ -144,6 +144,7 @@ public class Constants {
     public static final String CONFKEY_WX_KEY						 = "fbapi.wx.key";
     public static final String CONFKEY_WX_CERTPATH					 = "fbapi.wx.certpath";
     public static final String CONFKEY_NOTIFY_HOST					 = "fbapi.notify.host";
+    public static final String CONFKEY_RISK_URL					 	 = "fbapi.risk.url";
     public static final String CONFKEY_UPS_URL						 = "fbapi.ups.url";
     //菠萝觅
     public static final String CONFKEY_BOLUOME_APPKEY                = "fbapi.boluome.appkey";
