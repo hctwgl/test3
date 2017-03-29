@@ -187,6 +187,7 @@
 				<entry key="/auth/authMobile" value-ref="authMobileApi" />
 				<entry key="/auth/authContactor" value-ref="authContactorApi" />
 				<entry key="/auth/authLocation" value-ref="authLocationApi" />
+				<entry key="/auth/authMobileBack" value-ref="authMobileBackApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -210,8 +211,8 @@
 				<entry key="/brand/getBrandList" value-ref="getBrandListApi" />
 				<entry key="/brand/getPayAmount" value-ref="getPayAmountApi" />
 				<entry key="/brand/payOrder" value-ref="payOrderApi" />
-				
-				
+				<entry key="/brand/getBrandCouponList" value-ref="getBrandCouponListApi" />
+				<entry key="/brand/pickBrandCoupon" value-ref="pickBrandCouponApi" />
 				
 				<!--borrowCash  -->
 				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />

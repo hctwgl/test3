@@ -99,7 +99,8 @@ public class GetConfirmOrderApi implements ApiHandle {
 		vo.setMobileStatus(authDo.getMobileStatus());
 		vo.setRealNameStatus(authDo.getRealnameStatus());
 		vo.setTeldirStatus(authDo.getTeldirStatus());
-		vo.setUsableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
+		vo.setTotalAmount(userDto.getAuAmount());
+		vo.setUseableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
 		vo.setZmStatus(authDo.getZmStatus());
 		vo.setGmtZm(authDo.getGmtZm());
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){

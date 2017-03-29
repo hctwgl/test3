@@ -42,7 +42,8 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private String bankName;//银行名称
 	private String bankIcon;//银行图标
 	
-	private BigDecimal usableAmount;//可使用额度
+	private BigDecimal useableAmount;//可使用额度
+	private BigDecimal totalAmount;//总额度
 	
 	/**
 	 * @return the goodsName
@@ -297,18 +298,6 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 		this.bankIcon = bankIcon;
 	}
 	/**
-	 * @return the usableAmount
-	 */
-	public BigDecimal getUsableAmount() {
-		return usableAmount;
-	}
-	/**
-	 * @param usableAmount the usableAmount to set
-	 */
-	public void setUsableAmount(BigDecimal usableAmount) {
-		this.usableAmount = usableAmount;
-	}
-	/**
 	 * @return the currentTime
 	 */
 	public Date getCurrentTime() {
@@ -331,6 +320,30 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	 */
 	public void setRid(Long rid) {
 		this.rid = rid;
+	}
+	/**
+	 * @return the useableAmount
+	 */
+	public BigDecimal getUseableAmount() {
+		return useableAmount;
+	}
+	/**
+	 * @param useableAmount the useableAmount to set
+	 */
+	public void setUseableAmount(BigDecimal useableAmount) {
+		this.useableAmount = useableAmount;
+	}
+	/**
+	 * @return the totalAmount
+	 */
+	public BigDecimal getTotalAmount() {
+		return totalAmount;
+	}
+	/**
+	 * @param totalAmount the totalAmount to set
+	 */
+	public void setTotalAmount(BigDecimal totalAmount) {
+		this.totalAmount = totalAmount;
 	}
 	
 	

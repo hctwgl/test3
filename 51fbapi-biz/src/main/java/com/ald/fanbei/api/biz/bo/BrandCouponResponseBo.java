@@ -15,7 +15,8 @@ public class BrandCouponResponseBo extends AbstractSerial{
 	private String id;   //平台活动id
 	private String title;//平台活动title
 	private String subtitle;//平台活动subtitle
-	private Float threshold;   //优惠券使用阈值
+	private Float threshold;   //优惠券使用阈值, 期含义跟type 类型有关 type = 1,2是表示满足的金额, type = 3.4表示满足的数量
+	private Float value;   //优惠券抵用的新近价值或折扣时可抵用的最大现金价值
 	private Float discount ;   //折扣
 	private String[] channels;//优惠券适用的服务
 	private Integer mutex; //互斥
@@ -141,6 +142,18 @@ public class BrandCouponResponseBo extends AbstractSerial{
 	 */
 	public void setEts(Float ets) {
 		this.ets = ets;
+	}
+	/**
+	 * @return the value
+	 */
+	public Float getValue() {
+		return value;
+	}
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(Float value) {
+		this.value = value;
 	}
 	
 	

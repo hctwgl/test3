@@ -13,9 +13,9 @@ public class BrandCouponRequestBo extends HashMap<String, String>{
 	private static final long serialVersionUID = 8833336567301068866L;
 	
 	private String userId;   //用户id
-	private Integer type;   //优惠券类型
-	private Integer pageIndex;   //第几页
-	private Integer pageSize; //唯一标识
+	private String type;   //优惠券类型
+	private String pageIndex;   //第几页
+	private String pageSize; //唯一标识
 	/**
 	 * @return the userId
 	 */
@@ -27,42 +27,45 @@ public class BrandCouponRequestBo extends HashMap<String, String>{
 	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
+		this.put("userId", userId);
 	}
 	/**
 	 * @return the type
 	 */
-	public Integer getType() {
+	public String getType() {
 		return type;
 	}
 	/**
 	 * @param type the type to set
 	 */
-	public void setType(Integer type) {
+	public void setType(String type) {
 		this.type = type;
+		this.put("type", type);
 	}
 	/**
 	 * @return the pageIndex
 	 */
-	public Integer getPageIndex() {
+	public String getPageIndex() {
 		return pageIndex;
 	}
 	/**
 	 * @param pageIndex the pageIndex to set
 	 */
-	public void setPageIndex(Integer pageIndex) {
+	public void setPageIndex(String pageIndex) {
 		this.pageIndex = pageIndex;
+		this.put("pageIndex", pageIndex);
 	}
 	/**
 	 * @return the pageSize
 	 */
-	public Integer getPageSize() {
+	public String getPageSize() {
 		return pageSize;
 	}
 	/**
 	 * @param pageSize the pageSize to set
 	 */
-	public void setPageSize(Integer pageSize) {
+	public void setPageSize(String pageSize) {
 		this.pageSize = pageSize;
+		this.put("pageSize", pageSize);
 	}
-	
 }
