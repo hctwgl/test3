@@ -52,7 +52,7 @@ public class GetRepayCashListApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("rid", afBorrowCashDo.getRid());
 		data.put("amount", afBorrowCashDo.getRepaymentAmount());
-		data.put("gmtCreate", afBorrowCashDo.getGmtCreate());
+		data.put("gmtRepay", afBorrowCashDo.getGmtCreate());
 		data.put("repayDec", afBorrowCashDo.getName());
 		data.put("status", afBorrowCashDo.getStatus());
 		return data;

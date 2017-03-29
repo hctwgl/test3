@@ -79,7 +79,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
 		AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-		if(borrowCashDo!=null&&( !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())||
+		if(borrowCashDo!=null&&( !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())&&
 				!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 
