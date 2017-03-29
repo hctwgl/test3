@@ -79,6 +79,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 if(StringUtils.equals("10", result.getResult())){
 						//审核通过
 						 borrowCashDo.setGmtArrival(currDate);
+						 borrowCashDo.setArrivalAmount(afBorrowCashDo.getArrivalAmount());;
 
 						 borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
 						 AfUserAccountDto userDto = afUserAccountDao.getUserAndAccountByUserId(userId);
