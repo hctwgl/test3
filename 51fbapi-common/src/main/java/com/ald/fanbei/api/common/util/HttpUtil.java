@@ -150,6 +150,7 @@ public class HttpUtil {
         	return "";
         }
     }
+    
 
     /**
      * 发送POST请求，将参数放置到BODY里边
@@ -194,6 +195,8 @@ public class HttpUtil {
         }
         return result;
     }
+    
+    
 
     /**
      * 发送POST请求，将参数放置到BODY里边

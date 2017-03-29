@@ -209,8 +209,8 @@
 				<entry key="/brand/getBrandList" value-ref="getBrandListApi" />
 				<entry key="/brand/getPayAmount" value-ref="getPayAmountApi" />
 				<entry key="/brand/payOrder" value-ref="payOrderApi" />
-				
-				
+				<entry key="/brand/getBrandCouponList" value-ref="getBrandCouponListApi" />
+				<entry key="/brand/pickBrandCoupon" value-ref="pickBrandCouponApi" />
 				
 				<!--borrowCash  -->
 				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />
