@@ -48,10 +48,8 @@ public class RiskController{
     	String signInfo = request.getParameter("signInfo");
     	logger.info("deal operator begin,code="+code+",data="+data);
     	if(TRADE_STATUE_SUCC.equals(code)){
-    		if(riskUtil.operatorNotify(code, data, msg, signInfo)>0){
-    			return "SUCCESS";
-    		}
-        	return "ERROR";
+    		riskUtil.operatorNotify(code, data, msg, signInfo);
+        	return "SUCCESS";
     	}else{
         	return "ERROR";
     	}
