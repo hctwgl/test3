@@ -23,6 +23,8 @@
 	     	expiry_type='D')
 	</select>
 	
+	
+	
 	<select id="getCouponById" resultType="AfCouponDo">
 	    SELECT
 	    	<include refid="queryAllFields" />
@@ -31,7 +33,10 @@
 	    WHERE
 	    	is_delete = 0
 	    AND
+	    
 			id = #{couponId}
+		AND
+			status ='O'
 	</select>
 	<update id="updateCouponquotaAlreadyById" parameterType="AfCouponDo">
 		UPDATE
