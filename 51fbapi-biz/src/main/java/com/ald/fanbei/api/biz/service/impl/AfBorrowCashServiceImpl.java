@@ -72,6 +72,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 Long userId = afBorrowCashDo.getUserId();
 
 					 afBorrowCashDao.addBorrowCash(afBorrowCashDo);
+					 
 					 Long borrowId = afBorrowCashDo.getRid();
 					 RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, "") , "20", afBorrowCashDo.getCardNumber());
 					 AfBorrowCashDo borrowCashDo = new AfBorrowCashDo();
@@ -79,8 +80,6 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 if(StringUtils.equals("10", result.getResult())){
 						//审核通过
 						 borrowCashDo.setGmtArrival(currDate);
-						 borrowCashDo.setArrivalAmount(afBorrowCashDo.getArrivalAmount());;
-
 						 borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
 						 AfUserAccountDto userDto = afUserAccountDao.getUserAndAccountByUserId(userId);
 							AfUserBankcardDo card = afUserBankcardDao.getUserMainBankcardByUserId(userId);

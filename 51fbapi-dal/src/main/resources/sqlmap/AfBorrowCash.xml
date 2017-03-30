@@ -6,7 +6,7 @@
 	</sql>	
 		
 		<insert id="addBorrowCash" parameterType="AfBorrowCashDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type , amount , status , card_number , card_name ,  poundage , rate_amount , latitude , longitude , province , city , county,address)
+		INSERT INTO af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type , amount , status , card_number , card_name ,  poundage , rate_amount , latitude , longitude , province ,arrival_amount, city , county,address)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -22,6 +22,7 @@
     		#{latitude},
     		#{longitude},
     		#{province},
+    		#{arrivalAmount},
     		#{city},
     		#{county},
     		#{address}
