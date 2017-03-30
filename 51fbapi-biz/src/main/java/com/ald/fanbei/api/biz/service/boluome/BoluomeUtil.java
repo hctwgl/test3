@@ -47,7 +47,6 @@ public class BoluomeUtil extends AbstractThird{
 	private static Long SUCCESS_CODE = 1000L;
 	
 	public BoluomePushPayResponseBo pushPayStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
-		//TODO 增加失败记录
 		BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
 		reqBo.setOrderId(thirdOrderNo);
 		reqBo.setStatus(pushStatus.getCode());
@@ -116,7 +115,7 @@ public class BoluomeUtil extends AbstractThird{
 	}
 
 	public static OrderStatus parseOrderType(String orderStatusStr) {
-		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.已经退款 8.已取消 9.处理中 11.等待退款
+		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.退款成功 8.已取消 9.处理中 11.等待退款
 		int orderStatus = Integer.parseInt(orderStatusStr);
 		OrderStatus status = null;
 		if (orderStatus == 1 || orderStatus == 2) {
@@ -127,11 +126,9 @@ public class BoluomeUtil extends AbstractThird{
 			status = OrderStatus.FINISHED;
 		} else if (orderStatus == 6) {
 			status = OrderStatus.DEAL_REFUNDING;
-		} else if (orderStatus == 7) {
-			status = OrderStatus.REFUND_COMPLETE;
 		} else if (orderStatus == 11) {
 			status = OrderStatus.WAITING_REFUND;
-		} else if (orderStatus == 8) {
+		} else if (orderStatus == 8 || orderStatus == 7) {
 			status = OrderStatus.CLOSED;
 		}
 		return status;

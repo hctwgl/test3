@@ -10,4 +10,6 @@ import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 public interface AfOrderRefundDao {
 
 	int addOrderRefund(AfOrderRefundDo orderRefundInfo);
+	
+	int updateOrderRefund(AfOrderRefundDo orderRefundInfo);
 }

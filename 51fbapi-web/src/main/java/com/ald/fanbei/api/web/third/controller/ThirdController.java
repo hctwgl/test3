@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.AppResponse;
 import com.alibaba.fastjson.JSON;
@@ -62,13 +64,16 @@ public class ThirdController{
     		Map<String, Object> resultData = new HashMap<String, Object>();
     		String orderId = params.get(ThirdCore.ORDER_ID);
         	String plantform = params.get(ThirdCore.PLANT_FORM);
+        	BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(params.get(ThirdCore.PLANT_FORM), null);
         	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
         	if (orderInfo == null) {
         		throw new FanbeiException(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
         	} 
-//    		afOrderService.dealBrandOrderRefund(orderInfo);
         	
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+    		afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), 
+    				orderInfo.getOrderNo(), refundAmount, orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo());
+    				
+			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
         	result.setData(resultData);
     	} catch (FanbeiException e) {
     		result = new AppResponse(e.getErrorCode());

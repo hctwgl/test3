@@ -33,6 +33,7 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
+import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
@@ -51,6 +52,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
 import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
@@ -60,6 +62,7 @@ import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -102,7 +105,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	private TaobaoApiUtil taobaoApiUtil;
 	@Resource
 	private BizCacheUtil bizCacheUtil;
-	
 	@Resource
 	AfResourceDao afResourceDao;
 	@Resource
@@ -131,6 +133,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfBorrowBillDao afBorrowBillDao;
 	@Resource
 	BoluomeUtil boluomeUtil;
+	@Resource
+	AfOrderRefundDao afOrderRefundDao;
 	
 	@Override
 	public int createOrderTrade(String content) {
@@ -470,7 +474,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if (useableAmount.compareTo(orderInfo.getSaleAmount()) < 0) {
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 						}
-						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper, orderInfo.getRid(), orderInfo.getOrderNo());
+//						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper, orderInfo.getRid(), orderInfo.getOrderNo());
 						
 						boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 						
@@ -539,22 +543,28 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public int dealBrandOrderRefund(final AfOrderDo orderInfo) {
+	public int dealBrandOrderRefund(final Long orderId,final Long userId, final Long bankId, final String orderNo, 
+			final BigDecimal refundAmount, final BigDecimal totalAmount, final String payType, final String payTradeNo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					logger.info("dealBrandOrderRefund begin , orderInfo = {} ", orderInfo);
-					
-					PayType payType = PayType.findRoleTypeByCode(orderInfo.getPayType());
-					switch (payType) {
+					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {}", new Object[]{orderId,userId,orderNo,refundAmount,totalAmount,payType,payTradeNo});
+					AfOrderDo orderInfo = null;
+					PayType type = PayType.findRoleTypeByCode(payType);
+					switch (type) {
 					case WECHAT:
-						String refundResult = UpsUtil.wxRefund(orderInfo.getOrderNo(), orderInfo.getPayTradeNo(), orderInfo.getActualAmount(), orderInfo.getActualAmount());
+						String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
 						logger.info("wx refund  , refundResult = {} ", refundResult);
 						if(!"SUCCESS".equals(refundResult)){
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						}
+						orderInfo = new AfOrderDo();
+						orderInfo.setRid(orderId);
+						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+						orderDao.updateOrder(orderInfo);
 						
+						afOrderRefundDao.addOrderRefund(buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
 						break;
 					case AGENT_PAY:
 						logger.info("agent pay refund  , refundResult = {} ");
@@ -569,25 +579,23 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 						break;
 					case BANK:
-						Long userId = orderInfo.getUserId();
-						Long bankId = orderInfo.getBankId();
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
-						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(orderInfo.getActualAmount(), userAccount.getRealName(), card.getCardNumber(), orderInfo.getUserId()+"", 
+						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"", 
 								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.BOLUOME.getCode(),"");
 						logger.info("bank refund upsResult = {}", upsResult);
 						if(!upsResult.isSuccess()){
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						}
+						orderInfo = new AfOrderDo();
+						orderInfo.setRid(orderId);
+						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+						orderDao.updateOrder(orderInfo);
 						break;
 					default:
 						break;
 					}
-					
-					orderInfo.setStatus(OrderStatus.DEAL_REFUNDING.getCode());
-					orderDao.updateOrder(orderInfo);
-					
-					logger.info("dealBrandOrderRefund comlete , orderInfo = {} ", orderInfo);
+					logger.info("dealBrandOrderRefund comlete");
 					return 1;
 				} catch (FanbeiException e) {
 					status.setRollbackOnly();
@@ -612,6 +620,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return accountLog;
 	}
 	
+	private AfOrderRefundDo buildOrderRefundDo(BigDecimal amount,Long userId,Long orderId,String orderNo,OrderRefundStatus refundStatus){
+		AfOrderRefundDo orderRefundInfo = new AfOrderRefundDo();
+		orderRefundInfo.setAmount(amount);
+		orderRefundInfo.setUserId(userId);
+		orderRefundInfo.setOrderId(orderId);
+		orderRefundInfo.setOrderNo(orderNo);
+		orderRefundInfo.setStatus(refundStatus.getCode());
+		return orderRefundInfo;
+	}
 	
 	public static void main(String[] args) {
 		System.out.println(UUID.randomUUID());

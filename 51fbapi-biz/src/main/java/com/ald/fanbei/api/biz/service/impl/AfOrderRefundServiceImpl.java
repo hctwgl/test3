@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
+import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 
 /**
@@ -13,10 +16,17 @@ import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 @Service("afOrderRefundService")
 public class AfOrderRefundServiceImpl implements AfOrderRefundService {
 
+	@Resource
+	AfOrderRefundDao afOrderRefundDao;
+	
 	@Override
 	public int addOrderRefund(AfOrderRefundDo orderRefundInfo) {
-		// TODO Auto-generated method stub
-		return 0;
+		return afOrderRefundDao.addOrderRefund(orderRefundInfo);
+	}
+
+	@Override
+	public int updateOrderRefund(AfOrderRefundDo orderRefundInfo) {
+		return afOrderRefundDao.updateOrderRefund(orderRefundInfo);
 	}
 
 }

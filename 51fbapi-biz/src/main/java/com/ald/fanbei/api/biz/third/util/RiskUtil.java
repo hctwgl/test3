@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskBatchRemoveReqBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
@@ -121,9 +122,8 @@ public class RiskUtil extends AbstractThird{
 	 * 老用户批量同步
 	 * @return
 	 */
-	public void batchRegister(){
+	public void batchRegister(int pageSize,String userName){
 		int count = afUserAccountService.getUserAccountCountWithHasRealName();
-		int pageSize = 100;
 		int pageCount = (int)Math.ceil(count/pageSize);
 		logger.info("batchRegister begin,pageCount="+pageCount);
 		for (int j = 1; j <= pageCount; j++) {
@@ -135,19 +135,30 @@ public class RiskUtil extends AbstractThird{
 			for (int i = 0; i < list.size(); i++) {
 				AfUserAccountDto accountDto = list.get(i);
 				RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
+				reqBo.setTradeNo(accountDto.getUserId()+"");
 				reqBo.setConsumerNo(accountDto.getUserId()+"");
 				reqBo.setAlipayNo(accountDto.getAlipayAccount());
 				reqBo.setAddress(accountDto.getAddress());
 				reqBo.setChannel(CHANNEL);
 				reqBo.setReqExt("");
-				reqBo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getRealName()));
-				reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getMobile()));
-				reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getIdNumber()));
-				reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getEmail()));
+				reqBo.setRealName(accountDto.getRealName());
+				reqBo.setPhone(accountDto.getMobile());
+				reqBo.setIdNo(accountDto.getIdNumber());
+				reqBo.setEmail(accountDto.getEmail());
 				reqList.add(reqBo);
 			}
-			String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/user/action/batchRemove.htm", JSON.toJSONString(reqList),"");
-			logThird(reqResult, "batchRegister_"+j, JSON.toJSONString(reqList));
+			RiskBatchRemoveReqBo batchBo = new RiskBatchRemoveReqBo();
+			batchBo.setOrderNo(getOrderNo("bath", userName.substring(userName.length()-4,userName.length())));
+			batchBo.setDetails(JSON.toJSONString(reqList));
+			if(j<pageCount){
+				batchBo.setCount(pageSize+"");
+			}else{
+				batchBo.setCount((count-pageSize*(j-1))+"");
+			}
+			batchBo.setSignInfo(SignUtil.sign(createLinkString(batchBo), PRIVATE_KEY));
+			String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/user/action/batchRemove.htm",batchBo);
+			logThird(reqResult, "batchRegister_"+j,batchBo);
+			System.out.println(j);
 		}
 	}
 	

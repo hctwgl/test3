@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.ald.fanbei.api.common.Constants;
@@ -15,6 +17,8 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 
 
 public class BoluomeCore {
+	
+	private static Logger   logger = LoggerFactory.getLogger(BoluomeCore.class);
 	
 	public static final String CUSTOMER_USER_ID = "customerUserId";
 	public static final String CUSTOMER_USER_PHONE = "customerUserPhone";
@@ -112,12 +116,15 @@ public class BoluomeCore {
      * @return
      */
     public static String buildSignStr(Map<String, String> params) {
+    	logger.info("buildSignStr params = {}", params);
     	String beforeSign = 
     			AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) 
     			+ concatParams(params)
     			+ AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-    	
-        return DigestUtil.MD5(beforeSign);
+    	logger.info("beforeSignStr params = {}, beforeSign = {}", params, beforeSign);
+    	String sign = DigestUtil.MD5(beforeSign);
+    	logger.info("sign = {}", sign);
+        return sign;
     }
     
     /**
