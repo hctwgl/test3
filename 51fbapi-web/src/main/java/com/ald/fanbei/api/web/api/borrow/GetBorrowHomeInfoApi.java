@@ -83,7 +83,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 			vo.setMobileStatus(authDo.getMobileStatus());
 		}else{
 			if(StringUtil.equals(MobileStatus.YES.getCode(), authDo.getMobileStatus())&&DateUtil.afterDay(authDo.getGmtMobile(), DateUtil.addMonths(new Date(), 2))){//超过两个月
-				vo.setMobileStatus(MobileStatus.EXPIRE.getCode());
+				vo.setMobileStatus(MobileStatus.NO.getCode());
 			}else{
 				vo.setMobileStatus(authDo.getMobileStatus());
 			}

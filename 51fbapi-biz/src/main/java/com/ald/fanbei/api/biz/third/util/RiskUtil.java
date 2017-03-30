@@ -310,15 +310,16 @@ public class RiskUtil extends AbstractThird{
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");//10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			AfUserAuthDo auth = new AfUserAuthDo();
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtMobile(new Date());
 			if(StringUtil.equals("10", result)){
-				AfUserAuthDo auth = new AfUserAuthDo();
-				auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 				auth.setMobileStatus(YesNoStatus.YES.getCode());
-				auth.setGmtMobile(new Date());
-				return afUserAuthService.updateUserAuth(auth);
+			}else{
+				auth.setMobileStatus(YesNoStatus.NO.getCode());
 			}
+			return afUserAuthService.updateUserAuth(auth);
 		}
 		return 0;
 	}
-	
 }
