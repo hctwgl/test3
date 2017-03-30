@@ -30,6 +30,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：
@@ -69,30 +70,29 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		Map<String, Object> zmModel = new HashMap<String, Object>();
 		Map<String, Object> locationModel = new HashMap<String, Object>();
 		Map<String, Object> contactorModel = new HashMap<String, Object>();
-//		AfResourceDo afResourceDo =afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.creditScoreAmount.getCode());
-////		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
-//		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
-//		authDo.get
-//		BigDecimal creditAmount = BigDecimal.ZERO;
-//		int min = Integer.parseInt(afResourceDo.getValue1());//最小分数
-//		if(sorce<min){
-//			resp.addResponseData("tooLow", 'Y');
-//			resp.addResponseData("creditAmount", creditAmount);
-//		}else{
-//			for (int i = 0; i < arry.size(); i++) {
-//				JSONObject obj = arry.getJSONObject(i);
-//				int minScore = obj.getInteger("minScore");
-//				int maxScore = obj.getInteger("maxScore");
-//				BigDecimal amount = obj.getBigDecimal("amount");
-//				if(minScore<=sorce&&maxScore>sorce){
-//					creditAmount = amount;
-//				}
-//			}
-//			
-//		}
+		AfResourceDo afResourceDo =afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.creditScoreAmount.getCode());
+//		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
+		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
+		Integer sorce =userDto.getCreditScore();
+		
+		int min = Integer.parseInt(afResourceDo.getValue1());//最小分数
+		if(sorce<min){
+			creditModel.put("creditLevel", "信用较差");
+
+		}else{
+			for (int i = 0; i < arry.size(); i++) {
+				JSONObject obj = arry.getJSONObject(i);
+				int minScore = obj.getInteger("minScore");
+				int maxScore = obj.getInteger("maxScore");
+				String desc = obj.getString("desc");
+				if(minScore<=sorce&&maxScore>sorce){
+					creditModel.put("creditLevel", desc);
+				}
+			}
+			
+		}
 		
 		
-		creditModel.put("creditLevel", "较差");
 		creditModel.put("creditAssessTime", authDo.getGmtModified());
 		creditModel.put("allowConsume", afUserAuthService.getConsumeStatus(authDo.getUserId()));
 		zmModel.put("zmStatus", authDo.getZmStatus());
