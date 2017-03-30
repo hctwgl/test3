@@ -3,8 +3,15 @@ package com.ald.fanbei.web.test.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.junit.Test;
 
+import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.web.test.common.BaseControllerTest;
 
 /**
@@ -18,7 +25,7 @@ public class BrandShopControllerTest extends BaseControllerTest {
 	
 	public static final String GET_BRAND_URL      = HTTPHOST + "/brand/getBrandUrl";
 	
-	
+
 	@Test
 	public void testGetBrandUrl() {
 		 try {
@@ -29,5 +36,6 @@ public class BrandShopControllerTest extends BaseControllerTest {
 	            e.printStackTrace();
 	        }
 	}
+	
 	
 }
