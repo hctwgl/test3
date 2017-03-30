@@ -119,6 +119,23 @@
 		gmt_create DESC
 
 	</select>
+	
+		<select id="getRepaymentByPayTradeNo" 
+		resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		pay_trade_no=#{payTradeNo}
+		ORDER BY
+		gmt_create DESC
+
+	</select>
+	
+	
 
 	<select id="getRepaymentBorrowCashByrid" parameterType="java.lang.Long"
 		resultType="AfRepaymentBorrowCashDo">

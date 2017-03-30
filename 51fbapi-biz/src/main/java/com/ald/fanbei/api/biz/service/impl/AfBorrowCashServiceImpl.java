@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -30,8 +31,10 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 
 /**
@@ -53,6 +56,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	RiskUtil riskUtil;
 	@Resource
 	TransactionTemplate transactionTemplate;
+	@Resource
+	JpushService jpushService;
+	@Resource
+	AfUserDao afUserDao;
 	@Override
 	public int addBorrowCash(final AfBorrowCashDo afBorrowCashDo) {
 		
@@ -77,7 +84,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, "") , "20", afBorrowCashDo.getCardNumber());
 					 AfBorrowCashDo borrowCashDo = new AfBorrowCashDo();
 					 borrowCashDo.setRid(borrowId);	 
+					 AfUserDo afUserDo= afUserDao.getUserById(userId);
+
 					 if(StringUtils.equals("10", result.getResult())){
+						 jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 						//审核通过
 						 borrowCashDo.setGmtArrival(currDate);
 						 borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
@@ -99,6 +109,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 						 borrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 						 borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 						 borrowCashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
+						 jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+
 					 }else{
 						 borrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
 					 }

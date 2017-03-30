@@ -152,7 +152,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			AfUserCouponDto coupon, BigDecimal rebateAmount, Long borrow, Long cardId, Long userId, String clientIp,
 			AfUserAccountDo afUserAccountDo) {
 		Date now = new Date();
-		String repayNo = generatorClusterNo.getRepaymentNo(now);
+		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
 		final String payTradeNo=repayNo;
 		//新增还款记录
 		String name =Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
@@ -202,7 +202,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
 					
 					
-					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getRid());
+					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
 					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());
 					BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
