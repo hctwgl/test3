@@ -105,7 +105,7 @@
 				<value>/good/getGoodsDetailInfo</value>
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
-				<value>/brand/getBrandListApi</value>
+				<value>/brand/getBrandList</value>
 			</list>
 		</constructor-arg>
 	</bean>
