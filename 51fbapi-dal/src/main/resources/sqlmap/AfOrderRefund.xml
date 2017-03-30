@@ -5,45 +5,40 @@
 		id rid,gmt_create,gmt_modified,amount,user_id,order_id,order_no,status
 	</sql>
 	
-	<select id="selectCouponByCouponIds" resultType="AfCouponDo">
-	    SELECT
-	    	<include refid="queryAllFields" />
-	    FROM
-	   		 af_coupon
-	    WHERE
-	    	is_delete = 0
-	     AND
-	         status ='O'
-	     
-	     AND
-			 id in (${ids})
-		 AND
-	   		( ( expiry_type='R'and gmt_end >NOW())
-	    		 OR 
-	     	expiry_type='D')
-	</select>
+	<insert id="addOrderRefund" parameterType="AfOrderRefundDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_order_refund(gmt_create , gmt_modified , amount , user_id , order_id , order_no , status)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{amount},
+    		#{userId},
+    		#{orderId},
+    		#{orderNo},
+    		#{status}
+		)
+	</insert>
 	
-	<select id="getCouponById" resultType="AfCouponDo">
-	    SELECT
-	    	<include refid="queryAllFields" />
-	    FROM
-	   		 af_coupon
-	    WHERE
-	    	is_delete = 0
-	    AND
-			id = #{couponId}
-	</select>
-	<update id="updateCouponquotaAlreadyById" parameterType="AfCouponDo">
-		UPDATE
-			af_coupon
-		SET
-			gmt_modified = NOW()
-		<if test="quotaAlready != null">
-    	  ,quota_already=quota_already + #{quotaAlready}
-	   </if>
-		WHERE
-			is_delete = 0
-		AND
-			id = #{rid}
+	<update id="updateOrderRefund" parameterType="AfOrderRefundDo" >
+		UPDATE af_order_refund SET gmt_modified = NOW()
+			<if test="isDelete != null">
+    			,is_delete=#{isDelete}
+			</if>
+			<if test="amount != null">
+    			,amount=#{amount}
+			</if>
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="orderId != null">
+    			,order_id=#{orderId}
+			</if>
+			<if test="orderNo != null">
+    			,order_no=#{orderNo}
+			</if>
+			<if test="status != null">
+    			,status=#{status}
+			</if>
+		WHERE id = #{rid}
 	</update>
+	
 </mapper>

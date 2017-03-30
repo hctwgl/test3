@@ -142,7 +142,7 @@ public class BoluomeController{
         	if (orderInfo == null) {
         		result = new AppResponse(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
         	}
-        	afOrderService.dealBrandOrderRefund(orderInfo);
+//        	afOrderService.dealBrandOrderRefund(orderInfo);
         	resultData.put("orderId", orderInfo.getRid());
         	result.setData(resultData);
     	} catch (FanbeiException e) {
