@@ -4,6 +4,8 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +19,10 @@ import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -76,6 +80,14 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		}else if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())){
 			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 		}
+		Integer day = NumberUtil
+				.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+
+		if(afBorrowCashDo.getGmtArrival()!=null){
+			Date repaymentDay = DateUtil.addDays(afBorrowCashDo.getGmtArrival(), day);
+			data.put("gmtLastRepay", repaymentDay);
+		}
+		
 		data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 		data.put("rejectReason", afBorrowCashDo.getReviewDetails());
 		data.put("serviceAmount", BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), afBorrowCashDo.getPoundage()));
