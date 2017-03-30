@@ -119,6 +119,8 @@ public class BoluomeUtil extends AbstractThird{
 			status = OrderStatus.REFUND_COMPLETE;
 		} else if (orderStatus == 11) {
 			status = OrderStatus.WAITING_REFUND;
+		} else if (orderStatus == 8) {
+			status = OrderStatus.CLOSED;
 		}
 		return status;
 	}
