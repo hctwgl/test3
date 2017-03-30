@@ -54,8 +54,8 @@ public class TestController {
 	public String goodsRequest(HttpServletRequest request, HttpServletResponse response)throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
-		//riskUtil.batchRegister();
-		riskUtil.register("73772", "胡潮永", "13958004662", "330624198509136450", "", "", "");
+		riskUtil.batchRegister(5,"13958004662");
+//		riskUtil.register("73772", "胡潮永", "13958004662", "330624198509136450", "", "", "");
 //		Map<String,Object> inputData = new HashMap<String, Object>();
 //		inputData.put("userId", 11l);
 //		inputData.put("seriesCount", 5);
