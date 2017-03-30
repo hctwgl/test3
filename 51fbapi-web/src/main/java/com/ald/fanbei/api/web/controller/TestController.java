@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 
@@ -31,6 +32,9 @@ public class TestController {
 	CouponSceneRuleEnginer signinRuleEngine;
 	@Resource
 	JpushService jpushService;
+	
+	@Resource
+	RiskUtil riskUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -50,7 +54,8 @@ public class TestController {
 	public String goodsRequest(HttpServletRequest request, HttpServletResponse response)throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
-
+		//riskUtil.batchRegister();
+		riskUtil.register("73772", "胡潮永", "13958004662", "330624198509136450", "", "", "");
 //		Map<String,Object> inputData = new HashMap<String, Object>();
 //		inputData.put("userId", 11l);
 //		inputData.put("seriesCount", 5);

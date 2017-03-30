@@ -1,9 +1,12 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 
 /**
  * 
@@ -46,4 +49,8 @@ public interface AfUserAccountDao {
 	 * @return
 	 */
 	AfUserAccountDto getUserAndAccountByUserId(@Param("userId")Long userId);
+	
+	int getUserAccountCountWithHasRealName();
+	
+	List<AfUserAccountDto> getUserAndAccountListWithHasRealName(AfUserAccountQuery query);
 }

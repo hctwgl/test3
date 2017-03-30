@@ -16,6 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfLimitDetailDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfLimitDetailQuery;
+import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 
 /**
  * 
@@ -66,6 +67,17 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	@Override
 	public List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query) {
 		return afUserAccountLogDao.getLimitDetailList(query);
+	}
+
+	@Override
+	public int getUserAccountCountWithHasRealName() {
+		return afUserAccountDao.getUserAccountCountWithHasRealName();
+	}
+
+	@Override
+	public List<AfUserAccountDto> getUserAndAccountListWithHasRealName(
+			AfUserAccountQuery query) {
+		return afUserAccountDao.getUserAndAccountListWithHasRealName(query);
 	}
 
 }

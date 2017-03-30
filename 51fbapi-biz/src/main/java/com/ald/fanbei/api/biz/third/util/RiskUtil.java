@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
@@ -31,6 +32,8 @@ import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -53,6 +56,8 @@ public class RiskUtil extends AbstractThird{
 	
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 	
 	private static String getUrl(){
 		if(url==null){
@@ -109,6 +114,40 @@ public class RiskUtil extends AbstractThird{
 			return riskResp;
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+		}
+	}
+	
+	/**
+	 * 老用户批量同步
+	 * @return
+	 */
+	public void batchRegister(){
+		int count = afUserAccountService.getUserAccountCountWithHasRealName();
+		int pageSize = 100;
+		int pageCount = (int)Math.ceil(count/pageSize);
+		logger.info("batchRegister begin,pageCount="+pageCount);
+		for (int j = 1; j <= pageCount; j++) {
+			AfUserAccountQuery query = new AfUserAccountQuery();
+			query.setPageNo(j);
+			query.setPageSize(pageSize);
+			List<AfUserAccountDto> list = afUserAccountService.getUserAndAccountListWithHasRealName(query);
+			List<RiskRegisterReqBo> reqList = new ArrayList<RiskRegisterReqBo>();
+			for (int i = 0; i < list.size(); i++) {
+				AfUserAccountDto accountDto = list.get(i);
+				RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
+				reqBo.setConsumerNo(accountDto.getUserId()+"");
+				reqBo.setAlipayNo(accountDto.getAlipayAccount());
+				reqBo.setAddress(accountDto.getAddress());
+				reqBo.setChannel(CHANNEL);
+				reqBo.setReqExt("");
+				reqBo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getRealName()));
+				reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getMobile()));
+				reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getIdNumber()));
+				reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getEmail()));
+				reqList.add(reqBo);
+			}
+			String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/user/action/batchRemove.htm", JSON.toJSONString(reqList),"");
+			logThird(reqResult, "batchRegister_"+j, JSON.toJSONString(reqList));
 		}
 	}
 	
