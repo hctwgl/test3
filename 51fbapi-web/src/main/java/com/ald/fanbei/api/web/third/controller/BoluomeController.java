@@ -60,10 +60,10 @@ public class BoluomeController{
 	public String synchOrder(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) throws Exception{
     	
     	String uri = StringUtils.EMPTY;
-    	if (request.getRequestURI().contains("synchOrder")) {
-    		uri = "synchOrder";
-    	} else {
+    	if (request.getRequestURI().contains("synchOrderStatus")) {
     		uri = "synchOrderStatus";
+    	} else {
+    		uri = "synchOrder";
     	}
     	
     	logger.info(uri + "begin requestParams = {}",requestData);
