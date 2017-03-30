@@ -20,6 +20,8 @@ public interface AfRepaymentBorrowCashService {
 	Map<String,Object> createRepayment(BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,Long borrow,Long cardId,Long userId,String clientIp,AfUserAccountDo afUserAccountDo);
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo);
+	
+	public long dealRepaymentFail(final String outTradeNo, final String tradeNo);
 	/**
 	 * 增加记录
 	 * 

@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
@@ -40,7 +41,6 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -125,7 +125,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		repay.setRepaymentAmount(repaymentAmount);
 		repay.setRepayNo(repayNo);
 		repay.setGmtCreate(gmtCreate);
-		repay.setStatus(RepaymentStatus.NEW.getCode());
+		repay.setStatus(AfBorrowCashRepmentStatus.APPLY.getCode());
 		if(null != coupon){
 			repay.setUserCouponId(coupon.getRid());
 			repay.setCouponAmount(coupon.getAmount());
@@ -195,7 +195,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						return 0l;
 					}
 					AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
-					temRepayMent.setStatus(RepaymentStatus.YES.getCode());
+					temRepayMent.setStatus(AfBorrowCashRepmentStatus.YES.getCode());
 					temRepayMent.setTradeNo(tradeNo);
 					temRepayMent.setRid(repayment.getRid());
 					//变更还款记录为已还款
@@ -227,11 +227,16 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.info("dealRepaymentSucess error",e);
+					
+					
 					return 0l;
 				}
 			}
 		});
 	}
+	
+	
+	
 	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type,BigDecimal amount,Long userId,Long repaymentId){
 		//增加account变更日志
 		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
@@ -240,5 +245,21 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		accountLog.setRefId(repaymentId+"");
 		accountLog.setType(type.getCode());
 		return accountLog;
+	}
+
+
+
+	@Override
+	public long dealRepaymentFail(String outTradeNo, String tradeNo) {
+		AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(outTradeNo);
+		if(YesNoStatus.YES.getCode().equals(repayment.getStatus())){
+			return 0l;
+		}
+		AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
+		temRepayMent.setStatus(AfBorrowCashRepmentStatus.NO.getCode());
+		temRepayMent.setTradeNo(tradeNo);
+		temRepayMent.setRid(repayment.getRid());
+		
+		return afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
 	}
 }

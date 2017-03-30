@@ -272,6 +272,14 @@ public class PayRoutController{
 	    			afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, transactionId);
 
 	    		}
+    		}else{
+    			String outTradeNo = properties.getProperty("out_trade_no");
+	    		String transactionId = properties.getProperty("transaction_id");
+	    		String attach = properties.getProperty("attach");
+    			if(PayOrderSource.REPAYMENTCASH.getCode().equals(attach)){
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo,transactionId);
+
+        		}
     		}
             
         } catch (Exception e) {
@@ -309,7 +317,10 @@ public class PayRoutController{
         		}
     			return "SUCCESS";
 			}else{//代收失败
-				
+				if(UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)){
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo,tradeNo);
+
+        		}
 			}
     		return "ERROR";
 		} catch (Exception e) {
