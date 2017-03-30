@@ -197,5 +197,42 @@ public class JpushServiceimpl extends BaseService implements JpushService{
 			logger.info("dealBorrowCashTransfer error",e);
 		}
 	}
+
+	
+	@Override
+	public void dealBorrowCashApplySuccss(String userName, Date date) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("dealBorrowCashApplySuccss,pid=",pid,",date=",date));
+			String msgContext = "您的借款申请已经通过，银行系统已经开始处理您的打款需求，预计3—5分钟左右到账，请注意查看您的银行卡。";
+			Map<String,String> extras = new HashMap<String,String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis()+"");
+			extras.put(PUSH_JUMP_TYPE, "209");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("借钱申请成功", msgContext, extras, new String[]{userName});
+		} catch (Exception e) {
+			logger.info("dealBorrowCashTransfer error",e);
+		}
+	}
+
+	
+	@Override
+	public void dealBorrowCashApplyFail(String userName, Date date) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("dealBorrowCashTransfer,pid=",pid,",date=",date));
+			String msgContext = "亲，您的信用还需努力，本次借款申请没有通过。继续保持好的信用生活习惯，离下次成功借款只差一步了。";
+			Map<String,String> extras = new HashMap<String,String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis()+"");
+			extras.put(PUSH_JUMP_TYPE, "210");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("借钱申请失败", msgContext, extras, new String[]{userName});
+		} catch (Exception e) {
+			logger.info("dealBorrowCashTransfer error",e);
+		}
+		
+	}
 	
 }
