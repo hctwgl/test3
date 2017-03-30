@@ -71,21 +71,32 @@ public class AuthFaceApi implements ApiHandle {
 		
         AfUserAccountDto oldAccount = afUserAccountService.getUserAndAccountByUserId(context.getUserId());
 		
+		//实名信息，如果与之前的实名信息不一致时报错
+        if(StringUtil.isNotBlank(oldAccount.getIdNumber())&&StringUtil.isNotBlank(oldAccount.getRealName())){
+        	if(!StringUtil.equals(idNumber, oldAccount.getIdNumber())||!StringUtil.equals(realName, oldAccount.getRealName())){
+                throw new FanbeiException("user realname auth error",FanbeiExceptionCode.USER_REALNAME_AUTH_ERROR);
+            }
+        }
+        
         //第一次实名认证
       	if(StringUtil.isBlank(oldAccount.getIdNumber())&&StringUtil.isBlank(oldAccount.getRealName())){
       		//同步实名信息到融都
-      		RiskRespBo riskResp = riskUtil.register(oldAccount.getUserId()+"", realName, oldAccount.getMobile(), idNumber, 
-      				oldAccount.getEmail(), oldAccount.getAlipayAccount(), oldAccount.getAddress());
-      		if(!riskResp.isSuccess()){
-      			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
-      		}
+      		try {
+      			RiskRespBo riskResp = riskUtil.register(oldAccount.getUserId()+"", realName, oldAccount.getMobile(), idNumber, 
+          				oldAccount.getEmail(), oldAccount.getAlipayAccount(), oldAccount.getAddress());
+          		if(!riskResp.isSuccess()){
+          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+          		}
+			} catch (Exception e) {
+				//执行修改操作
+				RiskRespBo riskResp = riskUtil.modify(oldAccount.getUserId()+"", realName, oldAccount.getMobile(), idNumber,
+						oldAccount.getEmail(), oldAccount.getAlipayAccount(), oldAccount.getAddress(), "");
+				if(!riskResp.isSuccess()){
+          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+          		}
+			}
+      		
       	}
-      	
-		//实名信息，如果与之前的实名信息不一致时报错
-        if(!(StringUtil.isNotBlank(oldAccount.getIdNumber())&&StringUtil.equals(idNumber, oldAccount.getIdNumber()))
-                || !(StringUtil.isNotBlank(oldAccount.getRealName())&&StringUtil.equals(realName, oldAccount.getRealName()))){
-            throw new FanbeiException("user realname auth error",FanbeiExceptionCode.USER_REALNAME_AUTH_ERROR);
-        }
         
 		//TODO 更新user_account中身份证号和真实姓名
 		AfUserAccountDo afUserAccountDo = new AfUserAccountDo();

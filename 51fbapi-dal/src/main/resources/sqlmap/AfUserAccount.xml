@@ -9,7 +9,7 @@
 	<sql id="queryWithUserFields">
 		c.id rid,c.user_id,c.user_name,c.au_amount,c.used_amount,c.freeze_amount,
 		c.score,c.alipay_account,c.rebate_amount,c.id_number,c.jfb_amount,c.uc_amount,u.gender,u.nick,u.avatar,
-		u.real_name,u.mobile,u.recommend_code,u.email,u.address,c.password,c.salt,c.fail_count,c.credit_score,c.open_id
+		c.real_name,u.mobile,u.recommend_code,u.email,u.address,c.password,c.salt,c.fail_count,c.credit_score,c.open_id
 	</sql>
 	
 	<select id="getUserAccountInfoByUserId" resultType="AfUserAccountDo" >
