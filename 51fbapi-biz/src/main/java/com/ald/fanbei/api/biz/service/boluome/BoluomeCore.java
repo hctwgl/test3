@@ -122,7 +122,9 @@ public class BoluomeCore {
     			+ concatParams(params)
     			+ AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
     	logger.info("beforeSignStr params = {}, beforeSign = {}", params, beforeSign);
-        return DigestUtil.MD5(beforeSign);
+    	String sign = DigestUtil.MD5(beforeSign);
+    	logger.info("sign = {}", sign);
+        return sign;
     }
     
     /**
