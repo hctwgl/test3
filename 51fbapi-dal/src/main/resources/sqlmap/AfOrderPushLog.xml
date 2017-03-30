@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderPushLogDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,type,params,result,order_id,order_no,status
+	</sql>
+	
+	<insert id="addOrderPushLog" parameterType="AfOrderPushLogDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_order_push_log(gmt_create , gmt_modified , type , params , result , order_id , order_no , status)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{type},
+    		#{params},
+    		#{result},
+    		#{orderId},
+    		#{orderNo},
+    		#{status}
+		)
+	</insert>
+	
+	<update id="updateOrderPushLog" parameterType="AfOrderPushLogDo" >
+		UPDATE af_order_push_log SET gmt_modified = NOW()
+			<if test="isDelete != null">
+    			,is_delete=#{isDelete}
+			</if>
+			<if test="type != null">
+    			,type=#{type}
+			</if>
+			<if test="params != null">
+    			,params=#{params}
+			</if>
+			<if test="result != null">
+    			,result=#{result}
+			</if>
+			<if test="orderId != null">
+    			,order_id=#{orderId}
+			</if>
+			<if test="orderNo != null">
+    			,order_no=#{orderNo}
+			</if>
+			<if test="status != null">
+    			,status=#{status}
+			</if>
+		WHERE id = #{rid}
+	</update>
+
+</mapper>

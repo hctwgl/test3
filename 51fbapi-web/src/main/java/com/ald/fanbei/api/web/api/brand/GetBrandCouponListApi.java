@@ -3,7 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,6 +47,8 @@ public class GetBrandCouponListApi implements ApiHandle {
 	private static final String USED_COUPON = "usedCoupons";
 	private static final String EXPIRED_COUPON = "expiredCoupons";
 	private static final String DATA = "data";
+	private static final String NEXT_PAGE_INDEX = "nextPageIndex";
+	private static final String COUPON_LIST = "couponList"; 
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -76,8 +77,9 @@ public class GetBrandCouponListApi implements ApiHandle {
 			if (!"0".equals(resultJson.getString("code"))) {
 				new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 			}
-			List<AfBrandCouponVo> couponList = parseBrandCoupon(resultJson, type);
-			resp.addResponseData("couponList", couponList);
+			Map<String,Object> resultMap = parseBrandCoupon(resultJson, type);
+			resp.addResponseData(COUPON_LIST, resultMap.get(COUPON_LIST));
+			resp.addResponseData("nextPageNo", resultMap.get(NEXT_PAGE_INDEX));
 			resp.addResponseData("pageNo", pageNo);
 			return resp;
 		} catch (Exception e) {
@@ -85,11 +87,14 @@ public class GetBrandCouponListApi implements ApiHandle {
 		}
 	}
 	
-	private List<AfBrandCouponVo> parseBrandCoupon(JSONObject resultJson, Integer type) {
+	private Map<String,Object> parseBrandCoupon(JSONObject resultJson, Integer type) {
+		Map<String,Object> result = new HashMap<String,Object>();
 		List<AfBrandCouponVo> voList = new ArrayList<AfBrandCouponVo>();
+		Integer nextPageNo = null;
 		if (type == 1) {
 			JSONObject data = resultJson.getJSONObject(DATA);
 			String availableCouponStr = data.getString(AVAILABLE_COUPON);
+			nextPageNo = data.getInteger(NEXT_PAGE_INDEX);
 			List<BrandCouponResponseBo> availabeCouponlList = JSONObject.parseArray(availableCouponStr, BrandCouponResponseBo.class);
 			List<AfBrandCouponVo> availabeCouponVolList = parseBrandCouponVo(availabeCouponlList, "NOUSE");
 			if (CollectionUtils.isNotEmpty(availabeCouponVolList)) {
@@ -98,7 +103,7 @@ public class GetBrandCouponListApi implements ApiHandle {
 		} else if (type == 2){
 			JSONObject data = resultJson.getJSONObject(DATA);
 			String usedCouponStr = data.getString(USED_COUPON);
-			
+			nextPageNo = data.getInteger(NEXT_PAGE_INDEX);
 			List<BrandCouponResponseBo> usedCouponList = JSONObject.parseArray(usedCouponStr, BrandCouponResponseBo.class);
 			List<AfBrandCouponVo> usedCouponVoList = parseBrandCouponVo(usedCouponList, "USED");
 			if (CollectionUtils.isNotEmpty(usedCouponVoList)) {
@@ -107,6 +112,7 @@ public class GetBrandCouponListApi implements ApiHandle {
 		} else if (type == 3) {
 			JSONObject data = resultJson.getJSONObject(DATA);
 			String expiredCouponStr = data.getString(EXPIRED_COUPON);
+			nextPageNo = data.getInteger(NEXT_PAGE_INDEX);
 			List<BrandCouponResponseBo> expiredCouponList = JSONObject.parseArray(expiredCouponStr, BrandCouponResponseBo.class);
 			List<AfBrandCouponVo> expiredCouponVoList = parseBrandCouponVo(expiredCouponList, "EXPIRE");
 			if (CollectionUtils.isNotEmpty(expiredCouponVoList)) {
@@ -117,6 +123,7 @@ public class GetBrandCouponListApi implements ApiHandle {
 			String availableCouponStr = data.getString(AVAILABLE_COUPON);
 			String usedCouponStr = data.getString(USED_COUPON);
 			String expiredCouponStr = data.getString(EXPIRED_COUPON);
+			nextPageNo = data.getInteger(NEXT_PAGE_INDEX);
 			List<BrandCouponResponseBo> availabeCouponlList = JSONObject.parseArray(availableCouponStr, BrandCouponResponseBo.class);
 			List<AfBrandCouponVo> availabeCouponVolList = parseBrandCouponVo(availabeCouponlList, "NOUSE");
 			
@@ -135,7 +142,9 @@ public class GetBrandCouponListApi implements ApiHandle {
 				voList.addAll(expiredCouponVoList);
 			}
 		}
-		return voList;
+		result.put(COUPON_LIST, voList);
+		result.put(NEXT_PAGE_INDEX, nextPageNo);
+		return result;
 	}
 	
 	private List<AfBrandCouponVo> parseBrandCouponVo(List<BrandCouponResponseBo> boList, final String status) {

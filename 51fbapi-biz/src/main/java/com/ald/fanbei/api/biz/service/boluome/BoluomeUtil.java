@@ -2,6 +2,9 @@ package com.ald.fanbei.api.biz.service.boluome;
 
 import java.math.BigDecimal;
 
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -10,6 +13,7 @@ import com.ald.fanbei.api.biz.bo.BoluomePushPayRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundResponseBo;
+import com.ald.fanbei.api.biz.service.AfOrderPushLogService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -20,6 +24,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfOrderPushLogDo;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -33,6 +38,9 @@ import com.alibaba.fastjson.JSONObject;
 public class BoluomeUtil extends AbstractThird{
 	
 	protected static Logger   logger = LoggerFactory.getLogger(BoluomeUtil.class);
+	
+	@Resource
+	AfOrderPushLogService afOrderPushLogService;
 	
 	private static String pushPayUrl = null;
 	private static String pushRefundUrl = null;
@@ -57,8 +65,10 @@ public class BoluomeUtil extends AbstractThird{
 		logger.info("pushPayStatus result , responseBo = {}", responseBo);
 		if(responseBo != null && responseBo.getCode().equals(SUCCESS_CODE) ){
 			responseBo.setSuccess(true);
+			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, true, JSONObject.toJSONString(reqBo), reqResult));
 			return responseBo;
 		}else{
+			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, false, JSONObject.toJSONString(reqBo), reqResult));
 			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
 		}
 	}
@@ -80,9 +90,11 @@ public class BoluomeUtil extends AbstractThird{
 		BoluomePushRefundResponseBo responseBo = JSONObject.parseObject(reqResult,BoluomePushRefundResponseBo.class);
 		logger.info("pushRefundStatus result , responseBo = {}", responseBo);
 		if(responseBo != null && responseBo.getCode().equals(SUCCESS_CODE) ){
+			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, true, JSONObject.toJSONString(reqBo), reqResult));
 			responseBo.setSuccess(true);
 			return responseBo;
 		}else{
+			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, false, JSONObject.toJSONString(reqBo), reqResult));
 			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
 		}
 	}
@@ -135,6 +147,17 @@ public class BoluomeUtil extends AbstractThird{
 			status = PayStatus.REFUND;
 		}
 		return status;
+	}
+	
+	private AfOrderPushLogDo buildPushLog(Long orderId, String orderNo, PushStatus pushStatus, boolean status, String params, String result) {
+		AfOrderPushLogDo pushLog = new AfOrderPushLogDo();
+		pushLog.setOrderId(orderId);
+		pushLog.setOrderNo(orderNo);
+		pushLog.setParams(params);
+		pushLog.setResult(result);
+		pushLog.setStatus(status+StringUtils.EMPTY);
+		pushLog.setType(pushStatus.getCode());
+		return pushLog;
 	}
 
 } 
