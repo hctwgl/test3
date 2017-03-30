@@ -33,6 +33,7 @@
 			actual_amount , 
 			shop_name , 
 			rebate_amount , 
+			commission_amount,
 			mobile,
 			bank_id
 			<if test="gmtPayEnd != null" >
@@ -78,6 +79,7 @@
 		    #{actualAmount},
 		    #{shopName},
 		    #{rebateAmount},
+		    #{commissionAmount},
 		    #{mobile},
 		    #{bankId}
 		    <if test="gmtPayEnd != null">

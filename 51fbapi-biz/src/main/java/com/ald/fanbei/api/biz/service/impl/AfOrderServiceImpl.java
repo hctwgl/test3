@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -474,7 +473,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if (useableAmount.compareTo(orderInfo.getSaleAmount()) < 0) {
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 						}
-//						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper, orderInfo.getRid(), orderInfo.getOrderNo());
+						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper, orderInfo.getRid(), orderInfo.getOrderNo());
 						
 						boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 						
@@ -505,7 +504,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderDao.updateOrder(orderInfo);
 			 		return resultMap;
 				} catch (FanbeiException exception) {
-					status.setRollbackOnly();
+					logger.error("payBrandOrder faied e = {}", exception );
 					throw new FanbeiException("bank card pay error", exception.getErrorCode());
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -630,7 +629,4 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return orderRefundInfo;
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(UUID.randomUUID());
-	}
 }

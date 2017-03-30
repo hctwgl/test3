@@ -196,6 +196,50 @@ public class HttpUtil {
         return result;
     }
     
+    /**
+     * 发送POST请求，将参数放置到BODY里边
+     * 
+     * @param url
+     * @param param
+     * @return
+     */
+    public static String doHttpPostJsonParam(String url, String param) {
+        BufferedReader in = null;
+        OutputStreamWriter out = null;
+        String result = "";
+        try {
+            URL realUrl = new URL(url);
+            URLConnection conn = realUrl.openConnection();
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestProperty("content-type", "application/json");
+            out = new OutputStreamWriter(conn.getOutputStream());
+            // 把数据写入请求的Body
+            out.write(param);
+            out.flush();
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                result += line;
+            }
+        } catch (Exception e) {
+            logger.error("发送失败" + e);
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return result;
+    }
+    
     
 
     /**

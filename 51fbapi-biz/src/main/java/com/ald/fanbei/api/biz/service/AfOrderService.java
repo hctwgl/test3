@@ -137,7 +137,7 @@ public interface AfOrderService {
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(AfOrderDo orderInfo, Integer nper);
+	Map<String,Object> payBrandOrder(final AfOrderDo orderInfo, final Integer nper);
 	
 	/**
 	 * 处理菠萝觅回调订单 

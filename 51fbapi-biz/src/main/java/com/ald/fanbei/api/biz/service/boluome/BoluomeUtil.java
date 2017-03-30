@@ -55,7 +55,7 @@ public class BoluomeUtil extends AbstractThird{
 		reqBo.setTimestamp(System.currentTimeMillis());
 		reqBo.setSign(BoluomeCore.builSign(reqBo));
 		logger.info("pushPayStatus begin, reqBo = {}", reqBo);
-		String reqResult = HttpUtil.doHttpPost(getPushPayUrl(), JSONObject.toJSONString(reqBo));
+		String reqResult = HttpUtil.doHttpPostJsonParam(getPushPayUrl(), JSONObject.toJSONString(reqBo));
 		logThird(reqResult, "pushPayStatus", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
@@ -65,11 +65,11 @@ public class BoluomeUtil extends AbstractThird{
 		if(responseBo != null && responseBo.getCode().equals(SUCCESS_CODE) ){
 			responseBo.setSuccess(true);
 			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, true, JSONObject.toJSONString(reqBo), reqResult));
-			return responseBo;
 		}else{
+			responseBo.setSuccess(false);
 			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, false, JSONObject.toJSONString(reqBo), reqResult));
-			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
 		}
+		return responseBo;
 	}
 	
 	public BoluomePushRefundResponseBo pushRefundStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
@@ -81,7 +81,7 @@ public class BoluomeUtil extends AbstractThird{
 		reqBo.setTimestamp(System.currentTimeMillis());
 		reqBo.setSign(BoluomeCore.builSign(reqBo));
 		logger.info("pushRefundStatus begin, reqBo = {}", reqBo);
-		String reqResult = HttpUtil.doHttpPost(getPushRefundUrl(), JSONObject.toJSONString(reqBo));
+		String reqResult = HttpUtil.doHttpPostJsonParam(getPushRefundUrl(), JSONObject.toJSONString(reqBo));
 		logThird(reqResult, "pushRefundStatus", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
