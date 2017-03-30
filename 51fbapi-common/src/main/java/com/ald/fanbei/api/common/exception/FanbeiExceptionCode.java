@@ -158,6 +158,9 @@ public enum FanbeiExceptionCode {
     PICK_BRAND_COUPON_NOT_REAL_NAME("PICK_BRAND_COUPON_NOT_REAL_NAME",4002,"pick brand coupon","需要先实名认证,才可以领取优惠券"),
     PUSH_BRAND_ORDER_STATUS_FAILED("PUSH_BRAND_ORDER_STATUS_FAILED",4003,"push brand order status failed","推送品牌订单消息失败"),
     
+    //系统升级该code不能随便修改
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "新版本升级"),
+
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
 

@@ -12,7 +12,7 @@ public enum AfResourceSecType {
 	ResourceValue1MainImage("MAIN_IMAGE", "主图"),
 	ResourceValue1OtherImage("OTHER_IMAGE", "副图"),
 	
-	
+	creditScoreAmount("CREDIT_SCORE_AMOUNT","征信等级"),
 	H5_URL("H5_URL", "跳转普通H5"),
 	GOODS_ID("GOODS_ID", "跳转商品详情"),
 	MODEL_URL("MODEL_URL", "本地模板H5");
