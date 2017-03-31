@@ -142,7 +142,7 @@ public class RiskUtil extends AbstractThird{
 				reqBo.setChannel(CHANNEL);
 				reqBo.setReqExt("");
 				reqBo.setRealName(accountDto.getRealName());
-				reqBo.setPhone(accountDto.getMobile());
+				reqBo.setPhone(StringUtil.isBlank(accountDto.getMobile())?accountDto.getUserName():accountDto.getMobile());
 				reqBo.setIdNo(accountDto.getIdNumber());
 				reqBo.setEmail(accountDto.getEmail());
 				reqList.add(reqBo);
