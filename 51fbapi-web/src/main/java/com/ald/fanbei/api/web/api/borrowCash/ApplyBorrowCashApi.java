@@ -49,7 +49,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
- * @类描述：
+ * @类描述：申请借钱
  * 
  * @author suweili 2017年3月25日下午1:06:18
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -82,7 +82,6 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if (StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
-
 		}
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
@@ -98,15 +97,26 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				|| StringUtils.equals(pwd, "") || StringUtils.equals(latitude, "") || StringUtils.equals(longitude, "")
 				|| StringUtils.equals(province, "") || StringUtils.equals(city, "") || StringUtils.equals(county, "")) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		}
+		
+		//认证信息判断
+		if (StringUtils.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getYdStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.NO.getCode())||
+				StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 
 		}
+
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
-
 		}
 
 		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,

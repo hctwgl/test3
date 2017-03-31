@@ -175,7 +175,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		}
 		map.put("refId", repayment.getRid());
 		map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
-		
+		map.put("rid", repayment.getRid());
 
 		return map;
 	}

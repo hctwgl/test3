@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 		
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
-		BigDecimal bankService = BigDecimalUtil.multiply(BigDecimalUtil.divide(bankRate,new BigDecimal( 360)) , bankDouble);
+		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 
 		data.put("bankDoubleRate",bankService.toString());
 		data.put("poundageRate",rate.get("poundage"));
