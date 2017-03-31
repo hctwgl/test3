@@ -41,4 +41,15 @@
 		WHERE id = #{rid}
 	</update>
 	
+	<select id="getOrderRefundByOrderId" resultType="AfOrderRefundDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM	
+			af_order_refund
+		WHERE
+			is_delete
+		AND
+			id = #{refundId}
+	</select>
+	
 </mapper>

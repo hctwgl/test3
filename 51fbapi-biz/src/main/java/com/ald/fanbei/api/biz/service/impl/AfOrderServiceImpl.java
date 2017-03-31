@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -556,14 +557,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
 						logger.info("wx refund  , refundResult = {} ", refundResult);
 						if(!"SUCCESS".equals(refundResult)){
+							afOrderRefundDao.addOrderRefund(buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+						} else {
+							afOrderRefundDao.addOrderRefund(buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
 						}
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
 						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 						orderDao.updateOrder(orderInfo);
 						
-						afOrderRefundDao.addOrderRefund(buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
 						break;
 					case AGENT_PAY:
 						logger.info("agent pay refund  , refundResult = {} ");
@@ -581,9 +584,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
 						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"", 
-								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.BOLUOME.getCode(),"");
+								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);
 						logger.info("bank refund upsResult = {}", upsResult);
 						if(!upsResult.isSuccess()){
+							afOrderRefundDao.addOrderRefund(buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						}
 						orderInfo = new AfOrderDo();

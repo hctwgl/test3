@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
@@ -26,6 +28,8 @@ import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
+import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
@@ -42,6 +46,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
@@ -59,8 +64,9 @@ public class PayRoutController{
 	@Resource
 	private AfOrderService afOrderService;
 	@Resource
-	AfOrderDao afOrderDao;
-	
+	private AfOrderDao afOrderDao;
+	@Resource
+	private AfOrderRefundService afOrderRefundService;
 	@Resource
 	private AfRepaymentService afRepaymentService;
 	@Resource
@@ -80,6 +86,7 @@ public class PayRoutController{
 	private AfCashRecordDao afCashRecordDao;
 	@Resource
 	BoluomeUtil boluomeUtil;
+	
 	
 	private static String TRADE_STATUE_SUCC = "00";
 
@@ -151,12 +158,18 @@ public class PayRoutController{
         			record.setRid(result);
         			record.setStatus("TRANSED");
         			afCashRecordDao.updateCashRecord(record);
-        		}
-        		else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){//提现
+        		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){//提现
         			Long rid = NumberUtil.objToLong(result);
         			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
         			afBorrowCashDo.setStatus("TRANSED");
         			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+        		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//银行卡退款
+        			AfOrderDo orderInfo = afOrderService.getOrderById(result);
+        			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+        			afOrderService.updateOrder(orderInfo);
+        			
+        			AfOrderRefundDo refundInfo = afOrderRefundService.getOrderRefundByOrderId(result);
+        			buildOrderRefundDo(refundInfo.getAmount(), refundInfo.getUserId(), refundInfo.getOrderId(), refundInfo.getOrderNo(), OrderRefundStatus.FINISH);
         		}
     			return "SUCCESS";
 			}else{//代付失败
@@ -194,6 +207,12 @@ public class PayRoutController{
         			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
         			afBorrowCashDo.setStatus("TRANSEDFAIL");
         			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+        		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//银行卡退款
+        			AfOrderDo orderInfo = afOrderService.getOrderById(result);
+        			orderInfo.setStatus(OrderStatus.PAID.getCode());
+        			afOrderService.updateOrder(orderInfo);
+        			AfOrderRefundDo refundInfo = afOrderRefundService.getOrderRefundByOrderId(result);
+        			buildOrderRefundDo(refundInfo.getAmount(), refundInfo.getUserId(), refundInfo.getOrderId(), refundInfo.getOrderNo(), OrderRefundStatus.FAIL);
         		}
 			}
     		return "ERROR";
@@ -328,4 +347,14 @@ public class PayRoutController{
 			return "ERROR";
 		}
     }
+    
+    private AfOrderRefundDo buildOrderRefundDo(BigDecimal amount,Long userId,Long orderId,String orderNo,OrderRefundStatus refundStatus){
+		AfOrderRefundDo orderRefundInfo = new AfOrderRefundDo();
+		orderRefundInfo.setAmount(amount);
+		orderRefundInfo.setUserId(userId);
+		orderRefundInfo.setOrderId(orderId);
+		orderRefundInfo.setOrderNo(orderNo);
+		orderRefundInfo.setStatus(refundStatus.getCode());
+		return orderRefundInfo;
+	}
 }

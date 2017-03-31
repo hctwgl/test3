@@ -29,4 +29,9 @@ public class AfOrderRefundServiceImpl implements AfOrderRefundService {
 		return afOrderRefundDao.updateOrderRefund(orderRefundInfo);
 	}
 
+	@Override
+	public AfOrderRefundDo getOrderRefundByOrderId(Long orderId) {
+		return afOrderRefundDao.getOrderRefundByOrderId(orderId);
+	}
+
 }
