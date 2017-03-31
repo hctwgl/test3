@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
+import com.ald.fanbei.api.common.enums.TongdunEventEnmu;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -32,25 +34,35 @@ public class GetVerifyCodeApi implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	SmsUtil smsUtil;
-	
+	@Resource
+	TongdunUtil tongdunUtil;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
     	
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
         String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
         String typeParam = ObjectUtils.toString(requestDataVo.getParams().get("type"));
+        String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+
         if(StringUtils.isBlank(mobile) || StringUtils.isBlank(typeParam)){
         	logger.error("verifyCode or type is empty mobile = " + mobile + " type = " + typeParam);
         	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.PARAM_ERROR);
         }
+       
         if(!CommonUtil.isMobile(mobile)){
         	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_INVALID_MOBILE_NO);
         }
+        
         SmsType type = SmsType.findByCode(typeParam);
         
         AfUserDo afUserDo =null;
         switch (type) {
 		case REGIST://注册短信
+			if(StringUtils.isBlank(blackBox)){
+	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.PARAM_ERROR);
+
+			}
+			tongdunUtil.getRegistResult(requestDataVo.getId().startsWith("i")?TongdunEventEnmu.REGISTER_IOS:TongdunEventEnmu.REGISTER_ANDROID, blackBox,CommonUtil.getIpAddr(request),mobile,mobile,"","","");
 	
 	        afUserDo = afUserService.getUserByUserName(mobile);
 

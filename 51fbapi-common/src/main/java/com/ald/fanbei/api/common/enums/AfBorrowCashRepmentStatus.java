@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public enum AfBorrowCashRepmentStatus {
 	APPLY("A", "新建状态"), 
+	PROCESS("P","处理中"),
 	NO("N", "还款失败"),
 	YES("Y", "还款成功");
     

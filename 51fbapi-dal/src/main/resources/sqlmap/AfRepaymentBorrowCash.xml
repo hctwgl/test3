@@ -115,6 +115,8 @@
 		AND
 		borrow_id =
 		#{borrowCashId}
+		AND
+		status != 'A'
 		ORDER BY
 		gmt_create DESC
 
@@ -157,6 +159,8 @@
 		is_delete = 0
 		AND
 		user_id = #{userId}
+		AND
+		status != 'A'
 		ORDER BY
 		gmt_create DESC
 		LIMIT

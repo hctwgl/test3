@@ -1,24 +1,51 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.bo.TongdunResultBo;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTdFraudSerVice;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.TongdunEventEnmu;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfTdFraudDo;
 import com.alibaba.fastjson.JSONObject;
-
 /**
  *@类描述：铜盾工具类
  *@author 陈金虎 2017年1月21日 下午8:16:24
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的 
  */
+@Component("tongdunUtil")
 public class TongdunUtil extends AbstractThird {
 	private static String host = null;
 	private static String partnerCode = null;
 	private static String partnerKey = null;
 	private static String appName = null;
+	
+	@Resource
+	AfTdFraudSerVice afTdFraudSerVice;
+	@Resource
+	AfResourceService afResourceService;
+
 	
 	/**
 	 * 借贷申请
@@ -72,11 +99,139 @@ public class TongdunUtil extends AbstractThird {
 		return resultBo;
 	}
 	
+	public  String invoke(Map<String, Object> params) {
+
+		StringBuilder result = new StringBuilder();
+		try {
+			String apiUrl =getPartnerHost()+"/riskService/v1.1";
+			URL url = new URL(apiUrl);
+			// 组织请求参数
+			StringBuilder postBody = new StringBuilder();
+			for (Map.Entry<String, Object> entry : params.entrySet()) {
+				if (entry.getValue() == null)
+					continue;
+				postBody.append(entry.getKey())
+						.append("=")
+						.append(URLEncoder.encode(entry.getValue().toString(),
+								"utf-8")).append("&");
+			}
+
+			if (!params.isEmpty()) {
+				postBody.deleteCharAt(postBody.length() - 1);
+			}
+
+			SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory
+					.getDefault();
+			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+			conn.setSSLSocketFactory(ssf);
+			// 设置长链接
+			conn.setRequestProperty("Connection", "Keep-Alive");
+			// 设置连接超时
+			conn.setConnectTimeout(1000);
+			// 设置读取超时，建议设置为500ms。若同时调用了信息核验服务，请与客户经理协商确认具体时间
+			conn.setReadTimeout(500);
+			// 提交参数
+			conn.setRequestMethod("POST");
+			conn.setDoOutput(true);
+			conn.getOutputStream().write(postBody.toString().getBytes());
+			conn.getOutputStream().flush();
+			int responseCode = conn.getResponseCode();
+			if (responseCode != 200) {
+				logger.warn("[FraudApiInvoker] invoke failed, response status:"
+						+ responseCode);
+				return null;
+			}
+			BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(conn.getInputStream(), "utf-8"));
+			String line;
+			while ((line = bufferedReader.readLine()) != null) {
+				result.append(line).append("\n");
+			}
+			return result.toString().trim();
+//			return JSON.parseObject(result.toString().trim(),
+//					FraudApiResponse.class);
+		} catch (Exception e) {
+			logger.error("[FraudApiInvoker] invoke throw exception, details: " + e);
+		}finally{
+			logger.info("tdfqz params=" + params + ",response=" + result);
+		}
+		return null;
+	}
+	
+
+	/**
+	 * android或ios注册
+	 * 
+	 * @param tongdunEvent   同盾事件标识
+	 * @param blackBox       设备指纹
+	 * @param ip             真实ip
+	 * @param accountLogin   账户名
+	 * @param accountMobile  账户绑定手机号
+	 * @param accountEmail   账户绑定邮箱
+	 * @param remCode        推荐码
+	 */
+	public  void getRegistResult(TongdunEventEnmu tongdunEvent,String blackBox,String ip,String accountLogin,String accountMobile,String accountEmail,String remCode,String source){
+		accountLogin = accountMobile;
+		
+		String registSwitch = resourceValueWhithType(AfResourceType.registTongdunSwitch.getCode());
+		Map<String, Object> params = getCommonParam(tongdunEvent, blackBox, ip, accountLogin, accountMobile);
+		params.put("account_email", accountEmail);
+		params.put("rem_code", remCode);
+		JSONObject apiResp = null;
+		try{
+			String respStr = invoke(params);
+			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(),ip, respStr,source);
+			apiResp = JSONObject.parseObject(respStr);
+		}catch(Exception e){
+			logger.error("getLoginWebResult",e);
+			return ;
+		}
+		if(StringUtil.isBlank(registSwitch) || "0".equals(registSwitch)){//验证开关关闭
+			return ;
+		}
+		if(apiResp != null && apiResp.get("final_decision") != null && resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision")+"") < 0){
+			logger.info("手机号码为："+accountMobile + "的用户在app端注册的时候被拦截....同盾返回的code是...."+ apiResp.get("final_decision"));
+			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
+
+		}
+	}
 	
 	
 	
+	private String resourceValueWhithType(String type){
+		
+		AfResourceDo afResourceDo =	afResourceService.getSingleResourceBytype(type);
+		if(afResourceDo==null){
+			return "";
+		}else{
+			return afResourceDo.getValue();
+		}
+		
+	}
 	
+	private  Map<String, Object> getCommonParam(TongdunEventEnmu tongdunEvent,String blackBox,String ip,String accountLogin,String accountMobile){
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("partner_code", "alading");// 此处值填写您的合作方标识
+		params.put("secret_key", tongdunEvent.getSecretKey());// 此处填写对应app密钥
+		params.put("event_id", tongdunEvent.getEventId());// 此处填写策略集上的事件标识
+		params.put("black_box", blackBox);// 此处填写移动端sdk采集到的信息black_box
+		params.put("account_login", accountLogin);// 以下填写其他要传的参数，比如系统字段，扩展字段
+		params.put("account_mobile", accountMobile);// 以下填写其他要传的参数，比如系统字段，扩展字段
+		params.put("ip_address", ip);
+		
+		return params;
+	}
 	
+
+	private void addTdFraud(String userName,String userPhone,String type,String ip,String result,String source){
+		AfTdFraudDo tdFraud = new AfTdFraudDo();
+		tdFraud.setUserName(userName == null?"":userName+source);
+		tdFraud.setResult(result == null?"":result);
+		tdFraud.setType(type);
+		tdFraud.setUserPhone(userPhone == null?"":userPhone);
+		tdFraud.setIp(ip);
+		afTdFraudSerVice.addTdFraud(tdFraud);
+	}
 	
 	private static String getPartnerHost(){
 		if(host == null){

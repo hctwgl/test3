@@ -97,7 +97,9 @@ public class Constants {
     public static final String RES_CREDIT_SCORE				  	  	  = "CREDIT_SCORE";
     //免审核信用分
     public static final String RES_DIRECT_TRANS_CREDIT_SCORE		  = "DIRECT_TRANS_CREDIT_SCORE";
-    
+    //风控
+    public static final String REGIST_TONGDUN_SWITCH						 = "regist.tongdun.switch";
+
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
     public static final String CONFKEY_JPUSH_APPKEY                   = "fbapi.jpush.appkey";
@@ -146,6 +148,9 @@ public class Constants {
     public static final String CONFKEY_NOTIFY_HOST					 = "fbapi.notify.host";
     public static final String CONFKEY_RISK_URL					 	 = "fbapi.risk.url";
     public static final String CONFKEY_UPS_URL						 = "fbapi.ups.url";
+    
+  
+    
     //菠萝觅
     public static final String CONFKEY_BOLUOME_APPKEY                = "fbapi.boluome.appkey";
     public static final String CONFKEY_BOLUOME_SECRET                = "fbapi.boluome.secret";

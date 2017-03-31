@@ -168,7 +168,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			UpsCollectRespBo respBo = UpsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), 
 					Constants.DEFAULT_PAY_PURPOSE, name, "02",UserAccountLogType.REPAYMENTCASH.getCode());
-			
+			if(respBo.isSuccess()){
+				dealChangStatus(payTradeNo,"",AfBorrowCashRepmentStatus.PROCESS.getCode(),repayment.getRid());
+			}else{
+				dealRepaymentFail(payTradeNo,"");
+			}
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
@@ -255,10 +259,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		if(YesNoStatus.YES.getCode().equals(repayment.getStatus())){
 			return 0l;
 		}
+	
+		return dealChangStatus(outTradeNo,tradeNo,AfBorrowCashRepmentStatus.NO.getCode(),repayment.getRid());
+	}
+	
+	long dealChangStatus(String outTradeNo, String tradeNo,String status,Long rid){
 		AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
-		temRepayMent.setStatus(AfBorrowCashRepmentStatus.NO.getCode());
+		temRepayMent.setStatus(status);
 		temRepayMent.setTradeNo(tradeNo);
-		temRepayMent.setRid(repayment.getRid());
+		temRepayMent.setRid(rid);
 		
 		return afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
 	}
