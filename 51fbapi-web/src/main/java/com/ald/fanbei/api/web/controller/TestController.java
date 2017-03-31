@@ -54,8 +54,7 @@ public class TestController {
 	public String goodsRequest(HttpServletRequest request, HttpServletResponse response)throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
-		riskUtil.batchRegister(5,"13958004662");
-//		riskUtil.register("73772", "胡潮永", "13958004662", "330624198509136450", "", "", "");
+//		riskUtil.modify("73772", "胡潮永", "13958004662", "330624198509136450", "", "", "星耀城","");
 //		Map<String,Object> inputData = new HashMap<String, Object>();
 //		inputData.put("userId", 11l);
 //		inputData.put("seriesCount", 5);
@@ -73,6 +72,14 @@ public class TestController {
 
 //		SmsUtil.sendSms("15958119936", "验证码:1234");
 //		afOrderService.createOrderTrade("{'buyer_id':'AAGtxNL8AClXeBuXBPILbV-s','paid_fee':'138.00','shop_title':'佐祥车品旗舰店','is_eticket':false,'create_order_time':'2017-02-17 14:36:28','order_id':'3065189213875206','order_status':'7','seller_nick':'佐祥车品旗舰店','auction_infos':[{'detail_order_id':'3065189213875206','auction_id':'AAEnxNL_AClXeBuXBIxwBj6s','real_pay':'138.00','auction_pict_url':'i1/2208256900/TB2uxTDXNXkpuFjy0FiXXbUfFXa_!!2208256900.jpg','auction_title':'汽车载氧吧空气净化雾霾器 负离子杀菌香薰除甲醛异味全自动过滤','auction_amount':'1'}]}");
+		return "succ";
+	}
+	
+	@RequestMapping(value = { "/test2" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+	public String batchRequest(HttpServletRequest request, HttpServletResponse response)throws IOException {
+		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+		response.setContentType("application/json;charset=utf-8");
+		riskUtil.batchRegister(5,"13958004662");
 		return "succ";
 	}
 

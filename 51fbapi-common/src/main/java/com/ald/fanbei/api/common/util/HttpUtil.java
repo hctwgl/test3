@@ -119,6 +119,7 @@ public class HttpUtil {
         HttpResponse response = null;
         HttpPost postMethod = new HttpPost();
         postMethod.setURI(request.getURI());
+        postMethod.setHeader("content-type", "application/json;charset=utf-8"); 
         try{
 	        response = httpClient.execute(postMethod);
 	        HttpEntity entity = response.getEntity();

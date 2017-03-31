@@ -124,7 +124,7 @@ public class RiskUtil extends AbstractThird{
 	 */
 	public void batchRegister(int pageSize,String userName){
 		int count = afUserAccountService.getUserAccountCountWithHasRealName();
-		int pageCount = (int)Math.ceil(count/pageSize);
+		int pageCount = (int)Math.ceil(count/pageSize)+1;
 		logger.info("batchRegister begin,pageCount="+pageCount);
 		for (int j = 1; j <= pageCount; j++) {
 			AfUserAccountQuery query = new AfUserAccountQuery();
@@ -153,12 +153,11 @@ public class RiskUtil extends AbstractThird{
 			if(j<pageCount){
 				batchBo.setCount(pageSize+"");
 			}else{
-				batchBo.setCount((count-pageSize*(j-1))+"");
+				batchBo.setCount((count-pageSize*(pageCount-1))+"");
 			}
 			batchBo.setSignInfo(SignUtil.sign(createLinkString(batchBo), PRIVATE_KEY));
 			String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/user/action/batchRemove.htm",batchBo);
 			logThird(reqResult, "batchRegister_"+j,batchBo);
-			System.out.println(j);
 		}
 	}
 	
