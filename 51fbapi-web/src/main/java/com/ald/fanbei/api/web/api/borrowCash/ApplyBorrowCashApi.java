@@ -74,6 +74,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserService afUserService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -107,61 +108,62 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 
 		}
-		
-		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province, county, address, userId);
-		 afBorrowCashService.addBorrowCash(afBorrowCashDo);
-		 Long borrowId = afBorrowCashDo.getRid();
-		 AfBorrowCashDo cashDo = new AfBorrowCashDo();
-		 cashDo.setRid(borrowId);	
+
+		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,
+				county, address, userId);
+		afBorrowCashService.addBorrowCash(afBorrowCashDo);
+		Long borrowId = afBorrowCashDo.getRid();
+		AfBorrowCashDo cashDo = new AfBorrowCashDo();
+		cashDo.setRid(borrowId);
 		try {
-			 RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, "") , "20", afBorrowCashDo.getCardNumber());
-				Date currDate = new Date();
+			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20",
+					afBorrowCashDo.getCardNumber());
+			Date currDate = new Date();
 
-			 
-			 AfUserDo afUserDo= afUserService.getUserById(userId);
+			AfUserDo afUserDo = afUserService.getUserById(userId);
 
-			 if(StringUtils.equals("10", result.getResult())){
-				 jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
-				//审核通过
-				 cashDo.setGmtArrival(currDate);
-				 cashDo.setStatus(AfBorrowCashStatus.transed.getCode());
-				 AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
-				 //打款
-					UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), afBorrowCashDo.getUserId()+"",
-							card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02",
-							UserAccountLogType.BorrowCash.getCode(),borrowId+"");
-					cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-					if(!upsResult.isSuccess()){
-						logger.info("upsResult error:"+FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-						cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode()); 
-					}
-					afBorrowCashService.updateBorrowCash(cashDo);
-				 
-			 }else if(StringUtils.equals("30", result.getResult())){
-				 cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-				 cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
-				 cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
-				 jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+			if (StringUtils.equals("10", result.getResult())) {
+				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+				// 审核通过
+				cashDo.setGmtArrival(currDate);
+				cashDo.setStatus(AfBorrowCashStatus.transed.getCode());
+				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
+				// 打款
+				UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
+						userDto.getRealName(), afBorrowCashDo.getCardNumber(), afBorrowCashDo.getUserId() + "",
+						card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE,
+						"02", UserAccountLogType.BorrowCash.getCode(), borrowId + "");
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
+				if (!upsResult.isSuccess()) {
+					logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+					cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
+				}
+				afBorrowCashService.updateBorrowCash(cashDo);
 
-			 }else{
-				 cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
-			 }
-			 afBorrowCashService.updateBorrowCash(cashDo);
-			 return resp;
+			} else if (StringUtils.equals("30", result.getResult())) {
+				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+				cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
+				jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+
+			} else {
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
+			}
+			afBorrowCashService.updateBorrowCash(cashDo);
+			return resp;
 		} catch (Exception e) {
-			 cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 
-			 afBorrowCashService.updateBorrowCash(cashDo);
-
-			 	throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
-
+			afBorrowCashService.updateBorrowCash(cashDo);
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 
 		}
 
 	}
-	
-	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount,String type,String latitude,String longitude,
-			AfUserBankcardDo afUserBankcardDo,String city,String province,String county,String address,Long userId){
+
+	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount, String type, String latitude, String longitude,
+			AfUserBankcardDo afUserBankcardDo, String city, String province, String county, String address,
+			Long userId) {
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 
 		Map<String, Object> rate = getObjectWithResourceDolist(list);

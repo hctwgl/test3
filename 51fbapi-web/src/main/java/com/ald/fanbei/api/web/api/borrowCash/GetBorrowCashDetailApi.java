@@ -80,14 +80,15 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		}else if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())){
 			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 		}
+		AfBorrowCashType borrowCashType = AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType());
 		Integer day = NumberUtil
-				.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+				.objToIntDefault(borrowCashType.getCode(), 7);
 
 		if(afBorrowCashDo.getGmtArrival()!=null){
 			Date repaymentDay = DateUtil.addDays(DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival()), day-1);
 			data.put("gmtLastRepay", repaymentDay);
 		}
-		
+		data.put("type", borrowCashType.getCode());
 		data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 		data.put("rejectReason", afBorrowCashDo.getReviewDetails());
 		data.put("serviceAmount", BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), afBorrowCashDo.getPoundage()));
@@ -97,6 +98,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		data.put("bankName", afBorrowCashDo.getCardName());
 		data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 		data.put("gmtClose", afBorrowCashDo.getGmtClose());
+		
 		data.put("paidAmount",afBorrowCashDo.getRepayAmount());
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
