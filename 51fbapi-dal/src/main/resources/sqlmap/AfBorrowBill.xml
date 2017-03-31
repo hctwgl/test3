@@ -126,6 +126,17 @@
 		WHERE is_delete=0 AND status='N' AND user_id=#{userId}
     </select>
     
+    <update id="updateBorrowBillStatusByBorrowId" >
+    	UPDATE 
+		  af_borrow_bill 
+		SET
+		  gmt_modified = NOW(),
+		  status = #{status},
+		WHERE 
+		  is_delete = 0 
+		  AND borrow_id = #{borrowId}
+    </update>
+    
     
     <select id="getBillAmountByCashIds" resultType="AfBorrowBillDo">
 		SELECT SUM(b.bill_amount) bill_amount,SUM(b.principle_amount) principle_amount

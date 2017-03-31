@@ -189,6 +189,8 @@
 				<entry key="/auth/authContactor" value-ref="authContactorApi" />
 				<entry key="/auth/authLocation" value-ref="authLocationApi" />
 				<entry key="/auth/authMobileBack" value-ref="authMobileBackApi" />
+				<entry key="/auth/getAllowConsume" value-ref="getAllowConsumeApi" />
+				
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />

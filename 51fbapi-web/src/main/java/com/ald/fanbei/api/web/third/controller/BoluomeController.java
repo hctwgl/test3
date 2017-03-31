@@ -30,6 +30,7 @@ import com.ald.fanbei.api.common.enums.UnitType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.web.common.AppResponse;
@@ -138,11 +139,13 @@ public class BoluomeController{
     		Map<String, Object> resultData = new HashMap<String, Object>();
     		String orderId = params.get(BoluomeCore.ORDER_ID);
         	String plantform = params.get(BoluomeCore.PLANT_FORM);
+        	BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault((params.get(BoluomeCore.AMOUNT)), null);
         	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
         	if (orderInfo == null) {
         		result = new AppResponse(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
         	}
-//        	afOrderService.dealBrandOrderRefund(orderInfo);
+        	afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), 
+        			orderInfo.getOrderNo(), refundAmount, orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo());
         	resultData.put("orderId", orderInfo.getRid());
         	result.setData(resultData);
     	} catch (FanbeiException e) {

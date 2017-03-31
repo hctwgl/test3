@@ -125,4 +125,12 @@ public interface AfBorrowBillDao {
 	int getUserMonthlyBillTotalCount(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId);
 	
 	int getBorrowBillWithNoPayByUserId(@Param("userId")Long userId);
+	
+	/**
+	 * 统一修改所有账单的状态
+	 * @param borrowId
+	 * @param status
+	 * @return
+	 */
+	int updateBorrowBillStatusByBorrowId(@Param("borrowId")Long borrowId, @Param("status")String status);
 }
