@@ -82,6 +82,42 @@ public class GeneratorClusterNo {
     	return Integer.parseInt(newStr);
     }
     
+    //获取支付号
+  	public String getOrderPayNo(Date currDate){//支付号规则：6位日期_2位订单类型_5位订单序号
+  		String dateStr = DateUtil.formatDate(currDate, DateUtil.DEFAULT_PATTERN).substring(2);
+  		StringBuffer orderSb = new StringBuffer("fk");
+  		orderSb.append(dateStr).append(getOrderSeqStr(this.getOrderPaySequenceNum(currDate)));
+  		return orderSb.toString();
+  	}
+  	
+  	private int getOrderPaySequenceNum(Date currentDate) {//加锁，防止并发
+        Integer channelNum = 1;
+        String lockKey = Constants.CACHEKEY_ORDER_PAY_NO_LOCK;
+        String cacheKey = Constants.CACHEKEY_ORDER_PAY_NO;
+        
+        try{
+            if(TokenCacheUtil.getLockTryTimes(lockKey, "1", Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")))){//获得同步锁
+                channelNum = (Integer)TokenCacheUtil.getObject(cacheKey);
+                if(channelNum == null){//缓存中无数据,从库中获取
+                	String borrowNo = afOrderService.getCurrentLastPayNo(currentDate);
+                    channelNum = borrowNo == null?1:(getOrderSeqInt(borrowNo.substring(16, 20))+1);
+                }else{
+                    channelNum = channelNum + 1;
+                }
+            }else{//获取锁失败，从库中取订单号
+            	String payNo = afOrderService.getCurrentLastPayNo(currentDate);
+                if(payNo != null){
+                    channelNum = getOrderSeqInt(payNo.substring(16, 20))+1;
+                }
+                return channelNum;
+            }
+            TokenCacheUtil.saveObject(cacheKey, channelNum, 0l);
+        }finally{
+        	TokenCacheUtil.delCache(lockKey);
+        }
+        return channelNum;
+    }
+    
     //获取借款号
   	public String getBorrowNo(Date currDate){//订单号规则：6位日期_2位订单类型_5位订单序号
   		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);

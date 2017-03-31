@@ -154,4 +154,11 @@ public interface AfOrderService {
 	int dealBrandOrderRefund(Long orderId,Long userId,  Long bankId, String orderNo, 
 			BigDecimal refundAmount, BigDecimal totalAmount, String payType, String payTradeNo);
 	
+	
+	/**
+	 * 获取最近支付号码
+	 * @param current
+	 * @return
+	 */
+	String getCurrentLastPayNo(Date current);
 }

@@ -459,8 +459,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
 				try {
+					Date currentDate = new Date();
 					Map<String,Object> resultMap = new HashMap<String,Object>();
-					orderInfo.setGmtPay(new Date());
+					orderInfo.setGmtPay(currentDate);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
 					orderInfo.setActualAmount(orderInfo.getSaleAmount());
@@ -493,8 +494,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if(null == cardInfo){
 							throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 						}
+						String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
 						//银行卡支付 代收
-						UpsCollectRespBo respBo = UpsUtil.collect(orderInfo.getOrderNo(),orderInfo.getSaleAmount(), orderInfo.getUserId()+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
+						UpsCollectRespBo respBo = UpsUtil.collect(tradeNo,orderInfo.getSaleAmount(), orderInfo.getUserId()+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
 								cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
 						if(!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
@@ -621,6 +623,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+	}
+
+	@Override
+	public String getCurrentLastPayNo(Date current) {
+		return orderDao.getCurrentLastPayNo(current);
 	}
 	
 }

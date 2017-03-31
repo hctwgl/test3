@@ -451,4 +451,8 @@
 		AND
 			id = #{orderId}
 	</select>
+	
+	<select id="getCurrentLastPayNo" resultType="java.lang.String">
+		select pay_trade_no from af_order WHERE gmt_pay=#{currentDate} ORDER BY id DESC LIMIT 1;
+	</select>
 </mapper>

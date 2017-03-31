@@ -137,6 +137,10 @@ public class Constants {
     public static final String CONFKEY_KXG_KEY				  		  = "fbapi.kxg.key";
     public static final String CONFKEY_BILL_CREATE_TIME 			  = "fbapi.bill.create.time";
     public static final String CONFKEY_BILL_REPAY_TIME				  = "fbapi.bill.repay.time";
+    
+    public static final String CACHEKEY_ORDER_PAY_NO_LOCK			  = "ala_order_pay_no_lock";
+    public static final String CACHEKEY_ORDER_PAY_NO    			  = "ala_order_pay_no";
+    
     //发送邮箱
     public static final String EMAIL_SEND_USERNAME            = "fbapi.email.username";
     public static final String EMAIL_SEND_PWD       = "fbapi.email.pwd";
