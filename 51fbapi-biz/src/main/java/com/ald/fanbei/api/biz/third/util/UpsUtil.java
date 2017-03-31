@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.annotation.Resource;
+
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
@@ -49,6 +51,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -128,7 +131,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setPurpose(purpose);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-
+		
 		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
 		logThird(reqResult, "delegatePay", reqBo);
 		if(StringUtil.isBlank(reqResult)){

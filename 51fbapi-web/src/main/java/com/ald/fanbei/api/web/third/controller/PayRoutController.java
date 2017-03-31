@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -23,9 +24,11 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
@@ -34,6 +37,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.common.enums.UpsLogStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -42,12 +46,14 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 /**
  *@类现描述：
@@ -79,13 +85,16 @@ public class PayRoutController{
 	private AfUserAccountService afUserAccountService;
 	
 	@Resource
-
 	private AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfUserBankcardService afUserBankcardService;
 
 	@Resource
 	private AfCashRecordDao afCashRecordDao;
 	@Resource
 	BoluomeUtil boluomeUtil;
+	@Resource
+	AfUpsLogDao afUpsLogDao;
 	
 	
 	private static String TRADE_STATUE_SUCC = "00";
@@ -163,13 +172,18 @@ public class PayRoutController{
         			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
         			afBorrowCashDo.setStatus("TRANSED");
         			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
-        		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//银行卡退款
+        		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
         			AfOrderDo orderInfo = afOrderService.getOrderById(result);
         			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
         			afOrderService.updateOrder(orderInfo);
-        			
+        			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
+        			//还款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getOrderRefundByOrderId(result);
-        			buildOrderRefundDo(refundInfo.getAmount(), refundInfo.getUserId(), refundInfo.getOrderId(), refundInfo.getOrderNo(), OrderRefundStatus.FINISH);
+    				refundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
+    				afOrderRefundService.updateOrderRefund(refundInfo);
+        			//ups打款记录
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
+        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
         		}
     			return "SUCCESS";
 			}else{//代付失败
@@ -207,12 +221,24 @@ public class PayRoutController{
         			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
         			afBorrowCashDo.setStatus("TRANSEDFAIL");
         			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
-        		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//银行卡退款
+        		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
         			AfOrderDo orderInfo = afOrderService.getOrderById(result);
         			orderInfo.setStatus(OrderStatus.PAID.getCode());
         			afOrderService.updateOrder(orderInfo);
+        			
+        			AfUserBankcardDo cardinfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardinfo.getBankName(), cardinfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
+        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
+        			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
+        			
+        			//订单退款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getOrderRefundByOrderId(result);
-        			buildOrderRefundDo(refundInfo.getAmount(), refundInfo.getUserId(), refundInfo.getOrderId(), refundInfo.getOrderNo(), OrderRefundStatus.FAIL);
+    				refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
+    				afOrderRefundService.updateOrderRefund(refundInfo);
+    				
+        			//ups打款记录
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
+        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
         		}
 			}
     		return "ERROR";
@@ -347,14 +373,4 @@ public class PayRoutController{
 			return "ERROR";
 		}
     }
-    
-    private AfOrderRefundDo buildOrderRefundDo(BigDecimal amount,Long userId,Long orderId,String orderNo,OrderRefundStatus refundStatus){
-		AfOrderRefundDo orderRefundInfo = new AfOrderRefundDo();
-		orderRefundInfo.setAmount(amount);
-		orderRefundInfo.setUserId(userId);
-		orderRefundInfo.setOrderId(orderId);
-		orderRefundInfo.setOrderNo(orderNo);
-		orderRefundInfo.setStatus(refundStatus.getCode());
-		return orderRefundInfo;
-	}
 }

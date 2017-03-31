@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
@@ -64,6 +65,7 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
+import com.ald.fanbei.api.dal.domain.AfUpsLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -557,10 +559,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
 						logger.info("wx refund  , refundResult = {} ", refundResult);
 						if(!"SUCCESS".equals(refundResult)){
-							afOrderRefundDao.addOrderRefund(buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						} else {
-							afOrderRefundDao.addOrderRefund(buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
 						}
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
@@ -587,12 +589,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);
 						logger.info("bank refund upsResult = {}", upsResult);
 						if(!upsResult.isSuccess()){
-							afOrderRefundDao.addOrderRefund(buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						}
+						afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING));
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
-						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+						orderInfo.setStatus(OrderStatus.DEAL_REFUNDING.getCode());
 						orderDao.updateOrder(orderInfo);
 						break;
 					default:
@@ -611,26 +614,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
-	}
-	
-	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType logType,BigDecimal amount,Long userId,Long orderId){
-		//增加account变更日志
-		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
-		accountLog.setAmount(amount);
-		accountLog.setUserId(userId);
-		accountLog.setRefId(orderId+"");
-		accountLog.setType(logType.getCode());
-		return accountLog;
-	}
-	
-	private AfOrderRefundDo buildOrderRefundDo(BigDecimal amount,Long userId,Long orderId,String orderNo,OrderRefundStatus refundStatus){
-		AfOrderRefundDo orderRefundInfo = new AfOrderRefundDo();
-		orderRefundInfo.setAmount(amount);
-		orderRefundInfo.setUserId(userId);
-		orderRefundInfo.setOrderId(orderId);
-		orderRefundInfo.setOrderNo(orderNo);
-		orderRefundInfo.setStatus(refundStatus.getCode());
-		return orderRefundInfo;
 	}
 	
 }
