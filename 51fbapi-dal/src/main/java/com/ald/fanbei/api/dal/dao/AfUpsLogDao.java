@@ -15,5 +15,5 @@ public interface AfUpsLogDao {
     * @param afUpsLogDo
     * @return
     */
+    int addUpsLog(AfUpsLogDo afUpsLogDo);
 }
-int addUpsLog(AfUpsLogDo afUpsLogDo);

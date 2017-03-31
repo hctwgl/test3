@@ -39,7 +39,7 @@ public class BuildInfoUtil {
 		return orderRefundInfo;
 	}
 	
-	public AfUserAccountLogDo buildUserAccountLogDo(UserAccountLogType logType,BigDecimal amount,Long userId,Long orderId){
+	public static AfUserAccountLogDo buildUserAccountLogDo(UserAccountLogType logType,BigDecimal amount,Long userId,Long orderId){
 		//增加account变更日志
 		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
 		accountLog.setAmount(amount);

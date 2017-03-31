@@ -2,7 +2,6 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -157,10 +156,14 @@ public class PayRoutController{
     			if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
     				//生成账单
     				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
+    				afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
+    						result+StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
     				afBorrowService.cashBillTransfer(borrow, afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
         		}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
         			//生成账单
         			AfBorrowDo borrow = afBorrowService.getBorrowById(result);
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
+    						result+StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
     				afBorrowService.consumeBillTransfer(afBorrowService.getBorrowById(result), afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
         		}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
         			AfCashRecordDo record = new AfCashRecordDo();
@@ -226,9 +229,6 @@ public class PayRoutController{
         			orderInfo.setStatus(OrderStatus.PAID.getCode());
         			afOrderService.updateOrder(orderInfo);
         			
-        			AfUserBankcardDo cardinfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
-        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardinfo.getBankName(), cardinfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
-        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
         			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
         			
         			//订单退款记录

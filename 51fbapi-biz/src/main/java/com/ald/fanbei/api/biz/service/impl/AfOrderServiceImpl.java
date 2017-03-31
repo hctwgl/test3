@@ -33,6 +33,7 @@ import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -61,11 +62,10 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
-import com.ald.fanbei.api.dal.domain.AfUpsLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -571,14 +571,23 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 						break;
 					case AGENT_PAY:
-						logger.info("agent pay refund  , refundResult = {} ");
-//						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-//						
-//						BigDecimal usedAmount = BigDecimalUtil.add(accountInfo.getUsedAmount(), orderInfo.getActualAmount());
-//						accountInfo.setUsedAmount(usedAmount);
-//						afUserAccountDao.updateOriginalUserAccount(accountInfo);
-//						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
-//						afBorrowBillDao.getBorrowBillByBorrowId(borrowId)
+						logger.info("agent pay refund begin");
+						orderInfo = orderDao.getOrderById(orderId);
+						
+						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+						//更新账户金额
+						BigDecimal usedAmount = BigDecimalUtil.add(accountInfo.getUsedAmount(), orderInfo.getActualAmount());
+						accountInfo.setUsedAmount(usedAmount);
+						afUserAccountDao.updateOriginalUserAccount(accountInfo);
+						
+						
+						//增加Account记录
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, refundAmount, userId, orderId));
+						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.CLOSE.getCode());
+						
+//						afBorrowBillDao.getBorrowBillByBorrowId(borrowId);
+						
 //						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.AP_REFUND, orderInfo.getActualAmount(), orderInfo.getUserId(), orderInfo.getRid()));
 						
 						break;
