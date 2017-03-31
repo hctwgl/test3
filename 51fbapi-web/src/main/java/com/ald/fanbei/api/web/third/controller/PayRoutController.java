@@ -310,7 +310,7 @@ public class PayRoutController{
 	    		}else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
-	    			AfOrderDo orderInfo = afOrderDao.getOrderInfoByPayOrderNo(outTradeNo);
+	    			AfOrderDo orderInfo = afOrderDao.getOrderInfoByOrderNo(outTradeNo);
 	    			afOrderService.dealBrandOrder(orderInfo.getRid(), outTradeNo, transactionId, PayType.WECHAT.getCode());
         			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 	    		}else if(PayOrderSource.REPAYMENTCASH.getCode().equals(attach)){
