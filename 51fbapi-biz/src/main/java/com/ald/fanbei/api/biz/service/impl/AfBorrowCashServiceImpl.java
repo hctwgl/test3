@@ -52,16 +52,25 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfUserBankcardDao afUserBankcardDao;
-	@Resource
-	RiskUtil riskUtil;
+	
 	@Resource
 	TransactionTemplate transactionTemplate;
 	@Resource
 	JpushService jpushService;
 	@Resource
 	AfUserDao afUserDao;
+	@Resource
+	RiskUtil riskUtil;
 	@Override
-	public int addBorrowCash(final AfBorrowCashDo afBorrowCashDo) {
+	public int addBorrowCash( AfBorrowCashDo afBorrowCashDo) {
+		Date currDate = new Date();
+
+		afBorrowCashDo.setBorrowNo(generatorClusterNo.getBorrowCashNo(currDate));
+		return afBorrowCashDao.addBorrowCash(afBorrowCashDo);
+	}
+	
+//	@Override
+	public int addBorrowCash2(final AfBorrowCashDo afBorrowCashDo) {
 		
 		
 		
@@ -82,6 +91,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					 
 					 Long borrowId = afBorrowCashDo.getRid();
 					 RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, "") , "20", afBorrowCashDo.getCardNumber());
+					 
 					 AfBorrowCashDo borrowCashDo = new AfBorrowCashDo();
 					 borrowCashDo.setRid(borrowId);	 
 					 AfUserDo afUserDo= afUserDao.getUserById(userId);
