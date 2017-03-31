@@ -179,7 +179,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		}
 		map.put("refId", repayment.getRid());
 		map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
-		map.put("rid", repayment.getRid());
 
 		return map;
 	}
@@ -270,5 +269,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		temRepayMent.setRid(rid);
 		
 		return afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
+	}
+
+
+	
+	@Override
+	public AfRepaymentBorrowCashDo getLastRepaymentBorrowCashByBorrowId(Long borrowCashId) {
+		return afRepaymentBorrowCashDao.getLastRepaymentBorrowCashByBorrowId(borrowCashId);
 	}
 }

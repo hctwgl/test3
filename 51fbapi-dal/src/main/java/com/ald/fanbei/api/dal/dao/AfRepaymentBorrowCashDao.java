@@ -65,4 +65,13 @@ public interface AfRepaymentBorrowCashDao {
 	List<AfRepaymentBorrowCashDo> getRepaymentBorrowCashListByUserId(@Param("userId") Long userId);
 	
 	AfRepaymentBorrowCashDo getRepaymentByPayTradeNo(@Param("payTradeNo") String payTradeNo);
+	
+	/**
+	 * 根据rid获取还款信息
+	 * 
+	 * @param rid
+	 * @return
+	 */
+	AfRepaymentBorrowCashDo getLastRepaymentBorrowCashByBorrowId(@Param("borrowCashId") Long borrowCashId);
+	
 }

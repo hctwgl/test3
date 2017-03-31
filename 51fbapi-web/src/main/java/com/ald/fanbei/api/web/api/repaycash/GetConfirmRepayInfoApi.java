@@ -12,20 +12,25 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import org.dbunit.util.Base64;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -41,7 +46,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("getConfirmRepayInfoApi")
 public class GetConfirmRepayInfoApi implements ApiHandle {
-
+	BigDecimal showAmount;
 	@Resource
 	AfUserCouponService afUserCouponService;
 	@Resource
@@ -50,6 +55,9 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+	
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -79,10 +87,39 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
 		
+		
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+		if(afBorrowCashDo!=null){
+			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());
+			BigDecimal temAmount =BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+			if(temAmount.compareTo(repaymentAmount)<-1){
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+			}
+		}
+		
+		showAmount = actualAmount;
+		if(coupon!=null){
+			showAmount = BigDecimalUtil.add(actualAmount, coupon.getAmount());
+		}
+		if(cardId==-2){
+			showAmount = BigDecimalUtil.add(showAmount, userAmount);
+		}
+		if(repaymentAmount.compareTo(BigDecimalUtil.add(showAmount, actualAmount))!=0){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+
+			
+		}
+		
+		
+		AfRepaymentBorrowCashDo rbCashDo=afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
+		if(rbCashDo!=null&&StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
+
+		}
 		Map<String,Object> map;
 		if(cardId==-2){//余额支付
 			map	=afRepaymentBorrowCashService.createRepayment(repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
-			
+
 			resp.addResponseData("refId", map.get("refId"));
 			resp.addResponseData("type", map.get("type"));
 		}else if(cardId==-1){//微信支付
@@ -107,6 +144,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
 			newMap.put("refId", map.get("refId"));
 			newMap.put("type", map.get("type"));
+
 			resp.setResponseData(newMap);
 		}
 		

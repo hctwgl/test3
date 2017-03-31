@@ -69,5 +69,7 @@ public interface AfRepaymentBorrowCashService {
 	 * @return
 	 */
 	List<AfRepaymentBorrowCashDo> getRepaymentBorrowCashListByUserId( Long userId);
+	
+	AfRepaymentBorrowCashDo getLastRepaymentBorrowCashByBorrowId( Long borrowCashId);
 
 }

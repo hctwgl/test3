@@ -122,6 +122,24 @@
 
 	</select>
 	
+	<select id="getLastRepaymentBorrowCashByBorrowId" parameterType="java.lang.Long"
+		resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		borrow_id =
+		#{borrowCashId}
+		AND
+		status != 'A'
+		ORDER BY
+		gmt_create DESC
+          LIMIT 1
+	</select>
+	
 		<select id="getRepaymentByPayTradeNo" 
 		resultType="AfRepaymentBorrowCashDo">
 		SELECT

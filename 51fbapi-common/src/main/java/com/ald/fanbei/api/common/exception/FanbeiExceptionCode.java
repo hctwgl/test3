@@ -150,8 +150,15 @@ public enum FanbeiExceptionCode {
     
     BORROW_CASH_NOT_EXIST_ERROR("BORROW_CASH_NOT_EXIST_ERROR",2002,"borrow cash not exist","借钱信息不存在"),
     BORROW_CASH_REPAY_NOT_EXIST_ERROR("BORROW_CASH_REPAY_NOT_EXIST_ERROR",2003,"borrow cash repay not exist","还钱信息不存在或已删除"),
-
+   
+    //还款中，不能修改code
+    BORROW_CASH_REPAY_PROCESS_ERROR("BORROW_CASH_REPAY_PROCESS_ERROR",2004,"borrow cash repay not exist","您有一笔还款正在处理中"),
+   
     
+    BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2005,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
+
+    BORROW_CASH_REPAY_AMOUNT__ERROR("BORROW_CASH_REPAY_AMOUNT_BORROW_ERROR",20056,"borrow cash repay  borrow cash error","还款金额有误请重新检查"),
+
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),
     
