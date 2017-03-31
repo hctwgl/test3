@@ -565,7 +565,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 
 	@Override
 	public long dealBrandConsumeApply(final AfUserAccountDo userDto,
-			final BigDecimal amount, final String name, final int nper, final Long orderId, final String orderNo) {
+			final BigDecimal amount, final String name, final Integer nper, final Long orderId, final String orderNo) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {

@@ -62,7 +62,7 @@ public interface AfBorrowService {
 	 * @param nper --分期数
 	 * @return
 	 */
-	public long dealBrandConsumeApply(AfUserAccountDo userDto,BigDecimal amount,String name,int nper, Long orderId, String orderNo);
+	public long dealBrandConsumeApply(AfUserAccountDo userDto,BigDecimal amount,String name,Integer nper, Long orderId, String orderNo);
 	
 	/**
 	 * 获取最近借款号

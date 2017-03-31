@@ -45,10 +45,7 @@ public class GetBrandUrlApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		
-//		AfOrderDo orderInfo = afOrderDao.getOrderById(90179l);
-//		BoluomePushPayResponseBo res =  boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
-		
-		 Map<String, Object> params = requestDataVo.getParams();
+		Map<String, Object> params = requestDataVo.getParams();
 		Map<String, String> buildParams = new HashMap<String, String>();
 
 		Long shopId = NumberUtil.objToLongDefault(params.get("shopId"), null);
