@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 
 /**
@@ -12,4 +14,6 @@ public interface AfOrderRefundDao {
 	int addOrderRefund(AfOrderRefundDo orderRefundInfo);
 	
 	int updateOrderRefund(AfOrderRefundDo orderRefundInfo);
+	
+	AfOrderRefundDo getOrderRefundByOrderId(@Param("orderId")Long orderId);
 }

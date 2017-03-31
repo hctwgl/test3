@@ -24,6 +24,7 @@ public enum UserAccountLogType {
 	REGIST("REGIST", "新注册"),
 	CONSUME("CONSUME", "分期"),
 	AP_REFUND("AP_REFUND", "代付退款"),
+	BANK_REFUND("BANK_REFUND", "银行卡退款"),
 	REPAYMENT("REPAYMENT", "还款"),
 	REPAYMENTCASH("REPAYMENTCASH", "借钱还款"),
 

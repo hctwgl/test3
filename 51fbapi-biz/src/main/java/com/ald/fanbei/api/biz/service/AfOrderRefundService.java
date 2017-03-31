@@ -12,4 +12,6 @@ public interface AfOrderRefundService {
 	int addOrderRefund(AfOrderRefundDo orderRefundInfo);
 	
 	int updateOrderRefund(AfOrderRefundDo orderRefundInfo);
+	
+	AfOrderRefundDo getOrderRefundByOrderId(Long orderId);
 }
