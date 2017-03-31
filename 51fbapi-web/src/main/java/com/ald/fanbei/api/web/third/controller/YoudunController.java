@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.util.Enumeration;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.third.util.YoudunUtil;
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
  * 
@@ -19,13 +24,13 @@ import com.ald.fanbei.api.biz.third.util.YoudunUtil;
  */
 @Controller
 @RequestMapping("/third/youdun")
-public class YoudunController{
+public class YoudunController extends BaseController{
 	
 	@Resource
 	private YoudunUtil youdunUtil;
 	
 	/**
-	 * 支付宝回调接口
+	 * 人脸识别回调接口
 	 * @param request
 	 * @param response
 	 * @return
@@ -34,6 +39,14 @@ public class YoudunController{
     @ResponseBody
 	public String alipayNotify(HttpServletRequest request, HttpServletResponse response){
 
+    	Enumeration<String> enu=request.getParameterNames();  
+    	StringBuffer params = new StringBuffer();
+    	while(enu.hasMoreElements()){  
+	    	String paraName=(String)enu.nextElement();  
+	    	params = params.append(paraName).append("=").append(request.getParameter(paraName)).append("|");
+    	}
+    	logger.info("alipayNotify:" + params);
+    	
 //    	AfYoudunFaceDo youdunDo = new AfYoudunFaceDo();
 //    	youdunDo.setAddress(request.getParameter("address"));
 //    	youdunDo.setAge(NumberUtil.objToIntDefault(request.getParameter("age"), 0));
@@ -62,9 +75,26 @@ public class YoudunController{
 //    	
 //    	youdunUtil.dealYoudunNotify(youdunDo);
     	
-    	//TODO 更新af_user_auth表对应的有盾信息
     	
     	return "success";
+	}
+
+	@Override
+	public String checkCommonParam(String reqData, HttpServletRequest request,
+			boolean isForQQ) {
+		return null;
+	}
+
+	@Override
+	public RequestDataVo parseRequestData(String requestData,
+			HttpServletRequest request) {
+		return null;
+	}
+
+	@Override
+	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context,
+			HttpServletRequest httpServletRequest) {
+		return null;
 	}
 	
 }
