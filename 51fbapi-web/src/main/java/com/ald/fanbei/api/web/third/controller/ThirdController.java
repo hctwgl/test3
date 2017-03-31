@@ -64,7 +64,7 @@ public class ThirdController{
     		Map<String, Object> resultData = new HashMap<String, Object>();
     		String orderId = params.get(ThirdCore.ORDER_ID);
         	String plantform = params.get(ThirdCore.PLANT_FORM);
-        	BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(params.get(ThirdCore.PLANT_FORM), null);
+        	BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(params.get(ThirdCore.AMOUNT), null);
         	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
         	if (orderInfo == null) {
         		throw new FanbeiException(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
