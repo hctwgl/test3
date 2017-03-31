@@ -104,7 +104,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		if(cardId==-2){
 			showAmount = BigDecimalUtil.add(showAmount, userAmount);
 		}
-		if(repaymentAmount.compareTo(BigDecimalUtil.add(showAmount, actualAmount))!=0){
+		if(repaymentAmount.compareTo(showAmount)!=0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 
 			
