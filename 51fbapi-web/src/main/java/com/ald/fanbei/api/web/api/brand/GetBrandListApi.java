@@ -63,8 +63,8 @@ public class GetBrandListApi implements ApiHandle {
 		AfShopVo vo = new AfShopVo();
 		vo.setRid(shopInfo.getRid());
 		vo.setName(shopInfo.getName());
-		vo.setRebateAmount(shopInfo.getCommissionAmount());
-		vo.setRebateUnit(shopInfo.getCommissionUnit());
+		vo.setRebateAmount(shopInfo.getRebateAmount());
+		vo.setRebateUnit(shopInfo.getRebateUnit());
 		vo.setIcon(shopInfo.getIcon());
 		return vo;
 	}
