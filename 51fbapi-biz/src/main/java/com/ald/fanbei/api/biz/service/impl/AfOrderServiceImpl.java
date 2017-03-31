@@ -33,6 +33,7 @@ import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
@@ -580,15 +581,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						accountInfo.setUsedAmount(usedAmount);
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						
-						
 						//增加Account记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, refundAmount, userId, orderId));
 						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+						
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.CLOSE.getCode());
 						
-//						afBorrowBillDao.getBorrowBillByBorrowId(borrowId);
-						
-//						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.AP_REFUND, orderInfo.getActualAmount(), orderInfo.getUserId(), orderInfo.getRid()));
+						afBorrowBillDao.updateBorrowBillStatusByBorrowId(borrowInfo.getRid(), BorrowBillStatus.CLOSE.getCode());
 						
 						break;
 					case BANK:
@@ -613,7 +612,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					logger.info("dealBrandOrderRefund comlete");
 					return 1;
 				} catch (FanbeiException e) {
-					status.setRollbackOnly();
 					logger.error("dealBrandOrderRefund error = {}", e);
 					throw new FanbeiException("reund error", e.getErrorCode());
 				} catch (Exception e) {

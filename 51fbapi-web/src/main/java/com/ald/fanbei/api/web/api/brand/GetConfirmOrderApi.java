@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -18,13 +17,9 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -70,6 +65,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
+		
 		Long userId = orderInfo.getUserId();
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -89,30 +85,13 @@ public class GetConfirmOrderApi implements ApiHandle {
 		vo.setCurrentTime(new Date());
 		vo.setBankcardStatus(authDo.getBankcardStatus());
     	vo.setRealName(userDto.getRealName());
-        if(StringUtil.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())){
-        	String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-        	vo.setYdKey(publicKey);
-        	vo.setYdUrl(ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
-        	vo.setIdNumber(Base64.encodeString(userDto.getIdNumber()));
-        	
-        } else {
+        if(!StringUtil.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())){
         	vo.setBankId(bankInfo.getRid());
-        	vo.setBankName(bankInfo.getBankName());
-        	vo.setBankIcon(bankInfo.getBankIcon());
         }
-		vo.setMobileStatus(authDo.getMobileStatus());
-		vo.setRealNameStatus(authDo.getRealnameStatus());
-		vo.setTeldirStatus(authDo.getTeldirStatus());
 		vo.setTotalAmount(userDto.getAuAmount());
 		vo.setUseableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
-		vo.setZmStatus(authDo.getZmStatus());
-		vo.setGmtZm(authDo.getGmtZm());
-		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
-			String authParamUrl =  ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
-			vo.setZmxyAuthUrl(authParamUrl);
-		}
-		vo.setZmScore(authDo.getZmScore());
 		vo.setRealNameScore(authDo.getRealnameScore());
+		vo.setAllowConsume(afUserAuthService.getConsumeStatus(orderInfo.getUserId()));
 		return vo;
 	}
 
