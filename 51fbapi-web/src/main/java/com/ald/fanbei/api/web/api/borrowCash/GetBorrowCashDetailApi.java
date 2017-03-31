@@ -84,7 +84,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 				.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 
 		if(afBorrowCashDo.getGmtArrival()!=null){
-			Date repaymentDay = DateUtil.addDays(afBorrowCashDo.getGmtArrival(), day);
+			Date repaymentDay = DateUtil.addDays(DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival()), day);
 			data.put("gmtLastRepay", repaymentDay);
 		}
 		

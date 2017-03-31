@@ -89,7 +89,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			Date now = new Date();
 
 			if(afBorrowCashDo.getGmtArrival()!=null){
-				Date repaymentDay = DateUtil.addDays(afBorrowCashDo.getGmtArrival(), day);
+				
+				Date repaymentDay = DateUtil.addDays(DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival()), day);
 				data.put("repaymentDay", repaymentDay);
 				if (DateUtil.beforeDay(now, repaymentDay)) {
 					Calendar calendar = Calendar.getInstance();
@@ -98,11 +99,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 					calendarRepay.setTime(repaymentDay);
 					Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
 					data.put("deadlineDay", chaTime);
-
 				}
 			}
 			
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
+			
 			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
 			data.put("rid", afBorrowCashDo.getRid());
