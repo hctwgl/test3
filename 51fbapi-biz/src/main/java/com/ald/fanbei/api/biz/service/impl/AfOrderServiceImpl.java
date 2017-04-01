@@ -264,8 +264,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						newOrder.setStatus(OrderStatus.CLOSED.getCode());
 						orderDao.updateOrderByOutTradeNo(newOrder);
 						pushService.chargeMobileError(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
-					}else{
-						pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 					}
 				} catch (Exception e) {
 					status.setRollbackOnly();
