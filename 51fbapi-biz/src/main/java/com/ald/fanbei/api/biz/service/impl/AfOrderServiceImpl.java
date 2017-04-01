@@ -233,43 +233,39 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					afUserAccountDao.updateUserAccount(account);
 					//获取用户信息
 					AfUserDo userDo = afUserDao.getUserById(order.getUserId());
-					if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
-						String msg = kaixinUtil.charge(order.getOrderNo(), order.getMobile(), order.getSaleAmount().setScale(0).toString());
-						JSONObject returnMsg = JSON.parseObject(msg);
-						JSONObject result = JSON.parseObject(returnMsg.getString("result"));
-						if(!result.getString("ret_code").equals(MobileStatus.SUCCESS.getCode())){
-							//System.out.println(result.getString("ret_msg"));
-							//退款 生成退款记录  走微信退款流程，或者银行卡代付
-							//设置优惠券为未使用状态
-							afUserCouponDao.updateUserCouponSatusNouseById(order.getUserCouponId());
-							//返利金额
-							account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
-							afUserAccountDao.updateUserAccount(account);
-							if(order.getBankId()<0){//微信退款
-								try {
-									String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
-									if(!"SUCCESS".equals(refundResult)){
-										throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
-									}
-								} catch (Exception e) {
-									pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
-									logger.info("wxRefund error:",e);
+					String msg = kaixinUtil.charge(order.getOrderNo(), order.getMobile(), order.getSaleAmount().setScale(0).toString());
+					JSONObject returnMsg = JSON.parseObject(msg);
+					JSONObject result = JSON.parseObject(returnMsg.getString("result"));
+					if(!result.getString("ret_code").equals(MobileStatus.SUCCESS.getCode())){
+						//System.out.println(result.getString("ret_msg"));
+						//退款 生成退款记录  走微信退款流程，或者银行卡代付
+						//设置优惠券为未使用状态
+						afUserCouponDao.updateUserCouponSatusNouseById(order.getUserCouponId());
+						//返利金额
+						account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
+						afUserAccountDao.updateUserAccount(account);
+						if(order.getBankId()<0){//微信退款
+							try {
+								String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
+								if(!"SUCCESS".equals(refundResult)){
+									throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 								}
-							}else{//银行卡代付
-								//TODO 转账处理
-								AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
-								UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
-										card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
-								if(!upsResult.isSuccess()){
-									pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
-								}
+							} catch (Exception e) {
+								pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+								logger.info("wxRefund error:",e);
 							}
-							newOrder.setStatus(OrderStatus.CLOSED.getCode());
-							orderDao.updateOrderByOutTradeNo(newOrder);
-							pushService.chargeMobileError(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
-						}else{
-							pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
+						}else{//银行卡代付
+							//TODO 转账处理
+							AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
+							UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
+									card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
+							if(!upsResult.isSuccess()){
+								pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+							}
 						}
+						newOrder.setStatus(OrderStatus.CLOSED.getCode());
+						orderDao.updateOrderByOutTradeNo(newOrder);
+						pushService.chargeMobileError(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 					}else{
 						pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 					}
