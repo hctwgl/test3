@@ -65,12 +65,17 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		Long userId = context.getUserId();
 		BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repaymentAmount")), BigDecimal.ZERO);
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")), BigDecimal.ZERO);
+		
 		Long couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), 0l);
 		BigDecimal userAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
 		Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
+		AfRepaymentBorrowCashDo rbCashDo=afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
+		if(rbCashDo!=null&&StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 
+		}
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 		if (userDto == null) {
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -108,14 +113,6 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 
 		}
-		
-		
-		AfRepaymentBorrowCashDo rbCashDo=afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
-		if(rbCashDo!=null&&StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
-
-		}
-		
 		
 		Map<String,Object> map;
 		if(cardId==-2){//余额支付
