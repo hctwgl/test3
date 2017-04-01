@@ -96,9 +96,9 @@ public interface AfOrderDao {
 	AfOrderDo getOrderById(@Param("orderId") Long id);
 	
 	/**
-	 * 获取最近支付号码
+	 * 获取最近支付编号
 	 * @param current
 	 * @return
 	 */
-	String getCurrentLastPayNo(Date current);
+	String getCurrentLastPayNo(@Param("startDate")Date startDate,@Param("endDate")Date endDate);
 }

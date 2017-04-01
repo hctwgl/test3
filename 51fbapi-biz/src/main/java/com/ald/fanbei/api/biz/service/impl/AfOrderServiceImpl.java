@@ -48,10 +48,8 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
@@ -533,6 +531,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setGmtPay(currentDate);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setActualAmount(orderInfo.getSaleAmount());
 					Long payId = orderInfo.getBankId();
 					if(payId < 0 ){
@@ -695,7 +694,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Override
 	public String getCurrentLastPayNo(Date current) {
-		return orderDao.getCurrentLastPayNo(current);
+		Date startDate = DateUtil.getStartOfDate(current);
+		Date endDate = DateUtil.getEndOfDate(current);
+		return orderDao.getCurrentLastPayNo(startDate, endDate);
 	}
 	
 }

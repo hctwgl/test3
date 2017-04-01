@@ -76,15 +76,15 @@ public class GeneratorClusterNo {
     private int getOrderSeqInt(String orderStrVal){
     	orderStrVal = orderStrVal == null?"":orderStrVal;
     	String newStr = orderStrVal.replaceFirst("^0*", "");  
-    	if(StringUtil.isBlank(orderStrVal)){
+    	if(StringUtil.isBlank(newStr)){
     		return 1;
     	}
     	return Integer.parseInt(newStr);
     }
     
     //获取支付号
-  	public String getOrderPayNo(Date currDate){//支付号规则：6位日期_2位订单类型_5位订单序号
-  		String dateStr = DateUtil.formatDate(currDate, DateUtil.DEFAULT_PATTERN).substring(2);
+  	public String getOrderPayNo(Date currDate){//支付号规则：14位日期_5位订单序号
+  		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
   		StringBuffer orderSb = new StringBuffer("fk");
   		orderSb.append(dateStr).append(getOrderSeqStr(this.getOrderPaySequenceNum(currDate)));
   		return orderSb.toString();
@@ -99,22 +99,22 @@ public class GeneratorClusterNo {
             if(TokenCacheUtil.getLockTryTimes(lockKey, "1", Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")))){//获得同步锁
                 channelNum = (Integer)TokenCacheUtil.getObject(cacheKey);
                 if(channelNum == null){//缓存中无数据,从库中获取
-                	String borrowNo = afOrderService.getCurrentLastPayNo(currentDate);
-                    channelNum = borrowNo == null?1:(getOrderSeqInt(borrowNo.substring(16, 20))+1);
+                	String payNo= afOrderService.getCurrentLastPayNo(currentDate);
+                    channelNum = payNo == null?1:(getOrderSeqInt(payNo.substring(16, 20))+1);
                 }else{
                     channelNum = channelNum + 1;
                 }
             }else{//获取锁失败，从库中取订单号
             	String payNo = afOrderService.getCurrentLastPayNo(currentDate);
                 if(payNo != null){
-                    channelNum = getOrderSeqInt(payNo.substring(16, 20))+1;
+                    channelNum = getOrderSeqInt(payNo.substring(16, 21))+1;
                 }
                 return channelNum;
             }
             TokenCacheUtil.saveObject(cacheKey, channelNum, 0l);
         }finally{
-        	TokenCacheUtil.delCache(lockKey);
         }
+        TokenCacheUtil.delCache(lockKey);
         return channelNum;
     }
     
