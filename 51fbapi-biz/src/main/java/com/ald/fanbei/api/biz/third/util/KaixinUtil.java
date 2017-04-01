@@ -198,7 +198,7 @@ public class KaixinUtil extends AbstractThird{
 		}
 		sb.deleteCharAt(sb.length() - 1).append(getKey());
 
-		logger.info("签名前串：{}", sb.toString());
+		//logger.info("签名前串：{}", sb.toString());
 		String sign = DigestUtil.MD5(sb.toString());
 		logger.info("签名：{}", sign);
 		return sign;
