@@ -60,9 +60,10 @@
 		<property name="fbapi.sync.lock.try.times" defaultValue="1" description="同步锁重试次数" /> 
 		
 		<!-- kxg -->
-		<property name="fbapi.kxg.password" defaultValue="XmlfLrtI1Xb7QToAbNiIrg==" description="开心果登录密码" />
-		<property name="fbapi.kxg.pay.password" defaultValue="QhSQiFjhoS0U4Mxfr58Sug==" description="开心果支付密码" />
-		<property name="fbapi.kxg.key" defaultValue="2jAzMm3fMGexbK0cNsrSZdCuhgu0QhqoULwmZ+3gTgE=" description="开心果key" />
+		<property name="fbapi.kxg.url.charge" defaultValue="http://122.224.88.51:18080/mobile/charge.json" description="开心果下单地址" />
+		<property name="fbapi.kxg.password" defaultValue="lj8y4iAjs+zAZzDptjYVzg==" description="开心果登录密码" />
+		<property name="fbapi.kxg.pay.password" defaultValue="lj8y4iAjs+zAZzDptjYVzg==" description="开心果支付密码" />
+		<property name="fbapi.kxg.key" defaultValue="Y7SB2e5Toy6pAoZzKBgi6dCuhgu0QhqoULwmZ+3gTgE=" description="开心果key" />
 		
 		<!-- wx -->
 		<property name="fbapi.wx.appid" defaultValue="4r1JFuNNEHg2RU3jUAOr0IYC9KMPZSbw1S7bhCBACSw=" description="微信appid" />
