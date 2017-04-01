@@ -74,7 +74,6 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		AfRepaymentBorrowCashDo rbCashDo=afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
 		if(rbCashDo!=null&&StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
-
 		}
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 		if (userDto == null) {

@@ -274,10 +274,12 @@ public class TongdunUtil extends AbstractThird {
 	 * @param accountEmail
 	 *            账户邮箱
 	 * @param items
-	 *            订单项 // BORROWCASH 借钱；BORROW 借款；BILL
+	 *            订单项 
 	 */
-	public void getTradeResult(TongdunEventEnmu tongdunEvent, String blackBox, String ip, String accountLogin,
+	public void getTradeResult(String requsetId, String blackBox, String ip, String accountLogin,
 			String accountMobile, String idNumber, String realName, String accountEmail, String items, String source) {
+		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.TRADE_IOS
+				: TongdunEventEnmu.TRADE_ANDROID;
 		accountLogin = accountMobile;
 		String registSwitch = resourceValueWhithType(AfResourceType.tradeTongdunSwitch.getCode());
 
