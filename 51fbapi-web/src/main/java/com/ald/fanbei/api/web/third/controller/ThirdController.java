@@ -174,8 +174,8 @@ public class ThirdController {
             json.put("order_time", orderTime);
             json.put("order_type", orderType);
             json.put("partner_id", partnerId);
-            json.put("pay_money", payMoney.setScale(2).toString());
-            json.put("profit", profit.setScale(2).toString());
+            json.put("pay_money", payMoney.toString());
+            json.put("profit", profit.toString());
             json.put("sign_type", signType);
             json.put("status", status);
             json.put("stream_id", streamId);
