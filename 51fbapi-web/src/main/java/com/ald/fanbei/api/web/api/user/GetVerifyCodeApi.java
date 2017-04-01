@@ -62,7 +62,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 	        	return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.PARAM_ERROR);
 
 			}
-			tongdunUtil.getRegistResult(requestDataVo.getId().startsWith("i")?TongdunEventEnmu.REGISTER_IOS:TongdunEventEnmu.REGISTER_ANDROID, blackBox,CommonUtil.getIpAddr(request),mobile,mobile,"","","");
+			tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox,CommonUtil.getIpAddr(request),mobile,mobile,"","","");
 	
 	        afUserDo = afUserService.getUserByUserName(mobile);
 

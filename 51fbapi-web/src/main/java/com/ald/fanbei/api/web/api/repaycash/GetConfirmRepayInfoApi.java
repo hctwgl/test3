@@ -107,7 +107,6 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		if(repaymentAmount.compareTo(showAmount)!=0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 
-			
 		}
 		
 		
@@ -116,6 +115,8 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 
 		}
+		
+		
 		Map<String,Object> map;
 		if(cardId==-2){//余额支付
 			map	=afRepaymentBorrowCashService.createRepayment(repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);

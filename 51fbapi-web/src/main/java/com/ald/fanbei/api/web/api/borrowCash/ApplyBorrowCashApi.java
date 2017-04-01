@@ -38,8 +38,10 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -79,10 +81,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if (StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
-		}
+	
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
@@ -92,11 +91,31 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		String city = ObjectUtils.toString(requestDataVo.getParams().get("city"));
 		String county = ObjectUtils.toString(requestDataVo.getParams().get("county"));
 		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
+		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
-		if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null
-				|| StringUtils.equals(pwd, "") || StringUtils.equals(latitude, "") || StringUtils.equals(longitude, "")
-				|| StringUtils.equals(province, "") || StringUtils.equals(city, "") || StringUtils.equals(county, "")) {
+		if (StringUtils.isBlank(amountStr) || AfBorrowCashType.findRoleTypeByCode(type) == null
+				|| StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude) || StringUtils.isBlank(longitude)
+				|| StringUtils.isBlank(province) || StringUtils.isBlank(city) || StringUtils.isBlank(county)
+				|| StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		}
+		
+		
+		//密码判断
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+
+		if(accountDo ==null||authDo==null ){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
+
+		}
+		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
+		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+		}
+		
+		if (StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
 		
 		//认证信息判断
@@ -125,6 +144,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		Long borrowId = afBorrowCashDo.getRid();
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
 		cashDo.setRid(borrowId);
+		
+		
 		try {
 			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20",
 					afBorrowCashDo.getCardNumber());

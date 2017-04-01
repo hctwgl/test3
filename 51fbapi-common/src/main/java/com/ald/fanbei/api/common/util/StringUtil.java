@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+
+
 /**
  * 
  *@类描述：字符串工具类
@@ -15,6 +17,8 @@ import org.apache.commons.lang.StringUtils;
 public class StringUtil extends StringUtils{
     
 	private static final String COMMA = ",";
+	
+	
 	
     /**
      * 通过StringBuffer来组装字符串
