@@ -465,6 +465,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setGmtPay(currentDate);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setActualAmount(orderInfo.getSaleAmount());
 					Long payId = orderInfo.getBankId();
 					if(payId < 0 ){
@@ -627,7 +628,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Override
 	public String getCurrentLastPayNo(Date current) {
-		return orderDao.getCurrentLastPayNo(current);
+		Date startDate = DateUtil.getStartOfDate(current);
+		Date endDate = DateUtil.getEndOfDate(current);
+		return orderDao.getCurrentLastPayNo(startDate, endDate);
 	}
 	
 }
