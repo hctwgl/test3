@@ -282,6 +282,78 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 	}
 
+	@Override
+    public void notifyMobileChargeOrder(final String orderNo, final String status) {
+        transactionTemplate.execute(new TransactionCallback<Integer>() {
+
+            @Override
+            public Integer doInTransaction(TransactionStatus status) {
+                try {
+                    // 查询订单
+                    AfOrderDo order = orderDao.getOrderInfoByOrderNo(orderNo);
+                    if (order != null) {
+                        // 获取用户信息
+                        AfUserDo userDo = afUserDao.getUserById(order.getUserId());
+                        if ("SUCCESS".equals(status) && OrderStatus.CLOSED.getCode().equals(order.getStatus())) {
+                            order.setStatus(OrderStatus.REBATED.getCode());
+                            orderDao.updateOrderByOrderNo(order);
+
+                            // 返利金额
+                            AfUserAccountDo account = new AfUserAccountDo();
+                            account.setUserId(order.getUserId());
+                            account.setRebateAmount(order.getRebateAmount());
+                            afUserAccountDao.updateUserAccount(account);
+                            pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
+                        } else if (OrderStatus.REBATED.getCode().equals(order.getStatus())) {
+                            // 退款 生成退款记录 走微信退款流程，或者银行卡代付
+                            // 设置优惠券为未使用状态
+                            afUserCouponDao.updateUserCouponSatusNouseById(order.getUserCouponId());
+                            // // 返利金额
+                            AfUserAccountDo account = new AfUserAccountDo();
+                            account.setUserId(order.getUserId());
+                            account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
+                            afUserAccountDao.updateUserAccount(account);
+                            if (order.getBankId() < 0) {// 微信退款
+                                try {
+                                    String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
+                                    if (!"SUCCESS".equals(refundResult)) {
+                                        throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+                                    }
+                                } catch (Exception e) {
+                                    pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+                                    logger.info("wxRefund error:", e);
+                                }
+                            } else {// 银行卡代付
+                                    // TODO 转账处理
+                                AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
+                                UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId() + "",
+                                        card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02", OrderType.MOBILE.getCode(), "");
+                                if (!upsResult.isSuccess()) {
+                                    pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+                                }
+                            }
+                            // 支付成功后,直接返利
+                            AfOrderDo newOrder = new AfOrderDo();
+                            newOrder.setGmtFinished(new Date());
+                            newOrder.setGmtRebated(new Date());
+                            newOrder.setStatus(OrderStatus.CLOSED.getCode());
+                            orderDao.updateOrderByOutTradeNo(newOrder);
+                            pushService.chargeMobileError(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
+                        }
+                    } else {
+                        logger.error("notifyPhoneRecharge error,orderNo：【" + orderNo + "】");
+                    }
+
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    logger.info("notifyMobileChargeOrder error:", e);
+                }
+                return null;
+            }
+        });
+    }
+	
+	
 	/**
 	 * 
 	 * @param orderNo  --订单编号
