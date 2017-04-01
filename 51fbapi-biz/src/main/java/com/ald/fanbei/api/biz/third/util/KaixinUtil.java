@@ -119,7 +119,7 @@ public class KaixinUtil extends AbstractThird{
 				body.put("account_no", account_no);
 				body.put("face_price", face_price);
 			}else{
-				body.put("account_no", "18934199597");//测试，广东电信50面值
+				body.put("account_no", "13649879240");//测试，广东电信50面值
 				body.put("face_price", "50");
 			}
 
