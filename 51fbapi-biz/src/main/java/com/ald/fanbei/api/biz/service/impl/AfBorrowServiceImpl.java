@@ -422,7 +422,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						chargeAmount = rangeEnd;
 					}
 					BigDecimal interestAmount = money.multiply(dayRate);//日利息
-					List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CASH,borrow,money.add(interestAmount).add(chargeAmount),BigDecimal.ZERO,interestAmount,BigDecimal.ZERO,chargeAmount);
+					List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CASH,borrow,money.add(interestAmount).add(chargeAmount),BigDecimal.ZERO,interestAmount,BigDecimal.ZERO,chargeAmount,
+							null);
 					if(null!=billList&&billList.size()>0){
 						AfBorrowBillDo cashBill = billList.get(0);
 						//生成利息日志
@@ -450,7 +451,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	 * @return
 	 */
 	private List<AfBorrowBillDo> buildBorrowBill(BorrowType borrowType,AfBorrowDo borrow,BigDecimal perAmount,BigDecimal totalAmount,
-			BigDecimal interestAmount,BigDecimal monthRate,BigDecimal poundageAmount){
+			BigDecimal interestAmount,BigDecimal monthRate,BigDecimal poundageAmount, BorrowBillStatus billStatus){
 		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
 		Date now = new Date();//当前时间
 		BigDecimal billAmount = perAmount;
@@ -488,7 +489,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				totalAmount = totalAmount.subtract(billAmount);
 				bill.setPrincipleAmount(bill.getBillAmount().subtract(perInterest).subtract(perPoundageAmount));//本金 = 账单金额 -本月利息 -手续费
 				money = money.subtract(bill.getPrincipleAmount());//期初余额-本金
-				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
+				bill.setStatus(billStatus.getCode());
 				bill.setType(BorrowType.CONSUME.getCode());
 			}
 			list.add(bill);
@@ -543,7 +544,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 											8,BigDecimal.ROUND_HALF_UP), totalPoundage);
 							List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CONSUME,borrow,perAmount,totalBillAMount,
 									BigDecimal.ZERO,new BigDecimal(obj.getString("rate")).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
-											8,BigDecimal.ROUND_HALF_UP),totalPoundage);
+											8,BigDecimal.ROUND_HALF_UP),totalPoundage, BorrowBillStatus.FORBIDDEN);
 							//新增借款账单
 							afBorrowDao.addBorrowBill(billList);
 							afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
@@ -612,7 +613,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 											8,BigDecimal.ROUND_HALF_UP), totalPoundage);
 							List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CONSUME,borrow,perAmount,totalBillAMount,
 									BigDecimal.ZERO,new BigDecimal(obj.getString("rate")).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
-											8,BigDecimal.ROUND_HALF_UP),totalPoundage);
+											8,BigDecimal.ROUND_HALF_UP),totalPoundage,BorrowBillStatus.NO);
 							//新增借款账单
 							afBorrowDao.addBorrowBill(billList);
 							

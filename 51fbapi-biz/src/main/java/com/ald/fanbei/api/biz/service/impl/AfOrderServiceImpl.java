@@ -460,6 +460,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
 				try {
 					Date currentDate = new Date();
+					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
 					Map<String,Object> resultMap = new HashMap<String,Object>();
 					orderInfo.setGmtPay(currentDate);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
@@ -469,7 +470,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					if(payId < 0 ){
 						orderInfo.setPayType(PayType.WECHAT.getCode());
 						//微信支付
-						return UpsUtil.buildWxpayTradeOrder(orderInfo.getOrderNo(), orderInfo.getUserId(), orderInfo.getGoodsName(), orderInfo.getSaleAmount(),PayOrderSource.BRAND_ORDER.getCode());
+						return UpsUtil.buildWxpayTradeOrder(tradeNo, orderInfo.getUserId(), orderInfo.getGoodsName(), orderInfo.getSaleAmount(),PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
 						//代付
 						orderInfo.setPayType(PayType.AGENT_PAY.getCode());
@@ -494,7 +495,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if(null == cardInfo){
 							throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 						}
-						String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
 						//银行卡支付 代收
 						UpsCollectRespBo respBo = UpsUtil.collect(tradeNo,orderInfo.getSaleAmount(), orderInfo.getUserId()+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
 								cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
