@@ -14,12 +14,14 @@ import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -49,7 +51,8 @@ public class ApplyConsumeApi implements ApiHandle{
 	
 	@Resource
 	AfResourceService afResourceService;
-	
+	@Resource
+	TongdunUtil tongdunUtil;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -59,11 +62,19 @@ public class ApplyConsumeApi implements ApiHandle{
 		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
 		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
 		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
+		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+
 		int nper = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get(Constants.DEFAULT_NPER)), 2);
 		Long userId = context.getUserId();
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
+		if(StringUtils.isBlank(blackBox)){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+
+		}
+		tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "", requestDataVo.getMethod(), "");
+
 		if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
