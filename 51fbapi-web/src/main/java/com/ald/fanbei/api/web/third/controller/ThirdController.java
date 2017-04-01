@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -22,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
+import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -118,5 +120,70 @@ public class ThirdController{
     	return params;
     }
     
-    
+    /**
+     * @方法描述：异步处理手机充值状态（真实处理状态） @author huyang 2017年3月31日下午5:08:53
+     * @author huyang 2017年4月1日上午9:37:43
+     * @param partnerId
+     *            商户编号
+     * @param signType
+     *            签名方式
+     * @param sign
+     *            签名
+     * @param orderNo
+     *            商户订单号
+     * @param streamId
+     *            流水号
+     * @param orderTime
+     *            订单时间
+     * @param orderType
+     *            订单类型 01：话费充值
+     * @param accountNo
+     *            充值账号
+     * @param facePrice
+     *            面额
+     * @param payMoney
+     *            支付金额
+     * @param profit
+     *            佣金金额
+     * @param status
+     *            订单状态
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+     */
+    @RequestMapping(value = { "/notifyPhoneRecharge" }, method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String notifyPhoneRecharge(@RequestParam("partner_id") String partnerId, @RequestParam("sign_type") String signType, @RequestParam("sign") String sign,
+            @RequestParam("order_no") String orderNo, @RequestParam("stream_id") String streamId, @RequestParam("order_time") String orderTime,
+            @RequestParam("order_type") String orderType, @RequestParam("account_no") String accountNo, @RequestParam("face_price") BigDecimal facePrice,
+            @RequestParam("pay_money") BigDecimal payMoney, @RequestParam("profit") BigDecimal profit, @RequestParam("status") String status, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        try {
+            // 验签
+            JSONObject json = new JSONObject();
+            json.put("account_no", accountNo);
+            json.put("face_price", facePrice.setScale(0).toString());
+            json.put("order_no", orderNo);
+            json.put("order_time", orderTime);
+            json.put("order_type", orderType);
+            json.put("partner_id", partnerId);
+            json.put("pay_money", payMoney.setScale(2).toString());
+            json.put("profit", profit.setScale(2).toString());
+            json.put("sign_type", signType);
+            json.put("status", status);
+            json.put("stream_id", streamId);
+            String resign = KaixinUtil.sign(json);
+            if (sign.equals(resign)) {
+                afOrderService.notifyMobileChargeOrder(orderNo, status);
+            } else {
+                throw new Exception("verify signature error ! orderNo：【" + orderNo + "】");
+            }
+        } catch (Exception e) {
+            logger.error("notifyPhoneRecharge error！", e);
+            return "FAIL";
+        }
+        return "SUCCESS";
+    }
 }

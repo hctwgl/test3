@@ -66,6 +66,18 @@ public interface AfOrderService {
 	void dealMobileChargeOrder(String orderNo,String tradeNo);
 	
 	/**
+     * @方法描述：
+     * 
+     * @author huyang 2017年4月1日上午9:55:26
+     * @param orderNo
+     *            开心果交易订单号
+     * @param status
+     *            交易状态 （SUCCESS：成功 FAILED：失败 ）
+     * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+     */
+    void notifyMobileChargeOrder(String orderNo, String status);
+	
+	/**
 	 * 获取当天最近的订单
 	 * @param currentDate
 	 * @param orderType
