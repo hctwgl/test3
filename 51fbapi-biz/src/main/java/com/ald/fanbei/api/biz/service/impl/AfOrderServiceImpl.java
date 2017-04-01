@@ -536,6 +536,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					Long payId = orderInfo.getBankId();
 					if(payId < 0 ){
 						orderInfo.setPayType(PayType.WECHAT.getCode());
+						orderDao.updateOrder(orderInfo);
 						//微信支付
 						return UpsUtil.buildWxpayTradeOrder(tradeNo, orderInfo.getUserId(), orderInfo.getGoodsName(), orderInfo.getSaleAmount(),PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
@@ -546,6 +547,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if (useableAmount.compareTo(orderInfo.getSaleAmount()) < 0) {
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 						}
+						orderDao.updateOrder(orderInfo);
+						
 						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper, orderInfo.getRid(), orderInfo.getOrderNo());
 						
 						boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
@@ -562,6 +565,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if(null == cardInfo){
 							throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 						}
+						orderDao.updateOrder(orderInfo);
 						//银行卡支付 代收
 						UpsCollectRespBo respBo = UpsUtil.collect(tradeNo,orderInfo.getSaleAmount(), orderInfo.getUserId()+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
 								cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
@@ -574,7 +578,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
 						resultMap.put("resp", respBo);
 					}
-					orderDao.updateOrder(orderInfo);
 			 		return resultMap;
 				} catch (FanbeiException exception) {
 					logger.error("payBrandOrder faied e = {}", exception );
