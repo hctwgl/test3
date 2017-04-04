@@ -73,4 +73,18 @@
 	</if>
 	where id=#{rid}
 	</update>
+	
+	<select id="getRepaymentListByIds" resultType="AfRepaymentDo">
+		SELECT 
+			<include refid="queryFields"/> 
+		FROM 
+			af_repayment 
+		WHERE 
+			is_delete=0 
+		AND 
+			id IN 
+		<foreach collection="items" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+	</select>
 </mapper>

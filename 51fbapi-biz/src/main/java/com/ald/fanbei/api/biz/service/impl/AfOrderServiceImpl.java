@@ -629,6 +629,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					PayType type = PayType.findRoleTypeByCode(payType);
 					switch (type) {
 					case WECHAT:
+						//微信退款
 						String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
 						logger.info("wx refund  , refundResult = {} ", refundResult);
 						if(!"SUCCESS".equals(refundResult)){
@@ -641,28 +642,47 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderInfo.setRid(orderId);
 						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 						orderDao.updateOrder(orderInfo);
-						
 						break;
 					case AGENT_PAY:
+						//代付退款
 						logger.info("agent pay refund begin");
 						orderInfo = orderDao.getOrderById(orderId);
 						
 						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+						
+						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+						
+						BigDecimal shouldRefundAmount = afBorrowService.calculateBorrowRefundAmount(borrowInfo.getRid());
+						
+						AfUserBankcardDo cardInfo = afUserBankcardDao.getUserBankInfo(bankId);
+						if (shouldRefundAmount != null && shouldRefundAmount.compareTo(BigDecimal.ZERO) > 0) {
+							UpsDelegatePayRespBo tempUpsResult = UpsUtil.delegatePay(shouldRefundAmount, accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"", 
+									cardInfo.getMobile(), cardInfo.getBankName(), cardInfo.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);
+							logger.info("agent bank refund upsResult = {}", tempUpsResult);
+							if(!tempUpsResult.isSuccess()){
+								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
+								throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+							}
+						}
+						
 						//更新账户金额
 						BigDecimal usedAmount = BigDecimalUtil.add(accountInfo.getUsedAmount(), orderInfo.getActualAmount());
 						accountInfo.setUsedAmount(usedAmount);
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
-						
 						//增加Account记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, refundAmount, userId, orderId));
-						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
 						
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.CLOSE.getCode());
 						
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(borrowInfo.getRid(), BorrowBillStatus.CLOSE.getCode());
 						
+						orderInfo = new AfOrderDo();
+						orderInfo.setRid(orderId);
+						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+						orderDao.updateOrder(orderInfo);
 						break;
 					case BANK:
+						//银行卡退款
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
 						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"", 

@@ -17,7 +17,7 @@ public enum BorrowBillStatus {
 	FORBIDDEN("F", "冻结"),
 	PART("P", "部分还款"), 
 	OVERDUE("O","逾期"),
-	CLOSE("CLOSE","关闭(针对于退款)");
+	CLOSE("C","关闭(针对于退款)");
     
     private String code;
     private String name;
