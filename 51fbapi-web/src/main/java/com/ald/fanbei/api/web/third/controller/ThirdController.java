@@ -157,8 +157,8 @@ public class ThirdController {
     @ResponseBody
     public String notifyPhoneRecharge(@RequestParam("partner_id") String partnerId, @RequestParam("sign_type") String signType, @RequestParam("sign") String sign,
             @RequestParam("order_no") String orderNo, @RequestParam("stream_id") String streamId, @RequestParam("order_time") String orderTime,
-            @RequestParam("order_type") String orderType, @RequestParam("account_no") String accountNo, @RequestParam("face_price") BigDecimal facePrice,
-            @RequestParam("pay_money") BigDecimal payMoney, @RequestParam("profit") BigDecimal profit, @RequestParam("status") String status, HttpServletRequest request,
+            @RequestParam("order_type") String orderType, @RequestParam("account_no") String accountNo, @RequestParam("face_price") String facePrice,
+            @RequestParam("pay_money") String payMoney, @RequestParam("profit") String profit, @RequestParam("status") String status, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         String url =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getServletPath();
         if (request.getQueryString() != null) {
@@ -169,13 +169,13 @@ public class ThirdController {
             // 验签
             JSONObject json = new JSONObject();
             json.put("account_no", accountNo);
-            json.put("face_price", facePrice.setScale(0).toString());
+            json.put("face_price", facePrice);
             json.put("order_no", orderNo);
             json.put("order_time", orderTime);
             json.put("order_type", orderType);
             json.put("partner_id", partnerId);
-            json.put("pay_money", payMoney.setScale(2).toString());
-            json.put("profit", profit.setScale(2).toString());
+            json.put("pay_money", payMoney);
+            json.put("profit", profit);
             json.put("sign_type", signType);
             json.put("status", status);
             json.put("stream_id", streamId);

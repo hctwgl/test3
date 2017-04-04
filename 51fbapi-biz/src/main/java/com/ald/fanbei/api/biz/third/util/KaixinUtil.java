@@ -119,7 +119,7 @@ public class KaixinUtil extends AbstractThird{
 				body.put("account_no", account_no);
 				body.put("face_price", face_price);
 			}else{
-				body.put("account_no", "18934199597");//测试，广东电信50面值
+				body.put("account_no", "13649879240");//测试，广东电信50面值
 				body.put("face_price", "50");
 			}
 
@@ -196,7 +196,7 @@ public class KaixinUtil extends AbstractThird{
 			String value = entry.getValue();
 			sb.append(key).append("=").append(value).append("&");
 		}
-		sb.deleteCharAt(sb.length() - 1).append(KEY);
+		sb.deleteCharAt(sb.length() - 1).append(getKey());
 
 		//logger.info("签名前串：{}", sb.toString());
 		String sign = DigestUtil.MD5(sb.toString());

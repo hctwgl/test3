@@ -56,6 +56,7 @@ public class GetUserCounponListTypeApi implements ApiHandle {
 	}
 	private AfUserCouponVo getUserCouponVo(AfUserCouponDto afUserCouponDto){
 		AfUserCouponVo couponVo = new AfUserCouponVo();
+		couponVo.setRid(afUserCouponDto.getRid());
 		couponVo.setAmount(afUserCouponDto.getAmount());
 		couponVo.setGmtEnd(afUserCouponDto.getGmtEnd());
 		couponVo.setGmtStart(afUserCouponDto.getGmtStart());
