@@ -8,9 +8,13 @@
                 text-align: center;
 	    	}
             .mobileOperator span{
-                width: 100px;
-                height: 100px;
-                background-color: red;
+                width: 3.9rem;
+                height: 3.9rem;
+                background-image: url(/images/app/sys/chengg.png);
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                -ms-background-size: cover;
+                background-size: cover;
                 margin: 0 auto;
             }
             .mobileOperator p{
@@ -29,7 +33,7 @@
     	<div class="tac fs_14 mobileOperator">
             <span></span>
             <p>运营商认证申请已提交<br>请耐心等待审核结果</p>
-            <div class="tac fsc_f bdr_4 bgc_orange mobileOperator_btn"><a  href="https://app.51fanbei.com/app/sys/authBack">返回征信</a></div>
+            <div class="tac bdr_4 bgc_orange mobileOperator_btn"><a class="fsc_f" href="https://app.51fanbei.com/app/sys/authBack">返回征信</a></div>
         </div>
     </body>
 </html>
