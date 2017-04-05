@@ -526,10 +526,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					Date currentDate = new Date();
 					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
 					Map<String,Object> resultMap = new HashMap<String,Object>();
+					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setGmtPay(currentDate);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
-					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setActualAmount(orderInfo.getSaleAmount());
 					Long payId = orderInfo.getBankId();
 					if(payId < 0 ){
@@ -545,6 +545,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if (useableAmount.compareTo(orderInfo.getSaleAmount()) < 0) {
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 						}
+						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						
 						afBorrowService.dealBrandConsumeApply(userAccountInfo, orderInfo.getSaleAmount(), orderInfo.getGoodsName(), nper, orderInfo.getRid(), orderInfo.getOrderNo());
