@@ -145,6 +145,7 @@ public class RiskUtil extends AbstractThird{
 				reqBo.setPhone(StringUtil.isBlank(accountDto.getMobile())?accountDto.getUserName():accountDto.getMobile());
 				reqBo.setIdNo(accountDto.getIdNumber());
 				reqBo.setEmail(accountDto.getEmail());
+				reqBo.setOpenId(accountDto.getOpenId());
 				reqList.add(reqBo);
 			}
 			RiskBatchRemoveReqBo batchBo = new RiskBatchRemoveReqBo();
