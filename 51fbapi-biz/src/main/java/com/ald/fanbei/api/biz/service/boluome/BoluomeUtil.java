@@ -137,8 +137,11 @@ public class BoluomeUtil extends AbstractThird{
 	public static PayStatus parsePayStatus(String orderStatusStr) {
 		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.已经退款 8.已取消 9.处理中 11.等待退款
 		int orderStatus = Integer.parseInt(orderStatusStr);
-		PayStatus status = PayStatus.NOTPAY;
-		if (orderStatus == 3) {
+		PayStatus status = null;
+		if (orderStatus == 1 || orderStatus == 2 || orderStatus == 8) {
+			status = PayStatus.NOTPAY;
+		}
+		if (orderStatus == 3 || orderStatus == 4 || orderStatus == 9 ) {
 			status = PayStatus.PAYED;
 		} else if (orderStatus == 6 || orderStatus == 11 || orderStatus == 7) {
 			status = PayStatus.REFUND;

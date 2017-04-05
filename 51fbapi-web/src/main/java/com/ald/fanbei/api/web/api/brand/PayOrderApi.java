@@ -16,7 +16,9 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -38,15 +40,14 @@ public class PayOrderApi implements ApiHandle {
 
 	@Resource
 	AfUserCouponService afUserCouponService;
-
 	@Resource
 	private AfOrderService afOrderService;
-	
 	@Resource
 	private AfUserAccountService afUserAccountService;
-	
 	@Resource
 	private AfUserBankcardService afUserBankcardService;
+	@Resource
+	BoluomeUtil boluomeUtil;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -78,8 +79,11 @@ public class PayOrderApi implements ApiHandle {
 			}
 		}
 		try {
-			orderInfo.setBankId(payId);
-			Map<String,Object> result = afOrderService.payBrandOrder(orderInfo, nper);
+			
+			Map<String,Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getSaleAmount(), nper);
+			if (payId == 0) {
+				boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, userId, orderInfo.getSaleAmount());
+			}
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {
 			throw new FanbeiException("pay order failed", exception.getErrorCode());
