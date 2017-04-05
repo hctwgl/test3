@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017031701")
+    #set($version="2017040501")
     <title>商品列表模版</title>
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>

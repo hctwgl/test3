@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-14 18:17:24
+* @Last Modified time: 2017-04-05 17:50:55
 * @title:  商品列表页
 */
 
@@ -85,8 +85,6 @@ $(function(){
                 type: typeCurrentNum
             },
             success: function(returnData){
-
-                console.log(returnData);
 
                 if (returnData.success) {
 
@@ -176,8 +174,7 @@ $(function(){
     function pageNumber(page){
         for (var i = 0; i < categoryObj.length; i++) {
             pageNum = categoryObj[i].pageTotal;
-            pageNum = pageNum+1;
-            console.log(pageNum);
+            pageNum = pageNum-1;
             if(page==pageNum){ //最后一页
                 sover=1;
                 loadover();
@@ -198,7 +195,7 @@ $(function(){
             finished=1; //防止未加载完再次执行
 
             page++;
-            if (scrollTop + windowHeight -scrollHeight<=200 ) {
+            if (scrollTop + windowHeight -scrollHeight<=50 ) {
                 $.ajax({
                     url: "/app/goods/categoryGoodsList",
                     type: "POST",
