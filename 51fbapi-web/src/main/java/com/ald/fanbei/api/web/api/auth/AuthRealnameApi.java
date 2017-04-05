@@ -98,7 +98,7 @@ public class AuthRealnameApi implements ApiHandle {
 		}
 		resp.addResponseData("realNameScore", userAuthDo.getRealnameScore());
 		resp.addResponseData("realNameStatus", userAuthDo.getRealnameStatus());
-		resp.addResponseData("gmtEvaluate", userAuthDo.getGmtModified());
+		resp.addResponseData("creditAssessTime", userAuthDo.getGmtModified());
 
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 

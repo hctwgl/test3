@@ -156,7 +156,7 @@ public class AuthCreditApi implements ApiHandle {
 		logger.info("auAmount="+creditAmount+",creditScore="+sorce+",userId="+account.getUserId());
 		afUserAccountService.updateUserAccount(account);
 		
-		resp.addResponseData("gmtEvaluate", auth.getGmtModified());
+		resp.addResponseData("creditAssessTime", auth.getGmtModified());
 
 		if(userId<90000 && afBorrowBillService.getBorrowBillWithNoPayByUserId(userId)>0){
 			resp.addResponseData("zmScore", auth.getZmScore());
