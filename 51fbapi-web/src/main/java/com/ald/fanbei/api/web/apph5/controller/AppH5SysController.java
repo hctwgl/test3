@@ -94,6 +94,8 @@ public class AppH5SysController extends BaseController {
 		model.put("amountLower", borrowAmount);
 		if (borrowId > 0) {
             AfBorrowCashDo  afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+			model.put("gmtCreate", afBorrowCashDo.getGmtCreate());//出借人
+
             if(afBorrowCashDo!=null){
         		model.put("borrowNo", afBorrowCashDo.getBorrowNo());
         		if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode())||StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())){
@@ -105,8 +107,8 @@ public class AppH5SysController extends BaseController {
     				model.put("repaymentDay", repaymentDay);
     				
     				model.put("lender", "aaa");//出借人
-    				model.put("lenderIdNumber", "aaa");//出借人
-    				model.put("lenderIdAmount", borrowAmount);//出借人
+    				model.put("lenderIdNumber", "aaa");
+    				model.put("lenderIdAmount", afBorrowCashDo.getAmount());
 
         		}
 
