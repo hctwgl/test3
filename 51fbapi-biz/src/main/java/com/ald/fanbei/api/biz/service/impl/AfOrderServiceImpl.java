@@ -652,7 +652,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 						BigDecimal shouldRefundAmount = afBorrowService.calculateBorrowRefundAmount(borrowInfo.getRid());
 						
-						AfUserBankcardDo cardInfo = afUserBankcardDao.getUserBankInfo(bankId);
+						AfUserBankcardDo cardInfo = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 						if (shouldRefundAmount != null && shouldRefundAmount.compareTo(BigDecimal.ZERO) > 0) {
 							UpsDelegatePayRespBo tempUpsResult = UpsUtil.delegatePay(shouldRefundAmount, accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"", 
 									cardInfo.getMobile(), cardInfo.getBankName(), cardInfo.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);

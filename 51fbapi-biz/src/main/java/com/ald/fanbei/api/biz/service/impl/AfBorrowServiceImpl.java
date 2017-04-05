@@ -678,14 +678,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 				if (repaymentBillLists.contains(billId)) {
 					AfBorrowBillDo billInfo = getBillFromList(billList, billId);
 					if (repayment.getUserCouponId() == 0l) {
-						//没有优惠券,则直接按等分计算
-						BigDecimalUtil.add(totalRefundAmount, BigDecimalUtil.divide(repayment.getActualAmount(), new BigDecimal(repaymentBillLists.size())));
+						//没有优惠券,则按照账单金额来
+						totalRefundAmount = billInfo.getBillAmount();
 						continue;
 					} else {
 						//有优惠券
 						if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size()) {
 							//不是最后一个记录，则按照百分比计算
-							BigDecimalUtil.add(totalRefundAmount, calculateRepaymentCouponAmount(repayment, billInfo));
+							totalRefundAmount = BigDecimalUtil.add(totalRefundAmount, calculateRepaymentCouponAmount(repayment, billInfo));
 							continue;
 						} else {
 							//如果是最后一个，则先减去前面的还款记录
@@ -694,7 +694,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 								AfBorrowBillDo tempBillInfo = getBillFromList(billList, repaymentBillLists.get(i));
 								tempAmount = BigDecimalUtil.add(tempAmount, calculateRepaymentCouponAmount(repayment, tempBillInfo));
 							}
-							BigDecimalUtil.add(totalRefundAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
+							totalRefundAmount = BigDecimalUtil.add(totalRefundAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
 							continue;
 						}
 					}
@@ -712,7 +712,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	 */
 	private BigDecimal calculateRepaymentCouponAmount(AfRepaymentDo repayment, AfBorrowBillDo billInfo) {
 		BigDecimal couponAmount = repayment.getCouponAmount();
-		BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRebateAmount());
+		BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRepaymentAmount());
 		return billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
 	}
 	
