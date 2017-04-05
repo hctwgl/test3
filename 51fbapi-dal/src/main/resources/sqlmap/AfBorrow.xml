@@ -25,7 +25,8 @@
 			nper,
 			nper_amount,
 			card_number,
-			card_name
+			card_name,
+			gmt_transed
 			)
 			VALUES
 			(
@@ -40,7 +41,8 @@
 			#{nper},
 			#{nperAmount},
 			#{cardNumber},
-			#{cardName}
+			#{cardName},
+			#{gmtTransed}
 			)
 	</insert>
 	

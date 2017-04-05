@@ -136,6 +136,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					AfResourceDo resourceInfo = afResourceDao.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
 					if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 						borrow = buildBorrow(Constants.DEFAULT_BORROW_CASH_NAME,BorrowType.CASH,userDto.getUserId(), money,cardId,1,money,BorrowStatus.TRANSED.getCode());
+						borrow.setGmtTransed(new Date());
 						//直接打款
 						afBorrowDao.addBorrow(borrow);
 						afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(),userDto.getUserId(),borrow.getRid(),BorrowLogStatus.TRANSED.getCode()));

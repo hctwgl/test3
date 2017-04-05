@@ -52,6 +52,8 @@ public class AfBorrowDo extends AbstractSerial{
 	private String cardNumber;//卡编号
 	
 	private String cardName;//卡名称
+	
+	private Date gmtTransed;//打款时间
 
 	public Long getRid() {
 		return rid;
@@ -204,5 +206,12 @@ public class AfBorrowDo extends AbstractSerial{
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	
+
+	public Date getGmtTransed() {
+		return gmtTransed;
+	}
+
+	public void setGmtTransed(Date gmtTransed) {
+		this.gmtTransed = gmtTransed;
+	}
 }
