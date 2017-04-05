@@ -135,7 +135,7 @@ public class BoluomeController{
     	
     	AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
     	try {
-//    		result = getOrderIdAndRefundcheckSignAndParam(params);
+    		result = getOrderIdAndRefundcheckSignAndParam(params);
     		Map<String, Object> resultData = new HashMap<String, Object>();
     		String orderId = params.get(BoluomeCore.ORDER_ID);
         	String plantform = params.get(BoluomeCore.PLANT_FORM);
