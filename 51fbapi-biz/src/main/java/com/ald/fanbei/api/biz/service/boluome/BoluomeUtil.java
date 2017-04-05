@@ -120,9 +120,9 @@ public class BoluomeUtil extends AbstractThird{
 		OrderStatus status = null;
 		if (orderStatus == 1 || orderStatus == 2) {
 			status = OrderStatus.NEW;
-		} else if (orderStatus == 3) {
+		} else if (orderStatus == 3 || orderStatus == 9) {
 			status = OrderStatus.PAID;
-		} else if (orderStatus == 4) {
+		} else if (orderStatus == 4 ) {
 			status = OrderStatus.FINISHED;
 		} else if (orderStatus == 6) {
 			status = OrderStatus.DEAL_REFUNDING;
@@ -130,7 +130,7 @@ public class BoluomeUtil extends AbstractThird{
 			status = OrderStatus.WAITING_REFUND;
 		} else if (orderStatus == 8 || orderStatus == 7) {
 			status = OrderStatus.CLOSED;
-		}
+		} 
 		return status;
 	}
 	
