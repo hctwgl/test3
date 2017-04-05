@@ -185,6 +185,7 @@ public class BoluomeController{
     	String plantform = requestParams.getString(BoluomeCore.PLANT_FORM);
     	String sign = requestParams.getString(BoluomeCore.SIGN);
     	String amount = requestParams.getString(BoluomeCore.AMOUNT);
+    	String appKey = requestParams.getString(BoluomeCore.APP_KEY);
     	
     	params.put(BoluomeCore.ORDER_ID, orderId);
     	params.put(BoluomeCore.ORDER_TYPE, orderType);
@@ -201,6 +202,7 @@ public class BoluomeController{
     	params.put(BoluomeCore.PLANT_FORM, plantform);
     	params.put(BoluomeCore.SIGN, sign);
     	params.put(BoluomeCore.AMOUNT, amount);
+    	params.put(BoluomeCore.APP_KEY, appKey);
     	return params;
     }
     

@@ -90,7 +90,9 @@ public class ThirdCore {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
-            sb.append(params.get(key));
+            if (!key.equals(APP_KEY)) {
+            	sb.append(params.get(key));
+            }
         }
 
         return sb.toString();
