@@ -671,11 +671,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}
 						
 						//更新账户金额
-						BigDecimal usedAmount = BigDecimalUtil.add(accountInfo.getUsedAmount(), orderInfo.getActualAmount());
+						BigDecimal usedAmount = BigDecimalUtil.subtract(accountInfo.getUsedAmount(), orderInfo.getActualAmount());
 						accountInfo.setUsedAmount(usedAmount);
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						//增加Account记录
-						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, refundAmount, userId, orderId));
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, orderInfo.getActualAmount(), userId, orderId));
 						
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.CLOSE.getCode());
 						
