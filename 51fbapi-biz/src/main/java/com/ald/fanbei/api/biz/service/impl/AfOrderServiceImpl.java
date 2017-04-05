@@ -42,6 +42,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -616,7 +617,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public int dealBrandOrderRefund(final Long orderId,final Long userId, final Long bankId, final String orderNo, 
+	public int dealBrandOrderRefund(final Long orderId,final Long userId, final Long bankId, final String orderNo, final String thirdOrderNo,
 			final BigDecimal refundAmount, final BigDecimal totalAmount, final String payType, final String payTradeNo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
@@ -632,9 +633,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("wx refund  , refundResult = {} ", refundResult);
 						if(!"SUCCESS".equals(refundResult)){
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
+							boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
+							boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
 						}
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
@@ -659,7 +662,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							logger.info("agent bank refund upsResult = {}", tempUpsResult);
 							if(!tempUpsResult.isSuccess()){
 								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
+								boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
 								throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+							} else {
+								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
+								boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
 							}
 						}
 						
@@ -688,6 +695,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("bank refund upsResult = {}", upsResult);
 						if(!upsResult.isSuccess()){
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
+							boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						}
 						afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING));

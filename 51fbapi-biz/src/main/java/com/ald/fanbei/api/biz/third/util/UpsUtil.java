@@ -44,7 +44,6 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;

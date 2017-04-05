@@ -72,7 +72,7 @@ public class ThirdController {
                 throw new FanbeiException(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
             }
 
-            afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(), refundAmount, orderInfo.getActualAmount(),
+            afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(),orderInfo.getThirdOrderNo() ,refundAmount, orderInfo.getActualAmount(),
                     orderInfo.getPayType(), orderInfo.getPayTradeNo());
 
             boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(),

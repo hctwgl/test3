@@ -187,6 +187,9 @@ public class PayRoutController{
         			//ups打款记录
         			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
         					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+        			
+        			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+        			
         		}
     			return "SUCCESS";
 			}else{//代付失败

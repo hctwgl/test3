@@ -135,7 +135,7 @@ public class BoluomeController{
     	
     	AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
     	try {
-    		result = getOrderIdAndRefundcheckSignAndParam(params);
+//    		result = getOrderIdAndRefundcheckSignAndParam(params);
     		Map<String, Object> resultData = new HashMap<String, Object>();
     		String orderId = params.get(BoluomeCore.ORDER_ID);
         	String plantform = params.get(BoluomeCore.PLANT_FORM);
@@ -144,8 +144,8 @@ public class BoluomeController{
         	if (orderInfo == null) {
         		result = new AppResponse(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
         	}
-        	afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), 
-        			orderInfo.getOrderNo(), refundAmount, orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo());
+        	afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(),orderInfo.getOrderNo(),
+        			 orderInfo.getThirdOrderNo(), refundAmount, orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo());
         	result.setData(resultData);
     	} catch (FanbeiException e) {
     		result = new AppResponse(e.getErrorCode());

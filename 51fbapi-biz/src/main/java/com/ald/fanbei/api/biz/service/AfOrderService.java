@@ -163,7 +163,7 @@ public interface AfOrderService {
 	 * @param orderInfo
 	 * @return
 	 */
-	int dealBrandOrderRefund(Long orderId,Long userId,  Long bankId, String orderNo, 
+	int dealBrandOrderRefund(Long orderId,Long userId,  Long bankId, String orderNo, String thirdOrderNo,
 			BigDecimal refundAmount, BigDecimal totalAmount, String payType, String payTradeNo);
 	
 	
