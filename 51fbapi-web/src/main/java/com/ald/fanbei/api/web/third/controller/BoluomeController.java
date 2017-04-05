@@ -133,9 +133,9 @@ public class BoluomeController{
     	
     	Map<String, String> params = buildOrderParamMap(requestParams);
     	
-    	AppResponse result = null;
+    	AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
     	try {
-    		result = getOrderIdAndRefundcheckSignAndParam(params);
+//    		result = getOrderIdAndRefundcheckSignAndParam(params);
     		Map<String, Object> resultData = new HashMap<String, Object>();
     		String orderId = params.get(BoluomeCore.ORDER_ID);
         	String plantform = params.get(BoluomeCore.PLANT_FORM);
@@ -146,7 +146,6 @@ public class BoluomeController{
         	}
         	afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), 
         			orderInfo.getOrderNo(), refundAmount, orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo());
-        	resultData.put("orderId", orderInfo.getRid());
         	result.setData(resultData);
     	} catch (FanbeiException e) {
     		result = new AppResponse(e.getErrorCode());
@@ -185,6 +184,7 @@ public class BoluomeController{
     	String timestamp = requestParams.getString(BoluomeCore.TIME_STAMP);
     	String plantform = requestParams.getString(BoluomeCore.PLANT_FORM);
     	String sign = requestParams.getString(BoluomeCore.SIGN);
+    	String amount = requestParams.getString(BoluomeCore.AMOUNT);
     	
     	params.put(BoluomeCore.ORDER_ID, orderId);
     	params.put(BoluomeCore.ORDER_TYPE, orderType);
@@ -200,6 +200,7 @@ public class BoluomeController{
     	params.put(BoluomeCore.TIME_STAMP, timestamp);
     	params.put(BoluomeCore.PLANT_FORM, plantform);
     	params.put(BoluomeCore.SIGN, sign);
+    	params.put(BoluomeCore.AMOUNT, amount);
     	return params;
     }
     
@@ -280,7 +281,12 @@ public class BoluomeController{
     		return;
     	}
     	BigDecimal priceAmount = orderInfo.getPriceAmount();
-    	if (priceAmount == null || priceAmount.equals(BigDecimal.ZERO)) {
+    	if (priceAmount == null) {
+    		orderInfo.setPriceAmount(BigDecimal.ZERO);
+    		orderInfo.setSaleAmount(BigDecimal.ZERO);
+    		orderInfo.setActualAmount(BigDecimal.ZERO);
+    		orderInfo.setRebateAmount(BigDecimal.ZERO);
+    		orderInfo.setCommissionAmount(BigDecimal.ZERO);
     		return;
     	}
     	String commissionUnit =  shopInfo.getCommissionUnit();

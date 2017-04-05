@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -29,14 +30,18 @@ import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowInterestDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLogDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowTempDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -46,6 +51,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowInterestDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLogDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -102,6 +108,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	
 	@Resource
 	TaobaoApiUtil taobaoApiUtil;
+	@Resource
+	AfBorrowBillDao afBorrowBillDao;
+	@Resource
+	AfRepaymentDao afRepaymentDao;
 	
 	@Override
 	public Date getReyLimitDate(String billType,Date now){
@@ -634,4 +644,88 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	public AfBorrowDo getBorrowByOrderId(Long orderId) {
 		return afBorrowDao.getBorrowByOrderId(orderId);
 	}
+
+	@Override
+	public BigDecimal calculateBorrowRefundAmount(Long borrowId) {
+		List<AfBorrowBillDo> billList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowId, BorrowBillStatus.YES.getCode());
+		if (CollectionUtils.isEmpty(billList)) {
+			return BigDecimal.ZERO;
+		}
+		
+		List<Long> repaymentIds = CollectionConverterUtil.convertToListFromList(billList, new Converter<AfBorrowBillDo, Long>() {
+			@Override
+			public Long convert(AfBorrowBillDo source) {
+				return source.getRepaymentId();
+			}
+		});
+		List<Long> billIds = CollectionConverterUtil.convertToListFromList(billList, new Converter<AfBorrowBillDo, Long>() {
+			@Override
+			public Long convert(AfBorrowBillDo source) {
+				return source.getRid();
+			}
+		});
+		
+		List<AfRepaymentDo> repaymentList = afRepaymentDao.getRepaymentListByIds(repaymentIds);
+		BigDecimal totalRefundAmount = BigDecimal.ZERO;
+		for (AfRepaymentDo repayment : repaymentList) {
+			List<Long> repaymentBillLists = CollectionConverterUtil.convertToListFromArray(repayment.getBillIds().split(","), new Converter<String, Long>() {
+				@Override
+				public Long convert(String source) {
+					return Long.parseLong(source);
+				}
+			});
+			for (Long billId : billIds) {
+				if (repaymentBillLists.contains(billId)) {
+					AfBorrowBillDo billInfo = getBillFromList(billList, billId);
+					if (repayment.getUserCouponId() == 0l) {
+						//没有优惠券,则直接按等分计算
+						BigDecimalUtil.add(totalRefundAmount, BigDecimalUtil.divide(repayment.getActualAmount(), new BigDecimal(repaymentBillLists.size())));
+						continue;
+					} else {
+						//有优惠券
+						if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size()) {
+							//不是最后一个记录，则按照百分比计算
+							BigDecimalUtil.add(totalRefundAmount, calculateRepaymentCouponAmount(repayment, billInfo));
+							continue;
+						} else {
+							//如果是最后一个，则先减去前面的还款记录
+							BigDecimal tempAmount = BigDecimal.ZERO;
+							for (int i = 0; i < repaymentBillLists.size() - 1; i ++) {
+								AfBorrowBillDo tempBillInfo = getBillFromList(billList, repaymentBillLists.get(i));
+								tempAmount = BigDecimalUtil.add(tempAmount, calculateRepaymentCouponAmount(repayment, tempBillInfo));
+							}
+							BigDecimalUtil.add(totalRefundAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
+							continue;
+						}
+					}
+				}
+			}
+		}
+		return totalRefundAmount;
+	}
+	
+	/**
+	 * 计算该笔账单在还款中的实际还款金额
+	 * @param repayment
+	 * @param billInfo
+	 * @return
+	 */
+	private BigDecimal calculateRepaymentCouponAmount(AfRepaymentDo repayment, AfBorrowBillDo billInfo) {
+		BigDecimal couponAmount = repayment.getCouponAmount();
+		BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRebateAmount());
+		return billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+	}
+	
+	private AfBorrowBillDo getBillFromList(List<AfBorrowBillDo> billList, Long billId) {
+		if (CollectionUtils.isEmpty(billList)) {
+			return null;
+		}
+		for (AfBorrowBillDo billInfo : billList) {
+			if (billInfo.getRid().equals(billId)) {
+				return billInfo;
+			}
+		}
+		return null;
+	}
+	
 }

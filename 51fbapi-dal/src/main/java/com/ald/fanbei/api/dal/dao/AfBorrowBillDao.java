@@ -26,6 +26,13 @@ public interface AfBorrowBillDao {
 	List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query);
 	
 	/**
+	 * 获取所有借款账单记录
+	 * @param query
+	 * @return
+	 */
+	List<AfBorrowBillDo> getBillListByBorrowIdAndStatus(@Param("borrowId") Long borrowId, @Param("status") String status);
+	
+	/**
 	 * 获取本期总额
 	 * @param userId
 	 * @param billYear

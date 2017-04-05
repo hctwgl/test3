@@ -137,4 +137,11 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	int updateBorrowStatus(Long id,String status);
+	
+	/**
+	 * 计算出借款应退金额
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal calculateBorrowRefundAmount(Long borrowId);
 }

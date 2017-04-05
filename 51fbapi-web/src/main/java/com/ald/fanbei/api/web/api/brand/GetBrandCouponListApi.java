@@ -173,8 +173,8 @@ public class GetBrandCouponListApi implements ApiHandle {
 			vo.setAmount(bo.getValue());
 		}
 		vo.setLimitAmount(bo.getThreshold());
-		vo.setGmtStart(new Date(bo.getSts().longValue()));
-		vo.setGmtEnd(new Date(bo.getEts().longValue()));
+		vo.setGmtStart(new Date(bo.getSts().longValue() * 1000));
+		vo.setGmtEnd(new Date(bo.getEts().longValue() * 1000 ));
 		vo.setType(bo.getType());
 		vo.setStatus(status);
 		return vo;

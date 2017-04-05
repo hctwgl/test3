@@ -19,6 +19,15 @@
 		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status <![CDATA[<>'F']]>
     </select>
     
+    <select id="getBillListByBorrowIdAndStatus" resultType="AfBorrowBillDo" >
+		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_borrow_bill 
+		WHERE is_delete = 0 AND borrow_id = #{borrowId} 
+		AND status = #{status}
+    </select>
+    
     <select id="getMonthlyBillByStatus" resultType="java.math.BigDecimal">
 		SELECT 
 			sum(bill_amount)
@@ -131,7 +140,7 @@
 		  af_borrow_bill 
 		SET
 		  gmt_modified = NOW(),
-		  status = #{status},
+		  status = #{status}
 		WHERE 
 		  is_delete = 0 
 		  AND borrow_id = #{borrowId}
