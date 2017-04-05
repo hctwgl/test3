@@ -21,84 +21,66 @@
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
             }
-            .cashLoanProtocol_table p:first-child{
-                width: 100%;
-                /*text-align: center;*/
-            }
             .cashLoanProtocol_table p:last-child{
                 border-bottom: 1px solid #111;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
             }
-            .cashLoanProtocol_table1{
-                width: 3.7rem;
-                text-align: left;
+            .cashLoanProtocol_table1,.cashLoanProtocol_table2,.cashLoanProtocol_table3{
                 border-right: 1px solid #111;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
+            }
+            .cashLoanProtocol_table1{
+                width: 3.7rem;
             }
             .cashLoanProtocol_table2{
                 width: 4.6rem;
-                text-align: left;
-                border-right: 1px solid #111;
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
             }
             .cashLoanProtocol_table3{
-                width: 3.8rem;
-                text-align: left;
-                border-right: 1px solid #111;
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
+                width: 6.2rem;
+                border-left: 1px solid #111;
+                text-align: center;
             }
             .cashLoanProtocol_table4{
-                width: 6.2rem;
-                text-align: center;
-                border-left: 1px solid #111;
-                border-right: 1px solid #111;
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
-            }
-            .cashLoanProtocol_table5{
                 width: 5.6rem;
                 text-align: center;
             }
-
 	    </style>
     </head>
     <body style="background-color: #fff;">
     	<div class="cashLoanProtocol fs_14">
             <p>
-                借款协议<br>
-                编号： **订单成交后才可查看**<br>
-                甲方 （借款人）：<br>
-                身份证号码：<br>
+                <span class="tac" style="width: 100%;">借款协议</span><br>
+                编号：$!{borrowNo}<br>
+                甲方 （借款人）：$!{realName}<br>
+                身份证号码：$!{idNumber}<br>
                 乙方 （出借人）：乙方（出借人）相关明细详见本协议后附表。<br>
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
                 借款人甲方通过丙方平台提出借款需求，丙方介绍甲方在丙方运营的融资平台向出借人乙方借款，乙方亦同意出借款项，丙方为甲方、乙方借款提供居间服务，现经各方协商一致，达成如下协议：<br>
                 <div class="cashLoanProtocol_table">
                     <p>
-                        <i>借款明细</i>
+                        <i class="tac" style="width: 100%;">借款明细</i>
                     </p>
                     <p>
                         <i class="cashLoanProtocol_table1">本金金额</i>
-                        <i>人民币10000元</i>
+                        <i>人民币$!{lenderIdAmount}元</i>
                     </p>
                     <p>
                         <i class="cashLoanProtocol_table1">大写金额</i>
-                        <i>人民币壹万元整</i>
+                        <i>人民币$!{amountCapital}整</i>
                     </p>
                     <p>
                         <i class="cashLoanProtocol_table1">借款用途</i>
                         <i class="cashLoanProtocol_table2">个人消费</i>
-                        <i class="cashLoanProtocol_table3">年化利率</i>
-                        <i>10%</i>
+                        <i class="cashLoanProtocol_table1">年化利率</i>
+                        <i>$!{yearRate}</i>
                     </p>
                     <p>
                         <i class="cashLoanProtocol_table1">借款起息日</i>
-                        <i class="cashLoanProtocol_table2">20170405</i>
-                        <i class="cashLoanProtocol_table3">借款到期日</i>
-                        <i>20170405</i>
+                        <i class="cashLoanProtocol_table2">$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")</i>
+                        <i class="cashLoanProtocol_table1">借款到期日</i>
+                        <i>$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")</i>
                     </p>
                     <p>
                         <i class="cashLoanProtocol_table1">还款方式</i>
@@ -228,14 +210,14 @@
                 3、本协议项下的附件和补充协议构成本协议不可分割的一部分。<br>
                 4、本协议各方委托丙方保管所有与本协议有关的书面文件或电子信息；本协议各方确认并同意由丙方提供的与本协议有关的书面文件或电子信息在无明显错误的情况下应作为本协议有关事项的终局证明。<br>
                 （以下无正文）<br>
-                甲方 （借款人）：<br>
+                甲方 （借款人）：$!{realName}<br>
                 乙方 （出借人）：<br>
                 <div class="cashLoanProtocol_table">
-                    <p><i class="cashLoanProtocol_table5">姓名/名称</i><i class="cashLoanProtocol_table4">身份证号码<br>/统一社会信用代码</i><i class="cashLoanProtocol_table5">出借金额</i></p>
-                    <p><i class="cashLoanProtocol_table5">**订单成交后才可查看**</i><i class="cashLoanProtocol_table4">**订单成交后才可查看**</i><i class="cashLoanProtocol_table5">**订单成交后才可查看**</i></p>
+                    <p><i class="cashLoanProtocol_table4">姓名/名称</i><i class="cashLoanProtocol_table3">身份证号码<br>/统一社会信用代码</i><i class="cashLoanProtocol_table4">出借金额</i></p>
+                    <p><i class="cashLoanProtocol_table4">$!{lender}</i><i class="cashLoanProtocol_table3">$!{lenderIdNumber}</i><i class="cashLoanProtocol_table4">$!{lenderIdAmount}</i></p>
                 </div><br>
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
-                年 月 日
+                $dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")
             </p>
         </div>
     </body>

@@ -112,18 +112,15 @@ public class GetPayAmountApi implements ApiHandle{
 					rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
 					rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
 				}
-				//每期手续费
-				BigDecimal poundageAmount = BigDecimalUtil.getTotalPoundage(goodsAmount.multiply(new BigDecimal(goodsNum)), 
-						Integer.parseInt(key),new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd);
-				//每期利息合手续费
+				//每期利息+手续费
 				BigDecimal amount =  BigDecimalUtil.getConsumeAmount(goodsAmount.multiply(new BigDecimal(goodsNum)), Integer.parseInt(key), 
 						new BigDecimal(value).divide(new BigDecimal(Constants.MONTH_OF_YEAR),8,BigDecimal.ROUND_HALF_UP), 
 						BigDecimalUtil.getTotalPoundage(goodsAmount.multiply(new BigDecimal(goodsNum)), 
 								Integer.parseInt(key),new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd));
 				BigDecimal totalAmount = amount.multiply(new BigDecimal(key));
 				attrs.put("nper", key);
-				attrs.put("amount", totalAmount.subtract(goodsAmount));
-				attrs.put("poundageAmount", poundageAmount);
+				attrs.put("amount", amount);
+				attrs.put("poundageAmount", totalAmount.subtract(goodsAmount));
 				attrs.put("totalAmount", totalAmount);
 				list.add(attrs);
 			}

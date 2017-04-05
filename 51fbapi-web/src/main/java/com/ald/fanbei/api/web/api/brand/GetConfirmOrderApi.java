@@ -87,6 +87,9 @@ public class GetConfirmOrderApi implements ApiHandle {
     	vo.setRealName(userDto.getRealName());
         if(!StringUtil.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())){
         	vo.setBankId(bankInfo.getRid());
+        	vo.setBankName(bankInfo.getBankName());
+        	vo.setBankCode(bankInfo.getBankCode());
+        	vo.setBankIcon(bankInfo.getBankIcon());
         }
 		vo.setTotalAmount(userDto.getAuAmount());
 		vo.setUseableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
