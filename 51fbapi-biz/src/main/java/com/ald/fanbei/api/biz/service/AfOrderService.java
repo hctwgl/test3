@@ -149,7 +149,7 @@ public interface AfOrderService {
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(final AfOrderDo orderInfo, final Integer nper);
+	Map<String,Object> payBrandOrder(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper);
 	
 	/**
 	 * 处理菠萝觅回调订单 
