@@ -121,14 +121,6 @@ public class AuthCreditApi implements ApiHandle {
 		// TODO 计算信用分 更新userAccount
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		Long userId = context.getUserId();
-		if(userId<90000 && afBorrowBillService.getBorrowBillWithNoPayByUserId(userId)>0){
-			resp.addResponseData("zmScore", auth.getZmScore());
-			resp.addResponseData("ivsScore", auth.getIvsScore());
-			resp.addResponseData("gmtZm", auth.getGmtZm());
-			resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
-			return resp;
-		}
-		
 		
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_CREDIT_SCORE);
 		int sorce = BigDecimalUtil.getCreditScore(new BigDecimal(auth.getZmScore()), new BigDecimal(auth.getIvsScore()), 
@@ -138,9 +130,9 @@ public class AuthCreditApi implements ApiHandle {
 		JSONArray arry = JSON.parseArray(creditPz.getValue());
 		BigDecimal creditAmount = BigDecimal.ZERO;
 		int min = Integer.parseInt(creditPz.getValue1());//最小分数
+		
 		if(sorce<min){
-			resp.addResponseData("tooLow", 'Y');
-			resp.addResponseData("creditAmount", creditAmount);
+			resp.addResponseData("creditLevel", "信用较差");
 		}else{
 			for (int i = 0; i < arry.size(); i++) {
 				JSONObject obj = arry.getJSONObject(i);
@@ -149,10 +141,12 @@ public class AuthCreditApi implements ApiHandle {
 				BigDecimal amount = obj.getBigDecimal("amount");
 				if(minScore<=sorce&&maxScore>sorce){
 					creditAmount = amount;
+					String desc = obj.getString("desc");
+					if(minScore<=sorce&&maxScore>sorce){
+						resp.addResponseData("creditLevel", desc);
+					}
 				}
 			}
-			resp.addResponseData("tooLow", 'N');
-			resp.addResponseData("creditAmount", creditAmount);
 		}
 		AfUserAccountDo account = new AfUserAccountDo();
 		account.setAuAmount(creditAmount);
@@ -161,10 +155,23 @@ public class AuthCreditApi implements ApiHandle {
 		account.setOpenId(openId);
 		logger.info("auAmount="+creditAmount+",creditScore="+sorce+",userId="+account.getUserId());
 		afUserAccountService.updateUserAccount(account);
+		
+		resp.addResponseData("gmtEvaluate", auth.getGmtModified());
+
+		if(userId<90000 && afBorrowBillService.getBorrowBillWithNoPayByUserId(userId)>0){
+			resp.addResponseData("zmScore", auth.getZmScore());
+			resp.addResponseData("ivsScore", auth.getIvsScore());
+			resp.addResponseData("gmtZm", auth.getGmtZm());
+			resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
+			return resp;
+		}
+		resp.addResponseData("tooLow", sorce<min?'Y':"N");
+		resp.addResponseData("creditAmount", creditAmount);
 		resp.addResponseData("zmScore", auth.getZmScore());
 		resp.addResponseData("ivsScore", auth.getIvsScore());
 		resp.addResponseData("gmtZm", auth.getGmtZm());
 		resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
+		
 		return resp;
 	}
 }
