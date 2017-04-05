@@ -683,7 +683,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						continue;
 					} else {
 						//有优惠券
-						if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size()) {
+						if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size() - 1) {
 							//不是最后一个记录，则按照百分比计算
 							totalRefundAmount = BigDecimalUtil.add(totalRefundAmount, calculateRepaymentCouponAmount(repayment, billInfo));
 							continue;
