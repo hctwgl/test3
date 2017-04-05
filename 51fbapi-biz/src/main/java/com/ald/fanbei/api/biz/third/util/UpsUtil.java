@@ -44,6 +44,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -577,13 +578,21 @@ public class UpsUtil extends AbstractThird {
     	param.put("op_user_id", mchId);
     	param.put("out_refund_no", out_refund_no);
     	param.put("out_trade_no", out_trade_no);
-    	param.put("refund_fee", order_refund_fee);
-    	param.put("total_fee", order_total_fee);
+    	
+    	if(Constants.INVELOMENT_TYPE_ONLINE.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE))){
+			param.put("refund_fee", order_refund_fee);
+			param.put("total_fee", order_total_fee);
+		}else{
+			param.put("refund_fee", new BigDecimal("0.01").multiply(hundred).intValue()+"");
+			param.put("total_fee", new BigDecimal("0.01").multiply(hundred).intValue()+"");
+		}
+    	
     	
     	String sign = WxSignBase.byteToHex(WxSignBase.MD5Digest((WxpayCore.toQueryString(param)).getBytes(Constants.DEFAULT_ENCODE)));
     	param.put(WxpayConfig.KEY_SIGN, sign);
     	String buildStr = WxpayCore.buildXMLBody(param);
     	String result = WxpayCore.refundPost(WxpayConfig.WX_REFUND_API, buildStr,mchId,certPath);
+    	logger.info("wxRefund result = {}", result);
     	Properties respPro = WxXMLParser.parseXML(result);
     	return respPro.getProperty("result_code");
 	}

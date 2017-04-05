@@ -457,6 +457,6 @@
 	</select>
 	
 	<select id="getCurrentLastPayNo" resultType="java.lang.String">
-		select pay_trade_no from af_order WHERE #{endDate} >= gmt_pay AND gmt_pay >=#{startDate} and gmt_pay is not null ORDER BY gmt_pay DESC LIMIT 1;
+		select pay_trade_no from af_order WHERE #{endDate} >= gmt_pay AND gmt_pay >=#{startDate} and gmt_pay is not null and order_type = 'BOLUOME' ORDER BY gmt_pay DESC LIMIT 1;
 	</select>
 </mapper>
