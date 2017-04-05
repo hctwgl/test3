@@ -24,7 +24,6 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
-import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -60,7 +59,7 @@ public class ThirdController {
 
         Map<String, String> params = buildParam(requestParams);
 
-        AppResponse result = null;
+        AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
         try {
             result = checkSignAndParam(params);
             Map<String, Object> resultData = new HashMap<String, Object>();
@@ -75,8 +74,6 @@ public class ThirdController {
             afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(),orderInfo.getThirdOrderNo() ,refundAmount, orderInfo.getActualAmount(),
                     orderInfo.getPayType(), orderInfo.getPayTradeNo());
 
-            boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(),
-                    orderInfo.getActualAmount());
             result.setData(resultData);
         } catch (FanbeiException e) {
             result = new AppResponse(e.getErrorCode());
