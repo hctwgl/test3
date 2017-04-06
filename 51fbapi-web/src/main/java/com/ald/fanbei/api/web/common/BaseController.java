@@ -166,7 +166,7 @@ public abstract class BaseController {
         
         if(requestDataVo.getId().startsWith("i")){
         	AfAppUpgradeDo afAppUpgradeDo =	afAppUpgradeService.getNewestIOSVersionBySpecify(context.getAppVersion());
-        	if(StringUtils.equals(afAppUpgradeDo.getIsForce(), YesNoStatus.YES.getCode())  ){
+        	if(afAppUpgradeDo!=null && StringUtils.equals(afAppUpgradeDo.getIsForce(), YesNoStatus.YES.getCode())  ){
             	throw new FanbeiException("system update",FanbeiExceptionCode.SYSTEM_UPDATE);
 
         	}
