@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
@@ -41,9 +42,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Controller
 @RequestMapping("/third/boluome")
-public class BoluomeController{
-	
-    protected final Logger   logger = LoggerFactory.getLogger(this.getClass());
+public class BoluomeController extends AbstractThird{
 	
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
@@ -63,7 +62,7 @@ public class BoluomeController{
     		uri = "synchOrder";
     	}
     	
-    	logger.info(uri + "begin requestParams = {}",requestData);
+    	thirdLog.info(uri + "begin requestParams = {}",requestData);
     	JSONObject requestParams = JSON.parseObject(requestData);
         
     	Map<String, String> params = buildOrderParamMap(requestParams);
@@ -85,10 +84,10 @@ public class BoluomeController{
     			throw e;
     		}
     	}  else {
-    		logger.info("sign is invalid ");
+    		thirdLog.info("sign is invalid ");
     		throw new Exception("签名不对");
     	}
-    	logger.info(uri + " complete, result = {}, sign = {}",retunStr, sign);
+    	thirdLog.info(uri + " complete, result = {}, sign = {}",retunStr, sign);
     	return retunStr;
     }
     

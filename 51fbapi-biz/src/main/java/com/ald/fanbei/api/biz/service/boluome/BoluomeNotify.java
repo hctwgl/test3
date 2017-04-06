@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.ald.fanbei.api.biz.third.AbstractThird;
+
 
 /**
  * 
@@ -13,9 +15,9 @@ import org.springframework.util.StringUtils;
  * @author xiaotianjian 2017年3月24日下午6:16:36
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class BoluomeNotify {
+public class BoluomeNotify extends AbstractThird{
 
-	private static final Logger logger = LoggerFactory.getLogger(BoluomeNotify.class);
+	private static final Logger thirdLog = LoggerFactory.getLogger(BoluomeNotify.class);
 	
     /**
      * 验证签名
@@ -23,7 +25,7 @@ public class BoluomeNotify {
      * @return
      */
     public static boolean verify(Map<String, String> params) {
-    	logger.info("verify begin params = {}", params);
+    	thirdLog.info("verify begin params = {}", params);
 	    String sign = params.get("sign");
 	    if (StringUtils.isEmpty(sign)) {
 	    	return false;
@@ -39,12 +41,12 @@ public class BoluomeNotify {
      * @return 生成的签名结果
      */
 	private static boolean getSignVeryfy(Map<String, String> Params, String sign) {
-		logger.info("getSignVeryfy begin sign = {}", sign);
+		thirdLog.info("getSignVeryfy begin sign = {}", sign);
     	//过滤空值、sign与sign_type参数
     	Map<String, String> sParaNew = BoluomeCore.paraFilter(Params);
         //获取待签名字符串
         String preSignStr = BoluomeCore.buildSignStr(sParaNew);
-        logger.info("getSignVeryfy begin preSignStr = {}", preSignStr);
+        thirdLog.info("getSignVeryfy begin preSignStr = {}", preSignStr);
         return sign.equals(preSignStr);
     }
 }

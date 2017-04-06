@@ -63,6 +63,7 @@ import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 @Controller
 @RequestMapping("/third/ups")
 public class PayRoutController{
+	protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 	
     protected final Logger   logger = LoggerFactory.getLogger(this.getClass());
 	
@@ -294,7 +295,7 @@ public class PayRoutController{
             while ((line = reader.readLine()) != null) {
                 xmlStr.append(line);
             }   
-            logger.info("wxpayNotify="+xmlStr.toString());
+            thirdLog.info("wxpayNotify="+xmlStr.toString());
             //验证通知是否是微信的通知
     		Properties properties = WxXMLParser.parseXML(xmlStr.toString());
 			String resultStr = WxSignBase.checkWxSign(properties, AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)));
