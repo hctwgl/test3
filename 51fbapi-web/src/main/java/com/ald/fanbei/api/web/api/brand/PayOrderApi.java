@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -73,7 +74,7 @@ public class PayOrderApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		if (orderInfo.getPayStatus().equals(PayStatus.DEALING)) {
+		if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 		}
 		
