@@ -5,12 +5,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
+import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
+import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
 import com.ald.fanbei.api.biz.bo.RiskBatchRemoveReqBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
@@ -19,6 +23,7 @@ import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -32,6 +37,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
@@ -59,6 +65,8 @@ public class RiskUtil extends AbstractThird{
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfAuthContactsService afAuthContactsService;
 	
 	private static String getUrl(){
 		if(url==null){
@@ -333,4 +341,48 @@ public class RiskUtil extends AbstractThird{
 		}
 		return 0;
 	}
+	
+	 /**
+     * @方法描述：同步用户通讯录
+     * 
+     * @author huyang 2017年4月5日上午11:41:55
+     * 
+     * @param consumerNo
+     *            --用户唯一标识
+     * 
+     * @return
+     * @throws Exception
+     *             传入更新的通讯录为空
+     * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+     */
+    public RiskAddressListRespBo addressListPrimaries(String consumerNo) {
+
+        RiskAddressListReqBo reqBo = new RiskAddressListReqBo();
+        reqBo.setConsumerNo(consumerNo);
+        List<RiskAddressListDetailBo> detailBos = new ArrayList<RiskAddressListDetailBo>();
+        List<AfAuthContactsDo> details = afAuthContactsService.getContactsByUserId(Long.valueOf(consumerNo));
+        for (int i = 0; i < details.size(); i++) {
+            RiskAddressListDetailBo bo = new RiskAddressListDetailBo();
+            bo.setNickname(details.get(i).getFriendNick());
+            bo.setPhone(details.get(i).getFriendPhone());
+            detailBos.add(bo);
+        }
+        String uuid = UUID.randomUUID().toString();
+        reqBo.setOrderNo(getOrderNo("addr", uuid.substring(uuid.length() - 4, uuid.length())));
+        reqBo.setCount(detailBos.size() + "");
+        reqBo.setDetails(JSON.toJSONString(detailBos));
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/adrressList/remove.htm", reqBo);
+        if (StringUtil.isBlank(reqResult)) {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
+        }
+        RiskAddressListRespBo riskResp = JSONObject.parseObject(reqResult, RiskAddressListRespBo.class);
+        if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+            riskResp.setSuccess(true);
+            return riskResp;
+        } else {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
+        }
+
+    }
 }

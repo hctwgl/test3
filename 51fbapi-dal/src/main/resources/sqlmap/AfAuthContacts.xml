@@ -4,13 +4,21 @@
 	<sql id="queryFields">
 		id,gmt_create,user_id,friend_nick,friend_phone
 	</sql>
-	
-	<insert id="addAuthContacts"  parameterType="java.util.List">
-		INSERT INTO af_auth_contacts(gmt_create  , user_id , friend_nick , friend_phone)
-		VALUES 
-		<foreach collection="afAuthContactsDos"  separator="," item="item" index="index">
-			( NOW(), #{item.userId}, #{item.friendNick}, #{item.friendPhone} )
+
+	<insert id="addAuthContacts" parameterType="java.util.List">
+		INSERT INTO af_auth_contacts(gmt_create , user_id , friend_nick ,
+		friend_phone)
+		VALUES
+		<foreach collection="afAuthContactsDos" separator="," item="item"
+			index="index">
+			( NOW(), #{item.userId}, #{item.friendNick},
+			#{item.friendPhone} )
 		</foreach>
 	</insert>
-	
+
+	<select id="getContactsByUserId" resultType="AfAuthContactsDo">
+		select
+		<include refid="queryFields" />
+		from af_auth_contacts where user_id = #{userId} and is_delete=0
+	</select>
 </mapper>
