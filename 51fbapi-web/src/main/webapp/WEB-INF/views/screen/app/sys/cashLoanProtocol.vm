@@ -39,7 +39,7 @@
                 width: 4.6rem;
             }
             .cashLoanProtocol_table3{
-                width: 10.0rem;
+                width: 5.0rem;
                 text-align: center;
             }
             .pl{
@@ -195,7 +195,7 @@
                 乙方 （出借人）：<br>
                 <div class="cashLoanProtocol_table">
                     <p><i class="pl cashLoanProtocol_table1">姓名/名称</i><i class="pl">#if($!{lender}!="")$!{lender}#end</i></p>
-                    <p><i class="pl cashLoanProtocol_table3">身份证号码/统一社会信用代码</i><i class="pl">#if($!{lenderIdNumber}!="")$!{lenderIdNumber}#end</i></p>
+                    <p><i class="pl cashLoanProtocol_table3">身份证号码/统一社会信用代码</i><i class="pl" style="vertical-align: top">#if($!{lenderIdNumber}!="")$!{lenderIdNumber}#end</i></p>
                     <p><i class="pl cashLoanProtocol_table1">出借金额</i><i class="pl">#if($!{lenderIdAmount}!="")$!{lenderIdAmount}#end</i></p>
                 </div><br>
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
