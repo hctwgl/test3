@@ -52,7 +52,7 @@
     	<div class="cashLoanProtocol fs_14">
             <p>
                 <span class="tac" style="width: 100%;">借款协议</span><br>
-                编号：$!{borrowNo}<br>
+                编号：#if($!{borrowNo}!="")$!{borrowNo}#end<br>
                 甲方 （借款人）：$!{realName}<br>
                 身份证号码：$!{idNumber}<br>
                 乙方 （出借人）：乙方（出借人）相关明细详见本协议后附表。<br>
@@ -63,10 +63,14 @@
                     <p><i class="pl cashLoanProtocol_table1">本金金额</i><i class="pl">人民币$!{lenderIdAmount}元</i></p>
                     <p><i class="pl cashLoanProtocol_table1">大写金额</i><i class="pl">人民币$!{amountCapital}整</i></p>
                     <p><i class="pl cashLoanProtocol_table1">借款用途</i><i class="pl cashLoanProtocol_table2">个人消费</i><i class="pl cashLoanProtocol_table1">年化利率</i><i class="pl">$!{yearRate}</i></p>
-                    <p><i class="pl cashLoanProtocol_table1">借款起息日</i><i class="pl cashLoanProtocol_table2">$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")</i><i class="pl cashLoanProtocol_table1">借款到期日</i><i class="pl">$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")</i></p>
-                    <p><i class="pl cashLoanProtocol_table1">借款手续费</i><i class="pl cashLoanProtocol_table2">$!{poundage}</i><i class="pl cashLoanProtocol_table1">还款方式</i><i class="pl">到期一次性还款</i></p>
+                    <p><i class="pl cashLoanProtocol_table1">借款起息日</i><i class="pl cashLoanProtocol_table2">#if($!{gmtArrival}!="")$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")#end</i><i class="pl cashLoanProtocol_table1">借款到期日</i><i class="pl">#if($!{repaymentDay}!="")$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></p>
+                    <p><i class="pl cashLoanProtocol_table5">借款手续费率</i><i class="pl cashLoanProtocol_table1">$!{poundage}</i><i class="pl cashLoanProtocol_table1">还款方式</i><i class="pl">到期一次性还款</i></p>
                     <p><i class="tac" style="width: 100%;">逾期后产生的费率</i></p>
-                    <p><i class="pl cashLoanProtocol_table5">逾期手续费率</i><i>$!{overdueRate}</i></p>
+                    <p><i class="pl cashLoanProtocol_table5">滞纳金率</i>
+                    #if($!{overdueRate}!="")
+                        <i>$!{overdueRate}</i>
+                    #end
+                    </p>
                 </div>
                 （注：因丙方开展运营活动，给予甲方部分补贴或减免的，以丙方平台的运营规则与活动解释为准）<br><br>
                 <span>释义：</span><br>
@@ -191,10 +195,10 @@
                 乙方 （出借人）：<br>
                 <div class="cashLoanProtocol_table">
                     <p><i class="tac cashLoanProtocol_table4">姓名/名称</i><i class="cashLoanProtocol_table3">身份证号码/统一社会信用代码</i><i class="tac cashLoanProtocol_table4">出借金额</i></p>
-                    <p><i class="tac cashLoanProtocol_table4">$!{lender}</i><i class="cashLoanProtocol_table3">$!{lenderIdNumber}</i><i class="tac cashLoanProtocol_table4">$!{lenderIdAmount}</i></p>
+                    <p><i class="tac cashLoanProtocol_table4">#if($!{lender}!="")$!{lender}#end</i><i class="cashLoanProtocol_table3">#if($!{lenderIdNumber}!="")$!{lenderIdNumber}#end</i><i class="tac cashLoanProtocol_table4">#if($!{lenderIdAmount}!="")$!{lenderIdAmount}#end</i></p>
                 </div><br>
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
-                $dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")
+                #if($!{gmtCreate}!="")$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")#end
             </p>
         </div>
     </body>
