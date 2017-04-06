@@ -14,7 +14,7 @@ public class AfOrderRefundDo extends AbstractSerial {
 
 	private static final long serialVersionUID = -2912660072979192887L;
 	
-	private Long id;
+	private Long rid;
 	private Date gmtCreate;
 	private Date gmtModified;
 	private BigDecimal amount;
@@ -23,18 +23,6 @@ public class AfOrderRefundDo extends AbstractSerial {
 	private String orderNo;
 	private String status;
 	
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
 	/**
 	 * @return the gmtCreate
 	 */
@@ -118,6 +106,18 @@ public class AfOrderRefundDo extends AbstractSerial {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	/**
+	 * @return the rid
+	 */
+	public Long getRid() {
+		return rid;
+	}
+	/**
+	 * @param rid the rid to set
+	 */
+	public void setRid(Long rid) {
+		this.rid = rid;
 	}
 	
 	

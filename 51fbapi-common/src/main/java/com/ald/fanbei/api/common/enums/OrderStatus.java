@@ -12,6 +12,7 @@ import java.util.Map;
 public enum OrderStatus {
 	
 	NEW("NEW", "新建/待付款"),
+	DEALING("DEALING", "支付中"),
 	PAID("PAID", "已支付/待收货"),
 	FINISHED("FINISHED", "已收货/订单完成"),
 	REBATED("REBATED", "返利成功"),
