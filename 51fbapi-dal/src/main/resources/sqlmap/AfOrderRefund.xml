@@ -20,9 +20,6 @@
 	
 	<update id="updateOrderRefund" parameterType="AfOrderRefundDo" >
 		UPDATE af_order_refund SET gmt_modified = NOW()
-			<if test="isDelete != null">
-    			,is_delete=#{isDelete}
-			</if>
 			<if test="amount != null">
     			,amount=#{amount}
 			</if>
@@ -47,9 +44,9 @@
 		FROM	
 			af_order_refund
 		WHERE
-			is_delete
+			is_delete = 0
 		AND
-			id = #{refundId}
+			order_id = #{orderId}
 	</select>
 	
 </mapper>

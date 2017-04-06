@@ -12,6 +12,7 @@ import java.util.Map;
 public enum PayStatus {
 	
 	NOTPAY("N", "未支付"),
+	DEALING("D", "支付中"),
 	PAYED("P", "已支付"),
 	REFUND("R", "退款");
 	
