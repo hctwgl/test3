@@ -38,7 +38,7 @@ import com.taobao.api.domain.XItem;
 
 /**
  * 
- *@类描述：GetConsumeConfirmInfoApi
+ *@类描述：获取消费分期确认页面
  *@author 何鑫 2017年2月20日  09:50:48
  *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */

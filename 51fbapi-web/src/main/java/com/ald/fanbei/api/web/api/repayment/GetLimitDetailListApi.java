@@ -25,7 +25,7 @@ import com.ald.fanbei.api.web.vo.AfLimitDetailVo;
 
 /**
  * 
- *@类描述：GetLimitDetailListApi
+ *@类描述：获取明细列表Api
  *@author 何鑫 2017年2月23日  14:24:37
  *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */

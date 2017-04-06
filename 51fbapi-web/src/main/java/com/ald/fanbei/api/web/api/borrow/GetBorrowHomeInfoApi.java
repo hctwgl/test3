@@ -34,7 +34,7 @@ import com.ald.fanbei.api.web.vo.AfBorrowHomeVo;
 
 /**
  * 
- *@类描述：GetBorrowHomeInfoApi
+ *@类描述：获取分呗主页信息api
  *@author 何鑫 2017年2月18日  14:46:35
  *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
