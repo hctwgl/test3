@@ -84,12 +84,5 @@ public class TestController {
 		return "succ";
 	}
 
-	@RequestMapping(value = { "/test3" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-    public String addressListRequest(HttpServletRequest request, HttpServletResponse response)throws IOException {
-        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-        response.setContentType("application/json;charset=utf-8");
-        riskUtil.addressListPrimaries("73772");
-        return "succ";
-    }
 	// TongdunUtil
 }

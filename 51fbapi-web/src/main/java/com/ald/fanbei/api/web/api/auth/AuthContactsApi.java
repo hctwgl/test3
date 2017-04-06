@@ -31,13 +31,13 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  *                    为了防止通讯录中的昵称或手机号中有:,&这3个特殊字符，客户端需要先把通讯录中的这些特殊字符去除再传入服务端
  *
  * @author chenjinhu 2017年2月16日 下午2:09:44
- * @version
+ * @version 1.1 huyang 2017年4月6日 09:58:04 通讯录不再保存在本地，直接同步通讯录
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("authContactsApi")
 public class AuthContactsApi implements ApiHandle {
 
-    private static final int ADD_CONTRACT_PER_PAGE = 2;
+    // private static final int ADD_CONTRACT_PER_PAGE = 2;
     @Resource
     private AfUserAuthService afUserAuthService;
     @Resource
@@ -59,12 +59,9 @@ public class AuthContactsApi implements ApiHandle {
                 continue;
             }
             afAuthContactsDos.add(this.buildContractsDo(contractsArr[i], context.getUserId()));
-            if ((i + 1) % ADD_CONTRACT_PER_PAGE == 0 || i == contractsArr.length - 1) {
-                afAuthContactsService.addAuthContacts(afAuthContactsDos);
-                afAuthContactsDos = new ArrayList<AfAuthContactsDo>();
-            }
+            logger.info("同步通讯录，userId:[" + context.getUserId() + "],通讯录:" + contractsArr[i]);
         }
-        riskUtil.addressListPrimaries(context.getUserId() + "");
+        riskUtil.addressListPrimaries(context.getUserId() + "", afAuthContactsDos);
         AfUserAuthDo authDo = new AfUserAuthDo();
         authDo.setUserId(context.getUserId());
         authDo.setTeldirStatus(YesNoStatus.YES.getCode());

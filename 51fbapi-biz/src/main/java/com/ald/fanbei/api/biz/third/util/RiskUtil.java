@@ -355,12 +355,12 @@ public class RiskUtil extends AbstractThird{
      *             传入更新的通讯录为空
      * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
      */
-    public RiskAddressListRespBo addressListPrimaries(String consumerNo) {
+    public RiskAddressListRespBo addressListPrimaries(String consumerNo,List<AfAuthContactsDo> details) {
 
         RiskAddressListReqBo reqBo = new RiskAddressListReqBo();
         reqBo.setConsumerNo(consumerNo);
         List<RiskAddressListDetailBo> detailBos = new ArrayList<RiskAddressListDetailBo>();
-        List<AfAuthContactsDo> details = afAuthContactsService.getContactsByUserId(Long.valueOf(consumerNo));
+//        List<AfAuthContactsDo> details = afAuthContactsService.getContactsByUserId(Long.valueOf(consumerNo));
         for (int i = 0; i < details.size(); i++) {
             RiskAddressListDetailBo bo = new RiskAddressListDetailBo();
             bo.setNickname(details.get(i).getFriendNick());
