@@ -533,10 +533,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setActualAmount(saleAmount);
 					orderInfo.setBankId(payId);
 					if(payId < 0 ){
-						orderInfo.setPayType(PayType.WECHAT.getCode());
-						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
-						orderInfo.setStatus(OrderStatus.DEALING.getCode());
-						orderDao.updateOrder(orderInfo);
 						//微信支付
 						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
