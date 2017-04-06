@@ -26,15 +26,16 @@
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
             }
-            .cashLoanProtocol_table1,.cashLoanProtocol_table2,.cashLoanProtocol_table3{
+            .cashLoanProtocol_table1,.cashLoanProtocol_table2,.cashLoanProtocol_table3,.cashLoanProtocol_table5{
                 border-right: 1px solid #111;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
+                /*text-align: center;*/
             }
-            .cashLoanProtocol_table1{
-                width: 3.7rem;
+            .cashLoanProtocol_table1,.cashLoanProtocol_table4{
+                width: 3.8rem;
             }
-            .cashLoanProtocol_table2{
+            .cashLoanProtocol_table2,.cashLoanProtocol_table5{
                 width: 4.6rem;
             }
             .cashLoanProtocol_table3{
@@ -42,9 +43,8 @@
                 border-left: 1px solid #111;
                 text-align: center;
             }
-            .cashLoanProtocol_table4{
-                width: 3.8rem;
-                text-align: center;
+            .pl{
+                padding-left: 0.1rem;
             }
 	    </style>
     </head>
@@ -59,33 +59,14 @@
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
                 借款人甲方通过丙方平台提出借款需求，丙方介绍甲方在丙方运营的融资平台向出借人乙方借款，乙方亦同意出借款项，丙方为甲方、乙方借款提供居间服务，现经各方协商一致，达成如下协议：<br>
                 <div class="cashLoanProtocol_table">
-                    <p>
-                        <i class="tac" style="width: 100%;">借款明细</i>
-                    </p>
-                    <p>
-                        <i class="cashLoanProtocol_table1">本金金额</i>
-                        <i>人民币$!{lenderIdAmount}元</i>
-                    </p>
-                    <p>
-                        <i class="cashLoanProtocol_table1">大写金额</i>
-                        <i>人民币$!{amountCapital}整</i>
-                    </p>
-                    <p>
-                        <i class="cashLoanProtocol_table1">借款用途</i>
-                        <i class="cashLoanProtocol_table2">个人消费</i>
-                        <i class="cashLoanProtocol_table1">年化利率</i>
-                        <i>$!{yearRate}</i>
-                    </p>
-                    <p>
-                        <i class="cashLoanProtocol_table1">借款起息日</i>
-                        <i class="cashLoanProtocol_table2">$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")</i>
-                        <i class="cashLoanProtocol_table1">借款到期日</i>
-                        <i>$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")</i>
-                    </p>
-                    <p>
-                        <i class="cashLoanProtocol_table1">还款方式</i>
-                        <i>一次性还款</i>
-                    </p>
+                    <p><i class="tac" style="width: 100%;">借款明细</i></p>
+                    <p><i class="pl cashLoanProtocol_table1">本金金额</i><i class="pl">人民币$!{lenderIdAmount}元</i></p>
+                    <p><i class="pl cashLoanProtocol_table1">大写金额</i><i class="pl">人民币$!{amountCapital}整</i></p>
+                    <p><i class="pl cashLoanProtocol_table1">借款用途</i><i class="pl cashLoanProtocol_table2">个人消费</i><i class="pl cashLoanProtocol_table1">年化利率</i><i class="pl">$!{yearRate}</i></p>
+                    <p><i class="pl cashLoanProtocol_table1">借款起息日</i><i class="pl cashLoanProtocol_table2">$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")</i><i class="pl cashLoanProtocol_table1">借款到期日</i><i class="pl">$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")</i></p>
+                    <p><i class="pl cashLoanProtocol_table1">借款手续费</i><i class="pl cashLoanProtocol_table2">100%</i><i class="pl cashLoanProtocol_table1">还款方式</i><i class="pl">到期一次性还款</i></p>
+                    <p><i class="tac" style="width: 100%;">逾期后产生的费率</i></p>
+                    <p><i class="pl cashLoanProtocol_table5">逾期手续费率</i><i>**订单成交后才可查看**</i></p>
                 </div>
                 （注：因丙方开展运营活动，给予甲方部分补贴或减免的，以丙方平台的运营规则与活动解释为准）<br><br>
                 <span>释义：</span><br>
@@ -213,8 +194,8 @@
                 甲方 （借款人）：$!{realName}<br>
                 乙方 （出借人）：<br>
                 <div class="cashLoanProtocol_table">
-                    <p><i class="cashLoanProtocol_table4">姓名/名称</i><i class="cashLoanProtocol_table3">身份证号码/统一社会信用代码</i><i class="cashLoanProtocol_table4">出借金额</i></p>
-                    <p><i class="cashLoanProtocol_table4">$!{lender}</i><i class="cashLoanProtocol_table3">$!{lenderIdNumber}</i><i class="cashLoanProtocol_table4">$!{lenderIdAmount}</i></p>
+                    <p><i class="tac cashLoanProtocol_table4">姓名/名称</i><i class="cashLoanProtocol_table3">身份证号码/统一社会信用代码</i><i class="tac cashLoanProtocol_table4">出借金额</i></p>
+                    <p><i class="tac cashLoanProtocol_table4">$!{lender}</i><i class="cashLoanProtocol_table3">$!{lenderIdNumber}</i><i class="tac cashLoanProtocol_table4">$!{lenderIdAmount}</i></p>
                 </div><br>
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
                 $dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")
