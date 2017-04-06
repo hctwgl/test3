@@ -28,6 +28,19 @@
 		AND status = #{status}
     </select>
     
+   	<select id="getBillListByIds" resultType="AfBorrowBillDo" parameterType="java.util.List">
+   		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_borrow_bill 
+		WHERE 
+			is_delete = 0 
+		AND id IN
+		<foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+   	</select>
+    
     <select id="getMonthlyBillByStatus" resultType="java.math.BigDecimal">
 		SELECT 
 			sum(bill_amount)

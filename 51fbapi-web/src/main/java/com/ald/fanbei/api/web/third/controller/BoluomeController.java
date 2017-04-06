@@ -27,13 +27,9 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.web.common.AppResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -94,78 +90,6 @@ public class BoluomeController{
     	}
     	logger.info(uri + " complete, result = {}, sign = {}",retunStr, sign);
     	return retunStr;
-    }
-    
-    @RequestMapping(value = {"/getOrderId"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    @ResponseBody
-	public String getOrderId(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception{
-    	logger.info("getOrderId begin requestData = {}", requestData);
-    	JSONObject requestParams = JSON.parseObject(requestData);
-    	
-    	Map<String, String> params = buildOrderParamMap(requestParams);
-    	
-    	AppResponse result = null;
-    	try {
-    		result = getOrderIdAndRefundcheckSignAndParam(params);
-    		Map<String, Object> resultData = new HashMap<String, Object>();
-    		String orderId = params.get(BoluomeCore.ORDER_ID);
-        	String plantform = params.get(BoluomeCore.PLANT_FORM);
-        	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
-        	if (orderInfo == null) {
-        		result = new AppResponse(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
-        	}
-        	resultData.put("orderId", orderInfo.getRid());
-        	result.setData(resultData);
-    	} catch (FanbeiException e) {
-    		result = new AppResponse(e.getErrorCode());
-    	} catch (Exception e) {
-    		result = new AppResponse(FanbeiExceptionCode.SYSTEM_ERROR);
-		}
-    	logger.info("result is {}", JSONObject.toJSONString(result));
-    	return JSONObject.toJSONString(result);
-    }
-    
-    @RequestMapping(value = {"/orderRefund"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    @ResponseBody
-	public String orderRefund(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception{
-    	logger.info("orderRefund begin requestData = {}", requestData);
-    	JSONObject requestParams = JSON.parseObject(requestData);
-    	
-    	Map<String, String> params = buildOrderParamMap(requestParams);
-    	
-    	AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
-    	try {
-    		result = getOrderIdAndRefundcheckSignAndParam(params);
-    		Map<String, Object> resultData = new HashMap<String, Object>();
-    		String orderId = params.get(BoluomeCore.ORDER_ID);
-        	String plantform = params.get(BoluomeCore.PLANT_FORM);
-        	BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault((params.get(BoluomeCore.AMOUNT)), null);
-        	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
-        	if (orderInfo == null) {
-        		result = new AppResponse(FanbeiExceptionCode.BOLUOME_ORDER_NOT_EXIST);
-        	}
-        	afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(),orderInfo.getOrderNo(),
-        			 orderInfo.getThirdOrderNo(), refundAmount, orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo());
-        	result.setData(resultData);
-    	} catch (FanbeiException e) {
-    		result = new AppResponse(e.getErrorCode());
-    	} catch (Exception e) {
-    		result = new AppResponse(FanbeiExceptionCode.SYSTEM_ERROR);
-		}
-    	logger.info("result is {}", JSONObject.toJSONString(result));
-    	return JSONObject.toJSONString(result);
-    }
-    
-    private AppResponse getOrderIdAndRefundcheckSignAndParam(Map<String, String> params) {
-    	AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
-    	if (StringUtils.isEmpty(params.get(BoluomeCore.ORDER_ID)) || StringUtils.isEmpty(params.get(BoluomeCore.PLANT_FORM))) {
-    		throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-    	}
-    	boolean sign = BoluomeNotify.verify(params);
-    	if (!sign) {
-    		throw new FanbeiException(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
-    	} 
-		return result;
     }
     
     private Map<String, String> buildOrderParamMap(JSONObject requestParams) {

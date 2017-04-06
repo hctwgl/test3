@@ -633,11 +633,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("wx refund  , refundResult = {} ", refundResult);
 						if(!"SUCCESS".equals(refundResult)){
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
-							boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
+							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
-							boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
+							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
 						}
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
@@ -655,6 +655,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 						BigDecimal shouldRefundAmount = afBorrowService.calculateBorrowRefundAmount(borrowInfo.getRid());
 						
+						logger.info("dealBrandOrderRefund shouldRefundAmount = {}", shouldRefundAmount);
+						
 						AfUserBankcardDo cardInfo = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 						if (shouldRefundAmount != null && shouldRefundAmount.compareTo(BigDecimal.ZERO) > 0) {
 							UpsDelegatePayRespBo tempUpsResult = UpsUtil.delegatePay(shouldRefundAmount, accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"", 
@@ -662,11 +664,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							logger.info("agent bank refund upsResult = {}", tempUpsResult);
 							if(!tempUpsResult.isSuccess()){
 								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
-								boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
+								boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
 								throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 							} else {
 								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
-								boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
+								boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
 							}
 						}
 						
