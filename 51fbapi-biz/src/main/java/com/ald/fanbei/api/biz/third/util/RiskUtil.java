@@ -360,12 +360,14 @@ public class RiskUtil extends AbstractThird{
         RiskAddressListReqBo reqBo = new RiskAddressListReqBo();
         reqBo.setConsumerNo(consumerNo);
         List<RiskAddressListDetailBo> detailBos = new ArrayList<RiskAddressListDetailBo>();
-//        List<AfAuthContactsDo> details = afAuthContactsService.getContactsByUserId(Long.valueOf(consumerNo));
         for (int i = 0; i < details.size(); i++) {
             RiskAddressListDetailBo bo = new RiskAddressListDetailBo();
             bo.setNickname(details.get(i).getFriendNick());
             bo.setPhone(details.get(i).getFriendPhone());
             detailBos.add(bo);
+        }
+        if(detailBos.size()==0){
+            return null;
         }
         String uuid = UUID.randomUUID().toString();
         reqBo.setOrderNo(getOrderNo("addr", uuid.substring(uuid.length() - 4, uuid.length())));

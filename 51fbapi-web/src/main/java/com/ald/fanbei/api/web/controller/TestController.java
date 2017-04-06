@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -11,78 +12,111 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 
 @Controller
 public class TestController {
-	
-	@Resource
-	SmsUtil smsUtil;
-	
-	@Resource
-	AfOrderService afOrderService;
-	@Resource
-	CouponSceneRuleEnginer authRealnameRuleEngine;
-	@Resource
-	CouponSceneRuleEnginer signinRuleEngine;
-	@Resource
-	JpushService jpushService;
-	
-	@Resource
-	RiskUtil riskUtil;
-	/**
-	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
-	 * 
-	 * @param model
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = { "/h5/app/*_new", "/h5/app/sys/*_new","/h5/app/goods/*_new", "/h5/app/mine/*_new", "/h5/app/order/*_new" }, method = RequestMethod.GET)
-	public String newVmPage(Model model, HttpServletRequest request,HttpServletResponse response) throws IOException {
-		String returnUrl = request.getRequestURI().replace("/h5/", "");
-		return returnUrl;
-	}
 
-	@RequestMapping(value = { "/test1" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	public String goodsRequest(HttpServletRequest request, HttpServletResponse response)throws IOException {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-		afOrderService.dealMobileChargeOrder("MB17040100045", "222000");
-//		riskUtil.modify("73772", "胡潮永", "13958004662", "330624198509136450", "", "", "星耀城","");
-//		Map<String,Object> inputData = new HashMap<String, Object>();
-//		inputData.put("userId", 11l);
-//		inputData.put("seriesCount", 5);
-//		signinRuleEngine.executeRule(inputData);
-		
-//		jpushService.chargeMobileSucc("13607665702", "13607665702", new Date());
-		
-		// String reportId = TongdunUtil.applyPreloan("362525198601022112",
-		// "陈金虎", "15958119936", "410228573@qq.com");
-		// ER2017012122013411346564
-//		TongdunResultBo result = TongdunUtil.queryPreloan("ER2017012121595110613362");
-//
-//		System.out.println("-----reportId---" + 11 + ",result=" + result);
-		//smsUtil.sendRegistVerifyCode("15958119936");
+    @Resource
+    SmsUtil smsUtil;
 
-//		SmsUtil.sendSms("15958119936", "验证码:1234");
-//		afOrderService.createOrderTrade("{'buyer_id':'AAGtxNL8AClXeBuXBPILbV-s','paid_fee':'138.00','shop_title':'佐祥车品旗舰店','is_eticket':false,'create_order_time':'2017-02-17 14:36:28','order_id':'3065189213875206','order_status':'7','seller_nick':'佐祥车品旗舰店','auction_infos':[{'detail_order_id':'3065189213875206','auction_id':'AAEnxNL_AClXeBuXBIxwBj6s','real_pay':'138.00','auction_pict_url':'i1/2208256900/TB2uxTDXNXkpuFjy0FiXXbUfFXa_!!2208256900.jpg','auction_title':'汽车载氧吧空气净化雾霾器 负离子杀菌香薰除甲醛异味全自动过滤','auction_amount':'1'}]}");
-		return "succ";
-	}
-	
-	@RequestMapping(value = { "/test2" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	public String batchRequest(HttpServletRequest request, HttpServletResponse response)throws IOException {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-		riskUtil.batchRegister(5,"13958004662");
-		return "succ";
-	}
+    @Resource
+    AfOrderService afOrderService;
+    @Resource
+    CouponSceneRuleEnginer authRealnameRuleEngine;
+    @Resource
+    CouponSceneRuleEnginer signinRuleEngine;
+    @Resource
+    JpushService jpushService;
+    @Resource
+    AfUserAccountService afUserAccountService;
+    @Resource
+    AfAuthContactsService afAuthContactsService;
 
-	// TongdunUtil
+    @Resource
+    RiskUtil riskUtil;
+
+    /**
+     * 新h5页面处理，针对前端开发新的h5页面时请求的处理
+     * 
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = { "/h5/app/*_new", "/h5/app/sys/*_new", "/h5/app/goods/*_new", "/h5/app/mine/*_new", "/h5/app/order/*_new" }, method = RequestMethod.GET)
+    public String newVmPage(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String returnUrl = request.getRequestURI().replace("/h5/", "");
+        return returnUrl;
+    }
+
+    @RequestMapping(value = { "/test1" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+    public String goodsRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        afOrderService.dealMobileChargeOrder("MB17040100045", "222000");
+        // riskUtil.modify("73772", "胡潮永", "13958004662", "330624198509136450",
+        // "", "", "星耀城","");
+        // Map<String,Object> inputData = new HashMap<String, Object>();
+        // inputData.put("userId", 11l);
+        // inputData.put("seriesCount", 5);
+        // signinRuleEngine.executeRule(inputData);
+
+        // jpushService.chargeMobileSucc("13607665702", "13607665702", new
+        // Date());
+
+        // String reportId = TongdunUtil.applyPreloan("362525198601022112",
+        // "陈金虎", "15958119936", "410228573@qq.com");
+        // ER2017012122013411346564
+        // TongdunResultBo result =
+        // TongdunUtil.queryPreloan("ER2017012121595110613362");
+        //
+        // System.out.println("-----reportId---" + 11 + ",result=" + result);
+        // smsUtil.sendRegistVerifyCode("15958119936");
+
+        // SmsUtil.sendSms("15958119936", "验证码:1234");
+        // afOrderService.createOrderTrade("{'buyer_id':'AAGtxNL8AClXeBuXBPILbV-s','paid_fee':'138.00','shop_title':'佐祥车品旗舰店','is_eticket':false,'create_order_time':'2017-02-17
+        // 14:36:28','order_id':'3065189213875206','order_status':'7','seller_nick':'佐祥车品旗舰店','auction_infos':[{'detail_order_id':'3065189213875206','auction_id':'AAEnxNL_AClXeBuXBIxwBj6s','real_pay':'138.00','auction_pict_url':'i1/2208256900/TB2uxTDXNXkpuFjy0FiXXbUfFXa_!!2208256900.jpg','auction_title':'汽车载氧吧空气净化雾霾器
+        // 负离子杀菌香薰除甲醛异味全自动过滤','auction_amount':'1'}]}");
+        return "succ";
+    }
+
+    @RequestMapping(value = { "/test2" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+    public String batchRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        riskUtil.batchRegister(5, "13958004662");
+        return "succ";
+    }
+
+    @RequestMapping(value = { "/test3" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+    public String addressListRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        int count = afUserAccountService.getUserAccountCountWithHasRealName();
+        int pageCount = (int) Math.ceil(count / 10) + 1;
+        for (int j = 1; j <= pageCount; j++) {
+            AfUserAccountQuery query = new AfUserAccountQuery();
+            query.setPageNo(j);
+            query.setPageSize(10);
+            List<AfUserAccountDto> list = afUserAccountService.getUserAndAccountListWithHasRealName(query);
+            for (int i = 0; i < list.size(); i++) {
+                List<AfAuthContactsDo> contacts = afAuthContactsService.getContactsByUserId(list.get(i).getUserId());
+                riskUtil.addressListPrimaries(list.get(i).getUserId().toString(), contacts);
+            }
+        }
+        return "succ";
+    }
+    // TongdunUtil
 }
