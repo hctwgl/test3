@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    #set($version="2017040501")
     <head>
 		<title>现金借款协议</title>
 	    <style type="text/css">
