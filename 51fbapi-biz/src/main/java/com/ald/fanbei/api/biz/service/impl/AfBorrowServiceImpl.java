@@ -647,18 +647,21 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 
 	@Override
 	public BigDecimal calculateBorrowRefundAmount(Long borrowId) {
-		List<AfBorrowBillDo> billList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowId, BorrowBillStatus.YES.getCode());
-		if (CollectionUtils.isEmpty(billList)) {
+		logger.info(" calculateBorrowRefundAmount begin borrowId = {}", borrowId);
+		List<AfBorrowBillDo> repaymentedBillList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowId, BorrowBillStatus.YES.getCode());
+		if (CollectionUtils.isEmpty(repaymentedBillList)) {
 			return BigDecimal.ZERO;
 		}
 		
-		List<Long> repaymentIds = CollectionConverterUtil.convertToListFromList(billList, new Converter<AfBorrowBillDo, Long>() {
+		logger.info("billList = {}", repaymentedBillList);
+		List<Long> repaymentIds = CollectionConverterUtil.convertToListFromList(repaymentedBillList, new Converter<AfBorrowBillDo, Long>() {
 			@Override
 			public Long convert(AfBorrowBillDo source) {
 				return source.getRepaymentId();
 			}
 		});
-		List<Long> billIds = CollectionConverterUtil.convertToListFromList(billList, new Converter<AfBorrowBillDo, Long>() {
+		logger.info("repaymentIds = {}", repaymentIds);
+		List<Long> billIds = CollectionConverterUtil.convertToListFromList(repaymentedBillList, new Converter<AfBorrowBillDo, Long>() {
 			@Override
 			public Long convert(AfBorrowBillDo source) {
 				return source.getRid();
@@ -676,7 +679,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			});
 			for (Long billId : billIds) {
 				if (repaymentBillLists.contains(billId)) {
-					AfBorrowBillDo billInfo = getBillFromList(billList, billId);
+					AfBorrowBillDo billInfo = getBillFromList(repaymentedBillList, billId);
 					if (repayment.getUserCouponId() == 0l) {
 						//没有优惠券,则按照账单金额来
 						totalRefundAmount = billInfo.getBillAmount();
@@ -685,13 +688,16 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						//有优惠券
 						if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size() - 1) {
 							//不是最后一个记录，则按照百分比计算
+							logger.info(" is not last one");
 							totalRefundAmount = BigDecimalUtil.add(totalRefundAmount, calculateRepaymentCouponAmount(repayment, billInfo));
 							continue;
 						} else {
 							//如果是最后一个，则先减去前面的还款记录
 							BigDecimal tempAmount = BigDecimal.ZERO;
+							logger.info(" is last one");
+							List<AfBorrowBillDo> tempBillList = afBorrowBillDao.getBillListByIds(repaymentBillLists);
 							for (int i = 0; i < repaymentBillLists.size() - 1; i ++) {
-								AfBorrowBillDo tempBillInfo = getBillFromList(billList, repaymentBillLists.get(i));
+								AfBorrowBillDo tempBillInfo = getBillFromList(tempBillList, repaymentBillLists.get(i));
 								tempAmount = BigDecimalUtil.add(tempAmount, calculateRepaymentCouponAmount(repayment, tempBillInfo));
 							}
 							totalRefundAmount = BigDecimalUtil.add(totalRefundAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
@@ -711,9 +717,12 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	 * @return
 	 */
 	private BigDecimal calculateRepaymentCouponAmount(AfRepaymentDo repayment, AfBorrowBillDo billInfo) {
+		logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
 		BigDecimal couponAmount = repayment.getCouponAmount();
 		BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRepaymentAmount());
-		return billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+		BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+		logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate,billInfo.getBillAmount(),repayment.getRepaymentAmount(), result});
+		return result;
 	}
 	
 	private AfBorrowBillDo getBillFromList(List<AfBorrowBillDo> billList, Long billId) {
