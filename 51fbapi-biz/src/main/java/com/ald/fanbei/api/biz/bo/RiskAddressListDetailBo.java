@@ -34,7 +34,7 @@ public class RiskAddressListDetailBo extends HashMap<String, String> {
 
     public void setPhone(String phone) {
         this.phone = phone;
-        this.put("phone", phone);
+        this.put("phone", phone.replaceAll("\"", ""));
     }
 
     public String getTradeNo() {
