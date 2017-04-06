@@ -57,6 +57,8 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 		data.put("maxAmount", rate.get("maxAmount"));
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
+		data.put("lender", rate.get("lender"));
+
 		data.put("bannerList",bannerList);
 		resp.setResponseData(data);
 		return resp;

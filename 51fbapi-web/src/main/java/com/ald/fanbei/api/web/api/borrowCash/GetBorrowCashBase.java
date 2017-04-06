@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
@@ -25,29 +26,34 @@ public class GetBorrowCashBase {
 
 		for (AfResourceDo afResourceDo : list) {
 			if(StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())){
-			  if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashRange.getCode())){
+			  if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashRange.getCode())){
 				
 				 data.put("maxAmount", afResourceDo.getValue());
 				 data.put("minAmount", afResourceDo.getValue1());
 
 			}	
-			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashBaseBankDouble.getCode())){
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashBaseBankDouble.getCode())){
 				 data.put("bankDouble", afResourceDo.getValue());
 
 			}
-			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashPoundage.getCode())){
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashPoundage.getCode())){
 				 data.put("poundage", afResourceDo.getValue());
 
 			}
-			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashOverduePoundage.getCode())){
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashOverduePoundage.getCode())){
 				 data.put("overduePoundage", afResourceDo.getValue());
 
 			}
-			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BaseBankRate.getCode())){
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())){
 				 data.put("bankRate", afResourceDo.getValue());
 			}
-			 }else{
-				 if(StringUtils.equals(afResourceDo.getType(), AfResourceType.BorrowCashDay.getCode())){
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashLender.getCode())){
+				 data.put("lender", afResourceDo.getValue());
+
+			}
+			  
+			  }else{
+				 if(StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())){
 					 data.put("borrowCashDay", afResourceDo.getValue());
 
 					 

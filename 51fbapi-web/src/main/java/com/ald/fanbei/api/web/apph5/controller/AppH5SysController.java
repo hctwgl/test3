@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -88,8 +89,14 @@ public class AppH5SysController extends BaseController {
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
+		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
+		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
+
 		BigDecimal bankService = bankRate.multiply(bankDouble);
+		BigDecimal overdue = bankService.divide(new BigDecimal(360), 6, RoundingMode.HALF_UP).add(poundage).add(overduePoundage);
+
 		model.put("yearRate", bankService);
+		
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 		if (borrowId > 0) {
@@ -105,12 +112,15 @@ public class AppH5SysController extends BaseController {
             		Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
     				Date repaymentDay = DateUtil.addDays(arrivalStart, day-1);
     				model.put("repaymentDay", repaymentDay);
-    				
-    				model.put("lender", "aaa");//出借人
-    				model.put("lenderIdNumber", "aaa");
+    				model.put("lender",  rate.get("lender"));//出借人
+    				model.put("lenderIdNumber",  rate.get("lenderIdNumber"));
     				model.put("lenderIdAmount", afBorrowCashDo.getAmount());
+    				model.put("poundage", poundage);
+
 
         		}
+        		model.put("overdueRate", overdue);
+
 
             }
 		}
@@ -223,27 +233,32 @@ public class AppH5SysController extends BaseController {
 
 		for (AfResourceDo afResourceDo : list) {
 			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
-				if (StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashRange.getCode())) {
+				if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashRange.getCode())) {
 
 					data.put("maxAmount", afResourceDo.getValue());
 					data.put("minAmount", afResourceDo.getValue1());
 
 				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceType.BorrowCashBaseBankDouble.getCode())) {
+						AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
 					data.put("bankDouble", afResourceDo.getValue());
 
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BorrowCashPoundage.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashPoundage.getCode())) {
 					data.put("poundage", afResourceDo.getValue());
 
 				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceType.BorrowCashOverduePoundage.getCode())) {
+						AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
 					data.put("overduePoundage", afResourceDo.getValue());
 
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceType.BaseBankRate.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())) {
 					data.put("bankRate", afResourceDo.getValue());
 				}
+				else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashLender.getCode())){
+					 data.put("lender", afResourceDo.getValue());
+					 data.put("lenderIdNumber", afResourceDo.getValue1());
+
+				}
 			} else {
-				if (StringUtils.equals(afResourceDo.getType(), AfResourceType.BorrowCashDay.getCode())) {
+				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
 					data.put("borrowCashDay", afResourceDo.getValue());
 
 				}

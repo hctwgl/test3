@@ -116,6 +116,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 		data.put("bannerList", bannerList);
+		data.put("lender", rate.get("lender"));
 
 		resp.setResponseData(data);
 		return resp;

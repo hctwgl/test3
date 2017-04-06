@@ -72,6 +72,9 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
 		AfRepaymentBorrowCashDo rbCashDo=afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
+		if(borrowId==0){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+		}
 		if(rbCashDo!=null&&StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 		}
@@ -102,12 +105,16 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		}
 		
 		showAmount = actualAmount;
+		
 		if(coupon!=null){
 			showAmount = BigDecimalUtil.add(actualAmount, coupon.getAmount());
 		}
-		if(cardId==-2){
-			showAmount = BigDecimalUtil.add(showAmount, userAmount);
+		if(userDto.getRebateAmount().compareTo(userAmount)<-1){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 		}
+		showAmount = BigDecimalUtil.add(showAmount, userAmount);
+	
+		
 		if(repaymentAmount.compareTo(showAmount)!=0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 
