@@ -362,7 +362,7 @@ public class RiskUtil extends AbstractThird{
         List<RiskAddressListDetailBo> detailBos = new ArrayList<RiskAddressListDetailBo>();
         for (int i = 0; i < details.size(); i++) {
             RiskAddressListDetailBo bo = new RiskAddressListDetailBo();
-            bo.setNickname(details.get(i).getFriendNick());
+            bo.setNickname(StringUtil.filterEmoji(details.get(i).getFriendNick()));
             bo.setPhone(details.get(i).getFriendPhone());
             detailBos.add(bo);
         }
@@ -386,5 +386,5 @@ public class RiskUtil extends AbstractThird{
             throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
         }
 
-    }
+    } 
 }
