@@ -39,6 +39,7 @@ public class BoluomeCore {
 	public static final String DETAIL_URL = "detailUrl";
 	public static final String AMOUNT = "amount";
 	public static final String SIGN = "sign";
+	public static final String APP_KEY = "appKey";
 
     /** 
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串

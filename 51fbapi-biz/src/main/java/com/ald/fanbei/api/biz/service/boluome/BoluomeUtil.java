@@ -94,7 +94,8 @@ public class BoluomeUtil extends AbstractThird{
 			return responseBo;
 		}else{
 			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, false, JSONObject.toJSONString(reqBo), reqResult));
-			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
+			responseBo.setSuccess(false);
+			return responseBo;
 		}
 	}
 	

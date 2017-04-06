@@ -18,4 +18,6 @@ public interface AfAuthContactsService {
 	 * @return
 	 */
 	int addAuthContacts(List<AfAuthContactsDo> afAuthContactsDos);
+	
+	List<AfAuthContactsDo> getContactsByUserId(Long userId);
 }
