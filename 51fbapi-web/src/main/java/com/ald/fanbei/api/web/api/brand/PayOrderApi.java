@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -66,9 +67,14 @@ public class PayOrderApi implements ApiHandle {
 		}
 		//TODO获取用户订单
 		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
+		
 		if (orderInfo ==  null) {
 			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+		}
+		
+		if (orderInfo.getPayStatus().equals(PayStatus.DEALING)) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 		}
 		
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);

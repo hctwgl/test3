@@ -162,6 +162,7 @@ public interface AfOrderService {
 	 * 处理菠萝觅退款
 	 * @param orderInfo
 	 * @return
+	 * @throws Exception 
 	 */
 	int dealBrandOrderRefund(Long orderId,Long userId,  Long bankId, String orderNo, String thirdOrderNo,
 			BigDecimal refundAmount, BigDecimal totalAmount, String payType, String payTradeNo);

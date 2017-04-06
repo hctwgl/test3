@@ -530,18 +530,20 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setRid(orderId);
 					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setGmtPay(currentDate);
-					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
-					orderInfo.setStatus(OrderStatus.PAID.getCode());
 					orderInfo.setActualAmount(saleAmount);
 					orderInfo.setBankId(payId);
 					if(payId < 0 ){
 						orderInfo.setPayType(PayType.WECHAT.getCode());
+						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+						orderInfo.setStatus(OrderStatus.DEALING.getCode());
 						orderDao.updateOrder(orderInfo);
 						//微信支付
 						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
 						//代付
 						orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+						orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+						orderInfo.setStatus(OrderStatus.PAID.getCode());
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 						if (useableAmount.compareTo(saleAmount) < 0) {
@@ -554,6 +556,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
+						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+						orderInfo.setStatus(OrderStatus.DEALING.getCode());
 						
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 						
@@ -584,7 +588,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.error("payBrandOrder faied e = {}", e );
-					return null;
+					throw e;
 				}
 			}
 		});
@@ -600,6 +604,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					AfOrderDo orderInfo = new AfOrderDo();
 					orderInfo.setRid(orderId);
 					orderInfo.setPayTradeNo(payOrderNo);
+					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
 					orderInfo.setPayType(payType);
 					orderInfo.setGmtPay(new Date());
