@@ -18,10 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.service.AfAppUpgradeService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.Base64;
@@ -31,6 +33,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
@@ -54,6 +57,8 @@ public abstract class BaseController {
     @Resource
     AfUserService afUserService;
     
+    @Resource
+    AfAppUpgradeService afAppUpgradeService;
    
     
     /**
@@ -71,14 +76,17 @@ public abstract class BaseController {
         try {
         	//检查参数是否为空
         	reqData = checkCommonParam(reqData, request, isForQQ);
+        	
 //            if (StringUtils.isBlank(reqData)) {
 //                exceptionresponse = buildErrorResult(FanbeExceptionCode.REQUEST_PARAM_NOT_EXIST, request);
 //                return JSON.toJSONString(exceptionresponse);
 //            }
             //解析参数（包括请求头中的参数和报文体中的参数）
             requestDataVo = parseRequestData(reqData,request);
+            
             //验证参数、签名
             FanbeiContext contex = doCheck(requestDataVo);
+            
             //处理业务
             resultStr = doProcess(requestDataVo,contex, request);
         } catch (FanbeiException e) {
@@ -154,6 +162,14 @@ public abstract class BaseController {
         
         if(requestDataVo.getId()!= null && requestDataVo.getId().indexOf("i_") == 0 && context.getAppVersion() == 121){
         	throw new FanbeiException("系统维护中",FanbeiExceptionCode.SYSTEM_REPAIRING_ERROR);
+        }
+        
+        if(requestDataVo.getId().startsWith("i")){
+        	AfAppUpgradeDo afAppUpgradeDo =	afAppUpgradeService.getNewestIOSVersionBySpecify(context.getAppVersion());
+        	if(StringUtils.equals(afAppUpgradeDo.getIsForce(), YesNoStatus.YES.getCode())  ){
+            	throw new FanbeiException("system update",FanbeiExceptionCode.SYSTEM_UPDATE);
+
+        	}
         }
         
         String interfaceName = requestDataVo.getMethod();
