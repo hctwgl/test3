@@ -10,19 +10,19 @@ import java.util.Map;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum TongdunEventEnmu {
-	LOGIN_ANDROID("Login_android_20170310","android_login", "5c57003c8f314dc4a1b018d8ad4205a0"),
-	LOGIN_IOS("Login_ios_20170310","ios_login", "27bf15defb8d4038b7a9373e35025e01"),
-	LOGIN_WEB("Login_web_20170310","web_login","a3eec6aecf0c45e296dd94b8845f3b39"),
-	REGISTER_ANDROID("Register_android_20170310","android_regist","5c57003c8f314dc4a1b018d8ad4205a0"),
-	REGISTER_IOS("Register_ios_20170310","ios_regist","27bf15defb8d4038b7a9373e35025e01"),
-	REGISTER_WEB("Register_web_20170310","web_regist","a3eec6aecf0c45e296dd94b8845f3b39"),
-	MARKETING_ANDROID("Marketing_android_20170310","android_marketing","5c57003c8f314dc4a1b018d8ad4205a0"),
-	MARKETING_IOS("Marketing_ios_20170310","ios_marketing","27bf15defb8d4038b7a9373e35025e01"),
-	MARKETING_WEB("Marketing_web_20170310","web_marketing","a3eec6aecf0c45e296dd94b8845f3b39"),
-	TRADE_ANDROID("Trade_android_20170310","android_trade","5c57003c8f314dc4a1b018d8ad4205a0"),
-	TRADE_IOS("Trade_ios_20170310","ios_trade","27bf15defb8d4038b7a9373e35025e01"),
-	TRADE_WEB("Trade_web_20170310","web_trade","a3eec6aecf0c45e296dd94b8845f3b39"),
-	ACTIVATE_ANDROID("Activate_android_20170316","android_activate","5c57003c8f314dc4a1b018d8ad4205a0");
+	LOGIN_ANDROID("login_professional_android","android_login", "819453cc372b4e4d8d465ba19f2b0ba7"),
+	LOGIN_IOS("login_professional_ios","ios_login", "6d16b93b8da74ba9a522cb523bbf2fa6"),
+	LOGIN_WEB("login_professional_web","web_login","d8e4d175ec074e6eac1b71331d2f6135"),
+	REGISTER_ANDROID("register_professional_android","android_regist","819453cc372b4e4d8d465ba19f2b0ba7"),
+	REGISTER_IOS("register_professional_ios","ios_regist","6d16b93b8da74ba9a522cb523bbf2fa6"),
+	REGISTER_WEB("register_professional_web","web_regist","d8e4d175ec074e6eac1b71331d2f6135"),
+	MARKETING_ANDROID("marketing_professional_android","android_marketing","819453cc372b4e4d8d465ba19f2b0ba7"),
+	MARKETING_IOS("marketing_professional_ios","ios_marketing","6d16b93b8da74ba9a522cb523bbf2fa6"),
+	MARKETING_WEB("marketing_professional_web","web_marketing","d8e4d175ec074e6eac1b71331d2f6135"),
+	TRADE_ANDROID("trade_professional_android","android_trade","819453cc372b4e4d8d465ba19f2b0ba7"),
+	TRADE_IOS("trade_professional_ios","ios_trade","6d16b93b8da74ba9a522cb523bbf2fa6"),
+	TRADE_WEB("trade_professional_web","web_trade","d8e4d175ec074e6eac1b71331d2f6135"),
+	ACTIVATE_ANDROID("Activate_android_20170316","android_activate","819453cc372b4e4d8d465ba19f2b0ba7");
 	
 	
 	private static Map<String,TongdunEventEnmu> menueMap = null;
