@@ -2,7 +2,7 @@
 <html lang="en">
     #set($version="2017040501")
     <head>
-		<title>现金借款协议</title>
+		<title>个人现金服务合同</title>
 	    <style type="text/css">
 	    	.cashLoanProtocol{
 	    		padding: 0.5rem;
@@ -31,20 +31,18 @@
                 border-right: 1px solid #111;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
-                /*text-align: center;*/
             }
             .cashLoanProtocol_table1,.cashLoanProtocol_table4{
-                width: 3.8rem;
+                width: 3.9rem;
             }
             .cashLoanProtocol_table2,.cashLoanProtocol_table5{
                 width: 4.6rem;
             }
             .cashLoanProtocol_table3{
-                width: 6.0rem;
-                text-align: center;
+                width: 5.3rem;
             }
             .pl{
-                padding-left: 0.1rem;
+                /*padding-left: 0.1rem;*/
             }
 	    </style>
     </head>
@@ -60,18 +58,14 @@
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
                 借款人甲方通过丙方平台提出借款需求，丙方介绍甲方在丙方运营的融资平台向出借人乙方借款，乙方亦同意出借款项，丙方为甲方、乙方借款提供居间服务，现经各方协商一致，达成如下协议：<br>
                 <div class="cashLoanProtocol_table">
-                    <p><i class="tac" style="width: 100%;">借款明细</i></p>
-                    <p><i class="pl cashLoanProtocol_table1">本金金额</i><i class="pl">￥$!{amountLower}元</i></p>
-                    <p><i class="pl cashLoanProtocol_table1">大写金额</i><i class="pl">人民币$!{amountCapital}整</i></p>
-                    <p><i class="pl cashLoanProtocol_table1">借款用途</i><i class="pl cashLoanProtocol_table2">个人消费</i><i class="pl cashLoanProtocol_table1">年化利率</i><i class="pl">{{change($!{yearRate})}}</i></p>
-                    <p><i class="pl cashLoanProtocol_table1">借款起息日</i><i class="pl cashLoanProtocol_table2">&nbsp;#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")#end</i><i class="pl cashLoanProtocol_table1">借款到期日</i><i class="pl">#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></p>
-                    <p><i class="pl cashLoanProtocol_table5">借款手续费率</i><i class="pl cashLoanProtocol_table1">&nbsp;#if($!{poundage}){{change($!{poundage})}}#end</i><i class="pl cashLoanProtocol_table1">还款方式</i><i class="pl">到期一次性还款</i></p>
-                    <p><i class="tac" style="width: 100%;">逾期后产生的费率</i></p>
-                    <p><i class="pl cashLoanProtocol_table5">滞纳金率</i>
-                    #if($!{overdueRate})
-                        <i>{{change($!{overdueRate})}}</i>
-                    #end
-                    </p>
+                    <p><i class="tac" style="width: 100%;">&nbsp;借款明细</i></p>
+                    <p><i class="cashLoanProtocol_table1">&nbsp;本金金额</i><i>&nbsp;￥$!{amountLower}</i></p>
+                    <p><i class="cashLoanProtocol_table1">&nbsp;大写金额</i><i>&nbsp;人民币$!{amountCapital}整</i></p>
+                    <p><i class="cashLoanProtocol_table1">&nbsp;借款用途</i><i class="cashLoanProtocol_table2">&nbsp;个人消费</i><i class="cashLoanProtocol_table1">&nbsp;年化利率</i><i>&nbsp;{{change($!{yearRate})}}</i></p>
+                    <p><i class="cashLoanProtocol_table1">&nbsp;借款起息日</i><i class="cashLoanProtocol_table2">&nbsp;#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")#end</i><i class="cashLoanProtocol_table1">&nbsp;借款到期日</i><i>&nbsp;#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></p>
+                    <p><i class="cashLoanProtocol_table5">&nbsp;借款手续费率</i><i class="cashLoanProtocol_table1">&nbsp;{{change($!{poundage})}}</i><i class="cashLoanProtocol_table1">&nbsp;还款方式</i><i>&nbsp;到期一次性还款</i></p>
+                    <p><i class="tac" style="width: 100%;">&nbsp;逾期后产生的费率</i></p>
+                    <p><i class="cashLoanProtocol_table5">&nbsp;滞纳金率</i><i>&nbsp;{{change($!{overdueRate})}}</i></p>
                 </div>
                 （注：因丙方开展运营活动，给予甲方部分补贴或减免的，以丙方平台的运营规则与活动解释为准）<br><br>
                 <span>释义：</span><br>
@@ -195,15 +189,14 @@
                 甲方 （借款人）：$!{realName}<br>
                 乙方 （出借人）：<br>
                 <div class="cashLoanProtocol_table">
-                    <p><i class="pl cashLoanProtocol_table1">姓名/名称</i><i class="pl">#if($!{lender})$!{lender}#end</i></p>
-                    <p><i class="pl cashLoanProtocol_table3">身份证号码/统一社会信用代码</i><i class="pl" style="vertical-align: top">#if($!{lenderIdNumber})$!{lenderIdNumber}#end</i></p>
-                    <p><i class="pl cashLoanProtocol_table1">出借金额</i><i class="pl">#if($!{lenderIdAmount})$!{lenderIdAmount}#end</i></p>
+                    <p><i class="cashLoanProtocol_table1">&nbsp;姓名/名称</i><i>&nbsp;#if($!{lender})$!{lender}#end</i></p>
+                    <p><i class="cashLoanProtocol_table1">&nbsp;出借金额</i><i>&nbsp;￥#if($!{lenderIdAmount})$!{lenderIdAmount}#end</i></p>
+                    <p><i class="cashLoanProtocol_table3">&nbsp;身份证号码/统一社会信用代码</i><i style="vertical-align: top;">&nbsp;#if($!{lenderIdNumber})$!{lenderIdNumber}#end</i></p>
                 </div><br>
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
                 #if($!{gmtCreate})$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")#end
             </p>
         </div>
-        <script src="//cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
         <script type="text/javascript" src="/js/app/sys/cashLoanProtocol.js?version=$version"></script>
     </body>
 </html>
