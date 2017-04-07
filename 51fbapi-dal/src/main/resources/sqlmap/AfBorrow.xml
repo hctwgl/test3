@@ -34,7 +34,8 @@
 			card_number,
 			card_name,
 			order_id,
-			order_no
+			order_no,
+			gmt_transed
 			)
 			VALUES
 			(
@@ -52,7 +53,8 @@
 			#{cardNumber},
 			#{cardName},
 			#{orderId},
-			#{orderNo}
+			#{orderNo},
+			#{gmtTransed}
 			)
 	</insert>
 	
