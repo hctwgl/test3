@@ -64,8 +64,8 @@
                     <p><i class="pl cashLoanProtocol_table1">本金金额</i><i class="pl">￥$!{amountLower}元</i></p>
                     <p><i class="pl cashLoanProtocol_table1">大写金额</i><i class="pl">人民币$!{amountCapital}整</i></p>
                     <p><i class="pl cashLoanProtocol_table1">借款用途</i><i class="pl cashLoanProtocol_table2">个人消费</i><i class="pl cashLoanProtocol_table1">年化利率</i><i class="pl">{{change($!{yearRate})}}</i></p>
-                    <p><i class="pl cashLoanProtocol_table1">借款起息日</i><i class="pl cashLoanProtocol_table2">#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")#end</i><i class="pl cashLoanProtocol_table1">借款到期日</i><i class="pl">#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></p>
-                    <p><i class="pl cashLoanProtocol_table5">借款手续费率</i><i class="pl cashLoanProtocol_table1">#if($!{poundage}){{change($!{poundage})}}#end</i><i class="pl cashLoanProtocol_table1">还款方式</i><i class="pl">到期一次性还款</i></p>
+                    <p><i class="pl cashLoanProtocol_table1">借款起息日</i><i class="pl cashLoanProtocol_table2">&nbsp;#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")#end</i><i class="pl cashLoanProtocol_table1">借款到期日</i><i class="pl">#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></p>
+                    <p><i class="pl cashLoanProtocol_table5">借款手续费率</i><i class="pl cashLoanProtocol_table1">&nbsp;#if($!{poundage}){{change($!{poundage})}}#end</i><i class="pl cashLoanProtocol_table1">还款方式</i><i class="pl">到期一次性还款</i></p>
                     <p><i class="tac" style="width: 100%;">逾期后产生的费率</i></p>
                     <p><i class="pl cashLoanProtocol_table5">滞纳金率</i>
                     #if($!{overdueRate})
