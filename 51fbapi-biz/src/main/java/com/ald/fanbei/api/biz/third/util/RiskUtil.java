@@ -220,12 +220,51 @@ public class RiskUtil extends AbstractThird{
 	 * @param scene
 	 * @return
 	 */
-	public RiskVerifyRespBo verify(String consumerNo,String scene,String cardNo){
+	public RiskVerifyRespBo verify2(String consumerNo,String scene,String cardNo){
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(getOrderNo("vefy", cardNo.substring(cardNo.length()-4,cardNo.length())));
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setChannel(CHANNEL);
 		reqBo.setScene(scene);
+		JSONObject obj = new JSONObject();
+		obj.put("cardNo", cardNo);
+		reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
+		reqBo.setReqExt("");
+		reqBo.setNotifyUrl(getNotifyHost()+"/third/risk/verify");
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/risk/verify.htm", reqBo);
+		logThird(reqResult, "verify", reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult,RiskVerifyRespBo.class);
+		if(riskResp!=null && TRADE_RESP_SUCC.equals(riskResp.getCode())){
+			riskResp.setSuccess(true);
+			JSONObject dataObj = JSON.parseObject(riskResp.getData());
+			riskResp.setResult(dataObj.getString("result"));
+			return riskResp;
+		}else{
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
+	}
+	
+	/**
+	 * 风控审批
+	 * @param orderNo
+	 * @param consumerNo
+	 * @param scene
+	 * @return
+	 */
+	public RiskVerifyRespBo verify(String consumerNo,String scene,String cardNo,String appName,String ipAddress,String blackBox){
+		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		reqBo.setOrderNo(getOrderNo("vefy", cardNo.substring(cardNo.length()-4,cardNo.length())));
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setChannel(CHANNEL);
+		reqBo.setScene(scene);
+		reqBo.setCardNo(cardNo);
+		reqBo.setAppName(appName);
+		reqBo.setIpAddress(ipAddress);
+		reqBo.setBlackBox(blackBox);
 		JSONObject obj = new JSONObject();
 		obj.put("cardNo", cardNo);
 		reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
