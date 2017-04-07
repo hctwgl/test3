@@ -153,8 +153,10 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		
 		
 		try {
+//			RiskVerifyRespBo result2 = riskUtil.verify(ObjectUtils.toString(userId, ""), "20",afBorrowCashDo.getCardNumber());
 			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20",
-					afBorrowCashDo.getCardNumber());
+					afBorrowCashDo.getCardNumber(), (requestDataVo.getId().startsWith("i")?"alading_ios":"alading_and"), CommonUtil.getIpAddr(request), blackBox);
+			
 			Date currDate = new Date();
 
 			AfUserDo afUserDo = afUserService.getUserById(userId);
