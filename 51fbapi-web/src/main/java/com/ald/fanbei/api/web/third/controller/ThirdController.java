@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
+import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -40,9 +41,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Controller
 @RequestMapping("/thirdApi")
-public class ThirdController {
-
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+public class ThirdController extends AbstractThird{
 
     @Resource
     AfOrderService afOrderService;
@@ -54,7 +53,7 @@ public class ThirdController {
     @RequestMapping(value = { "/orderRefund" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String orderRefund(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        logger.info("orderRefund begin requestData = {}", requestData);
+        thirdLog.info("orderRefund begin requestData = {}", requestData);
         JSONObject requestParams = JSON.parseObject(requestData);
 
         Map<String, String> params = buildParam(requestParams);
@@ -80,7 +79,7 @@ public class ThirdController {
         } catch (Exception e) {
             result = new AppResponse(FanbeiExceptionCode.SYSTEM_ERROR);
         }
-        logger.info("result is {}", JSONObject.toJSONString(result));
+        thirdLog.info("result is {}", JSONObject.toJSONString(result));
         return JSONObject.toJSONString(result);
     }
 
@@ -161,7 +160,7 @@ public class ThirdController {
         if (request.getQueryString() != null) {
             url += "?" + request.getQueryString();
         }
-        logger.info(url);
+        thirdLog.info(url);
         try {
             // 验签
             JSONObject json = new JSONObject();
@@ -183,7 +182,7 @@ public class ThirdController {
                 throw new Exception("verify signature error ! orderNo：【" + orderNo + "】");
             }
         } catch (Exception e) {
-            logger.error("notifyPhoneRecharge error！", e);
+            thirdLog.error("notifyPhoneRecharge error！", e);
             return "FAIL";
         }
         return "SUCCESS";
