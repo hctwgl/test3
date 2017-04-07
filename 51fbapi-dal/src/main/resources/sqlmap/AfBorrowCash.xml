@@ -98,7 +98,7 @@
     			,rate_amount=#{rateAmount}
 			</if>
 			<if test="repayAmount != null">
-    			,repay_amount=repay_amount + #{repayAmount}
+    			,repay_amount=#{repayAmount}
     			
 			</if>
 		WHERE id = #{rid}

@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -74,4 +75,10 @@ public interface AfRepaymentBorrowCashDao {
 	 */
 	AfRepaymentBorrowCashDo getLastRepaymentBorrowCashByBorrowId(@Param("borrowCashId") Long borrowCashId);
 	
+	/**
+	 * 已还款金额
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal getRepaymentAllAmountByBorrowId(@Param("borrowId") Long borrowId);
 }
