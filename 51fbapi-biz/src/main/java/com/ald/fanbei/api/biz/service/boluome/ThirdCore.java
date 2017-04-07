@@ -8,8 +8,10 @@ import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.ThirdConfigProperties;
 
 /**
  * 
@@ -25,6 +27,7 @@ public class ThirdCore {
 	public static final String TIME_STAMP = "timestamp";
 	public static final String APP_KEY = "appKey";
 	public static final String SIGN = "sign";
+	private static Map<String, String> appKeyMap;
 
     /** 
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
@@ -104,12 +107,18 @@ public class ThirdCore {
      * @return
      */
     public static String buildSignStr(Map<String, String> params) {
+    	String appKey = params.get(APP_KEY);
     	String beforeSign = 
-    			params.get(APP_KEY) 
-    			+ concatParams(params)
-    			+ ThirdConfigProperties.get(params.get(APP_KEY));
-    	
+    			appKey + concatParams(params) +AesUtil.decrypt(appKeyMap.get(appKey), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
         return DigestUtil.MD5(beforeSign);
     }
+
+
+	/**
+	 * @param appKeyMap the appKeyMap to set
+	 */
+	public void setAppKeyMap(Map<String, String> appKeyMap) {
+		ThirdCore.appKeyMap = appKeyMap;
+	}
 
 }

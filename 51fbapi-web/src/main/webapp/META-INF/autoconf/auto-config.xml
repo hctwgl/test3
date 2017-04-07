@@ -82,6 +82,9 @@
 		
 		<property name="fbapi.boluome_push_pay_url" defaultValue="http://91ala.test.otosaas.com/api/validation/v1" description="菠萝觅 支付推送消息" />
 		<property name="fbapi.boluome.push_refund_url" defaultValue="http://91ala.test.otosaas.com/api/refundment/v1" description="菠萝觅 certpath" />
+		
+		<property name="third.offer.boluome.appKey" defaultValue="1d397480-dbce-4d87-b48c-a34b55ee310d" description="平台提供菠萝觅第三方appkey" />
+		<property name="third.offer.boluome.appSecret" defaultValue="coMMRJDVF/Nmy+U0TCHXbAPPD1LEftSOb248JtzvaXOdGnCapk8yRekWqTFXGtLh" description="平台提供菠萝觅第三方appSecret" />
 	</group>
 
 	<script>
