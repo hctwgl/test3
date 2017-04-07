@@ -96,7 +96,9 @@ public class AppH5SysController extends BaseController {
 		BigDecimal overdue = bankService.divide(new BigDecimal(360), 6, RoundingMode.HALF_UP).add(poundage).add(overduePoundage);
 
 		model.put("yearRate", bankService);
-		
+		model.put("overdueRate", overdue);
+		model.put("poundage", poundage);
+
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 		if (borrowId > 0) {
@@ -115,11 +117,9 @@ public class AppH5SysController extends BaseController {
     				model.put("lender",  rate.get("lender"));//出借人
     				model.put("lenderIdNumber",  rate.get("lenderIdNumber"));
     				model.put("lenderIdAmount", afBorrowCashDo.getAmount());
-    				model.put("poundage", poundage);
 
 
         		}
-        		model.put("overdueRate", overdue);
 
 
             }
