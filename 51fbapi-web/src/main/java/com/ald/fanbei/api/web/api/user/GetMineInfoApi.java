@@ -104,13 +104,14 @@ public class GetMineInfoApi implements ApiHandle {
 		bo.setUserId(context.getUserId()+StringUtils.EMPTY);
 		String resultString = HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/api/promotion/get_coupon_num", JSONObject.toJSONString(bo));
 		JSONObject resultJson = JSONObject.parseObject(resultString);
-		if (!"0".equals(resultJson.getString("code"))) {
-			new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
+		if (resultJson == null || !"0".equals(resultJson.getString("code"))) {
+			resultData.put("couponCount", coupleCount);
+			resultData.put("brandCouponCount", 0);
+		} else {
+			JSONObject data = resultJson.getJSONObject(DATA);
+			Integer brandCouponCount = data.getInteger(AVAILABLE_NUM);
+			resultData.put("couponCount", coupleCount + brandCouponCount);
 		}
-		JSONObject data = resultJson.getJSONObject(DATA);
-		Integer brandCouponCount = data.getInteger(AVAILABLE_NUM);
-		resultData.put("couponCount", coupleCount + brandCouponCount);
-		resultData.put("brandCouponCount", brandCouponCount);
 		resultData.put("plantformCouponCount", coupleCount);
 	}
 

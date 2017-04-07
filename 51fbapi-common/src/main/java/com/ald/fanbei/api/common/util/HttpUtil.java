@@ -167,6 +167,7 @@ public class HttpUtil {
      * @return
      */
     public static String doHttpPost(String url, String param) {
+    	logger.info("doHttpPost begin url = {} param = {}",url,param);
         BufferedReader in = null;
         OutputStreamWriter out = null;
         String result = "";
@@ -200,6 +201,7 @@ public class HttpUtil {
                 ex.printStackTrace();
             }
         }
+        logger.info("doHttpPost result = {}", result);
         return result;
     }
 
