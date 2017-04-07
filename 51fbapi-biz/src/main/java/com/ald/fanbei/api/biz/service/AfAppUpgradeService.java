@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.service;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
 
 

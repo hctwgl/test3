@@ -1,22 +1,11 @@
 package com.ald.fanbei.web.test.service;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.junit.Test;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.web.test.common.BaseControllerTest;
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
 
 /**
  *@类描述：

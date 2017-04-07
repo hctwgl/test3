@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.vo;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
