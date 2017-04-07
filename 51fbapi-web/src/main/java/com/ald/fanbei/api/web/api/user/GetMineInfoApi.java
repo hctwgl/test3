@@ -102,7 +102,7 @@ public class GetMineInfoApi implements ApiHandle {
 	private void dealWithVersionGT340(Map<String, Object> resultData, RequestDataVo requestDataVo, FanbeiContext context, int coupleCount) {
 		GetBrandCouponCountRequestBo bo = new GetBrandCouponCountRequestBo();
 		bo.setUserId(context.getUserId()+StringUtils.EMPTY);
-		String resultString = HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/api/promotion/get_coupon_num", JSONObject.toJSONString(bo));
+		String resultString = HttpUtil.doHttpPost("https://91ala.otosaas.com" + "/api/promotion/get_coupon_num", JSONObject.toJSONString(bo));
 		JSONObject resultJson = JSONObject.parseObject(resultString);
 		if (resultJson == null || !"0".equals(resultJson.getString("code"))) {
 			resultData.put("couponCount", coupleCount);

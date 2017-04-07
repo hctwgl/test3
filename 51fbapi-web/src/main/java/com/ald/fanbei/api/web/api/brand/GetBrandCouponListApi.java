@@ -74,12 +74,14 @@ public class GetBrandCouponListApi implements ApiHandle {
 		try {
 			String resultString = HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/api/promotion/get_coupon_list", JSONObject.toJSONString(bo));
 			JSONObject resultJson = JSONObject.parseObject(resultString);
-			if (!"0".equals(resultJson.getString("code"))) {
-				new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
+			if (resultJson == null || !"0".equals(resultJson.getString("code"))) {
+				resp.addResponseData(COUPON_LIST, new ArrayList<Object>());
+				resp.addResponseData("nextPageNo", 0);
+			} else {
+				Map<String,Object> resultMap = parseBrandCoupon(resultJson, type);
+				resp.addResponseData(COUPON_LIST, resultMap.get(COUPON_LIST));
+				resp.addResponseData("nextPageNo", resultMap.get(NEXT_PAGE_INDEX));
 			}
-			Map<String,Object> resultMap = parseBrandCoupon(resultJson, type);
-			resp.addResponseData(COUPON_LIST, resultMap.get(COUPON_LIST));
-			resp.addResponseData("nextPageNo", resultMap.get(NEXT_PAGE_INDEX));
 			resp.addResponseData("pageNo", pageNo);
 			return resp;
 		} catch (Exception e) {
