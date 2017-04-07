@@ -65,6 +65,7 @@ public class BillTest {
 		createCate();
 	}
 	
+	@SuppressWarnings("unused")
 	private static void createBill(){
 		int pageSize = 100;
 		int pageCount = getPageCount(pageSize);

@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author 陈金虎 2017年1月16日 下午11:41:47
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@SuppressWarnings("deprecation")
 public class HttpUtil {
 
     protected static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);

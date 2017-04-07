@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.bo;
 
-import java.util.HashMap;
-
 import com.ald.fanbei.api.common.AbstractSerial;
 
 /**
