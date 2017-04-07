@@ -108,6 +108,7 @@ public class HttpUtil {
      * @throws IOException
      */
     public static String httpPost(String url, Map<String, String> paramsMap) {
+    	logger.info("httpPost begin url = {}, paramsMap = {}",url, paramsMap);
         HttpClientBuilder builder = HttpClientBuilder.create();
         CloseableHttpClient httpClient = builder.build();
         // 要传递的参数
@@ -141,6 +142,7 @@ public class HttpUtil {
                     sb.append(line);
                 }
                 reader.close();
+                logger.info("httpPost result = {}",sb.toString());
                 return sb.toString();
             } else {
                 BufferedInputStream bi = new BufferedInputStream(entity.getContent());
