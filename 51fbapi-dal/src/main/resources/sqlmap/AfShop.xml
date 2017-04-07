@@ -38,6 +38,7 @@
 			is_delete = 0
 		AND
 			status = 'O'
+		ORDER BY sort DESC, gmt_modified DESC
 	</select>
 	
 </mapper>

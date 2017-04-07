@@ -18,6 +18,9 @@ public class AfShopVo extends AbstractSerial {
 	private String icon;//图片
 	private BigDecimal rebateAmount;//用户返利
 	private String rebateUnit;//用户返利单位【RMB人民币,PERCENTAGE百分比】
+	private String type;//类型
+	private String shopUrl;//商品链接地址
+	
 	/**
 	 * @return the rid
 	 */
@@ -77,6 +80,30 @@ public class AfShopVo extends AbstractSerial {
 	 */
 	public void setRebateUnit(String rebateUnit) {
 		this.rebateUnit = rebateUnit;
+	}
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+	/**
+	 * @return the shopUrl
+	 */
+	public String getShopUrl() {
+		return shopUrl;
+	}
+	/**
+	 * @param shopUrl the shopUrl to set
+	 */
+	public void setShopUrl(String shopUrl) {
+		this.shopUrl = shopUrl;
 	}
 	
 	
