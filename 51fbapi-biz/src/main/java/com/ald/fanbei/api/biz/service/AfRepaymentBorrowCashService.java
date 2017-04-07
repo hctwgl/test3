@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -71,5 +73,10 @@ public interface AfRepaymentBorrowCashService {
 	List<AfRepaymentBorrowCashDo> getRepaymentBorrowCashListByUserId( Long userId);
 	
 	AfRepaymentBorrowCashDo getLastRepaymentBorrowCashByBorrowId( Long borrowCashId);
-
+	/**
+	 * 已还款金额
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal getRepaymentAllAmountByBorrowId(Long borrowId);
 }

@@ -26,4 +26,5 @@ public interface AfCouponSceneService {
 	 *@return
 	 */
 	List<CouponSceneRuleBo> getRules(String type, String key);
+	
 }

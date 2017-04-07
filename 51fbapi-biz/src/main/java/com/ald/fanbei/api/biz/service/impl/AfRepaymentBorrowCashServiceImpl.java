@@ -206,14 +206,19 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
 					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());
-					BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+//					BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
 					bcashDo.setRid(afBorrowCashDo.getRid());
-					
-					bcashDo.setRepayAmount(repayment.getRepaymentAmount());
-					if(showAmount.compareTo(repayment.getRepaymentAmount())==0){
+					BigDecimal repayAllAmount = afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(repayment.getBorrowId());
+					if(allAmount.compareTo(repayAllAmount)==0){
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 					}
+					bcashDo.setRepayAmount(repayAllAmount);
+
+//					bcashDo.setRepayAmount(repayment.getRepaymentAmount());
+//					if(showAmount.compareTo(repayment.getRepaymentAmount())==0){
+//						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+//					}
 					afBorrowCashService.updateBorrowCash(bcashDo);
 					//优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
@@ -275,5 +280,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	@Override
 	public AfRepaymentBorrowCashDo getLastRepaymentBorrowCashByBorrowId(Long borrowCashId) {
 		return afRepaymentBorrowCashDao.getLastRepaymentBorrowCashByBorrowId(borrowCashId);
+	}
+
+
+	
+	@Override
+	public BigDecimal getRepaymentAllAmountByBorrowId(Long borrowId) {
+		return afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(borrowId);
 	}
 }

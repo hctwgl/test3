@@ -140,7 +140,7 @@
           LIMIT 1
 	</select>
 	
-		<select id="getRepaymentByPayTradeNo" 
+	<select id="getRepaymentByPayTradeNo" 
 		resultType="AfRepaymentBorrowCashDo">
 		SELECT
 		<include refid="queryFields" />
@@ -154,6 +154,20 @@
 		gmt_create DESC
 
 	</select>
+	<select id="getRepaymentAllAmountByBorrowId" 
+		resultType="java.math.BigDecimal">
+		SELECT
+		SUM(repayment_amount) 
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		borrow_id=#{borrowId}
+		AND `status` = 'Y'
+
+	</select>
+	
 	
 	
 
