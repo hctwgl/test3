@@ -83,7 +83,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			Integer day = NumberUtil
 					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
-			Date now = new Date();
+			Date now =DateUtil.getStartOfDate (new Date());
 
 			if(afBorrowCashDo.getGmtArrival()!=null){
 				Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
