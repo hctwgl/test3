@@ -77,12 +77,12 @@ public class ApplyConsumeApi implements ApiHandle {
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
-		if (StringUtils.isBlank(blackBox)) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-
-		}
+		
 		if (context.getAppVersion() >= 340) {
+			if (StringUtils.isBlank(blackBox)) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 
+			}
 			tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
 					context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "",
 					requestDataVo.getMethod(), "");

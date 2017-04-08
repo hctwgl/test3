@@ -72,10 +72,7 @@ public class LoginApi implements ApiHandle {
 
 		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
-		if (StringUtils.isBlank(blackBox)) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-
-		}
+		
 		if (StringUtils.isBlank(inputPassSrc)) {
 			logger.error("inputPassSrc can't be empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -155,7 +152,10 @@ public class LoginApi implements ApiHandle {
 		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid()));
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {
-			// todo 这里面放同盾代码,下面是示例
+			if (StringUtils.isBlank(blackBox)) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+
+			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
 		}
 

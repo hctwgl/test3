@@ -66,12 +66,12 @@ public class ApplyCashApi implements ApiHandle {
 		Long userId = context.getUserId();
 		logger.info("userId=" + userId + ",money=" + money);
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
-		if (StringUtils.isBlank(blackBox)) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-
-		}
+	
 		if (context.getAppVersion() >= 340) {
+			if (StringUtils.isBlank(blackBox)) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 
+			}
 			tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
 					context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "",
 					requestDataVo.getMethod(), "");
