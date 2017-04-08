@@ -156,9 +156,9 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		cashDo.setRid(borrowId);
 
 		try {
-			// RiskVerifyRespBo result2 =
-			// riskUtil.verify(ObjectUtils.toString(userId, ""),
-			// "20",afBorrowCashDo.getCardNumber());
+//			 RiskVerifyRespBo result =
+//			 riskUtil.verify2(ObjectUtils.toString(userId, ""),
+//			 "20",afBorrowCashDo.getCardNumber());
 			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20",
 					afBorrowCashDo.getCardNumber(),
 					(requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and"),

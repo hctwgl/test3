@@ -58,13 +58,13 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		// 账户关联信息
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		Map<String, Object> data = getCreditPromoteInfo(now, userDto, authDo);
+		Map<String, Object> data = getCreditPromoteInfo(now, userDto, authDo,context.getAppVersion());
 		resp.setResponseData(data);
 		
 		return resp;
 	}
 
-	private Map<String, Object> getCreditPromoteInfo(Date now, AfUserAccountDto userDto, AfUserAuthDo authDo) {
+	private Map<String, Object> getCreditPromoteInfo(Date now, AfUserAccountDto userDto, AfUserAuthDo authDo,Integer appVersion) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> creditModel = new HashMap<String, Object>();
 		Map<String, Object> zmModel = new HashMap<String, Object>();
@@ -94,7 +94,7 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		
 		
 		creditModel.put("creditAssessTime", authDo.getGmtModified());
-		creditModel.put("allowConsume", afUserAuthService.getConsumeStatus(authDo.getUserId()));
+		creditModel.put("allowConsume", afUserAuthService.getConsumeStatus(authDo.getUserId(),appVersion));
 		zmModel.put("zmStatus", authDo.getZmStatus());
 		zmModel.put("zmScore", authDo.getZmScore());
 		if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode())

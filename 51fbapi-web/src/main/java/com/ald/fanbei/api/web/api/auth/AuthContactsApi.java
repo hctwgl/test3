@@ -66,7 +66,7 @@ public class AuthContactsApi implements ApiHandle {
         authDo.setUserId(context.getUserId());
         authDo.setTeldirStatus(YesNoStatus.YES.getCode());
         afUserAuthService.updateUserAuth(authDo);
-        resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId()));
+        resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId(),context.getAppVersion()));
         return resp;
     }
 

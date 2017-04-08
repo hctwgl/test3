@@ -162,7 +162,7 @@ public class AuthCreditApi implements ApiHandle {
 			resp.addResponseData("zmScore", auth.getZmScore());
 			resp.addResponseData("ivsScore", auth.getIvsScore());
 			resp.addResponseData("gmtZm", auth.getGmtZm());
-			resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
+			resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId(),context.getAppVersion()));
 			return resp;
 		}
 		resp.addResponseData("tooLow", sorce<min?'Y':"N");
@@ -170,7 +170,7 @@ public class AuthCreditApi implements ApiHandle {
 		resp.addResponseData("zmScore", auth.getZmScore());
 		resp.addResponseData("ivsScore", auth.getIvsScore());
 		resp.addResponseData("gmtZm", auth.getGmtZm());
-		resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId()));
+		resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId(),context.getAppVersion()));
 		
 		return resp;
 	}

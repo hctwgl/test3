@@ -149,7 +149,7 @@ public class LoginApi implements ApiHandle {
 		JSONObject jo = new JSONObject();
 		jo.put("user", userVo);
 		jo.put("token", token);
-		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid()));
+		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(),context.getAppVersion()));
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {
 			if (StringUtils.isBlank(blackBox)) {

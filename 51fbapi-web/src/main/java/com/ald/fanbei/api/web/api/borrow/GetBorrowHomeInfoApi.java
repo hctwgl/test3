@@ -62,12 +62,12 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		Map<String,Integer> map = afBorrowService.getCurrentTermYearAndMonth("",now);
-		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()),userDto, authDo);
+		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()),userDto, authDo,context);
 		resp.setResponseData(data);
 		return resp;
 	}
 
-	private AfBorrowHomeVo getBorrowHomeInfo(Date now,BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo){
+	private AfBorrowHomeVo getBorrowHomeInfo(Date now,BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo,FanbeiContext context){
 		AfBorrowHomeVo vo = new AfBorrowHomeVo();
 		vo.setBankcardStatus(authDo.getBankcardStatus());
     	vo.setRealName(userDto.getRealName());
@@ -117,7 +117,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setContactorMobile(authDo.getContactorMobile());
 		vo.setLocationAddress(authDo.getLocationAddress());
 		vo.setLocationStatus(authDo.getLocationStatus());
-		vo.setAllowConsume(afUserAuthService.getConsumeStatus(authDo.getUserId()));
+		vo.setAllowConsume(afUserAuthService.getConsumeStatus(authDo.getUserId(),context.getAppVersion()));
 		return vo;
 	}
 }

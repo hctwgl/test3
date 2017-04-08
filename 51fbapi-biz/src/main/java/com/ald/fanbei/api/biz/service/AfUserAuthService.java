@@ -36,5 +36,5 @@ public interface AfUserAuthService {
 	 * @param userId
 	 * @return
 	 */
-	String getConsumeStatus(Long userId);
+	String getConsumeStatus(Long userId,Integer appVersion);
 }

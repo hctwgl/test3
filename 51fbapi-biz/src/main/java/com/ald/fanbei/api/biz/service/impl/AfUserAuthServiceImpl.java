@@ -46,20 +46,31 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 
 	@Override
-	public String getConsumeStatus(Long userId) {
+	public String getConsumeStatus(Long userId,Integer appVersion) {
 		AfUserAuthDo auth = afUserAuthDao.getUserAuthInfoByUserId(userId);
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 		String status = YesNoStatus.NO.getCode();
 		if(account.getAuAmount().compareTo(BigDecimal.ZERO)>0){
-			if(StringUtil.equals(YesNoStatus.YES.getCode(), auth.getIvsStatus())//反欺诈分已验证
-					&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())//反欺诈分已验证
-						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())//通讯录匹配状态
-						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getMobileStatus())//手机运营商
-						&&(null!=auth.getGmtMobile()&&DateUtil.beforeDay(auth.getGmtMobile(), DateUtil.addMonths(new Date(), 2)))//手机运营商认证时间小于两个月
-						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getContactorStatus())//紧急联系人
-						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getLocationStatus())){//定位
-				status = YesNoStatus.YES.getCode();
+			if(appVersion>=340){
+				if(StringUtil.equals(YesNoStatus.YES.getCode(), auth.getIvsStatus())//反欺诈分已验证
+						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())//反欺诈分已验证
+							&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())//通讯录匹配状态
+							&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getMobileStatus())//手机运营商
+							&&(null!=auth.getGmtMobile()&&DateUtil.beforeDay(auth.getGmtMobile(), DateUtil.addMonths(new Date(), 2)))//手机运营商认证时间小于两个月
+							&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getContactorStatus())//紧急联系人
+							&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getLocationStatus())){//定位
+					status = YesNoStatus.YES.getCode();
+				}
+			}else{
+				if(StringUtil.equals(YesNoStatus.YES.getCode(), auth.getIvsStatus())//反欺诈分已验证
+						&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())//反欺诈分已验证
+							&&StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())//通讯录匹配状态
+							
+							){
+					status = YesNoStatus.YES.getCode();
+				}
 			}
+			
 		}
 		return status;
 	}

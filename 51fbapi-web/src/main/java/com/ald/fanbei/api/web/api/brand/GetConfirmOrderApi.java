@@ -70,12 +70,12 @@ public class GetConfirmOrderApi implements ApiHandle {
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		AfUserBankcardDo bankInfo = afUserBankcardService.getUserMainBankcardByUserId(userId);
-		BoluomeConfirmOrderVo vo = buildConfirmOrderVo(orderInfo,userDto, authDo, bankInfo);
+		BoluomeConfirmOrderVo vo = buildConfirmOrderVo(orderInfo,userDto, authDo, bankInfo,context);
 		resp.setResponseData(vo);
 		return resp;
 	}
 	
-	private BoluomeConfirmOrderVo buildConfirmOrderVo(AfOrderDo orderInfo, AfUserAccountDto userDto, AfUserAuthDo authDo, AfUserBankcardDo bankInfo){
+	private BoluomeConfirmOrderVo buildConfirmOrderVo(AfOrderDo orderInfo, AfUserAccountDto userDto, AfUserAuthDo authDo, AfUserBankcardDo bankInfo, FanbeiContext context){
 		BoluomeConfirmOrderVo vo = new BoluomeConfirmOrderVo();
 		vo.setRid(orderInfo.getRid());
 		vo.setGoodsName(orderInfo.getGoodsName());
@@ -94,7 +94,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 		vo.setTotalAmount(userDto.getAuAmount());
 		vo.setUseableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
 		vo.setRealNameScore(authDo.getRealnameScore());
-		vo.setAllowConsume(afUserAuthService.getConsumeStatus(orderInfo.getUserId()));
+		vo.setAllowConsume(afUserAuthService.getConsumeStatus(orderInfo.getUserId(),context.getAppVersion()));
 		return vo;
 	}
 

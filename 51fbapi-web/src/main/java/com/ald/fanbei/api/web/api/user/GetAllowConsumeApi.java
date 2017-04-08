@@ -30,7 +30,7 @@ public class GetAllowConsumeApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId()));
+		resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId(),context.getAppVersion()));
 		return resp;
 	}
 }
