@@ -82,13 +82,12 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	TongdunUtil tongdunUtil;
 	@Resource
 	UpsUtil upsUtil;
-	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-	
+
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
@@ -106,35 +105,37 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				|| StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
-		
-		
-		//密码判断
+
+		// 密码判断
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
-		if(accountDo ==null||authDo==null ){
+		if (accountDo == null || authDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 
 		}
-		tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "", requestDataVo.getMethod(), "");
-
+		if (context.getAppVersion() >= 340) {
+			tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+					context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
+					requestDataVo.getMethod(), "");
+		}
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
-		
+
 		if (StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
-		
-		//认证信息判断
-		if (StringUtils.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())||
-				StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.NO.getCode())||
-				StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.NO.getCode())||
-				StringUtils.equals(authDo.getYdStatus(), YesNoStatus.NO.getCode())||
-				StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.NO.getCode())||
-				StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.NO.getCode())||
-				StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {
+
+		// 认证信息判断
+		if (StringUtils.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
+				|| StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.NO.getCode())
+				|| StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.NO.getCode())
+				|| StringUtils.equals(authDo.getYdStatus(), YesNoStatus.NO.getCode())
+				|| StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.NO.getCode())
+				|| StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.NO.getCode())
+				|| StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 
 		}
@@ -153,13 +154,16 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		Long borrowId = afBorrowCashDo.getRid();
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
 		cashDo.setRid(borrowId);
-		
-		
+
 		try {
-//			RiskVerifyRespBo result2 = riskUtil.verify(ObjectUtils.toString(userId, ""), "20",afBorrowCashDo.getCardNumber());
+			// RiskVerifyRespBo result2 =
+			// riskUtil.verify(ObjectUtils.toString(userId, ""),
+			// "20",afBorrowCashDo.getCardNumber());
 			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20",
-					afBorrowCashDo.getCardNumber(), (requestDataVo.getId().startsWith("i")?"alading_ios":"alading_and"), CommonUtil.getIpAddr(request), blackBox);
-			
+					afBorrowCashDo.getCardNumber(),
+					(requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and"),
+					CommonUtil.getIpAddr(request), blackBox);
+
 			Date currDate = new Date();
 
 			AfUserDo afUserDo = afUserService.getUserById(userId);

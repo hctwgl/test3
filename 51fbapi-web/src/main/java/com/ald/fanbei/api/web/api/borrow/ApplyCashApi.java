@@ -33,78 +33,86 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
  * 
- *@类描述：现金借款申请
- *@author 何鑫 2017年2月07日  11:01:26
- *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @类描述：现金借款申请
+ * @author 何鑫 2017年2月07日 11:01:26
+ * @注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("applyCashApi")
-public class ApplyCashApi implements ApiHandle{
+public class ApplyCashApi implements ApiHandle {
 
 	@Resource
 	private AfUserAccountService afUserAccountService;
-	
+
 	@Resource
 	private AfUserBankcardService afUserBankcardService;
-	
+
 	@Resource
 	private AfBorrowService afBorrowService;
-	
+
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
 	TongdunUtil tongdunUtil;
 	@Resource
 	UpsUtil upsUtil;
+
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo,
-			FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		BigDecimal money = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("money")), BigDecimal.ZERO);
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		BigDecimal money = NumberUtil
+				.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("money")), BigDecimal.ZERO);
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
 		Long userId = context.getUserId();
-        logger.info("userId=" + userId + ",money=" + money);
-        AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
-		if(StringUtils.isBlank(blackBox)){
+		logger.info("userId=" + userId + ",money=" + money);
+		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
+		if (StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 
 		}
-		tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "", requestDataVo.getMethod(), "");
+		if (context.getAppVersion() >= 340) {
 
-        
-        BigDecimal useableAmount = userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount());
+			tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+					context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "",
+					requestDataVo.getMethod(), "");
+
+		}
+		BigDecimal useableAmount = userDto.getAuAmount()
+				.divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE), 2, BigDecimal.ROUND_HALF_UP)
+				.subtract(userDto.getUcAmount());
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
 		if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
-		if((userDto.getAuAmount().subtract(userDto.getUsedAmount())).compareTo(useableAmount)==-1){
+		if ((userDto.getAuAmount().subtract(userDto.getUsedAmount())).compareTo(useableAmount) == -1) {
 			useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount());
 		}
-		if(useableAmount.compareTo(money)==-1){
+		if (useableAmount.compareTo(money) == -1) {
 			throw new FanbeiException("user cash money error", FanbeiExceptionCode.USER_CASH_MONEY_ERROR);
 		}
-		
+
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
-		if(null == card){
+		if (null == card) {
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
-		long result = afBorrowService.dealCashApply(userDto, money,card.getRid());
-		
-		if(result>0){
-			//信用分大于指定值
-			AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
-			//直接打款
+		long result = afBorrowService.dealCashApply(userDto, money, card.getRid());
+
+		if (result > 0) {
+			// 信用分大于指定值
+			AfResourceDo resourceInfo = afResourceService
+					.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
+			// 直接打款
 			if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
-				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), userId+"",
-						card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02",
-						UserAccountLogType.CASH.getCode(),result+"");
-				if(!upsResult.isSuccess()){
-					//代付失败处理
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(),
+						userId + "", card.getMobile(), card.getBankName(), card.getBankCode(),
+						Constants.DEFAULT_BORROW_PURPOSE, "02", UserAccountLogType.CASH.getCode(), result + "");
+				if (!upsResult.isSuccess()) {
+					// 代付失败处理
 					afUserAccountService.dealUserDelegatePayError(UserAccountLogType.CASH.getCode(), result);
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				}
-				
+
 				resp.addResponseData("directTrans", "T");
 			} else {
 				resp.addResponseData("directTrans", "F");
