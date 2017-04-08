@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-03-08 17:42:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-21 19:22:08
+* @Last Modified time: 2017-03-23 15:51:40
 * @title:  领取优惠劵
 */
 
@@ -14,7 +14,7 @@ var userName = $("#userName").val();
 // 领取优惠劵
 $(function(){
 
-    $(".receiveCoupons_main li").bind("click",function(){
+    $(".receiveCoupons_main li").click(function(){
         
         var i= $(this).index();
         var couponIdNum = couponList[i].rid;
@@ -35,11 +35,24 @@ $(function(){
 
                 } else {
                     
-                    if (returnData.url.length>0) {
+                    var status = returnData.data["status"];
+
+                    if (status == "USER_NOT_EXIST") { // 用户不存在
                         window.location.href = returnData.url;
-                    }else{
+                    }
+
+                    if (status == "OVER") { // 优惠券个数超过最大领券个数
+                        requestMsg(returnData.msg);
+                        $(".receiveCoupons_main li").eq(i).addClass("receiveCoupons_ylq");
+                    }
+
+                    if (status == "MORE_THAN") { // 优惠券已领取完
                         requestMsg(returnData.msg);
                         $(".receiveCoupons_main li").eq(i).addClass("receiveCoupons_ylw");
+                    }
+
+                    if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                        requestMsg(returnData.msg);
                     }
                 }
             },
@@ -50,3 +63,4 @@ $(function(){
         $(this).unbind("click"); // 移除当前元素的点击时间(禁止重复点击)
     });
 });
+
