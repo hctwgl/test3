@@ -277,7 +277,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-    public void notifyMobileChargeOrder(final String orderNo, final String status) {
+    public void notifyMobileChargeOrder(final String orderNo, final String orderStatus) {
         transactionTemplate.execute(new TransactionCallback<Integer>() {
 
             @Override
@@ -288,7 +288,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                     if (order != null) {
                         // 获取用户信息
                         AfUserDo userDo = afUserDao.getUserById(order.getUserId());
-                        if ("SUCCESS".equals(status) && OrderStatus.CLOSED.getCode().equals(order.getStatus())) {
+                        if ("SUCCESS".equals(orderStatus) && OrderStatus.CLOSED.getCode().equals(order.getStatus())) {
                             order.setStatus(OrderStatus.REBATED.getCode());
                             orderDao.updateOrderByOrderNo(order);
 
@@ -298,7 +298,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                             account.setRebateAmount(order.getRebateAmount());
                             afUserAccountDao.updateUserAccount(account);
                             pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
-                        } else if (!"SUCCESS".equals(status) && OrderStatus.REBATED.getCode().equals(order.getStatus())) {
+                        } else if (!"SUCCESS".equals(orderStatus) && OrderStatus.REBATED.getCode().equals(order.getStatus())) {
                             // 退款 生成退款记录 走微信退款流程，或者银行卡代付
                             // 设置优惠券为未使用状态
                             afUserCouponDao.updateUserCouponSatusNouseById(order.getUserCouponId());
