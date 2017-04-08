@@ -414,6 +414,7 @@ public class RiskUtil extends AbstractThird{
         reqBo.setDetails(JSON.toJSONString(detailBos));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
         String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/adrressList/remove.htm", reqBo);
+        logThird(reqResult, "addressListPrimaries", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
         }

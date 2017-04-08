@@ -298,7 +298,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                             account.setRebateAmount(order.getRebateAmount());
                             afUserAccountDao.updateUserAccount(account);
                             pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
-                        } else if (OrderStatus.REBATED.getCode().equals(order.getStatus())) {
+                        } else if (!"SUCCESS".equals(status) && OrderStatus.REBATED.getCode().equals(order.getStatus())) {
                             // 退款 生成退款记录 走微信退款流程，或者银行卡代付
                             // 设置优惠券为未使用状态
                             afUserCouponDao.updateUserCouponSatusNouseById(order.getUserCouponId());
