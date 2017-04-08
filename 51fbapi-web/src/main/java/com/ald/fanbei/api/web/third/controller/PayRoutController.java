@@ -29,7 +29,6 @@ import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -51,7 +50,6 @@ import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 /**
@@ -195,56 +193,9 @@ public class PayRoutController{
         		}
     			return "SUCCESS";
 			}else{//代付失败
-				if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
-					//借款关闭
-					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSED.getCode());
-					//账户还原
-    				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
-					AfUserAccountDo account = new AfUserAccountDo();
-					account.setUcAmount(borrow.getAmount());
-					account.setUsedAmount(borrow.getAmount());
-					account.setUserId(borrow.getUserId());
-        			afUserAccountService.updateUserAccount(account);
-				}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
-					//借款关闭
-					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSED.getCode());
-					//账户还原
-    				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
-					AfUserAccountDo account = new AfUserAccountDo();
-					account.setUsedAmount(borrow.getAmount());
-					account.setUserId(borrow.getUserId());
-        			afUserAccountService.updateUserAccount(account);
-				}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
-        			AfCashRecordDo record = afCashRecordDao.getCashRecordById(result);
-        			record.setStatus("REFUSE");
-        			afCashRecordDao.updateCashRecord(record);
-        			//
-        			AfUserAccountDo updateAccountDo = new AfUserAccountDo();
-        			updateAccountDo.setRebateAmount(record.getAmount());
-        			updateAccountDo.setUserId(record.getUserId());
-        			afUserAccountService.updateUserAccount(updateAccountDo);
-        		}else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){
-        			//借钱
-        			Long rid = NumberUtil.objToLong(result);
-        			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
-        			afBorrowCashDo.setStatus("TRANSEDFAIL");
-        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
-        		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
-        			AfOrderDo orderInfo = afOrderService.getOrderById(result);
-        			orderInfo.setStatus(OrderStatus.PAID.getCode());
-        			afOrderService.updateOrder(orderInfo);
-        			
-        			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
-        			
-        			//订单退款记录
-        			AfOrderRefundDo refundInfo = afOrderRefundService.getOrderRefundByOrderId(result);
-    				refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
-    				afOrderRefundService.updateOrderRefund(refundInfo);
-    				
-        			//ups打款记录
-        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
-        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
-        		}
+				if(afUserAccountService.dealUserDelegatePayError(merPriv, result)>0){
+					return "SUCCESS";
+				}
 			}
     		return "ERROR";
 		} catch (Exception e) {

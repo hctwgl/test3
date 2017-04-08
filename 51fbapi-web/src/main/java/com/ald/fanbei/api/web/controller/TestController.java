@@ -1,14 +1,19 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -19,13 +24,17 @@ import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
+import com.alibaba.fastjson.JSONObject;
 
 @Controller
 public class TestController {
+	Logger logger = LoggerFactory.getLogger(TestController.class);
 
     @Resource
     SmsUtil smsUtil;
@@ -97,6 +106,24 @@ public class TestController {
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
         response.setContentType("application/json;charset=utf-8");
         riskUtil.batchRegister(5, "13958004662");
+        return "succ";
+    }
+    
+    @RequestMapping(value = { "/testRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    public String testRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        JSONObject json = JSONObject.parseObject(body);
+        String orderNo = json.getString("orderNo");
+        String payTradeNo = json.getString("payTradeNo");
+        BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
+        BigDecimal totalAmount = NumberUtil.objToBigDecimalDefault(json.getString("totalAmount"), null);
+        logger.info("testRefund begin testRefund is orderNo = {}, payTradeNo = {}, refundAmount = {}, refundAmount = {}", new Object[]{orderNo,payTradeNo,refundAmount,totalAmount});
+        if (StringUtils.isEmpty(orderNo) || StringUtils.isEmpty(payTradeNo) || refundAmount == null || totalAmount == null) {
+        	return "";
+        }
+        String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
+        logger.info("testRefund refundResult = {}", refundResult);
         return "succ";
     }
 
