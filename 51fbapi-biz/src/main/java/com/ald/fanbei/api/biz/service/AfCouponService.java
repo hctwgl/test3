@@ -6,6 +6,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 
 /**
  * @类描述：
@@ -14,7 +15,7 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
  */
 public interface AfCouponService {
 	
-	List<AfCouponDo> selectCouponByCouponIds(String ids);
+	List<AfCouponDto> selectCouponByCouponIds(String ids,Long userId);
 	
 	AfCouponDo getCouponById(Long couponId);
 	

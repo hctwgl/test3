@@ -58,13 +58,15 @@ public class CheckBankcardApi implements ApiHandle {
 	private AfUserService afUserService;
 	@Resource
 	private AfAuthTdService afAuthTdService;
+	@Resource
+	UpsUtil upsUtil;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		Long bankId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("bankId")), 0);
 		AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(bankId);
-		UpsAuthSignValidRespBo upsResult = UpsUtil.authSignValid(context.getUserId()+"",bank.getCardNumber(), verifyCode, "02");
+		UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"",bank.getCardNumber(), verifyCode, "02");
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);

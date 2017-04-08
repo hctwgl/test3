@@ -31,6 +31,8 @@ public class CheckBankcardPayApi implements ApiHandle {
 	private AfOrderService afOrderService;
 	@Resource 
 	private AfRepaymentService afRepaymentService;
+	@Resource
+	UpsUtil upsUtil;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -39,7 +41,7 @@ public class CheckBankcardPayApi implements ApiHandle {
 		String outTradeNo = ObjectUtils.toString(requestDataVo.getParams().get("outTradeNo"));
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
 		String cardNo = ObjectUtils.toString(requestDataVo.getParams().get("cardNo"));
-		UpsAuthPayConfirmRespBo upsResult = UpsUtil.authPayConfirm(tradeNo, Base64.decodeToString(cardNo), context.getUserId()+"", verifyCode, outTradeNo, "02");
+		UpsAuthPayConfirmRespBo upsResult = upsUtil.authPayConfirm(tradeNo, Base64.decodeToString(cardNo), context.getUserId()+"", verifyCode, outTradeNo, "02");
 		
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_SMS_ERR);

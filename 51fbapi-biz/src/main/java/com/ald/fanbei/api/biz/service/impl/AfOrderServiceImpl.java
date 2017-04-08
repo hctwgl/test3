@@ -136,6 +136,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	BoluomeUtil boluomeUtil;
 	@Resource
 	AfOrderRefundDao afOrderRefundDao;
+	@Resource
+	UpsUtil upsUtil;
 	
 	@Override
 	public int createOrderTrade(String content) {
@@ -255,7 +257,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}else{//银行卡代付
 							//TODO 转账处理
 							AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
-							UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
+							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
 									card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
 							if(!upsResult.isSuccess()){
 								pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
@@ -318,7 +320,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                             } else {// 银行卡代付
                                     // TODO 转账处理
                                 AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
-                                UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId() + "",
+                                UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId() + "",
                                         card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02", OrderType.MOBILE.getCode(), "");
                                 if (!upsResult.isSuccess()) {
                                     pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
@@ -439,7 +441,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,PayOrderSource.ORDER.getCode());
 		}else{//银行卡支付 代收
 			map = new HashMap<String,Object>();
-			UpsCollectRespBo respBo = UpsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
+			UpsCollectRespBo respBo = upsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
 					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02",OrderType.MOBILE.getCode());
 			map.put("resp", respBo);
 		}
@@ -567,7 +569,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}
 						orderDao.updateOrder(orderInfo);
 						//银行卡支付 代收
-						UpsCollectRespBo respBo = UpsUtil.collect(tradeNo,saleAmount, userId+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
+						UpsCollectRespBo respBo = upsUtil.collect(tradeNo,saleAmount, userId+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
 								cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
 						if(!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
@@ -661,7 +663,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 						AfUserBankcardDo cardInfo = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 						if (shouldRefundAmount != null && shouldRefundAmount.compareTo(BigDecimal.ZERO) > 0) {
-							UpsDelegatePayRespBo tempUpsResult = UpsUtil.delegatePay(shouldRefundAmount, accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"", 
+							UpsDelegatePayRespBo tempUpsResult = upsUtil.delegatePay(shouldRefundAmount, accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"", 
 									cardInfo.getMobile(), cardInfo.getBankName(), cardInfo.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);
 							logger.info("agent bank refund upsResult = {}", tempUpsResult);
 							if(!tempUpsResult.isSuccess()){
@@ -681,7 +683,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//增加Account记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, orderInfo.getActualAmount(), userId, orderId));
 						
-						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.CLOSE.getCode());
+						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.CLOSED.getCode());
 						
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(borrowInfo.getRid(), BorrowBillStatus.CLOSE.getCode());
 						
@@ -694,7 +696,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//银行卡退款
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
-						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"", 
+						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"", 
 								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);
 						logger.info("bank refund upsResult = {}", upsResult);
 						if(!upsResult.isSuccess()){

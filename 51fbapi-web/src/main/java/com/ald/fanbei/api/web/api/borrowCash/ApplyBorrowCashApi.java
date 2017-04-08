@@ -80,6 +80,9 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	TongdunUtil tongdunUtil;
+	@Resource
+	UpsUtil upsUtil;
+	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -168,7 +171,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				cashDo.setStatus(AfBorrowCashStatus.transed.getCode());
 				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 				// 打款
-				UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
 						userDto.getRealName(), afBorrowCashDo.getCardNumber(), afBorrowCashDo.getUserId() + "",
 						card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE,
 						"02", UserAccountLogType.BorrowCash.getCode(), borrowId + "");

@@ -5,22 +5,32 @@
 		id rid,gmt_create,gmt_modified,gmt_start,gmt_end,name,status,limit_amount,amount,use_rule,valid_days,type,limit_count,expiry_type,quota_already,quota
 	</sql>
 	
-	<select id="selectCouponByCouponIds" resultType="AfCouponDo">
-	    SELECT
-	    	<include refid="queryAllFields" />
-	    FROM
-	   		 af_coupon
-	    WHERE
-	    	is_delete = 0
-	     AND
-	         status ='O'
-	     
-	     AND
-			 id in (${ids})
-		 AND
-	   		( ( expiry_type='R'and gmt_end >NOW())
-	    		 OR 
-	     	expiry_type='D')
+	<sql id="queryPickAllFields">
+		c.id
+		rid,c.gmt_create,c.gmt_modified,c.gmt_start,c.gmt_end,c.name,c.status,c.limit_amount,c.amount,
+		c.use_rule,c.valid_days,c.type,c.limit_count,c.expiry_type,c.quota_already,c.quota
+		,COUNT(uc.id) user_already
+	</sql>
+	
+	<select id="selectCouponByCouponIds" resultType="AfCouponDto">
+		SELECT
+			<include refid="queryPickAllFields" />
+		FROM
+			af_coupon c
+		LEFT JOIN 
+			af_user_coupon uc ON c.id =uc.coupon_id   AND uc.user_id =#{userId}
+		WHERE
+			c.is_delete = 0
+		AND
+			c.status ='O'
+
+		AND
+			c.id in (${ids})
+		AND
+			( ( c.expiry_type='R'and c.gmt_end >NOW())
+			OR
+			c.expiry_type='D')
+		GROUP BY c.id
 	</select>
 	
 	

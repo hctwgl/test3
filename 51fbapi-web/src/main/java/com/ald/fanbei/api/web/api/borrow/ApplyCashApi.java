@@ -53,6 +53,8 @@ public class ApplyCashApi implements ApiHandle{
 	AfResourceService afResourceService;
 	@Resource
 	TongdunUtil tongdunUtil;
+	@Resource
+	UpsUtil upsUtil;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -94,12 +96,15 @@ public class ApplyCashApi implements ApiHandle{
 			AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
 			//直接打款
 			if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
-				UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), userId+"",
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(money, userDto.getRealName(), card.getCardNumber(), userId+"",
 						card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_BORROW_PURPOSE, "02",
 						UserAccountLogType.CASH.getCode(),result+"");
 				if(!upsResult.isSuccess()){
+					//代付失败处理
+					afUserAccountService.dealUserDelegatePayError(UserAccountLogType.CASH.getCode(), result);
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				}
+				
 				resp.addResponseData("directTrans", "T");
 			} else {
 				resp.addResponseData("directTrans", "F");

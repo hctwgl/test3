@@ -197,7 +197,7 @@ public class PayRoutController{
 			}else{//代付失败
 				if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
 					//借款关闭
-					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSE.getCode());
+					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSED.getCode());
 					//账户还原
     				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
 					AfUserAccountDo account = new AfUserAccountDo();
@@ -207,7 +207,7 @@ public class PayRoutController{
         			afUserAccountService.updateUserAccount(account);
 				}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
 					//借款关闭
-					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSE.getCode());
+					afBorrowService.updateBorrowStatus(result, BorrowStatus.CLOSED.getCode());
 					//账户还原
     				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
 					AfUserAccountDo account = new AfUserAccountDo();

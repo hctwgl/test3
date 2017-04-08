@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfCashRecordService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -24,7 +25,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfCashLogDao;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfCashLogDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
@@ -45,12 +45,14 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 	@Resource
 	TransactionTemplate transactionTemplate;
 	@Resource
-	AfUserAccountDao afUserAccountDao;
+	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
 	
 	@Resource
 	AfCashLogDao afCashLogDao;
+	@Resource
+	UpsUtil upsUtil;
 	
 	@Override
 	public int addCashRecord(final AfCashRecordDo afCashRecordDo,final AfUserBankcardDo card) {
@@ -61,7 +63,7 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 			public Integer doInTransaction(TransactionStatus status) {
 				
 				try {
-					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afCashRecordDo.getUserId());
+					AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afCashRecordDo.getUserId());
 
 					AfUserAccountDo updateAccountDo = new AfUserAccountDo();
 					updateAccountDo.setRid(afUserAccountDo.getRid());
@@ -74,7 +76,7 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 					}else{
 						updateAccountDo.setRebateAmount(amount.multiply(new BigDecimal(-1)));
 					}
-					if(afUserAccountDao.updateUserAccount(updateAccountDo)==0){
+					if(afUserAccountService.updateUserAccount(updateAccountDo)==0){
 						return 0;
 					}
 					afCashRecordDao.addCashRecord(afCashRecordDo);
@@ -93,9 +95,11 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 
 						
 					}else{//银行卡提现
-						UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
+						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
 								card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_CASH_PURPOSE, "02",UserAccountLogType.REBATE_CASH.getCode(),afCashRecordDo.getRid()+"");
 						if(!upsResult.isSuccess()){
+							//代付失败处理
+							afUserAccountService.dealUserDelegatePayError(UserAccountLogType.REBATE_CASH.getCode(), afCashRecordDo.getRid());
 							throw new FanbeiException("bank card pay error",FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
 					}

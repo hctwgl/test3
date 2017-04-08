@@ -53,6 +53,8 @@ public class ApplyConsumeApi implements ApiHandle{
 	AfResourceService afResourceService;
 	@Resource
 	TongdunUtil tongdunUtil;
+	@Resource
+	UpsUtil upsUtil;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -101,9 +103,11 @@ public class ApplyConsumeApi implements ApiHandle{
 			//直接打款
 			if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 				//转账处理
-				UpsDelegatePayRespBo upsResult = UpsUtil.delegatePay(amount, userDto.getRealName(), card.getCardNumber(), userId+"", card.getMobile(), card.getBankName(),
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(amount, userDto.getRealName(), card.getCardNumber(), userId+"", card.getMobile(), card.getBankName(),
 						card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",UserAccountLogType.CONSUME.getCode(),result+"");
 				if(!upsResult.isSuccess()){
+					//代付失败处理
+					afUserAccountService.dealUserDelegatePayError(UserAccountLogType.CONSUME.getCode(), result);
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				}
 				resp.addResponseData("directTrans", "T");
