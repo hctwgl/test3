@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
@@ -111,9 +112,20 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode());
 		}else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+			
+			
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), 
 					Constants.DEFAULT_PAY_PURPOSE, name, "02",UserAccountLogType.REPAYMENT.getCode());
+//			if(respBo.isSuccess()){
+//				AfRepaymentDo repaymentD = new AfRepaymentDo();
+//				repaymentD.setRid(repayment.getRid());
+//				repaymentD.setStatus(RepaymentStatus.PROCESS.getCode());
+//				repaymentD.setPayTradeNo(payTradeNo);
+//				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
+//			}
+			
+			
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");

@@ -13,6 +13,7 @@ import java.util.Map;
 public enum RepaymentStatus {
 
 	NEW("N", "新建状态"), 
+	PROCESS("P","处理中"),
 	YES("Y", "还款成功");
     
     private String code;

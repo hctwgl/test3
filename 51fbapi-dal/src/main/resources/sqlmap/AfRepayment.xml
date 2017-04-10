@@ -74,6 +74,53 @@
 	where id=#{rid}
 	</update>
 	
+	<update id="updateRepaymentByAfRepaymentDo" parameterType="AfRepaymentDo" >
+		UPDATE af_repayment SET gmt_modified = NOW()
+			<if test="name != null">
+    			,name=#{name}
+			</if>
+			<if test="repayNo != null">
+    			,repay_no=#{repayNo}
+			</if>
+			<if test="repaymentAmount != null">
+    			,repayment_amount=#{repaymentAmount}
+			</if>
+			<if test="actualAmount != null">
+    			,actual_amount=#{actualAmount}
+			</if>
+			<if test="billIds != null">
+    			,bill_ids=#{billIds}
+			</if>
+			<if test="payTradeNo != null">
+    			,pay_trade_no=#{payTradeNo}
+			</if>
+			<if test="tradeNo != null">
+    			,trade_no=#{tradeNo}
+			</if>
+			<if test="userCouponId != null">
+    			,user_coupon_id=#{userCouponId}
+			</if>
+			<if test="couponAmount != null">
+    			,coupon_amount=#{couponAmount}
+			</if>
+			<if test="rebateAmount != null">
+    			,rebate_amount=#{rebateAmount}
+			</if>
+			<if test="status != null">
+    			,status=#{status}
+			</if>
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="cardNumber != null">
+    			,card_number=#{cardNumber}
+			</if>
+			<if test="cardName != null">
+    			,card_name=#{cardName}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
 	<select id="getRepaymentListByIds" resultType="AfRepaymentDo">
 		SELECT 
 			<include refid="queryFields"/> 

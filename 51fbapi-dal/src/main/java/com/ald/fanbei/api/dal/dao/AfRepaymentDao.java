@@ -45,4 +45,7 @@ public interface AfRepaymentDao {
      * @return
      */
     List<AfRepaymentDo> getRepaymentListByIds(@Param("items")List<Long> ids);
+    
+    
+   int  updateRepaymentByAfRepaymentDo(AfRepaymentDo repaymentDo);
 }
