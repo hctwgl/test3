@@ -109,23 +109,23 @@ public class TestController {
         return "succ";
     }
     
-    @RequestMapping(value = { "/testRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
-    public String testRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-        response.setContentType("application/json;charset=utf-8");
-        JSONObject json = JSONObject.parseObject(body);
-        String orderNo = json.getString("orderNo");
-        String payTradeNo = json.getString("payTradeNo");
-        BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
-        BigDecimal totalAmount = NumberUtil.objToBigDecimalDefault(json.getString("totalAmount"), null);
-        logger.info("testRefund begin testRefund is orderNo = {}, payTradeNo = {}, refundAmount = {}, refundAmount = {}", new Object[]{orderNo,payTradeNo,refundAmount,totalAmount});
-        if (StringUtils.isEmpty(orderNo) || StringUtils.isEmpty(payTradeNo) || refundAmount == null || totalAmount == null) {
-        	return "";
-        }
-        String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
-        logger.info("testRefund refundResult = {}", refundResult);
-        return "succ";
-    }
+//    @RequestMapping(value = { "/testRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+//    public String testRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
+//        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//        response.setContentType("application/json;charset=utf-8");
+//        JSONObject json = JSONObject.parseObject(body);
+//        String orderNo = json.getString("orderNo");
+//        String payTradeNo = json.getString("payTradeNo");
+//        BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
+//        BigDecimal totalAmount = NumberUtil.objToBigDecimalDefault(json.getString("totalAmount"), null);
+//        logger.info("testRefund begin testRefund is orderNo = {}, payTradeNo = {}, refundAmount = {}, refundAmount = {}", new Object[]{orderNo,payTradeNo,refundAmount,totalAmount});
+//        if (StringUtils.isEmpty(orderNo) || StringUtils.isEmpty(payTradeNo) || refundAmount == null || totalAmount == null) {
+//        	return "";
+//        }
+//        String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
+//        logger.info("testRefund refundResult = {}", refundResult);
+//        return "succ";
+//    }
 
     @RequestMapping(value = { "/test3" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
     public String addressListRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
