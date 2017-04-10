@@ -109,6 +109,7 @@ public class KaixinUtil extends AbstractThird{
 	 */
 	public String charge(String order_no, String account_no, String face_price) {
 		try {
+			thirdLog.info("charge begin, order_no = {}, account_no = {}, face_price = {}", new Object[]{order_no, account_no, face_price});
 			JSONObject header = getHeaderObject();
 			
 			JSONObject body = new JSONObject();
@@ -133,7 +134,7 @@ public class KaixinUtil extends AbstractThird{
 			String message = obj.toString();
 
 			String retMsg = post(getUrlCharge(), message);
-			
+			thirdLog.info("charge complete, message = {}, retMsg = {}", message,retMsg);
 			return retMsg;
 		} catch (Exception e) {
 			logger.error("charge:", e);
