@@ -267,8 +267,12 @@ public class PayRoutController{
 	    			afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
 	    		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
 	    			AfOrderDo orderInfo = afOrderDao.getOrderInfoByPayOrderNo(outTradeNo);
-	    			afOrderService.dealBrandOrder(orderInfo.getRid(), outTradeNo, transactionId, PayType.WECHAT.getCode());
-        			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+    				 if (orderInfo != null 
+    						 && (orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) || orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
+    					 //未支付状态
+    					 afOrderService.dealBrandOrder(orderInfo.getRid(), outTradeNo, transactionId, PayType.WECHAT.getCode());
+    					 boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+    				 }
 	    		}else if(PayOrderSource.REPAYMENTCASH.getCode().equals(attach)){
 	    			afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, transactionId);
 
