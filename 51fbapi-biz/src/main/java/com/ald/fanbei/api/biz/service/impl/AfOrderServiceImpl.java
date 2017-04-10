@@ -214,6 +214,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
+					AfOrderDo orderInfo = orderDao.getOrderInfoByOrderNo(payOrderNo);
+					if (orderInfo == null || orderInfo.getStatus().equals(OrderStatus.REBATED.getCode())) {
+						return null;
+					}
 					//支付成功后,直接返利
 					AfOrderDo newOrder = new AfOrderDo();
 					newOrder.setPayTradeNo(payOrderNo);
@@ -594,14 +598,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public int dealBrandOrder(final Long orderId, final String payOrderNo, final String tradeNo, final String payType) {
+	public int dealBrandOrderSucc(final String payOrderNo, final String tradeNo, final String payType) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
+					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+					if (orderInfo == null 
+   						 || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
+						return 0;
+					}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
-					AfOrderDo orderInfo = new AfOrderDo();
-					orderInfo.setRid(orderId);
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
@@ -610,6 +617,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
+					boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
