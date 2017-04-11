@@ -59,6 +59,8 @@ public class RiskAddressListDetailBo extends HashMap<String, String> {
 	 */
 	public void setRelation(String relation) {
 		this.relation = relation;
+        this.put("relation", relation);
+
 	}
 
 }
