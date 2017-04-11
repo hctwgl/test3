@@ -462,8 +462,9 @@ public class RiskUtil extends AbstractThird{
         reqBo.setCount(detailBos.size() + "");
         reqBo.setDetails(JSON.toJSONString(detailBos));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-//        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/linkman/remove.htm", reqBo);
-        String reqResult = HttpUtil.post("http://60.190.230.35:52637" + "/modules/api/user/action/linkman/remove.htm", reqBo);
+        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/linkman/remove.htm", reqBo);
+        //测试
+//        String reqResult = HttpUtil.post("http://60.190.230.35:52637" + "/modules/api/user/action/linkman/remove.htm", reqBo);
 
         logThird(reqResult, "addressContactsPrimaries", reqBo);
         if (StringUtil.isBlank(reqResult)) {
