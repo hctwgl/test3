@@ -216,7 +216,6 @@ public abstract class BaseController {
         if(!beforeLogin){//需要登录的接口
 	        AfUserDo userInfo = afUserService.getUserByUserName(userName);
 	        String methodString = requestDataVo.getMethod();
-	        System.out.println(methodString);
 	        if(userInfo ==null&&StringUtils.equals(borrowMethodName, methodString)){
 	        	throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR);
 
