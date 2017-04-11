@@ -427,4 +427,55 @@ public class RiskUtil extends AbstractThird{
         }
 
     } 
+    
+    /**
+     * @方法描述：¬	用户联系人同步
+
+     * 
+     * @author huyang 2017年4月5日上午11:41:55
+     * 
+     * @param consumerNo
+     *            --用户唯一标识
+     * 
+     * @return
+     * @throws Exception
+     *             ¬	用户联系人同步
+
+     * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+     */
+    public RiskAddressListRespBo addressContactsPrimaries(String consumerNo,AfAuthContactsDo detail) {
+
+        RiskAddressListReqBo reqBo = new RiskAddressListReqBo();
+        reqBo.setConsumerNo(consumerNo);
+        if(detail==null){
+            return null;
+        }
+        List<RiskAddressListDetailBo> detailBos = new ArrayList<RiskAddressListDetailBo>();
+        RiskAddressListDetailBo bo = new RiskAddressListDetailBo();
+        bo.setNickname(StringUtil.filterEmoji(detail.getFriendNick()));
+        bo.setPhone(detail.getFriendPhone());
+        bo.setRelation(detail.getRelation());
+        detailBos.add(bo);
+        
+        String uuid = UUID.randomUUID().toString();
+        reqBo.setOrderNo(getOrderNo("addr", uuid.substring(uuid.length() - 4, uuid.length())));
+        reqBo.setCount(detailBos.size() + "");
+        reqBo.setDetails(JSON.toJSONString(detailBos));
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+//        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/linkman/remove.htm", reqBo);
+        String reqResult = HttpUtil.post("http://60.190.230.35:52637" + "/modules/api/user/action/linkman/remove.htm", reqBo);
+
+        logThird(reqResult, "addressContactsPrimaries", reqBo);
+        if (StringUtil.isBlank(reqResult)) {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
+        }
+        RiskAddressListRespBo riskResp = JSONObject.parseObject(reqResult, RiskAddressListRespBo.class);
+        if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+            riskResp.setSuccess(true);
+            return riskResp;
+        } else {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
+        }
+
+    } 
 }

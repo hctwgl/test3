@@ -18,6 +18,7 @@ public class RiskAddressListDetailBo extends HashMap<String, String> {
     private String nickname;// 真实姓名
     private String phone;// 手机号码
     private String tradeNo;// 明细流水号
+    private String relation;// 社会关系
 
     public String getNickname() {
         return nickname;
@@ -45,5 +46,19 @@ public class RiskAddressListDetailBo extends HashMap<String, String> {
         this.tradeNo = tradeNo;
         this.put("tradeNo", tradeNo);
     }
+
+	/**
+	 * @return the relation
+	 */
+	public String getRelation() {
+		return relation;
+	}
+
+	/**
+	 * @param relation the relation to set
+	 */
+	public void setRelation(String relation) {
+		this.relation = relation;
+	}
 
 }

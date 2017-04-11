@@ -17,6 +17,8 @@ public class AfAuthContactsDo extends AbstractSerial {
 	private Long userId;
 	private String friendNick;
 	private String friendPhone;
+	private String relation;
+
 	public Long getId() {
 		return id;
 	}
@@ -46,6 +48,18 @@ public class AfAuthContactsDo extends AbstractSerial {
 	}
 	public void setFriendPhone(String friendPhone) {
 		this.friendPhone = friendPhone;
+	}
+	/**
+	 * @return the relation
+	 */
+	public String getRelation() {
+		return relation;
+	}
+	/**
+	 * @param relation the relation to set
+	 */
+	public void setRelation(String relation) {
+		this.relation = relation;
 	}
 	
 	
