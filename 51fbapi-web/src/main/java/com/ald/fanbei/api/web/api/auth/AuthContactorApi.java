@@ -7,11 +7,13 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -28,7 +30,8 @@ public class AuthContactorApi implements ApiHandle {
 
 	@Resource
 	AfUserAuthService afUserAuthService;
-	
+	 @Resource
+	    RiskUtil riskUtil;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -38,6 +41,13 @@ public class AuthContactorApi implements ApiHandle {
 		if(StringUtil.isBlank(contactorName)||StringUtil.isBlank(contactorMobile)||StringUtil.isBlank(contactorType)){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
+		 AfAuthContactsDo item = new AfAuthContactsDo();
+	        item.setFriendNick(contactorName);
+	        item.setFriendPhone(contactorMobile);
+	        item.setUserId(context.getUserId());
+	        item.setRelation(contactorType);
+		
+        riskUtil.addressContactsPrimaries(context.getUserId() + "", item);
 		AfUserAuthDo authDo = new AfUserAuthDo();
 		authDo.setContactorStatus(YesNoStatus.YES.getCode());
 		authDo.setContactorName(contactorName);
