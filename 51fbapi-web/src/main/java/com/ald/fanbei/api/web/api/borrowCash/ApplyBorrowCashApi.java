@@ -129,13 +129,13 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		}
 
 		// 认证信息判断
-		if (StringUtils.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
-				|| StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.NO.getCode())
-				|| StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.NO.getCode())
-				|| StringUtils.equals(authDo.getYdStatus(), YesNoStatus.NO.getCode())
-				|| StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.NO.getCode())
-				|| StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.NO.getCode())
-				|| StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {
+		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 
 		}
