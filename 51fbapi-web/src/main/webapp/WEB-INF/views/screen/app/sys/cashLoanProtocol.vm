@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    #set($version="2017040701")
+    #set($version="2017041301")
     <head>
 		<title>个人现金服务合同</title>
 	    <style type="text/css">
@@ -44,9 +44,9 @@
 	    </style>
     </head>
     <body style="background-color: #fff;">
-    	<div class="cashLoanProtocol fs_14">
+    	<div class="cashLoanProtocol">
             <p>
-                <span class="tac" style="width: 100%;">借款协议</span><br>
+                <span class="tac" style="width: 100%;">个人现金服务合同</span><br>
                 编号：#if($!{borrowNo})$!{borrowNo}#end<br>
                 甲方 （借款人）：$!{realName}<br>
                 身份证号码：$!{idNumber}<br>
@@ -55,13 +55,13 @@
                 借款人甲方通过丙方平台提出借款需求，丙方介绍甲方在丙方运营的融资平台向出借人乙方借款，乙方亦同意出借款项，丙方为甲方、乙方借款提供居间服务，现经各方协商一致，达成如下协议：<br>
                 <div class="cashLoanProtocol_table">
                     <p><i class="tac" style="width: 100%;">&nbsp;借款明细</i></p>
-                    <p><i class="cashLoanProtocol_table1">&nbsp;本金金额</i><i class="principal">&nbsp;￥{{change($!{amountLower})}}</i></p>
+                    <p><i class="cashLoanProtocol_table1">&nbsp;本金金额</i><i>&nbsp;￥{{changePrincipal($!{amountLower})}}</i></p>
                     <p><i class="cashLoanProtocol_table1">&nbsp;大写金额</i><i>&nbsp;人民币$!{amountCapital}整</i></p>
-                    <p><i class="cashLoanProtocol_table1">&nbsp;借款用途</i><i class="cashLoanProtocol_table2">&nbsp;个人消费</i><i class="cashLoanProtocol_table1">&nbsp;年化利率</i><i class="rate1">&nbsp;{{change($!{yearRate})}}</i></p>
+                    <p><i class="cashLoanProtocol_table1">&nbsp;借款用途</i><i class="cashLoanProtocol_table2">&nbsp;个人消费</i><i class="cashLoanProtocol_table1">&nbsp;还款方式</i><i>&nbsp;到期一次性还款</i></p>
                     <p><i class="cashLoanProtocol_table1">&nbsp;借款起息日</i><i class="cashLoanProtocol_table2">&nbsp;#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd")#end</i><i class="cashLoanProtocol_table1">&nbsp;借款到期日</i><i>&nbsp;#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></p>
-                    <p><i class="cashLoanProtocol_table5">&nbsp;借款手续费率</i><i class="cashLoanProtocol_table1 rate2">&nbsp;{{change($!{poundage})}}</i><i class="cashLoanProtocol_table1">&nbsp;还款方式</i><i>&nbsp;到期一次性还款</i></p>
-                    <p><i class="tac" style="width: 100%;">&nbsp;逾期后产生的费率</i></p>
-                    <p><i class="cashLoanProtocol_table5">&nbsp;滞纳金率</i><i class="rate3">&nbsp;{{change($!{overdueRate})}}</i></p>
+                    <p><i class="cashLoanProtocol_table5">&nbsp;借款手续费率</i><i class="cashLoanProtocol_table1">&nbsp;{{changeRate($!{poundage})}}</i><i class="cashLoanProtocol_table1">&nbsp;年化利率</i><i>&nbsp;{{changeRate($!{yearRate})}}</i></p>
+                    <p><i class="tac" style="width: 100%;">&nbsp;逾期后产生的滞纳金</i></p>
+                    <p><i class="cashLoanProtocol_table5">&nbsp;滞纳金率</i><i>&nbsp;{{changeRate($!{overdueRate})}}</i></p>
                 </div>
                 （注：因丙方开展运营活动，给予甲方部分补贴或减免的，以丙方平台的运营规则与活动解释为准）<br><br>
                 <span>释义：</span><br>
@@ -82,14 +82,16 @@
                 5、乙方按照丙方平台的规则接受丙方平台发布的甲方的借款申请，对平台发布的投资计划类似点击“充值”按钮时，即视为乙方阅知并同意本协议（以电子形式生成），并向丙方发出不可撤销的授权指令，授权丙方委托其指定的第三方支付机构从乙方的账户划扣出借资金，扣款金额等于本协议《借款标的明细》所列的借款本金金额。<br><br>
 
                 <span>第二条 正常还款</span><br>
-                1、还款方式以《借款标的明细》中列明的方式为准，甲方须在还款日当日18:00前将包括本金、利息以及依照《平台服务协议》应当支付的相应全部款项支付至甲方还款账户。<br>
+                1、还款方式以《借款标的明细》中列明的方式为准，甲方须在还款日当日24:00前将包括本金、利息以及依照《平台服务协议》应当支付的相应全部款项支付至甲方还款账户。<br>
                 2、甲方应通过丙方或丙方合作方平台类似点击“还款”选项，或经由丙方认可的其他方式进行还款操作，按时足额将还款金额支付至甲方还款账户，由于余额不足、账户问题、甲方操作失误等原因导致划款失败的由甲方承担相应责任。<br>
                 3、甲方不可撤销地授权丙方向第三方支付机构发出划款指令，从甲方还款账户中划扣相当于当期甲方应还款项的全部金额，第三方支付机构在接到划款指令后成功划转还款至乙方账户的视作甲方还款成功，由于账户余额不足、账户原因、甲方操作失误等原因导致划款失败的由甲方承担相应责任。<br>
                 4、乙方不可撤销地授权丙方向银行/第三方支付机构发出划款指令，将甲方还款本息支付至乙方账户。<br><br>
 
                 <span>第三条 逾期还款</span><br>
-                1、甲方未能在任何一个还款日18:00前足额支付还款金额至甲方还款账户的，或未能通过经由丙方认可的其他方式进行还款操作的，视作逾期还款。<br>
-                2、甲方逾期还款的，自还款日后第1日起向丙方支付逾期管理费。逾期费用计算方式如下：逾期还款费用=剩余还款金额*（1+借款日利率+手续费率+逾期费率）<br>
+                1、甲方未能在任何一个还款日24:00前足额支付还款金额至甲方还款账户的，或未能通过经由丙方认可的其他方式进行还款操作的，视作逾期还款。<br>
+                2、甲方逾期还款的，自还款日后第1日起向丙方支付滞纳金。逾期后的还款计算方式如下：<br>
+                滞纳金=上一个自然日应还金额*滞纳金率；<br>
+                当日应还金额=上一个自然日应还金额+滞纳金；<br>
                 3、甲方逾期还款的，丙方或丙方的合作方以风险准备金垫付逾期欠款。各方确认丙方或丙方合作方在垫付逾期欠款后有权以自己的名义向甲方追讨相关款项，具体垫付方式和额度以相关协议和《风险准备金规则》为准。<br>
                 4、甲方逾期还款的，根据本协议项下的授权委托，丙方或丙方合作的第三方支付机构有权从甲方账户中代扣或向相应各方代还其应付款项，还款优先顺序如下：实现债权的费用、逾期管理费、丙方居间服务费、利息、本金；<br>
                 5、甲方发生可能造成逾期还款的情形的，乙方授权丙方可以宣告借款提前到期，宣告提前到期时甲方的应还款及顺序如下：逾期管理费、丙方居间服务费、利息、本金；如甲方未能于宣告提前到期当日偿还如上全部应还款金额，则除上述应还款金额外，还须自宣告提起到期之日后第一日起向丙方支付提前到期管理费，具体以甲方与丙方签订的《平台服务协议》为准，并优先于宣告到期后应支付的其他款项支付。<br>
