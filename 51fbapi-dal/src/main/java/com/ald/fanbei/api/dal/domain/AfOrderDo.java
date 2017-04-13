@@ -30,6 +30,7 @@ public class AfOrderDo extends AbstractSerial{
 	private String orderType;
 	private Long goodsId;
 	private String openId;
+	private String numId;
 	private String goodsName;
 	private String goodsIcon;
 	private Integer count;
@@ -272,5 +273,17 @@ public class AfOrderDo extends AbstractSerial{
 	 */
 	public void setSecType(String secType) {
 		this.secType = secType;
+	}
+	/**
+	 * @return the numId
+	 */
+	public String getNumId() {
+		return numId;
+	}
+	/**
+	 * @param numId the numId to set
+	 */
+	public void setNumId(String numId) {
+		this.numId = numId;
 	}
 }

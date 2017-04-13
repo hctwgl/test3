@@ -31,7 +31,8 @@ public class TaobaoApiUtil extends AbstractThird {
 	private static TaobaoClient client = null;
 	private static final Long PAGE_SIZE = 50L;
 	
-	private static final String NUM_IID = "numIid";
+	public static final String NUM_IID = "numIid";
+	public static final String OPEN_IID = "openIids";
 	
 	private static TaobaoClient getTaobaoClient() {
 		if (client == null) {
@@ -96,7 +97,12 @@ public class TaobaoApiUtil extends AbstractThird {
 		TaobaoClient client = getTaobaoClient();
 		TaeItemsListRequest req = new TaeItemsListRequest();
 		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS));
-		req.setNumIids(params.get(NUM_IID).toString());
+		if (params.get(NUM_IID) != null) {
+			req.setNumIids(params.get(NUM_IID).toString());
+		}
+		if (params.get(OPEN_IID) != null) {
+			req.setOpenIids(params.get(OPEN_IID).toString());
+		}
 		logger.info("executeTbkRebateRecords complete.");
 		return client.execute(req);
 	}
