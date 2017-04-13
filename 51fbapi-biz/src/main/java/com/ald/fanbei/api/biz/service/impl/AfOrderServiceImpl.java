@@ -161,7 +161,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							String numId = StringUtils.EMPTY;
 							BigDecimal priceAmount = BigDecimal.ZERO;
 							int count = NumberUtil.objToIntDefault(goodsObj.getString("auction_amount"), 1);
-							priceAmount = NumberUtil.objToBigDecimalDefault(obj.getString("real_pay"), BigDecimal.ZERO);
+							priceAmount = NumberUtil.objToBigDecimalDefault(goodsObj.getString("real_pay"), BigDecimal.ZERO);
 							AfGoodsDo goods = afGoodsDao.getGoodsByOpenId(goodsObj.getString("auction_id"));
 							if(null == goods){
 								try {
