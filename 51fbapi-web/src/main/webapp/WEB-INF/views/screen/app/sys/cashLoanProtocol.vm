@@ -46,7 +46,7 @@
     <body style="background-color: #fff;">
     	<div class="cashLoanProtocol">
             <p>
-                <span class="tac" style="width: 100%;">借款协议</span><br>
+                <span class="tac" style="width: 100%;">个人现金服务合同</span><br>
                 编号：#if($!{borrowNo})$!{borrowNo}#end<br>
                 甲方 （借款人）：$!{realName}<br>
                 身份证号码：$!{idNumber}<br>
