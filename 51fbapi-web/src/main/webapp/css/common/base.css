@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-18 16:32:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-13 20:41:37
+* @Last Modified time: 2017-04-13 12:01:10
 * @title:  公用的样式
 */
 
@@ -40,6 +40,10 @@
 .tar { text-align: right; }
 .bdr_4 { border-radius: 0.2rem; }
 .bdc_cb { border: 1px solid #CBCBCB; }
+
+/*兼容*/
+.bgs_c { -webkit-background-size: cover; -moz-background-size: cover; -ms-background-size: cover; background-size: cover; }
+.bs_bb { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 
 /*公用的缺省页*/
 .nullPrompt { text-align: center; }
