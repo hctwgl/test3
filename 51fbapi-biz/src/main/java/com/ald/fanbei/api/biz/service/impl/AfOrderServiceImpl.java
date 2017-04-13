@@ -164,26 +164,22 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							priceAmount = NumberUtil.objToBigDecimalDefault(goodsObj.getString("real_pay"), BigDecimal.ZERO);
 							AfGoodsDo goods = afGoodsDao.getGoodsByOpenId(goodsObj.getString("auction_id"));
 							if(null == goods){
-								try {
-									Map<String, Object> params = new HashMap<String, Object>();
-									params.put(TaobaoApiUtil.OPEN_IID, goodsObj.getString("auction_id"));
-									List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
-									XItem item = nTbkItemList.get(0);
-									if (item != null) {
-										logger.info("createOrderTrade_content item is not null");
-										orderType = item.getMall() ? OrderType.TMALL.getCode() : OrderType.TAOBAO.getCode();
-										numId = item.getOpenId() + StringUtils.EMPTY;
-									} else {
-										//默认值
-										TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(goodsObj.getString("auction_id"));
-										logger.info("createOrderTrade_content item is null res = {}", res);
-										JSONObject resObj = JSON.parseObject(res.getBody());
-										JSONObject sellerInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data").getJSONObject("seller_info");
-										orderType = sellerInfo.getString("seller_type").toUpperCase();
-										numId = StringUtils.EMPTY;
-									}
-								} catch (Exception e) {
-									e.printStackTrace();
+								Map<String, Object> params = new HashMap<String, Object>();
+								params.put(TaobaoApiUtil.OPEN_IID, goodsObj.getString("auction_id"));
+								List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+								XItem item = nTbkItemList.get(0);
+								if (item != null) {
+									logger.info("createOrderTrade_content item is not null");
+									orderType = item.getMall() ? OrderType.TMALL.getCode() : OrderType.TAOBAO.getCode();
+									numId = item.getOpenId() + StringUtils.EMPTY;
+								} else {
+									//默认值
+									TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(goodsObj.getString("auction_id"));
+									logger.info("createOrderTrade_content item is null res = {}", res);
+									JSONObject resObj = JSON.parseObject(res.getBody());
+									JSONObject sellerInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data").getJSONObject("seller_info");
+									orderType = sellerInfo.getString("seller_type").toUpperCase();
+									numId = StringUtils.EMPTY;
 								}
 							}else{
 								goodsId = goods.getRid();
