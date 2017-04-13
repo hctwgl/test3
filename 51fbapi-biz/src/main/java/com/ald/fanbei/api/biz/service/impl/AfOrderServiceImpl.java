@@ -78,6 +78,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
+import com.taobao.api.response.TaeItemDetailGetResponse;
 /**
  *@类描述：
  *@author 何鑫 2017年16月20日 下午4:20:22
@@ -142,47 +143,69 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	UpsUtil upsUtil;
 	
 	@Override
-	public int createOrderTrade(String content) {
+	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:"+content);
-		JSONObject obj = JSON.parseObject(content);
-		JSONArray array = JSON.parseArray(obj.getString("auction_infos"));
-		List<AfOrderDo> orderList = new ArrayList<AfOrderDo>();
-		if (CollectionUtils.isNotEmpty(array)) {
-			//如果有多个 生成多个订单
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject goodsObj = array.getJSONObject(i);
-				Long goodsId =0l;
-				String orderType="";
-				String numId = StringUtils.EMPTY;
-				BigDecimal priceAmount = BigDecimal.ZERO;
-				int count = NumberUtil.objToIntDefault(goodsObj.getString("auction_amount"), 1);
-				priceAmount = NumberUtil.objToBigDecimalDefault(obj.getString("paid_fee"), BigDecimal.ZERO);
-				AfGoodsDo goods = afGoodsDao.getGoodsByOpenId(goodsObj.getString("auction_id"));
-				if(null == goods){
-					try {
-						Map<String, Object> params = new HashMap<String, Object>();
-						params.put(TaobaoApiUtil.OPEN_IID, goodsObj.getString("auction_id"));
-						List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
-						XItem item = nTbkItemList.get(0);
-						orderType = item.getMall() ? OrderType.TMALL.getCode() : OrderType.TAOBAO.getCode();
-						numId = item.getOpenId() + StringUtils.EMPTY;
-					} catch (Exception e) {
-						e.printStackTrace();
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					JSONObject obj = JSON.parseObject(content);
+					JSONArray array = JSON.parseArray(obj.getString("auction_infos"));
+					List<AfOrderDo> orderList = new ArrayList<AfOrderDo>();
+					if (CollectionUtils.isNotEmpty(array)) {
+						//如果有多个 生成多个订单
+						for (int i = 0; i < array.size(); i++) {
+							JSONObject goodsObj = array.getJSONObject(i);
+							Long goodsId =0l;
+							String orderType="";
+							String numId = StringUtils.EMPTY;
+							BigDecimal priceAmount = BigDecimal.ZERO;
+							int count = NumberUtil.objToIntDefault(goodsObj.getString("auction_amount"), 1);
+							priceAmount = NumberUtil.objToBigDecimalDefault(obj.getString("real_pay"), BigDecimal.ZERO);
+							AfGoodsDo goods = afGoodsDao.getGoodsByOpenId(goodsObj.getString("auction_id"));
+							if(null == goods){
+								try {
+									Map<String, Object> params = new HashMap<String, Object>();
+									params.put(TaobaoApiUtil.OPEN_IID, goodsObj.getString("auction_id"));
+									List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+									XItem item = nTbkItemList.get(0);
+									if (item != null) {
+										logger.info("createOrderTrade_content item is not null");
+										orderType = item.getMall() ? OrderType.TMALL.getCode() : OrderType.TAOBAO.getCode();
+										numId = item.getOpenId() + StringUtils.EMPTY;
+									} else {
+										//默认值
+										TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(goodsObj.getString("auction_id"));
+										logger.info("createOrderTrade_content item is null res = {}", res);
+										JSONObject resObj = JSON.parseObject(res.getBody());
+										JSONObject sellerInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data").getJSONObject("seller_info");
+										orderType = sellerInfo.getString("seller_type").toUpperCase();
+										numId = StringUtils.EMPTY;
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}else{
+								goodsId = goods.getRid();
+								orderType = goods.getSource();
+								numId = goods.getNumId();
+							}
+							AfOrderDo order = buildFullInfo(0l, obj.getString("order_id"), goodsObj.getString("detail_order_id"), StringUtils.EMPTY, OrderStatus.NEW.getCode(), 0l, orderType, 
+									StringUtils.EMPTY, goodsId, goodsObj.getString("auction_id"), numId, goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, 
+									priceAmount, priceAmount, priceAmount, obj.getString("shop_title"), PayStatus.NOTPAY.getCode(), StringUtils.EMPTY, StringUtils.EMPTY, null, StringUtils.EMPTY, null, StringUtils.EMPTY, null, BigDecimal.ZERO, BigDecimal.ZERO, 0l, null); 
+							orderList.add(order);
+						}
+						logger.info("createOrderTrade_content orderList = {}" ,orderList);
+						return orderDao.createOrderList(orderList);
 					}
-				}else{
-					goodsId = goods.getRid();
-					orderType = goods.getSource();
-					numId = goods.getNumId();
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("dealMobileChargeOrder error:",e);
+					return 0;
 				}
-				AfOrderDo order = buildFullInfo(0l, obj.getString("order_id"), goodsObj.getString("detail_order_id"), StringUtils.EMPTY, OrderStatus.NEW.getCode(), 0l, orderType, 
-						StringUtils.EMPTY, goodsId, goodsObj.getString("auction_id"), numId, goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, 
-						priceAmount, priceAmount, priceAmount, obj.getString("shop_title"), PayStatus.NOTPAY.getCode(), StringUtils.EMPTY, StringUtils.EMPTY, null, StringUtils.EMPTY, null, StringUtils.EMPTY, null, BigDecimal.ZERO, BigDecimal.ZERO, 0l, null); 
-				orderList.add(order);
 			}
-			logger.info("createOrderTrade_content orderList = {}" ,orderList);
-			return orderDao.createOrderList(orderList);
-		}
-		return 1;
+		});
 	}
 
 	@Override

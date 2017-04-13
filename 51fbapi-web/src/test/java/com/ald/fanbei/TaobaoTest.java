@@ -4,6 +4,7 @@ import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.BaichuanItemsUnsubscribeRequest;
+import com.taobao.api.request.TaeItemsListRequest;
 import com.taobao.api.request.TbkItemGetRequest;
 import com.taobao.api.response.BaichuanItemsUnsubscribeResponse;
 import com.taobao.api.response.TbkItemGetResponse;
@@ -18,6 +19,13 @@ import com.taobao.api.response.TbkItemGetResponse;
  */
 public class TaobaoTest {
 	public static void main(String[] args) throws ApiException {
+		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23427320", "f96804bd151c12114fa51ddb1bff91b6");
+		
+		TaeItemsListRequest req = new TaeItemsListRequest();
+		req.setFields("title,nick,pic_url,location,cid,price,post_fee,promoted_service,ju,shop_name");
+		req.setNumIids("542598579311");
+		System.out.println(client.execute(req).getBody());
+		
 //		TaobaoClient client = new DefaultTaobaoClient("", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
 //		AtbItemsDetailGetRequest req = new AtbItemsDetailGetRequest();
 //		req.setFields("open_iid,title");
@@ -31,7 +39,6 @@ public class TaobaoTest {
 //		req1.setParentCid(0L);
 //		ItemcatsGetResponse response = client.execute(req);
 		
-//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
 //		AtbItemsGetRequest req = new AtbItemsGetRequest();
 //		req.setCid(50008075L);
 //		req.setFields("open_iid,title,nick,pic_url,price,commission,commission_rate,commission_num,commission_volume,seller_credit_score,item_location,volume");
@@ -84,23 +91,22 @@ public class TaobaoTest {
 		
 		
 //		//淘宝客，搜索商品，没有返利
-		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-		TbkItemGetRequest req = new TbkItemGetRequest();
-		req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick");
-		req.setQ("2017新款春季男士运动休闲鞋韩版潮流板鞋男鞋子阿甘帆");
-		req.setSort("total_sales_des");
-		req.setIsOverseas(false);
-		req.setStartPrice(0L);
-		req.setEndPrice(100000L);
-		req.setStartTkRate(123L);
-		req.setEndTkRate(1000L);
-		req.setPageSize(100L);
-		TbkItemGetResponse rsp = client.execute(req);
-		System.out.println(rsp.getBody());
-		System.out.println(rsp.getResults());
-		System.out.println(rsp.getTotalResults());
-		System.out.println(rsp.getErrorCode());
-		System.out.println(rsp.getParams());
+//		TbkItemGetRequest req = new TbkItemGetRequest();
+//		req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick");
+//		req.setQ("2017新款春季男士运动休闲鞋韩版潮流板鞋男鞋子阿甘帆");
+//		req.setSort("total_sales_des");
+//		req.setIsOverseas(false);
+//		req.setStartPrice(0L);
+//		req.setEndPrice(100000L);
+//		req.setStartTkRate(123L);
+//		req.setEndTkRate(1000L);
+//		req.setPageSize(100L);
+//		TbkItemGetResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+//		System.out.println(rsp.getResults());
+//		System.out.println(rsp.getTotalResults());
+//		System.out.println(rsp.getErrorCode());
+//		System.out.println(rsp.getParams());
 		
 		//获取淘宝客返利
 //		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
@@ -193,11 +199,11 @@ public class TaobaoTest {
 //		System.out.println(rsp.getBody());
 		
 		//批量删除商品订阅， 最多100个
-		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-		BaichuanItemsUnsubscribeRequest req1 = new BaichuanItemsUnsubscribeRequest();
-		req1.setItemIds("22116135732,538337335488,537642216604");
-		BaichuanItemsUnsubscribeResponse rsp1 = client1.execute(req1);
-		System.out.println(rsp1.getBody());
+//		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+//		BaichuanItemsUnsubscribeRequest req1 = new BaichuanItemsUnsubscribeRequest();
+//		req1.setItemIds("22116135732,538337335488,537642216604");
+//		BaichuanItemsUnsubscribeResponse rsp1 = client1.execute(req1);
+//		System.out.println(rsp1.getBody());
 		
 		
 		//按条件查询订阅关系，最多100

@@ -19,15 +19,15 @@ public enum PayStatus {
     private String code;
     private String name;
 
-    private static Map<String,MobileStatus> codeRoleTypeMap = null;
+    private static Map<String,PayStatus> codeRoleTypeMap = null;
 
     PayStatus(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static MobileStatus findRoleTypeByCode(String code) {
-        for (MobileStatus roleType : MobileStatus.values()) {
+    public static PayStatus findRoleTypeByCode(String code) {
+        for (PayStatus roleType : PayStatus.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
@@ -36,12 +36,12 @@ public enum PayStatus {
     }
 
     
-    public static Map<String,MobileStatus> getCodeRoleTypeMap(){
+    public static Map<String,PayStatus> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
             return codeRoleTypeMap;
         }
-        codeRoleTypeMap = new HashMap<String, MobileStatus>();
-        for(MobileStatus item:MobileStatus.values()){
+        codeRoleTypeMap = new HashMap<String, PayStatus>();
+        for(PayStatus item:PayStatus.values()){
             codeRoleTypeMap.put(item.getCode(), item);
         }
         return codeRoleTypeMap;
