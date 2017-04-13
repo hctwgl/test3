@@ -261,16 +261,17 @@ public class RiskUtil extends AbstractThird{
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setChannel(CHANNEL);
 		reqBo.setScene(scene);
-		reqBo.setCardNo(cardNo);
-		reqBo.setAppName(appName);
-		reqBo.setIpAddress(ipAddress);
-		reqBo.setBlackBox(blackBox);
+		
 		JSONObject obj = new JSONObject();
 		obj.put("cardNo", cardNo);
 		reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setReqExt("");
 		reqBo.setNotifyUrl(getNotifyHost()+"/third/risk/verify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		reqBo.setCardNo(cardNo);
+		reqBo.setAppName(appName);
+		reqBo.setIpAddress(ipAddress);
+		reqBo.setBlackBox(blackBox);
 		String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/risk/verify.htm", reqBo);
 		logThird(reqResult, "verify", reqBo);
 		if(StringUtil.isBlank(reqResult)){
