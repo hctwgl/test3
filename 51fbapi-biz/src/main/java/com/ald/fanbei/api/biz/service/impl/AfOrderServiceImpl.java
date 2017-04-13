@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Service;
@@ -75,7 +77,7 @@ import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.taobao.api.response.TaeItemDetailGetResponse;
+import com.taobao.api.domain.XItem;
 /**
  *@类描述：
  *@author 何鑫 2017年16月20日 下午4:20:22
@@ -144,30 +146,43 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		logger.info("createOrderTrade_content:"+content);
 		JSONObject obj = JSON.parseObject(content);
 		JSONArray array = JSON.parseArray(obj.getString("auction_infos"));
-		JSONObject goodsObj = array.getJSONObject(0);
-		Long goodsId =0l;
-		String orderType="";
-		BigDecimal priceAmount = BigDecimal.ZERO;
-		int count = NumberUtil.objToIntDefault(goodsObj.getString("auction_amount"), 1);
-		priceAmount = NumberUtil.objToBigDecimalDefault(goodsObj.getString("real_pay"), BigDecimal.ZERO).multiply(new BigDecimal(count));
-		AfGoodsDo goods = afGoodsDao.getGoodsByOpenId(goodsObj.getString("auction_id"));
-		if(null == goods){
-			try {
-				TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(goodsObj.getString("auction_id"));
-				JSONObject resObj = JSON.parseObject(res.getBody());
-				JSONObject sellerInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data").getJSONObject("seller_info");
-				orderType = sellerInfo.getString("seller_type").toUpperCase();
-			} catch (Exception e) {
-				e.printStackTrace();
+		List<AfOrderDo> orderList = new ArrayList<AfOrderDo>();
+		if (CollectionUtils.isNotEmpty(array)) {
+			//如果有多个 生成多个订单
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject goodsObj = array.getJSONObject(i);
+				Long goodsId =0l;
+				String orderType="";
+				String numId = StringUtils.EMPTY;
+				BigDecimal priceAmount = BigDecimal.ZERO;
+				int count = NumberUtil.objToIntDefault(goodsObj.getString("auction_amount"), 1);
+				priceAmount = NumberUtil.objToBigDecimalDefault(obj.getString("paid_fee"), BigDecimal.ZERO);
+				AfGoodsDo goods = afGoodsDao.getGoodsByOpenId(goodsObj.getString("auction_id"));
+				if(null == goods){
+					try {
+						Map<String, Object> params = new HashMap<String, Object>();
+						params.put(TaobaoApiUtil.OPEN_IID, goodsObj.getString("auction_id"));
+						List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+						XItem item = nTbkItemList.get(0);
+						orderType = item.getMall() ? OrderType.TMALL.getCode() : OrderType.TAOBAO.getCode();
+						numId = item.getOpenId() + StringUtils.EMPTY;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}else{
+					goodsId = goods.getRid();
+					orderType = goods.getSource();
+					numId = goods.getNumId();
+				}
+				AfOrderDo order = buildFullInfo(0l, obj.getString("order_id"), goodsObj.getString("detail_order_id"), StringUtils.EMPTY, OrderStatus.NEW.getCode(), 0l, orderType, 
+						StringUtils.EMPTY, goodsId, goodsObj.getString("auction_id"), numId, goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, 
+						priceAmount, priceAmount, priceAmount, obj.getString("shop_title"), PayStatus.NOTPAY.getCode(), StringUtils.EMPTY, StringUtils.EMPTY, null, StringUtils.EMPTY, null, StringUtils.EMPTY, null, BigDecimal.ZERO, BigDecimal.ZERO, 0l, null); 
+				orderList.add(order);
 			}
-		}else{
-			goodsId = goods.getRid();
-			orderType = goods.getSource();
+			logger.info("createOrderTrade_content orderList = {}" ,orderList);
+			return orderDao.createOrderList(orderList);
 		}
-		AfOrderDo order = buildOrder(null,obj.getString("order_id"), "",0l, null, priceAmount, priceAmount, "", BigDecimal.ZERO, 
-				orderType, priceAmount, goodsId, goodsObj.getString("auction_id"), 
-				goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, obj.getString("shop_title"),0l);
-		return orderDao.createOrder(order);
+		return 1;
 	}
 
 	@Override
@@ -365,6 +380,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param actualAmount --实际支付价格
 	 * @param goodsId --商品id
 	 * @param openId  --商品混淆id
+	 * @param numId  --商品数字id
 	 * @param goodsName --商品名称
 	 * @param goodsIcon --商品图片
 	 * @param count --数量
@@ -373,7 +389,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 */
 	private AfOrderDo buildOrder(Date now,String orderNo,String payTradeNo,Long userId, AfUserCouponDto couponDto,
 			BigDecimal money,BigDecimal saleAmount, String mobile,BigDecimal rebateAmount,String orderType,BigDecimal actualAmount,
-			Long goodsId,String openId,String goodsName,String goodsIcon,int count,String shopName,Long bankId){
+			Long goodsId,String openId, String goodsName,String goodsIcon,int count,String shopName,Long bankId){
 		AfOrderDo orderDo = new AfOrderDo();
 		orderDo.setGmtCreate(now);
 		orderDo.setUserId(userId);
@@ -398,6 +414,44 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		orderDo.setRebateAmount(rebateAmount);
 		orderDo.setMobile(mobile);
 		orderDo.setBankId(bankId);
+		return orderDo;
+	}
+	
+	private AfOrderDo buildFullInfo(Long userId,String orderNo,String thirdOrderNo,String thirdDetailUrl,String status,Long userCouponId, String orderType,
+			String secType, Long goodsId, String openId, String numId, String goodsName, String goodsIcon, Integer count, BigDecimal priceAmount, BigDecimal saleAmount,
+			BigDecimal actualAmount, String shopName, String payStatus, String payType, String payTradeNo, Date gmtPay, String tradeNo, Date gmtRebated, String mobile,
+			Date gmtFinished, BigDecimal rebateAmount, BigDecimal commissionAmount, Long bankId, Date gmtPayEnd) {
+		AfOrderDo orderDo = new AfOrderDo();
+		orderDo.setUserId(userId);
+		orderDo.setOrderNo(orderNo);
+		orderDo.setThirdOrderNo(thirdOrderNo);
+		orderDo.setThirdDetailUrl(thirdDetailUrl);
+		orderDo.setStatus(status);
+		orderDo.setUserCouponId(userCouponId);
+		orderDo.setOrderType(orderType);
+		orderDo.setSecType(secType);
+		orderDo.setGoodsId(goodsId);
+		orderDo.setOpenId(openId);
+		orderDo.setNumId(numId);
+		orderDo.setGoodsName(goodsName);
+		orderDo.setGoodsIcon(goodsIcon);
+		orderDo.setCount(count);
+		orderDo.setPriceAmount(priceAmount);
+		orderDo.setSaleAmount(saleAmount);
+		orderDo.setActualAmount(actualAmount);
+		orderDo.setShopName(shopName);
+		orderDo.setPayStatus(payStatus);
+		orderDo.setPayType(payType);
+		orderDo.setPayTradeNo(payTradeNo);
+		orderDo.setGmtPay(gmtPay);
+		orderDo.setTradeNo(tradeNo);
+		orderDo.setGmtRebated(gmtRebated);
+		orderDo.setMobile(mobile);
+		orderDo.setGmtFinished(gmtFinished);
+		orderDo.setRebateAmount(rebateAmount);
+		orderDo.setCommissionAmount(commissionAmount);
+		orderDo.setBankId(bankId);
+		orderDo.setGmtPayEnd(gmtPayEnd);
 		return orderDo;
 	}
 

@@ -23,6 +23,13 @@ public interface AfOrderDao {
 	int createOrder(AfOrderDo afOrder);
 	
 	/**
+	 * 订单列表
+	 * @param orderList
+	 * @return
+	 */
+	int createOrderList(@Param("items")List<AfOrderDo> orderList);
+	
+	/**
 	 * 修改订单
 	 * @param afOrder
 	 * @return
