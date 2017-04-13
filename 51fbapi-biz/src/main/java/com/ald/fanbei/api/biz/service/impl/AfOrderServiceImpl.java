@@ -290,7 +290,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							try {
 								String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
 								if(!"SUCCESS".equals(refundResult)){
+									afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL));
 									throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+								}else{
+                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH));
 								}
 							} catch (Exception e) {
 								pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
@@ -302,7 +305,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
 									card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
 							if(!upsResult.isSuccess()){
+								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL));
 								pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+							}else{
+                            	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH));
 							}
 						}
 						newOrder.setStatus(OrderStatus.CLOSED.getCode());
@@ -353,7 +359,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 try {
                                     String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
                                     if (!"SUCCESS".equals(refundResult)) {
-                                        throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL));
+            							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+                                    }else{
+                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH));
                                     }
                                 } catch (Exception e) {
                                     pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
@@ -365,7 +374,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId() + "",
                                         card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02", OrderType.MOBILE.getCode(), "");
                                 if (!upsResult.isSuccess()) {
-                                    pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL));
+        							pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
+                                }else{
+                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH));
                                 }
                             }
                             // 支付成功后,直接返利
