@@ -66,48 +66,60 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 	 */
 	public String getCardNo() {
 		return cardNo;
+
 	}
 	/**
 	 * @param cardNo the cardNo to set
 	 */
 	public void setCardNo(String cardNo) {
 		this.cardNo = cardNo;
+		this.put("cardNo", cardNo);
+
 	}
 	/**
 	 * @return the appName
 	 */
 	public String getAppName() {
 		return appName;
+		
 	}
 	/**
 	 * @param appName the appName to set
 	 */
 	public void setAppName(String appName) {
 		this.appName = appName;
+		this.put("appName", appName);
+
 	}
 	/**
 	 * @return the ipAddress
 	 */
 	public String getIpAddress() {
 		return ipAddress;
+
 	}
 	/**
 	 * @param ipAddress the ipAddress to set
 	 */
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
+		this.put("ipAddress", ipAddress);
+
 	}
 	/**
 	 * @return the blackBox
 	 */
 	public String getBlackBox() {
 		return blackBox;
+		
 	}
 	/**
 	 * @param blackBox the blackBox to set
 	 */
 	public void setBlackBox(String blackBox) {
 		this.blackBox = blackBox;
+		this.put("blackBox", blackBox);
+
 	}
 	public String getReqExt() {
 		return reqExt;
