@@ -11,10 +11,12 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -56,7 +58,10 @@ public class GetBorrowCashListApi implements ApiHandle {
 		data.put("amount", afBorrowCashDo.getAmount());
 		data.put("gmtCreate", afBorrowCashDo.getGmtCreate());
 		data.put("status", afBorrowCashDo.getStatus());
+		 if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())) {
+				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
+			}
 		return data;
 
 	}

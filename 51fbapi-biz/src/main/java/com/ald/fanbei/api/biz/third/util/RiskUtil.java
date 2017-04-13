@@ -264,15 +264,20 @@ public class RiskUtil extends AbstractThird{
 		
 		JSONObject obj = new JSONObject();
 		obj.put("cardNo", cardNo);
+		obj.put("appName", appName);
+		obj.put("ipAddress", ipAddress);
+		obj.put("blackBox", blackBox);
+
 		reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setReqExt("");
+		
 		reqBo.setNotifyUrl(getNotifyHost()+"/third/risk/verify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		reqBo.setCardNo(cardNo);
-		reqBo.setAppName(appName);
-		reqBo.setIpAddress(ipAddress);
-		reqBo.setBlackBox(blackBox);
+	
+		
 		String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/risk/verify.htm", reqBo);
+
+//		String reqResult = HttpUtil.httpPost("http://arc.51fanbei.com"+"/modules/api/risk/verify.htm", reqBo);
 		logThird(reqResult, "verify", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
