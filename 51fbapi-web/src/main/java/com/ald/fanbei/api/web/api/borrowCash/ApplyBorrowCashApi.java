@@ -115,7 +115,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 
 		}
 		if (context.getAppVersion() >= 340) {
-			tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
 					context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
 					requestDataVo.getMethod(), "");
 		}

@@ -83,7 +83,7 @@ public class ApplyConsumeApi implements ApiHandle {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 
 			}
-			tongdunUtil.getTradeResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
 					context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "",
 					requestDataVo.getMethod(), "");
 		}

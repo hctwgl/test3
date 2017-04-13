@@ -312,6 +312,64 @@ public class TongdunUtil extends AbstractThird {
 		}
 	}
 
+	/**
+	 * 借钱时间
+	 * 
+	 * @param tongdunEvent
+	 *            同盾事件标识
+	 * @param blackBox
+	 *            设备指纹
+	 * @param ip
+	 *            真实ip
+	 * @param accountLogin
+	 *            账户名
+	 * @param accountMobile
+	 *            账户绑定手机号
+	 * @param idNumber
+	 *            身份证号码
+	 * @param accountEmail
+	 *            账户邮箱
+	 * @param items
+	 *            订单项 
+	 */
+	public void getBorrowCashResult(String requsetId, String blackBox, String ip, String accountLogin,
+			String accountMobile, String idNumber, String realName, String accountEmail, String items, String source) {
+		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.LOAN_IOS
+				: TongdunEventEnmu.LOAN_ANDROID;
+		accountLogin = accountMobile;
+		String registSwitch = resourceValueWhithType(AfResourceType.tradeTongdunSwitch.getCode());
+
+		Map<String, Object> params = getCommonParam(tongdunEvent, blackBox, ip, accountLogin, accountMobile);
+		params.put("account_email", accountEmail);
+		params.put("id_number", idNumber);
+		params.put("account_name", realName);
+		params.put("items", items);
+		JSONObject apiResp = null;
+		try {
+			String respStr = invoke(params);
+			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+			apiResp = JSONObject.parseObject(respStr);
+		} catch (Exception e) {
+			logger.error("getTradeResult", e);
+			return;
+		}
+		if (StringUtil.isBlank(registSwitch) || "0".equals(registSwitch)) {// 验证开关关闭
+			return;
+		}
+		if (apiResp != null && apiResp.get("final_decision") != null
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
+						.indexOf(apiResp.get("final_decision") + "") < 0) {
+			logger.info("手机号码为：" + accountMobile + ".....的用户在app端进行时候被拦截....同盾返回的code是...."
+					+ apiResp.get("final_decision"));
+			// throw new
+			// BussinessException("您投资手机号存在安全风险，如有疑问请联系客服:400-135-3388");
+			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_TRADE_ERROR);
+
+		}
+	}
+	
+	
+
 	private String resourceValueWhithType(String type) {
 
 		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(type);

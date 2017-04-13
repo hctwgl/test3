@@ -289,6 +289,17 @@ public class ZhimaUtil extends AbstractThird {
 		return System.currentTimeMillis() + last13Characts;
 	}
 	
+	public static void main(String[] args) {
+		try {
+			String result = getZhimaClient().decryptAndVerifySign("siaE0N11pnSM5rYCr6sPO+a+EZJCWv8bNh8B34Pmk2sUo+WdUuukzIvw0TZNxObD/EuAbW42o8eihZ/GKWTDmS7ZALjFFO2Ld5KIoqX7Ax22t3ifYMKawqXk7OYm7IfIn7DR4dqNjkrtSapK7zRuroDI7WDvBWRidAjUL2FKX50Mq/pR1SFELqkmH1qnGmeGNOLjiFqdX6MVahJ+DtPDH2HrgEok2QoTz5Tt0mQ9jnU2S2W7VSORu/gEn472CIGKu1LVjUz1xdwZqOYIH9O4bdnvTJ4u2WcixKsgr2gZ7iE4NCbb0l+4E1dJo0RHU/lBNlQK9DdDhvk/txXDBvp6xQ==" , 
+					"bGy95Psra4PvWfMge6Tq1GCDrM4D9HFKAufljqWsnRuRJMTtihOXJyS22wSsAGRlo+XV0pqV+qotg22TSoVQjeAitrv+mcgb9KZsrjC4NFMJUepqRrH2Hm/30FTabFnAhkWxRYde1bvSOnTk6l6GDz3tG91G9fgkBzTqT9nExoM=");
+			System.out.println(result);
+		} catch (ZhimaApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 //	//芝麻开放平台地址
 //    private String gatewayUrl     = "https://zmopenapi.zmxy.com.cn/openapi.do";
 //    //商户应用 Id
