@@ -163,7 +163,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 					afBorrowCashDo.getCardNumber(),
 					(requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and"),
 					CommonUtil.getIpAddr(request), blackBox);
-
+			
+			cashDo.setRishOrderNo(result.getOrderNo());
 			Date currDate = new Date();
 
 			AfUserDo afUserDo = afUserService.getUserById(userId);

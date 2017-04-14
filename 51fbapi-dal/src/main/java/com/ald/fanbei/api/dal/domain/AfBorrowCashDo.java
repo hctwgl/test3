@@ -52,6 +52,8 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String overdueStatus;
 	private String reviewStatus;
 	private String address;
+	
+	private String rishOrderNo;
 
 	/**
 	 * @return the gmtClose
@@ -424,6 +426,12 @@ public class AfBorrowCashDo extends AbstractSerial {
 	 */
 	public void setAddress(String address) {
 		this.address = address;
+	}
+	public String getRishOrderNo() {
+		return rishOrderNo;
+	}
+	public void setRishOrderNo(String rishOrderNo) {
+		this.rishOrderNo = rishOrderNo;
 	}
 
 	
