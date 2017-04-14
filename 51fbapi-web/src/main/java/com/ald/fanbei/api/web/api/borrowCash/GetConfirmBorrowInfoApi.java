@@ -62,7 +62,13 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		Map<String, Object> data = new HashMap<String, Object>();
+		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		if(!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 
+		}
+		
 		//判断是否绑定主卡
 		data.put("isBind", authDo.getBankcardStatus());
 		Boolean isPromote = true;
@@ -96,8 +102,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			
 			BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
 
-			List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-			Map<String, Object> rate = getObjectWithResourceDolist(list);
+			
 			BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 			BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 			BigDecimal bankService =bankRate.multiply(bankDouble).divide(new BigDecimal( 360),6,RoundingMode.HALF_UP);

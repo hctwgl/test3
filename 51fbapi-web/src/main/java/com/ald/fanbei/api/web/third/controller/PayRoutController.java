@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -169,10 +170,10 @@ public class PayRoutController{
         			record.setRid(result);
         			record.setStatus("TRANSED");
         			afCashRecordDao.updateCashRecord(record);
-        		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){//提现
+        		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){//借款
         			Long rid = NumberUtil.objToLong(result);
         			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
-        			afBorrowCashDo.setStatus("TRANSED");
+        			afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
         			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
         		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
         			AfOrderDo orderInfo = afOrderService.getOrderById(result);
@@ -193,6 +194,8 @@ public class PayRoutController{
         		}
     			return "SUCCESS";
 			}else{//代付失败
+				
+				
 				if(afUserAccountService.dealUserDelegatePayError(merPriv, result)>0){
 					return "SUCCESS";
 				}

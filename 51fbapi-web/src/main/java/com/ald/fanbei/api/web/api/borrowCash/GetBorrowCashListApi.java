@@ -58,7 +58,7 @@ public class GetBorrowCashListApi implements ApiHandle {
 		data.put("amount", afBorrowCashDo.getAmount());
 		data.put("gmtCreate", afBorrowCashDo.getGmtCreate());
 		data.put("status", afBorrowCashDo.getStatus());
-		 if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())) {
+		 if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())||StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())){
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
 			}

@@ -47,6 +47,9 @@ public class GetBorrowCashBase {
 			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())){
 				 data.put("bankRate", afResourceDo.getValue());
 			}
+			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashSupuerSwitch.getCode())){
+				 data.put("supuerSwitch", afResourceDo.getValue());
+			}
 			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashLender.getCode())){
 				 data.put("lender", afResourceDo.getValue());
 

@@ -73,10 +73,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		data.put("gmtCreate", afBorrowCashDo.getGmtCreate());
 		data.put("status", afBorrowCashDo.getStatus());
 		
-		if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.noFinsh.getCode())){
-			data.put("status", AfBorrowCashStatus.transed.getCode());
-
-		}else if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())){
+		 if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())||StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())){
 			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 		}
 		AfBorrowCashType borrowCashType = AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType());
