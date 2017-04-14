@@ -201,7 +201,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			if(whiteIdsList.contains(context.getUserName())){
 				
 			}
-			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + context.getUserName());
+			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + context.getUserName() + ",isContain=" + whiteIdsList.contains(context.getUserName()));
 			if (whiteIdsList.contains(context.getUserName()) || StringUtils.equals("10", result.getResult())) {
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 				// 审核通过
