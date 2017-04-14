@@ -172,7 +172,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 				// 审核通过
 				cashDo.setGmtArrival(currDate);
-				cashDo.setStatus(AfBorrowCashStatus.transed.getCode());
+				cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
 				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 				// 打款
 				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),

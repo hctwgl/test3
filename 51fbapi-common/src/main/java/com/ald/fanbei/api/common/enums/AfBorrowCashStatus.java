@@ -15,7 +15,8 @@ public enum AfBorrowCashStatus {
 	waitTransed("WAITTRANSED", "WAITTRANSED","待打款"),
 	transed("TRANSED","TRANSED", "已经打款/待还款"), 
 	finsh("FINSH", "FINSH","已结清"),
-	noFinsh("NOFINSH", "NOFINSH","待结清"),
+	transeding("TRANSEDING", "TRANSEDING","打款中"),
+
 	transedfail("TRANSEDFAIL","TRANSEDFAIL", "打款失败"), 
 	closed("CLOSED","CLOSED", "拒绝 ");
 	

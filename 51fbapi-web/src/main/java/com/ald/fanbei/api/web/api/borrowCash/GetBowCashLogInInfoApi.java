@@ -66,7 +66,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("status", afBorrowCashDo.getStatus());
 			AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 
-			 if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())) {
+			 if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())||StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())){
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
 			}
