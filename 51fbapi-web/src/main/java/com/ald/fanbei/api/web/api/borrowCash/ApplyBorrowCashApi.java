@@ -120,13 +120,13 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			//判断是否在白名单里面
 			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
 			if (whiteListInfo != null) {
-				List<Long> whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue().split(","), new Converter<String, Long>() {
+				List<String> whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
 					@Override
-					public Long convert(String source) {
-						return Long.parseLong(source);
+					public String convert(String source) {
+						return source.trim();
 					}
 				});
-				if (!whiteIdsList.contains(userId)) {
+				if (!whiteIdsList.contains(context.getUserName())) {
 					tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
 							context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
 							requestDataVo.getMethod(), "");
