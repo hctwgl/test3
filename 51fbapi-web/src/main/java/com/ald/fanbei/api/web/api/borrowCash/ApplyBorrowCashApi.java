@@ -5,6 +5,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -118,25 +119,31 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 
 		}
+		List<String> whiteIdsList = new ArrayList<String>();
 		if (context.getAppVersion() >= 340) {
+
+			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+					context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
+					requestDataVo.getMethod(), "");
+			
 			//判断是否在白名单里面
 			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
 			if (whiteListInfo != null) {
-				List<String> whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
+				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
 					@Override
 					public String convert(String source) {
 						return source.trim();
 					}
 				});
-				if (!whiteIdsList.contains(context.getUserName())) {
-					tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
-							context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
-							requestDataVo.getMethod(), "");
-				}
-			} else {
-				tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
-						context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
-						requestDataVo.getMethod(), "");
+//				if (!whiteIdsList.contains(context.getUserName())) {
+//					tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+//							context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
+//							requestDataVo.getMethod(), "");
+//				}
+//			} else {
+//				tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+//						context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
+//						requestDataVo.getMethod(), "");
 			}
 		}
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
@@ -191,7 +198,11 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 
 			AfUserDo afUserDo = afUserService.getUserById(userId);
 
-			if (StringUtils.equals("10", result.getResult())) {
+			if(whiteIdsList.contains(context.getUserName())){
+				
+			}
+			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + context.getUserName());
+			if (whiteIdsList.contains(context.getUserName()) || StringUtils.equals("10", result.getResult())) {
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 				// 审核通过
 				cashDo.setGmtArrival(currDate);
