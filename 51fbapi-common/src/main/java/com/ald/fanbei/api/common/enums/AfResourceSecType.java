@@ -25,6 +25,7 @@ public enum AfResourceSecType {
 		BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
 		BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
 		borrowCashLender("BORROW_CASH_LENDER", "出借人信息"),
+		borrowCashSupuerSwitch("BORROW_CASH_SUPUER_SWITCH", "借款超级开关"),
 
 	MODEL_URL("MODEL_URL", "本地模板H5");
 	

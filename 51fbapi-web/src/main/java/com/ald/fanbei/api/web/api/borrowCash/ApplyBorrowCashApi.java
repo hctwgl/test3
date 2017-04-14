@@ -107,6 +107,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				|| StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
+		
+		
 
 		// 密码判断
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
@@ -161,18 +163,20 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+		
+
+		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,
+				county, address, userId);
+		
 		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
-
-		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,
-				county, address, userId);
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 		Long borrowId = afBorrowCashDo.getRid();
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
 		cashDo.setRid(borrowId);
-
+		
 		try {
 //			 RiskVerifyRespBo result =
 //			 riskUtil.verify2(ObjectUtils.toString(userId, ""),
@@ -181,7 +185,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 					afBorrowCashDo.getCardNumber(),
 					(requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and"),
 					CommonUtil.getIpAddr(request), blackBox);
-
+			
+			cashDo.setRishOrderNo(result.getOrderNo());
 			Date currDate = new Date();
 
 			AfUserDo afUserDo = afUserService.getUserById(userId);
@@ -231,7 +236,10 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
-
+		if(!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
+		}
+		
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
