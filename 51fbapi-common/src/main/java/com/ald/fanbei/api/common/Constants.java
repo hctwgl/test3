@@ -95,6 +95,8 @@ public class Constants {
     public static final String RES_BRAND_SHOP				  	  	  = "BRAND_SHOP";
     public static final String RES_CREDIT_SCORE_AMOUNT				  = "CREDIT_SCORE_AMOUNT";
     public static final String RES_CREDIT_SCORE				  	  	  = "CREDIT_SCORE";
+    public static final String APPLY_BRROW_CASH_WHITE_LIST			  = "APPLY_BRROW_CASH_WHITE_LIST";
+    
     //免审核信用分
     public static final String RES_DIRECT_TRANS_CREDIT_SCORE		  = "DIRECT_TRANS_CREDIT_SCORE";
     //风控
