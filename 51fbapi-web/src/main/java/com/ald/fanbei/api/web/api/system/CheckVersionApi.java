@@ -3,9 +3,13 @@
  */
 package com.ald.fanbei.api.web.api.system;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -35,7 +39,16 @@ public class CheckVersionApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
         AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
-        resp.addResponseData("isForAuth", resourceInfo != null ? resourceInfo.getValue() : YesNoStatus.NO.getCode());
+        if (resourceInfo == null) {
+        	resp.addResponseData("isForAuth", YesNoStatus.NO.getCode());
+        } 
+        //需要打开为了审核的相关版本
+        List<String> needAuthVersion = Arrays.asList(resourceInfo.getValue().split(","));
+        if (needAuthVersion.contains(context.getAppVersion() + StringUtils.EMPTY)) {
+        	resp.addResponseData("isForAuth" , YesNoStatus.YES.getCode());
+        } else {
+        	resp.addResponseData("isForAuth" , YesNoStatus.NO.getCode());
+        }
         return resp;
 	}
 
