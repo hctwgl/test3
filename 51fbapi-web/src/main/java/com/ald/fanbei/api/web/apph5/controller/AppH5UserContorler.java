@@ -26,6 +26,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -54,14 +55,13 @@ public class AppH5UserContorler extends BaseController {
 	// AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfUserAccountService afUserAccountService;
-	
+
 	@Resource
 	AfUserService afUserService;
 
-	
 	@Resource
 	AfCouponDao afCouponDao;
-	
+
 	@Resource
 	AfUserCouponDao afUserCouponDao;
 
@@ -71,9 +71,6 @@ public class AppH5UserContorler extends BaseController {
 	SmsUtil smsUtil;
 	@Resource
 	AfSmsRecordService afSmsRecordService;
-	
-
-
 
 	@RequestMapping(value = { "invitationGift" }, method = RequestMethod.GET)
 	public void invitationGift(HttpServletRequest request, ModelMap model) throws IOException {
@@ -90,12 +87,13 @@ public class AppH5UserContorler extends BaseController {
 	@RequestMapping(value = { "register" }, method = RequestMethod.GET)
 	public void register(HttpServletRequest request, ModelMap model) throws IOException {
 		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(AfResourceType.RegisterProtocol.getCode());
-		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+resourceDo.getValue();
-		
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + resourceDo.getValue();
+
 		model.put("registerRule", notifyUrl);
 		logger.info(JSON.toJSONString(model));
 	}
-    @ResponseBody
+
+	@ResponseBody
 	@RequestMapping(value = "getRegisterSmsCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String getRegisterSmsCode(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
@@ -121,10 +119,8 @@ public class AppH5UserContorler extends BaseController {
 		}
 
 	}
-   
-    
-    
-    @ResponseBody
+
+	@ResponseBody
 	@RequestMapping(value = "commitRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
@@ -143,9 +139,10 @@ public class AppH5UserContorler extends BaseController {
 			AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
 			if (smsDo == null) {
 				logger.error("sms record is empty");
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SMS_MOBILE_ERROR.getDesc(), "", null).toString();
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SMS_MOBILE_ERROR.getDesc(), "", null)
+						.toString();
 			}
-	      
+
 			String realCode = smsDo.getVerifyCode();
 			if (!StringUtils.equals(verifyCode, realCode)) {
 				logger.error("verifyCode is invalid");
@@ -153,7 +150,7 @@ public class AppH5UserContorler extends BaseController {
 						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null)
 						.toString();
 			}
-			if(smsDo.getIsCheck() == 1){
+			if (smsDo.getIsCheck() == 1) {
 				logger.error("verifyCode is already invalid");
 				return H5CommonResponse
 						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "", null)
@@ -161,15 +158,15 @@ public class AppH5UserContorler extends BaseController {
 			}
 			// 判断验证码是否过期
 			if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
+				return H5CommonResponse
+						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null)
+						.toString();
 
 			}
-			
+
 			// 更新为已经验证
 			afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
-			
-			
-			
+
 			String salt = UserUtil.getSalt();
 			String password = UserUtil.getPassword(passwordSrc, salt);
 
@@ -177,7 +174,7 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setSalt(salt);
 			userDo.setUserName(mobile);
 			userDo.setMobile(mobile);
-			 userDo.setNick("");
+			userDo.setNick("");
 			userDo.setPassword(password);
 
 			afUserService.addUser(userDo);
@@ -196,10 +193,10 @@ public class AppH5UserContorler extends BaseController {
 			// 获取邀请分享地址
 			AfResourceDo resourceCodeDo = afResourceService
 					.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
-			String appDownLoadUrl ="";
-            if(resourceCodeDo!=null){
-            	appDownLoadUrl = resourceCodeDo.getValue();
-            }
+			String appDownLoadUrl = "";
+			if (resourceCodeDo != null) {
+				appDownLoadUrl = resourceCodeDo.getValue();
+			}
 			return H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
 
 		} catch (Exception e) {
@@ -224,6 +221,97 @@ public class AppH5UserContorler extends BaseController {
 	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@RequestMapping(value = { "channelRigister" }, method = RequestMethod.GET)
+	public void channelRigister(HttpServletRequest request, ModelMap model) throws IOException {
+		String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
+		String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
+		String style = ObjectUtils.toString(request.getParameter("style"), "").toString();
+		if (StringUtils.isBlank(channelCode) || StringUtils.isBlank(pointCode)|| StringUtils.isBlank(style)) {
+			throw new FanbeiException("缺少参数！");
+		} 
+		model.put("copyright", "楚橡科技版权所有");
+		model.put("sessionId", request.getSession().getId());
+		model.put("channelCode", channelCode);
+		model.put("pointCode", pointCode);
+		model.put("style", style);
+		logger.info(JSON.toJSONString(model));
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "commitChannelRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String commitChannelRegister(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
+			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
+			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
+
+			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
+			if (eUserDo != null) {
+				return H5CommonResponse
+						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null)
+						.toString();
+
+			}
+			AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
+			if (smsDo == null) {
+				logger.error("sms record is empty");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SMS_MOBILE_ERROR.getDesc(), "", null)
+						.toString();
+			}
+
+			String realCode = smsDo.getVerifyCode();
+			if (!StringUtils.equals(verifyCode, realCode)) {
+				logger.error("verifyCode is invalid");
+				return H5CommonResponse
+						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null)
+						.toString();
+			}
+			if (smsDo.getIsCheck() == 1) {
+				logger.error("verifyCode is already invalid");
+				return H5CommonResponse
+						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "", null)
+						.toString();
+			}
+			// 判断验证码是否过期
+			if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+				return H5CommonResponse
+						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null)
+						.toString();
+
+			}
+
+			// 更新为已经验证
+			afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+
+			String salt = UserUtil.getSalt();
+			String password = UserUtil.getPassword(passwordSrc, salt);
+
+			AfUserDo userDo = new AfUserDo();
+			userDo.setSalt(salt);
+			userDo.setUserName(mobile);
+			userDo.setMobile(mobile);
+			userDo.setNick("");
+			userDo.setPassword(password);
+
+			afUserService.addUser(userDo);
+
+			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+
+			// 获取邀请分享地址
+			AfResourceDo resourceCodeDo = afResourceService
+					.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
+			String appDownLoadUrl = "";
+			if (resourceCodeDo != null) {
+				appDownLoadUrl = resourceCodeDo.getValue();
+			}
+			return H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
+
+		} catch (Exception e) {
+			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+		}
+
 	}
 
 }
