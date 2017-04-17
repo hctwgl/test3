@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 

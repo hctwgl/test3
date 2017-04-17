@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -12,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -24,13 +21,11 @@ import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
-import com.alibaba.fastjson.JSONObject;
+
 
 @Controller
 public class TestController {

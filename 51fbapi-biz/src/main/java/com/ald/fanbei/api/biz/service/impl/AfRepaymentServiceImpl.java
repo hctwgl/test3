@@ -22,7 +22,6 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
