@@ -5,6 +5,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,9 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -105,6 +108,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				|| StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
+		
+		
 
 		// 密码判断
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
@@ -114,10 +119,32 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 
 		}
+		List<String> whiteIdsList = new ArrayList<String>();
 		if (context.getAppVersion() >= 340) {
+
 			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
 					context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
 					requestDataVo.getMethod(), "");
+			
+			//判断是否在白名单里面
+			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+			if (whiteListInfo != null) {
+				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
+					@Override
+					public String convert(String source) {
+						return source.trim();
+					}
+				});
+//				if (!whiteIdsList.contains(context.getUserName())) {
+//					tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+//							context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
+//							requestDataVo.getMethod(), "");
+//				}
+//			} else {
+//				tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+//						context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
+//						requestDataVo.getMethod(), "");
+			}
 		}
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
@@ -143,18 +170,20 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+		
+
+		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,
+				county, address, userId);
+		
 		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
-
-		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,
-				county, address, userId);
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 		Long borrowId = afBorrowCashDo.getRid();
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
 		cashDo.setRid(borrowId);
-
+		
 		try {
 //			 RiskVerifyRespBo result =
 //			 riskUtil.verify2(ObjectUtils.toString(userId, ""),
@@ -163,16 +192,21 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 					afBorrowCashDo.getCardNumber(),
 					(requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and"),
 					CommonUtil.getIpAddr(request), blackBox);
-
+			
+			cashDo.setRishOrderNo(result.getOrderNo());
 			Date currDate = new Date();
 
 			AfUserDo afUserDo = afUserService.getUserById(userId);
 
-			if (StringUtils.equals("10", result.getResult())) {
+			if(whiteIdsList.contains(context.getUserName())){
+				
+			}
+			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + context.getUserName() + ",isContain=" + whiteIdsList.contains(context.getUserName()));
+			if (whiteIdsList.contains(context.getUserName()) || StringUtils.equals("10", result.getResult())) {
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 				// 审核通过
 				cashDo.setGmtArrival(currDate);
-				cashDo.setStatus(AfBorrowCashStatus.transed.getCode());
+				cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
 				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 				// 打款
 				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
@@ -213,7 +247,10 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
-
+		if(!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
+		}
+		
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);

@@ -238,6 +238,7 @@ public class RiskUtil extends AbstractThird{
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult,RiskVerifyRespBo.class);
+		riskResp.setOrderNo(reqBo.getOrderNo());
 		if(riskResp!=null && TRADE_RESP_SUCC.equals(riskResp.getCode())){
 			riskResp.setSuccess(true);
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
@@ -283,6 +284,7 @@ public class RiskUtil extends AbstractThird{
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult,RiskVerifyRespBo.class);
+		riskResp.setOrderNo(reqBo.getOrderNo());
 		if(riskResp!=null && TRADE_RESP_SUCC.equals(riskResp.getCode())){
 			riskResp.setSuccess(true);
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());

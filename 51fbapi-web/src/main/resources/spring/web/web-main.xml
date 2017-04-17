@@ -106,6 +106,7 @@
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				<value>/brand/getBrandList</value>
+				<value>/system/checkVersion</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -171,6 +172,7 @@
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
+				<entry key="/system/checkVersion" value-ref="checkVersionApi" />
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />

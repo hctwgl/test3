@@ -5,7 +5,6 @@
 	    <style type="text/css">
 	    	.mobileOperator{
 	    		margin-top: 6.0rem;
-                text-align: center;
 	    	}
             .mobileOperator span{
                 width: 3.9rem;
@@ -18,19 +17,19 @@
                 margin: 0 auto;
             }
             .mobileOperator p{
-                margin-top: 3.0rem;
+                margin-top: 1.0rem;
             }
             .mobileOperator_btn{
                 width: 17.5rem;
-                height: 2.5rem;
-                line-height: 2.5rem;
+                height: 2.0rem;
+                line-height: 2.0rem;
                 color: #fff;
                 margin: 5.0rem auto 0;
             }
 	    </style>
     </head>
     <body>
-    	<div class="tac fs_14 mobileOperator">
+    	<div class="tac fs_32 mobileOperator">
             <span></span>
             <p>运营商认证申请已提交<br>请耐心等待审核结果</p>
             <div class="tac bdr_4 bgc_orange mobileOperator_btn"><a class="fsc_f" href="https://app.51fanbei.com/app/sys/authBack">返回征信</a></div>
