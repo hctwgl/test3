@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-04-12 10:47:30
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-14 18:10:51
+* @Last Modified time: 2017-04-17 14:59:29
 * @title:  51返呗注册
 */
 
@@ -16,18 +16,30 @@
 
 .channelRegister1{
 	width: 18.75rem;
-	height: 35.1rem;
-	background-image: url(/images/activity/channel_jrtt_bg.jpg);
+	height: 34.1rem;
+	background-image: url(/images/activity/channelRegister1.jpg);
 }
 .channelRegister2{
 	width: 18.75rem;
-	height: 35.1rem;
-	background-image: url(/images/activity/channel_jrtt_bg2.jpg);
+	height: 34.1rem;
+	background-image: url(/images/activity/channelRegister2.jpg);
 }
 .channelRegister3{
 	width: 18.75rem;
-	height: 35.1rem;
-	background-image: url(/images/activity/channel_jrtt_bg3.jpg);
+	height: 34.1rem;
+	background-image: url(/images/activity/channelRegister3.jpg);
+}
+.channelRegister4{
+	width: 18.75rem;
+	height: 33.0rem;
+	background-image: url(/images/activity/channelRegister4.jpg);
+	padding-bottom: 0.5rem;
+	background-color: #FF7903;
+}
+.channelRegister5{
+	width: 18.75rem;
+	height: 31.15rem;
+	background-image: url(/images/activity/channelRegister5.jpg);
 }
 
 .channelRegister ul{
@@ -160,9 +172,17 @@ input:-ms-input-placeholder{
 	line-height: 1.125rem;
 	border-top: 1px dashed #fff;
 	font-size: 0.4rem;
-	margin: 0 auto;
+	color: red;
 }
-.channelRegister_copyright span:first-child{
-	margin-left: 0.8rem;
-	margin-right: 0.2rem;
+.copyright1{
+	background-color: #F34636;
+}
+.copyright2{
+	background-color: #FF7903;
+}
+.copyright3{
+	background-color: #3FCFAE;
+}
+.copyright4{
+	background-color: #F34636;
 }
