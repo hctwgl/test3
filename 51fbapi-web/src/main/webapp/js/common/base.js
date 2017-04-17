@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-15 09:59:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-02 19:50:22
+* @Last Modified time: 2017-04-17 10:26:41
 * @title:  公用的
 */
 
@@ -44,4 +44,20 @@ function toDecimal2(x) {
         s += '0';
     }
     return s;
+}
+
+// 判断ios系统还是android系统
+function getBlatFrom(){
+    var u = navigator.userAgent;
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+    // 返回1是android系统
+    if (isAndroid){
+        return 1;
+    }
+    // 返回2是ios系统
+    if (isiOS)  {
+        return 2;
+    }
+    return 0;
 }

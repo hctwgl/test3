@@ -17,6 +17,10 @@
             .invitationRewardRule a{
                 margin-left: 0.2rem;
             }
+            .invitationRewardRule em{
+                border-bottom: 1px solid blue;
+                color: blue;
+            }
 	    </style>
     </head>
     <body style="background-color: #fff;">
@@ -37,8 +41,21 @@
                 5.被邀请人成功注册并认证后可获得2元返利金额；<br>
                 6.活动期间禁止任何作弊行为，一经发现将收回所发奖励；<br>
                 7.在法律范围内51返呗拥有最终解释权。<br><br>
-                <i class="fl">获取更多帮助，请拨打客服电话</i>&nbsp;&nbsp;<a class="fl" href="tel:0571-88193918">0571-88193918</a><br>
+                <i>获取更多帮助，请拨打客服电话</i>&nbsp;<em class="tel_btn">0571-88193918</em>
             </p>
         </div>
+        <script type="text/javascript">
+            // 拨打客服电话
+            $(function(){
+                var returnNum = getBlatFrom();
+                $(".tel_btn").click(function() {
+                    if (returnNum != 2) {
+                        window.location.href = 'tel:' + '0571-88193918';
+                    } else {
+                        window.location.href = 'tel://' + '0571-88193918';
+                    }
+                });
+            });
+        </script>
     </body>
 </html>
