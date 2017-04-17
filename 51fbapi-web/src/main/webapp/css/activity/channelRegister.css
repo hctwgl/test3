@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-04-12 10:47:30
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-13 14:03:37
+* @Last Modified time: 2017-04-14 18:10:51
 * @title:  51返呗注册
 */
 
@@ -154,3 +154,15 @@ input:-ms-input-placeholder{
 	margin-left: 1.0rem;
 }
 
+.channelRegister_copyright{
+	width: 18.75rem;
+	height: 1.125rem;
+	line-height: 1.125rem;
+	border-top: 1px dashed #fff;
+	font-size: 0.4rem;
+	margin: 0 auto;
+}
+.channelRegister_copyright span:first-child{
+	margin-left: 0.8rem;
+	margin-right: 0.2rem;
+}
