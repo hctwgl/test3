@@ -7,6 +7,7 @@
 </head>
 <body>
 	<input type="hidden" id="sessionId" name="sessionId" value="$!{sessionId}">
+	<input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
 	<div class="channelRegister_wrap">
 		<div class="bgs_c channelRegister 
 			#if( $!{style} == 1 )
