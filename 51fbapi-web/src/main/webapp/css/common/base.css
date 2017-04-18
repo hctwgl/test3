@@ -56,7 +56,7 @@
 
 /*公用的缺省页*/
 .nullPrompt { text-align: center; }
-.nullPrompt img { width: 6.0rem; height: 5.35rem; margin: 6.0rem auto 1.25rem; }
+.nullPrompt img { width: 3rem; height: 2.8rem; margin: 2rem auto 1.25rem; }
 
 /*公用title*/
 /*.baseP { width: 100%; height: 1.0rem; line-height: 1.0rem; text-align: center; position: absolute; top: 0 }*/
