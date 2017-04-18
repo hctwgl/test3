@@ -5,13 +5,11 @@
 		<title>个人现金服务合同</title>
 	    <style type="text/css">
 	    	.cashLoanProtocol{
-	    		padding: 0.5rem;
+                padding: 0.2rem;
+                line-height: 0.48rem;
 	    		text-align: Justify;
 				text-justify: inter-ideograph;
 	    	}
-            .cashLoanProtocol p{
-                line-height: 1.2rem;
-            }
             .cashLoanProtocol span{
                 font-weight: bold;
             }
@@ -33,18 +31,14 @@
                 box-sizing: border-box;
             }
             .cashLoanProtocol_table1,.cashLoanProtocol_table4{
-                width: 3.9rem;
+                width: 1.56rem;
             }
             .cashLoanProtocol_table2,.cashLoanProtocol_table5{
-                width: 4.6rem;
+                width: 1.84rem;
             }
             .cashLoanProtocol_table3{
-                width: 5.3rem;
+                width: 2.12rem;
             }
-            /*.cashLoanProtocol_prominent{
-                color: red;
-                font-weight: bold;
-            }*/
 	    </style>
     </head>
     <body style="background-color: #fff;">

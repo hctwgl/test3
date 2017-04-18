@@ -4,18 +4,17 @@
 		<title>邀请奖励规则</title>
 	    <style type="text/css">
 	    	.invitationRewardRule{
-	    		padding: 2.0rem 1.0rem 1.0rem;
+                padding: 0.8rem 0.4rem 0.4rem;
+                line-height: 0.48rem;
 	    		text-align: Justify;
 				text-justify: inter-ideograph;
 	    	}
-            .invitationRewardRule p{
-                line-height: 1.2rem;
-            }
             .invitationRewardRule span{
                 font-weight: bold;
             }
+            
             .invitationRewardRule a{
-                margin-left: 0.2rem;
+                margin-left: 0.08rem;
             }
             .invitationRewardRule em{
                 border-bottom: 1px solid blue;

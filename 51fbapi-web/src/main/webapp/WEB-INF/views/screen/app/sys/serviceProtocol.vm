@@ -4,20 +4,18 @@
 		<title>服务协议</title>
 	    <style type="text/css">
 	    	.serviceProtocol{
-	    		padding: 1.0rem;
+	    		padding: 0.2rem;
+                line-height: 0.48rem;
 	    		text-align: Justify;
 				text-justify: inter-ideograph;
 	    	}
-            .serviceProtocol p{
-                line-height: 1.2rem;
-            }
             .serviceProtocol span{
                 font-weight: bold;
             }
 	    </style>
     </head>
     <body style="background-color: #fff;">
-    	<div class="serviceProtocol fs_14">
+    	<div class="serviceProtocol">
             <p>
                 本协议是您（以下简称为“用户”、“您”）与浙江阿拉丁电子商务股份有限公司（下称“平台”、“我们”）及平台关联公司之间就“个人信息授权”相关事宜所订立的协议，具体被授权方如下：<br>
                 浙江阿拉丁电子商务股份有限公司<br>

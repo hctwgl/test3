@@ -4,12 +4,8 @@
 		<title>新手教程</title>
 	    <style type="text/css">
 	    	.fenbeiTutorial li{
-	    		width: 18.75rem;
-	    		height: 16.725rem;
-	    		-webkit-background-size: cover;
-				-moz-background-size: cover;
-				-ms-background-size: cover;
-				background-size: cover;
+	    		width: 7.5rem;
+	    		height: 6.69rem;
 	    	}
 	    	.fenbeiTutorial li:nth-child(1){
 				background-image: url(/images/app/sys/fenbeiTutorial_bg1.png);
@@ -27,10 +23,10 @@
     </head>
     <body>
 		<ul class="fenbeiTutorial">
-			<li></li>
-			<li></li>
-			<li></li>
-			<li></li>
+			<li class="bgs_c"></li>
+			<li class="bgs_c"></li>
+			<li class="bgs_c"></li>
+			<li class="bgs_c"></li>
 		</ul>
     </body>
 </html>

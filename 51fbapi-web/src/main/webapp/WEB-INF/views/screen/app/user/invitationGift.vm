@@ -4,13 +4,9 @@
 		<title>邀请有奖</title>
 	    <style type="text/css">
 	    	.invitationGift_wrap{
-	    		width: 18.75rem;
-				height: 30.45rem;
+	    		width: 7.5rem;
+				height: 12.18rem;
 				background-image: url(/images/app/user/invitationGift_bg.png);
-				-webkit-background-size: cover;
-				-moz-background-size: cover;
-				-ms-background-size: cover;
-				background-size: cover;
 	    	}
 	    	.invitationGift_footer_wrap{
 	    		position: fixed;
@@ -18,56 +14,51 @@
 	    		bottom: 0;
 	    		width: 100%;
 	    		background-color: rgba(0,0,0,.9);
-	    		-webkit-box-sizing: border-box;
-				box-sizing: border-box;
 	    	}
 	    	.invitationGift_footer{
-	    		width: 17.5rem;
-	    		margin: 0.5rem auto;
+	    		width: 7.0rem;
+	    		margin: 0.2rem auto;
 	    	}
 	    	.invitationGift_text img{
-	    		width: 3.0rem;
-	    		height: 3.0rem;
-	    		-webkit-background-size: cover;
-				-moz-background-size: cover;
-				-ms-background-size: cover;
-				background-size: cover;
-	    		margin-right: 0.6rem;
+	    		width: 1.2rem;
+	    		height: 1.2rem;
+	    		margin-right: 0.24rem;
 	    	}
 	    	.invitationGift_text p{
-	    		width: 13.8rem;
+	    		width: 5.52rem;
 	    		text-align: Justify;
 				text-justify: inter-ideograph;
 	    		color: #fff;
 	    	}
 	    	.invitationGift_btn{
 	    		width: 100%;
-	    		height: 2.0rem;
-	    		line-height: 2.0rem;
-	    		margin-top: 0.5rem;
+	    		height: 0.8rem;
+	    		line-height: 0.8rem;
+	    		margin-top: 0.2rem;
+	    		font-size: 0.32rem;
 	    	}
 	    </style>
     </head>
     <body>
     	<input type="hidden" id="recommendCode" name="recommendCode" value="$!{recommendCode}">
-    	<div class="invitationGift_wrap">
-    		<div class="invitationGift_footer_wrap">
+    	<div class="bgs_c invitationGift_wrap">
+    		<div class="bs_bb invitationGift_footer_wrap">
 	    		<div class="invitationGift_footer clearfix">
 	    			<div class="invitationGift_text clearfix">
 	    				#if($!{avatar}=='')
-							<img class="fl" src="/images/app/user/icon120.png">
+							<img class="fl bgs_c" src="/images/app/user/icon120.png">
 						#else
-	    					<img class="fl" src="$!{avatar}">
+	    					<img class="fl bgs_c" src="$!{avatar}">
 	    				#end
 	    				<p class="fl fs_28">亲，您的好友<span>$!{userName}</span>邀你来51返呗购物省钱，请注册的时候填写推荐人的ID<span class="fsc_orange">$!{recommendCode}</span>，立即开启省钱之旅</p>
 	    			</div>
-	    			<div class="tac fs_32 bgc_orange bdr_4 fsc_f invitationGift_btn">马上注册拿返利</div>
+	    			<div class="tac bgc_orange bdr_8 fsc_f invitationGift_btn">马上注册拿返利</div>
 	    		</div>
     		</div>
     	</div>
     	<script type="text/javascript">
     		var recommendCode = $("#recommendCode").val();
-    		$(".invitationGift_btn").click(function(event) {
+    		$(".invitationGift_btn").click(function(event) { // 马上去注册
     			window.location.href = "/app/user/register?recommendCode="+recommendCode;
     		});
     	</script>

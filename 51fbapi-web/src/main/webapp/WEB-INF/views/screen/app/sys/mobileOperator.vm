@@ -4,35 +4,29 @@
 		<title>提交成功</title>
 	    <style type="text/css">
 	    	.mobileOperator{
-	    		margin-top: 6.0rem;
+                margin-top: 2.4rem;
 	    	}
             .mobileOperator span{
-                width: 3.9rem;
-                height: 3.9rem;
+                width: 1.56rem;
+                height: 1.56rem;
                 background-image: url(/images/app/sys/chengg.png);
-                -webkit-background-size: cover;
-                -moz-background-size: cover;
-                -ms-background-size: cover;
-                background-size: cover;
-                margin: 0 auto;
             }
             .mobileOperator p{
-                margin-top: 1.0rem;
+                margin-top: 0.4rem;
             }
             .mobileOperator_btn{
-                width: 17.5rem;
-                height: 2.0rem;
-                line-height: 2.0rem;
-                color: #fff;
-                margin: 5.0rem auto 0;
+                width: 7.0rem;
+                height: 0.8rem;
+                line-height: 0.8rem;
+                margin: 2.0rem auto 0;
             }
 	    </style>
     </head>
     <body>
-    	<div class="tac fs_32 mobileOperator">
-            <span></span>
+    	<div class="tac mobileOperator">
+            <span class="bgs_c"></span>
             <p>运营商认证申请已提交<br>请耐心等待审核结果</p>
-            <div class="tac bdr_4 bgc_orange mobileOperator_btn"><a class="fsc_f" href="https://app.51fanbei.com/app/sys/authBack">返回征信</a></div>
+            <div class="tac bdr_8 bgc_orange mobileOperator_btn"><a class="fsc_f" href="https://app.51fanbei.com/app/sys/authBack">返回征信</a></div>
         </div>
     </body>
 </html>
