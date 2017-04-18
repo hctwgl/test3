@@ -19,6 +19,8 @@
 				channelRegister3
 			#elseif( $!{style} == 4 )
 				channelRegister4
+			#elseif( $!{style} == 5 )
+				channelRegister6
 			#end
 		">
 			<ul>
@@ -55,6 +57,8 @@
 				copyright2
 			#elseif( $!{style} == 3 )
 				copyright3
+			#elseif( $!{style} == 5 )
+				copyright6
 			#end
 		">
 	  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918
