@@ -2,60 +2,12 @@
 * @Author: Yangyang
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-18 12:49:37
+* @Last Modified time: 2017-04-18 16:29:31
 * @title:  渠道注册
 */
 
 
-// 根据判断姓名和验证码来控制按钮的颜色
-// function changeBtn() {
-
-// 	var mobileNum = $("#register_mobile").val();
-// 	var verificationNum = $("#register_verification").val();
-// 	var passwordNum = $("#register_password").val();
-
-// 	if ( mobileNum == "" ) {
-// 		$(".register_mobileIcon").addClass("registerIcon_hide");
-// 	} else {
-// 		$(".register_mobileIcon").removeClass("registerIcon_hide");
-// 	};
-
-// 	if ( verificationNum == "" ) {
-// 		$(".register_verificationIcon").addClass("registerIcon_hide");
-// 	} else {
-// 		$(".register_verificationIcon").removeClass("registerIcon_hide");
-// 	};
-
-// 	if ( passwordNum == "" ) {
-// 		$(".register_passwordIcon").addClass("registerIcon_hide");
-// 	} else {
-// 		$(".register_passwordIcon").removeClass("registerIcon_hide");
-// 	};
-
-// 	// 默认状态下提交按钮的样式
-// 	if ( mobileNum != "" && verificationNum != "" && passwordNum != ""　) {
-// 		$(".register_submitBtn").removeClass("btnC_gray");
-// 	} else{
-// 		$(".register_submitBtn").addClass("btnC_gray");
-// 	};
-// };
-
-// 点击删除按钮清空vul
-// $(function(){
-
-// 	$(".register_mobileIcon").click(function(){
-// 		$(".register_mobile").val("");
-// 		$(".register_mobileIcon").addClass("registerIcon_hide");
-// 	});
-
-// 	$(".register_verificationIcon").click(function(){
-// 		$(".register_verification").val("");
-// 		$(".register_verificationIcon").addClass("registerIcon_hide");
-// 	});
-// });
-
 var sessionId = $("#sessionId").val();
-console.log(sessionId);
 
 // 同盾校验编号的sessionId
  (function() {
@@ -158,8 +110,8 @@ $(function(){
 							smsCode: register_verification,
 							password: password_md5,
 							recommendCode: recommendCode,
-							channelCode:channelCode,
-							pointCode:pointCode
+							channelCode: channelCode,
+							pointCode: pointCode
 						},
 						success: function(returnData){
 							if ( returnData.success ) {
@@ -173,7 +125,7 @@ $(function(){
 						}
 					})
 				} else {
-					alert("请填写6-18位的数字、字母、字符组成的密码");
+					requestMsg("请填写6-18位的数字、字母、字符组成的密码");
 				}
 
 			} else {
