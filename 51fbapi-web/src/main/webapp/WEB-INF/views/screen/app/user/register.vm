@@ -34,7 +34,6 @@
 	      		<p class="fl fs_24 clearfix"><span class="fl">阅读并同意</span><a class="fl" href="http://testapp.51fanbei.com/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
 	      	</div>
 		</div>
-		<script type="text/javascript" src="/js/common/layer.js"></script>
 		<script type="text/javascript" src="/js/common/core.js"></script>
 		<script type="text/javascript" src="/js/common/md5.js"></script>
 		<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
