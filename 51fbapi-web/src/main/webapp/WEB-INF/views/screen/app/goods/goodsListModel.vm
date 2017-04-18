@@ -47,16 +47,14 @@
                                             <div class="goodsListModel_mainContent_wrap">
                                                 <p class="fs_26 fsc_1">$!{item.name}</p>
                                                 <p class="fs_26 fsc_red">
-                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.saleAmount})</span>
-                                                    <span class="fs_20">.$priceUtil.getDecimal($!{item.priceAmount})</span>
+                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.saleAmount})</span><span class="fs_24">.$priceUtil.getDecimal($!{item.priceAmount})</span>
                                                 </p>
                                             </div>
                                             <div class="goodsListModel_mainContent_rebate_wrap">
                                                 <div class="goodsListModel_mainContent_rebate clearfix">
                                                     <span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>
                                                     <p class="fl fs_24 fsc_orange">
-                                                        <span>￥$priceUtil.bigdecimalToInt($!{item.rebateAmount})</span>
-                                                        <span class="fs_20">.$priceUtil.getDecimal($!{item.rebateAmount})</span>
+                                                        <span>￥$priceUtil.bigdecimalToInt($!{item.rebateAmount})</span><span class="fs_22">.$priceUtil.getDecimal($!{item.rebateAmount})</span>
                                                     </p>
                                                 </div>
                                             </div>
