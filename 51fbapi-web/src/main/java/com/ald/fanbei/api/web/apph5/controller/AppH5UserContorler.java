@@ -309,12 +309,13 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setPassword(password);
 			userDo.setRegisterChannelId(pcp.getChannelId());
 			userDo.setRegisterChannelPointId(pcp.getId());
+			afUserService.addUser(userDo);
+
 			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 			// TODO 优化邀请码规则
 			String inviteCode = Long.toString(invteLong, 36);
 			userDo.setRecommendCode(inviteCode);
-			afUserService.addUser(userDo);
-			
+			afUserService.updateUser(userDo);
 			
 			// 获取下载app地址
 			AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
