@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-04-12 10:47:30
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-17 14:59:29
+* @Last Modified time: 2017-04-18 14:47:54
 * @title:  51返呗注册
 */
 
@@ -40,6 +40,11 @@
 	width: 18.75rem;
 	height: 31.15rem;
 	background-image: url(/images/activity/channelRegister5.jpg);
+}
+.channelRegister6{
+	width: 18.75rem;
+	height: 34.075rem;
+	background-image: url(/images/activity/channelRegister6.jpg);
 }
 
 .channelRegister ul{
@@ -185,4 +190,7 @@ input:-ms-input-placeholder{
 }
 .copyright4{
 	background-color: #F34636;
+}
+.copyright6{
+	background-color: #140605;
 }
