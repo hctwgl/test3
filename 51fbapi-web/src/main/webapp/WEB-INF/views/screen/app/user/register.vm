@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017031301")
+    	#set($version="2017041801")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/css/app/user/register.css?version=$version">
     </head>
     <body style="background-color: #fff;">
-    	<div class="bgc_white register_main">
+    	<div class="register_main">
 			<ul>
-		        <li class="tal bdc_cb">
-		        	<div class="fl register_mobile_icon_wrap"><i class="register_mobile_icon"></i></div>
-			    	<input type="text" class="fs_32 register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号" onkeyup="changeBtn()">
+		        <li class="tal bdc_cb bs_bb">
+		        	<div class="fl register_mobile_icon_wrap"><i class="bgs_c register_mobile_icon"></i></div>
+			    	<input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号" onkeyup="changeBtn()">
 			    	<i class="register_mobileIcon registerIcon_hide"></i>
 		        </li>
-	    	    <li class="tal clearfix">
+	    	    <li class="tal bs_bb clearfix">
 	    	    	<div class="fl bdc_cb register_verification_main">
-	    	    		<div class="fl register_verification_icon_wrap"><i class="register_verification_icon"></i></div>
-			        	<input type="text" class="fl fs_32 register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码" onkeyup="changeBtn()">
+	    	    		<div class="fl register_verification_icon_wrap"><i class="bgs_c register_verification_icon"></i></div>
+			        	<input type="text" class="fl register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码" onkeyup="changeBtn()">
 			        	<i class="register_verificationIcon registerIcon_hide"></i>
 	    	    	</div>
-		        	<span class="fr fs_32 tac bdc_cb bdr_4 register_codeBtn"><span>获取验证码</span></span>
+		        	<span class="fr tac bdc_cb bdr_8 register_codeBtn"><span>获取验证码</span></span>
 		        </li>
-		        <li class="bdc_cb tal">
-		        	<div class="fl register_password_icon_wrap"><i class="register_password_icon"></i></div>
-		        	<input type="password" class="fs_32 register_password" id="register_password" placeholder="请输入登陆密码" name="words" maxlength="18" onkeyup="changeBtn()">
+		        <li class="tal bdc_cb bs_bb">
+		        	<div class="fl register_password_icon_wrap"><i class="bgs_c register_password_icon"></i></div>
+		        	<input type="password" class="register_password" id="register_password" placeholder="请输入登陆密码" name="words" maxlength="18" onkeyup="changeBtn()">
 		        	<i class="register_passwordEyeClosed"></i>
 		        </li>
 	        </ul>
-	      	<div class="register_submitBtn_wrap"><button class="fs_32 tac bdr_4 fsc_f bgc_orange register_submitBtn btnC_gray" onkeyup="changeBtn()">完成注册并下载App</button></div>
+	      	<div class="tac register_submitBtn_wrap"><button class="tac bdr_8 fsc_f bgc_orange register_submitBtn btnC_gray" onkeyup="changeBtn()">完成注册并下载App</button></div>
 	      	<div class="tal register_checkbox clearfix">
 	      		<input type="checkbox" class="input_check" id="input_check"　onkeyup="changeBtn()">
             	<label for="input_check"></label>

@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-18 16:32:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-13 12:01:10
+* @Last Modified time: 2017-04-18 09:51:29
 * @title:  公用的样式
 */
 
@@ -14,7 +14,7 @@
 .btnC_gray { background-color: #CFCFCF; }
 
 /*公用的字体大小、公用的字体颜色*/
-.fs_20 { font-size: 0.5rem; }
+/*.fs_20 { font-size: 0.5rem; }
 .fs_22 { font-size: 0.55rem; }
 .fs_24 { font-size: 0.6rem; }
 .fs_26 { font-size: 0.65rem; }
@@ -22,7 +22,14 @@
 .fs_32 { font-size: 0.8rem; }
 .fs_36 { font-size: 0.9rem; }
 .fs_50 { font-size: 1.25rem; }
-.fs_92 { font-size: 2.3rem; }
+.fs_92 { font-size: 2.3rem; }*/
+
+.fs_24 { font-size: 0.24rem; }
+.fs_26 { font-size: 0.26rem; }
+.fs_28 { font-size: 0.28rem; }
+
+
+
 .fsc_1 { color: #111; }
 .fsc_6 { color: #666; }
 .fsc_9 { color: #999; }
@@ -38,7 +45,9 @@
 .tal { text-align: left; }
 .tac { text-align: center; }
 .tar { text-align: right; }
-.bdr_4 { border-radius: 0.2rem; }
+/*.bdr_4 { border-radius: 0.2rem; }*/
+
+.bdr_8 { border-radius: 0.08rem; }
 .bdc_cb { border: 1px solid #CBCBCB; }
 
 /*兼容*/
