@@ -76,6 +76,25 @@ Swipe.prototype = {
 
 new Swipe(document.getElementById('navWrap'));
 
+var addModel = function addModel(goodsList) {
+    var html = '';
+    for (var j = 0; j < goodsList.length; j++) {
+        // 售价
+        var saleAmount = toDecimal2(goodsList[j].saleAmount);
+        var amountAmountSplitArr = saleAmount.split(".");
+        var amountAmountPriceInteger = amountAmountSplitArr[0];
+        var amountAmountPriceDecimal = amountAmountSplitArr[1];
+        // 返利
+        var rebateAmount = toDecimal2(goodsList[j].rebateAmount);
+        var rebateAmountSplitArr = rebateAmount.split(".");
+        var rebateAmountPriceInteger = rebateAmountSplitArr[0];
+        var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
+        var goodInfoUrl = notifyUrl + '&params={"goodsId":"' + goodsList[j].goodsId + '"}';
+        html += "<li class=\"goodsListModel_item\">\n                                <a href=\"" + goodInfoUrl + "\">\n                                <img src=\"" + goodsList[j].goodsIcon + "\" class=\"mainContent_img\">\n                                <div class=\"goodsListModel_mainContent_wrap\">\n                                <p class=\"fs_26 fsc_1\">" + goodsList[j].name + "</p>\n                                <p class=\"fs_26 fsc_red\">\n                                <span>\uFFE5" + amountAmountPriceInteger + "</span><span class=\"fs_20\">." + amountAmountPriceDecimal + "</span>\n                                </p>\n                                </div>\n                                <div class=\"goodsListModel_mainContent_rebate_wrap\">\n                                <div class=\"goodsListModel_mainContent_rebate clearfix\">\n                                <span class=\"goodsListModel_rebate fl fs_26 bgc_orange fsc_f tac\">\u8FD4</span>\n                                <p class=\"fl fs_24 fsc_orange\">\n                                <span>\uFFE5" + rebateAmountPriceInteger + "</span><span class=\"fs_20\">." + rebateAmountPriceDecimal + "</span>\n                                </p>\n                                </div>\n                                </div>\n                                </a>\n                                </li>";
+    }
+    return html;
+};
+
 // 导航tab切换
 $(function(){
     var mySwiper = new Swiper('.swiper-container', {
@@ -135,39 +154,7 @@ $(function(){
                         var html = '';
                         var goodsList = returnData.data["goodsList"];
                         if(goodsList.length>0){
-                            for (var j = 0; j < goodsList.length; j++) {
-                                // 售价
-                                var saleAmount = toDecimal2(goodsList[j].saleAmount);
-                                var amountAmountSplitArr =  saleAmount.split(".");
-                                var amountAmountPriceInteger = amountAmountSplitArr[0];
-                                var amountAmountPriceDecimal = amountAmountSplitArr[1];
-                                // 返利
-                                var rebateAmount = toDecimal2(goodsList[j].rebateAmount);
-                                var rebateAmountSplitArr =  rebateAmount.split(".");
-                                var rebateAmountPriceInteger = rebateAmountSplitArr[0];
-                                var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-                                var goodInfoUrl = notifyUrl+'&params={"goodsId":"'+goodsList[j].goodsId+'"}';
-                                html+=  '<li class="goodsListModel_item">'
-                                    +'<a href='+goodInfoUrl+'>'
-                                    +'<img src="'+goodsList[j].goodsIcon+'" class="goodsListModel_mainContent_img">'
-                                    +'<div class="goodsListModel_mainContent_wrap">'
-                                    +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
-                                    +'<p class="fs_26 fsc_red">'
-                                    +'<span>￥'+amountAmountPriceInteger+'</span>'+'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
-                                    +'</p>'
-                                    +'</div>'
-                                    +'<div class="goodsListModel_mainContent_rebate_wrap">'
-                                    +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                    +'<span class="goodsListModel_rebate fl fs_26 bgc_orange fsc_f tac">返</span>'
-                                    +'<p class="fl fs_24 fsc_orange">'
-                                    +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
-                                    +'</p>'
-                                    +'</div>'
-                                    +'</div>'
-                                    +'</a>'
-                                    +'</li>';
-                            }
-
+                            html=addModel(goodsList)
                         }else{html = '<div class="nullPrompt"> ' +
                             '<img src="/images/common/040101wuyouhui.png"> ' +
                             '<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span> ' +
@@ -188,6 +175,7 @@ $(function(){
         }
 
     });
+
 
 
     // 下拉的时候加载
@@ -216,42 +204,8 @@ $(function(){
                                     $(".loadover").remove();
                                 }
                             }else{
-                                var html = '';
                                 var goodsList = returnData.data["goodsList"];
-                                for(var i = 0; i < goodsList.length; i++){
-
-                                    // 售价
-                                    var saleAmount = toDecimal2(goodsList[i].saleAmount);
-                                    var amountAmountSplitArr =  saleAmount.split(".");
-                                    var amountAmountPriceInteger = amountAmountSplitArr[0];
-                                    var amountAmountPriceDecimal = amountAmountSplitArr[1];
-                                    // 返利
-                                    var rebateAmount = toDecimal2(goodsList[i].rebateAmount);
-                                    var rebateAmountSplitArr =  rebateAmount.split(".");
-                                    var rebateAmountPriceInteger = rebateAmountSplitArr[0];
-                                    var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-                                    var goodInfoUrl = notifyUrl+'&params={"goodsId":"'+goodsList[i].goodsId+'"}';
-
-                                    html+= '<li class="goodsListModel_item">'
-                                        +'<a href='+goodInfoUrl+'>'
-                                        +'<img src="'+goodsList[i].goodsIcon+'" class="mainContent_img">'
-                                        +'<div class="goodsListModel_mainContent_wrap">'
-                                        +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'
-                                        +'<p class="fs_26 fsc_red">'
-                                        +'<span>￥'+amountAmountPriceInteger+'</span>'+'<span class="fs_20">.'+amountAmountPriceDecimal+'</span>'
-                                        +'</p>'
-                                        +'</div>'
-                                        +'<div class="goodsListModel_mainContent_rebate_wrap">'
-                                        +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                        +'<span class="goodsListModel_rebate fl fs_26 bgc_orange fsc_f tac">返</span>'
-                                        +'<p class="fl fs_24 fsc_orange">'
-                                        +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_20">.'+rebateAmountPriceDecimal+'</span>'
-                                        +'</p>'
-                                        +'</div>'
-                                        +'</div>'
-                                        +'</a>'
-                                        +'</li>';
-                                }
+                                var html =addModel(goodsList);
                                 $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").append(html);
                                 finished=0
                             }
