@@ -21,7 +21,6 @@ public class AfPromotionChannelPointServiceImpl implements AfPromotionChannelPoi
 
 	@Override
 	public void addVisit(Long id) {
-		// TODO Auto-generated method stub
 		
 	}
 
