@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfPromotionChannelDao">
+	<sql id="queryAllFields">
+		id,gmt_create,gmt_modified,name,contacts_name,contacts_email,contacts_phone,company_name,code,copyright,status
+	</sql>
+
+	<insert id="addPromotionChannel" parameterType="AfPromotionChannelDo"
+		useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO
+		af_promotion_channel(gmt_create , gmt_modified , name , contacts_name
+		, contacts_email , contacts_phone , company_name , code , copyright ,
+		status)
+		VALUES (
+		NOW(),
+		NOW(),
+		#{name},
+		#{contactsName},
+		#{contactsEmail},
+		#{contactsPhone},
+		#{companyName},
+		#{code},
+		#{copyright},
+		#{status},
+		)
+	</insert>
+
+	<update id="updatePromotionChannel" parameterType="AfPromotionChannelDo">
+		UPDATE af_promotion_channel SET gmt_modified = NOW()
+		<if test="isDelete != null">
+			,is_delete=#{isDelete}
+		</if>
+		<if test="name != null">
+			,name=#{name}
+		</if>
+		<if test="contactsName != null">
+			,contacts_name=#{contactsName}
+		</if>
+		<if test="contactsEmail != null">
+			,contacts_email=#{contactsEmail}
+		</if>
+		<if test="contactsPhone != null">
+			,contacts_phone=#{contactsPhone}
+		</if>
+		<if test="companyName != null">
+			,company_name=#{companyName}
+		</if>
+		<if test="code != null">
+			,code=#{code}
+		</if>
+		<if test="copyright != null">
+			,copyright=#{copyright}
+		</if>
+		<if test="status != null">
+			,status=#{status}
+		</if>
+		WHERE id = #{rid}
+	</update>
+	<update id="deletePromotionChannel" parameterType="java.lang.Long">
+		UPDATE
+		af_promotion_channel SET is_delete = 1 WHERE id=#{rid}
+	</update>
+
+	<select id="getById" parameterType="java.lang.Long" resultType="AfPromotionChannelDo">
+		select
+		<include refid="queryAllFields"/>
+		from af_promotion_channel WHERE id = #{rid}
+	</select>
+</mapper>

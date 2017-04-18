@@ -58,23 +58,22 @@ var sessionId = $("#sessionId").val();
 console.log(sessionId);
 
 // 同盾校验编号的sessionId
-// (function() {
-//     _fmOpt = {
-//         partner: 'alading',
-//         appName: 'eds_web',
-//         token: json.msg                            
-//     };
-//     var cimg = new Image(1,1);
-//     cimg.onload = function() {
-//         _fmOpt.imgLoaded = true;
-//     };
-//     cimg.src = "https://fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=eds_web&tokenId=" + _fmOpt.token;
-//     var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
-//     fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
-//     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
-//     $("#tokenId").val(_fmOpt.token);
-// 	// alert(json.msg);
-// })();
+ (function() {
+     _fmOpt = {
+         partner: 'alading',
+         appName: 'fanbei_register_web',
+         token: sessionId                            
+     };
+     var cimg = new Image(1,1);
+     cimg.onload = function() {
+         _fmOpt.imgLoaded = true;
+     };
+     cimg.src = "https://fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=eds_web&tokenId=" + _fmOpt.token;
+     var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+     fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+ 	// alert(json.msg);
+ })();
 
 
 
@@ -144,12 +143,14 @@ $(function(){
 				var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
 				var mobileNum = $("#register_mobile").val();
 				var register_verification = $("#register_verification").val();
+				var channelCode = $("#channelCode").val();
+				var pointCode = $("#pointCode").val();
 
 				var passwordLength = register_password.length;
 				if (passwordLength >= 6) {
 
 					$.ajax({ // 设置登录密码
-						url: "/app/user/commitRegister",
+						url: "/app/user/commitChannelRegister",
 						type: 'POST',
 						dataType: 'JSON',
 						data: {
