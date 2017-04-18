@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-05 17:50:55
+* @Last Modified time: 2017-04-18 19:21:46
 * @title:  商品列表页
 */
 
@@ -17,10 +17,10 @@ var categoryObj = eval('(' + category + ')');
 // 获取ip地址
 var notifyUrl = $("#notifyUrl").val();
 var windowW = $(window).outerWidth(),
-     liWArr = [], // 保存每一个li的索引(index),自身宽度(width),距离ul左侧的距离(offsetLeft)
-     ulW = 0, // ul初始宽度  通过各个li宽度之和 计算出来
-     finished = 0,
-     page = 1; // 默认页数从0开始
+    liWArr = [], // 保存每一个li的索引(index),自身宽度(width),距离ul左侧的距离(offsetLeft)
+    ulW = 0, // ul初始宽度  通过各个li宽度之和 计算出来
+    finished = 0,
+    page = 1; // 默认页数从1开始
 
 //导航滑动
 function Swipe(ele) {
@@ -80,8 +80,8 @@ var addModel = function addModel(goodsList) {
     var html = '';
     for (var j = 0; j < goodsList.length; j++) {
         // 售价
-        var saleAmount = toDecimal2(goodsList[j].saleAmount);
-        var amountAmountSplitArr = saleAmount.split(".");
+        var priceAmount = toDecimal2(goodsList[j].priceAmount);
+        var amountAmountSplitArr = priceAmount.split(".");
         var amountAmountPriceInteger = amountAmountSplitArr[0];
         var amountAmountPriceDecimal = amountAmountSplitArr[1];
         // 返利

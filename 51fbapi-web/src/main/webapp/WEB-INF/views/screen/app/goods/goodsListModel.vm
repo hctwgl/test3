@@ -47,7 +47,7 @@
                                             <div class="goodsListModel_mainContent_wrap">
                                                 <p class="fs_26 fsc_1">$!{item.name}</p>
                                                 <p class="fs_26 fsc_red">
-                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.saleAmount})</span><span class="fs_24">.$priceUtil.getDecimal($!{item.priceAmount})</span>
+                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.priceAmount})</span><span class="fs_24">.$priceUtil.getDecimal($!{item.priceAmount})</span>
                                                 </p>
                                             </div>
                                             <div class="goodsListModel_mainContent_rebate_wrap">
@@ -68,9 +68,9 @@
             </div>
         </div>
     #end
-<script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
-<script type="text/javascript" src="/js/common/swiper-3.4.2.jquery.min.js"></script>
-<script type="text/javascript" src="/js/common/layer.js"></script>
-<script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
+    <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="/js/common/swiper-3.4.2.jquery.min.js"></script>
+    <script type="text/javascript" src="/js/common/layer.js"></script>
+    <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>
