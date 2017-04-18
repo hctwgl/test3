@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
 import org.apache.ibatis.annotations.Param;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.ald.fanbei.api.dal.domain.AfPromotionChannelPointDo;
 
@@ -30,4 +29,18 @@ public interface AfPromotionChannelPointDao {
 	 * @return
 	 */
 	AfPromotionChannelPointDo getPointByChannelCodeAndPointCode(@Param("channelCode") String channelCode, @Param("pointCode") String pointCode);
+
+	/**
+	 * @方法说明：增加访问数
+	 * @author huyang
+	 * @param id
+	 */
+	void addVisit(Long id);
+	
+	/**
+	 * @方法说明：增加注册数
+	 * @author huyang
+	 * @param id
+	 */
+	void addRegister(Long id);
 }

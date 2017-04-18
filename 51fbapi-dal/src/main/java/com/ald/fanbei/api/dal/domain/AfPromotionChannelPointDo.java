@@ -27,7 +27,6 @@ public class AfPromotionChannelPointDo extends AbstractSerial {
 	private Integer status;
 	private Integer registerNum;
 	private Integer visitNum;
-	private Integer checkNum;
 
 	public Long getId() {
 		return id;
@@ -123,14 +122,6 @@ public class AfPromotionChannelPointDo extends AbstractSerial {
 
 	public void setVisitNum(Integer visitNum) {
 		this.visitNum = visitNum;
-	}
-
-	public Integer getCheckNum() {
-		return checkNum;
-	}
-
-	public void setCheckNum(Integer checkNum) {
-		this.checkNum = checkNum;
 	}
 
 }

@@ -21,7 +21,12 @@ public class AfPromotionChannelPointServiceImpl implements AfPromotionChannelPoi
 
 	@Override
 	public void addVisit(Long id) {
-		
+		afPromotionChannelPointDao.addVisit(id);
+	}
+
+	@Override
+	public void addRegister(Long id) {
+		afPromotionChannelPointDao.addRegister(id);		
 	}
 
 }

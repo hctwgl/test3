@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfPromotionChannelPointDao">
 	<sql id="queryAllFields">
-		id,gmt_create,gmt_modified,description,channel_id,apk_path,price_desc,style,code,status,register_num,visit_num,check_num
+		id,gmt_create,gmt_modified,description,channel_id,apk_path,price_desc,style,code,status,register_num,visit_num
 	</sql>
 
 	<insert id="addPromotionChannelPoint" parameterType="AfPromotionChannelPointDo"
@@ -10,7 +10,7 @@
 		INSERT INTO
 		af_promotion_channel_point(gmt_create , gmt_modified , description ,
 		channel_id , apk_path , price_desc , style , code , status ,
-		register_num , visit_num , check_num)
+		register_num , visit_num )
 		VALUES (
 		NOW(),
 		NOW(),
@@ -22,8 +22,7 @@
 		#{code},
 		#{status},
 		#{registerNum},
-		#{visitNum},
-		#{checkNum}
+		#{visitNum}
 		)
 	</insert>
 	<update id="updatePromotionChannelPoint" parameterType="AfPromotionChannelPointDo">
@@ -58,9 +57,6 @@
 		<if test="visitNum != null">
 			,visit_num=#{visitNum}
 		</if>
-		<if test="checkNum != null">
-			,check_num=#{checkNum}
-		</if>
 		WHERE id = #{rid}
 	</update>
 	<update id="deletePromotionChannelPoint" parameterType="java.lang.Long">
@@ -76,5 +72,15 @@
 		#{pointCode} and channel_id = (select id from af_promotion_channel
 		where code = #{channelCode})
 	</select>
+
+	<update id="addVisit" parameterType="java.lang.Long">
+		update
+		af_promotion_channel_point SET visit_num = visit_num+1 where id=#{rid}
+	</update>
+	
+	<update id="addRegister" parameterType="java.lang.Long">
+		update
+		af_promotion_channel_point SET register_num = register_num+1 where id=#{rid}
+	</update>
 </mapper>
 	

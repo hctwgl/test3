@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfPromotionChannelService;
+import com.ald.fanbei.api.biz.service.AfPromotionLogsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -37,6 +38,7 @@ import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfPromotionChannelDo;
 import com.ald.fanbei.api.dal.domain.AfPromotionChannelPointDo;
+import com.ald.fanbei.api.dal.domain.AfPromotionLogsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -80,6 +82,8 @@ public class AppH5UserContorler extends BaseController {
 	AfPromotionChannelPointService afPromotionChannelPointService;
 	@Resource
 	AfPromotionChannelService afPromotionChannelService;
+	@Resource
+	AfPromotionLogsService afPromotionLogsService;
 
 	@RequestMapping(value = { "invitationGift" }, method = RequestMethod.GET)
 	public void invitationGift(HttpServletRequest request, ModelMap model) throws IOException {
@@ -223,7 +227,7 @@ public class AppH5UserContorler extends BaseController {
 	public void channelRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 		String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
-		if (StringUtils.isBlank(channelCode) || StringUtils.isBlank(pointCode) ) {
+		if (StringUtils.isBlank(channelCode) || StringUtils.isBlank(pointCode)) {
 			throw new FanbeiException("缺少参数！");
 		} else {
 			AfPromotionChannelPointDo pcp = afPromotionChannelPointService.getPoint(channelCode, pointCode);
@@ -237,8 +241,14 @@ public class AppH5UserContorler extends BaseController {
 				model.put("pointCode", pcp.getCode());
 				model.put("style", pcp.getStyle());
 				logger.info(JSON.toJSONString(model));
-				
+
 				afPromotionChannelPointService.addVisit(pcp.getId());
+
+				AfPromotionLogsDo afPromotionLogsDo = new AfPromotionLogsDo();
+				afPromotionLogsDo.setChannelId(pc.getId());
+				afPromotionLogsDo.setPointId(pcp.getId());
+				afPromotionLogsDo.setIp(request.getRemoteAddr());
+				afPromotionLogsService.addAfPromotionLogs(afPromotionLogsDo);
 			}
 		}
 
@@ -301,7 +311,6 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setRegisterChannelPointId(pcp.getId());
 			afUserService.addUser(userDo);
 
-			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 
 			// 获取下载app地址
 			AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
@@ -309,6 +318,7 @@ public class AppH5UserContorler extends BaseController {
 			if (resourceCodeDo != null) {
 				appDownLoadUrl = resourceCodeDo.getValue();
 			}
+			afPromotionChannelPointService.addRegister(pcp.getId());
 			return H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
 
 		} catch (Exception e) {

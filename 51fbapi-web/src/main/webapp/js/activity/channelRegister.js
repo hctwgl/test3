@@ -157,7 +157,9 @@ $(function(){
 							registerMobile: mobileNum,
 							smsCode: register_verification,
 							password: password_md5,
-							recommendCode: recommendCode
+							recommendCode: recommendCode,
+							channelCode:channelCode,
+							pointCode:pointCode
 						},
 						success: function(returnData){
 							if ( returnData.success ) {
@@ -167,11 +169,11 @@ $(function(){
 							}
 						},
 						error: function(){
-					        requestMsg("绑定失败");
+					        requestMsg("注册失败");
 						}
 					})
 				} else {
-					requestMsg("请填写6-18位的数字、字母、字符组成的密码");
+					alert("请填写6-18位的数字、字母、字符组成的密码");
 				}
 
 			} else {

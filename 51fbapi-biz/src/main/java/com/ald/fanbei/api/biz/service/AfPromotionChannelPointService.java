@@ -27,4 +27,11 @@ public interface AfPromotionChannelPointService {
 	 */
 	void addVisit(Long id);
 
+	/**
+	 * @方法说明：注册增加1
+	 * @author huyang
+	 * @param id
+	 */
+	void addRegister(Long id);
+
 }
