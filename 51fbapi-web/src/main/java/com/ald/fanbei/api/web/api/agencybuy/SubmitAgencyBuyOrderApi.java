@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
@@ -52,7 +53,11 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("addressId"), 0);
 		String capture = ObjectUtils.toString(requestDataVo.getParams().get("capture"));
 		String remark = ObjectUtils.toString(requestDataVo.getParams().get("remark"));
+		if (StringUtils.isBlank(openId) || StringUtils.isBlank(goodsName) || StringUtils.isBlank(goodsIcon)
+				|| StringUtils.isBlank(shopName) ) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 
+		}
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		AfOrderDo afOrder = new AfOrderDo();
 		afOrder.setOpenId(openId);
