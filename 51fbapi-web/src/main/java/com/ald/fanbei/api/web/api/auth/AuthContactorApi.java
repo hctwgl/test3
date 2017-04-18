@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.ContactRelationType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -45,7 +46,13 @@ public class AuthContactorApi implements ApiHandle {
 	        item.setFriendNick(contactorName);
 	        item.setFriendPhone(contactorMobile);
 	        item.setUserId(context.getUserId());
-	        item.setRelation(contactorType);
+	        ContactRelationType contactRelationType  = ContactRelationType.findRoleTypeByName(contactorType);
+	        if(contactRelationType==null){
+		        item.setRelation( ContactRelationType.others.getCode());
+	        }else{
+		        item.setRelation( contactRelationType.getCode());
+
+	        }
 		
         riskUtil.addressContactsPrimaries(context.getUserId() + "", item);
 		AfUserAuthDo authDo = new AfUserAuthDo();
