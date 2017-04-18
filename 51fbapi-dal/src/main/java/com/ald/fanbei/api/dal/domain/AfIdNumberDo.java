@@ -19,8 +19,7 @@ public class AfIdNumberDo extends AbstractSerial {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long rid;
-	private Date gmtCreate;
-	private Date gmtModified;
+	
 	private Long userId;
 	private String address;
 	private String citizenId;
@@ -45,30 +44,8 @@ public class AfIdNumberDo extends AbstractSerial {
 	public void setRid(Long rid) {
 		this.rid = rid;
 	}
-	/**
-	 * @return the gmtCreate
-	 */
-	public Date getGmtCreate() {
-		return gmtCreate;
-	}
-	/**
-	 * @param gmtCreate the gmtCreate to set
-	 */
-	public void setGmtCreate(Date gmtCreate) {
-		this.gmtCreate = gmtCreate;
-	}
-	/**
-	 * @return the gmtModified
-	 */
-	public Date getGmtModified() {
-		return gmtModified;
-	}
-	/**
-	 * @param gmtModified the gmtModified to set
-	 */
-	public void setGmtModified(Date gmtModified) {
-		this.gmtModified = gmtModified;
-	}
+
+	
 	/**
 	 * @return the userId
 	 */

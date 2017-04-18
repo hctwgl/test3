@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfAgentOrderDao">
+	<sql id="queryAllFields">
+		order_id,user_id,province,city,county,address,consignee,mobile,capture,remark,agent_account,agent_message,agent_id,gmt_agent_buy,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,match_order_id,gmt_match_order,af_agent_ordercol
+	</sql>
+	
+	<insert id="addAgentOrder" parameterType="AfAgentOrderDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_agent_order(order_id , user_id , province , city ,
+		 county , address , consignee , mobile , <if test="remark !=null ">remark ,</if>
+		capture )
+		VALUES (
+    		#{orderId},
+    		#{userId},
+    		#{province},
+    		#{city},
+    		#{county},
+    		#{address},
+    		#{consignee},
+    		#{mobile},
+    		<if test="remark !=null ">#{remark},</if>
+    		#{capture}
+		)
+	</insert>
+	
+	
+	
+	<update id="updateAgentOrder" parameterType="AfAgentOrderDo" >
+		UPDATE af_agent_order SET gmt_modified = NOW()
+			<if test="orderId != null">
+    			,order_id=#{orderId}
+			</if>
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="province != null">
+    			,province=#{province}
+			</if>
+			<if test="city != null">
+    			,city=#{city}
+			</if>
+			<if test="county != null">
+    			,county=#{county}
+			</if>
+			<if test="address != null">
+    			,address=#{address}
+			</if>
+			<if test="consignee != null">
+    			,consignee=#{consignee}
+			</if>
+			<if test="mobile != null">
+    			,mobile=#{mobile}
+			</if>
+			<if test="capture != null">
+    			,capture=#{capture}
+			</if>
+			<if test="remark != null">
+    			,remark=#{remark}
+			</if>
+			<if test="agentAccount != null">
+    			,agent_account=#{agentAccount}
+			</if>
+			<if test="agentMessage != null">
+    			,agent_message=#{agentMessage}
+			</if>
+			<if test="agentId != null">
+    			,agent_id=#{agentId}
+			</if>
+			<if test="gmtAgentBuy != null">
+    			,gmt_agent_buy=#{gmtAgentBuy}
+			</if>
+			<if test="gmtClosed != null">
+    			,gmt_closed=#{gmtClosed}
+			</if>
+			<if test="cancelReason != null">
+    			,cancel_reason=#{cancelReason}
+			</if>
+			<if test="cancelDetail != null">
+    			,cancel_detail=#{cancelDetail}
+			</if>
+			<if test="closedReason != null">
+    			,closed_reason=#{closedReason}
+			</if>
+			<if test="closedDetail != null">
+    			,closed_detail=#{closedDetail}
+			</if>
+			<if test="matchOrderId != null">
+    			,match_order_id=#{matchOrderId}
+			</if>
+			<if test="gmtMatchOrder != null">
+    			,gmt_match_order=#{gmtMatchOrder}
+			</if>
+			<if test="afAgentOrdercol != null">
+    			,af_agent_ordercol=#{afAgentOrdercol}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
+		<select id="selectAgentOrderByOrderId" resultType="AfAgentOrderDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_agent_order
+		WHERE
+			is_delete = 0
+		AND
+			order_id = #{orderId}
+		LIMIT 1
+	</select>
+	
+</mapper>
