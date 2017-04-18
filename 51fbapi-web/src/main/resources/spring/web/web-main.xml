@@ -229,6 +229,12 @@
 				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
+				<!-- 代买模块 -->
+				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
+				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
+				<entry key="/agencyBuy/deleteUserAddress" value-ref="deleteUserAddressApi" />
+				<entry key="/agencyBuy/getUserAddressList" value-ref="getUserAddressListApi" />
+
 
 			</map>
 		</constructor-arg>

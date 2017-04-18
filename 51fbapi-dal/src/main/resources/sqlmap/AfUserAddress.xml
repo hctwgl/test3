@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAddressDao">
+	<sql id="queryAllFields">
+		id rid,user_id,province,city,county,address,is_default,consignee,mobile
+	</sql>
+	
+	<insert id="addUserAddress" parameterType="AfUserAddressDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_user_address( gmt_create , gmt_modified , user_id , province , city , county , address , is_default , consignee , mobile)
+		VALUES (
+		
+    		NOW(),
+    		NOW(),
+    		#{userId},
+    		#{province},
+    		#{city},
+    		#{county},
+    		#{address},
+    		#{isDefault},
+    		#{consignee},
+    		#{mobile},
+		)
+	</insert>
+	
+		<update id="updateUserAddress" parameterType="AfUserAddressDo" >
+		UPDATE af_user_address SET gmt_modified = NOW()
+			
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="province != null">
+    			,province=#{province}
+			</if>
+			<if test="city != null">
+    			,city=#{city}
+			</if>
+			<if test="county != null">
+    			,county=#{county}
+			</if>
+			<if test="address != null">
+    			,address=#{address}
+			</if>
+			<if test="isDefault != null">
+    			,is_default=#{isDefault}
+			</if>
+			<if test="consignee != null">
+    			,consignee=#{consignee}
+			</if>
+			<if test="mobile != null">
+    			,mobile=#{mobile}
+			</if>
+		WHERE id = #{rid} and id_delete =0
+	</update>
+	<update id="deleteUserAddress" parameterType="java.lang.Long" >
+		UPDATE af_user_address SET is_delete = 1 WHERE id=#{rid}
+	</update>
+	
+	<select id="selectUserAddressByUserId" resultType="AfUserAddressDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_user_address
+		WHERE
+			is_delete = 0
+		AND
+			user_id = #{userId}
+	</select>
+	
+	<select id="selectUserAddressByrid" resultType="AfUserAddressDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_user_address
+		WHERE
+			is_delete = 0
+		AND
+			id = #{rid}
+	</select>
+	
+	<select id="selectUserAddressDefaultByUserId" resultType="AfUserAddressDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_user_address
+		WHERE
+			is_delete = 0
+		AND
+			id = #{rid}
+		and  
+			is_default = 'Y'
+	</select>
+</mapper>

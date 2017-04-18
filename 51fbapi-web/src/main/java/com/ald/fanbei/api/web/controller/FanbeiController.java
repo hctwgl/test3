@@ -57,7 +57,15 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
-    
+    @RequestMapping(value ={
+    		"/agencyBuy/addUserAddress","/agencyBuy/changeUserAddress","/agencyBuy/deleteUserAddress","/agencyBuy/getUserAddressList"
+        },method = RequestMethod.POST,produces="application/json;charset=utf-8")
+        @ResponseBody
+        public String agencyBuyRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
+            request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+            response.setContentType("application/json;charset=utf-8");
+            return this.processRequest(body, request, false);
+        }
     @RequestMapping(value ={
     	"/order/confirmReceipt","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
