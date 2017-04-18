@@ -234,6 +234,7 @@
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
 				<entry key="/agencyBuy/deleteUserAddress" value-ref="deleteUserAddressApi" />
 				<entry key="/agencyBuy/getUserAddressList" value-ref="getUserAddressListApi" />
+				<entry key="/agencyBuy/getDefaultUserAddress" value-ref="getDefaultUserAddressApi" />
 
 
 			</map>

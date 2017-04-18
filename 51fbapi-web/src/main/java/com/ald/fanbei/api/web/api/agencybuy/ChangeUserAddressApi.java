@@ -56,7 +56,7 @@ public class ChangeUserAddressApi implements ApiHandle {
 		Long userId = context.getUserId();
 		if(StringUtils.equals(isDefault, YesNoStatus.YES.getCode())){
 			AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressDefaultByUserId(userId);
-			if(defauleDo!=null){
+			if(defauleDo!=null &&addressId!=defauleDo.getRid()){
 				defauleDo.setIsDefault(YesNoStatus.NO.getCode());
 				afUserAddressService.updateUserAddress(defauleDo);
 			}
