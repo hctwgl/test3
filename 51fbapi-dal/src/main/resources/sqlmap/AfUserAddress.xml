@@ -18,7 +18,7 @@
     		#{address},
     		#{isDefault},
     		#{consignee},
-    		#{mobile},
+    		#{mobile}
 		)
 	</insert>
 	
@@ -49,7 +49,7 @@
 			<if test="mobile != null">
     			,mobile=#{mobile}
 			</if>
-		WHERE id = #{rid} and id_delete =0
+		WHERE id = #{rid} and is_delete =0
 	</update>
 	<update id="deleteUserAddress" parameterType="java.lang.Long" >
 		UPDATE af_user_address SET is_delete = 1 WHERE id=#{rid}
@@ -85,7 +85,7 @@
 		WHERE
 			is_delete = 0
 		AND
-			id = #{rid}
+			user_id = #{userId}
 		and  
 			is_default = 'Y'
 	</select>

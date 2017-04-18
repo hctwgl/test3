@@ -53,6 +53,14 @@ public class AddUserAddressApi implements ApiHandle {
 
 		}
 		Long userId = context.getUserId();
+		
+		if(StringUtils.equals(isDefault, YesNoStatus.YES.getCode())){
+			AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressDefaultByUserId(userId);
+			if(defauleDo!=null ){
+				defauleDo.setIsDefault(YesNoStatus.NO.getCode());
+				afUserAddressService.updateUserAddress(defauleDo);
+			}
+		}
 		AfUserAddressDo addressDo = new AfUserAddressDo();
 		addressDo.setAddress(address);
 		addressDo.setUserId(userId);

@@ -1,0 +1,48 @@
+/**
+ * 
+ */
+package com.ald.fanbei.api.web.api.agencybuy;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.service.AfUserAddressService;
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
+import com.ald.fanbei.api.web.common.ApiHandle;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+
+/**
+ * @类描述：获取默认代码地址
+ * @author suweili 2017年4月18日上午11:30:50
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
+@Component("getDefaultUserAddressApi")
+public class GetDefaultUserAddressApi implements ApiHandle {
+	@Resource
+	AfUserAddressService afUserAddressService;
+	
+	@Override
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		Long userId = context.getUserId();
+		AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressDefaultByUserId(userId);
+		if(defauleDo==null){
+			 defauleDo = new AfUserAddressDo();
+		}
+		
+		resp.setResponseData(JSON.toJSON(defauleDo));
+
+		return resp;
+	}
+
+}
