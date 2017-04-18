@@ -69,6 +69,16 @@ id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,val
 	<update id="deleteIdNumber" parameterType="java.lang.Long" >
 		UPDATE af_id_number SET is_delete = 1 WHERE id=#{rid}
 	</update>
-	
+		<select id="selectUserIdNumberByUserId" resultType="AfIdNumberDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_id_number
+		WHERE
+			is_delete = 0
+		AND
+			user_id = #{userId}
+		LIMIT 1
+	</select>
 	
 </mapper>
