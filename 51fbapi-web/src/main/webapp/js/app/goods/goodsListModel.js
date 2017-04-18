@@ -160,7 +160,8 @@ $(function(){
                             '<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span> ' +
                             '</div>';}
                         $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").html(html);
-                        $('.main_wrap').css('height',$("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").height()+'px')
+                        $('.main_wrap').css('height',$("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").height()+'px');
+
 
                     } else {
                         requestMsg(returnData.msg);
@@ -173,7 +174,6 @@ $(function(){
         }else{
             $('.main_wrap').css('height',$("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").height()+'px')
         }
-
     });
 
 

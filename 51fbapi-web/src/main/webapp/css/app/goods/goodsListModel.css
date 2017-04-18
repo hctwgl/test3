@@ -140,11 +140,9 @@
         transform: rotate(360deg);
     }
 }
-.loadover {
-    position: relative;
+.loadOver {
     margin: 0.6rem 0 0.4rem;
     text-align: center;
-    background-color: #eee;
 }
 /*.loadover:after {*/
     /*content: '';*/
