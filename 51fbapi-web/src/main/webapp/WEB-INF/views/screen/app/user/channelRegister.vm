@@ -4,6 +4,7 @@
 	#set($version="20170401802")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/css/app/user/channelRegister.css?version=$version">
+
 </head>
 <body>
 	<input type="hidden" id="sessionId" name="sessionId" value="$!{sessionId}">

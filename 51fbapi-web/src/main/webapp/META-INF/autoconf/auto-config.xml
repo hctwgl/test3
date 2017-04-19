@@ -32,6 +32,7 @@
 		<property name="fbapi.tongdun.partner.code" defaultValue="ktRtt1OM1sQ8bvM5E0Q6Gw==" description="铜盾商户code" />
 		<property name="fbapi.tongdun.partner.key" defaultValue="30ohw4+pyRhim1YJthNzzvLKAsRkWviuLyI/5ZjKs3TQroYLtEIaqFC8Jmft4E4B" description="铜盾商户key" />
 		<property name="fbapi.tongdun.app.name" defaultValue="alading_web" description="铜盾appname" />
+		<property name="fbapi.tongdun.partner.webhost" defaultValue="https://fp.fraudmetrix.cn" description="铜盾商户接口webhost" />
 
 		<!-- youdun -->
 		<property name="fbapi.youdun.host" defaultValue="https://api4.udcredit.com" description="有盾接口host" />

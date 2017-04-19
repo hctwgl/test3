@@ -244,7 +244,7 @@ public class AppH5UserContorler extends BaseController {
 				model.put("channelCode", pc.getCode());
 				model.put("pointCode", pcp.getCode());
 				model.put("style", pcp.getStyle());
-				model.put("tdHost", ConfigProperties.get(Constants.CONFKEY_TONGDUN_PARTNER_HOST));
+				model.put("tdHost", "https://fp.fraudmetrix.cn");
 				logger.info(JSON.toJSONString(model));
 
 				afPromotionChannelPointService.addVisit(pcp.getId());

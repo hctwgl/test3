@@ -269,7 +269,7 @@ public class TongdunUtil extends AbstractThird {
 		
 		
 		accountLogin = accountMobile;
-		Map<String, Object> params = getCommonParam(tongdunEvent, sessionId, ip, accountLogin, accountMobile);
+		Map<String, Object> params = getCommonWebParam(tongdunEvent, sessionId, ip, accountLogin, accountMobile);
 		params.put("channleCode", channleCode);
 		params.put("pointCode", pointCode);
 		JSONObject apiResp = null;
@@ -428,6 +428,20 @@ public class TongdunUtil extends AbstractThird {
 		params.put("secret_key", tongdunEvent.getSecretKey());// 此处填写对应app密钥
 		params.put("event_id", tongdunEvent.getEventId());// 此处填写策略集上的事件标识
 		params.put("black_box", blackBox);// 此处填写移动端sdk采集到的信息black_box
+		params.put("account_login", accountLogin);// 以下填写其他要传的参数，比如系统字段，扩展字段
+		params.put("account_mobile", accountMobile);// 以下填写其他要传的参数，比如系统字段，扩展字段
+		params.put("ip_address", ip);
+
+		return params;
+	}
+	
+	private Map<String, Object> getCommonWebParam(TongdunEventEnmu tongdunEvent, String tokenId, String ip,
+			String accountLogin, String accountMobile) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("partner_code", "alading");// 此处值填写您的合作方标识
+		params.put("secret_key", tongdunEvent.getSecretKey());// 此处填写对应app密钥
+		params.put("event_id", tongdunEvent.getEventId());// 此处填写策略集上的事件标识
+		params.put("token_id", tokenId);// 此处填写移动端sdk采集到的信息black_box
 		params.put("account_login", accountLogin);// 以下填写其他要传的参数，比如系统字段，扩展字段
 		params.put("account_mobile", accountMobile);// 以下填写其他要传的参数，比如系统字段，扩展字段
 		params.put("ip_address", ip);
