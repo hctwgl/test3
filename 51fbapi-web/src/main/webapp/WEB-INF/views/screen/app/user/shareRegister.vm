@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="20170401401")
-	<title>51返呗注册</title>
-	<link rel="stylesheet" type="text/css" href="/css/common/layer.css">
-	<link rel="stylesheet" type="text/css" href="/css/app/user/shareRegister.css?version=$version">
+    #set($version="2017041901")
+    <title>51返呗注册</title>
+    <link rel="stylesheet" type="text/css" href="/css/app/user/shareRegister.css?version=$version">
 </head>
 <body>
-	<div class="shareRegister">
-		<ul>
-	        <li class="bgs_c">
-		    	<input type="text" class="fs_28 bs_bb register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入手机号">
-	        </li>
-    	    <li class="clearfix">
-				<input type="text" class="fl fs_28 register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入手机验证码">
-	        	<span class="fr tac bgs_c register_codeBtn"><span>获取验证码</span></span>
-	        </li>
-	        <li class="bgs_c">
-	        	<input type="password" class="fs_28 register_password" id="register_password" placeholder="请设置密码(8-16位字母或数字)" name="words" maxlength="18">
-	        </li>
+    <div class="bgs_c channelRegister channelRegister2">
+        <ul>
+            <li class="tal bgs_c">
+                <input type="text" class="fs_28 bs_bb register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号">
+                <span class="register_required">*</span>
+            </li>
+            <li class="tal clearfix">
+                <div class="fl bgs_c register_verification_main">
+                    <input type="text" class="fl fs_28 register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+                </div>
+                <span class="fr tac bgs_c register_codeBtn"><span>获取验证码</span></span>
+                <span class="register_required">*</span>
+            </li>
+            <li class="tal bgs_c">
+                <input type="password" class="fs_28 register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18">
+                <span class="register_required">*</span>
+            </li>
         </ul>
-        <button class="fs_32 fsc_1 register_submitBtn btnC_gray">完成注册</button>
-      	<div class="register_checkbox clearfix">
-      		<input type="checkbox" checked class="input_check" id="input_check">
-        	<label for="input_check" class="bgs_c register_checkbox_bg"></label>
-      		<a class="agree" href="http://testapp.51fanbei.com/app/sys/registerProtocol">《51返呗用户注册协议》</a>
-      	</div>
-	</div>
+        <div class="tac bgs_c register_submitBtn_wrap"><button class="fs_32 fsc_1 register_submitBtn btnC_gray">立即注册</button></div>
+        <div class="tal register_checkbox clearfix">
+            <input type="checkbox" class="input_check" id="input_check">
+            <label for="input_check" class="bgs_c register_checkbox_bg"></label>
+            <p class="fl fs_24 fsc_f clearfix"><span class="fl">阅读并同意</span><a class="fl fsc_f" href="http://testapp.51fanbei.com/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+        </div>
+        <div class="tac fsc_f channelRegister_copyright">版权所有：浙江阿拉丁电子商务股份有限公司 如有疑问，请联系在线客服或拨打0571-88193918</div>
+    </div>
     <script type="text/javascript" src="/js/common/core.js"></script>
     <script type="text/javascript" src="/js/common/md5.js"></script>
-	<script type="text/javascript" src="/js/app/user/shareRegister.js?version=$version"></script>
+    <script type="text/javascript" src="/js/app/user/shareRegister.js?version=$version"></script>
 </body>
 </html>
