@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -58,7 +59,8 @@ public class PayOrderApi implements ApiHandle {
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"),null);
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"),null);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"),null);
-		  
+		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
+
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		
 		if (orderId == null || payId == null) {
@@ -91,7 +93,7 @@ public class PayOrderApi implements ApiHandle {
 		try {
 			
 			Map<String,Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getSaleAmount(), nper);
-			if (payId == 0) {
+			if (payId == 0&&type==OrderType.BOLUOME.getCode()) {
 				boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, userId, orderInfo.getSaleAmount());
 			}
 			resp.setResponseData(result);
