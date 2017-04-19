@@ -1,8 +1,8 @@
 /*
 * @Author: nizhiwei
 * @Date:   2017-04-18
-* @Last Modified by:   nizhiwei
-* @Last Modified time: 2017-04-18
+* @Last Modified by:   Yangyang
+* @Last Modified time: 2017-04-19 14:40:38
 * @title:  返呗注册
 */
 
@@ -85,12 +85,12 @@ input:-ms-input-placeholder{
 	background-size: cover;
 }
 .register_checkbox .input_check+label {
-    background-image: url(/images/activity/channel_label1.png);
+    background-image: url(/images/app/user/channelRegister/channel_label1.png);
 }
 .register_checkbox .input_check:checked+label:after {
     content: "";
 	top:0;
-	background-image: url(/images/activity/channel_label2.png);
+	background-image: url(/images/app/user/channelRegister/channel_label2.png);
 }
 .register_checkbox p{
 	margin-left: 1.0rem;
