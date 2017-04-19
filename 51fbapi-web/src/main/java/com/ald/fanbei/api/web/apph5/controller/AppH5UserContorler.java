@@ -25,10 +25,12 @@ import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
+import com.ald.fanbei.api.common.enums.TongdunEventEnmu;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -84,6 +86,8 @@ public class AppH5UserContorler extends BaseController {
 	AfPromotionChannelService afPromotionChannelService;
 	@Resource
 	AfPromotionLogsService afPromotionLogsService;
+	@Resource
+	TongdunUtil tongdunUtil;
 
 	@RequestMapping(value = { "invitationGift" }, method = RequestMethod.GET)
 	public void invitationGift(HttpServletRequest request, ModelMap model) throws IOException {
@@ -240,6 +244,7 @@ public class AppH5UserContorler extends BaseController {
 				model.put("channelCode", pc.getCode());
 				model.put("pointCode", pcp.getCode());
 				model.put("style", pcp.getStyle());
+				model.put("tdHost", ConfigProperties.get(Constants.CONFKEY_TONGDUN_PARTNER_HOST));
 				logger.info(JSON.toJSONString(model));
 
 				afPromotionChannelPointService.addVisit(pcp.getId());
@@ -264,6 +269,7 @@ public class AppH5UserContorler extends BaseController {
 			String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
 
+			
 			AfPromotionChannelPointDo pcp = afPromotionChannelPointService.getPoint(channelCode, pointCode);
 			if (pcp == null) {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_CHANNEL_NOTEXIST.getDesc(), "", null).toString();
@@ -294,7 +300,8 @@ public class AppH5UserContorler extends BaseController {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
 
 			}
-
+			tongdunUtil.getPromotionResult(request.getSession().getId(),channelCode,pointCode,request.getRemoteAddr(),mobile, mobile, "");
+			
 			// 更新为已经验证
 			afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 

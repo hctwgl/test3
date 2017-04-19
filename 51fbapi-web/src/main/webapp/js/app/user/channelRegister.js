@@ -8,19 +8,19 @@
 
 
 var sessionId = $("#sessionId").val();
-
+var tdHost = $("#tdHost").val();
 // 同盾校验编号的sessionId
  (function() {
      _fmOpt = {
          partner: 'alading',
-         appName: 'fanbei_register_web',
-         token: sessionId                            
+         appName: 'register_professional_web',
+         token: sessionId,
      };
      var cimg = new Image(1,1);
      cimg.onload = function() {
          _fmOpt.imgLoaded = true;
      };
-     cimg.src = "https://fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=eds_web&tokenId=" + _fmOpt.token;
+     cimg.src = tdHost+"/fp/clear.png?partnerCode=alading&appName=register_professional_web&tokenId=" + _fmOpt.token;
      var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
      fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);

@@ -255,6 +255,46 @@ public class TongdunUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
 		}
 	}
+	
+	/**
+	 * @方法说明：渠道推广验证
+	 * @author huyang
+	 * @param sessionId
+	 * @param channleCode
+	 * @param pointCode
+	 * @param ip
+	 */
+	public void getPromotionResult(String sessionId,String channleCode,String pointCode,String ip,String accountMobile, String accountLogin, String source){
+		TongdunEventEnmu tongdunEvent = TongdunEventEnmu.REGISTER_WEB;
+		
+		
+		accountLogin = accountMobile;
+		Map<String, Object> params = getCommonParam(tongdunEvent, sessionId, ip, accountLogin, accountMobile);
+		params.put("channleCode", channleCode);
+		params.put("pointCode", pointCode);
+		JSONObject apiResp = null;
+		try {
+			String respStr = invoke(params);
+			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+			apiResp = JSONObject.parseObject(respStr);
+		} catch (Exception e) {
+			logger.error("getLoginResult", e);
+			return;
+		}
+		String loginSwitch = resourceValueWhithType(AfResourceType.loginTongdunSwitch.getCode());
+
+		if (StringUtil.isBlank(loginSwitch) || "0".equals(loginSwitch)) {// 验证开关关闭
+			return;
+		}
+
+		if (apiResp != null && apiResp.get("final_decision") != null
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
+						.indexOf(apiResp.get("final_decision") + "") < 0) {
+			logger.info(
+					"手机号码为：" + accountMobile + "的用户在验证渠道推广注册的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
+			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
+		}
+	}
 
 	/**
 	 * 
