@@ -4,7 +4,22 @@
 	#set($version="20170401802")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/css/app/user/channelRegister.css?version=$version">
-
+	<script type="text/javascript">;
+        (function(root) {
+            root._tt_config = true;
+            var ta = document.createElement('script'); ta.type = 'text/javascript'; ta.async = true;
+            ta.src = document.location.protocol + '//' + 's3.pstatp.com/bytecom/resource/track_log/src/toutiao-track-log.js';
+            ta.onerror = function () {
+                var request = new XMLHttpRequest();
+                var web_url = window.encodeURIComponent(window.location.href);
+                var js_url  = ta.src;
+                var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url=' + web_url + '&js_url=' + js_url;
+                request.open('GET', url, true);
+                request.send(null);
+            }
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ta, s);
+        })(window);
+    </script>
 </head>
 <body>
 	<input type="hidden" id="sessionId" name="sessionId" value="$!{sessionId}">
@@ -70,5 +85,6 @@
 	<script type="text/javascript" src="/js/common/md5.js"></script>
 	<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
 	<script type="text/javascript" src="/js/app/user/channelRegister.js?version=$version"></script>
+	<div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </body>
 </html>

@@ -100,7 +100,7 @@ $(function(){
 
 				var passwordLength = register_password.length;
 				if (passwordLength >= 6) {
-
+					_taq.push({convert_id:"59212981134", event_type:"form"})
 					$.ajax({ // 设置登录密码
 						url: "/app/user/commitChannelRegister",
 						type: 'POST',
