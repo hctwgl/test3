@@ -11,8 +11,6 @@
 	position: relative;
 	overflow: hidden;
     height: 0.92rem;
-    background: white;
-    border-bottom: 1px solid #CBCBCB;
 }
 .nav{
     color:#666;
@@ -22,6 +20,7 @@
     white-space: nowrap;
     font-size: 0.32rem;
     background: white;
+    border-bottom: 1px solid #CBCBCB;
     left: 0;
     top: 0;
 
