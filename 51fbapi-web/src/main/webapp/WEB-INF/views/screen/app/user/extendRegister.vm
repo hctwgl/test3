@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="20170401902")
+	#set($version="20170401903")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/css/common/layer.css">
-	<link rel="stylesheet" type="text/css" href="/css/app/user/shareRegister.css?version=$version">
+	<link rel="stylesheet" type="text/css" href="/css/app/user/extendRegister.css?version=$version">
 </head>
 <body>
 	<div class="shareRegister">
@@ -29,6 +29,6 @@
 	</div>
     <script type="text/javascript" src="/js/common/core.js"></script>
     <script type="text/javascript" src="/js/common/md5.js"></script>
-	<script type="text/javascript" src="/js/app/user/shareRegister.js?version=$version"></script>
+	<script type="text/javascript" src="/js/app/user/extendRegister.js?version=$version"></script>
 </body>
 </html>

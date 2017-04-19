@@ -2,7 +2,7 @@
 * @Author: nizhiwei
 * @Date:   2017-04-18
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-19 16:19:09
+* @Last Modified time: 2017-04-19 16:41:47
 * @title:  返呗注册
 */
 
@@ -10,7 +10,7 @@
 .shareRegister{
 	width: 18.75rem;
 	height: 35rem;
-	background: url(/images/app/user/shareRegister.jpg) no-repeat;
+	background: url(/images/app/user/extendRegister.jpg) no-repeat;
 	-webkit-background-size:100%;
 	background-size:100%;
 }
