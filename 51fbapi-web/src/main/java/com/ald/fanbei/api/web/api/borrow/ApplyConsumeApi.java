@@ -62,7 +62,7 @@ public class ApplyConsumeApi implements ApiHandle {
 		BigDecimal amount = NumberUtil
 				.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("amount")), BigDecimal.ZERO);
 		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId")), 0l);
-		if (amount.compareTo(BigDecimal.ZERO) == 0 || goodsId.equals(0l)) {
+		if (amount.compareTo(BigDecimal.ZERO) == 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_GOODS_IS_EMPTY);
 		}
 
