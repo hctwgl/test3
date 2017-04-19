@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 16:32:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-13 13:41:08
+* @Last Modified time: 2017-04-18 19:31:04
 * @title:  注册
 */
 
@@ -34,9 +34,9 @@ function changeBtn() {
 
 	// 默认状态下提交按钮的样式
 	if ( mobileNum != "" && verificationNum != "" && passwordNum != ""　) {
-		$(".register_submitBtn").removeClass("btnC_gray");
+		$(".register_submitBtn").removeClass("btnc_cf");
 	} else{
-		$(".register_submitBtn").addClass("btnC_gray");
+		$(".register_submitBtn").addClass("btnc_cf");
 	};
 };
 

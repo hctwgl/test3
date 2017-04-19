@@ -27,7 +27,7 @@
 		        	<i class="register_passwordEyeClosed"></i>
 		        </li>
 	        </ul>
-	      	<div class="tac register_submitBtn_wrap"><button class="tac bdr_8 fsc_f bgc_orange register_submitBtn btnC_gray" onkeyup="changeBtn()">完成注册并下载App</button></div>
+	      	<div class="tac register_submitBtn_wrap"><button class="tac bdr_8 fsc_f bgc_orange register_submitBtn btnc_cf" onkeyup="changeBtn()">完成注册并下载App</button></div>
 	      	<div class="tal register_checkbox clearfix">
 	      		<input type="checkbox" class="input_check" id="input_check"　onkeyup="changeBtn()">
             	<label for="input_check"></label>
