@@ -2,7 +2,7 @@
 * @Author: nizhiwei
 * @Date:   2017-04-18
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-19 14:40:38
+* @Last Modified time: 2017-04-19 15:26:28
 * @title:  返呗注册
 */
 
@@ -10,7 +10,7 @@
 .shareRegister{
 	width: 18.75rem;
 	height: 35rem;
-	background: url(/images/app/user/shareRegister.jpg) no-repeat;
+	background: url(/images/app/user/shareRegister.png) no-repeat;
 	-webkit-background-size:100%;
 	background-size:100%;
 }
@@ -18,7 +18,7 @@
 	background-color: transparent;
 }
 .shareRegister ul{
-	padding-top: 21.2rem;
+	padding-top: 16.7rem;
 }
 .shareRegister li{
 	width: 11.725rem;
@@ -38,11 +38,13 @@
 }
 .register_codeBtn{
 	width: 4.85rem;
-	height: 2.175rem;
-	line-height: 2.175rem;
+	height: 2.05rem;
+	line-height: 2.05rem;
 	color: #fd7923;
 }
-
+.register_codeBtn span{
+	margin-left: 0.5rem;
+}
 
 input::-webkit-input-placeholder{
 	color: #BFBFBF;
