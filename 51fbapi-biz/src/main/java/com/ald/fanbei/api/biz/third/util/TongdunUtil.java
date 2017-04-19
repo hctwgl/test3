@@ -292,7 +292,7 @@ public class TongdunUtil extends AbstractThird {
 						.indexOf(apiResp.get("final_decision") + "") < 0) {
 			logger.info(
 					"手机号码为：" + accountMobile + "的用户在验证渠道推广注册的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
-			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
 		}
 	}
 

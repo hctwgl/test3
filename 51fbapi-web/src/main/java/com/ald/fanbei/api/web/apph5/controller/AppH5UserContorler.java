@@ -300,7 +300,11 @@ public class AppH5UserContorler extends BaseController {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
 
 			}
-			tongdunUtil.getPromotionResult(request.getSession().getId(),channelCode,pointCode,request.getRemoteAddr(),mobile, mobile, "");
+			try {
+				tongdunUtil.getPromotionResult(request.getSession().getId(),channelCode,pointCode,request.getRemoteAddr(),mobile, mobile, "");
+			} catch (Exception e) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
+			}
 			
 			// 更新为已经验证
 			afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
