@@ -252,7 +252,7 @@ public class AppH5UserContorler extends BaseController {
 				AfPromotionLogsDo afPromotionLogsDo = new AfPromotionLogsDo();
 				afPromotionLogsDo.setChannelId(pc.getId());
 				afPromotionLogsDo.setPointId(pcp.getId());
-				afPromotionLogsDo.setIp(request.getRemoteAddr());
+				afPromotionLogsDo.setIp(getRemortIP(request));
 				afPromotionLogsService.addAfPromotionLogs(afPromotionLogsDo);
 			}
 		}
@@ -301,7 +301,7 @@ public class AppH5UserContorler extends BaseController {
 
 			}
 			try {
-				tongdunUtil.getPromotionResult(request.getSession().getId(),channelCode,pointCode,request.getRemoteAddr(),mobile, mobile, "");
+				tongdunUtil.getPromotionResult(request.getSession().getId(),channelCode,pointCode,getRemortIP(request),mobile, mobile, "");
 			} catch (Exception e) {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
 			}
@@ -342,5 +342,12 @@ public class AppH5UserContorler extends BaseController {
 		}
 
 	}
+	
+	private String getRemortIP(HttpServletRequest request) { 
+	    if (request.getHeader("x-forwarded-for") == null) { 
+	        return request.getRemoteAddr(); 
+	    } 
+	    return request.getHeader("x-forwarded-for"); 
+	} 
 
 }
