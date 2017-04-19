@@ -22,7 +22,7 @@
         </ul>
         <button class="fs_32 fsc_1 register_submitBtn btnC_gray">完成注册</button>
       	<div class="register_checkbox clearfix">
-      		<input type="checkbox" checked class="input_check" id="input_check">
+      		<input type="checkbox" class="input_check" id="input_check">
         	<label for="input_check" class="bgs_c register_checkbox_bg"></label>
       		<a class="agree" href="http://testapp.51fanbei.com/app/sys/registerProtocol">《51返呗用户注册协议》</a>
       	</div>
