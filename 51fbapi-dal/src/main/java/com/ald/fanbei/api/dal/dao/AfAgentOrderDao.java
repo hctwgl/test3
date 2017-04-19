@@ -3,6 +3,8 @@
  */
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 
 /**
@@ -23,4 +25,11 @@ public interface AfAgentOrderDao {
 	    * @return
 	    */
 	    int updateAgentOrder(AfAgentOrderDo afAgentOrderDo);
+	    /**
+	     * 根据orderId获得代买详情
+	     * @param orderId
+	     * @return
+	     */
+	    AfAgentOrderDo getAgentOrderByOrderId(@Param("orderId")Long orderId);
+	    
 }

@@ -73,4 +73,12 @@ public class AfAgentOrderServiceImpl implements AfAgentOrderService {
 		return afAgentOrderDao.addAgentOrder(afAgentOrderDo);
 	}
 
+
+	@Override
+	public AfAgentOrderDo getAgentOrderByOrderId(Long orderId) {
+		
+		return afAgentOrderDao.getAgentOrderByOrderId(orderId);
+	}
+
+
 }
