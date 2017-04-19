@@ -4,6 +4,8 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -84,6 +86,9 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setCapture(capture);
 		afAgentOrderDo.setRemark(remark);
 		if(afAgentOrderService.insertAgentOrder(afAgentOrderDo, afOrder)>0){
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("orderId", afOrder.getRid());
+			resp.setResponseData(data);;
 			return resp;
 
 		}
