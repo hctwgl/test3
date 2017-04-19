@@ -68,7 +68,7 @@ public class AuthFaceApi implements ApiHandle {
 			throw new FanbeiException("authRealnameApi param error",FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		if (resultAuth.equals(RESULT_AUTH_FALSE)) {
+		if (!resultAuth.equals(RESULT_AUTH_TRUE)) {
 			throw new FanbeiException("user realname auth error",FanbeiExceptionCode.USER_REALNAME_AUTH_ERROR);
 		}
 		
