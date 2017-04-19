@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-05 17:50:55
+* @Last Modified time: 2017-04-18 19:21:46
 * @title:  商品列表页
 */
 
@@ -17,10 +17,10 @@ var categoryObj = eval('(' + category + ')');
 // 获取ip地址
 var notifyUrl = $("#notifyUrl").val();
 var windowW = $(window).outerWidth(),
-     liWArr = [], // 保存每一个li的索引(index),自身宽度(width),距离ul左侧的距离(offsetLeft)
-     ulW = 0, // ul初始宽度  通过各个li宽度之和 计算出来
-     finished = 0,
-     page = 1; // 默认页数从0开始
+    liWArr = [], // 保存每一个li的索引(index),自身宽度(width),距离ul左侧的距离(offsetLeft)
+    ulW = 0, // ul初始宽度  通过各个li宽度之和 计算出来
+    finished = 0,
+    page = 1; // 默认页数从1开始
 
 //导航滑动
 function Swipe(ele) {
@@ -74,14 +74,14 @@ Swipe.prototype = {
     }
 };
 
-new Swipe(document.getElementById('navWrap'));
+new Swiper(document.getElementById('navWrap'));
 
 var addModel = function addModel(goodsList) {
     var html = '';
     for (var j = 0; j < goodsList.length; j++) {
         // 售价
-        var saleAmount = toDecimal2(goodsList[j].saleAmount);
-        var amountAmountSplitArr = saleAmount.split(".");
+        var priceAmount = toDecimal2(goodsList[j].priceAmount);
+        var amountAmountSplitArr = priceAmount.split(".");
         var amountAmountPriceInteger = amountAmountSplitArr[0];
         var amountAmountPriceDecimal = amountAmountSplitArr[1];
         // 返利
@@ -90,7 +90,7 @@ var addModel = function addModel(goodsList) {
         var rebateAmountPriceInteger = rebateAmountSplitArr[0];
         var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
         var goodInfoUrl = notifyUrl + '&params={"goodsId":"' + goodsList[j].goodsId + '"}';
-        html += "<li class=\"goodsListModel_item\">\n                                <a href=\"" + goodInfoUrl + "\">\n                                <img src=\"" + goodsList[j].goodsIcon + "\" class=\"mainContent_img\">\n                                <div class=\"goodsListModel_mainContent_wrap\">\n                                <p class=\"fs_26 fsc_1\">" + goodsList[j].name + "</p>\n                                <p class=\"fs_26 fsc_red\">\n                                <span>\uFFE5" + amountAmountPriceInteger + "</span><span class=\"fs_20\">." + amountAmountPriceDecimal + "</span>\n                                </p>\n                                </div>\n                                <div class=\"goodsListModel_mainContent_rebate_wrap\">\n                                <div class=\"goodsListModel_mainContent_rebate clearfix\">\n                                <span class=\"goodsListModel_rebate fl fs_26 bgc_orange fsc_f tac\">\u8FD4</span>\n                                <p class=\"fl fs_24 fsc_orange\">\n                                <span>\uFFE5" + rebateAmountPriceInteger + "</span><span class=\"fs_20\">." + rebateAmountPriceDecimal + "</span>\n                                </p>\n                                </div>\n                                </div>\n                                </a>\n                                </li>";
+        html += "<li class=\"goodsListModel_item\">\n                                <a href=\"" + goodInfoUrl + "\">\n                                <img src=\"" + goodsList[j].goodsIcon + "\" class=\"mainContent_img\">\n                                <div class=\"goodsListModel_mainContent_wrap\">\n                                <p class=\"fs_26 fsc_1\">" + goodsList[j].name + "</p>\n                                <p class=\"fs_26 fsc_red\">\n                                <span>\uFFE5" + amountAmountPriceInteger + "</span><span class=\"fs_24\">." + amountAmountPriceDecimal + "</span>\n                                </p>\n                                </div>\n                                <div class=\"goodsListModel_mainContent_rebate_wrap\">\n                                <div class=\"goodsListModel_mainContent_rebate clearfix\">\n                                <span class=\"goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac\">\u8FD4</span>\n                                <p class=\"fl fs_24 fsc_orange\">\n                                <span>\uFFE5" + rebateAmountPriceInteger + "</span><span class=\"fs_22\">." + rebateAmountPriceDecimal + "</span>\n                                </p>\n                                </div>\n                                </div>\n                                </a>\n                                </li>";
     }
     return html;
 };
@@ -153,6 +153,7 @@ $(function(){
                     if (returnData.success) {
                         var html = '';
                         var goodsList = returnData.data["goodsList"];
+                        console.log(returnData.data["goodsList"])
                         if(goodsList.length>0){
                             html=addModel(goodsList)
                         }else{html = '<div class="nullPrompt"> ' +

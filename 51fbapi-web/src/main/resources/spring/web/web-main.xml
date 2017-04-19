@@ -190,6 +190,7 @@
 				<entry key="/auth/authLocation" value-ref="authLocationApi" />
 				<entry key="/auth/authMobileBack" value-ref="authMobileBackApi" />
 				<entry key="/auth/getAllowConsume" value-ref="getAllowConsumeApi" />
+				<entry key="/auth/saveIdNumber" value-ref="saveIdNumberApi" />
 				
 
 				<!-- borrow -->
@@ -235,6 +236,7 @@
 				<entry key="/agencyBuy/deleteUserAddress" value-ref="deleteUserAddressApi" />
 				<entry key="/agencyBuy/getUserAddressList" value-ref="getUserAddressListApi" />
 				<entry key="/agencyBuy/getDefaultUserAddress" value-ref="getDefaultUserAddressApi" />
+				<entry key="/agencyBuy/submitAgencyBuyOrder" value-ref="submitAgencyBuyOrderApi" />
 
 
 			</map>

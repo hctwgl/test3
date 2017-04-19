@@ -59,7 +59,7 @@ public class FanbeiController extends BaseController {
     }
     //代买相关
     @RequestMapping(value ={
-    		"/agencyBuy/addUserAddress","/agencyBuy/changeUserAddress","/agencyBuy/getDefaultUserAddress","/agencyBuy/deleteUserAddress","/agencyBuy/getUserAddressList"
+    		"/agencyBuy/addUserAddress","/agencyBuy/changeUserAddress","/agencyBuy/getDefaultUserAddress","/agencyBuy/deleteUserAddress","/agencyBuy/getUserAddressList","/agencyBuy/submitAgencyBuyOrder"
         },method = RequestMethod.POST,produces="application/json;charset=utf-8")
         @ResponseBody
         public String agencyBuyRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -122,7 +122,7 @@ public class FanbeiController extends BaseController {
     @RequestMapping(value = {
     		"/auth/authRealname","/auth/authContacts","/auth/authCredit","/auth/authZhima","/auth/authBankcard",
     		"/auth/checkBankcard","/auth/getBankList","/auth/checkBankcardPay","/auth/authFace","/auth/authMobile","/auth/authContactor"
-    		,"/auth/authLocation","/auth/authMobileBack","/auth/getAllowConsume","/auth/getDailyRate"
+    		,"/auth/authLocation","/auth/authMobileBack","/auth/getAllowConsume","/auth/getDailyRate","/auth/saveIdNumber"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

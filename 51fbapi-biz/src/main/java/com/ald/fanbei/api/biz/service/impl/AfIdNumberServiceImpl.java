@@ -3,9 +3,12 @@
  */
 package com.ald.fanbei.api.biz.service.impl;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.dal.dao.AfIdNumberDao;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 
 /**
@@ -16,18 +19,23 @@ import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 @Service("afIdNumberService")
 public class AfIdNumberServiceImpl implements AfIdNumberService {
 
+	@Resource
+	AfIdNumberDao afIdNumberDao;
 	
 	@Override
 	public int addIdNumber(AfIdNumberDo afIdNumberDo) {
-		// TODO Auto-generated method stub
-		return 0;
+		return afIdNumberDao.addIdNumber(afIdNumberDo);
 	}
 
 	
 	@Override
 	public int updateIdNumber(AfIdNumberDo afIdNumberDo) {
-		// TODO Auto-generated method stub
-		return 0;
+		return afIdNumberDao.updateIdNumber(afIdNumberDo);
+	}
+
+	@Override
+	public AfIdNumberDo selectUserIdNumberByUserId(Long userId) {
+		return afIdNumberDao.selectUserIdNumberByUserId(userId);
 	}
 
 }

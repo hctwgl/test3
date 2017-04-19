@@ -25,9 +25,9 @@
 				">
 					<div class="fl receiveCoupons_mainContent">
 						<div class="receiveCoupons_content clearfix">
-							<span class="fl tac fsc_blue receiveCoupons_priceInfo">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></span>
+							<span class="fl tac receiveCoupons_priceInfo">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></span>
 							<div class="fl fs_24 fsc_6 receiveCoupons_text">
-								<p class="fsc_1 fs_32">$!{item.name}</p>
+								<p class="fsc_1">$!{item.name}</p>
 								<p>
 									#if($!{item.limitAmount}==0)
 										无限制
