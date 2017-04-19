@@ -2,15 +2,10 @@ package com.ald.fanbei.api.web.api.agencybuy;
 
 
 
-import java.math.BigDecimal;
-
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;

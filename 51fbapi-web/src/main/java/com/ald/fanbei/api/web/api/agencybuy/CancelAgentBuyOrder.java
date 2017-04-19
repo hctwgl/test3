@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -17,6 +18,8 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
+
+@Component("cancelAgencyBuyOrderApi")
 public class CancelAgentBuyOrder implements ApiHandle {
 
 	@Resource
