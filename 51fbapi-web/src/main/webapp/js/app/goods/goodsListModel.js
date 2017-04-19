@@ -74,7 +74,7 @@ Swipe.prototype = {
     }
 };
 
-new Swiper(document.getElementById('navWrap'));
+new Swipe(document.getElementById('navWrap'));
 
 var addModel = function addModel(goodsList) {
     var html = '';
@@ -97,7 +97,7 @@ var addModel = function addModel(goodsList) {
 
 // 导航tab切换
 $(function(){
-    var mySwiper = new Swiper('.swiper-container', {
+    var mySwiper = new Swiper('.swiper-container', {        //tab切换
         onSlideChangeStart: function(swiper) {
             $(".nav li").eq(swiper.realIndex).click()
         }
@@ -138,8 +138,8 @@ $(function(){
         }
         $(".nav").css({"left": offset + "px"});
         mySwiper.slideTo(i);
-        var isUl = $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").find('li').length;
-        if(isUl<=0){
+        var isUl = $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent");
+        if(isUl.find('li').length<=0){
             $.ajax({
                 url: "/app/goods/categoryGoodsList",
                 type: "POST",
@@ -153,17 +153,15 @@ $(function(){
                     if (returnData.success) {
                         var html = '';
                         var goodsList = returnData.data["goodsList"];
-                        console.log(returnData.data["goodsList"])
                         if(goodsList.length>0){
                             html=addModel(goodsList)
                         }else{html = '<div class="nullPrompt"> ' +
                             '<img src="/images/common/040101wuyouhui.png"> ' +
                             '<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span> ' +
-                            '</div>';}
-                        $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").html(html);
-                        $('.main_wrap').css('height',$("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").height()+'px');
-
-
+                            '</div>';
+                        }
+                        isUl.html(html);
+                        $('.main_wrap').css('height',isUl.height()+'px');
                     } else {
                         requestMsg(returnData.msg);
                     }
@@ -173,14 +171,14 @@ $(function(){
                 }
             });
         }else{
-            $('.main_wrap').css('height',$("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").height()+'px')
+            $('.main_wrap').css('height',isUl.height()+'px')
         }
     });
 
 
 
     // 下拉的时候加载
-    $(window).scroll(function () {
+    $(window).on('scroll',function () {
         if(finished==0){
             var scrollTop = $(this).scrollTop();
             var allHeight = $(document).height();
@@ -200,14 +198,11 @@ $(function(){
                     success: function(returnData){
                         if (returnData.success) {
                             if(returnData.data["goodsList"]==""){
-                                requestMsg("没有更多了...");
-                                if (page == 1) {
-                                    $(".loadover").remove();
-                                }
+                                var txt='<div class="loadOver"><span>没有更多了...</span></div>';
+                                $("div[data-type="+typeCurrentNum+"]").append(txt);
                             }else{
                                 var goodsList = returnData.data["goodsList"];
-                                var html =addModel(goodsList);
-                                $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").append(html);
+                                $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").append(addModel(goodsList));
                                 finished=0
                             }
                         } else {

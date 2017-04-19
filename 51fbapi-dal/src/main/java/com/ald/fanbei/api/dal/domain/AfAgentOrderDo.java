@@ -40,6 +40,11 @@ public class AfAgentOrderDo extends AbstractSerial {
 	private Long matchOrderId;
 	private Date gmtMatchOrder;
 	private String afAgentOrdercol;
+	
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 	/**
 	 * @return the orderId
 	 */

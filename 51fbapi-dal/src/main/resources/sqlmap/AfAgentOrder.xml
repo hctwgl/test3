@@ -96,7 +96,7 @@
 		WHERE id = #{rid}
 	</update>
 	
-		<select id="selectAgentOrderByOrderId" resultType="AfAgentOrderDo">
+	<select id="selectAgentOrderByOrderId" resultType="AfAgentOrderDo">
 		SELECT
 			<include refid="queryAllFields" />
 		FROM
@@ -107,5 +107,17 @@
 			order_id = #{orderId}
 		LIMIT 1
 	</select>
+	
+	<select id="getAgentOrderByOrderId" resultType="AfAgentOrderDo">
+	
+		SELECT
+			<include refid="queryAllFields"/>
+		FROM
+			af_agent_order
+		WHERE
+			order_id = #{orderId}
+		LIMIT 
+			1
+	 </select>
 	
 </mapper>
