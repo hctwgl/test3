@@ -52,8 +52,8 @@
 .register_verification_main{
 	position: relative;
 	width: 4.16rem;
-	height: 0.98rem;
-	line-height: 0.98rem;
+	height: 0.96rem;
+	line-height: 0.96rem;
 }
 .register_verification{
 	width: 3.2rem;
@@ -61,6 +61,7 @@
 }
 .register_codeBtn{
 	width: 2.4rem;
+	height: 0.96rem;
 }
 /*×的样式待定*/
 .register_mobileIcon,.register_verificationIcon,.register_passwordEyeClosed,.register_passwordEye{
