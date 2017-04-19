@@ -30,9 +30,9 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
-import com.ald.fanbei.api.common.enums.TongdunEventEnmu;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
@@ -252,7 +252,7 @@ public class AppH5UserContorler extends BaseController {
 				AfPromotionLogsDo afPromotionLogsDo = new AfPromotionLogsDo();
 				afPromotionLogsDo.setChannelId(pc.getId());
 				afPromotionLogsDo.setPointId(pcp.getId());
-				afPromotionLogsDo.setIp(getRemortIP(request));
+				afPromotionLogsDo.setIp(CommonUtil.getIpAddr(request));
 				afPromotionLogsService.addAfPromotionLogs(afPromotionLogsDo);
 			}
 		}
@@ -301,7 +301,7 @@ public class AppH5UserContorler extends BaseController {
 
 			}
 			try {
-				tongdunUtil.getPromotionResult(request.getSession().getId(),channelCode,pointCode,getRemortIP(request),mobile, mobile, "");
+				tongdunUtil.getPromotionResult(request.getSession().getId(),channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
 			} catch (Exception e) {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
 			}
@@ -343,11 +343,5 @@ public class AppH5UserContorler extends BaseController {
 
 	}
 	
-	private String getRemortIP(HttpServletRequest request) { 
-	    if (request.getHeader("x-forwarded-for") == null) { 
-	        return request.getRemoteAddr(); 
-	    } 
-	    return request.getHeader("x-forwarded-for"); 
-	} 
 
 }
