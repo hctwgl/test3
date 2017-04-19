@@ -1,0 +1,102 @@
+/*
+* @Author: nizhiwei
+* @Date:   2017-04-18
+* @Last Modified by:   nizhiwei
+* @Last Modified time: 2017-04-18
+* @title:  返呗注册
+*/
+
+
+.shareRegister{
+	width: 18.75rem;
+	height: 35rem;
+	background: url(/images/app/user/shareRegister.jpg) no-repeat;
+	-webkit-background-size:100%;
+	background-size:100%;
+}
+.shareRegister input,.shareRegister button{
+	background-color: transparent;
+}
+.shareRegister ul{
+	padding-top: 21.2rem;
+}
+.shareRegister li{
+	width: 11.725rem;
+	height: 2rem;
+	margin: 0 auto 0.6rem;
+}
+.register_mobile,.register_password,.register_verification{
+	margin-top: 0.5rem;
+	padding-left: 0.3rem;
+}
+.register_mobile,.register_password{
+	width: 11rem;
+}
+
+.register_verification{
+	width: 5.6rem;
+}
+.register_codeBtn{
+	width: 4.85rem;
+	height: 2.175rem;
+	line-height: 2.175rem;
+	color: #fd7923;
+}
+
+
+input::-webkit-input-placeholder{
+	color: #BFBFBF;
+}
+input:-moz-placeholder{
+	color: #BFBFBF;
+}
+input::-moz-placeholder{
+	color: #BFBFBF;
+}
+input:-ms-input-placeholder{
+	color: #BFBFBF;
+}
+
+.register_submitBtn{
+	width: 13.275rem;
+	margin: 1rem 2.5rem .8rem;
+}
+/*协议*/
+.register_checkbox{
+	position: relative;
+	height: 0.9rem;
+	line-height: 0.9rem;
+	margin: 0 3.4rem;
+
+}
+.register_checkbox .input_check {
+    visibility: hidden;
+}
+.register_checkbox .input_check+label,.register_checkbox .input_check:checked+label:after{
+	position: absolute;
+	top:.15rem;
+	left: 0;
+    display: inline-block;
+    width: 0.575rem;
+    height: 0.55rem;
+    -webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	background-size: cover;
+}
+.register_checkbox .input_check+label {
+    background-image: url(/images/activity/channel_label1.png);
+}
+.register_checkbox .input_check:checked+label:after {
+    content: "";
+	top:0;
+	background-image: url(/images/activity/channel_label2.png);
+}
+.register_checkbox p{
+	margin-left: 1.0rem;
+}
+.agree{
+	float: left;
+	margin-left: 3rem;
+	opacity:0;
+}
