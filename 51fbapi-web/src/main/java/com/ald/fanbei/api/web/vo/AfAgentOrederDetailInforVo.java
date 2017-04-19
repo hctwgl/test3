@@ -1,6 +1,6 @@
 package com.ald.fanbei.api.web.vo;
 
-import java.math.BigDecimal;
+
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
@@ -12,19 +12,20 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	
 	private String goodName; // 商品名称
 	private String goodsIcon; // 商品图片
-	private Integer count; // 商品
-	private String priceAmount; // 商品价格
-	private BigDecimal rebateAmount; // 返利金额
+	private Long count; // 商品数量
+	private Long priceAmount; // 商品价格
+	private Long rebateAmount; // 返利金额
 	private String consignee; // 收件人
 	private String province; // 省
 	private String city; // 城市
+	private String county; // 区域
 	private String address; // 地址
 	private String mobile; 	// 用户电话
 	private String capture; // 用户截图
 	private String remark; // 用户留言
 	private String gmtCreate; // 订单生成的时间
+	private String payType; // 支付方式
 	private String payStatus; // 支付的状态
-	private String payType; // 支付类型
 	private String payTradeNo; // 支付订单号
 	private String gmtPay; // 支付时间
 	private String status; // 订单的状态
@@ -34,11 +35,24 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String gmtAgentBuy; // 代买时间	
 	
 	
+	
 	public String getGmtPay() {
 		return gmtPay;
 	}
 	public void setGmtPay(String gmtPay) {
 		this.gmtPay = gmtPay;
+	}
+	public String getPayType() {
+		return payType;
+	}
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+	public String getCounty() {
+		return county;
+	}
+	public void setCounty(String county) {
+		this.county = county;
 	}
 	public String getGmtRebated() {
 		return gmtRebated;
@@ -51,12 +65,6 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	}
 	public void setPayStatus(String payStatus) {
 		this.payStatus = payStatus;
-	}
-	public String getPayType() {
-		return payType;
-	}
-	public void setPayType(String payType) {
-		this.payType = payType;
 	}
 	public String getPayTradeNo() {
 		return payTradeNo;
@@ -118,22 +126,23 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	public void setGoodsIcon(String goodsIcon) {
 		this.goodsIcon = goodsIcon;
 	}
-	public Integer getCount() {
+	public Long getCount() {
 		return count;
 	}
-	public void setCount(Integer count) {
+	public void setCount(Long count) {
 		this.count = count;
 	}
-	public String getPriceAmount() {
+	
+	public Long getPriceAmount() {
 		return priceAmount;
 	}
-	public void setPriceAmount(String priceAmount) {
+	public void setPriceAmount(Long priceAmount) {
 		this.priceAmount = priceAmount;
 	}
-	public BigDecimal getRebateAmount() {
+	public Long getRebateAmount() {
 		return rebateAmount;
 	}
-	public void setRebateAmount(BigDecimal rebateAmount) {
+	public void setRebateAmount(Long rebateAmount) {
 		this.rebateAmount = rebateAmount;
 	}
 	public String getMobile() {
