@@ -30,7 +30,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String gmtPay; // 支付时间
 	private String status; // 订单的状态
 	private String gmtRebated; // 返利时间
-	private String gmtModified; //最后的修改时间
+	private String gmtFinished; // 订单完成时间
 	private String agentMessage; // 代买人员的备注
 	private String gmtAgentBuy; // 代买时间	
 	
@@ -96,11 +96,12 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public String getGmtModified() {
-		return gmtModified;
+	
+	public String getGmtFinished() {
+		return gmtFinished;
 	}
-	public void setGmtModified(String gmtModified) {
-		this.gmtModified = gmtModified;
+	public void setGmtFinished(String gmtFinished) {
+		this.gmtFinished = gmtFinished;
 	}
 	public String getAgentMessage() {
 		return agentMessage;
