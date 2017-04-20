@@ -111,7 +111,7 @@ public class TaobaoApiUtil extends AbstractThird {
 	 * 查询商品详情接口 taobao.tae.item.detail.get
 	 * @param params
 	 * @return
-	 * @throws ApiException
+	 * @throws ApiExceptionx
 	 */
 	public TaeItemDetailGetResponse executeTaeItemDetailSearch(String openId) throws ApiException{
 		logger.info("executeTaeItemDetailSearch start,openId={}",openId);

@@ -64,14 +64,36 @@ public class ChangeUserAddressApi implements ApiHandle {
 		
 		AfUserAddressDo addressDo = new AfUserAddressDo();
 		addressDo.setRid(addressId);
-		addressDo.setAddress(address);
 		addressDo.setUserId(userId);
-		addressDo.setCity(city);
-		addressDo.setProvince(province);
-		addressDo.setCounty(county);
-		addressDo.setConsignee(consignee);
-		addressDo.setIsDefault(isDefault);
-		addressDo.setMobile(mobile);
+
+		if(StringUtils.isNotBlank(address)){
+			addressDo.setAddress(address);
+
+		}
+		if(StringUtils.isNotBlank(city)){
+			addressDo.setCity(city);
+
+		}
+		if(StringUtils.isNotBlank(province)){
+			addressDo.setProvince(province);
+
+		}
+		if(StringUtils.isNotBlank(county)){
+			addressDo.setCounty(county);
+
+		}
+		if(StringUtils.isNotBlank(consignee)){
+			addressDo.setConsignee(consignee);
+
+		}
+		if(StringUtils.isNotBlank(isDefault)){
+			addressDo.setIsDefault(isDefault);
+
+		}
+		if(StringUtils.isNotBlank(mobile)){
+			addressDo.setMobile(mobile);
+
+		}
 		if(afUserAddressService.updateUserAddress(addressDo)>0){
 			return resp;
 

@@ -126,6 +126,8 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_BCDS_SECRET			  = "fbapi.taobao.bcds.secret";
     public static final String CONFKEY_SMS_DHST_PASSWORD			  = "fbapi.sms.dhst.password";
     public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS	  = "taobao.tbk.item.get.fields";
+    public static final String CONFKEY_TAOBAO_TBK_ITEM_GET	  		  = "taobao.tbk.item.info.get";
+
     public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
     public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "taobao.tae.item.detail.get.fields";
     public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION	  = "http://img02.taobaocdn.com/bao/uploaded/";
