@@ -32,10 +32,25 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String gmtRebated; // 返利时间
 	private String gmtFinished; // 订单完成时间
 	private String agentMessage; // 代买人员的备注
-	private String gmtAgentBuy; // 代买时间	
+	private String gmtAgentBuy; // 代买时间
+	private String closedReason; // 取消理由
+	private String gmtClosed; // 用户取消时间
 	
 	
 	
+
+	public String getGmtClosed() {
+		return gmtClosed;
+	}
+	public void setGmtClosed(String gmtClosed) {
+		this.gmtClosed = gmtClosed;
+	}
+	public String getClosedReason() {
+		return closedReason;
+	}
+	public void setClosedReason(String closedReason) {
+		this.closedReason = closedReason;
+	}
 	public String getGmtPay() {
 		return gmtPay;
 	}

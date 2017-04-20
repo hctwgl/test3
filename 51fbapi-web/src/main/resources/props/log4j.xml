@@ -127,5 +127,6 @@
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="DEFAULT_APPENDER" />
 		<appender-ref ref="ERROR_APPENDER" />
+<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
 	</root>
 </log4j:configuration>

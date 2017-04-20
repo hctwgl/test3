@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfAgentOrderDao">
 	<sql id="queryAllFields">
 		order_id,user_id,province,city,county,address,consignee,mobile,capture,remark,agent_account,agent_message,agent_id,gmt_agent_buy,gmt_closed,cancel_reason,cancel_detail,closed_reason,
-		closed_detail,match_order_id,gmt_match_order,af_agent_ordercol
+		closed_detail,match_order_id,gmt_match_order
 	</sql>
 	
 	<insert id="addAgentOrder" parameterType="AfAgentOrderDo" useGeneratedKeys="true" keyProperty="rid">
@@ -91,9 +91,7 @@
 			<if test="gmtMatchOrder != null">
     			,gmt_match_order=#{gmtMatchOrder}
 			</if>
-			<if test="afAgentOrdercol != null">
-    			,af_agent_ordercol=#{afAgentOrdercol}
-			</if>
+			
 		WHERE id = #{rid}
 	</update>
 	

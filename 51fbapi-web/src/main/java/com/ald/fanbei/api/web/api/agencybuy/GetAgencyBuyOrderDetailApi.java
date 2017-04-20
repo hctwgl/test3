@@ -86,7 +86,8 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String gmtFinished = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtFinished());
 		String agentMessage = afAgentOrderDo.getAgentMessage();
 		String gmtAgentBuy = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtAgentBuy());
-		
+		String closedReason = afAgentOrderDo.getClosedReason();
+		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtClosed()); // 用户取消时间
 		// 根据订单状态和支付状态返回不同的值
 		/**
 		 * 订单状态【NEW:新建/待付款/等待代买,DEALING:支付中,PAID:已支付/待收货,FINISHED:已收货/订单完成,
@@ -95,29 +96,32 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 * 
 		 * 支付状态【N:(notpay)未支付,D:(dealing)支付中,P:(payed)已经支付,R:(refund)退款】
 		 */
-		agentOrderDetailVo.setStatus(StringUtils.isBlank(status)?status:"");
+		agentOrderDetailVo.setStatus(StringUtils.isBlank(status)?"":status);
 		agentOrderDetailVo.setPayStatus(StringUtils.isBlank(payStatus)?payStatus:"");
-		agentOrderDetailVo.setConsignee(StringUtils.isBlank(consignee)?consignee:"");
-		agentOrderDetailVo.setMobile(StringUtils.isBlank(mobile)?mobile:"");
-		agentOrderDetailVo.setProvince(StringUtils.isBlank(province)?province:"");
-		agentOrderDetailVo.setCity(StringUtils.isBlank(city)?city:"");
-		agentOrderDetailVo.setCounty(StringUtils.isBlank(county)?county:"");
-		agentOrderDetailVo.setAddress(StringUtils.isBlank(address)?address:"");
-		agentOrderDetailVo.setGoodName(StringUtils.isBlank(goodName)?goodName:"");
-		agentOrderDetailVo.setGoodsIcon(StringUtils.isBlank(goodsIcon)?goodsIcon:"");
+		agentOrderDetailVo.setConsignee(StringUtils.isBlank(consignee)?"":consignee);
+		agentOrderDetailVo.setMobile(StringUtils.isBlank(mobile)?"":mobile);
+		agentOrderDetailVo.setProvince(StringUtils.isBlank(province)?"":province);
+		agentOrderDetailVo.setCity(StringUtils.isBlank(city)?"":city);
+		agentOrderDetailVo.setCounty(StringUtils.isBlank(county)?"":county);
+		agentOrderDetailVo.setAddress(StringUtils.isBlank(address)?"":address);
+		agentOrderDetailVo.setGoodName(StringUtils.isBlank(goodName)?"":goodName);
+		agentOrderDetailVo.setGoodsIcon(StringUtils.isBlank(goodsIcon)?"":goodsIcon);
 		agentOrderDetailVo.setCount(count != -1?count:0);
-		agentOrderDetailVo.setCapture(StringUtils.isBlank(capture)?capture:"");
-		agentOrderDetailVo.setRemark(StringUtils.isBlank(remark)?remark:"");
-		agentOrderDetailVo.setPriceAmount(priceAmount != -1?priceAmount:0);
-		agentOrderDetailVo.setRebateAmount(rebateAmount != -1?rebateAmount:0);
-		agentOrderDetailVo.setAgentMessage(StringUtils.isBlank(agentMessage)?agentMessage:"");
-		agentOrderDetailVo.setGmtCreate(StringUtils.isBlank(gmtCreate)?gmtCreate:"");
-		agentOrderDetailVo.setPayType(StringUtils.isBlank(payType)?payType:"");
-		agentOrderDetailVo.setGmtPay(StringUtils.isBlank(gmtPay)?gmtPay:"");
-		agentOrderDetailVo.setPayTradeNo(StringUtils.isBlank(payTradeNo)?payTradeNo:"");
-		agentOrderDetailVo.setGmtAgentBuy(StringUtils.isBlank(gmtAgentBuy)?gmtAgentBuy:"");
-		agentOrderDetailVo.setGmtRebated(StringUtils.isBlank(gmtRebated)?gmtRebated:"");
-		agentOrderDetailVo.setGmtFinished(StringUtils.isBlank(gmtFinished)?gmtFinished:"");
+		agentOrderDetailVo.setCapture(StringUtils.isBlank(capture)?"":capture);
+		agentOrderDetailVo.setRemark(StringUtils.isBlank(remark)?"":remark);
+		agentOrderDetailVo.setPriceAmount(priceAmount != -1?0:priceAmount);
+		agentOrderDetailVo.setRebateAmount(rebateAmount != -1?0:rebateAmount);
+		agentOrderDetailVo.setAgentMessage(StringUtils.isBlank(agentMessage)?"":agentMessage);
+		agentOrderDetailVo.setGmtCreate(StringUtils.isBlank(gmtCreate)?"":gmtCreate);
+		agentOrderDetailVo.setPayType(StringUtils.isBlank(payType)?"":payType);
+		agentOrderDetailVo.setGmtPay(StringUtils.isBlank(gmtPay)?"":gmtPay);
+		agentOrderDetailVo.setPayTradeNo(StringUtils.isBlank(payTradeNo)?"":payTradeNo);
+		agentOrderDetailVo.setGmtAgentBuy(StringUtils.isBlank(gmtAgentBuy)?"":gmtAgentBuy);
+		agentOrderDetailVo.setGmtRebated(StringUtils.isBlank(gmtRebated)?"":gmtRebated);
+		agentOrderDetailVo.setGmtFinished(StringUtils.isBlank(gmtFinished)?"":gmtFinished);
+		agentOrderDetailVo.setClosedReason(StringUtils.isBlank(closedReason)?"":closedReason);
+		agentOrderDetailVo.setGmtClosed(StringUtils.isBlank(gmtClosed)?"":gmtClosed);
+		
 
 		return agentOrderDetailVo;
 	}
