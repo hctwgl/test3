@@ -1,8 +1,12 @@
 package com.ald.fanbei;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,14 +34,45 @@ public class Test {
 		// password);
 		
 //		getUserAccount();
-		try {
-			afUserInfo(1);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		try{
+			genFanbeiRedpackage("/Users/suweili/Desktop/90164");
+		}catch(Exception e){
+			System.out.println(e);
 		}
-
 		
+	}
+	
+	
+	
+	public static void genFanbeiRedpackage(String fileName) {
+		File file = new File(fileName);
+		BufferedReader reader = null;
+		
+		try {
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("/Users/suweili/Desktop/output.txt"), true)));
+			
+			reader = new BufferedReader(new FileReader(file));
+			String tempString = null;
+			//特别注意替换  红包id,红包名称，红包金额，红包有效时间
+			String sql = "insert into `af_user_coupon`(`gmt_create`,`gmt_modified`,`user_id`,`coupon_id`,`gmt_start`,`gmt_end`,`status`,`gmt_use`,`source_type`,`source_ref`)"
+					+ " values(NOW(),NOW(),#userId#,'39','2017-04-19 00:00:00','2017-05-19 23:59:59','NOUSE',null,'REGIST','SYS');\n";
+			while ((tempString = reader.readLine()) != null) {
+				String temp = sql.replace("#userId#", tempString);
+				out.append(temp);
+				System.out.println(temp);
+			}
+			reader.close();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e1) {
+				}
+			}
+		}
 	}
 	
 	@SuppressWarnings("unused")
