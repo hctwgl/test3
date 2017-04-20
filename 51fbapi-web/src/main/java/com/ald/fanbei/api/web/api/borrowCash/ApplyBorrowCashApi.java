@@ -104,7 +104,6 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 
 		if (StringUtils.isBlank(amountStr) || AfBorrowCashType.findRoleTypeByCode(type) == null
 				|| StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude) || StringUtils.isBlank(longitude)
-				|| StringUtils.isBlank(province) || StringUtils.isBlank(city) || StringUtils.isBlank(county)
 				|| StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
