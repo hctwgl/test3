@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfAgentOrderDao">
 	<sql id="queryAllFields">
-		order_id,user_id,province,city,county,address,consignee,mobile,capture,remark,agent_account,agent_message,agent_id,gmt_agent_buy,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,match_order_id,gmt_match_order,af_agent_ordercol
+		order_id,user_id,province,city,county,address,consignee,mobile,capture,remark,agent_account,agent_message,agent_id,gmt_agent_buy,gmt_closed,cancel_reason,cancel_detail,closed_reason,
+		closed_detail,match_order_id,gmt_match_order,af_agent_ordercol
 	</sql>
 	
 	<insert id="addAgentOrder" parameterType="AfAgentOrderDo" useGeneratedKeys="true" keyProperty="rid">
