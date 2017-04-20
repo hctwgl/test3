@@ -97,11 +97,11 @@ var addModel = function addModel(goodsList) {
 
 // 导航tab切换
 $(function(){
-    var mySwiper = new Swiper('.swiper-container', {        //tab切换
-        onSlideChangeStart: function(swiper) {
-            $(".nav li").eq(swiper.realIndex).click()
-        }
-    });
+    // var mySwiper = new Swiper('.swiper-container', {        //tab切换
+    //     onSlideChangeStart: function(swiper) {
+    //         $(".nav li").eq(swiper.realIndex).click()
+    //     }
+    // });
     $(".nav li").each(function(index){
         var thisLiW = $(this).outerWidth();
         liWArr.push({
@@ -137,7 +137,8 @@ $(function(){
             offset = windowW-ulW;
         }
         $(".nav").css({"left": offset + "px"});
-        mySwiper.slideTo(i);
+        $(".swiper-slide").hide();
+        $("div[data-type="+typeCurrentNum+"]").show();
         var isUl = $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent");
         if(isUl.find('li').length<=0){
             $.ajax({
@@ -154,14 +155,17 @@ $(function(){
                         var html = '';
                         var goodsList = returnData.data["goodsList"];
                         if(goodsList.length>0){
-                            html=addModel(goodsList)
+                            html=addModel(goodsList);
+                            // 下拉的时候加载
+                            finished=0;
+
                         }else{html = '<div class="nullPrompt"> ' +
                             '<img src="/images/common/040101wuyouhui.png"> ' +
                             '<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span> ' +
                             '</div>';
                         }
                         isUl.html(html);
-                        $('.main_wrap').css('height',isUl.height()+'px');
+                        // $('.main_wrap').css('height',isUl.height()+'px');
                     } else {
                         requestMsg(returnData.msg);
                     }
@@ -170,20 +174,14 @@ $(function(){
                     requestMsg("请求失败");
                 }
             });
-        }else{
-            $('.main_wrap').css('height',isUl.height()+'px')
         }
     });
-
-
-
-    // 下拉的时候加载
     $(window).on('scroll',function () {
         if(finished==0){
             var scrollTop = $(this).scrollTop();
             var allHeight = $(document).height();
             var windowHeight = $(this).height();
-            if (allHeight-windowHeight<=scrollTop+200) {
+            if (allHeight-windowHeight<=scrollTop+400) {
                 page++;
                 finished=1; //防止未加载完再次执行
                 $.ajax({
@@ -218,6 +216,10 @@ $(function(){
         }
 
     });
+
+
+
+
 });
 
 

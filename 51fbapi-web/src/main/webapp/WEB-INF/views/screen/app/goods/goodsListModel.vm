@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    #set($version="20170412501")
+    ##set($version="20170412502")
     <title>商品列表模版</title>
-    <link rel="stylesheet" type="text/css" href="/css/common/swiper-3.4.2.min.css">
+##    <link rel="stylesheet" type="text/css" href="/css/common/swiper-3.4.2.min.css">
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>
 <body>
@@ -37,6 +37,7 @@
                     <img class="goodsListModel_banner" src="$!{item.imageIcon}">
                 #end
                 #foreach($item in $!{categoryList})
+                    #if($!{item.type}==$!{typeCurrent})
                     <div class="swiper-slide" data-type="$!{item.type}">
                         <ul class="goodsListModel_mainContent clearfix">
                             #if(${item.type} == ${typeCurrent})
@@ -64,12 +65,17 @@
                             #end
                         </ul>
                     </div>
+                    #else
+                    <div class="swiper-slide" data-type="$!{item.type}" style="display: none">
+                        <ul class="goodsListModel_mainContent clearfix"></ul>
+                    </div>
+                    #end
                 #end
             </div>
         </div>
     #end
     <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
-    <script type="text/javascript" src="/js/common/swiper-3.4.2.jquery.min.js"></script>
+##    <script type="text/javascript" src="/js/common/swiper-3.4.2.jquery.min.js"></script>
     <script type="text/javascript" src="/js/common/layer.js"></script>
     <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
 </body>
