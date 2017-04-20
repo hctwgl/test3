@@ -79,18 +79,20 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 						afOrder.setOrderType(OrderType.AGENTBUY.getCode());
 						
 						
-						TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(afOrder.getOpenId());
-						logger.info("createOrderTrade_content item is null res = {}", res);
-						JSONObject resObj = JSON.parseObject(res.getBody());
-						JSONObject taoBaoInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data");
-						
+//						TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(afOrder.getOpenId());
+//						logger.info("createOrderTrade_content item is null res = {}", res);
+//						JSONObject resObj = JSON.parseObject(res.getBody());
+//						JSONObject taoBaoInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data");
+//						
+//
+//						JSONObject sellerInfo = taoBaoInfo.getJSONObject("seller_info");
+//					    String	orderType = sellerInfo.getString("seller_type").toUpperCase();
+//					    String	shopName = sellerInfo.getString("shop_name").toUpperCase();
+//
+//					    afOrder.setShopName(shopName);
+					    afOrder.setShopName("");
 
-						JSONObject sellerInfo = taoBaoInfo.getJSONObject("seller_info");
-					    String	orderType = sellerInfo.getString("seller_type").toUpperCase();
-					    String	shopName = sellerInfo.getString("shop_name").toUpperCase();
-
-					    afOrder.setShopName(shopName);
-					    afOrder.setSecType(orderType);
+					    afOrder.setSecType("");
 					    
 						afOrderDao.createOrder(afOrder);
 						
