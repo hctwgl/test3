@@ -1,8 +1,8 @@
 /*
 * @Author: nizhiwei
 * @Date:   2017-04-18
-* @Last Modified by:   nizhiwei
-* @Last Modified time: 2017-04-18
+* @Last Modified by:   Yangyang
+* @Last Modified time: 2017-04-19 18:50:13
 * @title:  返呗注册
 */
 
@@ -63,7 +63,7 @@ $(function(){
 
             if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
-                if ( /^(?![^a-zA-Z]+$)(?!\\D+$).{8,16}$/.test(register_password) ) { 		// 正则判断密码为8-16位字母+字符的组合
+                if ( /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(register_password) ) { 		// 正则判断密码为8-16位字母+字符的组合
                     var password_md5 = String(CryptoJS.MD5(register_password));            // md5加密
                     var recommendCode = getUrl("recommendCode");                          // 从分享链接中获取code
                     var register_verification = $("#register_verification").val();
@@ -89,7 +89,7 @@ $(function(){
 						}
 					})
                 }else{
-                    requestMsg("请填写8-16位的数字、字母组成的密码");
+                    requestMsg("请填写6-18位的数字、字母组成的密码");
                 }
             } else {
                 requestMsg("请阅读并同意《51返呗用户注册协议》");
