@@ -83,7 +83,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 */
 		String status = afOrderDo.getStatus();
 		String gmtRebated = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtRebated());
-		String gmtModified = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtModified());
+		String gmtFinished = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtFinished());
 		String agentMessage = afAgentOrderDo.getAgentMessage();
 		String gmtAgentBuy = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtAgentBuy());
 		
