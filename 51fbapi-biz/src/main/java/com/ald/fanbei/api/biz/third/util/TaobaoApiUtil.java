@@ -20,6 +20,8 @@ import com.taobao.api.response.TaeItemDetailGetResponse;
 import com.taobao.api.response.TaeItemsListResponse;
 import com.taobao.api.response.TbkItemGetResponse;
 
+
+
 /**
  *@类描述：
  *@author xiaotianjian 2017年2月8日下午3:30:25
@@ -122,4 +124,25 @@ public class TaobaoApiUtil extends AbstractThird {
 		return client.execute(req);
 	}
 	
+	
+	/**
+	 * 查询商品详情接口 taobao.tbk.item.info.get
+	 * @param params
+	 * @return
+	 * @throws ApiExceptionx
+	 */
+	public TaeItemDetailGetResponse executeTakItemDetailSearch(String numIids) throws ApiException{
+		logger.info("executeTaeItemDetailSearch start,openId={}",numIids);
+		TaobaoClient client = getTaobaoClient();
+	
+		
+//		TbkItemInfoGetRequest req = new TbkItemInfoGetRequest();
+//		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS));
+//		req.setPlatform(1L);
+//		req.setNumIids(numIids);
+//		TbkItemInfoGetResponse rsp = client.execute(req);
+//		System.out.println(rsp.getBody());
+//		return client.execute(req);
+		return null;
+	}
 }
