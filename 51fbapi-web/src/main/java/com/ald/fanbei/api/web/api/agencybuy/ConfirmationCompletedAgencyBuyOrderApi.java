@@ -15,7 +15,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
 
-@Component("ConfirmationCompletedAgencyBuyOrderApi")
+@Component("confirmationCompletedAgencyBuyOrderApi")
 public class ConfirmationCompletedAgencyBuyOrderApi implements ApiHandle {
 
 	

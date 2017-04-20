@@ -117,7 +117,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setPayTradeNo(StringUtils.isBlank(payTradeNo)?payTradeNo:"");
 		agentOrderDetailVo.setGmtAgentBuy(StringUtils.isBlank(gmtAgentBuy)?gmtAgentBuy:"");
 		agentOrderDetailVo.setGmtRebated(StringUtils.isBlank(gmtRebated)?gmtRebated:"");
-		agentOrderDetailVo.setGmtModified(StringUtils.isBlank(gmtModified)?gmtModified:"");
+		agentOrderDetailVo.setGmtFinished(StringUtils.isBlank(gmtFinished)?gmtFinished:"");
 
 		return agentOrderDetailVo;
 	}
