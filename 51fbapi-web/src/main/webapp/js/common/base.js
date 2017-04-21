@@ -26,7 +26,12 @@ function getUrl(para){
     }
     return '';
 }
-
+// 获取当前页面的URL 对其带的参数进行处理
+function getInfo(){
+    var paraArr = location.toString().split("_appInfo=");
+    paraArr[1]=paraArr[1].replace(/%22/ig,"'");
+    return eval('(' + paraArr[1] + ')')
+}
 // 处理默认的保留二位小数
 function toDecimal2(x) {
     var f = parseFloat(x);

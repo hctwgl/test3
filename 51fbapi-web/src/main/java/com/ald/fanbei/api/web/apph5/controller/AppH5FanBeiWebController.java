@@ -213,12 +213,17 @@ public class AppH5FanBeiWebController extends BaseController {
 			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
 			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
-			if (StringUtils.isEmpty(userName) || sceneId == null) {
+			if (sceneId == null) {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
 			}
 			
+			if (StringUtils.isEmpty(userName)) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
 			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
-			
 			if (afUserDo == null) {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
 				return H5CommonResponse
