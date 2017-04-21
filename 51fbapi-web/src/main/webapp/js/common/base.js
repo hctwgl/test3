@@ -30,6 +30,8 @@ function getUrl(para){
 function getInfo(){
     var paraArr = location.toString().split("_appInfo=");
     if(paraArr.length>1){
+        paraArr[1]=paraArr[1].replace(/%7B/g,'{');
+        paraArr[1]=paraArr[1].replace(/%7D/g,'}');
         paraArr[1]=paraArr[1].replace(/%22/g,'"');
         return eval('(' + paraArr[1] + ')');
     }else{
