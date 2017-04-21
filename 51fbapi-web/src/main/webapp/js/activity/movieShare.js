@@ -25,6 +25,7 @@ function shareBtn() {
         type: 'post',
         success:function (data) {
             data=eval('(' + data + ')');
+            alert(data)
             if(data.success){
                 requestMsg(data.msg)
             }else{

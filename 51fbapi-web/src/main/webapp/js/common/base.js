@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-15 09:59:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-02 19:50:22
+* @Last Modified time: 2017-04-21 20:11:01
 * @title:  公用的
 */
 
@@ -28,11 +28,9 @@ function getUrl(para){
 }
 // 获取当前页面的URL 对其带的参数进行处理
 function getInfo(){
-    var paraArr = location.toString().split("_appInfo=");
+    var url = decodeURIComponent(location.toString());
+    var paraArr = url.split("_appInfo=");
     if(paraArr.length>1){
-        paraArr[1]=paraArr[1].replace(/%7B/g,'{');
-        paraArr[1]=paraArr[1].replace(/%7D/g,'}');
-        paraArr[1]=paraArr[1].replace(/%22/g,'"');
         return eval('(' + paraArr[1] + ')');
     }else{
         return ''
