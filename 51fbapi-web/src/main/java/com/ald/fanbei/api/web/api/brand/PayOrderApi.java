@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -91,8 +92,11 @@ public class PayOrderApi implements ApiHandle {
 			}
 		}
 		try {
-			
-			Map<String,Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getSaleAmount(), nper);
+			BigDecimal saleAmount =orderInfo.getSaleAmount();
+			if(type==OrderType.AGENTBUY.getCode()){
+				saleAmount = orderInfo.getActualAmount();
+			}
+			Map<String,Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),saleAmount , nper);
 			if (payId == 0&&type==OrderType.BOLUOME.getCode()) {
 				boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, userId, orderInfo.getSaleAmount());
 			}

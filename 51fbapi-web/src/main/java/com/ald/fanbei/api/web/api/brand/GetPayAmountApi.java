@@ -10,12 +10,14 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -66,6 +68,9 @@ public class GetPayAmountApi implements ApiHandle{
 		}
 		
 		BigDecimal amount = orderInfo.getSaleAmount();
+		if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode()) ){
+			amount = orderInfo.getActualAmount();
+		}
 		//获取借款分期配置信息
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 		JSONArray array  = JSON.parseArray(resource.getValue());
