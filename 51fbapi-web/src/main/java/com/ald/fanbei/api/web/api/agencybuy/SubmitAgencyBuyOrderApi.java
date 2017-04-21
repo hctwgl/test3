@@ -44,33 +44,29 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
+		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
 
 		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
-		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
-		String goodsIcon = ObjectUtils.toString(requestDataVo.getParams().get("goodsIcon"));
-		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
-		BigDecimal priceAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("priceAmount")),BigDecimal.ZERO);
-		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("saleAmount")),BigDecimal.ZERO);
+//		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
+//		String goodsIcon = ObjectUtils.toString(requestDataVo.getParams().get("goodsIcon"));
+//		BigDecimal priceAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("priceAmount")),BigDecimal.ZERO);
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")),BigDecimal.ZERO);
 
 		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("addressId"), 0);
 		String capture = ObjectUtils.toString(requestDataVo.getParams().get("capture"));
 		String remark = ObjectUtils.toString(requestDataVo.getParams().get("remark"));
-		if ( StringUtils.isBlank(goodsName) || StringUtils.isBlank(goodsIcon)
-				|| StringUtils.isBlank(numId) ) {
+		if (  StringUtils.isBlank(numId) ) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 
 		}
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		AfOrderDo afOrder = new AfOrderDo();
-		afOrder.setOpenId(openId);
-		afOrder.setGoodsName(goodsName);
+	
 		afOrder.setUserId(userId);
-		afOrder.setGoodsIcon(goodsIcon);
-		afOrder.setPriceAmount(priceAmount);
-		afOrder.setSaleAmount(saleAmount);
-		afOrder.setActualAmount(saleAmount);
+		afOrder.setActualAmount(actualAmount);
+
 		afOrder.setNumId(numId);
-		
+		afOrder.setOpenId(openId);
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if(addressDo==null){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -85,6 +81,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setUserId(userId);
 		afAgentOrderDo.setCapture(capture);
 		afAgentOrderDo.setRemark(remark);
+
 		if(afAgentOrderService.insertAgentOrder(afAgentOrderDo, afOrder)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
