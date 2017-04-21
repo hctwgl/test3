@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -47,5 +48,10 @@ public interface AfBorrowCashDao {
 	     */
 	    AfBorrowCashDo getBorrowCashByrid(@Param("rid")Long rid); 
 
-	    
+	    /**
+		 * 获取最近借款号
+		 * @param current
+		 * @return
+		 */
+		String getCurrentLastBorrowNo(Date current);
 }

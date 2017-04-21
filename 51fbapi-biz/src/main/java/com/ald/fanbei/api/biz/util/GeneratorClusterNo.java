@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
@@ -29,6 +30,9 @@ public class GeneratorClusterNo {
 	AfOrderService afOrderService;
 	@Resource
 	AfBorrowService afBorrowService;
+	
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfRepaymentService afRepaymentService;
 	
@@ -129,9 +133,38 @@ public class GeneratorClusterNo {
   	public String getBorrowCashNo(Date currDate){//订单号规则：6位日期_2位订单类型_5位订单序号
   		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
   		StringBuffer orderSb = new StringBuffer("jq");
-  		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowSequenceNum(currDate)));
+  		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowCashSequenceNum(currDate)));
   		return orderSb.toString();
   	}
+  	private int getBorrowCashSequenceNum(Date currentDate) {//加锁，防止并发
+        Integer channelNum = 1;
+        String lockKey = Constants.CACHEKEY_BORROWCASHNO_LOCK;
+        String cacheKey = Constants.CACHEKEY_BORROWCASHNO;
+        
+        try{
+            if(TokenCacheUtil.getLockTryTimes(lockKey, "1", Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")))){//获得同步锁
+                channelNum = (Integer)TokenCacheUtil.getObject(cacheKey);
+                if(channelNum == null){//缓存中无数据,从库中获取
+                	String borrowNo = afBorrowCashService.getCurrentLastBorrowNo(currentDate);
+                    channelNum = borrowNo == null?1:(getOrderSeqInt(borrowNo.substring(16, 20))+1);
+                }else{
+                    channelNum = channelNum + 1;
+                }
+            }else{//获取锁失败，从库中取订单号
+            	String borrowNo = afBorrowCashService.getCurrentLastBorrowNo(currentDate);
+                if(borrowNo != null){
+                    channelNum = getOrderSeqInt(borrowNo.substring(16, 20))+1;
+                }
+                return channelNum;
+            }
+            TokenCacheUtil.saveObject(cacheKey, channelNum, 0l);
+        }finally{
+        	TokenCacheUtil.delCache(lockKey);
+        }
+        return channelNum;
+    }
+  	
+  	
       private int getBorrowSequenceNum(Date currentDate) {//加锁，防止并发
           Integer channelNum = 1;
           String lockKey = Constants.CACHEKEY_BORROWNO_LOCK;

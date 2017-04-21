@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -44,5 +45,10 @@ public interface AfBorrowCashService {
 	     * @return
 	     */
 	    AfBorrowCashDo getBorrowCashByrid(Long rid); 
-	   
+	    /**
+		 * 获取最近借款号
+		 * @param current
+		 * @return
+		 */
+		String getCurrentLastBorrowNo(Date current);
 }

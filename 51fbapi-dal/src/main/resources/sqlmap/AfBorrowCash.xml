@@ -150,5 +150,7 @@
 		LIMIT 
 			#{start},20
 	</select>
-	
+	<select id="getCurrentLastBorrowNo" resultType="java.lang.String">
+		select borrow_no from af_borrow_cash WHERE gmt_create=#{currentDate} ORDER BY id DESC LIMIT 1;
+	</select>
 </mapper>

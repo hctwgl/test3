@@ -59,4 +59,12 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return afBorrowCashDao.getBorrowCashByrid(rid);
 	}
 
+
+
+	
+	@Override
+	public String getCurrentLastBorrowNo(Date current) {
+		return afBorrowCashDao.getCurrentLastBorrowNo(current);
+	}
+
 }
