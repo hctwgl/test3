@@ -1,0 +1,51 @@
+/*
+* @Author: Yangyang
+* @Date:   2017-02-18 16:32:54
+* @Last Modified by:   Yangyang
+* @Last Modified time: 2017-04-18 19:31:41
+* @title:  公用的样式
+*/
+
+
+/*公用的背景色*/
+.bgc_orange { background-color: #FE963B; }
+.bgc_white { background-color: #fff; }
+.bgc_e { background-color: #eee; }
+.btnc_cf { background-color: #CFCFCF; }
+
+/*公用的字体大小、公用的字体颜色*/
+.fs_20 { font-size: 0.20rem; }
+.fs_22 { font-size: 0.22rem; }
+.fs_24 { font-size: 0.24rem; }
+.fs_26 { font-size: 0.26rem; }
+.fs_28 { font-size: 0.28rem; }
+.fsc_1 { color: #111; }
+.fsc_6 { color: #666; }
+.fsc_9 { color: #999; }
+.fsc_f { color: #fff; }
+.fsc_bf { color: #BFBFBF; }
+.fsc_red { color: #EB0000; }
+.fsc_orange { color: #FE963B; }
+
+/*浮动、居中、圆角、边框*/
+.fl { float: left; }
+.fr { float: right; }
+.tal { text-align: left; }
+.tac { text-align: center; }
+.tar { text-align: right; }
+.bdr_8 { border-radius: 0.08rem; }
+.bdc_cb { border: 1px solid #CBCBCB; }
+
+/*兼容*/
+.bgs_c { -webkit-background-size: cover; -moz-background-size: cover; -ms-background-size: cover; background-size: cover; }
+.bs_bb { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+
+/*公用的缺省页*/
+.nullPrompt { text-align: center; }
+.nullPrompt img { width: 2.4rem; height: 2.14rem; margin: 2.4rem auto 0.5rem; }
+
+/*公用title*/
+/*.baseP { width: 100%; height: 1.0rem; line-height: 1.0rem; text-align: center; position: absolute; top: 0 }*/
+
+
+
