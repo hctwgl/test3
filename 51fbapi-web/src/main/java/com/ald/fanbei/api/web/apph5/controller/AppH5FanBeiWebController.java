@@ -50,6 +50,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -254,10 +255,10 @@ public class AppH5FanBeiWebController extends BaseController {
 			JSONObject resultJson = JSONObject.parseObject(resultString);
 			if (!"0".equals(resultJson.getString("code"))) {
 				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
-			} else if (StringUtils.isEmpty(resultJson.getString("data"))){
+			} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
 				return H5CommonResponse.getNewInstance(false, "优惠券已经发放完,请期待下次活动", null, null).toString();
 			}
-			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
+			return H5CommonResponse.getNewInstance(true, "领券成功", "", null).toString();
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
@@ -305,5 +306,6 @@ public class AppH5FanBeiWebController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
 }
