@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
@@ -22,6 +23,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfUserVo;
+import com.sun.xml.internal.rngom.parse.host.Base;
 
 /**
  * 
@@ -81,7 +83,7 @@ public class GetUserInfoApi implements ApiHandle {
 		userVo.setCounty(userDo.getCounty());
 		userVo.setAddress(userDo.getAddress());
 		
-		String idNumber = userAccountDo.getIdNumber();
+		String idNumber = Base64.encodeString(userAccountDo.getIdNumber());
 		String realName = userDo.getRealName();
 		userVo.setRealnameStatus(userAuthDo.getRealnameStatus());
 		userVo.setIdNumber(StringUtils.isBlank(idNumber) ? "" : idNumber);

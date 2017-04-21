@@ -6,6 +6,8 @@ package com.ald.fanbei.api.web.api.agencybuy;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
@@ -30,9 +32,16 @@ public class DeleteUserAddressApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("addressId"), 0);
-		if(afUserAddressService.deleteUserAddress(addressId)>0){
-			return resp;
+		String isDefault = ObjectUtils.toString(requestDataVo.getParams().get("addressId"),null);
+		Long userId = context.getUserId();
+		if(afUserAddressService.deleteUserAddress(addressId) > 0){
+			if(StringUtils.isNotBlank(isDefault)){
+				if (afUserAddressService.reselectTheDefaultAddress(userId) > 0){
+					return resp;
+				}
+			}	
 		}
+
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 	}
 

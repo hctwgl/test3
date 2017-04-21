@@ -61,4 +61,14 @@ public class AfUserAddressServiceImpl implements AfUserAddressService {
 		return afUserAddressDao.deleteUserAddress(rid);
 	}
 
+
+	@Override
+	public int reselectTheDefaultAddress(Long userId) {
+		
+		return afUserAddressDao.reselectTheDefaultAddress(userId);
+	}
+
+
+
+
 }

@@ -53,6 +53,12 @@ public interface AfUserAddressDao {
 	    * @return
 	    */
 	   AfUserAddressDo selectUserAddressDefaultByUserId(@Param("userId")Long userId);
+	   
+	   /**
+	    * 删除默认地址的时候, 重新设置默认地址
+	    * @return
+	    */
+	   int reselectTheDefaultAddress(@Param("userId") Long userId);
 
 	    
 }
