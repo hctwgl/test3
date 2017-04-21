@@ -509,9 +509,8 @@ public class RiskUtil extends AbstractThird{
         reqBo.setConsumerNo(consumerNo);
         reqBo.setData(data);
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        System.out.println(getUrl());
-//      http://arc.edushi.erongyun.net
-        String reqResult = HttpUtil.post("http://60.190.230.35:52637" + "/modules/api/user/action/directory/remove.htm", reqBo);
+//      http://arc.edushi.erongyun.net  "http://60.190.230.35:52637"
+        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/directory/remove.htm", reqBo);
         logThird(reqResult, "addressListPrimaries", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
