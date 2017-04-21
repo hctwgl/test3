@@ -21,7 +21,7 @@ function More(i) {
 function shareBtn() {
     jQuery.ajax({
         url: 'pickBoluomeCoupon',
-        data:{'sceneId':'347','userName':userName},
+        data:{'sceneId':'8139','userName':userName},
         type: 'post',
         success:function (data) {
             data=eval('(' + data + ')');
