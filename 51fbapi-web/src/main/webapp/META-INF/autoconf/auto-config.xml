@@ -85,6 +85,13 @@
 		
 		<property name="third.offer.boluome.appKey" defaultValue="1d397480-dbce-4d87-b48c-a34b55ee310d" description="平台提供菠萝觅第三方appkey" />
 		<property name="third.offer.boluome.appSecret" defaultValue="coMMRJDVF/Nmy+U0TCHXbAPPD1LEftSOb248JtzvaXOdGnCapk8yRekWqTFXGtLh" description="平台提供菠萝觅第三方appSecret" />
+	
+		<!-- 依图 -->
+		<property name="fbapi.yitu.url" defaultValue="http://staging.yitutech.com" description="服务地址"/>
+		<property name="fbapi.yitu.id" defaultValue="13079" description="客户标识"/>
+		<property name="fbapi.yitu.key" defaultValue="0bab2c4fbbfb66d0694b16b6d86dc25b" description="秘钥"/>
+		<property name="fbapi.yitu.definedContent" defaultValue="abc" description="用户自定义字符串"/>
+		<property name="fbapi.yitu.pemPath" defaultValue="staging.public.pem" description="公钥位置"/>
 	</group>
 
 	<script>

@@ -169,4 +169,9 @@ public class Constants {
     public static final String CONFKEY_BOLUOME_PUSH_PAY_URL          = "fbapi.boluome.push.pay.url";
     public static final String CONFKEY_BOLUOME_PUSH_REFUND_URL       = "fbapi.boluome.push.refund.url";
     
+    //依图
+    public static final String CONFKEY_YITU_URL = "fbapi.yitu.url";
+    public static final String CONFKEY_YITU_ID = "fbapi.yitu.id";
+    public static final String CONFKEY_YITU_KEY = "fbapi.yitu.key";
+    public static final String CONFKEY_YITU_DEFINED_CONTENT = "fbapi.yitu.definedContent";
 }

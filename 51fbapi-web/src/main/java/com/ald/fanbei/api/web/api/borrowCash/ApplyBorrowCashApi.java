@@ -217,7 +217,6 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 					logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 					cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
 				}
-				afBorrowCashService.updateBorrowCash(cashDo);
 
 			} else if (StringUtils.equals("30", result.getResult())) {
 				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
