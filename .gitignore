@@ -23,3 +23,5 @@
 .DS_Store
 51fbapi-web/.DS_Store
 1
+.idea
+node_modules

@@ -2,7 +2,8 @@
 * @Author: Yangyang
 * @Date:   2017-02-15 09:59:54
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-17 10:26:41
+
+* @Last Modified time: 2017-04-21 21:16:36
 * @title:  公用的
 */
 
@@ -26,7 +27,18 @@ function getUrl(para){
     }
     return '';
 }
+// 获取当前页面的URL 对其带的参数进行处理
+function getInfo(){
+    var url = decodeURIComponent(location.toString());
+    var paraArr = url.toString().split("_appInfo=");
 
+    if(paraArr.length>1){
+        return eval('(' + paraArr[1] + ')');
+    }else{
+        return ''
+    }
+    
+}
 // 处理默认的保留二位小数
 function toDecimal2(x) {
     var f = parseFloat(x);
