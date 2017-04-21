@@ -25,14 +25,19 @@ function shareBtn() {
         type: 'post',
         success:function (data) {
             data=eval('(' + data + ')');
-            alert(data)
             if(data.success){
-                requestMsg(data.msg)
+                requestMsg("领劵成功")
             }else{
+
                 if(data.url){
-                    location.href=data.url
+                    if (getBlatFrom() == 2) {
+                        location.href=data.url;
+                    }else{
+                        requestMsg("请退出当前活动页面,登录后再进行领劵");
+                    }
+                    
                 }else{
-                    requestMsg(data.msg)
+                    requestMsg(data.msg);
                 }
             }
 
