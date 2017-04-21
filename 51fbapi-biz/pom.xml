@@ -78,6 +78,19 @@
 			<artifactId>taobao-sdk</artifactId>
 			<version>20170204</version>
 		</dependency>
+		
+		<dependency>
+		  <groupId>third.taobao.sdk</groupId>
+		  <artifactId>taobaolianmeng-sdk</artifactId>
+		  <version>20170420</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>third.taobao.sdk</groupId>
+		  <artifactId>taobaolianmeng-sdk</artifactId>
+		  <version>20170420</version>
+		  <classifier>source</classifier>
+		</dependency>
 
 		<dependency>
 			<groupId>third.taobao.sdk</groupId>

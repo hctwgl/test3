@@ -39,7 +39,8 @@ public class AfAgentOrderDo extends AbstractSerial {
 	private String closedDetail;
 	private Long matchOrderId;
 	private Date gmtMatchOrder;
-	private String afAgentOrdercol;
+	private String goodsUrl;
+	
 	
 
 	public static long getSerialversionuid() {
@@ -298,17 +299,18 @@ public class AfAgentOrderDo extends AbstractSerial {
 		this.gmtMatchOrder = gmtMatchOrder;
 	}
 	/**
-	 * @return the afAgentOrdercol
+	 * @return the goodsUrl
 	 */
-	public String getAfAgentOrdercol() {
-		return afAgentOrdercol;
+	public String getGoodsUrl() {
+		return goodsUrl;
 	}
 	/**
-	 * @param afAgentOrdercol the afAgentOrdercol to set
+	 * @param goodsUrl the goodsUrl to set
 	 */
-	public void setAfAgentOrdercol(String afAgentOrdercol) {
-		this.afAgentOrdercol = afAgentOrdercol;
+	public void setGoodsUrl(String goodsUrl) {
+		this.goodsUrl = goodsUrl;
 	}
+	
 	
 
 }
