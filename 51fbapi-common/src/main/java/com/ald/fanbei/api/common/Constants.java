@@ -13,7 +13,7 @@ public class Constants {
     public static final long   SECOND_OF_HALF_HOUR                    = 30 * 60l;
     public static final long   SECOND_OF_AN_HOUR                      = 60 * 60l;
     public static final long   SECOND_OF_ONE_DAY                      = 24 * 60 * 60l;
-    public static final long   SECOND_OF_ONE_WEEK                     = 90 * 24 * 60 * 60l;
+    public static final long   SECOND_OF_ONE_WEEK                     = 7 * 24 * 60 * 60l;
     
     public static final int   MINITS_OF_2HOURS                        = 120;
     public static final int   MINITS_OF_HALF_HOUR                     = 30;
@@ -130,15 +130,16 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
     public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "taobao.tae.item.detail.get.fields";
     public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION	  = "http://img02.taobaocdn.com/bao/uploaded/";
-    public static final String CACHEKEY_ORDERNO_LOCK				  = "ala_order_lock";
-    public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
-    public static final String CACHEKEY_BORROWNO_LOCK				  = "ala_borrow_no_lock";
-    public static final String CACHEKEY_BORROWNO    				  = "ala_borrow_no";
-    public static final String CACHEKEY_REPAYNO_LOCK				  = "ala_repay_no_lock";
-    public static final String CACHEKEY_REPAYNO    				      = "ala_repay_no";
-    public static final String CACHEKEY_BORROWCASHNO_LOCK				  = "ala_borrow_cash_no_lock";
-    public static final String CACHEKEY_BORROWCASHNO    				  = "ala_borrow_cash_no";
-    
+    public static final String CACHEKEY_ORDERNO_LOCK				  = "fbapi_order_lock";
+    public static final String CACHEKEY_ORDERNO    				  	  = "fbapi_order";
+    public static final String CACHEKEY_BORROWNO_LOCK				  = "fbapi_borrow_no_lock";
+    public static final String CACHEKEY_BORROWNO    				  = "fbapi_borrow_no";
+    public static final String CACHEKEY_BORROWCASHNO_LOCK			  = "fbapi_borrow_cash_no_lock";
+    public static final String CACHEKEY_BORROWCASHNO    			  = "fbapi_borrow_cash_no";
+    public static final String CACHEKEY_REPAYNO_LOCK				  = "fbapi_repay_no_lock";
+    public static final String CACHEKEY_REPAYNO    				      = "fbapi_repay_no";
+    public static final String CACHEKEY_REPAYCASHNO_LOCK 			  = "fbapi_repay_cash_no_lock";
+    public static final String CACHEKEY_REPAYCASHNO    			      = "fbapi_repay_cash_no";
     public static final String CONFIG_KEY_LOCK_TRY_TIMES              = "fbapi.sync.lock.try.times";
     public static final String CONFKEY_KXG_URL_CHARGE				  = "fbapi.kxg.url.charge";
     public static final String CONFKEY_KXG_PASSWORD					  = "fbapi.kxg.password";

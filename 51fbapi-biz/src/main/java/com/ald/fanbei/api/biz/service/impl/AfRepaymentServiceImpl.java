@@ -135,8 +135,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	}
 
 	@Override
-	public String getCurrentLastRepayNo(Date current) {
-		return afRepaymentDao.getCurrentLastRepayNo(current);
+	public String getCurrentLastRepayNo(String orderNoPre) {
+		return afRepaymentDao.getCurrentLastRepayNo(orderNoPre);
 	}
 
 	private AfRepaymentDo buildRepayment(BigDecimal repaymentAmount,String repayNo,Date gmtCreate,BigDecimal actualAmount,
