@@ -253,7 +253,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
 			JSONObject resultJson = JSONObject.parseObject(resultString);
 			if (!"0".equals(resultJson.getString("code"))) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc()).toString();
+				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
 			}
 			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
 
