@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <title>激情4月 大片来袭</title>
     <link rel="stylesheet" type="text/css" href="/css/activity/movieShare.css?version=$version">
-
 </head>
 <body>
 <input type="hidden" id="userName" name="userName" value="$!{userName}">
@@ -14,7 +13,7 @@
     <p>推荐一：</p>
     <p>有生之年，终于等到这帮老司机！</p>
     <img src="/images/activity/movie2.png">
-    <p class="moreBtn">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <p class="moreBtn" onclick="More(0)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
     <div class="details">
         <p>导演: F•加里•格雷</p>
         <p>主演: 范•迪塞尔 / 道恩•强森 / 查理兹•塞隆 / 杰森•斯坦森 / 米歇尔•罗德里格兹</p>
@@ -29,7 +28,7 @@
     <p>推荐二：</p>
     <p>经典提档之《大话西游之大圣娶亲》</p>
     <img src="/images/activity/movie3.png">
-    <p class="moreBtn">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <p class="moreBtn" onclick="More(1)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
     <div class="details">
         <p>导演: 刘镇伟</p>
         <p>主演:/周星驰 / 吴孟达 / 朱茵 / 蔡少芬 / 蓝洁瑛 / 莫文蔚 / 罗家英 / 刘镇伟 / 陆树铭 / 李健仁</p>
@@ -44,7 +43,7 @@
     <p>推荐三：</p>
     <p>童年的心声之作《蓝精灵：寻找神秘村》</p>
     <img src="/images/activity/movie4.png">
-    <p class="moreBtn">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <p class="moreBtn" onclick="More(2)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
     <div class="details">
         <p>导演: 凯利•阿斯博瑞</p>
         <p>主演:曼迪•帕廷金/黛米•洛瓦托、丹尼•普迪、雷恩•威尔森</p>
@@ -67,7 +66,8 @@
     <p>5.本次活动的最终解释权归51返呗APP官方所有。</p>
 </section>
 
-<div class="shareBtn">立抢2元（无门槛代金券）</div>
+<div class="shareBtn" onclick="shareBtn()">立抢2元（无门槛代金券）</div>
+<script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
 
 <script type="text/javascript" src="/js/activity/movieShare.js?version=$version"></script>
 
