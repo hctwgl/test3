@@ -673,6 +673,28 @@ public class DateUtil {
         String pid = formatter.format(nowc);
         return pid;
     }
+    
+
+
+    /**
+     * get date time as "yyyyMMddhhmmss"
+     * 
+     * @return the current date with time component
+     */
+    public static String getNowYearMonthDay() {
+        return formatDate(new Date(), DEFAULT_PATTERN);
+    }
+    
+
+
+    /**
+     * get date time as "yyyyMMddhhmmss"
+     * 
+     * @return the current date with time component
+     */
+    public static String getNowYearMonthDay(Date date) {
+        return formatDate(date, DEFAULT_PATTERN);
+    }
 
    /**
     *  
@@ -970,14 +992,15 @@ public class DateUtil {
         // + DateUtils.getMondayBefore4Week());
 //        long time = System.currentTimeMillis();
 //        System.out.println(convert(time,null));
-        System.out.println(getNoEndDate().getTime());
+//        System.out.println(getNoEndDate().getTime());
 //        System.out.println(formatDate(addDays(new Date(), 1), "yyyyMMdd"));
 //        System.out.println("formatDate(new Date(), \"yyyyMMdd\"):" + DateUtil.formatDate(new Date(), "yyyyMMdd"));
 //        System.out.println(parseDate("2011年11月03", "yyyy年MM月dd"));
         
-        System.out.println(isBetweenDateRange(new Date(), new Date(System.currentTimeMillis()-1), new Date()));
-        System.out.println(new Date());
-        System.out.println(addHoures(new Date(), 1));
+//        System.out.println(isBetweenDateRange(new Date(), new Date(System.currentTimeMillis()-1), new Date()));
+//        System.out.println(new Date());
+//        System.out.println(addHoures(new Date(), 1));
+    	System.out.println(getNowYearMonthDay());
     }
 
 }

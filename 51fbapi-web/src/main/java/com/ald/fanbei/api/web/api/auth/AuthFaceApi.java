@@ -41,7 +41,7 @@ import com.alibaba.fastjson.JSONObject;
 public class AuthFaceApi implements ApiHandle {
 	
 	private final static String  RESULT_AUTH_TRUE = "T";
-	private final static String  RESULT_AUTH_FALSE = "F";
+//	private final static String  RESULT_AUTH_FALSE = "F";
 	
 	@Resource
 	AfUserAuthService afUserAuthService;

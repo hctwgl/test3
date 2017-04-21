@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 
 
@@ -21,8 +22,15 @@ public class HealthCheck {
     
     @Resource
     BizCacheUtil bizCacheUtil;
+    @Resource
+    TokenCacheUtil tokenCacheUtil;
     
     public void checkBizCache() throws InterruptedException{
+    	this.checkBiz();
+    	this.checkToken();
+    }
+    
+    private void checkBiz() throws InterruptedException{
         Thread.sleep(CommonUtil.getRandomNum(20)+1);
         Long startTime = System.currentTimeMillis();
         boolean putResult = bizCacheUtil.putObjectForCheckHeath("biz_cache_check", "hello", 5);
@@ -39,6 +47,26 @@ public class HealthCheck {
         } else {
         	BizCacheUtil.BIZ_CACHE_SWITCH = false;
             logger.info(putResult + ",cache server is inavailable,time="+time+",result=" + result + ",time1=" + time1 + ",result1=" + result1);
+        }
+    }
+    
+    private void checkToken() throws InterruptedException{
+        Thread.sleep(CommonUtil.getRandomNum(20)+1);
+        Long startTime = System.currentTimeMillis();
+        boolean putResult = tokenCacheUtil.putObjectForCheckHeath("token_cache_check", "hellotoken", 5);
+        String result = String.valueOf(tokenCacheUtil.getObjectForCheckHeath("token_cache_check"));
+        Long time = System.currentTimeMillis() - startTime.longValue();
+        
+        Thread.sleep(CommonUtil.getRandomNum(1000)+1);
+        startTime = System.currentTimeMillis();
+        String result1 = String.valueOf(tokenCacheUtil.getObjectForCheckHeath("token_cache_check"));
+        Long time1 = System.currentTimeMillis() - startTime;
+        if (("hellotoken".equals(result) && time < 200) || ("hellotoken".equals(result1) && time1 < 200)) {
+            logger.info(putResult + ",token cache server is avaliable");
+            BizCacheUtil.BIZ_CACHE_SWITCH = true;
+        } else {
+        	BizCacheUtil.BIZ_CACHE_SWITCH = false;
+            logger.info(putResult + ",token cache server is inavailable,time="+time+",result=" + result + ",time1=" + time1 + ",result1=" + result1);
         }
     }
 }

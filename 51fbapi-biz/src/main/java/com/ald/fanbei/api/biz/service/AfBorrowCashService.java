@@ -44,5 +44,12 @@ public interface AfBorrowCashService {
 	     * @return
 	     */
 	    AfBorrowCashDo getBorrowCashByrid(Long rid); 
+	    
+	    /**
+	     * 获取当前最大的借款编号
+	     * @param orderNoPre
+	     * @return
+	     */
+	    String getCurrentLastBorrowNo(String orderNoPre);
 	   
 }

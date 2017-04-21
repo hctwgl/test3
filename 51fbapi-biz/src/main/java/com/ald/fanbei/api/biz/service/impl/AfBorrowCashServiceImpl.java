@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -59,4 +60,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return afBorrowCashDao.getBorrowCashByrid(rid);
 	}
 
+	@Override
+	public String getCurrentLastBorrowNo(String orderNoPre) {
+		return afBorrowCashDao.getCurrentLastBorrowNo(orderNoPre);
+	}
 }

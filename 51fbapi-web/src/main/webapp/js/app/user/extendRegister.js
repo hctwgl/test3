@@ -68,14 +68,16 @@ $(function(){
                     var recommendCode = getUrl("recommendCode");                          // 从分享链接中获取code
                     var register_verification = $("#register_verification").val();
 					$.ajax({
-						url: "/app/user/commitRegister",
+						url: "/app/user/commitChannelRegister",
 						type: 'POST',
 						dataType: 'JSON',
 						data: {
 							registerMobile: mobileNum,
 							smsCode: register_verification,
 							password: password_md5,
-							recommendCode: recommendCode
+							recommendCode: recommendCode,
+							channelCode: 'Xdt',
+							pointCode: 'Xdt1'
 						},
 						success: function(returnData){
 							if ( returnData.success ) {

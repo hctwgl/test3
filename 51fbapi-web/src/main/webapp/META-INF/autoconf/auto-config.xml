@@ -73,7 +73,7 @@
 		<property name="fbapi.wx.certpath" defaultValue="D:/cert/apiclient_cert.p12" description="weixin certpath" />
 		
 		<property name="fbapi.notify.host" defaultValue="http://testapp.51fanbei.com" description="异步回调地址" />
-		<property name="fbapi.ups.url" defaultValue="http://payrout.51fanbei.com/ups/main.html" description="ups请求地址" />
+		<property name="fbapi.ups.url" defaultValue="http://testpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
 		<property name="fbapi.risk.url" defaultValue="http://arc.edushi.erongyun.net" description="risk请求地址" />
 		
 		<!-- 菠萝觅 -->
