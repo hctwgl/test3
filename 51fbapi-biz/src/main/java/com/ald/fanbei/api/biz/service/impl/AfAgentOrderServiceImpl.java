@@ -22,8 +22,10 @@ import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.response.TaeItemDetailGetResponse;
+import com.taobao.api.response.TbkItemRecommendGetResponse;
 
 /**
  * @类描述：
@@ -77,11 +79,27 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 						final String orderNo = generatorClusterNo.getOrderNo(OrderType.AGENTBUY);
 						afOrder.setOrderNo(orderNo);
 						afOrder.setOrderType(OrderType.AGENTBUY.getCode());
+//						TbkItemRecommendGetResponse res = taobaoApiUtil.executeTaeItemRecommendSearch(afOrder.getNumId());
+
+						
+//						TbkItemInfoGetResponse res = taobaoApiUtil.executeTakItemDetailSearch(afOrder.getNumId());
 						
 						
-//						TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(afOrder.getOpenId());
+						
 //						logger.info("createOrderTrade_content item is null res = {}", res);
 //						JSONObject resObj = JSON.parseObject(res.getBody());
+//						
+//						JSONObject taoBaoInfo = resObj.getJSONObject("tbk_item_info_get_response").getJSONObject("results");
+//						
+//
+//						JSONArray items = taoBaoInfo.getJSONArray("n_tbk_item");
+//						if(items.size()>0){
+//							JSONObject item = (JSONObject) items.get(0);
+//							afAgentOrderDo.setGoodsUrl(item.getString("item_url"));
+//						}
+						
+//					    String	orderType = sellerInfo.getString("seller_type").toUpperCase();
+//					    String	shopName = sellerInfo.getString("shop_name").toUpperCase();
 //						JSONObject taoBaoInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data");
 //						
 //

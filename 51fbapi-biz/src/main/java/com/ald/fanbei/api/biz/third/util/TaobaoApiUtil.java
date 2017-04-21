@@ -16,9 +16,13 @@ import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.TaeItemDetailGetRequest;
 import com.taobao.api.request.TaeItemsListRequest;
 import com.taobao.api.request.TbkItemGetRequest;
+//import com.taobao.api.request.TbkItemInfoGetRequest;
+import com.taobao.api.request.TbkItemRecommendGetRequest;
 import com.taobao.api.response.TaeItemDetailGetResponse;
 import com.taobao.api.response.TaeItemsListResponse;
 import com.taobao.api.response.TbkItemGetResponse;
+//import com.taobao.api.response.TbkItemInfoGetResponse;
+import com.taobao.api.response.TbkItemRecommendGetResponse;
 
 
 
@@ -123,7 +127,22 @@ public class TaobaoApiUtil extends AbstractThird {
 		req.setOpenIid(openId);
 		return client.execute(req);
 	}
-	
+	/**
+	 * 查询商品详情接口 taobao.tbk.item.recommend.get
+	 * @param params
+	 * @return
+	 * @throws ApiExceptionx
+	 */
+	public TbkItemRecommendGetResponse executeTaeItemRecommendSearch(String numId) throws ApiException{
+		logger.info("executeTaeItemDetailSearch start,numId={}",numId);
+		TaobaoClient client = getTaobaoClient();
+		TbkItemRecommendGetRequest req = new TbkItemRecommendGetRequest();
+		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS));
+		Long numIdL = NumberUtil.objToLongDefault(numId, 0L);
+		req.setNumIid(numIdL);
+
+		return client.execute(req);
+	}
 	
 	/**
 	 * 查询商品详情接口 taobao.tbk.item.info.get
@@ -131,11 +150,12 @@ public class TaobaoApiUtil extends AbstractThird {
 	 * @return
 	 * @throws ApiExceptionx
 	 */
-	public TaeItemDetailGetResponse executeTakItemDetailSearch(String numIids) throws ApiException{
-		logger.info("executeTaeItemDetailSearch start,openId={}",numIids);
-		TaobaoClient client = getTaobaoClient();
-	
-		
+//	public TbkItemInfoGetResponse executeTakItemDetailSearch(String numIids) throws ApiException{
+//		logger.info("executeTaeItemDetailSearch start,openId={}",numIids);
+////		TaobaoClient client = getTaobaoClient();
+//		TaobaoClient client = new DefaultTaobaoClient("https://eco.taobao.com/router/rest", "23384158", "92e14df48e375e5f115b421d84305866");
+//
+//		
 //		TbkItemInfoGetRequest req = new TbkItemInfoGetRequest();
 //		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS));
 //		req.setPlatform(1L);
@@ -143,6 +163,6 @@ public class TaobaoApiUtil extends AbstractThird {
 //		TbkItemInfoGetResponse rsp = client.execute(req);
 //		System.out.println(rsp.getBody());
 //		return client.execute(req);
-		return null;
-	}
+////		return null;
+//	}
 }
