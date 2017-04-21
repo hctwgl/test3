@@ -16,37 +16,43 @@ var gulp = require('gulp'),
 // clean 清空 dist 目录
 gulp.task('clean', function(cb) {
     del([
-        '51fbapi-web/src/main/webapp/js/**/*',
-        '51fbapi-web/src/main/webapp/css/**/*'
+        '51fbapi-web/src/main/webapp/js/**/*.js',
+        '!51fbapi-web/src/main/webapp/js/common/**/*',
+        '51fbapi-web/src/main/webapp/css/**/*.less',
+        '51fbapi-web/src/main/webapp/css/**/*.css',
+        '!51fbapi-web/src/main/webapp/css/common/**/*'
     ],cb);
 });
 // es6编译为es5
 gulp.task('es6', function() {
-    gulp.src(['51fbapi-web/build/js/**/*.js','!51fbapi-web/build/js/common/**/*'])
+    return gulp.src(['51fbapi-web/build/js/**/*.js','!51fbapi-web/build/js/common/**/*'])
         .pipe(plumber())
         .pipe(babel({presets: ['es2015']}))
         .pipe(cached('js'))
         .pipe(uglify())                  //压缩
         // .pipe(rename({suffix:".min"}))    //改名加前缀
         .pipe(gulp.dest('51fbapi-web/src/main/webapp/js'));
-    gulp.src('51fbapi-web/build/js/common/**/*')
-        .pipe(gulp.dest('51fbapi-web/src/main/webapp/js/common'));
+    // gulp.src('51fbapi-web/build/js/common/**/*')
+    //     .pipe(gulp.dest('51fbapi-web/src/main/webapp/js/common'));
 });
 //less编译为css
 gulp.task('less', function() {
-    return gulp.src('51fbapi-web/build/less/**/*')
+    return gulp.src(['51fbapi-web/build/less/**/*','!51fbapi-web/build/less/common/**/*'])
         .pipe(plumber())
         .pipe(less())
         .pipe(cached('less'))
         .pipe(autoprefixer('last 6 version'))
         .pipe(minifycss())
         .pipe(gulp.dest('51fbapi-web/src/main/webapp/css'));
-});
+    // gulp.src('51fbapi-web/build/less/common/**/*')
+    //     .pipe(gulp.dest('51fbapi-web/src/main/webapp/less/common'));
 
-// default 默认任务，依赖清空任务
-gulp.task('default', ['clean']);
+});
 
 // 监控 build 目录的改动自动编译
-gulp.task('watch',['clean'],function () {
-    gulp.watch('51fbapi-web/build/**/*', gulpsync.sync(['es6','less']));
+gulp.task('watch',function () {
+    return gulp.watch('51fbapi-web/build/**/*', gulpsync.sync(['es6','less']));
 });
+
+// default 默认执行任务
+gulp.task('default', ['clean','es6','less','watch']);
