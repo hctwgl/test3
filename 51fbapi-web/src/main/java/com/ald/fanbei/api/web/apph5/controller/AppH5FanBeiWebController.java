@@ -254,6 +254,8 @@ public class AppH5FanBeiWebController extends BaseController {
 			JSONObject resultJson = JSONObject.parseObject(resultString);
 			if (!"0".equals(resultJson.getString("code"))) {
 				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+			} else if (StringUtils.isEmpty(resultJson.getString("data"))){
+				return H5CommonResponse.getNewInstance(false, "优惠券已经发放完,请期待下次活动", null, null).toString();
 			}
 			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
 
