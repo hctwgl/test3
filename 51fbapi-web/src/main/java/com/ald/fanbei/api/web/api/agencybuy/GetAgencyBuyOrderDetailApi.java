@@ -87,7 +87,8 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String agentMessage = afAgentOrderDo.getAgentMessage();
 		String gmtAgentBuy = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtAgentBuy());
 		String closedReason = afAgentOrderDo.getClosedReason();
-		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtClosed()); // 用户取消时间
+		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtClosed()); // 用户取消订单时间
+		String numId = afOrderDo.getNumId();
 		// 根据订单状态和支付状态返回不同的值
 		/**
 		 * 订单状态【NEW:新建/待付款/等待代买,DEALING:支付中,PAID:已支付/待收货,FINISHED:已收货/订单完成,
@@ -109,8 +110,8 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setCount(count != -1?count:0);
 		agentOrderDetailVo.setCapture(StringUtils.isBlank(capture)?"":capture);
 		agentOrderDetailVo.setRemark(StringUtils.isBlank(remark)?"":remark);
-		agentOrderDetailVo.setPriceAmount(priceAmount != -1?0:priceAmount);
-		agentOrderDetailVo.setRebateAmount(rebateAmount != -1?0:rebateAmount);
+		agentOrderDetailVo.setPriceAmount(priceAmount != -1?priceAmount:0);
+		agentOrderDetailVo.setRebateAmount(rebateAmount != -1?rebateAmount:0);
 		agentOrderDetailVo.setAgentMessage(StringUtils.isBlank(agentMessage)?"":agentMessage);
 		agentOrderDetailVo.setGmtCreate(StringUtils.isBlank(gmtCreate)?"":gmtCreate);
 		agentOrderDetailVo.setPayType(StringUtils.isBlank(payType)?"":payType);
@@ -121,6 +122,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setGmtFinished(StringUtils.isBlank(gmtFinished)?"":gmtFinished);
 		agentOrderDetailVo.setClosedReason(StringUtils.isBlank(closedReason)?"":closedReason);
 		agentOrderDetailVo.setGmtClosed(StringUtils.isBlank(gmtClosed)?"":gmtClosed);
+		agentOrderDetailVo.setNumId(StringUtils.isBlank(numId)?"":numId);
 		
 
 		return agentOrderDetailVo;

@@ -1,10 +1,12 @@
 /**
  * Created by nizhiwei on 2017/4/14.
  */
-let gulp = require('gulp'),
+
+var gulp = require('gulp'),
     clean = require('gulp-clean'),
     babel = require('gulp-babel'),  //es6转码
     less = require('gulp-less'),
+
     cached = require('gulp-cached'), // 缓存未修改的文件，不多次编译
     uglify = require('gulp-uglify'),   //js压缩文件
     minifycss = require('gulp-minify-css'),// css压缩

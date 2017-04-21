@@ -50,4 +50,9 @@ public interface AfUserAddressService {
 	    * @return
 	    */
 	   AfUserAddressDo selectUserAddressDefaultByUserId(Long userId);
+	   
+	   /**
+	    * 默认地址被删除 , 重新设置默认地址
+	    */
+	   
 }

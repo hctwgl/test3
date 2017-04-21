@@ -26,7 +26,41 @@ public class AfUserVo extends AbstractSerial {
 	private String bindCard;
 
 	private String alipayAccount;
+	private String realnameStatus; // 是否实名状态
+	private String idNumber; //省份证号
+	private String isUploadImage; // 是否上传图片了
 	
+	
+	
+	
+	public String getRealnameStatus() {
+		return realnameStatus;
+	}
+
+	public void setRealnameStatus(String realnameStatus) {
+		this.realnameStatus = realnameStatus;
+	}
+
+	public String getIdNumber() {
+		return idNumber;
+	}
+
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
+	}
+
+	public String getIsUploadImage() {
+		return isUploadImage;
+	}
+
+	public void setIsUploadImage(String isUploadImage) {
+		this.isUploadImage = isUploadImage;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	public AfUserVo() {
 		
 	}

@@ -3,14 +3,20 @@ package com.ald.fanbei.api.web.api.user;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -32,6 +38,11 @@ public class GetUserInfoApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
+	@Resource
+	AfIdNumberService afIdNumberService;
+	@Resource
+	AfUserAuthService afUserAuthService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -39,15 +50,27 @@ public class GetUserInfoApi implements ApiHandle {
 		if (userId == null) {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
+		
 		AfUserDo userDo = afUserService.getUserById(userId);
-		AfUserVo vo = parseUserInfoToUserVo(userDo);
+		AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+		AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		AfUserVo vo = parseUserInfoToUserVo(userDo, userAccountDo, userAuthDo);
+		AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
+		if(idNumberDo == null){
+			vo.setIsUploadImage("N");
+		}else if (StringUtils.isNotBlank(idNumberDo.getIdFrontUrl()) && StringUtils.isNotBlank(idNumberDo.getIdBehindUrl()) ) {
+			vo.setIsUploadImage("Y");
+		}else {
+			vo.setIsUploadImage("N");
+		}
+		
 	 int bankCardBind = afUserBankcardService.getUserBankcardCountByUserId(userId);
 		vo.setBindCard(bankCardBind+"");
 		resp.setResponseData(vo);
 		return resp;
 	}
 	
-	private AfUserVo parseUserInfoToUserVo(AfUserDo userDo) {
+	private AfUserVo parseUserInfoToUserVo(AfUserDo userDo, AfUserAccountDo userAccountDo, AfUserAuthDo userAuthDo) {
 		AfUserVo userVo = new AfUserVo();
 		userVo.setAvatar(userDo.getAvatar());
 		userVo.setNick(userDo.getNick());
@@ -55,9 +78,15 @@ public class GetUserInfoApi implements ApiHandle {
 		userVo.setEmail(userDo.getEmail());
 		userVo.setProvince(userDo.getProvince());
 		userVo.setCity(userDo.getCity());
-		userVo.setRealName(userDo.getRealName());
 		userVo.setCounty(userDo.getCounty());
 		userVo.setAddress(userDo.getAddress());
+		
+		String idNumber = userAccountDo.getIdNumber();
+		String realName = userDo.getRealName();
+		userVo.setRealnameStatus(userAuthDo.getRealnameStatus());
+		userVo.setIdNumber(StringUtils.isBlank(idNumber) ? "" : idNumber);
+		userVo.setRealName(StringUtils.isBlank(realName) ? "" : realName );
+		
 		return userVo;
 	}
 	
