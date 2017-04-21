@@ -3,7 +3,6 @@
 /**
  * Created by nizhiwei on 2017/4/19.
  */
-alert(location.href)
 
 var userName = getInfo().userName || "";
 $(function () {

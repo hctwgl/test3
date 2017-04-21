@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="2017041415")
+    #set($version="2017041424")
     <meta charset="UTF-8">
     <title>激情4月 大片来袭</title>
     <link rel="stylesheet" type="text/css" href="/css/activity/movieShare.css?version=$version">
