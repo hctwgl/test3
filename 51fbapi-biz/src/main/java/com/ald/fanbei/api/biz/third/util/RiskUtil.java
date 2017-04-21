@@ -402,7 +402,7 @@ public class RiskUtil extends AbstractThird{
      *             传入更新的通讯录为空
      * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
      */
-    public RiskAddressListRespBo addressListPrimaries(String consumerNo,List<AfAuthContactsDo> details) {
+/*    public RiskAddressListRespBo addressListPrimaries(String consumerNo,List<AfAuthContactsDo> details) {
 
         RiskAddressListReqBo reqBo = new RiskAddressListReqBo();
         reqBo.setConsumerNo(consumerNo);
@@ -434,7 +434,7 @@ public class RiskUtil extends AbstractThird{
             throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
         }
 
-    } 
+    } */
     
     /**
      * @方法描述：¬	用户联系人同步
@@ -485,6 +485,44 @@ public class RiskUtil extends AbstractThird{
         } else {
             throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
         }
+    }
+    
+	 /**
+     * @方法描述：同步用户通讯录集合
+     * 
+     * @author fumeiai 2017年4月21日上午11:08:55
+     * 
+     * @param consumerNo
+     *            --用户唯一标识
+     * @param data
+     *            --通讯录信息，格式为 张三:15888881111&15811234444,李四:15888881111&15811234444
+     * @return
+     * @throws Exception
+     *             传入更新的通讯录为空
+     * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+     */
+    public RiskAddressListRespBo addressListPrimaries(String consumerNo, String data) {
 
+        RiskAddressListReqBo reqBo = new RiskAddressListReqBo();
+        String uuid = UUID.randomUUID().toString();
+        reqBo.setOrderNo(getOrderNo("addr", uuid.substring(uuid.length() - 4, uuid.length())));
+        reqBo.setConsumerNo(consumerNo);
+        reqBo.setData(data);
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        System.out.println(getUrl());
+//      http://arc.edushi.erongyun.net
+        String reqResult = HttpUtil.post("http://60.190.230.35:52637" + "/modules/api/user/action/directory/remove.htm", reqBo);
+        logThird(reqResult, "addressListPrimaries", reqBo);
+        if (StringUtil.isBlank(reqResult)) {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
+        }
+        RiskAddressListRespBo riskResp = JSONObject.parseObject(reqResult, RiskAddressListRespBo.class);
+        if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+            riskResp.setSuccess(true);
+            return riskResp;
+        } else {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
+        }
     } 
+    
 }

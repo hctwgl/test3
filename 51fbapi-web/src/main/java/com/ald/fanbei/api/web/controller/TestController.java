@@ -128,31 +128,96 @@ public class TestController {
 //		return "succ";
 //	}
 
-	@RequestMapping(value = { "/test3" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	public String addressListRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-		int count = afUserAccountService.getUserAccountCountWithHasRealName();
-		int pageCount = (int) Math.ceil(count / 10) + 1;
-		for (int j = 1; j <= pageCount; j++) {
-			AfUserAccountQuery query = new AfUserAccountQuery();
-			query.setPageNo(j);
-			query.setPageSize(10);
-			List<AfUserAccountDto> list = afUserAccountService.getUserAndAccountListWithHasRealName(query);
-			for (int i = 0; i < list.size(); i++) {
-				List<AfAuthContactsDo> contacts = afAuthContactsService.getContactsByUserId(list.get(i).getUserId());
-				riskUtil.addressListPrimaries(list.get(i).getUserId().toString(), contacts);
-			}
-		}
-		return "succ";
-	}
+//	@RequestMapping(value = { "/test3" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+//	public String addressListRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//		int count = afUserAccountService.getUserAccountCountWithHasRealName();
+//		int pageCount = (int) Math.ceil(count / 10) + 1;
+//		for (int j = 1; j <= pageCount; j++) {
+//			AfUserAccountQuery query = new AfUserAccountQuery();
+//			query.setPageNo(j);
+//			query.setPageSize(10);
+//			List<AfUserAccountDto> list = afUserAccountService.getUserAndAccountListWithHasRealName(query);
+//			for (int i = 0; i < list.size(); i++) {
+//				List<AfAuthContactsDo> contacts = afAuthContactsService.getContactsByUserId(list.get(i).getUserId());
+//				riskUtil.addressListPrimaries(list.get(i).getUserId().toString(), contacts);
+//			}
+//		}
+//		return "succ";
+//	}
+//	/**
+//	 * 同步通讯录
+//	 * @return
+//	 */
+//	@RequestMapping(value = { "/SyncAddressList/toRiskManagement" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+//	@ResponseBody
+//	public String SyncAddressListRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//		int count = afUserAuthService.getUserAuthCountWithIvs_statusIsY();
+//		int pageCount = (int) Math.ceil(count / 10) + 1;
+//		for (int j = 1; j <= pageCount; j++) {
+//			AfUserAuthQuery query = new AfUserAuthQuery();
+//			query.setPageNo(j);
+//			query.setPageSize(10);
+//			List<AfUserAuthDo> list = afUserAuthService.getUserAuthListWithIvs_statusIsY(query);
+//			for (int i = 0; i < list.size(); i++) {
+//				AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(list.get(i).getUserId());
+//				if (null != afContactsOldDo) {
+//					String moblieBook = afContactsOldDo.getMobileBook();
+//					String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
+//					 
+//					JSONArray moblieBookJsons = JSONArray.parseArray(formatMoblieBook);
+//					List<AfAuthContactsDo> contacts = new ArrayList<AfAuthContactsDo>();
+//					for (Object object : moblieBookJsons) {
+//						JSONObject json = JSONObject.parseObject(object.toString());
+//						AfAuthContactsDo afAuthContactsDo = new AfAuthContactsDo();
+//						afAuthContactsDo.setFriendNick(json.getString("name"));
+//						afAuthContactsDo.setFriendPhone(json.getString("phone_number"));
+//						contacts.add(afAuthContactsDo);
+//					}
+//					riskUtil.addressListPrimaries(list.get(i).getUserId().toString(), contacts);
+//				}
+//			}
+//		}
+//		return "succ";
+//	}
+//	/**
+//	 * 同步一条通讯录
+//	 * @return
+//	 */
+//	@RequestMapping(value = { "/SyncOneAddress" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+//	@ResponseBody
+//	public String SyncAddressRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//			
+//		Long userId = (long) 68424;
+//		AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(userId);
+//		String moblieBook = afContactsOldDo.getMobileBook();
+//		String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
+//		 
+//		JSONArray moblieBookJsons = JSONArray.parseArray(formatMoblieBook);
+//		List<AfAuthContactsDo> contacts = new ArrayList<AfAuthContactsDo>();
+//		for (Object object : moblieBookJsons) {
+//			JSONObject json = JSONObject.parseObject(object.toString());
+//			AfAuthContactsDo afAuthContactsDo = new AfAuthContactsDo();
+//			afAuthContactsDo.setFriendNick(json.getString("name"));
+//			afAuthContactsDo.setFriendPhone(json.getString("phone_number"));
+//			contacts.add(afAuthContactsDo);
+//		}
+//		RiskAddressListRespBo riskAddressListRespBo = riskUtil.addressListPrimaries(userId.toString(), contacts);
+//		return JSONObject.toJSONString(riskAddressListRespBo);
+//	}
 	/**
-	 * 同步通讯录
+	 * 用户通讯录集合同步
+	 * @author fumeiai
 	 * @return
 	 */
-	@RequestMapping(value = { "/SyncAddressList/toRiskManagement" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+	@RequestMapping(value = { "/SyncUserAddressList/toRiskManagement" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	@ResponseBody
-	public String SyncAddressListRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String SyncUserAddressList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
 		int count = afUserAuthService.getUserAuthCountWithIvs_statusIsY();
@@ -169,46 +234,19 @@ public class TestController {
 					String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
 					 
 					JSONArray moblieBookJsons = JSONArray.parseArray(formatMoblieBook);
-					List<AfAuthContactsDo> contacts = new ArrayList<AfAuthContactsDo>();
+					StringBuffer data = new StringBuffer();
 					for (Object object : moblieBookJsons) {
 						JSONObject json = JSONObject.parseObject(object.toString());
-						AfAuthContactsDo afAuthContactsDo = new AfAuthContactsDo();
-						afAuthContactsDo.setFriendNick(json.getString("name"));
-						afAuthContactsDo.setFriendPhone(json.getString("phone_number"));
-						contacts.add(afAuthContactsDo);
+						data.append(json.getString("name")+":");
+						data.append(json.getString("phone_number")+",");
 					}
-					riskUtil.addressListPrimaries(list.get(i).getUserId().toString(), contacts);
+					
+					riskUtil.addressListPrimaries(afContactsOldDo.getUid().toString(), data.toString().substring(0,data.toString().length()-1));
 				}
 			}
 		}
 		return "succ";
 	}
-	/**
-	 * 同步一条通讯录
-	 * @return
-	 */
-	@RequestMapping(value = { "/SyncOneAddress" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	@ResponseBody
-	public String SyncAddressRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-			
-		Long userId = (long) 68424;
-		AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(userId);
-		String moblieBook = afContactsOldDo.getMobileBook();
-		String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
-		 
-		JSONArray moblieBookJsons = JSONArray.parseArray(formatMoblieBook);
-		List<AfAuthContactsDo> contacts = new ArrayList<AfAuthContactsDo>();
-		for (Object object : moblieBookJsons) {
-			JSONObject json = JSONObject.parseObject(object.toString());
-			AfAuthContactsDo afAuthContactsDo = new AfAuthContactsDo();
-			afAuthContactsDo.setFriendNick(json.getString("name"));
-			afAuthContactsDo.setFriendPhone(json.getString("phone_number"));
-			contacts.add(afAuthContactsDo);
-		}
-		RiskAddressListRespBo riskAddressListRespBo = riskUtil.addressListPrimaries(userId.toString(), contacts);
-		return JSONObject.toJSONString(riskAddressListRespBo);
-	}
+	
 	// TongdunUtil
 }
