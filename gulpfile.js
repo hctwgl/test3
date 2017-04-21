@@ -1,12 +1,11 @@
 /**
  * Created by nizhiwei on 2017/4/14.
  */
-
 var gulp = require('gulp'),
     clean = require('gulp-clean'),
+    del = require('del'),
     babel = require('gulp-babel'),  //es6转码
     less = require('gulp-less'),
-
     cached = require('gulp-cached'), // 缓存未修改的文件，不多次编译
     uglify = require('gulp-uglify'),   //js压缩文件
     minifycss = require('gulp-minify-css'),// css压缩
@@ -15,19 +14,23 @@ var gulp = require('gulp'),
     plumber = require("gulp-plumber"),//出错打印日志不终止进程
     gulpsync = require('gulp-sync')(gulp);
 // clean 清空 dist 目录
-gulp.task('clean', function() {
-    return gulp.src(['src/main/webapp/js/**/*','src/main/webapp/css/**/*'])
-        .pipe(clean());
+gulp.task('clean', function(cb) {
+    del([
+        '51fbapi-web/src/main/webapp/js/**/*',
+        '51fbapi-web/src/main/webapp/css/**/*'
+    ],cb);
 });
 // es6编译为es5
 gulp.task('es6', function() {
-    return gulp.src('51fbapi-web/build/js/**/*.js')
+    gulp.src(['51fbapi-web/build/js/**/*.js','!51fbapi-web/build/js/common/**/*'])
         .pipe(plumber())
         .pipe(babel({presets: ['es2015']}))
         .pipe(cached('js'))
         .pipe(uglify())                  //压缩
         // .pipe(rename({suffix:".min"}))    //改名加前缀
         .pipe(gulp.dest('51fbapi-web/src/main/webapp/js'));
+    gulp.src('51fbapi-web/build/js/common/**/*')
+        .pipe(gulp.dest('51fbapi-web/src/main/webapp/js/common'));
 });
 //less编译为css
 gulp.task('less', function() {
@@ -41,9 +44,7 @@ gulp.task('less', function() {
 });
 
 // default 默认任务，依赖清空任务
-gulp.task('default', ['clean'], function() {
-    gulp.start('es6');
-});
+gulp.task('default', ['clean']);
 
 // 监控 build 目录的改动自动编译
 gulp.task('watch',['clean'],function () {
