@@ -170,9 +170,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     
     //4000-4999
     PICK_BRAND_COUPON_NOT_START("PICK_BRAND_COUPON_NOT_START",4000,"pick brand not start","领取活动还未开始,敬请期待"),
-    PICK_BRAND_COUPON_DATE_END("PICK_BRAND_COUPON_DATE_END",4001,"pick brand has end","没有在活动时间内,敬请期待"),
+    PICK_BRAND_COUPON_DATE_END("PICK_BRAND_COUPON_DATE_END",4001,"pick brand has end","活动已经结束,请期待下一次活动"),
     PICK_BRAND_COUPON_NOT_REAL_NAME("PICK_BRAND_COUPON_NOT_REAL_NAME",4002,"pick brand coupon","需要先实名认证,才可以领取优惠券"),
     PUSH_BRAND_ORDER_STATUS_FAILED("PUSH_BRAND_ORDER_STATUS_FAILED",4003,"push brand order status failed","推送品牌订单消息失败"),
+    PICK_BRAND_COUPON_FAILED("PICK_BRAND_COUPON_FAILED",4004,"pick brand coupon failed","领取优惠券失败"),
     
     
     TONGTUN_FENGKONG_REGIST_ERROR("TONGTUN_FENGKONG_REGIST_ERROR",4004,"tongtun fengkong error","您注册手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
