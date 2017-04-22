@@ -4,10 +4,17 @@ import java.security.PublicKey;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.YituFaceCardReqBo;
+import com.ald.fanbei.api.biz.bo.YituFaceCardRespBo;
+import com.ald.fanbei.api.biz.bo.YituFaceRespBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 @Component("yituUtil")
 public class YituUtil extends AbstractThird {
@@ -18,9 +25,41 @@ public class YituUtil extends AbstractThird {
 	private static String userDefinedContent;
 	private static String ip;
 
-	
-	public static 
-	
+	public static YituFaceRespBo checkCard(String filePath1, String filePath2) throws Exception {
+		String pic = FileHelper.getImageBase64Content(filePath1);
+		YituFaceCardReqBo bo = new YituFaceCardReqBo();
+		bo.genUserInfo(pic);
+		bo.genOptions(YituFaceCardReqBo.OCR_MODE_FRONT);
+		String requestBody = JSON.toJSONString(bo);
+		String signature = signature(requestBody);
+		String url = getIp() + "/face/basic/ocr";
+		String result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
+		YituFaceCardRespBo respBo1 = JSONObject.parseObject(result, YituFaceCardRespBo.class);
+		logger.info(StringUtil.appendStrs("yitu checkCard front params=|", requestBody, "|,reqResult=", result));
+		if (respBo1.getRtn() == 0) {
+			pic = FileHelper.getImageBase64Content(filePath2);
+			bo = new YituFaceCardReqBo();
+			bo.genUserInfo(pic);
+			bo.genOptions(YituFaceCardReqBo.OCR_MODE_BACK);
+			requestBody = JSON.toJSONString(bo);
+			signature = signature(requestBody);
+			url = getIp() + "/face/basic/ocr";
+			result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
+			YituFaceCardRespBo respBo2 = JSONObject.parseObject(result, YituFaceCardRespBo.class);
+			logger.info(StringUtil.appendStrs("yitu checkCard back params=|", requestBody, "|,reqResult=", result));
+			if (respBo2.getRtn() == 0) {
+				respBo1.getIdcard_ocr_result().setAgency(respBo2.getIdcard_ocr_result().getAgency());
+				respBo1.getIdcard_ocr_result().setValid_date_begin(respBo2.getIdcard_ocr_result().getValid_date_begin());
+				respBo1.getIdcard_ocr_result().setValid_date_end(respBo2.getIdcard_ocr_result().getValid_date_end());
+			}else{
+				throw new FanbeiException(FanbeiExceptionCode.USER_CARD_AUTH_ERROR);
+			}
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_AUTH_ERROR);
+		}
+		return respBo1;
+	}
+
 	/**
 	 * 
 	 * @方法说明：加签方法
@@ -30,7 +69,7 @@ public class YituUtil extends AbstractThird {
 	 * @return
 	 * @throws Exception
 	 */
-	private String signature(String requestBody) throws Exception {
+	private static String signature(String requestBody) throws Exception {
 		PublicKey publicKey = EncryptionHelper.RSAHelper.loadPublicKey(getPemPath());
 		String signature = HttpRequestHelper.generateSignature(publicKey, getAccessId(), requestBody, getUserDefinedContent());
 		logger.info(StringUtil.appendStrs("Yitu signature requestBody=", requestBody, "|,signature=", signature));

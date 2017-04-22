@@ -41,10 +41,10 @@ public class SampleCodeV1PairVerify {
 		/*
 		 * Step 1 生成HTTP body 
 		 */
-		String databaseImageContent = FileHelper.getImageBase64Content("sample_images/id.jpg"); //  设置上传图片并编码为base64字符串
+		String databaseImageContent = FileHelper.getImageBase64Content("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=4208920090,1298886745&fm=11&gp=0.jpg"); //  设置上传图片并编码为base64字符串
 		int databaseImageType = 1; // 设置上传图片的类型，类型编号请参见接口文档
 
-		String queryImageContent = FileHelper.getImageBase64Content("sample_images/id_test.jpg"); // 设置查询照图片并编码为base64字符串
+		String queryImageContent = FileHelper.getImageBase64Content("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=4208920090,1298886745&fm=11&gp=0.jpg"); // 设置查询照图片并编码为base64字符串
 		int queryImageType = 301; // 设置查询照图片类型
 		
 	    Map<String, Object> requestData = new HashMap<String, Object>();

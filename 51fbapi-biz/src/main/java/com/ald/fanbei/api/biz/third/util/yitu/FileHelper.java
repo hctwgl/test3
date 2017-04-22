@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util.yitu;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -104,12 +106,10 @@ public class FileHelper {
 	 * @param filepath
 	 *            , 文件路径
 	 */
-	public static void saveBinaryFile(final byte[] content,
-			final String filepath) {
+	public static void saveBinaryFile(final byte[] content, final String filepath) {
 		File file = new File(filepath);
 		try {
-			BufferedOutputStream fos = new BufferedOutputStream(
-					new FileOutputStream(file));
+			BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(file));
 			fos.write(content, 0, content.length);
 			fos.flush();
 			fos.close();
@@ -122,27 +122,27 @@ public class FileHelper {
 	/**
 	 * 读取图片文件内容，并转为Base64编码
 	 * 
-	 * @param filePath 文件路径
+	 * @param filePath
+	 *            文件路径
 	 * @return 图片内容Base64编码的字符串
 	 */
-	public static String getImageBase64Content(String filePath)
-			throws Exception {
-		File imgFile = new File(filePath);
-		byte[] bytes = null;
+	public static String getImageBase64Content(String filePath) throws Exception {
+		URL url = null;
+		url = new URL(filePath);
+		byte[] in2b = null;
 		try {
-			InputStream is = new FileInputStream(imgFile);
-			long length = imgFile.length();
-			bytes = new byte[(int) length];
-
-			int offset = 0, numRead = 0;
-			while (offset < bytes.length
-					&& (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
-				offset += numRead;
+			InputStream is = url.openStream();
+			ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+			byte[] buff = new byte[100];
+			int rc = 0;
+			while ((rc = is.read(buff, 0, 100)) > 0) {
+				swapStream.write(buff, 0, rc);
 			}
+			in2b = swapStream.toByteArray();
 			is.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return Base64.encodeBase64String(bytes);
+		return Base64.encodeBase64String(in2b);
 	}
 }
