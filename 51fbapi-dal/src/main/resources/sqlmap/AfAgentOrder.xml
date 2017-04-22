@@ -27,10 +27,8 @@
 	
 	
 	<update id="updateAgentOrder" parameterType="AfAgentOrderDo" >
-		UPDATE af_agent_order SET gmt_modified = NOW()
-			<if test="orderId != null">
-    			,order_id=#{orderId}
-			</if>
+		UPDATE af_agent_order SET  order_id=#{orderId}
+			
 			<if test="userId != null">
     			,user_id=#{userId}
 			</if>
@@ -92,28 +90,18 @@
     			,gmt_match_order=#{gmtMatchOrder}
 			</if>
 			
-		WHERE id = #{rid}
+			WHERE 
+				order_id = #{orderId}
 	</update>
 	
-	<select id="selectAgentOrderByOrderId" resultType="AfAgentOrderDo">
-		SELECT
-			<include refid="queryAllFields" />
-		FROM
-			af_agent_order
-		WHERE
-			is_delete = 0
-		AND
-			order_id = #{orderId}
-		LIMIT 1
-	</select>
-	
+
 	<select id="getAgentOrderByOrderId" resultType="AfAgentOrderDo">
 	
 		SELECT
 			<include refid="queryAllFields"/>
 		FROM
 			af_agent_order
-		WHERE
+		WHERE	
 			order_id = #{orderId}
 		LIMIT 
 			1
