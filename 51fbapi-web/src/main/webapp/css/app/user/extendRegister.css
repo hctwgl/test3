@@ -2,13 +2,12 @@
 * @Author: nizhiwei
 * @Date:   2017-04-18
 * @Last Modified by:   Yangyang
-
-* @Last Modified time: 2017-04-19 18:48:55
+* @Last Modified time: 2017-04-19 16:41:47
 * @title:  返呗注册
 */
 
 
-/*.shareRegister{
+.shareRegister{
 	width: 18.75rem;
 	height: 35rem;
 	background: url(/images/app/user/extendRegister.jpg) no-repeat;
@@ -63,9 +62,9 @@ input:-ms-input-placeholder{
 .register_submitBtn{
 	width: 13.275rem;
 	margin: 1rem 2.5rem .8rem;
-}*/
+}
 /*协议*/
-/*.register_checkbox{
+.register_checkbox{
 	position: relative;
 	height: 0.9rem;
 	line-height: 0.9rem;
@@ -102,149 +101,4 @@ input:-ms-input-placeholder{
 	float: left;
 	margin-left: 3rem;
 	opacity:0;
-}*/
-
-.channelRegister input,.channelRegister button{
-	background-color: transparent;
-}
-.registerIcon_hide{
-	display: none;
-}
-.channelRegister{
-	width: 18.75rem;
-	height: 34.1rem;
-	background-image: url(/images/app/user/channelRegister/channelRegister2.jpg);
-}
-.channelRegister ul{
-	padding-top: 21.2rem;
-}
-.channelRegister li{
-	width: 12.525rem;
-	margin: 0 auto 0.6rem;
-	position: relative;
-}
-.channelRegister li:first-child,.channelRegister li:nth-child(3){
-	height: 2.175rem;
-	background-image: url(/images/app/user/channelRegister/channel_btn1.png);
-}
-.register_mobile,.register_password,.register_verification{
-	margin-top: 0.5rem;
-	padding-left: 0.8rem;
-}
-.register_mobile,.register_password{
-	width: 12.525rem;
-}
-.register_verification_main{
-	width: 7.275rem;
-	height: 2.175rem;
-	background-image: url(/images/app/user/channelRegister/channel_btn2.png);
-}
-.register_verification{
-	width: 8.2rem;
-}
-.register_codeBtn{
-	width: 4.95rem;
-	height: 2.175rem;
-	line-height: 2.175rem;
-	background-image: url(/images/app/user/channelRegister/channel_btn3.png);
-	color: #fd7923;
-}
-.register_required{
-	color: red;
-	position: absolute;
-	top: 50%;
-	right: -0.5rem;
-	-webkit-transform: translateY(-50%);
-	-ms-transform: translateY(-50%);
-	-o-transform: translateY(-50%);
-	transform: translateY(-50%);
-}
-/*密码眼睛*/
-.register_passwordEyeClosed,.register_passwordEye{
-	position: absolute;
-	top: 50%;
-	right: 0.8rem;
-	-webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-}
-.register_passwordEyeClosed{
-	width: 1.1rem;
-	height: 0.4rem;
-	background-image: url(/images/app/user/0601eye_closed.png);
-}
-.register_passwordEye{
-	width: 1.1rem;
-	height: 0.6rem;
-	background-image: url(/images/app/user/0601eye.png);
-}
-input::-webkit-input-placeholder{
-	color: #BFBFBF;
-}
-input:-moz-placeholder{
-	color: #BFBFBF;
-}
-input::-moz-placeholder{
-	color: #BFBFBF;
-}
-input:-ms-input-placeholder{
-	color: #BFBFBF;
-}
-
-.register_submitBtn_wrap{
-	width: 13.275rem;
-	height: 2.95rem;
-	background-image: url(/images/app/user/channelRegister/channel_btn4.png);
-	margin: 0 auto;
-}
-.register_submitBtn{
-	width: 13.275rem;
-	margin-top: 0.65rem;
-}
-/*协议*/
-.register_checkbox{
-	position: relative;
-	height: 0.9rem;
-	line-height: 0.9rem;
-	margin: 0 3.4rem;
-}
-.register_checkbox .input_check {
-    visibility: hidden;
-}
-.register_checkbox .input_check+label,.register_checkbox .input_check:checked+label:after{
-	position: absolute;
-	top: 50%;
-	left: 0;
-	-webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-    display: inline-block;
-    width: 0.575rem;
-    height: 0.55rem;
-    -webkit-background-size: cover;
-	-moz-background-size: cover;
-	-ms-background-size: cover;
-	background-size: cover;
-}
-.register_checkbox .input_check+label {
-    background-image: url(/images/app/user/channelRegister/channel_label1.png);
-}
-.register_checkbox .input_check:checked+label:after {
-    content: "";
-    background-image: url(/images/app/user/channelRegister/channel_label2.png);
-}
-.register_checkbox p{
-	margin-left: 1.0rem;
-}
-
-.channelRegister_copyright{
-	width: 18.75rem;
-	height: 1.125rem;
-	line-height: 1.125rem;
-	border-top: 1px dashed #fff;
-	font-size: 0.4rem;
-	background-color: #FF7903;
-	margin-top: 0.5rem;
 }
