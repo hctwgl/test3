@@ -174,4 +174,5 @@ public class Constants {
     public static final String CONFKEY_YITU_ID = "fbapi.yitu.id";
     public static final String CONFKEY_YITU_KEY = "fbapi.yitu.key";
     public static final String CONFKEY_YITU_DEFINED_CONTENT = "fbapi.yitu.definedContent";
+    public static final String CONFKEY_YITU_PEM_PATH = "fbapi.yitu.pemPath";
 }

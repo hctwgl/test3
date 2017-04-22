@@ -91,11 +91,10 @@ public class SampleCodeV1PairVerify {
 	 * 
 	 * @throws JsonProcessingException
 	 */
-	@SuppressWarnings("unchecked")
 	public static void loadConfig() throws Exception {
 
 		ip = ConfigProperties.get(Constants.CONFKEY_YITU_URL);
-//		pemPath = config.get("pemPath").toString();
+		pemPath = ConfigProperties.get(Constants.CONFKEY_YITU_PEM_PATH);
 		accessId = ConfigProperties.get(Constants.CONFKEY_YITU_ID);
 		accessKey = ConfigProperties.get(Constants.CONFKEY_YITU_KEY);
 		userDefinedContent = ConfigProperties.get(Constants.CONFKEY_YITU_DEFINED_CONTENT);
