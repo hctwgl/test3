@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-18 19:21:46
+* @Last Modified time: 2017-04-24 16:15:30
 * @title:  商品列表页
 */
 
@@ -159,10 +159,11 @@ $(function(){
                             // 下拉的时候加载
                             finished=0;
 
-                        }else{html = '<div class="nullPrompt"> ' +
-                            '<img src="/images/common/040101wuyouhui.png"> ' +
-                            '<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span> ' +
-                            '</div>';
+                        }else{
+                            html =  '<div class="nullPrompt">'
+                                        +'<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/images/040101wuyouhui.png">'
+                                        +'<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span>'
+                                    +'</div>';
                         }
                         isUl.html(html);
                         // $('.main_wrap').css('height',isUl.height()+'px');
@@ -216,9 +217,6 @@ $(function(){
         }
 
     });
-
-
-
 
 });
 

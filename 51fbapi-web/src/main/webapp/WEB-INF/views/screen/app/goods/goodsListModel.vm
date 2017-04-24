@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    ##set($version="20170412502")
+    #set($version="2017042401")
+    #set($src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
     <title>商品列表模版</title>
-##    <link rel="stylesheet" type="text/css" href="/css/common/swiper-3.4.2.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="$src/common/css/swiper-3.4.2.min.css">
+    <link rel="stylesheet" type="text/css" href="$src/common/css/layer.css">
+    <link rel="stylesheet" type="text/css" href="/css/goods/goodsListModel.css?version=$version">
 </head>
 <body>
     <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
@@ -13,7 +15,7 @@
 
     #if($!{goodsList.size()}==0)
         <div class="nullPrompt">
-            <img src="/images/common/040101wuyouhui.png">
+            <img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/images/040101wuyouhui.png">
             <span class="fsc_6">暂无商品</span>
         </div>
     #else
@@ -74,9 +76,9 @@
             </div>
         </div>
     #end
-    <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
-##    <script type="text/javascript" src="/js/common/swiper-3.4.2.jquery.min.js"></script>
-    <script type="text/javascript" src="/js/common/layer.js"></script>
-    <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>
+    <script type="text/javascript" src="$src/common/js/jquery-2.2.4.min.js"></script>
+    <!-- <script type="text/javascript" src="$url/common/js/swiper-3.4.2.jquery.min.js"></script> -->
+    <script type="text/javascript" src="$src/common/js/layer.js"></script>
+    <script type="text/javascript" src="/js/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>
