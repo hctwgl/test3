@@ -55,6 +55,7 @@ public class GetRepayCashInfoApi implements ApiHandle {
 		data.put("cardName", afBorrowCashDo.getCardName());
 		data.put("cardNumber", afBorrowCashDo.getCardNumber());
 		data.put("repayNo", afBorrowCashDo.getRepayNo());
+		data.put("jfbAmount", afBorrowCashDo.getJfbAmount().intValue());
 
 		return data;
 

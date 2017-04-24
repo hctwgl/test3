@@ -117,11 +117,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 
 	
-	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal repaymentAmount,String repayNo,Date gmtCreate,BigDecimal actualAmount,
+	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,String repayNo,Date gmtCreate,BigDecimal actualAmount,
 			AfUserCouponDto coupon,BigDecimal rebateAmount, Long borrowId, Long cardId,String payTradeNo,String name,Long userId){
 		AfRepaymentBorrowCashDo repay = new AfRepaymentBorrowCashDo();
 		repay.setActualAmount(actualAmount);
 		repay.setBorrowId(borrowId);;
+		repay.setJfbAmount(jfbAmount);
 		repay.setPayTradeNo(payTradeNo);
 		repay.setRebateAmount(rebateAmount);
 		repay.setRepaymentAmount(repaymentAmount);
@@ -150,7 +151,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 
 	@Override
-	public Map<String, Object> createRepayment(BigDecimal repaymentAmount, BigDecimal actualAmount,
+	public Map<String, Object> createRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount,
 			AfUserCouponDto coupon, BigDecimal rebateAmount, Long borrow, Long cardId, Long userId, String clientIp,
 			AfUserAccountDo afUserAccountDo) {
 		Date now = new Date();
@@ -159,7 +160,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		//新增还款记录
 		String name =Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		
-		final AfRepaymentBorrowCashDo repayment = buildRepayment(repaymentAmount, repayNo, now, actualAmount,coupon, 
+		final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount,repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, borrow, cardId, payTradeNo,name,userId);
 		Map<String,Object> map = new HashMap<String,Object>();
 		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);

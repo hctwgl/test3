@@ -88,7 +88,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	UpsUtil upsUtil;
 	
 	@Override
-	public Map<String,Object> createRepayment(BigDecimal repaymentAmount,
+	public Map<String,Object> createRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,
 			final BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp,
 			final AfUserAccountDo afUserAccountDo) {
@@ -103,7 +103,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}else if(BorrowType.CASH.getCode().equals(billDo.getType())){
 			name +=billDo.getBorrowNo();
 		}
-		final AfRepaymentDo repayment = buildRepayment(repaymentAmount, repayNo, now, actualAmount,coupon, 
+		final AfRepaymentDo repayment = buildRepayment(jfbAmount,repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
 		Map<String,Object> map = new HashMap<String,Object>();
 		afRepaymentDao.addRepayment(repayment);
@@ -139,7 +139,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		return afRepaymentDao.getCurrentLastRepayNo(current);
 	}
 
-	private AfRepaymentDo buildRepayment(BigDecimal repaymentAmount,String repayNo,Date gmtCreate,BigDecimal actualAmount,
+	private AfRepaymentDo buildRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,String repayNo,Date gmtCreate,BigDecimal actualAmount,
 			AfUserCouponDto coupon,BigDecimal rebateAmount, String billIds, Long cardId,String payTradeNo,String name,Long userId){
 		AfRepaymentDo repay = new AfRepaymentDo();
 		repay.setActualAmount(actualAmount);
@@ -149,6 +149,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		repay.setRepaymentAmount(repaymentAmount);
 		repay.setRepayNo(repayNo);
 		repay.setGmtCreate(gmtCreate);
+		repay.setJfbAmount(jfbAmount);
 		repay.setStatus(RepaymentStatus.NEW.getCode());
 		if(null != coupon){
 			repay.setUserCouponId(coupon.getRid());

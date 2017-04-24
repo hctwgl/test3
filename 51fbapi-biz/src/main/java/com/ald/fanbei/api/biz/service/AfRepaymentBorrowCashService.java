@@ -16,7 +16,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfRepaymentBorrowCashService {
-	Map<String,Object> createRepayment(BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
+	Map<String,Object> createRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,Long borrow,Long cardId,Long userId,String clientIp,AfUserAccountDo afUserAccountDo);
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo);
 	
