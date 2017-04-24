@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-03-08 17:42:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-10 11:29:56
+* @Last Modified time: 2017-04-24 17:50:09
 * @title:  领取优惠劵
 */
 
@@ -30,7 +30,7 @@ $(function(){
             success: function(returnData){
 
                 if (returnData.success) {
-
+                    requestMsg("优惠劵领取成功");
                     $(".receiveCoupons_main li").eq(i).addClass("receiveCoupons_ylq");
 
                 } else {
