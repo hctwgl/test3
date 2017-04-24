@@ -15,16 +15,16 @@ public class YituFaceCardRespBo extends YituFaceRespBo {
 	private CardResult idcard_ocr_result;
 
 	public class CardResult {
-		private String name;
-		private String address;
-		private String citizen_id;
-		private String valid_date_begin;
-		private String valid_date_end;
-		private String gender;
-		private String nation;
-		private String birthday;
-		private String agency;
-		private Integer idcard_type;
+		private String name; // 姓名
+		private String address;// 资质
+		private String citizen_id;// 身份证号
+		private String valid_date_begin;// 有效开始时间
+		private String valid_date_end;// 有效结束时间
+		private String gender;// 性别
+		private String nation;// 民族
+		private String birthday;// 出生年月日
+		private String agency;// 签发机关
+		private Integer idcard_type;// 识别出的身份证图片类型
 
 		public String getName() {
 			return name;

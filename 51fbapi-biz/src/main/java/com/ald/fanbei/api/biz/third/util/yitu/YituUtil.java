@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.YituFaceCardReqBo;
 import com.ald.fanbei.api.biz.bo.YituFaceCardRespBo;
-import com.ald.fanbei.api.biz.bo.YituFaceRespBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -25,7 +24,7 @@ public class YituUtil extends AbstractThird {
 	private static String userDefinedContent;
 	private static String ip;
 
-	public static YituFaceRespBo checkCard(String filePath1, String filePath2) throws Exception {
+	public YituFaceCardRespBo checkCard(String filePath1, String filePath2) throws Exception {
 		String pic = FileHelper.getImageBase64Content(filePath1);
 		YituFaceCardReqBo bo = new YituFaceCardReqBo();
 		bo.genUserInfo(pic);
@@ -36,7 +35,7 @@ public class YituUtil extends AbstractThird {
 		String result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
 		YituFaceCardRespBo respBo1 = JSONObject.parseObject(result, YituFaceCardRespBo.class);
 		logger.info(StringUtil.appendStrs("yitu checkCard front params=|", requestBody, "|,reqResult=", result));
-		if (respBo1.getRtn() == 0) {
+		if (respBo1.getRtn() == 0 && respBo1.getIdcard_ocr_result().getIdcard_type() != -1) {
 			pic = FileHelper.getImageBase64Content(filePath2);
 			bo = new YituFaceCardReqBo();
 			bo.genUserInfo(pic);
@@ -47,11 +46,11 @@ public class YituUtil extends AbstractThird {
 			result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
 			YituFaceCardRespBo respBo2 = JSONObject.parseObject(result, YituFaceCardRespBo.class);
 			logger.info(StringUtil.appendStrs("yitu checkCard back params=|", requestBody, "|,reqResult=", result));
-			if (respBo2.getRtn() == 0) {
+			if (respBo2.getRtn() == 0 && respBo2.getIdcard_ocr_result().getIdcard_type() != -1) {
 				respBo1.getIdcard_ocr_result().setAgency(respBo2.getIdcard_ocr_result().getAgency());
 				respBo1.getIdcard_ocr_result().setValid_date_begin(respBo2.getIdcard_ocr_result().getValid_date_begin());
 				respBo1.getIdcard_ocr_result().setValid_date_end(respBo2.getIdcard_ocr_result().getValid_date_end());
-			}else{
+			} else {
 				throw new FanbeiException(FanbeiExceptionCode.USER_CARD_AUTH_ERROR);
 			}
 		} else {
@@ -69,9 +68,9 @@ public class YituUtil extends AbstractThird {
 	 * @return
 	 * @throws Exception
 	 */
-	private static String signature(String requestBody) throws Exception {
+	private String signature(String requestBody) throws Exception {
 		PublicKey publicKey = EncryptionHelper.RSAHelper.loadPublicKey(getPemPath());
-		String signature = HttpRequestHelper.generateSignature(publicKey, getAccessId(), requestBody, getUserDefinedContent());
+		String signature = HttpRequestHelper.generateSignature(publicKey, getAccessKey(), requestBody, getUserDefinedContent());
 		logger.info(StringUtil.appendStrs("Yitu signature requestBody=", requestBody, "|,signature=", signature));
 		return signature;
 	}

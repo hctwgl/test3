@@ -84,6 +84,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     
 
     USER_CARD_AUTH_ERROR("USER_CARD_AUTH_ERROR",1306,"user card auth error","身份证识别失败"),
+    USER_CARD_INFO_EXIST_ERROR("USER_CARD_INFO_EXIST_ERROR",1307,"user card exist error","用户身份证信息不存在"),
     
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
