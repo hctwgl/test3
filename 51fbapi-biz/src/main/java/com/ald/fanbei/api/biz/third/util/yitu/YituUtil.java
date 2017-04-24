@@ -42,7 +42,6 @@ public class YituUtil extends AbstractThird {
 			bo.genOptions(YituFaceCardReqBo.OCR_MODE_BACK);
 			requestBody = JSON.toJSONString(bo);
 			signature = signature(requestBody);
-			url = getIp() + "/face/basic/ocr";
 			result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
 			YituFaceCardRespBo respBo2 = JSONObject.parseObject(result, YituFaceCardRespBo.class);
 			logger.info(StringUtil.appendStrs("yitu checkCard back params=|", requestBody, "|,reqResult=", result));
@@ -58,6 +57,8 @@ public class YituUtil extends AbstractThird {
 		}
 		return respBo1;
 	}
+	
+	
 
 	/**
 	 * 

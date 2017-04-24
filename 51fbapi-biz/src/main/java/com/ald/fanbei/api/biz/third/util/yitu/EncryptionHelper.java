@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.third.util.yitu;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,7 +29,7 @@ public class EncryptionHelper {
 		private PemObject pemObject;
 
 		public PemFile(String filename) throws FileNotFoundException, IOException {
-			PemReader pemReader = new PemReader(new InputStreamReader(new FileInputStream(filename)));
+			PemReader pemReader = new PemReader(new InputStreamReader(EncryptionHelper.class.getClassLoader().getResourceAsStream(filename)));
 			try {
 				this.pemObject = pemReader.readPemObject();
 			} finally {
