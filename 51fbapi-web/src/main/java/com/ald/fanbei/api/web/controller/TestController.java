@@ -226,9 +226,9 @@ public class TestController {
 			List<AfUserAuthDo> list = afUserAuthService.getUserAuthListWithIvs_statusIsY(query);
 			logger.info("j=" + j + ",size=" + list.size());
 			for (int i = 0; i < list.size(); i++) {
-				AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(list.get(i).getUserId());
-				logger.info("i=" + i + "," + afContactsOldDo !=null?afContactsOldDo.toString():"");
 				try{
+					AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(list.get(i).getUserId());
+					logger.info("i=" + i + "," + afContactsOldDo !=null?afContactsOldDo.toString():"");
 					if (null != afContactsOldDo) {
 						String moblieBook = afContactsOldDo.getMobileBook();
 						String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
@@ -246,6 +246,7 @@ public class TestController {
 						
 					}
 				}catch(Exception e){
+					e.printStackTrace();
 					logger.info("init error="+list.get(i).getUserId());
 				}
 			}
