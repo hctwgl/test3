@@ -230,7 +230,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					//授权账户可用金额变更
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(repayment.getUserId());
-					
+					account.setJfbAmount(repayment.getJfbAmount().multiply(new BigDecimal(-1)));
+
 					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
 					afUserAccountDao.updateUserAccount(account);
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH,repayment.getRebateAmount(),repayment.getUserId(), repayment.getRid()));
