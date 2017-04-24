@@ -3,8 +3,12 @@
  */
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
+
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
 
 /**
  * @类描述：
@@ -39,6 +43,21 @@ public interface AfAgentOrderService {
 	     * @return
 	     */
 	    AfAgentOrderDo getAgentOrderByOrderId(Long orderId);
+	    
+	    /**
+	     * 根据状态获取订单列表
+	     * @param agentId
+	     * @param status
+	     * @return
+	     */
+	    List<AfAgentOrderDto> getAgentOrderListByAgentId(Long agentId,String status);
+	    
+	    /**
+	     * 根据订单id获取订单信息
+	     * @param orderId
+	     * @return
+	     */
+	    AfAgentOrderDto getAgentOrderInfoById(Long orderId);
 	    
 	    
 }
