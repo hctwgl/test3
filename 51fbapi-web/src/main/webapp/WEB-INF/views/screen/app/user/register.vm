@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017041801")
+    	#set($version="2017042401")
+    	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 		<title>注册</title>
-		<link rel="stylesheet" type="text/css" href="/css/app/user/register.css?version=$version">
+		<link rel="stylesheet" type="text/css" href="/css/user/register.css?version=$version">
     </head>
     <body style="background-color: #fff;">
     	<div class="register_main">
@@ -31,13 +32,13 @@
 	      	<div class="tal register_checkbox clearfix">
 	      		<input type="checkbox" class="input_check" id="input_check"　onkeyup="changeBtn()">
             	<label for="input_check"></label>
-	      		<p class="fl fs_24 clearfix"><span class="fl">阅读并同意</span><a class="fl" href="$!{registerRule}">《51返呗用户注册协议》</a></p>
+	      		<p class="fl fs_24 clearfix"><span class="fl">阅读并同意</span><a class="fl" href="https://app.51fanbei.com/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
 	      	</div>
 		</div>
-		<script type="text/javascript" src="/js/common/layer.js"></script>
-		<script type="text/javascript" src="/js/common/core.js"></script>
-		<script type="text/javascript" src="/js/common/md5.js"></script>
-		<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
-		<script type="text/javascript" src="/js/app/user/register.js?version=$version"></script>
+		<script type="text/javascript" src="/js/layer.js?version=$version"></script>
+		<script type="text/javascript" src="$commonUrl/common/js/core.js"></script>
+		<script type="text/javascript" src="$commonUrl/common/js/md5.js"></script>
+		<script type="text/javascript" src="/js/base.js?version=$version"></script>
+		<script type="text/javascript" src="/js/user/register.js?version=$version"></script>
     </body>
 </html>
