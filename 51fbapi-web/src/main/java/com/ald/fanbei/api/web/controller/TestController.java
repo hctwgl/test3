@@ -224,6 +224,7 @@ public class TestController {
 			query.setPageNo(j);
 			query.setPageSize(10);
 			List<AfUserAuthDo> list = afUserAuthService.getUserAuthListWithIvs_statusIsY(query);
+			logger.info("j=" + j + ",size=" + list.size());
 			for (int i = 0; i < list.size(); i++) {
 				AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(list.get(i).getUserId());
 				if (null != afContactsOldDo) {
