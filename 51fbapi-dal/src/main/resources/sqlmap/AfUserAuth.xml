@@ -112,7 +112,7 @@
 		FROM 
 			af_user_auth  
 		where 
-			mobile_status ='Y';		
+			mobile_status ='Y' and user_id < 90000;		
 	</select>
 	
 	<select id="getUserAuthListWithIvs_statusIsY" resultType="AfUserAuthDo">
@@ -121,7 +121,7 @@
 		FROM 
 			af_user_auth a
 		WHERE 
-			a.mobile_status = 'Y'
+			a.mobile_status = 'Y' and a.user_id < 90000
 	</select>
 	
 </mapper>

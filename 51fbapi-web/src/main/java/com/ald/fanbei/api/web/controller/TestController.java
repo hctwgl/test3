@@ -217,8 +217,8 @@ public class TestController {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
 		int count = afUserAuthService.getUserAuthCountWithIvs_statusIsY();
-		logger.info("------toRiskManagement--count---" + count);
 		int pageCount = (int) Math.ceil(count / 10) + 1;
+		logger.info("------toRiskManagement--count---" + count + ",pageCount=" + pageCount);
 		for (int j = 1; j <= pageCount; j++) {
 			AfUserAuthQuery query = new AfUserAuthQuery();
 			query.setPageNo(j);
@@ -227,6 +227,7 @@ public class TestController {
 			logger.info("j=" + j + ",size=" + list.size());
 			for (int i = 0; i < list.size(); i++) {
 				AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(list.get(i).getUserId());
+				logger.info("i=" + i + "," + afContactsOldDo !=null?afContactsOldDo.toString():"");
 				if (null != afContactsOldDo) {
 					String moblieBook = afContactsOldDo.getMobileBook();
 					String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
@@ -239,7 +240,11 @@ public class TestController {
 						data.append(json.getString("phone_number")+",");
 					}
 					logger.info("i=" + i + "," + data.toString());
-					riskUtil.addressListPrimaries(afContactsOldDo.getUid().toString(), data.toString().substring(0,data.toString().length()-1));
+					try{
+						riskUtil.addressListPrimaries(afContactsOldDo.getUid().toString(), data.toString().substring(0,data.toString().length()-1));
+					}catch(Exception e){
+						logger.info("init error="+list.get(i).getUserId());
+					}
 				}
 			}
 		}
