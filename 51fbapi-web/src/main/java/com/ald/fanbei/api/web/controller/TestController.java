@@ -222,7 +222,7 @@ public class TestController {
 		for (int j = 1; j <= pageCount; j++) {
 			AfUserAuthQuery query = new AfUserAuthQuery();
 			query.setPageNo(j);
-			query.setPageSize(10);
+			query.setPageSize(120);
 			List<AfUserAuthDo> list = afUserAuthService.getUserAuthListWithIvs_statusIsY(query);
 			logger.info("j=" + j + ",size=" + list.size());
 			for (int i = 0; i < list.size(); i++) {
