@@ -66,6 +66,18 @@ public interface AfOrderService {
 	void dealMobileChargeOrder(String orderNo,String tradeNo);
 	
 	/**
+     * @方法描述：
+     * 
+     * @author huyang 2017年4月1日上午9:55:26
+     * @param orderNo
+     *            开心果交易订单号
+     * @param status
+     *            交易状态 （SUCCESS：成功 FAILED：失败 ）
+     * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+     */
+    void notifyMobileChargeOrder(String orderNo, String status);
+	
+	/**
 	 * 获取当天最近的订单
 	 * @param currentDate
 	 * @param orderType
@@ -79,6 +91,13 @@ public interface AfOrderService {
 	 * @return
 	 */
 	AfOrderDo getOrderInfoById(Long id,Long userId);
+	
+	/**
+	 * 获取订单详情
+	 * @param id
+	 * @return
+	 */
+	AfOrderDo getOrderById(Long id);
 	
 	/**
 	 * 获取订单列表
@@ -95,4 +114,64 @@ public interface AfOrderService {
 	 * @return
 	 */
 	int syncOrderNoWithUser(Long userId,String orderNo);
+	
+	/**
+	 * 根据第三方订单类型和订单编号获取订单信息
+	 * @param orderType
+	 * @param thirdOrderNo
+	 * @return
+	 */
+	AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(String orderType, String thirdOrderNo);
+	
+	/**
+	 * 新增订单
+	 * @param afOrder
+	 * @return
+	 */
+	int createOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 修改订单信息
+	 * @param afOrder
+	 * @return
+	 */
+	int updateOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 处理菠萝么订单
+	 * @param afOrder
+	 * @return
+	 */
+	int dealBoluomeOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 支付菠萝觅订单
+	 * @param afOrder
+	 * @return
+	 */
+	Map<String,Object> payBrandOrder(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper);
+	
+	/**
+	 * 处理菠萝觅回调订单 
+	 * @param payOrderNo
+	 * @param tradeNo
+	 */
+	int dealBrandOrderSucc(String payOrderNo, String tradeNo, String payType);
+	
+	/**
+	 * 处理菠萝觅退款
+	 * @param orderInfo
+	 * @return
+	 * @throws Exception 
+	 */
+	int dealBrandOrderRefund(Long orderId,Long userId,  Long bankId, String orderNo, String thirdOrderNo,
+			BigDecimal refundAmount, BigDecimal totalAmount, String payType, String payTradeNo);
+	
+	
+	/**
+	 * 获取最近支付号码
+	 * @param current
+	 * @return
+	 */
+	String getCurrentLastPayNo(Date current);
 }

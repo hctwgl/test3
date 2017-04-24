@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderRefundDao">
+	<sql id="queryAllFields">
+		id rid,gmt_create,gmt_modified,amount,user_id,order_id,order_no,status
+	</sql>
+	
+	<insert id="addOrderRefund" parameterType="AfOrderRefundDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_order_refund(gmt_create , gmt_modified , amount , user_id , order_id , order_no , status)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{amount},
+    		#{userId},
+    		#{orderId},
+    		#{orderNo},
+    		#{status}
+		)
+	</insert>
+	
+	<update id="updateOrderRefund" parameterType="AfOrderRefundDo" >
+		UPDATE af_order_refund SET gmt_modified = NOW()
+			<if test="amount != null">
+    			,amount=#{amount}
+			</if>
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="orderId != null">
+    			,order_id=#{orderId}
+			</if>
+			<if test="orderNo != null">
+    			,order_no=#{orderNo}
+			</if>
+			<if test="status != null">
+    			,status=#{status}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
+	<select id="getOrderRefundByOrderId" resultType="AfOrderRefundDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM	
+			af_order_refund
+		WHERE
+			is_delete = 0
+		AND
+			order_id = #{orderId}
+	</select>
+	
+</mapper>

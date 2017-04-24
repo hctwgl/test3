@@ -24,6 +24,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service.impl" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.service.boluome" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.rule.service.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.common" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
@@ -103,7 +104,9 @@
 				<value>/good/getBrandShopList</value>
 				<value>/good/getGoodsDetailInfo</value>
 				<value>/system/appUpgrade</value>
-				
+				<value>/borrowCash/getBorrowCashHomeInfo</value>
+				<value>/brand/getBrandList</value>
+				<value>/system/checkVersion</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -144,6 +147,7 @@
 				<entry key="/user/addCollection" value-ref="addCollectionApi" />
 				<entry key="/user/getCollectionList" value-ref="getCollectionListApi" />
 				<entry key="/user/getMobileRechargeMoneyList" value-ref="getMobileRechargeMoneyListApi" />
+				<entry key="/user/getUserCounponListType" value-ref="getUserCounponListTypeApi" />
 
 
 				<entry key="/user/signin" value-ref="signinApi" />
@@ -168,6 +172,7 @@
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
+				<entry key="/system/checkVersion" value-ref="checkVersionApi" />
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
@@ -180,6 +185,12 @@
 				<entry key="/auth/getBankList" value-ref="getBankListApi" />
 				<entry key="/auth/checkBankcardPay" value-ref="checkBankcardPayApi" />
 				<entry key="/auth/authYdInfo" value-ref="authYdInfoApi" />
+				<entry key="/auth/authMobile" value-ref="authMobileApi" />
+				<entry key="/auth/authContactor" value-ref="authContactorApi" />
+				<entry key="/auth/authLocation" value-ref="authLocationApi" />
+				<entry key="/auth/authMobileBack" value-ref="authMobileBackApi" />
+				<entry key="/auth/getAllowConsume" value-ref="getAllowConsumeApi" />
+				
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -195,6 +206,29 @@
 				<entry key="/repay/submitRepayment" value-ref="submitRepaymentApi" />
 				<entry key="/bill/getLimitDetailList" value-ref="getLimitDetailListApi" />
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
+				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
+				
+				<!-- brand品牌模块 -->
+				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
+				<entry key="/brand/getOrderDetailUrl" value-ref="getOrderDetailUrlApi" />
+				<entry key="/brand/getConfirmOrder" value-ref="getConfirmOrderApi" />
+				<entry key="/brand/getBrandList" value-ref="getBrandListApi" />
+				<entry key="/brand/getPayAmount" value-ref="getPayAmountApi" />
+				<entry key="/brand/payOrder" value-ref="payOrderApi" />
+				<entry key="/brand/getBrandCouponList" value-ref="getBrandCouponListApi" />
+				<entry key="/brand/pickBrandCoupon" value-ref="pickBrandCouponApi" />
+				
+				<!--borrowCash  -->
+				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />
+				<entry key="/borrowCash/getBowCashLogInInfo" value-ref="getBowCashLogInInfoApi" />
+				<entry key="/borrowCash/getConfirmBorrowInfo" value-ref="getConfirmBorrowInfoApi" />
+				<entry key="/borrowCash/applyBorrowCash" value-ref="applyBorrowCashApi" />
+				<entry key="/borrowCash/getBorrowCashDetail" value-ref="getBorrowCashDetailApi" />
+				<entry key="/borrowCash/getBorrowCashList" value-ref="getBorrowCashListApi" />
+				<entry key="/borrowCash/getBorrowOverdueList" value-ref="getBorrowOverdueListApi" />
+				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
+				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
+				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
 
 			</map>
 		</constructor-arg>

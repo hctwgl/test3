@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao">
+	<sql id="queryFields">
+		id
+		rid,gmt_create,gmt_modified,name,repay_no,repayment_amount,actual_amount,borrow_id,pay_trade_no,trade_no,user_coupon_id,coupon_amount,rebate_amount,status,user_id,card_number,card_name
+	</sql>
+
+	<insert id="addRepaymentBorrowCash" parameterType="AfRepaymentBorrowCashDo"
+		useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO
+		af_repayment_borrow_cash
+		(gmt_create ,
+		gmt_modified ,
+		name ,
+		repay_no ,
+		repayment_amount ,
+		actual_amount ,
+		borrow_id ,
+		pay_trade_no ,
+		<if test="userCouponId !=null ">
+			user_coupon_id ,
+		</if>
+		<if test="couponAmount !=null ">
+			coupon_amount ,
+		</if>
+		rebate_amount ,
+		status ,
+		user_id ,
+		card_number ,
+		card_name)
+		VALUES (
+		NOW(),
+		NOW(),
+		#{name},
+		#{repayNo},
+		#{repaymentAmount},
+		#{actualAmount},
+		#{borrowId},
+		#{payTradeNo},
+
+		<if test="userCouponId !=null ">
+			#{userCouponId},
+		</if>
+		<if test="couponAmount !=null ">
+			#{couponAmount},
+		</if>
+		#{rebateAmount},
+		#{status},
+		#{userId},
+		#{cardNumber},
+		#{cardName}
+		)
+	</insert>
+	<update id="updateRepaymentBorrowCash" parameterType="AfRepaymentBorrowCashDo">
+		UPDATE af_repayment_borrow_cash SET gmt_modified = NOW()
+
+		<if test="name != null">
+			,name=#{name}
+		</if>
+		<if test="repayNo != null">
+			,repay_no=#{repayNo}
+		</if>
+		<if test="repaymentAmount != null">
+			,repayment_amount=#{repaymentAmount}
+		</if>
+		<if test="actualAmount != null">
+			,actual_amount=#{actualAmount}
+		</if>
+		<if test="borrowId != null">
+			,borrow_id=#{borrowId}
+		</if>
+		<if test="payTradeNo != null">
+			,pay_trade_no=#{payTradeNo}
+		</if>
+		<if test="tradeNo != null">
+			,trade_no=#{tradeNo}
+		</if>
+		<if test="userCouponId != null">
+			,user_coupon_id=#{userCouponId}
+		</if>
+		<if test="couponAmount != null">
+			,coupon_amount=#{couponAmount}
+		</if>
+		<if test="rebateAmount != null">
+			,rebate_amount=#{rebateAmount}
+		</if>
+		<if test="status != null">
+			,status=#{status}
+		</if>
+		<if test="userId != null">
+			,user_id=#{userId}
+		</if>
+		<if test="cardNumber != null">
+			,card_number=#{cardNumber}
+		</if>
+		<if test="cardName != null">
+			,card_name=#{cardName}
+		</if>
+		WHERE id = #{rid}
+	</update>
+	<update id="deleteRepaymentBorrowCash" parameterType="java.lang.Long">
+		UPDATE
+		af_repayment_borrow_cash SET is_delete = 1 WHERE id=#{rid}
+	</update>
+
+	<select id="getRepaymentBorrowCashByBorrowId" parameterType="java.lang.Long"
+		resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		borrow_id =
+		#{borrowCashId}
+		AND
+		status != 'A'
+		ORDER BY
+		gmt_create DESC
+
+	</select>
+	
+	<select id="getLastRepaymentBorrowCashByBorrowId" parameterType="java.lang.Long"
+		resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		borrow_id =
+		#{borrowCashId}
+		AND
+		status != 'A'
+		ORDER BY
+		gmt_create DESC
+          LIMIT 1
+	</select>
+	
+	<select id="getRepaymentByPayTradeNo" 
+		resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		pay_trade_no=#{payTradeNo}
+		ORDER BY
+		gmt_create DESC
+
+	</select>
+	<select id="getRepaymentAllAmountByBorrowId" 
+		resultType="java.math.BigDecimal">
+		SELECT
+		SUM(repayment_amount) 
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		borrow_id=#{borrowId}
+		AND `status` = 'Y'
+
+	</select>
+	
+	
+	
+
+	<select id="getRepaymentBorrowCashByrid" parameterType="java.lang.Long"
+		resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		id = #{rid}
+	</select>
+	<select id="getRepaymentBorrowCashListByUserId" resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		AND
+		status != 'A'
+		ORDER BY
+		gmt_create DESC
+		LIMIT
+		#{start},20
+	</select>
+	
+	<select id="getCurrentLastRepayNo" resultType="java.lang.String">
+		select repay_no from af_repayment_borrow_cash WHERE repay_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
+	</select>
+
+</mapper>

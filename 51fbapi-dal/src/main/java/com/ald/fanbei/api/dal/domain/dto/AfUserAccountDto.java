@@ -20,6 +20,8 @@ public class AfUserAccountDto extends AfUserAccountDo{
 	private String mobile;//绑定手机号
 	private Integer vipLevel;//会员等级 【 1:为普通会员，2:为青铜会员，3:为白银会员，4:为黄金会员】
 	private String recommendCode;//邀请码
+	private String email;
+	private String address;
 	public String getGender() {
 		return gender;
 	}
@@ -62,5 +64,16 @@ public class AfUserAccountDto extends AfUserAccountDo{
 	public void setRecommendCode(String recommendCode) {
 		this.recommendCode = recommendCode;
 	}
-	
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
 }

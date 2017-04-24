@@ -45,7 +45,7 @@ public class AuthBankcardApi implements ApiHandle {
 	@Resource
 	private AfUserAuthService afUserAuthService;
 	@Resource
-	private UpsUtil upsUtil;
+	UpsUtil upsUtil;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {

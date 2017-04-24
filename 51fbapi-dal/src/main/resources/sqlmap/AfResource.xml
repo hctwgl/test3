@@ -141,6 +141,22 @@
 		ORDER BY 
 		r1.sort desc,r1.id desc, r2.sort desc
 	</select>
+	
+	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
+    SELECT
+    <include refid="queryAllFields" />
+    FROM
+    af_resource
+    WHERE
+    is_delete = 0
+    AND
+   ( (
+    type ='BORROW_RATE'
+    AND
+	 sec_type in ('BASE_BANK_RATE','BORROW_CASH_RANGE','BORROW_CASH_BASE_BANK_DOUBLE','BORROW_CASH_POUNDAGE','BORROW_CASH_OVERDUE_POUNDAGE','BORROW_CASH_LENDER','BORROW_CASH_SUPUER_SWITCH','BORROW_CASH_TOTAL_SWITCH')
+	)Or type ='BORROW_CASH_DAY')
+
+</select>
 
 	
 </mapper>

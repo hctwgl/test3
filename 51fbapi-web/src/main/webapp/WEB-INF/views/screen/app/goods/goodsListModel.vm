@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017032401")
+    #set($version="2017040501")
     <title>商品列表模版</title>
     <link rel="stylesheet" type="text/css" href="/css/app/goods/goodsListModel.css?version=$version">
 </head>
@@ -9,10 +9,14 @@
     <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
-    <div class="goodsListModel_wrap wrap">
-        #if($!{categoryList.size()}==0)
-            <div class="goodsListModel_header_wrap bgc_e"></div>
-        #else
+
+    #if($!{goodsList.size()}==0)
+        <div class="nullPrompt">
+            <img src="/images/common/040101wuyouhui.png">
+            <span class="fsc_6">暂无商品</span>
+        </div>
+    #else
+        <div class="goodsListModel_wrap wrap">
             <div class="goodsListModel_header_wrap swiper-pagination clearfix">
                 <ul class="fs_32 fsc_6 bgc_white goodsListModel_header tabs">
                     #foreach($item in $!{categoryList})
@@ -26,13 +30,6 @@
                     #end
                 </ul>
             </div>
-        #end
-        #if($!{goodsList.size()}==0)
-            <div class="nullPrompt">
-                <img src="/images/common/040101wuyouhui.png">
-                <span class="fsc_6">暂无商品</span>
-            </div>
-        #else
             <div class="goodsListModel_main_wrap clearfix swiper-container bgc_e">
                 #foreach($item in $!{bannerList})
                     <img class="goodsListModel_banner" src="$!{item.imageIcon}">
@@ -45,18 +42,12 @@
                                 #foreach($item in $!{goodsList})
                                 <li class="fl goodsListModel_item bgc_white">
         							<a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}"}'>
-                                        <div class="goodsListModel_mainContent_img bgc_e">
-                                            #if($!{item.goodsIcon.length()} <= 0)
-                                                <img class="zhanwei" src="/images/app/goods/0205zhanwei.png">
-                                            #else
-                                                <img src="$!{item.goodsIcon}">
-                                            #end
-                                        </div>
+                                        <img src="$!{item.goodsIcon}" class="goodsListModel_mainContent_img">
                                         <div class="goodsListModel_mainContent_main">
                                             <div class="goodsListModel_mainContent_wrap">
                                                 <p class="fs_26 fsc_1">$!{item.name}</p>
                                                 <p class="fs_26 fsc_red">
-                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.saleAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.priceAmount})</span>
+                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.priceAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.priceAmount})</span>
                                                 </p>
                                             </div>
                                             <div class="goodsListModel_mainContent_rebate_wrap">
@@ -77,8 +68,8 @@
                  #end
                 </div>
             </div>
-        #end
-    </div>
+        </div>
+    #end
     <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/js/common/layer.js"></script>
     <script type="text/javascript" src="/js/app/goods/goodsListModel.js?version=$version"></script>

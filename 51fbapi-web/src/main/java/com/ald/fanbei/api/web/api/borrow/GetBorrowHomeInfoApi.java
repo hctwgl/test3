@@ -18,10 +18,12 @@ import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -32,7 +34,7 @@ import com.ald.fanbei.api.web.vo.AfBorrowHomeVo;
 
 /**
  * 
- *@类描述：GetBorrowHomeInfoApi
+ *@类描述：获取分呗主页信息api
  *@author 何鑫 2017年2月18日  14:46:35
  *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -60,13 +62,12 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		Map<String,Integer> map = afBorrowService.getCurrentTermYearAndMonth("",now);
-		//TODO "year","month"在多个类多处用到可放Constants中用常量表示
-		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()),userDto, authDo);
+		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()),userDto, authDo,context);
 		resp.setResponseData(data);
 		return resp;
 	}
 
-	private AfBorrowHomeVo getBorrowHomeInfo(Date now,BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo){
+	private AfBorrowHomeVo getBorrowHomeInfo(Date now,BigDecimal repaymentAmount,AfUserAccountDto userDto,AfUserAuthDo authDo,FanbeiContext context){
 		AfBorrowHomeVo vo = new AfBorrowHomeVo();
 		vo.setBankcardStatus(authDo.getBankcardStatus());
     	vo.setRealName(userDto.getRealName());
@@ -78,7 +79,15 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
         }
 		vo.setCurrentAmount(repaymentAmount);
 		vo.setIvsStatus(authDo.getIvsStatus());
-		vo.setMobileStatus(authDo.getMobileStatus());
+		if(null == authDo.getGmtMobile()){
+			vo.setMobileStatus(authDo.getMobileStatus());
+		}else{
+			if(StringUtil.equals(MobileStatus.YES.getCode(), authDo.getMobileStatus())&&DateUtil.afterDay(authDo.getGmtMobile(), DateUtil.addMonths(new Date(), 2))){//超过两个月
+				vo.setMobileStatus(MobileStatus.NO.getCode());
+			}else{
+				vo.setMobileStatus(authDo.getMobileStatus());
+			}
+		}
 		vo.setRealNameStatus(authDo.getRealnameStatus());
 		vo.setRepayLimitTime(afBorrowService.getReyLimitDate("",now));
 		vo.setTeldirStatus(authDo.getTeldirStatus());
@@ -102,6 +111,13 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setZmScore(authDo.getZmScore());
 		vo.setIvsScore(authDo.getIvsScore());
 		vo.setRealNameScore(authDo.getRealnameScore());
+		vo.setContactorStatus(authDo.getContactorStatus());
+		vo.setContactorName(authDo.getContactorName());
+		vo.setContactorType(authDo.getContactorType());
+		vo.setContactorMobile(authDo.getContactorMobile());
+		vo.setLocationAddress(authDo.getLocationAddress());
+		vo.setLocationStatus(authDo.getLocationStatus());
+		vo.setAllowConsume(afUserAuthService.getConsumeStatus(authDo.getUserId(),context.getAppVersion()));
 		return vo;
 	}
 }

@@ -1,3 +1,4 @@
+
 /**
  * 
  */
@@ -26,11 +27,29 @@ public enum AfResourceType {
 	ShareInviteCode("SHARE_INVITECODE", "分享邀请码"),
 
 	AppDownloadUrl("APP_DOWNLOAD_URL", "app下载地址"),
-
 	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),
+	
+	//借钱模块
+	BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
+	BorrowCashRange("BORROW_CASH_RANGE", "借款金额"),
+	BorrowCashBaseBankDouble("BORROW_CASH_BASE_BANK_DOUBLE", "借钱最高倍数"),
+	BorrowCashPoundage("BORROW_CASH_POUNDAGE", "借钱手续费率（日）"),
+	BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
+	BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
+	borrowRate("BORROW_RATE", "疯分期设置"),
+	
+	
+	registTongdunSwitch("REGIST_TONGDUN_SWITCH", "注册同盾风控"),
+	loginTongdunSwitch("LOGIN_TONGDUN_SWITCH", "登录同盾风控"),
+	TRADE_TONGDUN_SWITCH("TRADE_TONGDUN_SWITCH", "借钱申请同盾风控"),
+	tradeTongdunSwitch("TRADE_TONGDUN_SWITCH", "交易申请同盾风控"),
+
+	tongdunAccecptLevel("TONGDUN_ACCECPT_LEVEL", "借款申请同盾风控"),
+
+
+	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
 
 	
-	//ResourceTypeSetType不是首页配置是设置页面的配置
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置");
 
 	

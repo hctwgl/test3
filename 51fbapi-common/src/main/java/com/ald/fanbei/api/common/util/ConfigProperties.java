@@ -3,6 +3,7 @@ package com.ald.fanbei.api.common.util;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.UUID;
 
 /**
  * 
@@ -59,4 +60,8 @@ public class ConfigProperties {
     public static String get(String key, String defaultValue) {
         return config.getProperty(key, defaultValue);
     }
+    
+    public static void main(String[] args) {
+		System.out.println(UUID.randomUUID());
+	}
 }

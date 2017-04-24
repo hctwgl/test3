@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowCashDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address,gmt_close,rish_order_no
+	</sql>	
+		
+		<insert id="addBorrowCash" parameterType="AfBorrowCashDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type , amount , status , card_number , card_name ,  poundage , rate_amount , latitude , longitude , province ,arrival_amount, city , county,address)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{borrowNo},
+    		#{userId},
+    		#{type},
+    		#{amount},
+    		#{status},
+    		#{cardNumber},
+    		#{cardName},
+    		#{poundage},
+    		#{rateAmount},
+    		#{latitude},
+    		#{longitude},
+    		#{province},
+    		#{arrivalAmount},
+    		#{city},
+    		#{county},
+    		#{address}
+		)
+	</insert>
+		<update id="updateBorrowCash" parameterType="AfBorrowCashDo" >
+		UPDATE af_borrow_cash SET gmt_modified = NOW()
+		
+			<if test="borrowNo != null">
+    			,borrow_no=#{borrowNo}
+			</if>
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="type != null">
+    			,type=#{type}
+			</if>
+			<if test="amount != null">
+    			,amount=#{amount}
+			</if>
+			<if test="status != null">
+    			,status=#{status}
+			</if>
+			<if test="remark != null">
+    			,remark=#{remark}
+			</if>
+			<if test="cardNumber != null">
+    			,card_number=#{cardNumber}
+			</if>
+			<if test="cardName != null">
+    			,card_name=#{cardName}
+			</if>
+			<if test="overdueDay != null">
+    			,overdue_day=#{overdueDay}
+			</if>
+			<if test="overdueAmount != null">
+    			,overdue_amount=#{overdueAmount}
+			</if>
+			<if test="arrivalAmount != null">
+    			,arrival_amount=#{arrivalAmount}
+			</if>
+			<if test="gmtArrival != null">
+    			,gmt_arrival=#{gmtArrival}
+			</if>
+			<if test="reviewName != null">
+    			,review_name=#{reviewName}
+			</if>
+			<if test="reviewUserName != null">
+    			,review_user_name=#{reviewUserName}
+			</if>
+			<if test="reviewDetails != null">
+    			,review_details=#{reviewDetails}
+			</if>
+			<if test="gmtReview != null">
+    			,gmt_review=#{gmtReview}
+			</if>
+			<if test="gmtClose != null">
+    			,gmt_close=#{gmtClose}
+			</if>
+			
+			<if test="poundage != null">
+    			,poundage=#{poundage}
+			</if>
+			
+			
+			<if test="overdueStatus != null">
+    			,overdue_status=#{overdueStatus}
+			</if>
+				<if test="reviewStatus != null">
+    			,review_status=#{reviewStatus}
+			</if>
+			<if test="rateAmount != null">
+    			,rate_amount=#{rateAmount}
+			</if>
+			<if test="repayAmount != null">
+    			,repay_amount=#{repayAmount}
+    			
+			</if>
+			<if test="rishOrderNo != null">
+    			,rish_order_no=#{rishOrderNo}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
+	<update id="deleteBorrowCash" parameterType="java.lang.Long" >
+		UPDATE af_borrow_cash SET is_delete = 1 WHERE id=#{rid}
+	</update>
+	
+	<select id="getBorrowCashByUserId" parameterType="java.lang.Long"  resultType="AfBorrowCashDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_borrow_cash 
+		WHERE 
+			is_delete = 0 
+		AND 
+			user_id = #{userId} 
+		ORDER BY
+			gmt_create DESC
+		LIMIT 
+			1
+	</select>
+	
+	<select id="getBorrowCashByrid" parameterType="java.lang.Long"  resultType="AfBorrowCashDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_borrow_cash 
+		WHERE 
+			is_delete = 0 
+		AND 
+			id = #{rid}
+	</select>
+	<select id="getBorrowCashListByUserId" resultType="AfBorrowCashDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_borrow_cash 
+		WHERE 
+			is_delete = 0 
+		AND 
+			user_id = #{userId} 
+		ORDER BY
+			gmt_create DESC
+		LIMIT 
+			#{start},20
+	</select>
+	
+	<select id="getCurrentLastBorrowNo" resultType="java.lang.String">
+		select borrow_no from af_borrow_cash WHERE borrow_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
+	</select>
+	
+</mapper>

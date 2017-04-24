@@ -111,9 +111,20 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode());
 		}else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+			
+			
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), 
 					Constants.DEFAULT_PAY_PURPOSE, name, "02",UserAccountLogType.REPAYMENT.getCode());
+//			if(respBo.isSuccess()){
+//				AfRepaymentDo repaymentD = new AfRepaymentDo();
+//				repaymentD.setRid(repayment.getRid());
+//				repaymentD.setStatus(RepaymentStatus.PROCESS.getCode());
+//				repaymentD.setPayTradeNo(payTradeNo);
+//				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
+//			}
+			
+			
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
@@ -124,8 +135,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	}
 
 	@Override
-	public String getCurrentLastRepayNo(Date current) {
-		return afRepaymentDao.getCurrentLastRepayNo(current);
+	public String getCurrentLastRepayNo(String orderNoPre) {
+		return afRepaymentDao.getCurrentLastRepayNo(orderNoPre);
 	}
 
 	private AfRepaymentDo buildRepayment(BigDecimal repaymentAmount,String repayNo,Date gmtCreate,BigDecimal actualAmount,

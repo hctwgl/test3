@@ -4,13 +4,14 @@
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,gmt_start,gmt_end,name,status,limit_amount,amount,use_rule,valid_days,type,limit_count,expiry_type,quota_already,quota
 	</sql>
+	
 	<sql id="queryPickAllFields">
 		c.id
 		rid,c.gmt_create,c.gmt_modified,c.gmt_start,c.gmt_end,c.name,c.status,c.limit_amount,c.amount,
 		c.use_rule,c.valid_days,c.type,c.limit_count,c.expiry_type,c.quota_already,c.quota
 		,COUNT(uc.id) user_already
 	</sql>
-
+	
 	<select id="selectCouponByCouponIds" resultType="AfCouponDto">
 		SELECT
 			<include refid="queryPickAllFields" />

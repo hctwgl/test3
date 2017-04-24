@@ -69,7 +69,7 @@ public class FanbeiController extends BaseController {
     }
     
     @RequestMapping(value ={
-    	"/system/appUpgrade","/system/commitFeedBack","/system/feedbackList","/system/getArea","/system/getSettingInfo"
+    	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -81,7 +81,7 @@ public class FanbeiController extends BaseController {
     @RequestMapping(value = {
     		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/login","/user/resetPwd","/user/getUserInfo",
     		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo",
-    		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getMobileRechargeMoneyList","/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail","/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode","/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile"
+    		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getUserCounponListType","/user/getMobileRechargeMoneyList","/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail","/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode","/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -93,7 +93,7 @@ public class FanbeiController extends BaseController {
     @RequestMapping(value = {
     		"/borrow/getCashConfirmInfo","/borrow/applyCash","/borrow/getBorrowHomeInfo","/borrow/getConsumeConfirmInfo","/borrow/applyConsume",
     		"/bill/getMyBillHomeInfo","/bill/getMyBillList","/bill/getBillDetailList","/bill/getBillDetailInfo","/repay/getRepaymentConfirmInfo",
-            "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo"
+            "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo","/borrow/getCreditPromoteInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -112,7 +112,8 @@ public class FanbeiController extends BaseController {
      */
     @RequestMapping(value = {
     		"/auth/authRealname","/auth/authContacts","/auth/authCredit","/auth/authZhima","/auth/authBankcard",
-    		"/auth/checkBankcard","/auth/getBankList","/auth/checkBankcardPay","/auth/authFace"
+    		"/auth/checkBankcard","/auth/getBankList","/auth/checkBankcardPay","/auth/authFace","/auth/authMobile","/auth/authContactor"
+    		,"/auth/authLocation","/auth/authMobileBack","/auth/getAllowConsume","/auth/getDailyRate"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -121,7 +122,40 @@ public class FanbeiController extends BaseController {
         return this.processRequest(body, request, false);
     }
     
+    /**
+     * 品牌商城相关
+     * @param body
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = {"/brand/getBrandUrl","/brand/getOrderDetailUrl","/brand/getConfirmOrder","/brand/getBrandList"
+    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @ResponseBody
+    public String brandShopRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        return this.processRequest(body, request, false);
+    }
     
+    /**
+     * 借钱相关
+     * @param body
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = {"/borrowCash/getBorrowCashHomeInfo","/borrowCash/getBowCashLogInInfo","/borrowCash/getConfirmBorrowInfo","/borrowCash/applyBorrowCash",
+    		"/borrowCash/getBorrowCashDetail","/borrowCash/getBorrowCashList","/borrowCash/getBorrowOverdueList","/repayCash/getConfirmRepayInfo",
+    		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @ResponseBody
+    public String borrowCashRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        return this.processRequest(body, request, false);
+    }
     @Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		if (StringUtils.isBlank(reqData)) {

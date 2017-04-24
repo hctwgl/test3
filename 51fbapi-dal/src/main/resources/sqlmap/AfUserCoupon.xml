@@ -49,6 +49,8 @@
 		</if>
 		ORDER BY u.gmt_create desc
 	</select>
+	
+	
 
 	<!-- 可使用优惠券 -->
 	<select id="getUserCouponByUserNouse" parameterType="java.lang.Long" resultType="java.lang.Integer">
@@ -159,5 +161,23 @@
 		    u.status = 'NOUSE'
 		order by c.amount desc
 	</select>
-	
+		<select id="getUserCouponByType" resultType="AfUserCouponDto">
+		SELECT 
+			<include refid="queryAllFields" />
+		FROM 
+			af_user_coupon u
+		LEFT JOIN
+			af_coupon c
+		ON
+			c.is_delete = 0 and u.coupon_id = c.id
+		WHERE
+			u.is_delete = 0 
+		AND
+			u.user_id = #{userId}
+		AND
+		    (c.type = #{type} or c.type='COMMON')
+		AND
+		    u.status = 'NOUSE'
+		order by c.amount desc
+	</select>
 </mapper>

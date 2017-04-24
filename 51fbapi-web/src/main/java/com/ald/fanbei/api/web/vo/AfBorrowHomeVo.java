@@ -36,6 +36,13 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	private Integer zmScore;
 	private Integer ivsScore;
 	private Integer realNameScore;
+	private String contactorStatus;
+	private String contactorName;
+	private String contactorMobile;
+	private String contactorType;
+	private String locationStatus;
+	private String locationAddress;
+	private String allowConsume;
 	
 	public BigDecimal getTotalAmount() {
 		return totalAmount;
@@ -168,5 +175,47 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	}
 	public void setRealNameScore(Integer realNameScore) {
 		this.realNameScore = realNameScore;
+	}
+	public String getContactorStatus() {
+		return contactorStatus;
+	}
+	public void setContactorStatus(String contactorStatus) {
+		this.contactorStatus = contactorStatus;
+	}
+	public String getContactorName() {
+		return contactorName;
+	}
+	public void setContactorName(String contactorName) {
+		this.contactorName = contactorName;
+	}
+	public String getContactorMobile() {
+		return contactorMobile;
+	}
+	public void setContactorMobile(String contactorMobile) {
+		this.contactorMobile = contactorMobile;
+	}
+	public String getLocationStatus() {
+		return locationStatus;
+	}
+	public void setLocationStatus(String locationStatus) {
+		this.locationStatus = locationStatus;
+	}
+	public String getLocationAddress() {
+		return locationAddress;
+	}
+	public void setLocationAddress(String locationAddress) {
+		this.locationAddress = locationAddress;
+	}
+	public String getContactorType() {
+		return contactorType;
+	}
+	public void setContactorType(String contactorType) {
+		this.contactorType = contactorType;
+	}
+	public String getAllowConsume() {
+		return allowConsume;
+	}
+	public void setAllowConsume(String allowConsume) {
+		this.allowConsume = allowConsume;
 	}
 }

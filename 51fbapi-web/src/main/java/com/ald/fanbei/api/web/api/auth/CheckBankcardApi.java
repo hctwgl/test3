@@ -59,8 +59,7 @@ public class CheckBankcardApi implements ApiHandle {
 	@Resource
 	private AfAuthTdService afAuthTdService;
 	@Resource
-	private UpsUtil upsUtil;
-	
+	UpsUtil upsUtil;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);

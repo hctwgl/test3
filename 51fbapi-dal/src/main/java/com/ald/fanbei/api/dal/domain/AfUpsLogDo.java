@@ -4,9 +4,9 @@ import com.ald.fanbei.api.common.AbstractSerial;
 
 /**
  * 
- *@类描述：AfUpsLogDo
- *@author 何鑫 2017年3月24日  13:20:25
- *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @类描述：
+ * @author xiaotianjian 2017年3月31日下午3:40:24
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class AfUpsLogDo extends AbstractSerial{
 
@@ -20,6 +20,8 @@ public class AfUpsLogDo extends AbstractSerial{
 	private String orderNo;
 	private String type;
 	private String refId;
+	private String status;//打款状态【NEW:新建 SUCCESS:成功 FAIL:失败】
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -67,5 +69,17 @@ public class AfUpsLogDo extends AbstractSerial{
 	}
 	public void setRefId(String refId) {
 		this.refId = refId;
+	}
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

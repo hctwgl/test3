@@ -8,7 +8,7 @@ package com.ald.fanbei.api.common.exception;
  */
 public enum FanbeiExceptionCode {
 
-    SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
+SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
     
     // PARAM_CODE 1001-1099
     PARAM_ERROR("PARAM_ERROR", 1001, "param error", "参数错误"),
@@ -33,6 +33,7 @@ public enum FanbeiExceptionCode {
     USER_PASSWORD_ERROR_GREATER_THAN5("USER_PASSWORD_ERROR_GREATER_THAN5",1104,"user password error count to max","密码错误次数超过限制锁定2小时"),
     USER_REGIST_SMS_NOTEXIST("USER_REGIST_SMS_NOTEXIST",1105,"user regist sms not exist","验证码不正确"),
     USER_REGIST_SMS_ERROR("USER_REGIST_SMS_ERROR",1106,"user regist sms error","验证码不正确"),
+    USER_REGIST_CHANNEL_NOTEXIST("USER_REGIST_SMS_NOTEXIST",1138,"user regist channel code not exist","渠道编号不正确"),
 
     USER_REGIST_SMS_OVERDUE("USER_REGIST_SMS_OVERDUE",1107,"user regist sms overdue","验证码已经过期"),
     USER_REGIST_ACCOUNT_EXIST("USER_REGIST_ACCOUNT_EXIST",1108,"user regist account exist","用户已存在"),
@@ -49,7 +50,7 @@ public enum FanbeiExceptionCode {
     APPLY_CASHED_AMOUNT_ERROR("APPLY_CASHED_AMOUNT_ERROR",1117,"apply cashed amount invalid","申请的金额无效"),
     USER_ACCOUNT_NOT_EXIST_ERROR("USER_ACCOUNT_NOT_EXIST_ERROR",1118,"user not exist error","账户不存在"),
     USER_ACCOUNT_IDNUMBER_INVALID_ERROR("USER_ACCOUNT_IDNUMBER_INVALID_ERROR",1119,"id number error","身份证输入有误"),
-    USER_PAY_PASSWORD_INVALID_ERROR("USER_PAY_PASSWORD_INVALID_ERROR",1120,"pay password error","支付密码输入有误"),
+    USER_PAY_PASSWORD_INVALID_ERROR("USER_PAY_PASSWORD_INVALID_ERROR",1120,"pay password error","您的支付密码不正确或者尚未设置,请点击\"忘记密码\"找回或者重置"),
     APPLY_CASHED_AMOUNT_MORE_ACCOUNT("APPLY_CASHED_AMOUNT_MORE_ACCOUNT",1121,"apply cash amount more than account money","申请金额大于账户可提现金额"),
     APPLY_CASHED_BANK_ERROR("APPLY_CASHED_BANK_ERROR",1122,"apply cash bank id error","该卡不支持提现"),
 
@@ -80,6 +81,8 @@ public enum FanbeiExceptionCode {
     USER_BANKCARD_NOT_EXIST_ERROR("USER_BANKCARD_NOT_EXIST_ERROR",1302,"user bankcard not exist error","用户银行卡不存在"),
     USER_FACE_AUTH_ERROR("USER_FACE_AUTH_ERROR",1303,"user face auth error","用户未通过人脸识别"),
     USER_BANKCARD_EXIST_ERROR("USER_BANKCARD_EXIST_ERROR",1304,"user bankcard exist error","用户银行卡已被绑定"),
+    USER_REALNAME_AUTH_ERROR("USER_REALNAME_AUTH_ERROR",1305,"user realname auth error","用户实名认证失败"),
+    
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
     
@@ -117,6 +120,8 @@ public enum FanbeiExceptionCode {
     UPS_BATCH_DELEGATE_ERR("UPS_BATCH_DELEGATE_ERR",1566,"ups batch delegate error","批量代付失败"),
     AUTH_BINDCARD_SMS_ERROR("AUTH_BINDCARD_SMS_ERROR",1567,"auth bindcard sms error","短信验证码获取失败,请重试"),
     SIGN_RELEASE_ERROR("SIGN_RELEASE_ERROR",1568,"sign release error","银行卡解绑失败"),
+    ORDER_PAY_DEALING("ORDER_PAY_DEALING",1569,"order pay dealing","订单正在支付中,请勿重复提交"),
+    ORDER_HAS_PAID("ORDER_HAS_PAID",1570,"order has been paid","订单已经支付,请勿重复提交"),
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1601,"goods not exist error","商品不存在"),
@@ -129,6 +134,8 @@ public enum FanbeiExceptionCode {
     BORROW_BILL_UPDATE_ERROR("BORROW_BILL_UPDATE_ERROR",1704,"borrow bill update error","用户账单已更新"),
     BORROW_DETAIL_NOT_EXIST_ERROR("BORROW_DETAIL_NOT_EXIST_ERROR",1705,"borrow detail not exist error","借款详情不存在"),
     REPAYMENT_DETAIL_NOT_EXIST_ERROR("REPAYMENT_DETAIL_NOT_EXIST_ERROR",1706,"repayment detail not exist error","还款详情不存在"),
+    BORROW_CONSUME_GOODS_IS_EMPTY("BORROW_CONSUME_GOODS_IS_EMPTY",1707,"borrow consume goods is empty","商品不存在"),
+    
     
     //h5 1800-1900
     RESOURES_H5_ERROR("RESOURES_H5_ERROR",1800,"resoures h5 not exist error","信息不存在，请联系管理员"),
@@ -137,7 +144,46 @@ public enum FanbeiExceptionCode {
     RISK_REGISTER_ERROR("RISK_REGISTER_ERROR",1901,"risk register error","用户信息同步失败"),
     RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控审批失败"),
     RISK_MODIFY_ERROR("RISK_VERIFY_ERROR",1903,"risk modify error","用户信息修改失败"),
+    RISK_OPERATOR_ERROR("RISK_OPERATOR_ERROR",1904,"risk operator error","上树运营商数据查询失败"),
+    AUTH_MOBILE_ERROR("AUTH_MOBILE_ERROR",1905,"auth mobile error","手机运营商认证失败"),
+    RISK_ADDRESSLIST_PRIMARIES_ERROR("RISK_ADDRESSLIST_PRIMARIES_ERROR",1906,"risk address list primaries error","通讯录同步失败"),
     
+    AUTH_ALL_AUTH_ERROR("AUTH_ALL_AUTH_ERROR",1910,"all auth  error","信息未认证失败"),
+
+    //2000-2100
+    BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","借钱金额或者时间有误"),
+    BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
+    
+    BORROW_CASH_NOT_EXIST_ERROR("BORROW_CASH_NOT_EXIST_ERROR",2002,"borrow cash not exist","借钱信息不存在"),
+    BORROW_CASH_REPAY_NOT_EXIST_ERROR("BORROW_CASH_REPAY_NOT_EXIST_ERROR",2003,"borrow cash repay not exist","还钱信息不存在或已删除"),
+   
+    //还款中，不能修改code
+    BORROW_CASH_REPAY_PROCESS_ERROR("BORROW_CASH_REPAY_PROCESS_ERROR",2004,"borrow cash repay not exist","您有一笔还款正在处理中"),
+   
+    
+    BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2005,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
+
+    BORROW_CASH_REPAY_AMOUNT__ERROR("BORROW_CASH_REPAY_AMOUNT_BORROW_ERROR",2006,"borrow cash repay  borrow cash error","还款金额有误请重新检查"),
+    BORROW_CASH_SWITCH_NO("BORROW_CASH_SWITCH_NO",2007,"borrow cash switch error","今日放款已达上限， 明天尽早哦！"),
+
+    //3000-3999
+    BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),
+    
+    //4000-4999
+    PICK_BRAND_COUPON_NOT_START("PICK_BRAND_COUPON_NOT_START",4000,"pick brand not start","领取活动还未开始,敬请期待"),
+    PICK_BRAND_COUPON_DATE_END("PICK_BRAND_COUPON_DATE_END",4001,"pick brand has end","活动已经结束,请期待下一次活动"),
+    PICK_BRAND_COUPON_NOT_REAL_NAME("PICK_BRAND_COUPON_NOT_REAL_NAME",4002,"pick brand coupon","需要先实名认证,才可以领取优惠券"),
+    PUSH_BRAND_ORDER_STATUS_FAILED("PUSH_BRAND_ORDER_STATUS_FAILED",4003,"push brand order status failed","推送品牌订单消息失败"),
+    PICK_BRAND_COUPON_FAILED("PICK_BRAND_COUPON_FAILED",4004,"pick brand coupon failed","领取优惠券失败"),
+    
+    
+    TONGTUN_FENGKONG_REGIST_ERROR("TONGTUN_FENGKONG_REGIST_ERROR",4004,"tongtun fengkong error","您注册手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
+    TONGTUN_FENGKONG_LOGIN_ERROR("TONGTUN_FENGKONG_LOGIN_ERROR",4005,"tongtun login fengkong error","您登录手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
+    TONGTUN_FENGKONG_TRADE_ERROR("TONGTUN_FENGKONG_TRADE_ERROR",4006,"tongtun trade fengkong error","您投资手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
+
+    //系统升级该code不能随便修改
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "新版本升级"),
+
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
 

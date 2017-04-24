@@ -25,6 +25,7 @@ public interface AfAppUpgradeService {
 	 *@return
 	 */
 	AfAppUpgradeDo getNewestAppUpgradeVersion(Integer versionCode);
-	
+	AfAppUpgradeDo getNewestIOSVersionBySpecify(Integer versionCode);
+
 	
 }

@@ -23,11 +23,20 @@ public interface AfOrderDao {
 	int createOrder(AfOrderDo afOrder);
 	
 	/**
+	 * 订单列表
+	 * @param orderList
+	 * @return
+	 */
+	int createOrderList(@Param("items")List<AfOrderDo> orderList);
+	
+	/**
 	 * 修改订单
 	 * @param afOrder
 	 * @return
 	 */
 	int updateOrderByOrderNo(AfOrderDo afOrder);
+	
+
 	
 	/**
 	 * 修改订单
@@ -71,4 +80,32 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	public List<AfOrderDo> getOrderListByStatus(AfOrderQuery query);
+	
+	/**
+	 * 根据第三方订单类型和订单编号获取订单信息
+	 * @param orderNo
+	 * @return
+	 */
+	AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(@Param("orderType")String orderType, @Param("thirdOrderNo")String thirdOrderNo);
+	
+	/**
+	 * 修改订单信息
+	 * @param afOrder
+	 * @return
+	 */
+	int updateOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 获取订单详情
+	 * @param id
+	 * @return
+	 */
+	AfOrderDo getOrderById(@Param("orderId") Long id);
+	
+	/**
+	 * 获取最近支付编号
+	 * @param current
+	 * @return
+	 */
+	String getCurrentLastPayNo(@Param("startDate")Date startDate,@Param("endDate")Date endDate);
 }

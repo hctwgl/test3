@@ -72,4 +72,18 @@ public interface JpushService {
 	 * @param date
 	 */
 	public void dealBorrowCashTransfer(String userName,Date date);
+	
+	/**
+	 * 【借钱申请成功提示】温馨提示
+	 * @param userName
+	 * @param date
+	 */
+	public void dealBorrowCashApplySuccss(String userName,Date date);
+	/**
+	 * 【借钱申请失败提示】温馨提示
+	 * @param userName
+	 * @param date
+	 */
+	public void dealBorrowCashApplyFail(String userName,Date date);
+	
 }

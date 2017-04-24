@@ -52,12 +52,24 @@ public interface AfBorrowService {
 	 */
 	public long dealConsumeApply(AfUserAccountDo userDto,BigDecimal amount,Long cardId,Long goodsId,String openId,String numId,String name,int nper);
 	
+	
+	/**
+	 * 品牌分期代付
+	 * @param userDto --
+	 * @param amount --金额
+	 * @param cardId --银行卡id
+	 * @param name --借款名称
+	 * @param nper --分期数
+	 * @return
+	 */
+	public long dealBrandConsumeApply(AfUserAccountDo userDto,BigDecimal amount,String name,Integer nper, Long orderId, String orderNo);
+	
 	/**
 	 * 获取最近借款号
 	 * @param current
 	 * @return
 	 */
-	String getCurrentLastBorrowNo(Date current);
+	String getCurrentLastBorrowNo(String orderNoPre);
 	
 	/**
 	 * 获取当前账单 year month 
@@ -86,6 +98,13 @@ public interface AfBorrowService {
      * @return
      */
     AfBorrowDo getBorrowById(Long id);
+    
+    /**
+     * 通过订单id获取借款信息
+     * @param id
+     * @return
+     */
+    AfBorrowDo getBorrowByOrderId(Long orderId);
     
     /**
      * 获取借款商品信息
@@ -118,4 +137,11 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	int updateBorrowStatus(Long id,String status);
+	
+	/**
+	 * 计算出借款应退金额
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal calculateBorrowRefundAmount(Long borrowId);
 }

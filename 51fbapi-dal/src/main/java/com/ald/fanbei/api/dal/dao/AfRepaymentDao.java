@@ -1,6 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
-import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -27,7 +27,7 @@ public interface AfRepaymentDao {
      * @param current
      * @return
      */
-    public String getCurrentLastRepayNo(Date current);
+    public String getCurrentLastRepayNo(String orderNoPre);
     
     /**
      * 通过payTradeNo获取详情
@@ -37,4 +37,14 @@ public interface AfRepaymentDao {
     AfRepaymentDo getRepaymentById(@Param("rid")Long rid);
     
     AfRepaymentDo getRepaymentByPayTradeNo(@Param("payTradeNo")String payTradeNo);
+    
+    /**
+     * 通过payTradeNo获取详情
+     * @param rid
+     * @return
+     */
+    List<AfRepaymentDo> getRepaymentListByIds(@Param("items")List<Long> ids);
+    
+    
+   int  updateRepaymentByAfRepaymentDo(AfRepaymentDo repaymentDo);
 }

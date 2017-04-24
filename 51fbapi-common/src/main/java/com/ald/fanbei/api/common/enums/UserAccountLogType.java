@@ -14,6 +14,7 @@ public enum UserAccountLogType {
 
 	CASH("CASH", "取现"), 
 	JIFENBAO("JIFENBAO", "集分宝取现"), 
+	BorrowCash("BORROWCASH", "借钱"), 
 
 	AU_SCORE("AU_SCORE", "授权分数"),
 	AU_AMOUNT("AU_AMOUNT", "授权金额"),
@@ -22,7 +23,13 @@ public enum UserAccountLogType {
 	SIGN("SIGN", "签到"),
 	REGIST("REGIST", "新注册"),
 	CONSUME("CONSUME", "分期"),
+	
+	WX_REFUND("WX_REFUND","微信退款"),
+	AP_REFUND("AP_REFUND", "代付退款"),
+	BANK_REFUND("BANK_REFUND", "银行卡退款"),
 	REPAYMENT("REPAYMENT", "还款"),
+	REPAYMENTCASH("REPAYMENTCASH", "借钱还款"),
+
 	REBATE_CASH("REBATE_CASH", "返利现金"),
 	REBATE_JFB("REBATE_JFB", "返利集分宝"),
     AUTHNAME("AUTHNAME", "实名认证");

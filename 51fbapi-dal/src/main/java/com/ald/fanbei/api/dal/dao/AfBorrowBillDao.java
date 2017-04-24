@@ -26,6 +26,20 @@ public interface AfBorrowBillDao {
 	List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query);
 	
 	/**
+	 * 获取所有借款账单记录
+	 * @param query
+	 * @return
+	 */
+	List<AfBorrowBillDo> getBillListByBorrowIdAndStatus(@Param("borrowId") Long borrowId, @Param("status") String status);
+	
+	/**
+	 * 获取所有借款账单记录
+	 * @param query
+	 * @return
+	 */
+	List<AfBorrowBillDo> getBillListByIds(@Param("items")List<Long> billIds);
+	
+	/**
 	 * 获取本期总额
 	 * @param userId
 	 * @param billYear
@@ -125,4 +139,12 @@ public interface AfBorrowBillDao {
 	int getUserMonthlyBillTotalCount(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId);
 	
 	int getBorrowBillWithNoPayByUserId(@Param("userId")Long userId);
+	
+	/**
+	 * 统一修改所有账单的状态
+	 * @param borrowId
+	 * @param status
+	 * @return
+	 */
+	int updateBorrowBillStatusByBorrowId(@Param("borrowId")Long borrowId, @Param("status")String status);
 }

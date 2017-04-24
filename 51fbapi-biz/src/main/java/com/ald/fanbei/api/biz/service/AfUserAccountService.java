@@ -7,6 +7,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfLimitDetailDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfLimitDetailQuery;
+import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 
 /**
  * 
@@ -58,6 +59,10 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query);
+	
+	int getUserAccountCountWithHasRealName();
+	
+	List<AfUserAccountDto> getUserAndAccountListWithHasRealName(AfUserAccountQuery query);
 	
 	/**
 	 * 代付失败处理

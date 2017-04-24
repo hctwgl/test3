@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAuthDao">
 	<sql id="queryField">
-		id rid,gmt_modified,user_id,zm_status,gmt_zm,zm_score,ivs_status,gmt_ivs,ivs_score,realname_status,gmt_realname,realname_score,faces_status,similar_degree,mobile_status,bankcard_status,teldir_status,yd_status
+		id rid,gmt_modified,user_id,zm_status,gmt_zm,zm_score,ivs_status,gmt_ivs,ivs_score,realname_status,gmt_realname,realname_score,faces_status,similar_degree,mobile_status,gmt_mobile,
+		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type
 	</sql>
 
 
@@ -52,6 +53,9 @@
 			<if test="mobileStatus != null">
     			,mobile_status=#{mobileStatus}
 			</if>
+			<if test="gmtMobile != null">
+    			,gmt_mobile=#{gmtMobile}
+			</if>
 			<if test="bankcardStatus != null">
     			,bankcard_status=#{bankcardStatus}
 			</if>
@@ -70,6 +74,24 @@
 			<if test="watchlistScore != null">
     			,watchlist_score=#{watchlistScore}
 			</if>
+			<if test="contactorStatus != null">
+    			,contactor_status=#{contactorStatus}
+			</if>
+			<if test="contactorName != null">
+    			,contactor_name=#{contactorName}
+			</if>
+			<if test="contactorMobile != null">
+    			,contactor_mobile=#{contactorMobile}
+			</if>
+			<if test="contactorType != null">
+    			,contactor_type=#{contactorType}
+			</if>
+			<if test="locationStatus != null">
+    			,location_status=#{locationStatus}
+			</if>
+			<if test="locationAddress != null">
+    			,location_address=#{locationAddress}
+			</if>
 		WHERE user_id = #{userId}
 	</update>
 	
@@ -83,4 +105,23 @@
 		AND
 			user_id = #{userId}	 limit 1
 	</select>
+	
+	<select id="getUserAuthCountWithIvs_statusIsY" resultType="java.lang.Integer">		
+		SELECT 
+			count(1) 
+		FROM 
+			af_user_auth  
+		where 
+			ivs_status ='Y';		
+	</select>
+	
+	<select id="getUserAuthListWithIvs_statusIsY" resultType="AfUserAuthDo">
+		SELECT 
+			<include refid="queryField" />
+		FROM 
+			af_user_auth a
+		WHERE 
+			a.ivs_status = 'Y'
+	</select>
+	
 </mapper>

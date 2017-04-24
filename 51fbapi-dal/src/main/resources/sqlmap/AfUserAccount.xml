@@ -9,7 +9,7 @@
 	<sql id="queryWithUserFields">
 		c.id rid,c.user_id,c.user_name,c.au_amount,c.used_amount,c.freeze_amount,
 		c.score,c.alipay_account,c.rebate_amount,c.id_number,c.jfb_amount,c.uc_amount,u.gender,u.nick,u.avatar,
-		u.real_name,u.mobile,u.recommend_code,c.password,c.salt,c.fail_count,c.credit_score,c.open_id
+		c.real_name,u.mobile,u.recommend_code,u.email,u.address,c.password,c.salt,c.fail_count,c.credit_score,c.open_id
 	</sql>
 	
 	<select id="getUserAccountInfoByUserId" resultType="AfUserAccountDo" >
@@ -92,6 +92,67 @@
 			</if>
 		WHERE user_id = #{userId}
 	</update>
+	
+	<update id="updateOriginalUserAccount" parameterType="AfUserAccountDo" >
+		UPDATE 
+			af_user_account 
+		SET gmt_modified = NOW()
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="userName != null">
+    			,user_name=#{userName}
+			</if>
+			<if test="auAmount != null">
+    			,au_amount=#{auAmount}
+			</if>
+			<if test="usedAmount != null">
+    			,used_amount=#{usedAmount}
+			</if>
+			<if test="freezeAmount != null">
+    			,freeze_amount=#{freezeAmount}
+			</if>
+			<if test="score != null">
+    			,score=#{score}
+			</if>
+			<if test="alipayAccount != null">
+    			,alipay_account=#{alipayAccount}
+			</if>
+			<if test="rebateAmount != null">
+    			,rebate_amount=#{rebateAmount}
+			</if>
+			<if test="idNumber != null">
+    			,id_number=#{idNumber}
+			</if>
+			<if test="realName != null">
+    			,real_name=#{realName}
+			</if>
+			<if test="jfbAmount != null">
+    			,jfb_amount=#{jfbAmount}
+			</if>
+			<if test="password != null">
+    			,password=#{password}
+			</if>
+			<if test="salt != null">
+    			,salt=#{salt}
+			</if>
+			<if test="failCount != null">
+    			,fail_count=#{failCount}
+			</if>
+			<if test="ucAmount != null">
+    			,uc_amount=#{ucAmount}
+			</if>
+			<if test="bindCard != null">
+    			,bind_card=#{bindCard}
+			</if>
+			<if test="creditScore != null">
+    			,credit_score=#{creditScore}
+			</if>
+			<if test="openId != null">
+    			,open_id=#{openId}
+			</if>
+		WHERE id = #{rid}
+	</update>
 
 	<select id="getUserAndAccountByUserId" parameterType="java.lang.Long" resultType="AfUserAccountDto">
 		SELECT 
@@ -107,5 +168,27 @@
 		AND
 			u.id = #{userId}	
 	</select>
+	
+	<select id="getUserAccountCountWithHasRealName" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			af_user_account c
+		WHERE
+			c.is_delete = 0 and c.real_name !='' and c.id_number !=''
+	</select>
 
+	<select id="getUserAndAccountListWithHasRealName" resultType="AfUserAccountDto">
+		SELECT 
+			<include refid="queryWithUserFields" />
+		FROM 
+			af_user_account c
+		LEFT JOIN
+			af_user u
+		ON
+			u.is_delete = 0 and u.id = c.user_id
+		WHERE
+			c.is_delete = 0 and c.real_name !='' and c.id_number !=''
+	</select>
+	
 </mapper>

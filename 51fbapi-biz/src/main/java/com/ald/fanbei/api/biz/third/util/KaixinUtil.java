@@ -23,6 +23,7 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.TripleDESUtil;
 import com.alibaba.fastjson.JSONObject;
 
@@ -43,10 +44,18 @@ public class KaixinUtil extends AbstractThird{
 	public static String SIGN_TYPE = "md5"; // 签名方式
 	public static String KEY = null; // 密钥
 
-	public static String URL_CHARGE = "http://www.aikaixin.com:6666/mobile/charge.json";
+	public static String URL_CHARGE = null;
 
 	public static TripleDESUtil TDES = TripleDESUtil.getInstance();
 
+	private static String getUrlCharge(){
+		if(URL_CHARGE != null){
+			return URL_CHARGE;
+		}
+		URL_CHARGE = ConfigProperties.get(Constants.CONFKEY_KXG_URL_CHARGE);
+		return URL_CHARGE;
+	}
+	
 	private static String getPassword(){
 		if(PASSWORD != null){
 			return PASSWORD;
@@ -100,13 +109,20 @@ public class KaixinUtil extends AbstractThird{
 	 */
 	public String charge(String order_no, String account_no, String face_price) {
 		try {
+			thirdLog.info("charge begin, order_no = {}, account_no = {}, face_price = {}", new Object[]{order_no, account_no, face_price});
 			JSONObject header = getHeaderObject();
 			
 			JSONObject body = new JSONObject();
 			body.put("pay_password", TDES.encrypt(getPayPwd(), getKey()));
 			body.put("order_no", order_no);
-			body.put("account_no", account_no);
-			body.put("face_price", face_price);
+			if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+					Constants.INVELOMENT_TYPE_ONLINE)){
+				body.put("account_no", account_no);
+				body.put("face_price", face_price);
+			}else{
+				body.put("account_no", "13649879240");//测试，广东电信50面值
+				body.put("face_price", "50");
+			}
 
 			// 设置签名
 			header.put("sign", sign(header, body));
@@ -117,8 +133,8 @@ public class KaixinUtil extends AbstractThird{
 
 			String message = obj.toString();
 
-			String retMsg = post(URL_CHARGE, message);
-			
+			String retMsg = post(getUrlCharge(), message);
+			thirdLog.info("charge complete, message = {}, retMsg = {}", message,retMsg);
 			return retMsg;
 		} catch (Exception e) {
 			logger.error("charge:", e);
@@ -181,7 +197,7 @@ public class KaixinUtil extends AbstractThird{
 			String value = entry.getValue();
 			sb.append(key).append("=").append(value).append("&");
 		}
-		sb.deleteCharAt(sb.length() - 1).append(KEY);
+		sb.deleteCharAt(sb.length() - 1).append(getKey());
 
 		//logger.info("签名前串：{}", sb.toString());
 		String sign = DigestUtil.MD5(sb.toString());
@@ -189,4 +205,12 @@ public class KaixinUtil extends AbstractThird{
 		return sign;
 	}
 	
+	public static void main(String[] args) {
+		try {
+			System.out.println(TDES.encrypt("88888888", "FD0762380D980D52"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

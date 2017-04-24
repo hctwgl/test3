@@ -11,6 +11,12 @@
 			<include refid="queryFields"/>
 		FROM af_borrow WHERE is_delete = 0 AND id = #{id}
     </select>
+    
+    <select id="getBorrowByOrderId" resultType="AfBorrowDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_borrow WHERE is_delete = 0 AND order_id = #{orderId}
+    </select>
 
 	<insert id="addBorrow" keyProperty="rid" useGeneratedKeys="true" parameterType="AfBorrowDo">
 		INSERT INTO af_borrow (
@@ -20,12 +26,15 @@
 			type,
 			borrow_no,
 			name,
+			remark,
 			amount,
 			status,
 			nper,
 			nper_amount,
 			card_number,
 			card_name,
+			order_id,
+			order_no,
 			gmt_transed
 			)
 			VALUES
@@ -36,12 +45,15 @@
 			#{type},
 			#{borrowNo},
 			#{name},
+			#{remark},
 			#{amount},
 			#{status},
 			#{nper},
 			#{nperAmount},
 			#{cardNumber},
 			#{cardName},
+			#{orderId},
+			#{orderNo},
 			#{gmtTransed}
 			)
 	</insert>
@@ -144,7 +156,7 @@
 	</update>
 	
 	<select id="getCurrentLastBorrowNo" resultType="java.lang.String">
-		select borrow_no from af_borrow WHERE gmt_create=#{currentDate} ORDER BY id DESC LIMIT 1;
+		select borrow_no from af_borrow WHERE borrow_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
 	</select>
 	
 	<update id="updateBorrowStatus">

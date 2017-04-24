@@ -32,7 +32,6 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.alibaba.fastjson.JSON;

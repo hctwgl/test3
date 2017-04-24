@@ -11,6 +11,7 @@ import java.util.HashMap;
 public class RiskRegisterReqBo extends HashMap<String, String>{
 
 	private static final long serialVersionUID = 912277311269987518L;
+	private String tradeNo;
 	private String consumerNo;
 	private String realName;
 	private String phone;
@@ -23,6 +24,13 @@ public class RiskRegisterReqBo extends HashMap<String, String>{
 	private String channel;
 	private String reqExt;
 	private String signInfo;
+	public String getTradeNo() {
+		return tradeNo;
+	}
+	public void setTradeNo(String tradeNo) {
+		this.tradeNo = tradeNo;
+		this.put("tradeNo", tradeNo);
+	}
 	public String getConsumerNo() {
 		return consumerNo;
 	}

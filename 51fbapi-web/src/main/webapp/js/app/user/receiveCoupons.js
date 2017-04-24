@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-03-08 17:42:52
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-23 15:51:40
+* @Last Modified time: 2017-04-10 11:29:56
 * @title:  领取优惠劵
 */
 
@@ -53,6 +53,7 @@ $(function(){
 
                     if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
                         requestMsg(returnData.msg);
+                        $(".receiveCoupons_main li").eq(i).css('display', 'none');;
                     }
                 }
             },

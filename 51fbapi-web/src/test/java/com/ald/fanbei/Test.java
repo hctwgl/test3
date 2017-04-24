@@ -40,6 +40,7 @@ public class Test {
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private static Integer getUserAccount(){
 		Connection conn = getConn();
 		String sql = "SELECT password ,id  from  af_user_account where  `password` != ''";
@@ -117,6 +118,7 @@ public class Test {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private static Integer getUserInfoPage(){
 		Connection conn = getConn();
 		String sql = "SELECT COUNT(id) total FROM 51fanbei_app.af_user";

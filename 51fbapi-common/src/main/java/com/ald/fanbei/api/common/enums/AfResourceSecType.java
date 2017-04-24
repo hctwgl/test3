@@ -1,3 +1,4 @@
+
 /**
  * 
  */
@@ -12,9 +13,21 @@ public enum AfResourceSecType {
 	ResourceValue1MainImage("MAIN_IMAGE", "主图"),
 	ResourceValue1OtherImage("OTHER_IMAGE", "副图"),
 	
-	
 	H5_URL("H5_URL", "跳转普通H5"),
 	GOODS_ID("GOODS_ID", "跳转商品详情"),
+	creditScoreAmount("CREDIT_SCORE_AMOUNT","征信等级"),
+
+	//借钱模块
+		BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
+		BorrowCashRange("BORROW_CASH_RANGE", "借款金额"),
+		BorrowCashBaseBankDouble("BORROW_CASH_BASE_BANK_DOUBLE", "借钱最高倍数"),
+		BorrowCashPoundage("BORROW_CASH_POUNDAGE", "借钱手续费率（日）"),
+		BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
+		BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
+		borrowCashLender("BORROW_CASH_LENDER", "出借人信息"),
+		borrowCashSupuerSwitch("BORROW_CASH_SUPUER_SWITCH", "借款超级开关"),
+		borrowCashTotalAmount("BORROW_CASH_TOTAL_SWITCH","每日借款借款总金额"),
+
 	MODEL_URL("MODEL_URL", "本地模板H5");
 	
 
@@ -38,3 +51,4 @@ public enum AfResourceSecType {
 		this.name = name;
 	}
 }
+

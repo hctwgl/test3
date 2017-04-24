@@ -12,7 +12,10 @@ import java.util.Map;
  */
 public enum MobileStatus {
 
-	SUCCESS("10000000", "交易成功");
+	SUCCESS("10000000", "交易成功"),
+	YES("Y","已认证"),
+	NO("N","未认证"),
+	WAIT("W","认证中");
     
     private String code;
     private String name;

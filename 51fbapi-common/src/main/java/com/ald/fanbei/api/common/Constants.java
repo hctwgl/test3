@@ -13,7 +13,7 @@ public class Constants {
     public static final long   SECOND_OF_HALF_HOUR                    = 30 * 60l;
     public static final long   SECOND_OF_AN_HOUR                      = 60 * 60l;
     public static final long   SECOND_OF_ONE_DAY                      = 24 * 60 * 60l;
-    public static final long   SECOND_OF_ONE_WEEK                     = 90 * 24 * 60 * 60l;
+    public static final long   SECOND_OF_ONE_WEEK                     = 7 * 24 * 60 * 60l;
     
     public static final int   MINITS_OF_2HOURS                        = 120;
     public static final int   MINITS_OF_HALF_HOUR                     = 30;
@@ -67,7 +67,9 @@ public class Constants {
     public static final String DEFAULT_USER_ACCOUNT					  = "账户余额";
     public static final String DEFAULT_SERVICE_PHONE				  =	"0571-88193918";
     public static final String DEFAULT_REPAYMENT_NAME				  =	"主动还款-";
-    
+    public static final String DEFAULT_BRAND_SHOP					  = "品牌订单支付";
+    public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH	  =	"主动还款";
+
     //cache keys
     public static final String CACHEKEY_USER_TOKEN                    = "user_token$";
     public static final String CACHEKEY_APK_NEWEST_VERSION            = "apk_newest_version$";
@@ -93,9 +95,15 @@ public class Constants {
     public static final String RES_BRAND_SHOP				  	  	  = "BRAND_SHOP";
     public static final String RES_CREDIT_SCORE_AMOUNT				  = "CREDIT_SCORE_AMOUNT";
     public static final String RES_CREDIT_SCORE				  	  	  = "CREDIT_SCORE";
+    public static final String APPLY_BRROW_CASH_WHITE_LIST			  = "APPLY_BRROW_CASH_WHITE_LIST";
+    //为了审核定义字段
+    public static final String RES_IS_FOR_AUTH			  			  = "IS_FOR_AUTH";
+    
     //免审核信用分
     public static final String RES_DIRECT_TRANS_CREDIT_SCORE		  = "DIRECT_TRANS_CREDIT_SCORE";
-    
+    //风控
+    public static final String REGIST_TONGDUN_SWITCH						 = "regist.tongdun.switch";
+
     //config key
     public static final String CONFKEY_CHECK_SIGN_SWITCH              = "fbapi.check.sign.switch";
     public static final String CONFKEY_JPUSH_APPKEY                   = "fbapi.jpush.appkey";
@@ -108,6 +116,7 @@ public class Constants {
     public static final String CONFKEY_TONGDUN_PARTNER_HOST           = "fbapi.tongdun.partner.host";
     public static final String CONFKEY_TONGDUN_PARTNER_CODE           = "fbapi.tongdun.partner.code";
     public static final String CONFKEY_TONGDUN_PARTNER_KEY            = "fbapi.tongdun.partner.key";
+    public static final String CONFKEY_TONGDUN_PARTNER_WEBHOST        = "fbapi.tongdun.partner.webhost";
     public static final String CONFKEY_TONGDUN_APP_NAME               = "fbapi.tongdun.app.name";
     public static final String CONFKEY_YOUDUN_HOST       		      = "fbapi.youdun.host";
     public static final String CONFKEY_YOUDUN_PUBKEY                  = "fbapi.youdun.pubkey";
@@ -121,18 +130,27 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS	  = "taobao.tae.item.list.fields";
     public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "taobao.tae.item.detail.get.fields";
     public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION	  = "http://img02.taobaocdn.com/bao/uploaded/";
-    public static final String CACHEKEY_ORDERNO_LOCK				  = "ala_order_lock";
-    public static final String CACHEKEY_ORDERNO    				  	  = "ala_order";
-    public static final String CACHEKEY_BORROWNO_LOCK				  = "ala_borrow_no_lock";
-    public static final String CACHEKEY_BORROWNO    				  = "ala_borrow_no";
-    public static final String CACHEKEY_REPAYNO_LOCK				  = "ala_repay_no_lock";
-    public static final String CACHEKEY_REPAYNO    				      = "ala_repay_no";
+    public static final String CACHEKEY_ORDERNO_LOCK				  = "fbapi_order_lock";
+    public static final String CACHEKEY_ORDERNO    				  	  = "fbapi_order";
+    public static final String CACHEKEY_BORROWNO_LOCK				  = "fbapi_borrow_no_lock";
+    public static final String CACHEKEY_BORROWNO    				  = "fbapi_borrow_no";
+    public static final String CACHEKEY_BORROWCASHNO_LOCK			  = "fbapi_borrow_cash_no_lock";
+    public static final String CACHEKEY_BORROWCASHNO    			  = "fbapi_borrow_cash_no";
+    public static final String CACHEKEY_REPAYNO_LOCK				  = "fbapi_repay_no_lock";
+    public static final String CACHEKEY_REPAYNO    				      = "fbapi_repay_no";
+    public static final String CACHEKEY_REPAYCASHNO_LOCK 			  = "fbapi_repay_cash_no_lock";
+    public static final String CACHEKEY_REPAYCASHNO    			      = "fbapi_repay_cash_no";
     public static final String CONFIG_KEY_LOCK_TRY_TIMES              = "fbapi.sync.lock.try.times";
+    public static final String CONFKEY_KXG_URL_CHARGE				  = "fbapi.kxg.url.charge";
     public static final String CONFKEY_KXG_PASSWORD					  = "fbapi.kxg.password";
     public static final String CONFKEY_KXG_PAY_PASSWORD				  = "fbapi.kxg.pay.password";
     public static final String CONFKEY_KXG_KEY				  		  = "fbapi.kxg.key";
     public static final String CONFKEY_BILL_CREATE_TIME 			  = "fbapi.bill.create.time";
     public static final String CONFKEY_BILL_REPAY_TIME				  = "fbapi.bill.repay.time";
+    
+    public static final String CACHEKEY_ORDER_PAY_NO_LOCK			  = "ala_order_pay_no_lock";
+    public static final String CACHEKEY_ORDER_PAY_NO    			  = "ala_order_pay_no";
+    
     //发送邮箱
     public static final String EMAIL_SEND_USERNAME            = "fbapi.email.username";
     public static final String EMAIL_SEND_PWD       = "fbapi.email.pwd";
@@ -142,5 +160,16 @@ public class Constants {
     public static final String CONFKEY_WX_KEY						 = "fbapi.wx.key";
     public static final String CONFKEY_WX_CERTPATH					 = "fbapi.wx.certpath";
     public static final String CONFKEY_NOTIFY_HOST					 = "fbapi.notify.host";
+    public static final String CONFKEY_RISK_URL					 	 = "fbapi.risk.url";
     public static final String CONFKEY_UPS_URL						 = "fbapi.ups.url";
+    
+  
+    
+    //菠萝觅
+    public static final String CONFKEY_BOLUOME_APPKEY                = "fbapi.boluome.appkey";
+    public static final String CONFKEY_BOLUOME_SECRET                = "fbapi.boluome.secret";
+    public static final String CONFKEY_BOLUOME_API_URL               = "fbapi.boluome.api.url";
+    public static final String CONFKEY_BOLUOME_PUSH_PAY_URL          = "fbapi.boluome.push.pay.url";
+    public static final String CONFKEY_BOLUOME_PUSH_REFUND_URL       = "fbapi.boluome.push.refund.url";
+    
 }

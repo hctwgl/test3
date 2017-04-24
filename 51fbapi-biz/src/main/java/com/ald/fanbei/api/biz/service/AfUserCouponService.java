@@ -64,4 +64,13 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	List<AfUserCouponDto> getUserCouponByUserIdAndType(Long userId,String type,BigDecimal amount);
+	/**
+	 * 获取类型可用优惠券
+	 * @param userId
+	 * @param type
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserCouponByType(Long userId,String type);
+	
+	
 }

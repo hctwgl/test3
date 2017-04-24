@@ -17,7 +17,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
  */
 public interface AfCouponDao {
 	
-	List<AfCouponDto> selectCouponByCouponIds(@Param("ids")String ids, @Param("userId")Long userId);
+    List<AfCouponDto> selectCouponByCouponIds(@Param("ids")String ids, @Param("userId")Long userId);
 	
 	AfCouponDo getCouponById(@Param("couponId")Long couponId);
 	

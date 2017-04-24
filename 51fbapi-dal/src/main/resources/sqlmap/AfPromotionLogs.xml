@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfPromotionLogsDao">
+	<sql id="queryAllFields">
+		id,gmt_create,ip,channel_id,point_id
+	</sql>
+	<insert id="addPromotionLogs" parameterType="AfPromotionLogsDo"
+		useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO
+		af_promotion_logs(gmt_create , ip , channel_id , point_id)
+		VALUES (
+		NOW(),
+		#{ip},
+		#{channelId},
+		#{pointId}
+		)
+	</insert>
+	<update id="updatePromotionLogs" parameterType="AfPromotionLogsDo">
+		UPDATE af_promotion_logs SET gmt_modified = NOW()
+		<if test="ip != null">
+			,ip=#{ip}
+		</if>
+		<if test="channelId != null">
+			,channel_id=#{channelId}
+		</if>
+		<if test="pointId != null">
+			,point_id=#{pointId}
+		</if>
+		WHERE id = #{rid}
+	</update>
+</mapper>
+	

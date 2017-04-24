@@ -13,7 +13,8 @@ public enum OrderType {
 
 	MOBILE("MOBILE", "话费充值","MB"), 
 	TAOBAO("TAOBAO", "淘宝订单","TB"),
-	TMALL("TMALL", "天猫订单","TM");
+	TMALL("TMALL", "天猫订单","TM"),
+	BOLUOME("BOLUOME", "菠萝觅","BL");
     
     private String code;
     private String name;

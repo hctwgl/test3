@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.dal.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -49,7 +48,14 @@ public interface AfBorrowDao {
 	 * @param current
 	 * @return
 	 */
-	public String getCurrentLastBorrowNo(Date current);
+	public String getCurrentLastBorrowNo(String orderNoPre);
 	
 	int updateBorrowStatus(@Param("id")Long id,@Param("status")String status);
+	
+	/**
+     * 通过订单id获取借款信息
+     * @param id
+     * @return
+     */
+    AfBorrowDo getBorrowByOrderId(Long orderId);
 }

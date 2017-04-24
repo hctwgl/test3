@@ -28,12 +28,19 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String facesStatus;
 	private BigDecimal similarDegree;
 	private String mobileStatus;
+	private Date gmtMobile;
 	private String bankcardStatus;
 	private String teldirStatus;
 	private String ydStatus;
 	private String watchlistStatus;
 	private Date gmtWatchlist;
 	private String watchlistScore;
+	private String contactorStatus;
+	private String contactorName;
+	private String contactorMobile;
+	private String contactorType;
+	private String locationStatus;
+	private String locationAddress;
 	
 	public Long getRid() {
 		return rid;
@@ -162,5 +169,46 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setWatchlistScore(String watchlistScore) {
 		this.watchlistScore = watchlistScore;
 	}
-	
+	public Date getGmtMobile() {
+		return gmtMobile;
+	}
+	public void setGmtMobile(Date gmtMobile) {
+		this.gmtMobile = gmtMobile;
+	}
+	public String getContactorStatus() {
+		return contactorStatus;
+	}
+	public void setContactorStatus(String contactorStatus) {
+		this.contactorStatus = contactorStatus;
+	}
+	public String getContactorName() {
+		return contactorName;
+	}
+	public void setContactorName(String contactorName) {
+		this.contactorName = contactorName;
+	}
+	public String getContactorMobile() {
+		return contactorMobile;
+	}
+	public void setContactorMobile(String contactorMobile) {
+		this.contactorMobile = contactorMobile;
+	}
+	public String getLocationStatus() {
+		return locationStatus;
+	}
+	public void setLocationStatus(String locationStatus) {
+		this.locationStatus = locationStatus;
+	}
+	public String getLocationAddress() {
+		return locationAddress;
+	}
+	public void setLocationAddress(String locationAddress) {
+		this.locationAddress = locationAddress;
+	}
+	public String getContactorType() {
+		return contactorType;
+	}
+	public void setContactorType(String contactorType) {
+		this.contactorType = contactorType;
+	}
 }

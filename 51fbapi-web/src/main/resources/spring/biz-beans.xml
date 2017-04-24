@@ -30,6 +30,8 @@
 				<value>fbapi.taobao.bcds.url</value>
 				<value>fbapi.taobao.bcds.appid</value>
 				<value>fbapi.taobao.bcds.secret</value>
+				<value>third.offer.boluome.appSecret</value>
+				
 			</list>
 		</property>
 		<property name="locations">
@@ -38,6 +40,16 @@
 			</list>
 		</property>
 	</bean>	
+	
+	<!-- 申请退款等接口 提供给第三方的Appkey和secrete -->
+	<bean class="com.ald.fanbei.api.biz.service.boluome.ThirdCore">
+		<property name="appKeyMap">  
+            <map>  
+                <entry key="${third.offer.boluome.appKey}" value="${third.offer.boluome.appSecret}"></entry>  
+            </map>  
+        </property>
+	</bean>
+	
 	<!-- redis 192.168.11.118 foobared	 -->
     <bean id="poolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
     	<property name="minIdle" value="8" />

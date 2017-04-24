@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -14,6 +16,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,7 +162,13 @@ public class AesUtil {
     }
     
     public static void main(String[] args) {
-        String encryptStr = new String(Base64.encodeBase64(encrypt("edushitest123", "testC1b6x@6aH$2dlw")));
+    	String str = StringUtils.EMPTY;
+    	for (int i = 0 ; i < 10; i ++) {
+    		str = str + new Random().nextInt(10);
+    	}
+    	System.out.println(UUID.randomUUID());
+    	System.out.println(str);
+        String encryptStr = new String(Base64.encodeBase64(encrypt("be20af59-e0ed-414e-993b-bad48df6b343", "testC1b6x@6aH$2dlw")));
         System.out.println(encryptStr);
 //        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
         String sec = decryptFromBase64("cJiZKo2M0HcKZdjgGmv/vQ==", "testC1b6x@6aH$2dlw");

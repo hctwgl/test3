@@ -2,19 +2,21 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-03-24 13:28:06
+* @Last Modified time: 2017-04-05 17:50:55
 * @title:  商品列表页
 */
 
 
 
 var typeCurrentNum = $("#typeCurrent").val(); // 获取当前的type类型
-var modelIdNum = getUrl("modelId"); // 获取页面url里面的modelId参数
+var modelIdNum = getUrl("modelId"); // 获取modelId参数
 // 获取categoryList数组
 var category = $("#categoryList").val();
 var categoryObj = eval('(' + category + ')');
 
-var notifyUrl = $("#notifyUrl").val(); // 获取ip地址
+// 获取ip地址
+var notifyUrl = $("#notifyUrl").val();
+
 
 // 导航tab切换
 $(function(){
@@ -34,12 +36,13 @@ $(function(){
         ulW += thisLiW;
     });
 
-    // 如果li的个数小于一屏时ul的宽度
     if ( ulW<windowW ) {
         $(".goodsListModel_header").css("width", windowW+"px");
     }else{
         $(".goodsListModel_header").css("width", ulW+5+"px");
     }
+
+    // $(".goodsListModel_header").css("width", ulW+5+"px");
 
     // 默认goodsList第一个位显示其他的都为隐藏
     $(".goodsListModel_main .goodsListModel_main_list:first-child").removeClass("goodsListModel_main_hide");
@@ -104,19 +107,10 @@ $(function(){
                             var rebateAmountPriceInteger = rebateAmountSplitArr[0];
                             var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
                             var goodInfoUrl = notifyUrl+'&params={"goodsId":"'+goodsList[j].goodsId+'"}';
-
-                            // 添加占位图
-                            var imgUrl = '<img src="'+goodsList[j].goodsIcon+'">';
-                            var goodsIconLength = goodsList[j].goodsIcon.length;
-                            if (goodsIconLength <= 0) {
-                                imgUrl = '<img class="zhanwei" src="/images/app/goods/0205zhanwei.png">'
-                            }
                             
                             html+=  '<li class="fl goodsListModel_item bgc_white">'
                                         +'<a href='+goodInfoUrl+'>'
-                                            +'<div class="goodsListModel_mainContent_img bgc_e">'
-                                                +imgUrl
-                                            +'</div>'
+                                            +'<img src="'+goodsList[j].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                             +'<div class="goodsListModel_mainContent_main">'
                                                 +'<div class="goodsListModel_mainContent_wrap">'
                                                     +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
@@ -188,7 +182,7 @@ $(function(){
         }
     }
 
-    var page = 1; // 默认页数从1开始
+    var page = 1; // 默认页数从0开始
     //加载更多  
     function loadmore(obj){
 
@@ -201,7 +195,7 @@ $(function(){
             finished=1; //防止未加载完再次执行
 
             page++;
-            if (scrollTop + windowHeight -scrollHeight<=200 ) {
+            if (scrollTop + windowHeight -scrollHeight<=50 ) {
                 $.ajax({
                     url: "/app/goods/categoryGoodsList",
                     type: "POST",
@@ -236,19 +230,10 @@ $(function(){
                                     var rebateAmountPriceInteger = rebateAmountSplitArr[0];
                                     var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
                                     var goodInfoUrl = notifyUrl+'&params={"goodsId":"'+goodsList[i].goodsId+'"}';
-
-                                    // 添加占位图
-                                    var imgUrl = '<img src="'+goodsList[i].goodsIcon+'">';
-                                    var goodsIconLength = goodsList[i].goodsIcon.length;
-                                    if (goodsIconLength <= 0) {
-                                        imgUrl = '<img class="zhanwei" src="/images/app/goods/0205zhanwei.png">'
-                                    }
-
+                                    
                                     html+= '<li class="fl goodsListModel_item bgc_white">'
                                                 +'<a href='+goodInfoUrl+'>'
-                                                    +'<div class="goodsListModel_mainContent_img bgc_e">'
-                                                        +imgUrl
-                                                    +'</div>'
+                                                    +'<img src="'+goodsList[i].goodsIcon+'" class="goodsListModel_mainContent_img">'
                                                     +'<div class="goodsListModel_mainContent_main">'
                                                         +'<div class="goodsListModel_mainContent_wrap">'
                                                             +'<p class="fs_28 fsc_1">'+goodsList[i].name+'</p>'

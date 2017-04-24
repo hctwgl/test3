@@ -13,7 +13,7 @@
 		FROM 
 			af_app_upgrade 
 		WHERE 
-			is_delete = 0 
+			is_delete = 0 AND type ='A'
 		AND 
 			id = #{id}
     </select>
@@ -23,7 +23,7 @@
 			<include refid="queryAllFields" />
 		FROM af_app_upgrade 
 		WHERE is_delete = 0 
-		AND status = 'O' AND upgrade_range = 'A'
+		AND status = 'O' AND upgrade_range = 'A'AND type ='A'
 		ORDER BY version_code DESC
 		LIMIT 1
     </select>
@@ -33,9 +33,20 @@
 			<include refid="queryAllFields" />
 		FROM af_app_upgrade 
 		WHERE is_delete = 0 
-		AND status = 'O' AND upgrade_range = 'P'
+		AND status = 'O' AND upgrade_range = 'P' AND type ='A'
 		AND #{versionCode} BETWEEN min_version AND max_version 
 		ORDER BY version_code DESC
 		LIMIT 1
 	</select>
+	  <select id="getNewestIOSVersionBySpecify" resultType="AfAppUpgradeDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM af_app_upgrade 
+		WHERE is_delete = 0 
+		AND status = 'O'  AND type ='I'
+		AND #{versionCode} BETWEEN min_version AND max_version 
+		ORDER BY version_code DESC
+		LIMIT 1
+	</select>
+	
 </mapper>
