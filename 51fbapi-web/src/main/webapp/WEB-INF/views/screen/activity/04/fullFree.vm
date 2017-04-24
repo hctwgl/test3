@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/04")
+	<title>现金借款 随借随还</title>
+</head>
+<body>
+	<img src="$src/fullFree1.png">
+	<img src="$src/fullFree2.png">
+</body>
+</html>
