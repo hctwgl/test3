@@ -228,23 +228,25 @@ public class TestController {
 			for (int i = 0; i < list.size(); i++) {
 				AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(list.get(i).getUserId());
 				logger.info("i=" + i + "," + afContactsOldDo !=null?afContactsOldDo.toString():"");
-				if (null != afContactsOldDo) {
-					String moblieBook = afContactsOldDo.getMobileBook();
-					String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
-					 
-					JSONArray moblieBookJsons = JSONArray.parseArray(formatMoblieBook);
-					StringBuffer data = new StringBuffer();
-					for (Object object : moblieBookJsons) {
-						JSONObject json = JSONObject.parseObject(object.toString());
-						data.append(json.getString("name")+":");
-						data.append(json.getString("phone_number")+",");
-					}
-					logger.info("i=" + i + "," + data.toString());
-					try{
+				try{
+					if (null != afContactsOldDo) {
+						String moblieBook = afContactsOldDo.getMobileBook();
+						String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
+						 
+						JSONArray moblieBookJsons = JSONArray.parseArray(formatMoblieBook);
+						StringBuffer data = new StringBuffer();
+						for (Object object : moblieBookJsons) {
+							JSONObject json = JSONObject.parseObject(object.toString());
+							data.append(json.getString("name")+":");
+							data.append(json.getString("phone_number")+",");
+						}
+						logger.info("i=" + i + "," + data.toString());
+						
 						riskUtil.addressListPrimaries(afContactsOldDo.getUid().toString(), data.toString().substring(0,data.toString().length()-1));
-					}catch(Exception e){
-						logger.info("init error="+list.get(i).getUserId());
+						
 					}
+				}catch(Exception e){
+					logger.info("init error="+list.get(i).getUserId());
 				}
 			}
 		}
