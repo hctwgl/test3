@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 
 /**
  *@类现描述：
@@ -29,4 +32,16 @@ public interface AfUserAuthDao {
 	 * @return
 	 */
 	public AfUserAuthDo getUserAuthInfoByUserId(Long userId);
+	
+	/**
+	 * 获取Ivs_status is Y 的数量
+	 * @return
+	 */
+	int getUserAuthCountWithIvs_statusIsY();
+	
+	/**
+	 * 获取Ivs_status is Y 的数据
+	 * @return
+	 */
+	List<AfUserAuthDo> getUserAuthListWithIvs_statusIsY(AfUserAuthQuery query);
 }

@@ -216,8 +216,8 @@ public class TokenCacheUtil extends AbstractThird{
             if (!BIZ_CACHE_SWITCH) {
                 return false;
             }
-            if (times < 2) {
-                return getLock(key, value);
+            if(getLock(key, value)){
+            	return true;
             }
             for (int i = 0; i < times; i++) {
                 Thread.sleep(RandomUtils.nextInt(10));

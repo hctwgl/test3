@@ -20,7 +20,8 @@ public class RiskAddressListReqBo extends HashMap<String, String> {
     private String count;
     private String details;
     private String signInfo;
-
+    private String data;
+    
     public String getOrderNo() {
         return orderNo;
     }
@@ -65,5 +66,14 @@ public class RiskAddressListReqBo extends HashMap<String, String> {
         this.signInfo = signInfo;
         this.put("signInfo", signInfo);
     }
+
+	public String getData() {
+		return data;
+	}
+
+	public void setData(String data) {
+		this.put("data", data);
+		this.data = data;
+	}
 
 }

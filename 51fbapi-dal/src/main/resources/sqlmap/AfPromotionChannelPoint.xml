@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfPromotionChannelPointDao">
+	<sql id="queryAllFields">
+		id,gmt_create,gmt_modified,description,channel_id,apk_path,price_desc,style,code,status,register_num,visit_num
+	</sql>
+
+	<insert id="addPromotionChannelPoint" parameterType="AfPromotionChannelPointDo"
+		useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO
+		af_promotion_channel_point(gmt_create , gmt_modified , description ,
+		channel_id , apk_path , price_desc , style , code , status ,
+		register_num , visit_num )
+		VALUES (
+		NOW(),
+		NOW(),
+		#{description},
+		#{channelId},
+		#{apkPath},
+		#{priceDesc},
+		#{style},
+		#{code},
+		#{status},
+		#{registerNum},
+		#{visitNum}
+		)
+	</insert>
+	<update id="updatePromotionChannelPoint" parameterType="AfPromotionChannelPointDo">
+		UPDATE af_promotion_channel_point SET gmt_modified = NOW()
+		<if test="isDelete != null">
+			,is_delete=#{isDelete}
+		</if>
+		<if test="description != null">
+			,description=#{description}
+		</if>
+		<if test="channelId != null">
+			,channel_id=#{channelId}
+		</if>
+		<if test="apkPath != null">
+			,apk_path=#{apkPath}
+		</if>
+		<if test="priceDesc != null">
+			,price_desc=#{priceDesc}
+		</if>
+		<if test="style != null">
+			,style=#{style}
+		</if>
+		<if test="code != null">
+			,code=#{code}
+		</if>
+		<if test="status != null">
+			,status=#{status}
+		</if>
+		<if test="registerNum != null">
+			,register_num=#{registerNum}
+		</if>
+		<if test="visitNum != null">
+			,visit_num=#{visitNum}
+		</if>
+		WHERE id = #{rid}
+	</update>
+	<update id="deletePromotionChannelPoint" parameterType="java.lang.Long">
+		UPDATE
+		af_promotion_channel_point SET is_delete = 1 WHERE id=#{rid}
+	</update>
+
+	<!-- 根据channelCode 和 pointCode查询 -->
+	<select id="getPointByChannelCodeAndPointCode" resultType="AfPromotionChannelPointDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM af_promotion_channel_point where is_delete = 0 and code =
+		#{pointCode} and channel_id = (select id from af_promotion_channel
+		where code = #{channelCode})
+	</select>
+
+	<update id="addVisit" parameterType="java.lang.Long">
+		update
+		af_promotion_channel_point SET visit_num = visit_num+1 where id=#{rid}
+	</update>
+	
+	<update id="addRegister" parameterType="java.lang.Long">
+		update
+		af_promotion_channel_point SET register_num = register_num+1 where id=#{rid}
+	</update>
+</mapper>
+	

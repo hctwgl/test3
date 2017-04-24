@@ -53,6 +53,8 @@ public class GetBorrowCashBase {
 			else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashLender.getCode())){
 				 data.put("lender", afResourceDo.getValue());
 
+			}else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashTotalAmount.getCode())){
+				 data.put("amountPerDay", afResourceDo.getValue());
 			}
 			  
 			  }else{

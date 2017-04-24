@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        #set($version="2017041801")
+        #set($version="2017042102")
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="renderer" content="webkit">
@@ -20,6 +20,7 @@
         <link rel="stylesheet" type="text/css" href="/css/common/base.css?version=$version">
         <script type="text/javascript" src="/js/common/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="/js/common/vue.min.js"></script>
+        <script type="text/javascript" src="/js/common/layer.js"></script>
         <script type="text/javascript" src="/js/common/base.js?version=$version"></script>
         <script type="text/javascript">
             // 判断rem字体大小
