@@ -18,6 +18,8 @@ public class AfRepaymentConfirmVo extends AbstractSerial{
 	private String billId;//账单id
 	private BigDecimal repayAmount;//还款金额
 	private BigDecimal rebateAmount;//返现金额
+	private Integer jfbAmount;//集分宝个数
+
 	private Long couponId;//优惠券id
 	private String couponName;//优惠券名称
 	private BigDecimal couponAmount;//优惠券金额
@@ -63,5 +65,17 @@ public class AfRepaymentConfirmVo extends AbstractSerial{
 	}
 	public void setCouponList(List<AfUserCouponVo> couponList) {
 		this.couponList = couponList;
+	}
+	/**
+	 * @return the jfbAmount
+	 */
+	public Integer getJfbAmount() {
+		return jfbAmount;
+	}
+	/**
+	 * @param jfbAmount the jfbAmount to set
+	 */
+	public void setJfbAmount(Integer jfbAmount) {
+		this.jfbAmount = jfbAmount;
 	}
 }

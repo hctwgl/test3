@@ -62,6 +62,8 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		
 		Map<String, Object>  data = objectWithAfBorrowCashDo(afBorrowCashDo);
 		data.put("rebateAmount", account.getRebateAmount());
+		 data.put("jfbAmount", account.getJfbAmount());
+
 		resp.setResponseData(data);
 		
 		return resp;
