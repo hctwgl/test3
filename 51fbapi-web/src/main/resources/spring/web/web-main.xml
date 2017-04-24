@@ -239,7 +239,7 @@
 				<entry key="/agencyBuy/submitAgencyBuyOrder" value-ref="submitAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/getAgencyBuyOrderDetail" value-ref="GetAgencyBuyOrderDetailApi" />
 				<entry key="/agencyBuy/cancelAgencyBuyOrder" value-ref="cancelAgencyBuyOrderApi" />
-				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder" value-ref="confirmationCompletedAgencyBuyOrderApi" />
+				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder" value-ref="completedAgencyBuyOrderApi" />
 				<!--运营接口-->
 
 				<entry key="/operataApp/getAgencyBuyOrderList" value-ref="getAgencyBuyOrderListApi" />

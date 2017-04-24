@@ -48,6 +48,7 @@ public class CancelAgentBuyOrder implements ApiHandle {
 		afAgentOrderDo.setOrderId(orderId);
 		afAgentOrderDo.setCancelReason(cancelReason);
 		afAgentOrderDo.setCancelDetail(cancelDetail);
+		afAgentOrderDo.setStatus("CLOSED");
 		
 		if(afOrderService.updateOrder(afOrderDo) > 0){
 			if(afAgentOrderService.updateAgentOrder(afAgentOrderDo) > 0){
