@@ -6,16 +6,16 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -33,6 +33,8 @@ public class SaveIdNumberApi implements ApiHandle {
 	AfIdNumberService afIdNumberService;
 	@Resource
 	AfUserService afUserService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -47,9 +49,12 @@ public class SaveIdNumberApi implements ApiHandle {
 			afUserDo.setRealName(idNumberDo.getName());
 			afUserService.updateUser(afUserDo);
 			
-			
+			AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+			accountDo.setRealName(idNumberDo.getName());
+			accountDo.setIdNumber(idNumberDo.getCitizenId());
+			afUserAccountService.updateUserAccount(accountDo);
+			return resp;
 		}
-		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 
 	}
 

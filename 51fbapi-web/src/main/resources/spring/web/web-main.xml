@@ -192,6 +192,7 @@
 				<entry key="/auth/getAllowConsume" value-ref="getAllowConsumeApi" />
 				<entry key="/auth/saveIdNumber" value-ref="saveIdNumberApi" />
 				<entry key="/auth/checkIdCardApi" value-ref="checkIdCardApi" />
+				<entry key="/auth/updateIdCardApi" value-ref="updateIdCardApi" />
 				
 
 				<!-- borrow -->
