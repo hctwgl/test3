@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/04")
+	<title>月末救急金</title>
+</head>
+<body>
+	<img src="$src/emergencyFund1.jpg">
+	<img src="$src/emergencyFund2.jpg">
+	<img src="$src/emergencyFund3.jpg">
+</body>
+</html>
