@@ -41,15 +41,8 @@ public class AfAgentOrderDo extends AbstractSerial {
 	private Date gmtMatchOrder;
 	private String goodsUrl;
 	private String status; // 代买订单的状态
-	
-	
 
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -316,6 +309,18 @@ public class AfAgentOrderDo extends AbstractSerial {
 	 */
 	public void setGoodsUrl(String goodsUrl) {
 		this.goodsUrl = goodsUrl;
+	}
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	

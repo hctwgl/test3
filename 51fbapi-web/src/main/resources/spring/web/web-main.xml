@@ -243,6 +243,7 @@
 				<entry key="/agencyBuy/cancelAgencyBuyOrder" value-ref="cancelAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder" value-ref="completedAgencyBuyOrderApi" />
 				<!--运营接口-->
+				<entry key="/operateApp/getOrderSyncAgencyOrderInfo" value-ref="getOrderSyncAgencyOrderInfoApi" />
 
 				<entry key="/operataApp/getAgencyBuyOrderList" value-ref="getAgencyBuyOrderListApi" />
 				<entry key="/operataApp/getAgencyBuyOrderInfo" value-ref="getAgencyBuyOrderInfoApi" />
