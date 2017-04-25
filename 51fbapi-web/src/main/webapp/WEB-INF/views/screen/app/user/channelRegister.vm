@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017042502")
+	#set($version="2017042503")
 	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -20,6 +20,7 @@
             }
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ta, s);
         })(window);
+        
     </script>
 </head>
 <body>
