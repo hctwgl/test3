@@ -26,6 +26,7 @@ public class AfOrderRefundDo extends AbstractSerial {
 	private String type;
 	private String accountNumber;
 	private String accountName;
+	private String content;
 	
 	
 	/**
@@ -171,6 +172,18 @@ public class AfOrderRefundDo extends AbstractSerial {
 	 */
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;
+	}
+	/**
+	 * @return the content
+	 */
+	public String getContent() {
+		return content;
+	}
+	/**
+	 * @param content the content to set
+	 */
+	public void setContent(String content) {
+		this.content = content;
 	}
 	
 	

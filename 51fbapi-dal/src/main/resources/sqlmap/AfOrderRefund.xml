@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderRefundDao">
 	<sql id="queryAllFields">
-		id rid,gmt_create,gmt_modified,amount,user_id,order_id,order_no,status,refund_no,type,account_number,account_name
+		id rid,gmt_create,gmt_modified,amount,user_id,order_id,order_no,status,refund_no,type,account_number,account_name,content
 	</sql>
 	
 	<insert id="addOrderRefund" parameterType="AfOrderRefundDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_order_refund(gmt_create , gmt_modified , amount , user_id , order_id , order_no , status,refund_no,type,account_number,account_name)
+		INSERT INTO af_order_refund(gmt_create , gmt_modified , amount , user_id , order_id , order_no , status,refund_no,type,account_number,account_name,content)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -18,7 +18,8 @@
     		#{refundNo},
     		#{type},
     		#{accountNumber},
-    		#{accountName}
+    		#{accountName},
+    		#{content}
 		)
 	</insert>
 	
@@ -47,6 +48,9 @@
 			</if>
 			<if test="accountName != null">
     			,account_name=#{accountName}
+			</if>
+			<if test="content != null">
+				,content = {content}
 			</if>
 		WHERE id = #{rid}
 	</update>

@@ -32,7 +32,7 @@ public class BuildInfoUtil {
     	return log;
     }
 	
-	public static AfOrderRefundDo buildOrderRefundDo(String refundNo, BigDecimal amount,Long userId,Long orderId,String orderNo,OrderRefundStatus refundStatus,PayType type,String accountNumber,String accountName){
+	public static AfOrderRefundDo buildOrderRefundDo(String refundNo, BigDecimal amount,Long userId,Long orderId,String orderNo,OrderRefundStatus refundStatus,PayType type,String accountNumber,String accountName,String content){
 		AfOrderRefundDo orderRefundInfo = new AfOrderRefundDo();
 		orderRefundInfo.setAmount(amount);
 		orderRefundInfo.setUserId(userId);
@@ -43,6 +43,7 @@ public class BuildInfoUtil {
 		orderRefundInfo.setType(type.getCode());
 		orderRefundInfo.setAccountNumber(accountNumber);
 		orderRefundInfo.setAccountName(StringUtils.isEmpty(accountName) ? type.getName() : accountName);
+		orderRefundInfo.setContent(content);
 		return orderRefundInfo;
 	}
 	
