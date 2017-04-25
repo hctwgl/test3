@@ -27,6 +27,7 @@ import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -67,6 +68,8 @@ public class RiskUtil extends AbstractThird{
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfAuthContactsService afAuthContactsService;
+	@Resource
+	CommitRecordUtil commitRecordUtil;
 	
 	private static String getUrl(){
 		if(url==null){
@@ -256,7 +259,7 @@ public class RiskUtil extends AbstractThird{
 	 * @param scene
 	 * @return
 	 */
-	public RiskVerifyRespBo verify(String consumerNo,String scene,String cardNo,String appName,String ipAddress,String blackBox){
+	public RiskVerifyRespBo verify(String consumerNo, String scene, String cardNo, String appName, String ipAddress, String blackBox, String borrowId){
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(getOrderNo("vefy", cardNo.substring(cardNo.length()-4,cardNo.length())));
 		reqBo.setConsumerNo(consumerNo);
@@ -275,10 +278,14 @@ public class RiskUtil extends AbstractThird{
 		reqBo.setNotifyUrl(getNotifyHost()+"/third/risk/verify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 	
+		String url = getUrl()+"/modules/api/risk/verify.htm";
+		String content = JSONObject.toJSONString(reqBo);
+		commitRecordUtil.addRecord("verify", borrowId, content, url);
 		
-		String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/risk/verify.htm", reqBo);
+		String reqResult = HttpUtil.httpPost(url, reqBo);
 
 //		String reqResult = HttpUtil.httpPost("http://arc.51fanbei.com"+"/modules/api/risk/verify.htm", reqBo);
+		
 		logThird(reqResult, "verify", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -507,7 +514,7 @@ public class RiskUtil extends AbstractThird{
         String uuid = UUID.randomUUID().toString();
         reqBo.setOrderNo(getOrderNo("addr", uuid.substring(uuid.length() - 4, uuid.length())));
         reqBo.setConsumerNo(consumerNo);
-        reqBo.setData(data);
+        reqBo.setData(StringUtil.filterEmoji(data));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 //      http://arc.edushi.erongyun.net  "http://60.190.230.35:52637"
         String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/directory/remove.htm", reqBo);
