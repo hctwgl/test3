@@ -848,6 +848,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		afAgentOrderDo.setOrderId(orderId);
 		afAgentOrderDo.setStatus("BUY");
+		
 		afAgentOrderService.updateAgentOrder(afAgentOrderDo);
 		
 		return afUserOrderDao.addUserOrder(order);
