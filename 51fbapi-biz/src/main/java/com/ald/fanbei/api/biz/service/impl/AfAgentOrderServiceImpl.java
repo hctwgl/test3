@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -21,11 +22,11 @@ import com.ald.fanbei.api.dal.dao.AfAgentOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.taobao.api.response.TaeItemDetailGetResponse;
-import com.taobao.api.response.TbkItemRecommendGetResponse;
+import com.taobao.api.response.TbkItemInfoGetResponse;
 
 /**
  * @类描述：
@@ -79,41 +80,34 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 						final String orderNo = generatorClusterNo.getOrderNo(OrderType.AGENTBUY);
 						afOrder.setOrderNo(orderNo);
 						afOrder.setOrderType(OrderType.AGENTBUY.getCode());
-//						TbkItemRecommendGetResponse res = taobaoApiUtil.executeTaeItemRecommendSearch(afOrder.getNumId());
-
 						
-//						TbkItemInfoGetResponse res = taobaoApiUtil.executeTakItemDetailSearch(afOrder.getNumId());
-						
-						
-						
-//						logger.info("createOrderTrade_content item is null res = {}", res);
-//						JSONObject resObj = JSON.parseObject(res.getBody());
-//						
-//						JSONObject taoBaoInfo = resObj.getJSONObject("tbk_item_info_get_response").getJSONObject("results");
-//						
-//
-//						JSONArray items = taoBaoInfo.getJSONArray("n_tbk_item");
-//						if(items.size()>0){
-//							JSONObject item = (JSONObject) items.get(0);
-//							afAgentOrderDo.setGoodsUrl(item.getString("item_url"));
-//						}
-						
-//					    String	orderType = sellerInfo.getString("seller_type").toUpperCase();
-//					    String	shopName = sellerInfo.getString("shop_name").toUpperCase();
-//						JSONObject taoBaoInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data");
-//						
-//
-//						JSONObject sellerInfo = taoBaoInfo.getJSONObject("seller_info");
-//					    String	orderType = sellerInfo.getString("seller_type").toUpperCase();
-//					    String	shopName = sellerInfo.getString("shop_name").toUpperCase();
-//
-//					    afOrder.setShopName(shopName);
+						afOrder.setSecType("TAOBAO");
 					    afOrder.setShopName("");
-
-					    afOrder.setSecType("");
-					    
-						afOrderDao.createOrder(afOrder);
+			
+						TbkItemInfoGetResponse res = taobaoApiUtil.executeTakItemDetailSearch(afOrder.getNumId());
 						
+						JSONObject resObj = JSON.parseObject(res.getBody());
+						JSONObject taoBaoInfo = resObj.getJSONObject("tbk_item_info_get_response").getJSONObject("results");
+
+						JSONArray items = taoBaoInfo.getJSONArray("n_tbk_item");
+						if(items.size()>0){
+							JSONObject item = (JSONObject) items.get(0);
+							afAgentOrderDo.setGoodsUrl(item.getString("item_url"));
+						    String	orderType = item.getInteger("user_type")==0?"TAOBAO":"TMALL";
+						    String price = item.getString("reserve_price");
+						    String title = item.getString("title");
+						    String pictUrl = item.getString("pict_url");
+						    String salePrice = item.getString("zk_final_price");
+						    String nick = item.getString("nick");
+						    afOrder.setPriceAmount(new BigDecimal(price));
+						    afOrder.setSaleAmount(new BigDecimal(salePrice));
+						    afOrder.setSecType(orderType);
+						    afOrder.setShopName(nick);
+						    afOrder.setGoodsName(title);
+						    afOrder.setGoodsIcon(pictUrl);
+
+						}					
+						afOrderDao.createOrder(afOrder);
 						afAgentOrderDo.setOrderId(afOrder.getRid());
 						afAgentOrderDao.addAgentOrder(afAgentOrderDo);
 			
@@ -131,6 +125,18 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 	public AfAgentOrderDo getAgentOrderByOrderId(Long orderId) {
 
 		return afAgentOrderDao.getAgentOrderByOrderId(orderId);
+	}
+
+	
+	@Override
+	public List<AfAgentOrderDto> getAgentOrderListByAgentId(Long agentId, String status) {
+		return afAgentOrderDao.getAgentOrderListByAgentId(agentId, status);
+	}
+
+	
+	@Override
+	public AfAgentOrderDto getAgentOrderInfoById(Long orderId) {
+		return afAgentOrderDao.getAgentOrderInfoById(orderId);
 	}
 
 }

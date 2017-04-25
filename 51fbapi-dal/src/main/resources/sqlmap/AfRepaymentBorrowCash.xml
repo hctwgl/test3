@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao">
 	<sql id="queryFields">
 		id
-		rid,gmt_create,gmt_modified,name,repay_no,repayment_amount,actual_amount,borrow_id,pay_trade_no,trade_no,user_coupon_id,coupon_amount,rebate_amount,status,user_id,card_number,card_name
+		rid,gmt_create,gmt_modified,name,repay_no,repayment_amount,actual_amount,borrow_id,pay_trade_no,trade_no,user_coupon_id,coupon_amount,rebate_amount,status,user_id,card_number,card_name,jfb_amount
 	</sql>
 
 	<insert id="addRepaymentBorrowCash" parameterType="AfRepaymentBorrowCashDo"
@@ -15,6 +15,7 @@
 		name ,
 		repay_no ,
 		repayment_amount ,
+		jfb_amount,
 		actual_amount ,
 		borrow_id ,
 		pay_trade_no ,
@@ -35,6 +36,7 @@
 		#{name},
 		#{repayNo},
 		#{repaymentAmount},
+		#{jfbAmount},
 		#{actualAmount},
 		#{borrowId},
 		#{payTradeNo},

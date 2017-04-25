@@ -3,8 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.agencybuy;
 
-import java.util.HashMap;
-import java.util.Map;
+
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.web.common.ApiHandle;

@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfRepaymentDao">
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,repay_no,repayment_amount,actual_amount,bill_ids,pay_trade_no,trade_no,user_coupon_id,coupon_amount,rebate_amount,
-		status,user_id,card_number,card_name
+		status,user_id,card_number,card_name,jfb_amount
 	</sql>
 	
 	<insert id="addRepayment" parameterType="AfRepaymentDo" useGeneratedKeys="true" keyProperty="rid">
@@ -13,6 +13,7 @@
 		repay_no , 
 		name,
 		repayment_amount , 
+		jfb_amount,
 		actual_amount , 
 		bill_ids , 
 		pay_trade_no , 
@@ -33,6 +34,7 @@
     		#{repayNo},
     		#{name},
     		#{repaymentAmount},
+    		#{jfbAmount},
     		#{actualAmount},
     		#{billIds},
     		#{payTradeNo},

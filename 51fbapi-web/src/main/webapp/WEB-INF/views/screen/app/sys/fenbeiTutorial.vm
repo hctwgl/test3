@@ -1,32 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+    	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 		<title>新手教程</title>
-	    <style type="text/css">
-	    	.fenbeiTutorial li{
-	    		width: 7.5rem;
-	    		height: 6.69rem;
-	    	}
-	    	.fenbeiTutorial li:nth-child(1){
-				background-image: url(/images/app/sys/fenbeiTutorial_bg1.png);
-	    	}
-	    	.fenbeiTutorial li:nth-child(2){
-				background-image: url(/images/app/sys/fenbeiTutorial_bg2.png);
-	    	}
-	    	.fenbeiTutorial li:nth-child(3){
-				background-image: url(/images/app/sys/fenbeiTutorial_bg3.png);
-	    	}
-	    	.fenbeiTutorial li:nth-child(4){
-				background-image: url(/images/app/sys/fenbeiTutorial_bg4.png);
-	    	}
-	    </style>
     </head>
     <body>
-		<ul class="fenbeiTutorial">
-			<li class="bgs_c"></li>
-			<li class="bgs_c"></li>
-			<li class="bgs_c"></li>
-			<li class="bgs_c"></li>
-		</ul>
+		<img src="$commonUrl/app/images/sys/fenbeiTutorial_bg1.png">
+		<img src="$commonUrl/app/images/sys/fenbeiTutorial_bg2.png">
+		<img src="$commonUrl/app/images/sys/fenbeiTutorial_bg3.png">
+		<img src="$commonUrl/app/images/sys/fenbeiTutorial_bg4.png">
     </body>
 </html>

@@ -125,6 +125,10 @@ public class Constants {
     public static final String CONFKEY_TAOBAO_BCDS_URL			      = "fbapi.taobao.bcds.url";
     public static final String CONFKEY_TAOBAO_BCDS_APPID			  = "fbapi.taobao.bcds.appid";
     public static final String CONFKEY_TAOBAO_BCDS_SECRET			  = "fbapi.taobao.bcds.secret";
+    
+    public static final String CONFKEY_TAOBAO_LIANMENG_URL			      = "fbapi.taobao.lianmeng.url";
+    public static final String CONFKEY_TAOBAO_LIANMENG_APPID			  = "fbapi.taobao.lianmeng.appid";
+    public static final String CONFKEY_TAOBAO_LIANMENG_SECRET			  = "fbapi.taobao.lianmeng.secret";    
     public static final String CONFKEY_SMS_DHST_PASSWORD			  = "fbapi.sms.dhst.password";
     public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS	  = "taobao.tbk.item.get.fields";
     public static final String CONFKEY_TAOBAO_TBK_ITEM_GET	  		  = "taobao.tbk.item.info.get";

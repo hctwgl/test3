@@ -3,8 +3,6 @@
  */
 package com.ald.fanbei.api.biz.service;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 
 /**
@@ -26,6 +24,9 @@ public interface AfIdNumberService {
 	    */
 	    int updateIdNumber(AfIdNumberDo afIdNumberDo);
 	    
+	    /**
+	     * 根据userId获取省份证的信息
+	     */
 	    AfIdNumberDo selectUserIdNumberByUserId(Long userId);
 
 }

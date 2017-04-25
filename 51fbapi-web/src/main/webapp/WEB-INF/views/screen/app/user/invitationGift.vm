@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+    	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 		<title>邀请有奖</title>
 	    <style type="text/css">
 	    	.invitationGift_wrap{
 	    		width: 7.5rem;
 				height: 12.18rem;
-				background-image: url(/images/app/user/invitationGift_bg.png);
+				background-image: url($commonUrl/app/images/user/invitationGift_bg.png);
 	    	}
 	    	.invitationGift_footer_wrap{
 	    		position: fixed;
@@ -46,7 +47,7 @@
 	    		<div class="invitationGift_footer clearfix">
 	    			<div class="invitationGift_text clearfix">
 	    				#if($!{avatar}=='')
-							<img class="fl bgs_c" src="/images/app/user/icon120.png">
+							<img class="fl bgs_c" src="$commonUrl/app/images/user/icon120.png">
 						#else
 	    					<img class="fl bgs_c" src="$!{avatar}">
 	    				#end

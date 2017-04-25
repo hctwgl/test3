@@ -1,0 +1,155 @@
+/*
+* @Author: Yangyang
+* @Date:   2017-02-13 15:15:44
+* @Last Modified by:   Yangyang
+* @Last Modified time: 2017-04-18 09:58:37
+* @title:  注册
+*/
+
+
+.register_main{
+	margin-top: 0.66rem;
+}
+.register_main ul input{
+	font-size: 0.32rem;
+}
+.register_main li{
+	position: relative;
+	height: 1.0rem;
+	line-height: 1.0rem;
+	margin: 0 0.24rem 0.2rem;
+	font-size: 0.32rem;
+}
+.register_mobile_icon_wrap,.register_verification_icon_wrap,.register_password_icon_wrap{
+	position: relative;
+	width: 0.96rem;
+	height: 0.98rem;
+}
+.register_mobile_icon,.register_verification_icon,.register_password_icon{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+.register_mobile_icon{
+	width: 0.32rem;
+	height: 0.48rem;
+	background-image: url(/images/app/user/0602phone.png);
+}
+.register_verification_icon{
+	width: 0.48rem;
+	height: 0.48rem;
+	background-image: url(/images/app/user/0602yzm.png);
+}
+.register_password_icon{
+	width: 0.48rem;
+	height: 0.5rem;
+	background-image: url(/images/app/user/0603mima.png);
+}
+.register_verification_main{
+	position: relative;
+	width: 4.16rem;
+	height: 0.96rem;
+	line-height: 0.96rem;
+}
+.register_verification{
+	width: 3.2rem;
+	margin-top: 0.28rem;
+}
+.register_codeBtn{
+	width: 2.4rem;
+	height: 0.96rem;
+}
+/*×的样式待定*/
+.register_mobileIcon,.register_verificationIcon,.register_passwordEyeClosed,.register_passwordEye{
+	position: absolute;
+	top: 50%;
+	right: 0.2rem;
+	-webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	background-size: cover;
+}
+.register_mobileIcon,.register_verificationIcon{
+	width: 0.24rem;
+	height: 0.24rem;
+}
+.register_mobileIcon,.register_verificationIcon{
+	background-image: url(/images/app/user/shanc.png);
+}
+.register_passwordEyeClosed{
+	width: 0.44rem;
+	height: 0.16rem;
+	background-image: url(/images/app/user/0601eye_closed.png);
+}
+.register_passwordEye{
+	width: 0.44rem;
+	height: 0.24rem;
+	background-image: url(/images/app/user/0601eye.png);
+}
+input::-webkit-input-placeholder{
+	color: #BFBFBF;
+}
+input:-moz-placeholder{
+	color: #BFBFBF;
+}
+input::-moz-placeholder{
+	color: #BFBFBF;
+}
+input:-ms-input-placeholder{
+	color: #BFBFBF;
+}
+
+.register_submitBtn{
+	width: 7.0rem;
+	height: 0.8rem;
+	line-height: 0.8rem;
+	margin-top: 1.0rem;
+	font-size: 0.32rem;
+}
+
+.register_checkbox{
+	position: relative;
+	height: 0.36rem;
+	line-height: 0.36rem;
+	margin: 0.44rem 0.36rem 0;
+}
+.register_checkbox .input_check {
+    visibility: hidden;
+}
+.register_checkbox .input_check+label,.register_checkbox .input_check:checked+label:after{
+	position: absolute;
+	top: 50%;
+	left: 0;
+	-webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    display: inline-block;
+    width: 0.28rem;
+    height: 0.24rem;
+    -webkit-background-size: cover;
+	-moz-background-size: cover;
+	-ms-background-size: cover;
+	background-size: cover;
+}
+.register_checkbox .input_check+label {
+    background-image: url(/images/app/user/0604kuangxuanz.png);
+}
+.register_checkbox .input_check:checked+label:after {
+    content: "";
+    background-image: url(/images/app/user/0604kuang.png);
+}
+.register_checkbox p{
+	margin-left: 0.4rem;
+}
+.registerIcon_hide{
+	display: none;
+}

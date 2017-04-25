@@ -71,6 +71,8 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
+		BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
+
 		AfRepaymentBorrowCashDo rbCashDo=afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
 		if(borrowId==0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
@@ -97,7 +99,10 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 		if(afBorrowCashDo!=null){
+		
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());
+			
+			
 			BigDecimal temAmount =BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 			if(temAmount.compareTo(repaymentAmount)<-1){
 				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
@@ -112,6 +117,14 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		if(userDto.getRebateAmount().compareTo(userAmount)<-1){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 		}
+		
+		BigDecimal jfb=BigDecimalUtil.divide(jfbAmount, new BigDecimal(100));
+		if(userDto.getJfbAmount().compareTo(jfbAmount)<-1){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+
+		}
+
+		showAmount =BigDecimalUtil.add(showAmount, jfb);
 		showAmount = BigDecimalUtil.add(showAmount, userAmount);
 	
 		
@@ -122,12 +135,12 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		
 		Map<String,Object> map;
 		if(cardId==-2){//余额支付
-			map	=afRepaymentBorrowCashService.createRepayment(repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
+			map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
 
 			resp.addResponseData("refId", map.get("refId"));
 			resp.addResponseData("type", map.get("type"));
 		}else if(cardId==-1){//微信支付
-			map	=afRepaymentBorrowCashService.createRepayment(repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
+			map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
 
 			resp.setResponseData(map);
 		}else if(cardId>0){//银行卡支付
@@ -135,7 +148,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			if(null == card){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map	=afRepaymentBorrowCashService.createRepayment(repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+			map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto);
 
 			//代收
 			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

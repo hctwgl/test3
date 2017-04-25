@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017041801")
+    	#set($version="2017042402")
+		#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 		<title>领取优惠券</title>
-		<link rel="stylesheet" type="text/css" href="/css/app/user/receiveCoupons.css?version=$version">
+		<link rel="stylesheet" type="text/css" href="/css/user/receiveCoupons.css?version=$version">
     </head>
     <body>
 		<input type="hidden" id="couponList" name="couponList" value=$jsonUtil.toJSONString($!{couponList})>
 		<input type="hidden" id="userName" name="userName" value="$!{userName}">
 		#if($!{couponList.size()}==0)
 	   		<div class="nullPrompt">
-	   			<img src="/images/common/040101wuyouhui.png">
+	   			<img src="$commonUrl/common/images/040101wuyouhui.png">
 				<span class="fsc_6">暂无优惠劵</span>
 	   		</div>
 		#end
@@ -43,7 +44,6 @@
 				</li>
 			#end
 		</ul>
-		<script type="text/javascript" src="/js/common/layer.js"></script>
-		<script type="text/javascript" src="/js/app/user/receiveCoupons.js?version=$version"></script>
+		<script type="text/javascript" src="/js/user/receiveCoupons.js?version=$version"></script>
     </body>
 </html>

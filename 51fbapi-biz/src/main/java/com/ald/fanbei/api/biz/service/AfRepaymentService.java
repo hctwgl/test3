@@ -27,7 +27,7 @@ public interface AfRepaymentService {
 	 * @param cardId
 	 * @return
 	 */
-	Map<String,Object> createRepayment(BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
+	Map<String,Object> createRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp,AfUserAccountDo afUserAccountDo);
 	
 	long dealRepaymentSucess(String outTradeNo,String tradeNo);

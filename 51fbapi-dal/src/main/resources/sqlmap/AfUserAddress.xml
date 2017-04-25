@@ -64,6 +64,9 @@
 			is_delete = 0
 		AND
 			user_id = #{userId}
+		ORDER BY 
+			is_default DESC
+			
 	</select>
 	
 	<select id="selectUserAddressByrid" resultType="AfUserAddressDo">
@@ -89,4 +92,18 @@
 		and  
 			is_default = 'Y'
 	</select>
+	
+	<update id="reselectTheDefaultAddress" >
+		UPDATE
+			af_user_address 
+		SET 
+			gmt_modified = NOW(),
+			is_default = "Y"
+		WHERE
+			is_delete = 0 
+		AND
+			user_id = #{userId}
+		LIMIT 
+			1
+	</update>
 </mapper>
