@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -18,6 +19,7 @@ import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfAgentOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
@@ -80,9 +82,10 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 						final String orderNo = generatorClusterNo.getOrderNo(OrderType.AGENTBUY);
 						afOrder.setOrderNo(orderNo);
 						afOrder.setOrderType(OrderType.AGENTBUY.getCode());
-						
+						Date gmtPayEnd  = DateUtil.addMins(new Date(), 15);
 						afOrder.setSecType("TAOBAO");
 					    afOrder.setShopName("");
+					    afOrder.setGmtPayEnd(gmtPayEnd);
 			
 						TbkItemInfoGetResponse res = taobaoApiUtil.executeTakItemDetailSearch(afOrder.getNumId());
 						
