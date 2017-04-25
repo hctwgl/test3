@@ -243,8 +243,8 @@
 				<!--运营接口-->
 				<entry key="/operateApp/getOrderSyncAgencyOrderInfo" value-ref="getOrderSyncAgencyOrderInfoApi" />
 
-				<entry key="/operataApp/getAgencyBuyOrderList" value-ref="getAgencyBuyOrderListApi" />
-				<entry key="/operataApp/getAgencyBuyOrderInfo" value-ref="getAgencyBuyOrderInfoApi" />
+				<entry key="/operateApp/getAgencyBuyOrderList" value-ref="getAgencyBuyOrderListApi" />
+				<entry key="/operateApp/getAgencyBuyOrderInfo" value-ref="getAgencyBuyOrderInfoApi" />
 
 			</map>
 		</constructor-arg>
