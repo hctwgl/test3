@@ -176,19 +176,19 @@ public class PayRoutController{
         			afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
         			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
         		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
-        			AfOrderDo orderInfo = afOrderService.getOrderById(result);
+        			//退款记录
+        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+        			
+        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
         			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
         			afOrderService.updateOrder(orderInfo);
         			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
-        			//还款记录
-        			AfOrderRefundDo refundInfo = afOrderRefundService.getOrderRefundByOrderId(result);
     				refundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
     				afOrderRefundService.updateOrderRefund(refundInfo);
         			//ups打款记录
         			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
         					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
 
-        			
         			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
         			
         		}

@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.common.Constants;
@@ -31,6 +32,8 @@ public class GeneratorClusterNo {
 	AfBorrowService afBorrowService;
 	@Resource
 	AfRepaymentService afRepaymentService;
+	@Resource
+	AfOrderRefundService afOrderRefundService;
 	
 	//获取订单号
 	public String getOrderNo(OrderType orderType){//订单号规则：6位日期_2位订单类型_5位订单序号
@@ -115,6 +118,42 @@ public class GeneratorClusterNo {
         }finally{
         }
         TokenCacheUtil.delCache(lockKey);
+        return channelNum;
+    }
+  	
+  	//获取退款编号
+  	public String getRefundNo(Date currDate){//退款编号规则：6位日期_2位订单类型_5位退款序号
+  		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+  		StringBuffer orderRefundSb = new StringBuffer("tk");
+  		orderRefundSb.append(dateStr).append(getOrderSeqStr(this.getRefundSequenceNum(currDate)));
+  		return orderRefundSb.toString();
+  	}
+  	
+  	private int getRefundSequenceNum(Date currentDate) {//加锁，防止并发
+        Integer channelNum = 1;
+        String lockKey = Constants.CACHEKEY_REFUND_NO_LOCK;
+        String cacheKey = Constants.CACHEKEY_REFUND_NO;
+        
+        try{
+            if(TokenCacheUtil.getLockTryTimes(lockKey, "1", Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")))){//获得同步锁
+                channelNum = (Integer)TokenCacheUtil.getObject(cacheKey);
+                if(channelNum == null){//缓存中无数据,从库中获取
+                	String refundNo = afOrderRefundService.getCurrentLastRefundNo(currentDate);
+                    channelNum = refundNo == null?1:(getOrderSeqInt(refundNo.substring(16, 20))+1);
+                }else{
+                    channelNum = channelNum + 1;
+                }
+            }else{//获取锁失败，从库中取订单号
+            	String refundNo = afOrderRefundService.getCurrentLastRefundNo(currentDate);
+                if(refundNo != null){
+                    channelNum = getOrderSeqInt(refundNo.substring(16, 20))+1;
+                }
+                return channelNum;
+            }
+            TokenCacheUtil.saveObject(cacheKey, channelNum, 0l);
+        }finally{
+        	TokenCacheUtil.delCache(lockKey);
+        }
         return channelNum;
     }
     

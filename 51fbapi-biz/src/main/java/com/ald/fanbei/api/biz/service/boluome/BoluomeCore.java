@@ -37,6 +37,7 @@ public class BoluomeCore extends AbstractThird{
 	public static final String AMOUNT = "amount";
 	public static final String SIGN = "sign";
 	public static final String APP_KEY = "appKey";
+	public static final String CHANNEL  = "channel";
 
     /** 
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串

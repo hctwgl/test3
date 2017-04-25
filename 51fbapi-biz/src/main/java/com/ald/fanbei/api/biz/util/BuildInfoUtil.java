@@ -2,7 +2,10 @@ package com.ald.fanbei.api.biz.util;
 
 import java.math.BigDecimal;
 
+import org.springframework.util.StringUtils;
+
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
@@ -29,13 +32,17 @@ public class BuildInfoUtil {
     	return log;
     }
 	
-	public static AfOrderRefundDo buildOrderRefundDo(BigDecimal amount,Long userId,Long orderId,String orderNo,OrderRefundStatus refundStatus){
+	public static AfOrderRefundDo buildOrderRefundDo(String refundNo, BigDecimal amount,Long userId,Long orderId,String orderNo,OrderRefundStatus refundStatus,PayType type,String accountNumber,String accountName){
 		AfOrderRefundDo orderRefundInfo = new AfOrderRefundDo();
 		orderRefundInfo.setAmount(amount);
 		orderRefundInfo.setUserId(userId);
 		orderRefundInfo.setOrderId(orderId);
 		orderRefundInfo.setOrderNo(orderNo);
 		orderRefundInfo.setStatus(refundStatus.getCode());
+		orderRefundInfo.setRefundNo(refundNo);
+		orderRefundInfo.setType(type.getCode());
+		orderRefundInfo.setAccountNumber(accountNumber);
+		orderRefundInfo.setAccountName(StringUtils.isEmpty(accountName) ? type.getName() : accountName);
 		return orderRefundInfo;
 	}
 	
