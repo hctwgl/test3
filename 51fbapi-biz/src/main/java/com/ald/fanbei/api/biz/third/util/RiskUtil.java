@@ -259,7 +259,7 @@ public class RiskUtil extends AbstractThird{
 	 * @param scene
 	 * @return
 	 */
-	public RiskVerifyRespBo verify(String consumerNo, String scene, String cardNo, String appName, String ipAddress, String blackBox, String borrowId){
+	public RiskVerifyRespBo verify(String consumerNo,String scene,String cardNo,String appName,String ipAddress,String blackBox){
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(getOrderNo("vefy", cardNo.substring(cardNo.length()-4,cardNo.length())));
 		reqBo.setConsumerNo(consumerNo);

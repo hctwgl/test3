@@ -107,10 +107,13 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
-		if (StringUtils.isBlank(amountStr) || AfBorrowCashType.findRoleTypeByCode(type) == null || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude) 
-				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox)) {
+		if (StringUtils.isBlank(amountStr) || AfBorrowCashType.findRoleTypeByCode(type) == null
+				|| StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude) || StringUtils.isBlank(longitude)
+				|| StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
+		
+		
 
 		// 密码判断
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
@@ -123,10 +126,11 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		List<String> whiteIdsList = new ArrayList<String>();
 		if (context.getAppVersion() >= 340) {
 
-			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), context.getUserName(), context.getMobile(), accountDo.getIdNumber(), 
-					accountDo.getRealName(), "", requestDataVo.getMethod(), "");
-
-			// 判断是否在白名单里面
+			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+					context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
+					requestDataVo.getMethod(), "");
+			
+			//判断是否在白名单里面
 			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
 			if (whiteListInfo != null) {
 				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
@@ -147,9 +151,12 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		}
 
 		// 认证信息判断
-		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode()) 
-				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode()) 
-				|| !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode()) 
+		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 
@@ -158,13 +165,12 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+		
 
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
-		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-		String ipAddress = CommonUtil.getIpAddr(request);
-		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province, county, address, userId, currentDay);
-
-		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode()) 
+		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,county, address, userId,currentDay);
+		
+		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
@@ -172,21 +178,24 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		Long borrowId = afBorrowCashDo.getRid();
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
 		cashDo.setRid(borrowId);
-
+		
 		try {
-			// RiskVerifyRespBo result =
-			// riskUtil.verify2(ObjectUtils.toString(userId, ""),
-			// "20",afBorrowCashDo.getCardNumber());
-			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox, afBorrowCashDo.getBorrowNo());
-
+//			 RiskVerifyRespBo result =
+//			 riskUtil.verify2(ObjectUtils.toString(userId, ""),
+//			 "20",afBorrowCashDo.getCardNumber());
+			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20",
+					afBorrowCashDo.getCardNumber(),
+					(requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and"),
+					CommonUtil.getIpAddr(request), blackBox);
+			
 			cashDo.setRishOrderNo(result.getOrderNo());
 			Date currDate = new Date();
 
 			AfUserDo afUserDo = afUserService.getUserById(userId);
 
-			// if(whiteIdsList.contains(context.getUserName())){
-			//
-			// }
+//			if(whiteIdsList.contains(context.getUserName())){
+//				
+//			}
 			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + context.getUserName() + ",isContain=" + whiteIdsList.contains(context.getUserName()));
 			if (whiteIdsList.contains(context.getUserName()) || StringUtils.equals("10", result.getResult())) {
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
@@ -195,9 +204,10 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
 				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 				// 打款
-				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), 
-						afBorrowCashDo.getUserId() + "", card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02", 
-						UserAccountLogType.BorrowCash.getCode(), borrowId + "");
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
+						userDto.getRealName(), afBorrowCashDo.getCardNumber(), afBorrowCashDo.getUserId() + "",
+						card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE,
+						"02", UserAccountLogType.BorrowCash.getCode(), borrowId + "");
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
 				if (!upsResult.isSuccess()) {
 					logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
@@ -226,28 +236,28 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		}
 
 	}
-
+	
 	/**
 	 * 增加当天审核的金额
-	 * 
 	 * @param day
 	 * @param amount
 	 */
-	private void addTodayTotalAmount(int day, BigDecimal amount) {
+	private void addTodayTotalAmount(int day,BigDecimal amount){
 		AfBorrowCacheAmountPerdayDo amountCurrentDay = new AfBorrowCacheAmountPerdayDo();
 		amountCurrentDay.setDay(day);
 		amountCurrentDay.setAmount(amount);
 		afBorrowCacheAmountPerdayService.updateBorrowCacheAmount(amountCurrentDay);
 	}
 
-	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount, String type, String latitude, String longitude, AfUserBankcardDo afUserBankcardDo, 
-			String city, String province, String county, String address, Long userId, int currentDay) {
-
+	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount, String type, String latitude, String longitude,
+			AfUserBankcardDo afUserBankcardDo, String city, String province, String county, String address,
+			Long userId,int currentDay) {
+		
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
-
+		
 		this.checkSwitch(rate, currentDay);
-
+		
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
@@ -280,31 +290,32 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		afBorrowCashDo.setRateAmount(rateAmount);
 		afBorrowCashDo.setPoundage(poundageBig);
 		afBorrowCashDo.setAddress(address);
-		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(BigDecimalUtil.subtract(amount, rateAmount), poundageBig));
+		afBorrowCashDo
+				.setArrivalAmount(BigDecimalUtil.subtract(BigDecimalUtil.subtract(amount, rateAmount), poundageBig));
+		;
 		return afBorrowCashDo;
 	}
-
+	
 	/**
 	 * 检查放款开关
-	 * 
 	 * @param rate
 	 * @param currentDay
 	 */
-	private void checkSwitch(Map<String, Object> rate, Integer currentDay) {
-
-		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())) {
+	private void checkSwitch(Map<String, Object> rate,Integer currentDay){
+		
+		if(!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 		}
-
+		
 		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
-		if (currentAmount == null) {
+		if(currentAmount == null){
 			AfBorrowCacheAmountPerdayDo temp = new AfBorrowCacheAmountPerdayDo();
 			temp.setAmount(new BigDecimal(0));
 			temp.setDay(currentDay);
 			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
 			currentAmount = temp;
 		}
-		if (currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
+		if(currentAmount.getAmount().compareTo(new BigDecimal((String)rate.get("amountPerDay"))) >=0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 		}
 	}
