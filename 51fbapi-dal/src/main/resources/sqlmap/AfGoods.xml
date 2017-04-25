@@ -63,6 +63,9 @@
 			gmt_modified = NOW(),
 			modifier = 'system',
 			subscribe = #{status}
+			<if test="publishStatus != null and  publishStatus != ''">
+				 ,status = #{publishStatus}
+			</if>
 		WHERE
 			num_id = #{numId}
 	</update>
