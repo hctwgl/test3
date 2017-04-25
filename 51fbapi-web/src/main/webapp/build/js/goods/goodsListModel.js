@@ -142,9 +142,9 @@ $(function(){
         $(this).find("span").addClass("current");
         $(this).siblings().find("span").removeClass("current");
         typeCurrentNum =  categoryObj[i].type;
-        ulOffsetLeft = $(".nav").offset().left;
-        thisLiOffsetUl = liWArr[i].offsetLeft;
-        thisLiOffsetDiv = thisLiOffsetUl + ulOffsetLeft; //距离 边框的距离
+        var ulOffsetLeft = $(".nav").offset().left;
+        var thisLiOffsetUl = liWArr[i].offsetLeft;
+        var thisLiOffsetDiv = thisLiOffsetUl + ulOffsetLeft; //距离 边框的距离
         var offsetLeft = ((windowW-liWArr[i].width)/2) - thisLiOffsetDiv;
         var offset = ulOffsetLeft+offsetLeft;
         if(offset >0){

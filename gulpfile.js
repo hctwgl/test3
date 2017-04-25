@@ -17,16 +17,12 @@ var gulp = require('gulp'),
 // clean 清空 dist 目录
 gulp.task('clean', function(cb) {
     del([
-        '51fbapi-web/src/main/webapp/js/**/*.js',
-        '!51fbapi-web/src/main/webapp/js/common/**/*',
-        '51fbapi-web/src/main/webapp/css/**/*.less',
-        '51fbapi-web/src/main/webapp/css/**/*.css',
-        '!51fbapi-web/src/main/webapp/css/common/**/*'
+        '51fbapi-web/src/main/webapp/dist/**/*'
     ],cb);
 });
 // es6编译为es5
 gulp.task('es6', function() {
-    return gulp.src(['51fbapi-web/build/js/**/*.js','!51fbapi-web/build/js/common/**/*'])
+    return gulp.src(['51fbapi-web/src/main/webapp/build/js/**/*'])
         .pipe(sourcemaps.init())
         .pipe(plumber())
         .pipe(babel({presets: ['es2015']}))
@@ -34,13 +30,11 @@ gulp.task('es6', function() {
         .pipe(uglify())                  //压缩
         // .pipe(rename({suffix:".min"}))    //改名加前缀
         .pipe(sourcemaps.write('_srcmap'))
-        .pipe(gulp.dest('51fbapi-web/src/main/webapp/js'));
-    // gulp.src('51fbapi-web/build/js/common/**/*')
-    //     .pipe(gulp.dest('51fbapi-web/src/main/webapp/js/common'));
+        .pipe(gulp.dest('51fbapi-web/src/main/webapp/dist/js'));
 });
 //less编译为css
 gulp.task('less', function() {
-    return gulp.src(['51fbapi-web/build/less/**/*','!51fbapi-web/build/less/common/**/*'])
+    return gulp.src(['51fbapi-web/src/main/webapp/build/css/**/*'])
         .pipe(sourcemaps.init())
         .pipe(plumber())
         .pipe(less())
@@ -48,15 +42,12 @@ gulp.task('less', function() {
         .pipe(autoprefixer('last 6 version'))
         .pipe(minifycss())
         .pipe(sourcemaps.write('_srcmap'))
-        .pipe(gulp.dest('51fbapi-web/src/main/webapp/css'));
-    // gulp.src('51fbapi-web/build/less/common/**/*')
-    //     .pipe(gulp.dest('51fbapi-web/src/main/webapp/less/common'));
-
+        .pipe(gulp.dest('51fbapi-web/src/main/webapp/dist/css'));
 });
 
 // 监控 build 目录的改动自动编译
 gulp.task('watch',function () {
-    return gulp.watch('51fbapi-web/build/**/*', gulpsync.sync(['es6','less']));
+    return gulp.watch('51fbapi-web/src/main/webapp/build/**/*', gulpsync.sync(['es6','less']));
 });
 
 // default 默认执行任务
