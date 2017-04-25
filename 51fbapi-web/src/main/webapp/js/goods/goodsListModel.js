@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-18 19:21:46
+* @Last Modified time: 2017-04-24 19:13:32
 * @title:  商品列表页
 */
 
@@ -89,8 +89,26 @@ var addModel = function addModel(goodsList) {
         var rebateAmountSplitArr = rebateAmount.split(".");
         var rebateAmountPriceInteger = rebateAmountSplitArr[0];
         var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-        var goodInfoUrl = notifyUrl + '&params={"goodsId":"' + goodsList[j].goodsId + '"}';
-        html += "<li class=\"goodsListModel_item\">\n                                <a href=\"" + goodInfoUrl + "\">\n                                <img src=\"" + goodsList[j].goodsIcon + "\" class=\"mainContent_img\">\n                                <div class=\"goodsListModel_mainContent_wrap\">\n                                <p class=\"fs_26 fsc_1\">" + goodsList[j].name + "</p>\n                                <p class=\"fs_26 fsc_red\">\n                                <span>\uFFE5" + amountAmountPriceInteger + "</span><span class=\"fs_24\">." + amountAmountPriceDecimal + "</span>\n                                </p>\n                                </div>\n                                <div class=\"goodsListModel_mainContent_rebate_wrap\">\n                                <div class=\"goodsListModel_mainContent_rebate clearfix\">\n                                <span class=\"goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac\">\u8FD4</span>\n                                <p class=\"fl fs_24 fsc_orange\">\n                                <span>\uFFE5" + rebateAmountPriceInteger + "</span><span class=\"fs_22\">." + rebateAmountPriceDecimal + "</span>\n                                </p>\n                                </div>\n                                </div>\n                                </a>\n                                </li>";
+        var goodInfoUrl = notifyUrl + '&params={"goodsId":" '+ goodsList[j].goodsId+' "}';
+        html += '<li class="goodsListModel_item">'
+                    +'<a href=" '+ goodInfoUrl +' ">'
+                        +'<img src=" '+goodsList[j].goodsIcon+' " class="mainContent_img">'
+                        +'<div class="goodsListModel_mainContent_wrap">'
+                            +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
+                            +'<p class="fs_26 fsc_red">'
+                                +'<span>￥'+amountAmountPriceInteger+'</span><span class="fs_24">.'+amountAmountPriceDecimal+'</span>'
+                            +'</p>'
+                        +'</div>'
+                        +'<div class="goodsListModel_mainContent_rebate_wrap">'
+                            +'<div class="goodsListModel_mainContent_rebate clearfix">'
+                                +'<span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>'
+                                +'<p class="fl fs_24 fsc_orange">'
+                                    +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_22">.'+rebateAmountPriceDecimal+'</span>'
+                                +'</p>'
+                            +'</div>'
+                        +'</div>'
+                    +'</a>'
+                +'</li>';
     }
     return html;
 };
@@ -159,10 +177,11 @@ $(function(){
                             // 下拉的时候加载
                             finished=0;
 
-                        }else{html = '<div class="nullPrompt"> ' +
-                            '<img src="/images/common/040101wuyouhui.png"> ' +
-                            '<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span> ' +
-                            '</div>';
+                        }else{
+                            html =  '<div class="nullPrompt">'
+                                        +'<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/images/040101wuyouhui.png">'
+                                        +'<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span>'
+                                    +'</div>';
                         }
                         isUl.html(html);
                         // $('.main_wrap').css('height',isUl.height()+'px');
@@ -216,9 +235,6 @@ $(function(){
         }
 
     });
-
-
-
 
 });
 

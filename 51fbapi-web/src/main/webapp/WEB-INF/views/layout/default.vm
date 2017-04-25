@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         #set($version="2017041801")
+        #set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="renderer" content="webkit">
@@ -16,11 +17,12 @@
         <meta name="format-detection" content="telephone=no">
         <meta http-equiv="x-rim-auto-match" content="none">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <link rel="stylesheet" type="text/css" href="/css/common/reset.css?version=$version">
-        <link rel="stylesheet" type="text/css" href="/css/common/base.css?version=$version">
-        <script type="text/javascript" src="/js/common/jquery-1.10.2.min.js"></script>
-        <script type="text/javascript" src="/js/common/vue.min.js"></script>
-        <script type="text/javascript" src="/js/common/base.js?version=$version"></script>
+        <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/reset.css">
+        <link rel="stylesheet" type="text/css" href="/css/base.css?version=$version">
+        <script type="text/javascript" src="$commonUrl/common/js/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="$commonUrl/common/js/vue.min.js"></script>
+        <script type="text/javascript" src="/js/layer.js"></script>
+        <script type="text/javascript" src="/js/base.js?version=$version"></script>
         <script type="text/javascript">
             // 判断rem字体大小
             (function (doc, win) {    
