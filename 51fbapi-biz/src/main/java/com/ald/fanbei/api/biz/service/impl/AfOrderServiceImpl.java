@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -63,6 +64,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -141,7 +143,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfOrderRefundDao afOrderRefundDao;
 	@Resource
 	UpsUtil upsUtil;
-	
+	@Resource
+	AfAgentOrderService afAgentOrderService;
 	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:"+content);
@@ -225,6 +228,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			order.setUserId(orderTemp.getUserId());
 			orderTemp.setStatus(YesNoStatus.YES.getCode());
 			afOrderTempDao.updateUserOrderTemp(orderTemp);
+			
+			if (orderTemp != null && orderTemp.getOrderId() > 0) {
+				AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
+				AfOrderDo temorder = orderDao.getOrderInfoByOrderNo(orderNo);
+				afAgentOrderDo.setOrderId(orderTemp.getOrderId());
+				afAgentOrderDo.setStatus("BUY");
+				afAgentOrderDo.setMatchOrderId(temorder.getRid());			
+				afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+				AfOrderDo applyOrder = new AfOrderDo();
+				applyOrder.setRid(orderTemp.getOrderId());
+				applyOrder.setOrderNo(orderNo);
+				applyOrder.setStatus(OrderStatus.AGENCYCOMPLETED.getCode());
+				orderDao.updateOrder(applyOrder);
+			}
+			
 		}
 		order.setStatus(OrderStatus.PAID.getCode());
 		order.setGmtPay(new Date());
@@ -825,6 +843,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		Date startDate = DateUtil.getStartOfDate(current);
 		Date endDate = DateUtil.getEndOfDate(current);
 		return orderDao.getCurrentLastPayNo(startDate, endDate);
+	}
+
+	
+	@Override
+	public int syncOrderNoWithAgencyUser(Long userId, String orderNo, Long orderId) {
+		AfOrderTempDo order = new AfOrderTempDo();
+		order.setOrderNo(orderNo);
+		order.setUserId(userId);
+		order.setOrderId(orderId);
+		return afUserOrderDao.addUserOrder(order);
 	}
 	
 }

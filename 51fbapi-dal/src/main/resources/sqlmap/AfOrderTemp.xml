@@ -2,14 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderTempDao">
 	<sql id="queryFields">
-		id rid,user_id,order_no,status
+		id rid,user_id,order_no,status,order_id
 	</sql>
 	
 	<insert id="addUserOrder" parameterType="AfOrderTempDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_order_temp(user_id ,gmt_create, order_no)
+		INSERT INTO af_order_temp(user_id ,gmt_create,
+		 <if test="orderId != null">
+		    	order_id, 
+			</if>order_no)
 		VALUES (
     		#{userId},
-    		NOW(),
+    		NOW()
+    		,<if test="orderId != null">
+		    	#{orderId}, 
+			</if>
     		#{orderNo}
 		)
 	</insert>

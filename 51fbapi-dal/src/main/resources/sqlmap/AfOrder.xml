@@ -332,7 +332,7 @@
 		<if test="commissionAmount != null">
 		    ,commission_amount=#{commissionAmount}
 		</if>
-		where is_delete=0 and order_no = #{orderNo}
+		where is_delete=0 and order_no = #{orderNo} and order_type !='AGENTBUY'
 	</update>
 	
 	<select id="getCurrentLastOrderNo" resultType="java.lang.String">
@@ -354,7 +354,7 @@
 		FROM
 			af_order
 		WHERE
-			is_delete=0 AND order_no = #{orderNo}
+			is_delete=0 AND order_no = #{orderNo} and order_type !='AGENTBUY'
 	</select>
 	
 	<select id="getOrderInfoByPayOrderNo" resultType="AfOrderDo">

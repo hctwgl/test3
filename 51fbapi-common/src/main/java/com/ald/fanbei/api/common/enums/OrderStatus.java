@@ -14,6 +14,8 @@ public enum OrderStatus {
 	NEW("NEW", "新建/待付款"),
 	DEALING("DEALING", "支付中"),
 	PAID("PAID", "已支付/待收货"),
+	AGENCYCOMPLETED("AGENCYCOMPLETED", "等待完成／等待收货"),
+
 	FINISHED("FINISHED", "已收货/订单完成"),
 	REBATED("REBATED", "返利成功"),
 	CLOSED("CLOSED", "订单关闭(未付款或退款成功)"),
