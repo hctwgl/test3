@@ -3,8 +3,6 @@
  */
 package com.ald.fanbei.api.dal.domain;
 
-import java.util.Date;
-
 import com.ald.fanbei.api.common.AbstractSerial;
 
 /**

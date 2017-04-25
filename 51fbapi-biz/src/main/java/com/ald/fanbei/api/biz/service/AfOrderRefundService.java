@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Date;
+
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 
 /**
@@ -14,4 +16,18 @@ public interface AfOrderRefundService {
 	int updateOrderRefund(AfOrderRefundDo orderRefundInfo);
 	
 	AfOrderRefundDo getOrderRefundByOrderId(Long orderId);
+	
+	/**
+	 * 获取最近退款号码
+	 * @param current
+	 * @return
+	 */
+	String getCurrentLastRefundNo(Date current);
+	
+	/**
+	 * 根据id获取退款信息
+	 * @param refundId
+	 * @return
+	 */
+	AfOrderRefundDo getRefundInfoById(Long refundId);
 }

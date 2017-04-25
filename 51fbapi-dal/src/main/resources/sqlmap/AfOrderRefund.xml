@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderRefundDao">
 	<sql id="queryAllFields">
-		id rid,gmt_create,gmt_modified,amount,user_id,order_id,order_no,status
+		id rid,gmt_create,gmt_modified,amount,user_id,order_id,order_no,status,refund_no,type,account_number,account_name
 	</sql>
 	
 	<insert id="addOrderRefund" parameterType="AfOrderRefundDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_order_refund(gmt_create , gmt_modified , amount , user_id , order_id , order_no , status)
+		INSERT INTO af_order_refund(gmt_create , gmt_modified , amount , user_id , order_id , order_no , status,refund_no,type,account_number,account_name)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -14,7 +14,11 @@
     		#{userId},
     		#{orderId},
     		#{orderNo},
-    		#{status}
+    		#{status},
+    		#{refundNo},
+    		#{type},
+    		#{accountNumber},
+    		#{accountName}
 		)
 	</insert>
 	
@@ -35,6 +39,15 @@
 			<if test="status != null">
     			,status=#{status}
 			</if>
+			<if test="type != null">
+    			,type=#{type}
+			</if>
+			<if test="accountNumber != null">
+    			,account_number=#{accountNumber}
+			</if>
+			<if test="accountName != null">
+    			,account_name=#{accountName}
+			</if>
 		WHERE id = #{rid}
 	</update>
 	
@@ -47,6 +60,33 @@
 			is_delete = 0
 		AND
 			order_id = #{orderId}
+	</select>
+	
+	<select id="calculateTotalRefundAmount" resultType="java.math.BigDecimal">
+		SELECT SUM(amount)
+		FROM
+			af_order_refund
+		WHERE
+			is_delete = 0
+		AND
+			status IN ('REFUNDING','FINISH') 
+		AND
+			order_id = #{orderId}
+	</select>
+	
+	<select id="getCurrentLastRefundNo" resultType="java.lang.String">
+		select refund_no from af_order_refund WHERE gmt_create=#{currentDate} ORDER BY id DESC LIMIT 1;
+	</select>
+	
+	<select id="getRefundInfoById" resultType="AfOrderRefundDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM	
+			af_order_refund
+		WHERE
+			is_delete = 0
+		AND
+			id = #{refundId}
 	</select>
 	
 </mapper>

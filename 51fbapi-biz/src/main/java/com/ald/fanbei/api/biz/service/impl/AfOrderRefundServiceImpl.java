@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -32,6 +34,16 @@ public class AfOrderRefundServiceImpl implements AfOrderRefundService {
 	@Override
 	public AfOrderRefundDo getOrderRefundByOrderId(Long orderId) {
 		return afOrderRefundDao.getOrderRefundByOrderId(orderId);
+	}
+
+	@Override
+	public String getCurrentLastRefundNo(Date current) {
+		return afOrderRefundDao.getCurrentLastRefundNo(current);
+	}
+
+	@Override
+	public AfOrderRefundDo getRefundInfoById(Long refundId) {
+		return afOrderRefundDao.getRefundInfoById(refundId);
 	}
 
 }
