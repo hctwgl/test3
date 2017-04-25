@@ -107,6 +107,7 @@ public class BoluomeController extends AbstractThird{
     	String sign = requestParams.getString(BoluomeCore.SIGN);
     	String amount = requestParams.getString(BoluomeCore.AMOUNT);
     	String appKey = requestParams.getString(BoluomeCore.APP_KEY);
+    	String channel = requestParams.getString(BoluomeCore.CHANNEL);
     	
     	params.put(BoluomeCore.ORDER_ID, orderId);
     	params.put(BoluomeCore.ORDER_TYPE, orderType);
@@ -124,6 +125,8 @@ public class BoluomeController extends AbstractThird{
     	params.put(BoluomeCore.SIGN, sign);
     	params.put(BoluomeCore.AMOUNT, amount);
     	params.put(BoluomeCore.APP_KEY, appKey);
+    	params.put(BoluomeCore.CHANNEL, channel);
+    	
     	return params;
     }
     

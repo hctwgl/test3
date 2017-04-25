@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        #set($version="2017041801")
+        #set($version="2017042501")
         #set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">

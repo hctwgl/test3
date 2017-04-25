@@ -4,7 +4,7 @@
     	#set($version="2017042401")
     	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 		<title>注册</title>
-		<link rel="stylesheet" type="text/css" href="/css/user/register.css?version=$version">
+		<link rel="stylesheet" type="text/css" href="/dist/css/user/register.css?version=$version">
     </head>
     <body style="background-color: #fff;">
     	<div class="register_main">
@@ -35,9 +35,9 @@
 	      		<p class="fl fs_24 clearfix"><span class="fl">阅读并同意</span><a class="fl" href="https://app.51fanbei.com/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
 	      	</div>
 		</div>
-		<script type="text/javascript" src="/dist/js/layer.js?version=$version"></script>
 		<script type="text/javascript" src="$commonUrl/common/js/core.js"></script>
 		<script type="text/javascript" src="$commonUrl/common/js/md5.js"></script>
+		<script type="text/javascript" src="/dist/js/layer.js?version=$version"></script>
 		<script type="text/javascript" src="/dist/js/base.js?version=$version"></script>
 		<script type="text/javascript" src="/dist/js/user/register.js?version=$version"></script>
     </body>

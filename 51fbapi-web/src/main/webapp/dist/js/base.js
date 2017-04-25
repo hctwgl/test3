@@ -1,2 +1,2 @@
 "use strict";function requestMsg(t){layer.open({content:t,skin:"msg",time:2})}function getUrl(t){for(var n=location.search.substring(1).split("&"),r=0;r<n.length;r++)if(t==n[r].split("=")[0])return n[r].split("=")[1];return""}function toDecimal2(t){var n=parseFloat(t);if(isNaN(n))return!1;var r=Math.round(100*t)/100,e=r.toString(),i=e.indexOf(".");for(i<0&&(i=e.length,e+=".");e.length<=i+2;)e+="0";return e}function getBlatFrom(){var t=navigator.userAgent,n=t.indexOf("Android")>-1||t.indexOf("Adr")>-1,r=!!t.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);return n?1:r?2:0}
-//# sourceMappingURL=_srcmap/base.js.map
+//# sourceMappingURL=../_srcmap/js/base.js.map

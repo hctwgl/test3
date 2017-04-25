@@ -141,6 +141,8 @@ public class Constants {
     public static final String CACHEKEY_BORROWNO    				  = "ala_borrow_no";
     public static final String CACHEKEY_REPAYNO_LOCK				  = "ala_repay_no_lock";
     public static final String CACHEKEY_REPAYNO    				      = "ala_repay_no";
+    public static final String CACHEKEY_REFUND_NO_LOCK				  = "ala_refund_no_lock";
+    public static final String CACHEKEY_REFUND_NO    				  = "ala_brefund_no";
     public static final String CONFIG_KEY_LOCK_TRY_TIMES              = "fbapi.sync.lock.try.times";
     public static final String CONFKEY_KXG_URL_CHARGE				  = "fbapi.kxg.url.charge";
     public static final String CONFKEY_KXG_PASSWORD					  = "fbapi.kxg.password";
@@ -148,6 +150,7 @@ public class Constants {
     public static final String CONFKEY_KXG_KEY				  		  = "fbapi.kxg.key";
     public static final String CONFKEY_BILL_CREATE_TIME 			  = "fbapi.bill.create.time";
     public static final String CONFKEY_BILL_REPAY_TIME				  = "fbapi.bill.repay.time";
+    
     
     public static final String CACHEKEY_ORDER_PAY_NO_LOCK			  = "ala_order_pay_no_lock";
     public static final String CACHEKEY_ORDER_PAY_NO    			  = "ala_order_pay_no";
