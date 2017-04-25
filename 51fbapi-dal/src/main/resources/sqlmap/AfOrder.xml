@@ -332,7 +332,7 @@
 		<if test="commissionAmount != null">
 		    ,commission_amount=#{commissionAmount}
 		</if>
-		where is_delete=0 and order_no = #{orderNo}
+		where is_delete=0 and order_no = #{orderNo} and order_type !='AGENTBUY'
 	</update>
 	
 	<select id="getCurrentLastOrderNo" resultType="java.lang.String">
@@ -354,7 +354,7 @@
 		FROM
 			af_order
 		WHERE
-			is_delete=0 AND order_no = #{orderNo}
+			is_delete=0 AND order_no = #{orderNo} and order_type !='AGENTBUY'
 	</select>
 	
 	<select id="getOrderInfoByPayOrderNo" resultType="AfOrderDo">
@@ -402,9 +402,9 @@
 		<if test="orderStatus == 'AR'">
 			and a.status = 'REBATED'
 		</if>
-		and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.status='NEW' AND a.id=b.id)
+<!-- 		and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.status='NEW' AND a.id=b.id) -->
 		AND
-			a.order_type IN ('MOBILE','TAOBAO','TMALL',"AGENTBUY")
+			a.order_type IN ('MOBILE','TAOBAO','TMALL','AGENTBUY')
 		UNION ALL
 		SELECT
 			id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,

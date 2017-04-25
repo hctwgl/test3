@@ -182,6 +182,33 @@
                 丙方 （居间方）：浙江阿拉丁电子商务股份有限公司<br><br>
             </p>
         </div>
-        <script type="text/javascript" src="/js/app/sys/cashLoanProtocol.js?version=$version"></script>
+        <script type="text/javascript">
+            new Vue({
+                el:'.cashLoanProtocol',
+                methods:{
+                    changeRate: function(num){ // 利率截取最后两位小数
+                        var rate=num;
+                        rate = (rate*100).toFixed(4);   //截取小数点后4位
+                        rate = parseFloat(rate);
+                        rate = rate+'%';
+                        return rate;
+                    },
+                    changePrincipal: function(principalNum){ // 本金金额保留二位小数
+
+                        principalNum = parseFloat(principalNum);
+                        principalNum = principalNum.toFixed(2);     //截取小数点后2位
+                        return principalNum;
+                    },
+                    changeDailyRate: function(dailyRate){ // 日利率/365
+
+                        dailyRate = dailyRate/360; // 日利率
+                        dailyRate = (dailyRate*100).toFixed(4);   //截取小数点后4位
+                        dailyRate = parseFloat(dailyRate);
+                        dailyRate = dailyRate+'%';
+                        return dailyRate;
+                    }
+                }
+            });
+        </script>
     </body>
 </html>

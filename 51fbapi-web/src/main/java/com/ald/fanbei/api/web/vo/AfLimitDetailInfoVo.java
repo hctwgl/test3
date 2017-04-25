@@ -34,6 +34,9 @@ public class AfLimitDetailInfoVo extends AbstractSerial{
 	private String borrowDetail;//借款明细
 	private Integer borrowDay;//借款天数
 	private BigDecimal payAmount;//当前需还
+	
+	private Integer jfbAmount;//集分宝
+
 	public String getCardName() {
 		return cardName;
 	}
@@ -136,4 +139,17 @@ public class AfLimitDetailInfoVo extends AbstractSerial{
 	public void setPayAmount(BigDecimal payAmount) {
 		this.payAmount = payAmount;
 	}
+	/**
+	 * @return the jfbAmount
+	 */
+	public Integer getJfbAmount() {
+		return jfbAmount;
+	}
+	/**
+	 * @param jfbAmount the jfbAmount to set
+	 */
+	public void setJfbAmount(Integer jfbAmount) {
+		this.jfbAmount = jfbAmount;
+	}
+
 }

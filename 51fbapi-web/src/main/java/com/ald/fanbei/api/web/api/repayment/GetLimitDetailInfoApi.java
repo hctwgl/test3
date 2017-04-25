@@ -108,6 +108,8 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 		detailInfo.setCardName(repayment.getCardName());
 		detailInfo.setCardNo(StringUtil.getLastString(repayment.getCardNumber(), 4));
 		detailInfo.setStatus(repayment.getStatus());
+		detailInfo.setJfbAmount(repayment.getJfbAmount().intValue());
+		
 		return detailInfo;
 	}
 }

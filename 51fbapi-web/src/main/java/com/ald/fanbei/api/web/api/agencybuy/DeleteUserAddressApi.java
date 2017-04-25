@@ -35,11 +35,16 @@ public class DeleteUserAddressApi implements ApiHandle {
 		String isDefault = ObjectUtils.toString(requestDataVo.getParams().get("addressId"),null);
 		Long userId = context.getUserId();
 		if(afUserAddressService.deleteUserAddress(addressId) > 0){
+		 if(afUserAddressService.selectUserAddressByrid(userId)!= null){
 			if(StringUtils.isNotBlank(isDefault)){
 				if (afUserAddressService.reselectTheDefaultAddress(userId) > 0){
 					return resp;
 				}
-			}	
+			}
+		 }else
+		 {
+			 return resp;
+		 }
 		}
 
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);

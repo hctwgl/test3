@@ -70,8 +70,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
 			}
-			data.put("rebateAmount", account.getRebateAmount());
+			 data.put("jfbAmount", account.getJfbAmount());
 
+			data.put("rebateAmount", account.getRebateAmount());
+			
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());

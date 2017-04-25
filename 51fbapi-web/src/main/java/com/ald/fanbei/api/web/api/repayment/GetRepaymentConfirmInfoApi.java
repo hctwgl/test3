@@ -61,6 +61,7 @@ public class GetRepaymentConfirmInfoApi implements ApiHandle{
 			int billYear,int billMonth ){
 		AfRepaymentConfirmVo vo = new AfRepaymentConfirmVo();
 		vo.setRebateAmount(userDto.getRebateAmount());
+		vo.setJfbAmount(userDto.getJfbAmount().intValue());
 		if(billId>0){//单笔还款
 			AfBorrowBillDo billDo = afBorrowBillService.getBorrowBillById(billId);
 			vo.setRepayAmount(billDo.getBillAmount());

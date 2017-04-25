@@ -18,6 +18,8 @@ public class AfOrderTempDo extends AbstractSerial{
 	private Date gmtCreate;
 	private String orderNo;
 	private String status;
+	private Long orderId;
+
 	public Long getRid() {
 		return rid;
 	}
@@ -47,5 +49,17 @@ public class AfOrderTempDo extends AbstractSerial{
 	}
 	public void setGmtCreate(Date gmtCreate) {
 		this.gmtCreate = gmtCreate;
+	}
+	/**
+	 * @return the orderId
+	 */
+	public Long getOrderId() {
+		return orderId;
+	}
+	/**
+	 * @param orderId the orderId to set
+	 */
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
 	}
 }

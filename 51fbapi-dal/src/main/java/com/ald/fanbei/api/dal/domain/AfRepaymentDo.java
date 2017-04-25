@@ -32,6 +32,8 @@ public class AfRepaymentDo extends AbstractSerial{
 	private Long userId;
 	private String cardNumber;
 	private String cardName;
+	
+	private BigDecimal jfbAmount;
 	public Long getRid() {
 		return rid;
 	}
@@ -133,5 +135,17 @@ public class AfRepaymentDo extends AbstractSerial{
 	}
 	public void setCardName(String cardName) {
 		this.cardName = cardName;
+	}
+	/**
+	 * @return the jfbAmount
+	 */
+	public BigDecimal getJfbAmount() {
+		return jfbAmount;
+	}
+	/**
+	 * @param jfbAmount the jfbAmount to set
+	 */
+	public void setJfbAmount(BigDecimal jfbAmount) {
+		this.jfbAmount = jfbAmount;
 	}
 }

@@ -36,6 +36,7 @@ public class AfRepaymentBorrowCashDo extends AbstractSerial {
 	private Long userId;
 	private String cardNumber;
 	private String cardName;
+	private BigDecimal jfbAmount;
 
 	/**
 	 * @return the gmtCreate
@@ -241,6 +242,18 @@ public class AfRepaymentBorrowCashDo extends AbstractSerial {
 	 */
 	public void setRid(Long rid) {
 		this.rid = rid;
+	}
+	/**
+	 * @return the jfbAmount
+	 */
+	public BigDecimal getJfbAmount() {
+		return jfbAmount;
+	}
+	/**
+	 * @param jfbAmount the jfbAmount to set
+	 */
+	public void setJfbAmount(BigDecimal jfbAmount) {
+		this.jfbAmount = jfbAmount;
 	}
 	
 	

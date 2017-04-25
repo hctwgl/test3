@@ -165,6 +165,22 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
+    
+    /**
+     * 运营相关接口相关
+     * @param body
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = {"/operataApp/getAgencyBuyOrderList","/operateApp/getOrderSyncAgencyOrderInfo","/operataApp/getAgencyBuyOrderInfo"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @ResponseBody
+    public String operateAppRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        return this.processRequest(body, request, false);
+    }
     @Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		if (StringUtils.isBlank(reqData)) {

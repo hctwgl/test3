@@ -1,29 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+    	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 		<title>详细教程</title>
-	    <style type="text/css">
-	    	.rebateTutorial li{
-	    		width: 7.5rem;
-	    		height: 7.51rem;
-	    	}
-	    	.rebateTutorial li:nth-child(1){
-				background-image: url(/images/app/sys/rebateTutorial_bg1.png);
-	    	}
-	    	.rebateTutorial li:nth-child(2){
-				background-image: url(/images/app/sys/rebateTutorial_bg2.jpg);
-	    	}
-	    	.rebateTutorial li:nth-child(3){
-				background-image: url(/images/app/sys/rebateTutorial_bg3.jpg);
-	    	}
-	    </style>
-
     </head>
     <body>
-		<ul class="rebateTutorial">
-			<li class="bgs_c"></li>
-			<li class="bgs_c"></li>
-			<li class="bgs_c"></li>
-		</ul>
+		<img src="$commonUrl/app/images/sys/rebateTutorial_bg1.png">
+		<img src="$commonUrl/app/images/sys/rebateTutorial_bg2.jpg">
+		<img src="$commonUrl/app/images/sys/rebateTutorial_bg3.jpg">
     </body>
 </html>
