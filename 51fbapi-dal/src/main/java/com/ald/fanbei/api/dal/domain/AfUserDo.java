@@ -36,8 +36,8 @@ public class AfUserDo extends AbstractSerial {
 	private String recommendCode;// 邀请码
 	private String status;// NORMAL:正常使用，FROZEN：表示冻结
 
-	private Long registerChannelId; // 注册渠道
-	private Long registerChannelPointId;// 注册渠道位置
+	private String registerChannelId; // 注册渠道
+	private String registerChannelPointId;// 注册渠道位置
 
 	public Long getRid() {
 		return rid;
@@ -214,20 +214,26 @@ public class AfUserDo extends AbstractSerial {
 		this.status = status;
 	}
 
-	public Long getRegisterChannelId() {
+	public String getRegisterChannelId() {
 		return registerChannelId;
 	}
 
-	public void setRegisterChannelId(Long registerChannelId) {
+	public void setRegisterChannelId(String registerChannelId) {
 		this.registerChannelId = registerChannelId;
 	}
 
-	public Long getRegisterChannelPointId() {
+	public String getRegisterChannelPointId() {
 		return registerChannelPointId;
 	}
 
-	public void setRegisterChannelPointId(Long registerChannelPointId) {
+	public void setRegisterChannelPointId(String registerChannelPointId) {
 		this.registerChannelPointId = registerChannelPointId;
 	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	
 
 }

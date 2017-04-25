@@ -51,6 +51,8 @@ public class SetRegisterPwdApi implements ApiHandle {
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
         String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
         String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
+        String registerChannelId = ObjectUtils.toString(requestDataVo.getParams().get("channelId"));
+        String registerChannelPointId = ObjectUtils.toString(requestDataVo.getParams().get("channelPointId"), null);
         
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
@@ -95,6 +97,8 @@ public class SetRegisterPwdApi implements ApiHandle {
         userDo.setMobile(userName);
         userDo.setNick(nick);
         userDo.setPassword(password);
+        userDo.setRegisterChannelId(registerChannelId);
+        userDo.setRegisterChannelPointId(registerChannelPointId);
         afUserService.addUser(userDo);
 
         
