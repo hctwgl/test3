@@ -278,13 +278,13 @@ public class RiskUtil extends AbstractThird{
 		reqBo.setNotifyUrl(getNotifyHost()+"/third/risk/verify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 	
-		String url = getUrl()+"/modules/api/risk/verify.htm";
-		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("verify", borrowId, content, url);
+//		String url = getUrl()+"/modules/api/risk/verify.htm";
+//		String content = JSONObject.toJSONString(reqBo);
+//		commitRecordUtil.addRecord("verify", borrowId, content, url);
 		
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+//		String reqResult = HttpUtil.httpPost(url, reqBo);
 
-//		String reqResult = HttpUtil.httpPost("http://arc.51fanbei.com"+"/modules/api/risk/verify.htm", reqBo);
+		String reqResult = HttpUtil.httpPost(getUrl()+"/modules/api/risk/verify.htm", reqBo);
 		
 		logThird(reqResult, "verify", reqBo);
 		if(StringUtil.isBlank(reqResult)){
