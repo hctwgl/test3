@@ -17,6 +17,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
@@ -51,8 +52,8 @@ public class SetRegisterPwdApi implements ApiHandle {
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
         String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
         String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
-        String registerChannelId = ObjectUtils.toString(requestDataVo.getParams().get("channelId"));
-        String registerChannelPointId = ObjectUtils.toString(requestDataVo.getParams().get("channelPointId"), null);
+//        Long registerChannelId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("channelId"),null);
+//        Long registerChannelPointId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("channelPointId"), null);
         
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
@@ -97,8 +98,8 @@ public class SetRegisterPwdApi implements ApiHandle {
         userDo.setMobile(userName);
         userDo.setNick(nick);
         userDo.setPassword(password);
-        userDo.setRegisterChannelId(registerChannelId);
-        userDo.setRegisterChannelPointId(registerChannelPointId);
+//        userDo.setRegisterChannelId(registerChannelId);
+//        userDo.setRegisterChannelPointId(registerChannelPointId);
         afUserService.addUser(userDo);
 
         
