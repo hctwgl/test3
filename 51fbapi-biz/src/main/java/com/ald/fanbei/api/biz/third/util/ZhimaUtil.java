@@ -6,9 +6,12 @@ import java.util.Map;
 
 import com.ald.fanbei.api.biz.bo.ZhimaAuthResultBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.antgroup.zmxy.openplatform.api.DefaultZhimaClient;
@@ -48,9 +51,9 @@ public class ZhimaUtil extends AbstractThird {
 	private synchronized static DefaultZhimaClient getZhimaClient() {
 		if (ZhimaClient == null) {
 			String gatewayUrl = "https://zmopenapi.zmxy.com.cn/openapi.do";
-			String appId = "1001908";//AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-			String privateKey =  "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAMNDc33KJ72xZcwYhSjpqPuPGv/TInDAomJrvovLOJ9U/iPKbq5fRT1bL0OmNnXr8ShOPhqK+C31uvFN0Flo6KbaALwz7l8AeuGqiu2y6oOk9ESpxfnp3f9G/ljNNnUKFO9egGIrnLZZdHAysECxDaxPjCUTOqa5i2+Fuokq9EVdAgMBAAECgYA1m+o0afEZQoApVb4Ran1re3G1NPlqrWinzt8EsGm+TO5tUyGqHBv9aXCDiTnAjGOsZjbkwKy8qY+Guo9uTMA6vBW3Dg0F7clD9QJ9qxia2HwAcaODwpZ26cxjZZjmP6SY+wZNBeaZGcqDiSvf1ObJyKhW3WCPahiOThj5WODaPQJBAOkb0y1AYkbiO+hzCf9L6M+awmMA+hVW6BYLC7V9CaBhSp6E5FXb2F6i7vSLhjv7MZFqyUvFP2eBHtGdSpi9HCcCQQDWcDn4m3aEbKUK+cnBjxGl6p5o6q7YJw9ylChJIhEhTIMMvLQq+6f62jGAKyxpHK9r9pi/xQLHHvQ6ZE5EN1DbAkAtPYAzhQ5NsXRs/X6QNHw/ZkqZikP+xjoOpSAlndmzbY5cy2/BFgSdAUQc48Mueua40R+1+9b9UHrZtYwXroP7AkBRFylk8O01kJws9V6tWnvzATEcPbsWtFasHojJdx+BNxzLoUSEiJvySba0YB8wNI/FxP/obQjq4bK7rhjGxSBHAkBd0f4QCx1RxfAkr68ery7WWtAtB8RW+EKCnowIaW3iZkakV9Zw39t8PNVf78WddkT8IPqqWITHT+YAZ795q2MV";//AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PRIKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-			String zhimaPublicKey =  "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1jiVoaKsIQtk0PU3HolnS9hFEQ5Sfv2naxbOBSR6xix/jQbdzZ3sQyQ8xV6Z4xgary5vnxGOMtJDIUIshUJE3ByQJ0apOa+YqFsZpFJBmPwpLwIG54R0ZtOkhTJZ3ZNXgUo4MOJgDowfz/GcDyimZSS7NlecX4wN4JXLoPZH7KwIDAQAB";//AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String appId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String privateKey =  AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PRIKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			String zhimaPublicKey =  AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_ZHIMA_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 			ZhimaClient = new DefaultZhimaClient(gatewayUrl, appId, privateKey,zhimaPublicKey);
 		}
 		return ZhimaClient;

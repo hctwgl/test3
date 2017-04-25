@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.YituFaceCardReqBo;
 import com.ald.fanbei.api.biz.bo.YituFaceCardRespBo;
+import com.ald.fanbei.api.biz.bo.YituFaceLivingReqBo;
+import com.ald.fanbei.api.biz.bo.YituFaceLivingRespBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -57,8 +59,33 @@ public class YituUtil extends AbstractThird {
 		}
 		return respBo1;
 	}
-	
-	
+
+	/**
+	 * 
+	 * @方法说明：活体检验
+	 * @author huyang
+	 * @param packages
+	 *            依图识别图像
+	 * @return
+	 * @throws Exception
+	 */
+	public YituFaceLivingRespBo checkLiving(String packages, String idcardPath) throws Exception {
+		YituFaceLivingReqBo bo = new YituFaceLivingReqBo();
+		bo.setQuery_image_package(packages);
+		String pic = FileHelper.getImageBase64Content(idcardPath);
+		bo.setDatabase_image_content(pic);
+		String requestBody = JSON.toJSONString(bo);
+		String signature = signature(requestBody);
+		String url = getIp() + "/face/v1/algorithm/recognition/face_pair_verification";
+		String result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
+		YituFaceLivingRespBo respBo = JSONObject.parseObject(result, YituFaceLivingRespBo.class);
+		logger.info(StringUtil.appendStrs("yitu checkLiving params=|", requestBody, "|,reqResult=", result));
+		if (respBo.getRtn() == 0) {
+			return respBo;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
+		}
+	}
 
 	/**
 	 * 

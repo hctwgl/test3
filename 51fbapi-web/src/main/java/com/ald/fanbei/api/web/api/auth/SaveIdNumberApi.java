@@ -11,12 +11,13 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -35,6 +36,8 @@ public class SaveIdNumberApi implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	RiskUtil riskUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -48,19 +51,21 @@ public class SaveIdNumberApi implements ApiHandle {
 			AfUserDo afUserDo = afUserService.getUserById(userId);
 			afUserDo.setRealName(idNumberDo.getName());
 			afUserService.updateUser(afUserDo);
-			
-			AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+
+			AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 			accountDo.setRealName(idNumberDo.getName());
 			accountDo.setIdNumber(idNumberDo.getCitizenId());
 			afUserAccountService.updateUserAccount(accountDo);
+
+			riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
+					accountDo.getAddress(), accountDo.getOpenId());
 			return resp;
 		}
 
 	}
 
-	public AfIdNumberDo idNumberDoWithIdNumberInfo(String address, String citizenId, String gender, String nation,
-			String name, String validDateBegin, String validDateEnd, String birthday, String agency, String idFrontUrl,
-			String idBehindUrl, AfIdNumberDo idNumberDo) {
+	public AfIdNumberDo idNumberDoWithIdNumberInfo(String address, String citizenId, String gender, String nation, String name, String validDateBegin, String validDateEnd,
+			String birthday, String agency, String idFrontUrl, String idBehindUrl, AfIdNumberDo idNumberDo) {
 		if (idNumberDo == null) {
 			idNumberDo = new AfIdNumberDo();
 		}
