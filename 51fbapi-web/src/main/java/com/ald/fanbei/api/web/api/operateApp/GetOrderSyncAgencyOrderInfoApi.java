@@ -9,11 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -25,18 +27,21 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("getOrderSyncAgencyOrderInfoApi")
 public class GetOrderSyncAgencyOrderInfoApi implements ApiHandle {
-	
+
 	@Resource
 	AfOrderService afOrderService;
+	@Resource
+	AfAgentOrderService afAgentOrderService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"),"");
-		Long otherOrderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), 0L) ;
+		String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"), "");
+		Long otherOrderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), 0L);
 
-		if(afOrderService.syncOrderNoWithAgencyUser(userId, orderNo,otherOrderId)>0){
+		if (afOrderService.syncOrderNoWithAgencyUser(userId, orderNo, otherOrderId) > 0) {
+		
 			return resp;
 		}
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);
