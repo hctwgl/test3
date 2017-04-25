@@ -174,7 +174,7 @@ public class FanbeiController extends BaseController {
      * @return
      * @throws IOException
      */
-    @RequestMapping(value = {"/operateApp/getAgencyBuyOrderList","/operateApp/getOrderSyncAgencyOrderInfo","/operateApp/getAgencyBuyOrderInfo"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @RequestMapping(value = {"/operateApp/getAgencyBuyOrderList","/operateApp/getOrderSyncOrderInfo","/operateApp/getAgencyBuyOrderInfo"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String operateAppRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

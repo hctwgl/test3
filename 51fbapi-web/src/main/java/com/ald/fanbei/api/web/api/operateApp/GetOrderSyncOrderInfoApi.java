@@ -25,8 +25,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @author suweili 2017年4月24日下午6:41:24
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("getOrderSyncAgencyOrderInfoApi")
-public class GetOrderSyncAgencyOrderInfoApi implements ApiHandle {
+@Component("getOrderSyncOrderInfoApi")
+public class GetOrderSyncOrderInfoApi implements ApiHandle {
 
 	@Resource
 	AfOrderService afOrderService;
