@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
@@ -37,7 +38,7 @@ public interface AfRepaymentService {
 	 * @param current
 	 * @return
 	 */
-	String getCurrentLastRepayNo(String orderNoPre);
+	String getCurrentLastRepayNo(Date current);
 	
 	/**
      * 通过id获取详情
