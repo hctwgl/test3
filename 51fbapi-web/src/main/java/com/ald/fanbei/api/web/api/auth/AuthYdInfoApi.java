@@ -55,13 +55,9 @@ public class AuthYdInfoApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+
 		data.put("ydKey", publicKey);
 		data.put("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
-		if (callLimitDo.getDisableStatus().equals("Y")) {
-			data.put("canRetry", "Y");
-		} else {
-			data.put("canRetry", "N");
-		}
 		resp.setResponseData(data);
 
 		return resp;
