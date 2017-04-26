@@ -89,7 +89,7 @@ var addModel = function addModel(goodsList) {
         var rebateAmountSplitArr = rebateAmount.split(".");
         var rebateAmountPriceInteger = rebateAmountSplitArr[0];
         var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-        var goodInfoUrl = notifyUrl + '&params={"goodsId":" '+ goodsList[j].goodsId+' "}';
+        var goodInfoUrl = notifyUrl + "&params={'goodsId':'"+ goodsList[j].goodsId+"'}";
         html += '<li class="goodsListModel_item">'
                     +'<a href=" '+ goodInfoUrl +' ">'
                         +'<img src=" '+goodsList[j].goodsIcon+' " class="mainContent_img">'
