@@ -165,7 +165,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox, afBorrowCashDo.getBorrowNo());
 
 			cashDo.setRishOrderNo(result.getOrderNo());
-			cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
+			cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
 			
 			return resp;
