@@ -401,12 +401,14 @@ public class RiskUtil extends AbstractThird {
 
 			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + afUserDo.getUserName() + ",isContain=" + whiteIdsList.contains(afUserDo.getUserName()));
 			if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
+				/*
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 				// 审核通过
 				cashDo.setGmtArrival(currDate);
 				cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
 				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(consumerNo);
-//				// 打款
+				// 打款
 				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", 
 						card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02", 
 						UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
@@ -417,7 +419,7 @@ public class RiskUtil extends AbstractThird {
 				}
 				afBorrowCashService.updateBorrowCash(cashDo);
 				addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
-
+				 */
 			} else if (StringUtils.equals("30", result)) {
 				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
