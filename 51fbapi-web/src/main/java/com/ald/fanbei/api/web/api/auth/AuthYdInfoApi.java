@@ -6,16 +6,22 @@ package com.ald.fanbei.api.web.api.auth;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserApiCallLimitService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.ApiCallType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfUserApiCallLimitDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -28,23 +34,40 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("authYdInfoApi")
 public class AuthYdInfoApi implements ApiHandle {
 
-	
+	@Resource
+	AfUserApiCallLimitService afUserApiCallLimitService;
+	@Resource
+	AfResourceService afResourceService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		 Long userId = context.getUserId();
-	        if (userId == null) {
-				throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
-			}
-	        Map<String, Object> data = new HashMap<String, Object>();
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		Long userId = context.getUserId();
+		if (userId == null) {
+			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
+		}
 
-    	String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-    	data.put("ydKey", publicKey);
-    	data.put("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
-    	resp.setResponseData(data);
+		// 添加次数限制
+		Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YOUDUN.getCode()).getValue(), 0);
+		AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(userId, ApiCallType.YOUDUN.getCode());
+		if (callLimitDo == null) {
+			callLimitDo = new AfUserApiCallLimitDo();
+			afUserApiCallLimitService.addUserApiCallLimit(callLimitDo);
+		}
+		if (callLimitDo.getDisableStatus().equals("Y")) {
+			throw new FanbeiException(FanbeiExceptionCode.API_CALL_NUM_OVERFLOW);
+		}
 
-        return resp;
-    	
+		Map<String, Object> data = new HashMap<String, Object>();
+
+		String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		data.put("ydKey", publicKey);
+		data.put("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
+		data.put("surplus", maxNum - callLimitDo.getCallNum());
+		resp.setResponseData(data);
+
+		return resp;
+
 	}
 
 }
