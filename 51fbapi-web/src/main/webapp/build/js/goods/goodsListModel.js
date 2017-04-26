@@ -2,7 +2,7 @@
 * @Author: Yangyang
 * @Date:   2017-02-23 14:11:41
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-24 19:13:32
+* @Last Modified time: 2017-04-26 10:31:23
 * @title:  商品列表页
 */
 
@@ -89,9 +89,9 @@ var addModel = function addModel(goodsList) {
         var rebateAmountSplitArr = rebateAmount.split(".");
         var rebateAmountPriceInteger = rebateAmountSplitArr[0];
         var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-        var goodInfoUrl = notifyUrl + "&params={'goodsId':'"+ goodsList[j].goodsId+"'}";
+        var goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[j].goodsId+'"}';
         html += '<li class="goodsListModel_item">'
-                    +'<a href=" '+ goodInfoUrl +' ">'
+                    +'<a href='+goodInfoUrl+'>'
                         +'<img src=" '+goodsList[j].goodsIcon+' " class="mainContent_img">'
                         +'<div class="goodsListModel_mainContent_wrap">'
                             +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'

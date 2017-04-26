@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="2017042402")
+    #set($version="2017042601")
     #set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
     <title>商品列表模版</title>
     <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
