@@ -81,16 +81,18 @@ public class AuthFaceApi implements ApiHandle {
 		// TODO 具体计数办法待实现
 		afUserApiCallLimitService.addVisitNum(context.getUserId(), ApiCallType.YOUDUN.getCode());
 		AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(context.getUserId(), ApiCallType.YOUDUN.getCode());
-		Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YOUDUN.getCode()).getValue(), 0);
-		Map<String,Object> data = new HashMap<>();
-		if (maxNum - callLimitDo.getCallNum() > 0 && callLimitDo.getDisableStatus().equals("N")) {
-			data.put("canRetry", "Y");
-		} else {
-			data.put("canRetry", "N");
-			callLimitDo.setDisableStatus("Y");
-			afUserApiCallLimitService.updateUserApiCallLimit(callLimitDo);
+		if(callLimitDo!=null){
+			Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YOUDUN.getCode()).getValue(), 0);
+			Map<String,Object> data = new HashMap<>();
+			if (maxNum - callLimitDo.getCallNum()> 0 && callLimitDo.getDisableStatus().equals("N")) {
+				data.put("canRetry", "Y");
+			} else {
+				data.put("canRetry", "N");
+				callLimitDo.setDisableStatus("Y");
+				afUserApiCallLimitService.updateUserApiCallLimit(callLimitDo);
+			}
+			resp.setResponseData(data);
 		}
-		resp.setResponseData(data);
 
 		if (StringUtil.isBlank(idNumber) || StringUtil.isBlank(realName)) {
 			throw new FanbeiException("authRealnameApi param error", FanbeiExceptionCode.PARAM_ERROR);
