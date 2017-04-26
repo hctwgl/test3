@@ -2,18 +2,28 @@ package com.ald.fanbei.api.web.api.agencybuy;
 
 
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
+
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -27,6 +37,8 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 	AfAgentOrderService afAgentOrderService;
 	@Resource
 	AfOrderService afOrderService;
+	@Resource
+	AfResourceService afResourceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -57,9 +69,16 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		// 取出所有所需要的值
 		String goodName = afOrderDo.getGoodsName();
 		String goodsIcon = afOrderDo.getGoodsIcon();
-		Long count = NumberUtil.objToLongDefault(afOrderDo.getCount(), -1);
-		Long priceAmount = NumberUtil.objToLongDefault(afOrderDo.getPriceAmount(), -1);
-		Long rebateAmount = NumberUtil.objToLongDefault(afOrderDo.getRebateAmount(), -1);
+		Long count = NumberUtil.objToLongDefault(afOrderDo.getCount(), 1);
+		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(afOrderDo.getPriceAmount(), BigDecimal.ZERO);	// 商品的价格
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(afOrderDo.getPriceAmount(),BigDecimal.ZERO); // 用户填写的价格
+		String rebateAmount = ObjectUtils.toString(afOrderDo.getRebateAmount(), "0.00");
+
+		final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
+		if(rebateAmount.equals("0.00")){
+		rebateAmount = parseToVo(saleAmount,NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO),
+					NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO));	
+		}
 		String consignee = afAgentOrderDo.getConsignee();
 		String province = afAgentOrderDo.getProvince();
 		String city = afAgentOrderDo.getCity();
@@ -69,7 +88,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String capture = afAgentOrderDo.getCapture();
 		String remark = afAgentOrderDo.getRemark();
 		String gmtCreate = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT,afOrderDo.getGmtCreate());
-		String payType =  afOrderDo.getPayType();
+		String payType =  afOrderDo.getPayType().equals("AP")?"返呗支付":"其他支付方式";
 		String gmtPay = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT,afOrderDo.getGmtPay());
 		/**
 		 * 支付状态【N:(notpay)未支付,D:(dealing)支付中,P:(payed)已经支付,R:(refund)退款】
@@ -107,11 +126,10 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setAddress(StringUtils.isBlank(address)?"":address);
 		agentOrderDetailVo.setGoodName(StringUtils.isBlank(goodName)?"":goodName);
 		agentOrderDetailVo.setGoodsIcon(StringUtils.isBlank(goodsIcon)?"":goodsIcon);
-		agentOrderDetailVo.setCount(count != -1?count:0);
+		agentOrderDetailVo.setCount(count);
 		agentOrderDetailVo.setCapture(StringUtils.isBlank(capture)?"":capture);
 		agentOrderDetailVo.setRemark(StringUtils.isBlank(remark)?"":remark);
-		agentOrderDetailVo.setPriceAmount(priceAmount != -1?priceAmount:0);
-		agentOrderDetailVo.setRebateAmount(rebateAmount != -1?rebateAmount:0);
+		agentOrderDetailVo.setRebateAmount(StringUtils.isBlank(rebateAmount)?"0":rebateAmount);
 		agentOrderDetailVo.setAgentMessage(StringUtils.isBlank(agentMessage)?"":agentMessage);
 		agentOrderDetailVo.setGmtCreate(StringUtils.isBlank(gmtCreate)?"":gmtCreate);
 		agentOrderDetailVo.setPayType(StringUtils.isBlank(payType)?"":payType);
@@ -123,9 +141,18 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setClosedReason(StringUtils.isBlank(closedReason)?"":closedReason);
 		agentOrderDetailVo.setGmtClosed(StringUtils.isBlank(gmtClosed)?"":gmtClosed);
 		agentOrderDetailVo.setNumId(StringUtils.isBlank(numId)?"":numId);
+		agentOrderDetailVo.setSaleAmount(saleAmount);
+		agentOrderDetailVo.setActualAmount(actualAmount);
 		
 
 		return agentOrderDetailVo;
+	}
+	
+	
+	private String parseToVo(BigDecimal saleAmount, BigDecimal minRate,BigDecimal maxRate){
+		BigDecimal minRebateAmount = saleAmount.multiply(minRate).setScale(2,BigDecimal.ROUND_HALF_UP);
+		BigDecimal maxRebateAmount = saleAmount.multiply(maxRate).setScale(2,BigDecimal.ROUND_HALF_UP);
+		return new StringBuffer("").append(minRebateAmount).append("~").append(maxRebateAmount).toString();
 	}
 
 }

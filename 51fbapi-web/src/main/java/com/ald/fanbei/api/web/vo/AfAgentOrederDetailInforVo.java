@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.vo;
 
 
 
+import java.math.BigDecimal;
+
 import com.ald.fanbei.api.common.AbstractSerial;
 
 
@@ -13,8 +15,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String goodName; // 商品名称
 	private String goodsIcon; // 商品图片
 	private Long count; // 商品数量
-	private Long priceAmount; // 商品价格
-	private Long rebateAmount; // 返利金额
+	private String rebateAmount; // 返利金额
 	private String consignee; // 收件人
 	private String province; // 省
 	private String city; // 城市
@@ -36,7 +37,23 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String closedReason; // 取消理由
 	private String gmtClosed; // 用户取消时间
 	private String numId; // 商品的numId
+	private BigDecimal saleAmount; // 商品的价格
+	private BigDecimal actualAmount; // 用户填写的金额
 	
+	
+	
+	public BigDecimal getSaleAmount() {
+		return saleAmount;
+	}
+	public void setSaleAmount(BigDecimal saleAmount) {
+		this.saleAmount = saleAmount;
+	}
+	public BigDecimal getActualAmount() {
+		return actualAmount;
+	}
+	public void setActualAmount(BigDecimal actualAmount) {
+		this.actualAmount = actualAmount;
+	}
 	public String getNumId() {
 		return numId;
 	}
@@ -153,16 +170,10 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 		this.count = count;
 	}
 	
-	public Long getPriceAmount() {
-		return priceAmount;
-	}
-	public void setPriceAmount(Long priceAmount) {
-		this.priceAmount = priceAmount;
-	}
-	public Long getRebateAmount() {
+	public String getRebateAmount() {
 		return rebateAmount;
 	}
-	public void setRebateAmount(Long rebateAmount) {
+	public void setRebateAmount(String rebateAmount) {
 		this.rebateAmount = rebateAmount;
 	}
 	public String getMobile() {
