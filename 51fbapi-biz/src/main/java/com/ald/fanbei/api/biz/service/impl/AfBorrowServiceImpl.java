@@ -232,8 +232,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		return borrow;
 	}
 	
-	public String getCurrentLastBorrowNo(String orderNoPre) {
-		return afBorrowDao.getCurrentLastBorrowNo(orderNoPre);
+	@Override
+	public String getCurrentLastBorrowNo(Date current) {
+		return null;
 	}
 	
 	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType borrowType,BigDecimal amount,Long userId,Long borrowId){
