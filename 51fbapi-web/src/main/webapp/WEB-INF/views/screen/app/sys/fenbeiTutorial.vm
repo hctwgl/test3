@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
+    	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/sys")
 		<title>新手教程</title>
     </head>
     <body>
-		<img src="$commonUrl/app/images/sys/fenbeiTutorial_bg1.png">
-		<img src="$commonUrl/app/images/sys/fenbeiTutorial_bg2.png">
-		<img src="$commonUrl/app/images/sys/fenbeiTutorial_bg3.png">
-		<img src="$commonUrl/app/images/sys/fenbeiTutorial_bg4.png">
+		<img src="$commonUrl/fenbeiTutorial_bg1.png">
+		<img src="$commonUrl/fenbeiTutorial_bg2.png">
+		<img src="$commonUrl/fenbeiTutorial_bg3.png">
+		<img src="$commonUrl/fenbeiTutorial_bg4.png">
     </body>
 </html>

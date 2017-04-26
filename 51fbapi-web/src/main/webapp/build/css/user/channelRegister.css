@@ -2,10 +2,12 @@
 * @Author: Yangyang
 * @Date:   2017-04-12 10:47:30
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-25 17:07:43
+* @Last Modified time: 2017-04-26 11:35:08
 * @title:  51返呗注册
 */
 
+
+@url: "http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user";
 
 .channelRegister input,.channelRegister button{
 	background-color: transparent;
@@ -18,28 +20,28 @@
 	height: 34.1rem;*/
 	width: 7.5rem;
 	height: 13.64rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channelRegister1.jpg);
+	background-image: url("@{url}/channelRegister/channelRegister1.jpg");
 }
 .channelRegister2{
 	/*width: 18.75rem;
 	height: 34.1rem;*/
 	width: 7.5rem;
 	height: 13.64rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channelRegister2.jpg);
+	background-image: url("@{url}/channelRegister/channelRegister2.jpg");
 }
 .channelRegister3{
 	/*width: 18.75rem;
 	height: 34.1rem;*/
 	width: 7.5rem;
 	height: 13.64rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channelRegister3.jpg);
+	background-image: url("@{url}/channelRegister/channelRegister3.jpg");
 }
 .channelRegister4{
 	/*width: 18.75rem;
 	height: 33.0rem;*/
 	width: 7.5rem;
 	height: 13.2rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channelRegister4.jpg);
+	background-image: url("@{url}/channelRegister/channelRegister4.jpg");
 	/*padding-bottom: 0.5rem;*/
 	padding-bottom: 0.2rem;
 	background-color: #FF7903;
@@ -49,14 +51,14 @@
 	height: 31.15rem;*/
 	width: 7.5rem;
 	height: 12.46rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channelRegister5.jpg);
+	background-image: url("@{url}/channelRegister/channelRegister5.jpg");
 }
 .channelRegister6{
 	/*width: 18.75rem;
 	height: 34.075rem;*/
 	width: 7.5rem;
 	height: 13.63rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channelRegister6.jpg);
+	background-image: url("@{url}/channelRegister/channelRegister6.jpg");
 }
 
 .channelRegister ul{
@@ -73,7 +75,7 @@
 .channelRegister li:first-child,.channelRegister li:nth-child(3){
 	/*height: 2.175rem;*/
 	height: 0.87rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channel_btn1.png);
+	background-image: url("@{url}/channelRegister/channel_btn1.png");
 }
 .register_mobile,.register_password,.register_verification{
 	/*margin-top: 0.5rem;
@@ -90,7 +92,7 @@
 	height: 2.175rem;*/
 	width: 2.91rem;
 	height: 0.87rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channel_btn2.png);
+	background-image: url("@{url}/channelRegister/channel_btn2.png");
 }
 .register_verification{
 	/*width: 8.2rem;*/
@@ -103,7 +105,7 @@
 	width: 1.98rem;
 	height: 0.87rem;
 	line-height: 0.87rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channel_btn3.png);
+	background-image: url("@{url}/channelRegister/channel_btn3.png");
 	color: #fd7923;
 }
 .register_required{
@@ -133,14 +135,14 @@
 	height: 0.4rem;*/
 	width: 0.44rem;
 	height: 0.16rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0601eye_closed.png);
+	background-image: url("@{url}/0601eye_closed.png");
 }
 .register_passwordEye{
 	/*width: 1.1rem;
 	height: 0.6rem;*/
 	width: 0.44rem;
 	height: 0.24rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0601eye.png);
+	background-image: url("@{url}/0601eye.png");
 }
 input::-webkit-input-placeholder{
 	color: #BFBFBF;
@@ -160,7 +162,7 @@ input:-ms-input-placeholder{
 	height: 2.95rem;*/
 	width: 5.31rem;
 	height: 1.18rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channel_btn4.png);
+	background-image: url("@{url}/channelRegister/channel_btn4.png");
 	margin: 0 auto;
 }
 .register_submitBtn{
@@ -201,11 +203,11 @@ input:-ms-input-placeholder{
 	background-size: cover;
 }
 .register_checkbox .input_check+label {
-    background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channel_label1.png);
+    background-image: url("@{url}/channelRegister/channel_label1.png");
 }
 .register_checkbox .input_check:checked+label:after {
     content: "";
-    background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channel_label2.png);
+    background-image: url("@{url}/channelRegister/channel_label2.png");
 }
 .register_checkbox p{
 	/*margin-left: 1.0rem;*/

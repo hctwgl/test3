@@ -26,3 +26,4 @@
 .idea/
 node_modules
 *.map
+/log4j.xml

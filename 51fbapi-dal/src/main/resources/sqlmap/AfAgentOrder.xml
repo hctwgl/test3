@@ -128,7 +128,10 @@
 			a.agent_id = #{agentId}
 		AND 
 			a.status =#{status}
-	
+		ORDER BY
+			o.gmt_create DESC
+	     LIMIT 
+			#{start},20
 	 </select>
 	 
 	 <select id="getAgentOrderInfoById" resultType="AfAgentOrderDto">

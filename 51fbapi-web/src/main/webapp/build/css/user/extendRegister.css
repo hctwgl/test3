@@ -2,15 +2,17 @@
 * @Author: nizhiwei
 * @Date:   2017-04-18
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-25 15:37:18
+* @Last Modified time: 2017-04-26 11:35:42
 * @title:  返呗注册
 */
 
 
+@url: "http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user";
+
 .shareRegister{
 	width: 7.5rem;
 	height: 14.0rem;
-	background: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/extendRegister.jpg) no-repeat;
+	background: url("@{url}/extendRegister.jpg") no-repeat;
 	-webkit-background-size:100%;
 	background-size:100%;
 }
@@ -86,12 +88,12 @@ input:-ms-input-placeholder{
 	background-size: cover;
 }
 .register_checkbox .input_check+label {
-    background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channel_label1.png);
+    background-image: url("@{url}/channelRegister/channel_label1.png");
 }
 .register_checkbox .input_check:checked+label:after {
     content: "";
 	top:0;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/channelRegister/channel_label2.png);
+	background-image: url("@{url}/channelRegister/channel_label2.png");
 }
 .register_checkbox p{
 	margin-left: 0.4rem;

@@ -19,12 +19,12 @@ public class AfSigninDo extends AbstractSerial {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long rid;
-	private Integer isDelete;
-	private Date gmtCreate;
-	private Date gmtSeries;
-	private Long userId;
-	private Integer totalCount;
-	private Integer seriesCount;
+	private Integer isDelete; 
+	private Date gmtCreate; // 第一次签到的时间
+	private Date gmtSeries; // 最后的签到的时间 
+	private Long userId; // 用户ID
+	private Integer totalCount;	// 总的签到次数
+	private Integer seriesCount; // 连续签到次数
 	/**
 	 * @return the rid
 	 */

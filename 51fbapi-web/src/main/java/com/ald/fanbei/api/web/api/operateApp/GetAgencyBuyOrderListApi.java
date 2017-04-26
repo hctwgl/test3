@@ -41,14 +41,14 @@ public class GetAgencyBuyOrderListApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
 		String status = ObjectUtils.toString(requestDataVo.getParams().get("status"));
-		Long pageNo = NumberUtil.objToLongDefault(requestDataVo.getParams().get("status"), 0L);
+		Integer pageNo =NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
 		AfAgentOrderStatus orderStatus = AfAgentOrderStatus.findRoleTypeByCode(status);
 
 		if (orderStatus == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 
 		}
-		List<AfAgentOrderDto> agentOrderList = afAgentOrderService.getAgentOrderListByAgentId(context.getUserId(), status);
+		List<AfAgentOrderDto> agentOrderList = afAgentOrderService.getAgentOrderListByAgentId(context.getUserId(), status,(pageNo-1)*20);
 		List<Object> list = new ArrayList<Object>();
 
 		for (AfAgentOrderDto afAgentOrderDto : agentOrderList) {

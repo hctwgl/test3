@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Param;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
 
+
+
 /**
  * @类描述：
  * @author suweili 2017年4月18日下午3:44:05
@@ -40,7 +42,7 @@ public interface AfAgentOrderDao {
 	     * @param status
 	     * @return
 	     */
-	    List<AfAgentOrderDto> getAgentOrderListByAgentId(@Param("agentId")Long agentId,@Param("status")String status);
+	    List<AfAgentOrderDto> getAgentOrderListByAgentId(@Param("agentId")Long agentId,@Param("status")String status,@Param("start")Integer start);
 	    
 	    /**
 	     * 根据订单id获取订单信息
