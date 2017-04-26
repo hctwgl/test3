@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.YituFaceCardRespBo;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -68,8 +69,11 @@ public class UpdateIdCardApi implements ApiHandle {
 					return resp;
 				}
 			}
-			riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
+			RiskRespBo riskResp = riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
 					accountDo.getAddress(), accountDo.getOpenId());
+			if(!riskResp.isSuccess()){
+				throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
+			}
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR);
 		}

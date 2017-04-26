@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -15,6 +16,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -57,8 +59,20 @@ public class SaveIdNumberApi implements ApiHandle {
 			accountDo.setIdNumber(idNumberDo.getCitizenId());
 			afUserAccountService.updateUserAccount(accountDo);
 
-			riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
-					accountDo.getAddress(), accountDo.getOpenId());
+			if (StringUtil.isBlank(accountDo.getIdNumber())&&StringUtil.isBlank(accountDo.getRealName())) {
+				RiskRespBo riskResp = riskUtil.register(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
+						accountDo.getAlipayAccount(), accountDo.getAddress());
+				if(!riskResp.isSuccess()){
+          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+          		}
+			} else {
+				RiskRespBo riskResp = riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
+						accountDo.getAlipayAccount(), accountDo.getAddress(), accountDo.getOpenId());
+				if(!riskResp.isSuccess()){
+          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+          		}
+			}
+
 			return resp;
 		}
 
