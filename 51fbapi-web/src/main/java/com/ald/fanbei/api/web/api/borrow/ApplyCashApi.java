@@ -67,16 +67,16 @@ public class ApplyCashApi implements ApiHandle {
 		logger.info("userId=" + userId + ",money=" + money);
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 	
-		if (context.getAppVersion() >= 340) {
-			if (StringUtils.isBlank(blackBox)) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-
-			}
-			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
-					context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "",
-					requestDataVo.getMethod(), "");
-
-		}
+//		if (context.getAppVersion() >= 340) {
+//			if (StringUtils.isBlank(blackBox)) {
+//				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+//
+//			}
+//			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
+//					context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "",
+//					requestDataVo.getMethod(), "");
+//
+//		}
 		BigDecimal useableAmount = userDto.getAuAmount()
 				.divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE), 2, BigDecimal.ROUND_HALF_UP)
 				.subtract(userDto.getUcAmount());

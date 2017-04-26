@@ -114,10 +114,10 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 		
-		if (context.getAppVersion() >= 340) {
-			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), context.getUserName(), context.getMobile(), accountDo.getIdNumber(), 
-					accountDo.getRealName(), "", requestDataVo.getMethod(), "");
-		}
+//		if (context.getAppVersion() >= 340) {
+//			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), context.getUserName(), context.getMobile(), accountDo.getIdNumber(), 
+//					accountDo.getRealName(), "", requestDataVo.getMethod(), "");
+//		}
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
