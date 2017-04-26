@@ -79,27 +79,27 @@ public class AuthFaceApi implements ApiHandle {
 
 		// 增加接口请求次数统计
 		// TODO 具体计数办法待实现
-		if (context.getAppVersion() >= 343) {
-			AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(context.getUserId(), ApiCallType.YOUDUN.getCode());
-			if(callLimitDo!=null){
-				Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YOUDUN.getCode()).getValue(), 0);
-				Map<String,Object> data = new HashMap<>();
-				if (maxNum - (callLimitDo.getCallNum()+1)> 0 && callLimitDo.getDisableStatus().equals("N")) {
-					data.put("canRetry", "Y");
-				} else {
-					data.put("canRetry", "N");
-					callLimitDo.setDisableStatus("Y");
-					afUserApiCallLimitService.updateUserApiCallLimit(callLimitDo);
-				}
-				resp.setResponseData(data);
-			}else{
-				callLimitDo = new AfUserApiCallLimitDo();
-				callLimitDo.setType(ApiCallType.YOUDUN.getCode());
-				callLimitDo.setUserId(context.getUserId());
-				afUserApiCallLimitService.addUserApiCallLimit(callLimitDo);
-			}
-			afUserApiCallLimitService.addVisitNum(context.getUserId(), ApiCallType.YOUDUN.getCode());
-		}
+//		if (context.getAppVersion() >= 343) {
+//			AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(context.getUserId(), ApiCallType.YOUDUN.getCode());
+//			if(callLimitDo!=null){
+//				Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YOUDUN.getCode()).getValue(), 0);
+//				Map<String,Object> data = new HashMap<>();
+//				if (maxNum - (callLimitDo.getCallNum()+1)> 0 && callLimitDo.getDisableStatus().equals("N")) {
+//					data.put("canRetry", "Y");
+//				} else {
+//					data.put("canRetry", "N");
+//					callLimitDo.setDisableStatus("Y");
+//					afUserApiCallLimitService.updateUserApiCallLimit(callLimitDo);
+//				}
+//				resp.setResponseData(data);
+//			}else{
+//				callLimitDo = new AfUserApiCallLimitDo();
+//				callLimitDo.setType(ApiCallType.YOUDUN.getCode());
+//				callLimitDo.setUserId(context.getUserId());
+//				afUserApiCallLimitService.addUserApiCallLimit(callLimitDo);
+//			}
+//			afUserApiCallLimitService.addVisitNum(context.getUserId(), ApiCallType.YOUDUN.getCode());
+//		}
 		if (StringUtil.isBlank(idNumber) || StringUtil.isBlank(realName)) {
 			throw new FanbeiException("authRealnameApi param error", FanbeiExceptionCode.PARAM_ERROR);
 		}

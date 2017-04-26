@@ -42,18 +42,18 @@ public class AuthYdInfoApi implements ApiHandle {
 		if (userId == null) {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
-		if (context.getAppVersion() >= 343) {
-			AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(userId, ApiCallType.YOUDUN.getCode());
-			if (callLimitDo == null) {
-				callLimitDo = new AfUserApiCallLimitDo();
-				callLimitDo.setType(ApiCallType.YOUDUN.getCode());
-				callLimitDo.setUserId(userId);
-				afUserApiCallLimitService.addUserApiCallLimit(callLimitDo);
-			}
-			if (callLimitDo.getDisableStatus().equals("Y")) {
-				throw new FanbeiException(FanbeiExceptionCode.API_CALL_NUM_OVERFLOW);
-			}
-		}
+//		if (context.getAppVersion() >= 343) {
+//			AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(userId, ApiCallType.YOUDUN.getCode());
+//			if (callLimitDo == null) {
+//				callLimitDo = new AfUserApiCallLimitDo();
+//				callLimitDo.setType(ApiCallType.YOUDUN.getCode());
+//				callLimitDo.setUserId(userId);
+//				afUserApiCallLimitService.addUserApiCallLimit(callLimitDo);
+//			}
+//			if (callLimitDo.getDisableStatus().equals("Y")) {
+//				throw new FanbeiException(FanbeiExceptionCode.API_CALL_NUM_OVERFLOW);
+//			}
+//		}
 
 		Map<String, Object> data = new HashMap<String, Object>();
 
