@@ -220,7 +220,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		borrow.setType(type.getCode());
 		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
 		borrow.setStatus(status);//默认转账成功
-		borrow.setName(BorrowType.CONSUME.getName());
+		borrow.setName(name);
 		borrow.setUserId(userId);
 		borrow.setNper(nper);
 		borrow.setNperAmount(perAmount);
@@ -656,7 +656,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		BigDecimal borrowAmount = borrowInfo.getAmount();
 		
 		Calendar c1 = Calendar.getInstance();
-		c1.setTime(borrowInfo.getGmtTransed());
+		c1.setTime(borrowInfo.getGmtCreate());
 		Calendar c2 = Calendar.getInstance();
 		c2.setTime(new Date());
 		//借款天数
