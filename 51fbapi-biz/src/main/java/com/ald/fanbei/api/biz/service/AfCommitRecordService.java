@@ -16,5 +16,12 @@ public interface AfCommitRecordService {
 	 * @return
 	 */
 	int addRecord(AfCommitRecordDo afCommitRecordDo);
-
+	
+	/**
+	 * 根据Type和relate_Id获取记录
+	 * @param 
+	 * @return
+	 */
+	AfCommitRecordDo getRecordByTypeAndRelateId(String relate_id);
+	
 }

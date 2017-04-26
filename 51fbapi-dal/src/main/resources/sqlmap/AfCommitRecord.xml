@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>  
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfCommitRecordDao">
-
-	<insert id="addRecord" parameterType="AfCommitRecordDo"
-		useGeneratedKeys="true" keyProperty="id">
+	<sql id="queryFields">
+		id, type, relate_id, content, url, commit_time, commit_num;
+	</sql>
+	
+	<insert id="addRecord" parameterType="AfCommitRecordDo" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO af_commit_record(type, relate_id, content, url, commit_time, commit_num)
 		VALUES (
 		#{type},
@@ -14,5 +16,14 @@
 		#{commit_num}
 		)
 	</insert>
+	
+	<select id="getRecordByTypeAndRelateId" parameterType="java.lang.String"  resultType="AfCommitRecordDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_commit_record 
+		WHERE
+			relate_id = #{relate_id}
+	</select>
 
 </mapper>
