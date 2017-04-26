@@ -115,6 +115,7 @@ public interface AfOrderService {
 	 */
 	int syncOrderNoWithUser(Long userId,String orderNo);
 	
+	int syncOrderNoWithAgencyUser(Long userId,String orderNo,Long orderId);
 	/**
 	 * 根据第三方订单类型和订单编号获取订单信息
 	 * @param orderType
