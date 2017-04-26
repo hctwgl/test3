@@ -13,7 +13,7 @@
 		#{userId},
 		#{callNum},
 		#{disableStatus},
-		#{type},
+		#{type}
 		)
 	</insert>
 	<update id="updateUserApiCallLimit" parameterType="AfUserApiCallLimitDo">

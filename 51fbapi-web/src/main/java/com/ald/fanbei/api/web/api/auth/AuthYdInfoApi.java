@@ -46,6 +46,8 @@ public class AuthYdInfoApi implements ApiHandle {
 		AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(userId, ApiCallType.YOUDUN.getCode());
 		if (callLimitDo == null) {
 			callLimitDo = new AfUserApiCallLimitDo();
+			callLimitDo.setType(ApiCallType.YOUDUN.getCode());
+			callLimitDo.setUserId(userId);
 			afUserApiCallLimitService.addUserApiCallLimit(callLimitDo);
 		}
 		if (callLimitDo.getDisableStatus().equals("Y")) {

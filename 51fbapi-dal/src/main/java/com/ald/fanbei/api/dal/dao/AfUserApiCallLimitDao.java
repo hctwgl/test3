@@ -46,5 +46,5 @@ public interface AfUserApiCallLimitDao {
 	 * @param userId
 	 * @param type
 	 */
-	void addVisitNum(Long userId, String type);
+	void addVisitNum(@Param("userId") Long userId, @Param("type") String type);
 }
