@@ -58,9 +58,9 @@ public class AuthYdInfoApi implements ApiHandle {
 		data.put("ydKey", publicKey);
 		data.put("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
 		if (callLimitDo.getDisableStatus().equals("Y")) {
-			data.put("canRetry", true);
+			data.put("canRetry", "Y");
 		} else {
-			data.put("canRetry", false);
+			data.put("canRetry", "N");
 		}
 		resp.setResponseData(data);
 

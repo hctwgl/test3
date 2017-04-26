@@ -80,10 +80,10 @@ public class AuthFaceApi implements ApiHandle {
 		afUserApiCallLimitService.addVisitNum(context.getUserId(), ApiCallType.YOUDUN.getCode());
 		AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(context.getUserId(), ApiCallType.YOUDUN.getCode());
 		Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YOUDUN.getCode()).getValue(), 0);
-		if (maxNum - callLimitDo.getCallNum() > 0) {
-			resp.addResponseData("canRetry", true);
+		if (maxNum - callLimitDo.getCallNum() > 0 && callLimitDo.getDisableStatus().equals("Y")) {
+			resp.addResponseData("canRetry", "Y");
 		} else {
-			resp.addResponseData("canRetry", false);
+			resp.addResponseData("canRetry", "N");
 			callLimitDo.setDisableStatus("N");
 			afUserApiCallLimitService.updateUserApiCallLimit(callLimitDo);
 		}
