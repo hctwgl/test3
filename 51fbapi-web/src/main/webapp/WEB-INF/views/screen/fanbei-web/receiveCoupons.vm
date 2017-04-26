@@ -4,7 +4,7 @@
     	#set($version="2017042402")
 		#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 		<title>领取优惠券</title>
-		<link rel="stylesheet" type="text/css" href="/css/user/receiveCoupons.css?version=$version">
+		<link rel="stylesheet" type="text/css" href="/dist/css/user/receiveCoupons.css?version=$version">
     </head>
     <body>
 		<input type="hidden" id="couponList" name="couponList" value=$jsonUtil.toJSONString($!{couponList})>
@@ -44,6 +44,6 @@
 				</li>
 			#end
 		</ul>
-		<script type="text/javascript" src="/js/user/receiveCoupons.js?version=$version"></script>
+		<script type="text/javascript" src="/dist/js/user/receiveCoupons.js?version=$version"></script>
     </body>
 </html>

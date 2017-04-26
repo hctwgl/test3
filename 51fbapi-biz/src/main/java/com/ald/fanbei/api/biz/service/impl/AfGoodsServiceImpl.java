@@ -37,13 +37,13 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public int subscribeGoods(String messageContent) {
 		logger.info("subscribeGoods begin, messageContent = {}", messageContent);
 		TaobaoResultBo bo = JSONObject.parseObject(messageContent, TaobaoResultBo.class);
-		return afGoodsDao.updateSubscribeStatus(bo.getItem_id(), "Y");
+		return afGoodsDao.updateSubscribeStatus(bo.getItem_id(), "Y", null);
 	}
 	@Override
 	public int unSubscribeGoods(String messageContent) {
 		logger.info("unSubscribeGoods begin, messageContent = {}", messageContent);
 		TaobaoResultBo bo = JSONObject.parseObject(messageContent, TaobaoResultBo.class);
-		return afGoodsDao.updateSubscribeStatus(bo.getItem_id(), "N");
+		return afGoodsDao.updateSubscribeStatus(bo.getItem_id(), "N", "CANCEL");
 	}
 	@Override
 	public int updateTaobaoInfo(String messageContent) {

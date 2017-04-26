@@ -40,7 +40,7 @@ public interface AfGoodsDao {
 	 * @param messageContent
 	 * @return
 	 */
-	int updateSubscribeStatus(@Param("numId")String numId, @Param("status")String status);
+	int updateSubscribeStatus(@Param("numId")String numId, @Param("status")String status, @Param("publishStatus")String publishStatus);
 	
 	/**
 	 * 更新商品淘宝信息

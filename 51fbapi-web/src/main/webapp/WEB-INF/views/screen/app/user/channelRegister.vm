@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="20170401802")
+	#set($version="2017042503")
+	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
 	<title>51返呗注册</title>
-	<link rel="stylesheet" type="text/css" href="/css/app/user/channelRegister.css?version=$version">
+	<link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
 	<script type="text/javascript">;
         (function(root) {
             root._tt_config = true;
@@ -82,10 +83,9 @@
 	  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918
 	  	</div>
   	</div>
-	<script type="text/javascript" src="/js/common/core.js"></script>
-	<script type="text/javascript" src="/js/common/md5.js"></script>
-	<script type="text/javascript" src="/js/common/base.js?version=$version"></script>
-	<script type="text/javascript" src="/js/app/user/channelRegister.js?version=$version"></script>
+	<script type="text/javascript" src="$commonUrl/common/js/core.js"></script>
+	<script type="text/javascript" src="$commonUrl/common/js/md5.js"></script>
+	<script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
 	<div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </body>
 </html>

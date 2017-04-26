@@ -36,8 +36,6 @@ import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
-import com.ald.fanbei.api.common.enums.BorrowBillStatus;
-import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -65,9 +63,9 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -238,7 +236,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				afAgentOrderService.updateAgentOrder(afAgentOrderDo);
 				AfOrderDo applyOrder = new AfOrderDo();
 				applyOrder.setRid(orderTemp.getOrderId());
-				applyOrder.setOrderNo(orderNo);
 				applyOrder.setStatus(OrderStatus.AGENCYCOMPLETED.getCode());
 				orderDao.updateOrder(applyOrder);
 			}
@@ -302,12 +299,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						afUserAccountDao.updateUserAccount(account);
 						if(order.getBankId()<0){//微信退款
 							try {
+								String refundNo = generatorClusterNo.getRefundNo(new Date());
 								String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
 								if(!"SUCCESS".equals(refundResult)){
-									afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL));
+									afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL,PayType.WECHAT,StringUtils.EMPTY,null,"充值失败微信退款"));
 									throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 								}else{
-                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH));
+                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH,PayType.WECHAT,StringUtils.EMPTY,null,"充值失败微信退款"));
 								}
 							} catch (Exception e) {
 								pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
@@ -316,13 +314,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}else{//银行卡代付
 							//TODO 转账处理
 							AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
+							String refundNo = generatorClusterNo.getRefundNo(new Date());
 							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
 									card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
 							if(!upsResult.isSuccess()){
-								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL));
+								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo,order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款"));
 								pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
 							}else{
-                            	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH));
+                            	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo,order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH,PayType.BANK,card.getCardNumber(), card.getBankName(),"充值失败银行卡退款"));
 							}
 						}
 						newOrder.setStatus(OrderStatus.CLOSED.getCode());
@@ -369,14 +368,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                             account.setUserId(order.getUserId());
                             account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
                             afUserAccountDao.updateUserAccount(account);
+                            String refundNo = generatorClusterNo.getRefundNo(new Date());
                             if (order.getBankId() < 0) {// 微信退款
                                 try {
                                     String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
                                     if (!"SUCCESS".equals(refundResult)) {
-                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL));
+                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL,PayType.WECHAT,StringUtils.EMPTY,null,"充值失败微信退款"));
             							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
                                     }else{
-                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH));
+                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH,PayType.WECHAT,StringUtils.EMPTY,null,"充值失败微信退款"));
                                     }
                                 } catch (Exception e) {
                                     pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
@@ -388,10 +388,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId() + "",
                                         card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02", OrderType.MOBILE.getCode(), "");
                                 if (!upsResult.isSuccess()) {
-                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL));
+                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款"));
         							pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
                                 }else{
-                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH));
+                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款"));
                                 }
                             }
                             // 支付成功后,直接返利
@@ -741,17 +741,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {}", new Object[]{orderId,userId,orderNo,refundAmount,totalAmount,payType,payTradeNo});
 					AfOrderDo orderInfo = null;
 					PayType type = PayType.findRoleTypeByCode(payType);
+					BigDecimal refundedAmount = afOrderRefundDao.calculateTotalRefundAmount(orderId);
+					BigDecimal totalRefundAmount = refundAmount.add(refundedAmount == null ? BigDecimal.ZERO : refundedAmount);
+					//金额小于0
+					if (refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
+						throw new FanbeiException("reund amount error", FanbeiExceptionCode.REFUND_AMOUNT_ERROR);
+					}
+					//总退款金额大于订单金额
+					if (totalRefundAmount.compareTo(totalAmount) > 0) {
+						throw new FanbeiException("reund total amount error", FanbeiExceptionCode.REFUND_TOTAL_AMOUNT_ERROR);
+					}
+					String refundNo = generatorClusterNo.getRefundNo(new Date());
 					switch (type) {
 					case WECHAT:
 						//微信退款
 						String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
 						logger.info("wx refund  , refundResult = {} ", refundResult);
 						if(!"SUCCESS".equals(refundResult)){
-							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
-							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL,PayType.WECHAT,StringUtils.EMPTY, null,"菠萝觅微信退款"));
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						} else {
-							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.WECHAT,StringUtils.EMPTY, null,"菠萝觅微信退款"));
 							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
 						}
 						orderInfo = new AfOrderDo();
@@ -766,60 +776,41 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
 						
-						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+						afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅返呗余额退款"));
 						
-						BigDecimal shouldRefundAmount = afBorrowService.calculateBorrowRefundAmount(borrowInfo.getRid());
-						
-						logger.info("dealBrandOrderRefund shouldRefundAmount = {}", shouldRefundAmount);
-						
-						AfUserBankcardDo cardInfo = afUserBankcardDao.getUserMainBankcardByUserId(userId);
-						if (shouldRefundAmount != null && shouldRefundAmount.compareTo(BigDecimal.ZERO) > 0) {
-							UpsDelegatePayRespBo tempUpsResult = upsUtil.delegatePay(shouldRefundAmount, accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"", 
-									cardInfo.getMobile(), cardInfo.getBankName(), cardInfo.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);
-							logger.info("agent bank refund upsResult = {}", tempUpsResult);
-							if(!tempUpsResult.isSuccess()){
-								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
-								boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
-								throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
-							} else {
-								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH));
-								boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
-							}
-						}
-						
-						//更新账户金额
-						BigDecimal usedAmount = BigDecimalUtil.subtract(accountInfo.getUsedAmount(), orderInfo.getActualAmount());
+						//更改已使用额度，并且将金额退回至返利金额
+						BigDecimal usedAmount = BigDecimalUtil.subtract(accountInfo.getUsedAmount(), refundAmount);
+						BigDecimal rebateAmount = BigDecimalUtil.add(accountInfo.getRebateAmount(), refundAmount);
 						accountInfo.setUsedAmount(usedAmount);
+						accountInfo.setRebateAmount(rebateAmount);
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						//增加Account记录
-						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, orderInfo.getActualAmount(), userId, orderId));
-						
-						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.CLOSED.getCode());
-						
-						afBorrowBillDao.updateBorrowBillStatusByBorrowId(borrowInfo.getRid(), BorrowBillStatus.CLOSE.getCode());
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, refundAmount, userId, orderId));
 						
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
 						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 						orderDao.updateOrder(orderInfo);
+						
+						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
 						break;
 					case BANK:
 						//银行卡退款
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
-						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"", 
-								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);
-						logger.info("bank refund upsResult = {}", upsResult);
-						if(!upsResult.isSuccess()){
-							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL));
-							boluomeUtil.pushPayStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
-							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
-						}
-						afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING));
+						AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING,PayType.BANK,card.getCardNumber(),card.getBankName(),"菠萝觅银行卡退款");
+						afOrderRefundDao.addOrderRefund(refundInfo);
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
 						orderInfo.setStatus(OrderStatus.DEAL_REFUNDING.getCode());
 						orderDao.updateOrder(orderInfo);
+						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"", 
+								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),refundInfo.getRid() + StringUtils.EMPTY);
+						logger.info("bank refund upsResult = {}", upsResult);
+						if(!upsResult.isSuccess()){
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"菠萝觅银行卡退款"));
+							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+						}
 						break;
 					default:
 						break;
@@ -828,6 +819,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return 1;
 				} catch (FanbeiException e) {
 					logger.error("dealBrandOrderRefund error = {}", e);
+					boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
 					throw new FanbeiException("reund error", e.getErrorCode());
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -852,6 +844,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		order.setOrderNo(orderNo);
 		order.setUserId(userId);
 		order.setOrderId(orderId);
+		
+		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
+		afAgentOrderDo.setOrderId(orderId);
+		afAgentOrderDo.setStatus("BUY");
+		
+		afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+		
 		return afUserOrderDao.addUserOrder(order);
 	}
 	

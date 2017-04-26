@@ -162,14 +162,16 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 						updateAccountDo.setUserId(record.getUserId());
 						afUserAccountDao.updateUserAccount(updateAccountDo);
 					} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
-	        			AfOrderDo orderInfo = afOrderService.getOrderById(result);
+						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+						
+	        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+	        			
 	        			orderInfo.setStatus(OrderStatus.PAID.getCode());
 	        			afOrderService.updateOrder(orderInfo);
 	        			
 	        			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
 	        			
 	        			//订单退款记录
-	        			AfOrderRefundDo refundInfo = afOrderRefundService.getOrderRefundByOrderId(result);
 	    				refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
 	    				afOrderRefundService.updateOrderRefund(refundInfo);
 	    				

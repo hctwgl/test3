@@ -5,7 +5,7 @@
     #set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
     <title>商品列表模版</title>
     <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
-    <link rel="stylesheet" type="text/css" href="/css/goods/goodsListModel.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/css/goods/goodsListModel.css?version=$version">
 </head>
 <body>
     <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
@@ -77,6 +77,6 @@
     #end
     <script type="text/javascript" src="$commonUrl/common/js/jquery-2.2.4.min.js"></script>
     <!-- <script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script> -->
-    <script type="text/javascript" src="/js/goods/goodsListModel.js?version=$version"></script>
+    <script type="text/javascript" src="/dist/js/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>

@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAgentOrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -40,6 +41,7 @@ public class GetAgencyBuyOrderListApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
 		String status = ObjectUtils.toString(requestDataVo.getParams().get("status"));
+		Long pageNo = NumberUtil.objToLongDefault(requestDataVo.getParams().get("status"), 0L);
 		AfAgentOrderStatus orderStatus = AfAgentOrderStatus.findRoleTypeByCode(status);
 
 		if (orderStatus == null) {

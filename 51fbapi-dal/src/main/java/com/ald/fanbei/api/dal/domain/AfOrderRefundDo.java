@@ -21,7 +21,13 @@ public class AfOrderRefundDo extends AbstractSerial {
 	private Long userId;
 	private Long orderId;
 	private String orderNo;
+	private String refundNo;
 	private String status;
+	private String type;
+	private String accountNumber;
+	private String accountName;
+	private String content;
+	
 	
 	/**
 	 * @return the gmtCreate
@@ -118,6 +124,66 @@ public class AfOrderRefundDo extends AbstractSerial {
 	 */
 	public void setRid(Long rid) {
 		this.rid = rid;
+	}
+	/**
+	 * @return the refundNo
+	 */
+	public String getRefundNo() {
+		return refundNo;
+	}
+	/**
+	 * @param refundNo the refundNo to set
+	 */
+	public void setRefundNo(String refundNo) {
+		this.refundNo = refundNo;
+	}
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+	/**
+	 * @return the accountNumber
+	 */
+	public String getAccountNumber() {
+		return accountNumber;
+	}
+	/**
+	 * @param accountNumber the accountNumber to set
+	 */
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+	/**
+	 * @return the accountName
+	 */
+	public String getAccountName() {
+		return accountName;
+	}
+	/**
+	 * @param accountName the accountName to set
+	 */
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
+	/**
+	 * @return the content
+	 */
+	public String getContent() {
+		return content;
+	}
+	/**
+	 * @param content the content to set
+	 */
+	public void setContent(String content) {
+		this.content = content;
 	}
 	
 	
