@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserApiCallLimitService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -20,7 +19,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfUserApiCallLimitDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -36,8 +34,6 @@ public class AuthYdInfoApi implements ApiHandle {
 
 	@Resource
 	AfUserApiCallLimitService afUserApiCallLimitService;
-	@Resource
-	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -47,8 +43,6 @@ public class AuthYdInfoApi implements ApiHandle {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 
-		// 添加次数限制
-		Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YOUDUN.getCode()).getValue(), 0);
 		AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(userId, ApiCallType.YOUDUN.getCode());
 		if (callLimitDo == null) {
 			callLimitDo = new AfUserApiCallLimitDo();
@@ -63,7 +57,7 @@ public class AuthYdInfoApi implements ApiHandle {
 		String publicKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_YOUDUN_PUBKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		data.put("ydKey", publicKey);
 		data.put("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
-		if (maxNum - callLimitDo.getCallNum() > 0) {
+		if (callLimitDo.getDisableStatus().equals("Y")) {
 			data.put("canRetry", true);
 		} else {
 			data.put("canRetry", false);
