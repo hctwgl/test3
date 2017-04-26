@@ -329,16 +329,14 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setReqExt("");
 
-//		reqBo.setNotifyUrl(getNotifyHost() + "/third/risk/verify");
-		reqBo.setNotifyUrl("http://xtestapp.51fanbei.com/third/risk/verify");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/risk/verify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "/modules/api/risk/verify.htm";
+		String url = getUrl() + "/modules/api/risk/examine/verify.htm";
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("verify", borrowId, content, url);
 
-//		String reqResult = HttpUtil.httpPost(url, reqBo);
-		String reqResult = HttpUtil.httpPost("http://60.190.230.35:52637/modules/api/risk/verify.htm", reqBo);
+		String reqResult = HttpUtil.httpPost(url, reqBo);
 
 		logThird(reqResult, "verify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
@@ -366,61 +364,72 @@ public class RiskUtil extends AbstractThird {
 	 * @return
 	 */
 	public int asyVerify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "asyVerify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			logger.info("reqBo.getSignInfo()" + reqBo.getSignInfo());
+			JSONObject obj = JSON.parseObject(data);
+			String orderNo = obj.getString("orderNo");
+			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
+			String result = obj.getString("result");//
+			AfBorrowCashDo cashDo = new AfBorrowCashDo();
+//			cashDo.setRishOrderNo(orderNo);
+			Date currDate = new Date();
+			
+			AfUserDo afUserDo = afUserService.getUserById(consumerNo);
+			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
+			cashDo.setRid(afBorrowCashDo.getRid());
 
-		JSONObject obj = JSON.parseObject(data);
-		String orderNo = obj.getString("orderNo");
-		Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
-		String result = obj.getString("result");//
-		AfBorrowCashDo cashDo = new AfBorrowCashDo();
-		cashDo.setRishOrderNo(orderNo);
-		Date currDate = new Date();
+			AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(consumerNo);
 
-		AfUserDo afUserDo = afUserService.getUserById(consumerNo);
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
-		cashDo.setRid(afBorrowCashDo.getRid());
-
-		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(consumerNo);
-
-		List<String> whiteIdsList = new ArrayList<String>();
-		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
-		// 判断是否在白名单里面
-		AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
-		if (whiteListInfo != null) {
-			whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
-				@Override
-				public String convert(String source) {
-					return source.trim();
-				}
-			});
-		}
-
-		logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + afUserDo.getUserName() + ",isContain=" + whiteIdsList.contains(afUserDo.getUserName()));
-		if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
-			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
-			// 审核通过
-			cashDo.setGmtArrival(currDate);
-			cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
-			AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(consumerNo);
-			// 打款
-			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02", UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
-			cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-			if (!upsResult.isSuccess()) {
-				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
+			List<String> whiteIdsList = new ArrayList<String>();
+			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+			// 判断是否在白名单里面
+			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+			if (whiteListInfo != null) {
+				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
+					@Override
+					public String convert(String source) {
+						return source.trim();
+					}
+				});
 			}
-			// afBorrowCashService.updateBorrowCash(cashDo);
-			addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
 
-		} else if (StringUtils.equals("30", result)) {
-			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
-			cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
-			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
-		} else {
-			cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
+			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + afUserDo.getUserName() + ",isContain=" + whiteIdsList.contains(afUserDo.getUserName()));
+			if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
+				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+				// 审核通过
+				cashDo.setGmtArrival(currDate);
+				cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
+				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(consumerNo);
+//				// 打款
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", 
+						card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02", 
+						UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
+				if (!upsResult.isSuccess()) {
+					logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+					cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
+				}
+				afBorrowCashService.updateBorrowCash(cashDo);
+				addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
+
+			} else if (StringUtils.equals("30", result)) {
+				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+				cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
+				jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+			} else {
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
+			}
+
+			return afBorrowCashService.updateBorrowCash(cashDo);
 		}
-
-		return afBorrowCashService.updateBorrowCash(cashDo);
+		return 0;
 	}
 
 	/**
