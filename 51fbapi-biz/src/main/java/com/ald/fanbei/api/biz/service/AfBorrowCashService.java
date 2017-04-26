@@ -51,5 +51,11 @@ public interface AfBorrowCashService {
 	     * @return
 	     */
 	    String getCurrentLastBorrowNo(String orderNoPre);
-	   
+	    
+	    /**
+	     * 根据rishOrderNo获取借款信息
+	     * @param rishOrderNo
+	     * @return
+	     */
+	    AfBorrowCashDo getBorrowCashByRishOrderNo(String rishOrderNo);
 }

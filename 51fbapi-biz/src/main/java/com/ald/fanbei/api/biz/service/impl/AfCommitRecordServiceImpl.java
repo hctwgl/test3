@@ -24,4 +24,9 @@ public class AfCommitRecordServiceImpl implements AfCommitRecordService {
 		return commitRecordDao.addRecord(afCommitRecordDo);
 	}
 
+	@Override
+	public AfCommitRecordDo getRecordByTypeAndRelateId(String relate_id) {
+		return commitRecordDao.getRecordByTypeAndRelateId(relate_id);
+	}
+
 }
