@@ -226,11 +226,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		AfOrderDo order = new AfOrderDo();
 		order.setOrderNo(orderNo);
 		if(orderTemp != null){
-			order.setUserId(orderTemp.getUserId());
-			orderTemp.setStatus(YesNoStatus.YES.getCode());
-			afOrderTempDao.updateUserOrderTemp(orderTemp);
-			
-			if (orderTemp != null && orderTemp.getOrderId() > 0) {
+			logger.info("orderTemp1=="+JSON.toJSONString(orderTemp));
+
+			if (orderTemp.getOrderId() > 0) {
+				logger.info("orderTemp1=="+JSON.toJSONString(orderTemp));
+
 				AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 				AfOrderDo temorder = orderDao.getOrderInfoByOrderNo(orderNo);
 				afAgentOrderDo.setOrderId(orderTemp.getOrderId());
@@ -242,7 +242,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				applyOrder.setStatus(OrderStatus.AGENCYCOMPLETED.getCode());
 				orderDao.updateOrder(applyOrder);
 			}
-			
+			logger.info("orderTemp2=="+JSON.toJSONString(orderTemp));
+
+			order.setUserId(orderTemp.getUserId());
+			orderTemp.setStatus(YesNoStatus.YES.getCode());
+			afOrderTempDao.updateUserOrderTemp(orderTemp);
+			logger.info("orderTemp3=="+JSON.toJSONString(orderTemp));
+
 		}
 		order.setStatus(OrderStatus.PAID.getCode());
 		order.setGmtPay(new Date());

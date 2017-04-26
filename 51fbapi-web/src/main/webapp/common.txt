@@ -1,0 +1,21 @@
+静态服务器上面公用的文件及路径
+所有的前缀：http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common
+
+css 路径: http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/css/reset.css
+
+reset.css  // 重置自带的属性
+layer.css  // 弹窗
+swiper-3.4.2.min.css
+
+
+
+
+js 路径: http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/js/jquery-1.10.2.min.js
+
+jquery-1.10.2.min.js
+jquery-2.2.4.min.js
+vue.min.js
+layer.js // 弹窗
+core.js // 登录密码加密
+md5.js // 登录密码加密
+swiper-3.4.2.jquery.min.js 
