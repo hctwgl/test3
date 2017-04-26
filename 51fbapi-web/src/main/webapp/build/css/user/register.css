@@ -2,10 +2,12 @@
 * @Author: Yangyang
 * @Date:   2017-02-13 15:15:44
 * @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-24 16:47:43
+* @Last Modified time: 2017-04-26 11:04:20
 * @title:  注册
 */
 
+
+@url: "http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user";
 
 .register_main{
 	margin-top: 0.66rem;
@@ -37,17 +39,17 @@
 .register_mobile_icon{
 	width: 0.32rem;
 	height: 0.48rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0602phone.png);
+	background-image: url("@{url}/0602phone.png");
 }
 .register_verification_icon{
 	width: 0.48rem;
 	height: 0.48rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0602yzm.png);
+	background-image: url("@{url}/0602yzm.png");
 }
 .register_password_icon{
 	width: 0.48rem;
 	height: 0.5rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0603mima.png);
+	background-image: url("@{url}/0603mima.png");
 }
 .register_verification_main{
 	position: relative;
@@ -82,17 +84,17 @@
 	height: 0.24rem;
 }
 .register_mobileIcon,.register_verificationIcon{
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/shanc.png);
+	background-image: url("@{url}/shanc.png");
 }
 .register_passwordEyeClosed{
 	width: 0.44rem;
 	height: 0.16rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0601eye_closed.png);
+	background-image: url("@{url}/0601eye_closed.png");
 }
 .register_passwordEye{
 	width: 0.44rem;
 	height: 0.24rem;
-	background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0601eye.png);
+	background-image: url("@{url}/0601eye.png");
 }
 input::-webkit-input-placeholder{
 	color: #BFBFBF;
@@ -141,11 +143,11 @@ input:-ms-input-placeholder{
 	background-size: cover;
 }
 .register_checkbox .input_check+label {
-    background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0604kuangxuanz.png);
+    background-image: url("@{url}/0604kuangxuanz.png");
 }
 .register_checkbox .input_check:checked+label:after {
     content: "";
-    background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/images/user/0604kuang.png);
+    background-image: url("@{url}/0604kuang.png");
 }
 .register_checkbox p{
 	margin-left: 0.4rem;
