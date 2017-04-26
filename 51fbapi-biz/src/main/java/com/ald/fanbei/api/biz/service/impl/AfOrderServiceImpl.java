@@ -227,7 +227,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			orderTemp.setStatus(YesNoStatus.YES.getCode());
 			afOrderTempDao.updateUserOrderTemp(orderTemp);
 			
-			if (orderTemp != null && orderTemp.getOrderId() > 0) {
+			if (orderTemp.getOrderId() > 0) {
 				AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 				AfOrderDo temorder = orderDao.getOrderInfoByOrderNo(orderNo);
 				afAgentOrderDo.setOrderId(orderTemp.getOrderId());
