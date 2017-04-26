@@ -330,16 +330,15 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setReqExt("");
 
 //		reqBo.setNotifyUrl(getNotifyHost() + "/third/risk/verify");
-		reqBo.setNotifyUrl("http://testapp.51fanbei.com/third/risk/verify");
+		reqBo.setNotifyUrl("http://xtestapp.51fanbei.com/third/risk/verify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/verify.htm";
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("verify", borrowId, content, url);
 
-		String reqResult = HttpUtil.httpPost(url, reqBo);
-
-		// String reqResult = HttpUtil.httpPost("http://60.190.230.35:52637/modules/api/risk/verify.htm", reqBo);
+//		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.httpPost("http://60.190.230.35:52637/modules/api/risk/verify.htm", reqBo);
 
 		logThird(reqResult, "verify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
@@ -351,7 +350,6 @@ public class RiskUtil extends AbstractThird {
 			riskResp.setSuccess(true);
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
 			riskResp.setResult(dataObj.getString("result"));
-
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
