@@ -39,7 +39,8 @@ public class GetOrderSyncOrderInfoApi implements ApiHandle {
 		Long userId = context.getUserId();
 		String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"), "");
 		Long otherOrderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), 0L);
-      
+        String test = "{\"order_id\":\"10607643000050904\"}";
+        afOrderService.updateOrderTradePaidDone(test);
 		if (afOrderService.syncOrderNoWithAgencyUser(userId, orderNo, otherOrderId) > 0) {
 		
 			return resp;
