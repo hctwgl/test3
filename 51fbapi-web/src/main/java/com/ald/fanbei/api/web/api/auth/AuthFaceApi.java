@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.auth;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -80,13 +82,15 @@ public class AuthFaceApi implements ApiHandle {
 		afUserApiCallLimitService.addVisitNum(context.getUserId(), ApiCallType.YOUDUN.getCode());
 		AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(context.getUserId(), ApiCallType.YOUDUN.getCode());
 		Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YOUDUN.getCode()).getValue(), 0);
+		Map<String,Object> data = new HashMap<>();
 		if (maxNum - callLimitDo.getCallNum() > 0 && callLimitDo.getDisableStatus().equals("Y")) {
-			resp.addResponseData("canRetry", "Y");
+			data.put("canRetry", "Y");
 		} else {
-			resp.addResponseData("canRetry", "N");
+			data.put("canRetry", "N");
 			callLimitDo.setDisableStatus("N");
 			afUserApiCallLimitService.updateUserApiCallLimit(callLimitDo);
 		}
+		resp.setResponseData(data);
 
 		if (StringUtil.isBlank(idNumber) || StringUtil.isBlank(realName)) {
 			throw new FanbeiException("authRealnameApi param error", FanbeiExceptionCode.PARAM_ERROR);
