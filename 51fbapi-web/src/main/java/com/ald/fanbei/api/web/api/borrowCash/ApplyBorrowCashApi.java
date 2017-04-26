@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -42,8 +43,10 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -85,6 +88,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	TongdunUtil tongdunUtil;
 	@Resource
 	UpsUtil upsUtil;
+	@Resource
+	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -134,15 +139,6 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 						return source.trim();
 					}
 				});
-//				if (!whiteIdsList.contains(context.getUserName())) {
-//					tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
-//							context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
-//							requestDataVo.getMethod(), "");
-//				}
-//			} else {
-//				tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
-//						context.getUserName(), context.getMobile(), accountDo.getIdNumber(), accountDo.getRealName(), "",
-//						requestDataVo.getMethod(), "");
 			}
 		}
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
@@ -171,8 +167,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 		
 
-		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,
-				county, address, userId);
+		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province,county, address, userId,currentDay);
 		
 		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
@@ -197,9 +193,9 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 
 			AfUserDo afUserDo = afUserService.getUserById(userId);
 
-			if(whiteIdsList.contains(context.getUserName())){
-				
-			}
+//			if(whiteIdsList.contains(context.getUserName())){
+//				
+//			}
 			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + context.getUserName() + ",isContain=" + whiteIdsList.contains(context.getUserName()));
 			if (whiteIdsList.contains(context.getUserName()) || StringUtils.equals("10", result.getResult())) {
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
@@ -218,6 +214,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 					cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
 				}
 				afBorrowCashService.updateBorrowCash(cashDo);
+				addTodayTotalAmount(currentDay, amount);
 
 			} else if (StringUtils.equals("30", result.getResult())) {
 				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
@@ -239,16 +236,27 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		}
 
 	}
+	
+	/**
+	 * 增加当天审核的金额
+	 * @param day
+	 * @param amount
+	 */
+	private void addTodayTotalAmount(int day,BigDecimal amount){
+		AfBorrowCacheAmountPerdayDo amountCurrentDay = new AfBorrowCacheAmountPerdayDo();
+		amountCurrentDay.setDay(day);
+		amountCurrentDay.setAmount(amount);
+		afBorrowCacheAmountPerdayService.updateBorrowCacheAmount(amountCurrentDay);
+	}
 
 	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount, String type, String latitude, String longitude,
 			AfUserBankcardDo afUserBankcardDo, String city, String province, String county, String address,
-			Long userId) {
+			Long userId,int currentDay) {
+		
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
-		if(!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
-		}
+		
+		this.checkSwitch(rate, currentDay);
 		
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
@@ -286,6 +294,30 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				.setArrivalAmount(BigDecimalUtil.subtract(BigDecimalUtil.subtract(amount, rateAmount), poundageBig));
 		;
 		return afBorrowCashDo;
+	}
+	
+	/**
+	 * 检查放款开关
+	 * @param rate
+	 * @param currentDay
+	 */
+	private void checkSwitch(Map<String, Object> rate,Integer currentDay){
+		
+		if(!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
+		}
+		
+		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
+		if(currentAmount == null){
+			AfBorrowCacheAmountPerdayDo temp = new AfBorrowCacheAmountPerdayDo();
+			temp.setAmount(new BigDecimal(0));
+			temp.setDay(currentDay);
+			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
+			currentAmount = temp;
+		}
+		if(currentAmount.getAmount().compareTo(new BigDecimal((String)rate.get("amountPerDay"))) >=0){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
+		}
 	}
 
 }

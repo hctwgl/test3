@@ -6,14 +6,18 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -28,52 +32,40 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class SaveIdNumberApi implements ApiHandle {
 	@Resource
 	AfIdNumberService afIdNumberService;
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	AfUserAccountService afUserAccountService;
+	@Resource
+	RiskUtil riskUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 
-		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
-		String citizenId = ObjectUtils.toString(requestDataVo.getParams().get("idNumber"));
-		String gender = ObjectUtils.toString(requestDataVo.getParams().get("gender"));
-		String nation = ObjectUtils.toString(requestDataVo.getParams().get("nation"));
-		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
-		String validDateBegin = ObjectUtils.toString(requestDataVo.getParams().get("validDateBegin"));
-		String validDateEnd = ObjectUtils.toString(requestDataVo.getParams().get("validDateEnd"));
-		String birthday = ObjectUtils.toString(requestDataVo.getParams().get("birthday"));
-		String agency = ObjectUtils.toString(requestDataVo.getParams().get("agency"));
-		String idFrontUrl = ObjectUtils.toString(requestDataVo.getParams().get("idFrontUrl"));
-		String idBehindUrl = ObjectUtils.toString(requestDataVo.getParams().get("idBehindUrl"));
-
-		if (StringUtils.isBlank(address) || StringUtils.isBlank(citizenId) || StringUtils.isBlank(gender)
-				|| StringUtils.isBlank(nation) || StringUtils.isBlank(name) || StringUtils.isBlank(validDateBegin)
-				|| StringUtils.isBlank(validDateEnd) || StringUtils.isBlank(birthday) || StringUtils.isBlank(agency)) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-
-		}
 		AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 		if (idNumberDo == null) {
-			idNumberDo = idNumberDoWithIdNumberInfo(address, citizenId, gender, nation, name, validDateBegin,
-					validDateEnd, birthday, agency, idFrontUrl, idBehindUrl, idNumberDo);
-			idNumberDo.setUserId(userId);
-			if (afIdNumberService.addIdNumber(idNumberDo) > 0) {
-				return resp;
-			}
+			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_INFO_EXIST_ERROR);
 		} else {
-			idNumberDo = idNumberDoWithIdNumberInfo(address, citizenId, gender, nation, name, validDateBegin,
-					validDateEnd, birthday, agency, idFrontUrl, idBehindUrl, idNumberDo);
-			if (afIdNumberService.updateIdNumber(idNumberDo) > 0) {
-				return resp;
-			}
+			AfUserDo afUserDo = afUserService.getUserById(userId);
+			afUserDo.setRealName(idNumberDo.getName());
+			afUserService.updateUser(afUserDo);
+
+			AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
+			accountDo.setRealName(idNumberDo.getName());
+			accountDo.setIdNumber(idNumberDo.getCitizenId());
+			afUserAccountService.updateUserAccount(accountDo);
+
+			riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
+					accountDo.getAddress(), accountDo.getOpenId());
+			return resp;
 		}
-		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 
 	}
 
-	public AfIdNumberDo idNumberDoWithIdNumberInfo(String address, String citizenId, String gender, String nation,
-			String name, String validDateBegin, String validDateEnd, String birthday, String agency, String idFrontUrl,
-			String idBehindUrl, AfIdNumberDo idNumberDo) {
+	public AfIdNumberDo idNumberDoWithIdNumberInfo(String address, String citizenId, String gender, String nation, String name, String validDateBegin, String validDateEnd,
+			String birthday, String agency, String idFrontUrl, String idBehindUrl, AfIdNumberDo idNumberDo) {
 		if (idNumberDo == null) {
 			idNumberDo = new AfIdNumberDo();
 		}

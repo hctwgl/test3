@@ -53,7 +53,7 @@
 	</insert>
 	
 	<select id="getCurrentLastRepayNo" resultType="java.lang.String">
-		select repay_no from af_repayment WHERE gmt_create=#{currentDate} ORDER BY id DESC LIMIT 1;
+		select repay_no from af_repayment WHERE repay_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
 	</select>
 	
 	<select id="getRepaymentById" resultType="AfRepaymentDo">

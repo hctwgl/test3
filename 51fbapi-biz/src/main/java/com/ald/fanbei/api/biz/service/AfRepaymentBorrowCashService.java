@@ -76,4 +76,11 @@ public interface AfRepaymentBorrowCashService {
 	 * @return
 	 */
 	BigDecimal getRepaymentAllAmountByBorrowId(Long borrowId);
+	
+	/**
+	 * 查询某一天最后一个订单号
+	 * @param orderNoPre
+	 * @return
+	 */
+	String getCurrentLastRepayNo(String orderNoPre);
 }

@@ -293,4 +293,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	public BigDecimal getRepaymentAllAmountByBorrowId(Long borrowId) {
 		return afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(borrowId);
 	}
+	
+	@Override
+	public String getCurrentLastRepayNo(String orderNoPre) {
+		return afRepaymentBorrowCashDao.getCurrentLastRepayNo(orderNoPre);
+	}
 }

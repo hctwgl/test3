@@ -69,7 +69,7 @@ public interface AfBorrowService {
 	 * @param current
 	 * @return
 	 */
-	String getCurrentLastBorrowNo(Date current);
+	String getCurrentLastBorrowNo(String orderNoPre);
 	
 	/**
 	 * 获取当前账单 year month 

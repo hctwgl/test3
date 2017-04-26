@@ -32,6 +32,7 @@
 		<property name="fbapi.tongdun.partner.code" defaultValue="ktRtt1OM1sQ8bvM5E0Q6Gw==" description="铜盾商户code" />
 		<property name="fbapi.tongdun.partner.key" defaultValue="30ohw4+pyRhim1YJthNzzvLKAsRkWviuLyI/5ZjKs3TQroYLtEIaqFC8Jmft4E4B" description="铜盾商户key" />
 		<property name="fbapi.tongdun.app.name" defaultValue="alading_web" description="铜盾appname" />
+		<property name="fbapi.tongdun.partner.webhost" defaultValue="https://fp.fraudmetrix.cn" description="铜盾商户接口webhost" />
 
 		<!-- youdun -->
 		<property name="fbapi.youdun.host" defaultValue="https://api4.udcredit.com" description="有盾接口host" />
@@ -78,7 +79,7 @@
 		<property name="fbapi.wx.certpath" defaultValue="D:/cert/apiclient_cert.p12" description="weixin certpath" />
 		
 		<property name="fbapi.notify.host" defaultValue="http://testapp.51fanbei.com" description="异步回调地址" />
-		<property name="fbapi.ups.url" defaultValue="http://payrout.51fanbei.com/ups/main.html" description="ups请求地址" />
+		<property name="fbapi.ups.url" defaultValue="http://testpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
 		<property name="fbapi.risk.url" defaultValue="http://arc.edushi.erongyun.net" description="risk请求地址" />
 		
 		<!-- 菠萝觅 -->
@@ -91,6 +92,13 @@
 		
 		<property name="third.offer.boluome.appKey" defaultValue="1d397480-dbce-4d87-b48c-a34b55ee310d" description="平台提供菠萝觅第三方appkey" />
 		<property name="third.offer.boluome.appSecret" defaultValue="coMMRJDVF/Nmy+U0TCHXbAPPD1LEftSOb248JtzvaXOdGnCapk8yRekWqTFXGtLh" description="平台提供菠萝觅第三方appSecret" />
+	
+		<!-- 依图 -->
+		<property name="fbapi.yitu.url" defaultValue="http://staging.yitutech.com" description="服务地址"/>
+		<property name="fbapi.yitu.id" defaultValue="13079" description="客户标识"/>
+		<property name="fbapi.yitu.key" defaultValue="0bab2c4fbbfb66d0694b16b6d86dc25b" description="秘钥"/>
+		<property name="fbapi.yitu.definedContent" defaultValue="abc" description="用户自定义字符串"/>
+		<property name="fbapi.yitu.pemPath" defaultValue="staging.public.pem" description="公钥位置"/>
 	</group>
 
 	<script>

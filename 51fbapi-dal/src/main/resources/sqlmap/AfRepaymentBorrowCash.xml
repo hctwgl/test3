@@ -200,5 +200,9 @@
 		LIMIT
 		#{start},20
 	</select>
+	
+	<select id="getCurrentLastRepayNo" resultType="java.lang.String">
+		select repay_no from af_repayment_borrow_cash WHERE repay_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
+	</select>
 
 </mapper>

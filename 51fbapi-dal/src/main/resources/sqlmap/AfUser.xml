@@ -21,7 +21,9 @@
 			password,
 			salt,
 			nick,
-			mobile
+			mobile,
+			register_channel_id,
+			register_channel_point_id
 		)
 		VALUES
 		(
@@ -31,7 +33,9 @@
 			#{password},
 			#{salt},
 			#{nick},
-			#{mobile}
+			#{mobile},
+			#{registerChannelId},
+			#{registerChannelPointId}
 		)
 	</insert>
 	
