@@ -50,7 +50,7 @@ public interface AfAgentOrderService {
 	     * @param status
 	     * @return
 	     */
-	    List<AfAgentOrderDto> getAgentOrderListByAgentId(Long agentId,String status);
+	    List<AfAgentOrderDto> getAgentOrderListByAgentId(Long agentId,String status,Integer start);
 	    
 	    /**
 	     * 根据订单id获取订单信息

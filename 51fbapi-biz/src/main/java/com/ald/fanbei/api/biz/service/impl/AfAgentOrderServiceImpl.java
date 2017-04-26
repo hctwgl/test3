@@ -132,8 +132,8 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 
 	
 	@Override
-	public List<AfAgentOrderDto> getAgentOrderListByAgentId(Long agentId, String status) {
-		return afAgentOrderDao.getAgentOrderListByAgentId(agentId, status);
+	public List<AfAgentOrderDto> getAgentOrderListByAgentId(Long agentId, String status,Integer start) {
+		return afAgentOrderDao.getAgentOrderListByAgentId(agentId, status,start);
 	}
 
 	
