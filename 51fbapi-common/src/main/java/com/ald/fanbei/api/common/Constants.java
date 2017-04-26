@@ -92,6 +92,7 @@ public class Constants {
 	public static final String RES_CREDIT_SCORE_AMOUNT = "CREDIT_SCORE_AMOUNT";
 	public static final String RES_CREDIT_SCORE = "CREDIT_SCORE";
 	public static final String APPLY_BRROW_CASH_WHITE_LIST = "APPLY_BRROW_CASH_WHITE_LIST";
+	public static final String RES_REFUND_RATE = "REFUND_RATE";
 	// 为了审核定义字段
 	public static final String RES_IS_FOR_AUTH = "IS_FOR_AUTH";
 

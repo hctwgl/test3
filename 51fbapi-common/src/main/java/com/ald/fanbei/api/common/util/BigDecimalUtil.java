@@ -29,6 +29,24 @@ public class BigDecimalUtil {
 		return v1;
 	}
 	
+
+	/**
+	 * 多个加法想家
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public static BigDecimal add(BigDecimal... array){
+		BigDecimal result = BigDecimal.ZERO;
+		if (array == null || array.length == 0) {
+			return BigDecimal.ZERO;
+		}
+		for (int i = 0; i < array.length; i++) {
+			result = add(result, array[i]);
+		}
+		return result;
+	}
+	
 	/**
 	 * 加法,保留小数点两位
 	 * 
@@ -87,6 +105,22 @@ public class BigDecimalUtil {
 		v2 = v2==null?new BigDecimal(0):v2;
 		v1 = v1.multiply(v2).setScale(2, RoundingMode.HALF_UP);
 		return v1;
+	}
+	
+	/**
+	 * 多个Bigdecimal相乘
+	 * @param array
+	 * @return
+	 */
+	public static BigDecimal multiply(BigDecimal... array){
+		BigDecimal result = BigDecimal.ONE;
+		if (array == null || array.length == 0) {
+			return BigDecimal.ZERO;
+		}
+		for (int i = 0; i < array.length; i++) {
+			result = multiply(result, array[i]);
+		}
+		return result;
 	}
 	
 	/**

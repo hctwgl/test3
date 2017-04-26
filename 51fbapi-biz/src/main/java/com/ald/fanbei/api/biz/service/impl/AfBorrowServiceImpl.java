@@ -575,8 +575,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	}
 
 	@Override
-	public long dealBrandConsumeApply(final AfUserAccountDo userDto,
-			final BigDecimal amount, final String name, final Integer nper, final Long orderId, final String orderNo) {
+	public long dealAgentPayConsumeApply(final AfUserAccountDo userDto,
+			final BigDecimal amount, final String name, final Integer nper, final Long orderId, final String orderNo, final Integer totalNper) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -601,9 +601,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
 					}
 					JSONArray array = JSON.parseArray(resource.getValue());
+					//如果是重新生成的账单，需要原来账单的总期数
+					Integer realTotalNper = totalNper == null ? nper : totalNper;
 					for (int i = 0; i < array.size(); i++) {
 						JSONObject obj = array.getJSONObject(i);
-						if(obj.getInteger(Constants.DEFAULT_NPER)==nper){
+						if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
 							BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, 
 									nper,new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd);//总手续费
 							BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, nper, 
@@ -646,68 +648,97 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	}
 
 	@Override
-	public BigDecimal calculateBorrowRefundAmount(Long borrowId) {
+	public BigDecimal calculateBorrowAmount(Long borrowId, BigDecimal refundAmount, boolean refundByUser) {
+		//借款金额+借款金额*退款日利率*（退款日期-借款日期+1）*（0,1）- 退款金额- 已还账单和 + 优惠和
 		logger.info(" calculateBorrowRefundAmount begin borrowId = {}", borrowId);
+		AfBorrowDo borrowInfo = afBorrowDao.getBorrowById(borrowId);
+		//借款金额
+		BigDecimal borrowAmount = borrowInfo.getAmount();
+		
+		Calendar c1 = Calendar.getInstance();
+		c1.setTime(borrowInfo.getGmtTransed());
+		Calendar c2 = Calendar.getInstance();
+		c2.setTime(new Date());
+		//借款天数
+		long days = DateUtil.getNumberOfDaysBetween(c1, c2) + 1;
+		
+		AfResourceDo refundResourceInfo = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_REFUND_RATE);
+		//退款利率
+		BigDecimal refundRate = new BigDecimal(refundResourceInfo.getValue());
+		//已经还账单和-优惠和
+		BigDecimal repaymentAndCouponAmount = calculateRepaymentAndCouponAmount(borrowId);
+		
+		return BigDecimalUtil.add(borrowAmount, refundByUser ? BigDecimalUtil.multiply(borrowAmount, new BigDecimal(days), refundRate) : BigDecimal.ZERO, 
+				BigDecimalUtil.multiply(refundAmount, new BigDecimal("-1")), repaymentAndCouponAmount);
+	}
+	
+	/**
+	 * 计算还款金额以及优惠金额
+	 * @param borrowId
+	 * @return
+	 */
+	private BigDecimal calculateRepaymentAndCouponAmount(Long borrowId) {
 		List<AfBorrowBillDo> repaymentedBillList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowId, BorrowBillStatus.YES.getCode());
+		BigDecimal totalAmount = BigDecimal.ZERO;
 		if (CollectionUtils.isEmpty(repaymentedBillList)) {
-			return BigDecimal.ZERO;
-		}
-		
-		logger.info("billList = {}", repaymentedBillList);
-		List<Long> repaymentIds = CollectionConverterUtil.convertToListFromList(repaymentedBillList, new Converter<AfBorrowBillDo, Long>() {
-			@Override
-			public Long convert(AfBorrowBillDo source) {
-				return source.getRepaymentId();
-			}
-		});
-		logger.info("repaymentIds = {}", repaymentIds);
-		List<Long> billIds = CollectionConverterUtil.convertToListFromList(repaymentedBillList, new Converter<AfBorrowBillDo, Long>() {
-			@Override
-			public Long convert(AfBorrowBillDo source) {
-				return source.getRid();
-			}
-		});
-		
-		List<AfRepaymentDo> repaymentList = afRepaymentDao.getRepaymentListByIds(repaymentIds);
-		BigDecimal totalRefundAmount = BigDecimal.ZERO;
-		for (AfRepaymentDo repayment : repaymentList) {
-			List<Long> repaymentBillLists = CollectionConverterUtil.convertToListFromArray(repayment.getBillIds().split(","), new Converter<String, Long>() {
+			//没有还款记录
+			return totalAmount;
+		} else {
+			logger.info("billList = {}", repaymentedBillList);
+			List<Long> repaymentIds = CollectionConverterUtil.convertToListFromList(repaymentedBillList, new Converter<AfBorrowBillDo, Long>() {
 				@Override
-				public Long convert(String source) {
-					return Long.parseLong(source);
+				public Long convert(AfBorrowBillDo source) {
+					return source.getRepaymentId();
 				}
 			});
-			for (Long billId : billIds) {
-				if (repaymentBillLists.contains(billId)) {
-					AfBorrowBillDo billInfo = getBillFromList(repaymentedBillList, billId);
-					if (repayment.getUserCouponId() == 0l) {
-						//没有优惠券,则按照账单金额来
-						totalRefundAmount = billInfo.getBillAmount();
-						continue;
-					} else {
-						//有优惠券
-						if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size() - 1) {
-							//不是最后一个记录，则按照百分比计算
-							logger.info(" is not last one");
-							totalRefundAmount = BigDecimalUtil.add(totalRefundAmount, calculateRepaymentCouponAmount(repayment, billInfo));
+			logger.info("repaymentIds = {}", repaymentIds);
+			List<Long> billIds = CollectionConverterUtil.convertToListFromList(repaymentedBillList, new Converter<AfBorrowBillDo, Long>() {
+				@Override
+				public Long convert(AfBorrowBillDo source) {
+					return source.getRid();
+				}
+			});
+			
+			List<AfRepaymentDo> repaymentList = afRepaymentDao.getRepaymentListByIds(repaymentIds);
+			for (AfRepaymentDo repayment : repaymentList) {
+				List<Long> repaymentBillLists = CollectionConverterUtil.convertToListFromArray(repayment.getBillIds().split(","), new Converter<String, Long>() {
+					@Override
+					public Long convert(String source) {
+						return Long.parseLong(source);
+					}
+				});
+				for (Long billId : billIds) {
+					if (repaymentBillLists.contains(billId)) {
+						AfBorrowBillDo billInfo = getBillFromList(repaymentedBillList, billId);
+						if (repayment.getUserCouponId() == 0l) {
+							//没有优惠券,则按照账单金额来
+							totalAmount = billInfo.getBillAmount();
 							continue;
 						} else {
-							//如果是最后一个，则先减去前面的还款记录
-							BigDecimal tempAmount = BigDecimal.ZERO;
-							logger.info(" is last one");
-							List<AfBorrowBillDo> tempBillList = afBorrowBillDao.getBillListByIds(repaymentBillLists);
-							for (int i = 0; i < repaymentBillLists.size() - 1; i ++) {
-								AfBorrowBillDo tempBillInfo = getBillFromList(tempBillList, repaymentBillLists.get(i));
-								tempAmount = BigDecimalUtil.add(tempAmount, calculateRepaymentCouponAmount(repayment, tempBillInfo));
+							//有优惠券
+							if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size() - 1) {
+								//不是最后一个记录，则按照百分比计算
+								logger.info(" is not last one");
+								totalAmount = BigDecimalUtil.add(totalAmount, calculateRepaymentCouponAmount(repayment, billInfo));
+								continue;
+							} else {
+								//如果是最后一个，则先减去前面的还款记录
+								BigDecimal tempAmount = BigDecimal.ZERO;
+								logger.info(" is last one");
+								List<AfBorrowBillDo> tempBillList = afBorrowBillDao.getBillListByIds(repaymentBillLists);
+								for (int i = 0; i < repaymentBillLists.size() - 1; i ++) {
+									AfBorrowBillDo tempBillInfo = getBillFromList(tempBillList, repaymentBillLists.get(i));
+									tempAmount = BigDecimalUtil.add(tempAmount, calculateRepaymentCouponAmount(repayment, tempBillInfo));
+								}
+								totalAmount = BigDecimalUtil.add(totalAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
+								continue;
 							}
-							totalRefundAmount = BigDecimalUtil.add(totalRefundAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
-							continue;
 						}
 					}
 				}
 			}
+			return totalAmount;
 		}
-		return totalRefundAmount;
 	}
 	
 	/**

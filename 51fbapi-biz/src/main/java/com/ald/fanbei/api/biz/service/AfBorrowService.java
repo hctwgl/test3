@@ -54,15 +54,18 @@ public interface AfBorrowService {
 	
 	
 	/**
-	 * 品牌分期代付
+	 * 代付分期
 	 * @param userDto --
 	 * @param amount --金额
 	 * @param cardId --银行卡id
 	 * @param name --借款名称
 	 * @param nper --分期数
+	 * @param orderId 订单id
+	 * @param orderNo 订单编号
+	 * @param totalNper 原来订单总分期数 为重新生成账单使用，当第一次生成账单 该值为null
 	 * @return
 	 */
-	public long dealBrandConsumeApply(AfUserAccountDo userDto,BigDecimal amount,String name,Integer nper, Long orderId, String orderNo);
+	public long dealAgentPayConsumeApply(AfUserAccountDo userDto,BigDecimal amount,String name,Integer nper, Long orderId, String orderNo, Integer totalNper);
 	
 	/**
 	 * 获取最近借款号
@@ -139,9 +142,12 @@ public interface AfBorrowService {
 	int updateBorrowStatus(Long id,String status);
 	
 	/**
-	 * 计算出借款应退金额
-	 * @param borrowId
+	 * 计算出重新生产账单金额
+	 * 借款金额+借款金额*退款日利率*（退款日期-借款日期+1）*（0,1）- 退款金额- 已还账单和 + 优惠和
+	 * @param borrowId 借款id
+	 * @param refundAmount 退款金额
+	 * @param refundByUser 是否由客户发起退款
 	 * @return
 	 */
-	BigDecimal calculateBorrowRefundAmount(Long borrowId);
+	BigDecimal calculateBorrowAmount(Long borrowId, BigDecimal refundAmount, boolean refundByUser);
 }
