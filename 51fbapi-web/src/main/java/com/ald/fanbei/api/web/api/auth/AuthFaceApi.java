@@ -84,6 +84,8 @@ public class AuthFaceApi implements ApiHandle {
 			resp.addResponseData("canRetry", true);
 		} else {
 			resp.addResponseData("canRetry", false);
+			callLimitDo.setDisableStatus("N");
+			afUserApiCallLimitService.updateUserApiCallLimit(callLimitDo);
 		}
 
 		if (StringUtil.isBlank(idNumber) || StringUtil.isBlank(realName)) {
