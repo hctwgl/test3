@@ -53,4 +53,11 @@ public interface AfBorrowCashDao {
 	     * @return
 	     */
 	    String getCurrentLastBorrowNo(String orderNoPre);
+	    
+	    /**
+	     * 根据rishOrderNo获取借款信息
+	     * @param rishOrderNo
+	     * @return
+	     */
+	    public AfBorrowCashDo getBorrowCashByRishOrderNo(String rishOrderNo);
 }

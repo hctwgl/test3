@@ -39,4 +39,9 @@ public class CommitRecordUtil {
 		afCommitRecordDo.setCommit_num(1);
 		afCommitRecordService.addRecord(afCommitRecordDo);
     }
+	
+	public AfCommitRecordDo getRecord(String relate_id) {
+		return afCommitRecordService.getRecordByTypeAndRelateId(relate_id);
+    }
+	
 }
