@@ -1,0 +1,53 @@
+* {padding: 0;margin: 0;font-family: "微软雅黑";box-sizing: border-box;}
+h1,h2,h3,h4,h5,h6{font-weight: normal;}
+ul,li {list-style: none;}
+img {font-size: 0;}
+a {text-decoration: none;}
+
+.head{width:100%;height:11.46rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney01.jpg") no-repeat;
+background-size:contain;}
+.banner{width:100%;height:15rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney02.jpg") no-repeat;
+background-size:contain;}
+.section1{width:100%;background:#fff8ee;padding-top:.6rem;}
+.section1 .title{height:0.82rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney03.jpg") no-repeat;
+background-size:contain;}
+.section1 ul{height:9.62rem;}
+.section1 ul li{float:left;}
+.section1 ul li h2{font-size:.22rem;color:#000;font-weight: bold;}
+.section1 ul li h2 span{width:.28rem;height:.28rem;border:1px solid #000;border-radius: 50%;line-height: .26rem;text-align: center;}
+.section1 ul li h3{font-size:.22rem;color:#000;font-weight: bold;padding:0 0 0 .85rem;}
+.section1 ul li:nth-child(1) .pic{width:2.82rem;height:2.63rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney09.png") no-repeat;
+background-size:contain;margin:.4rem 0 0 .76rem;}
+.section1 ul li:nth-child(1) h2{padding:.3rem 0 .2rem .85rem;}
+
+.section1 ul li:nth-child(2) .pic{width:2.56rem;height:2.61rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney10.png") no-repeat;
+background-size:contain;margin:.33rem 0 0 .58rem;}
+.section1 ul li:nth-child(2) h2{padding:.4rem 0 .2rem .85rem;}
+
+.section1 ul li:nth-child(3) .pic{width:2.77rem;height:2.78rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney11.png") no-repeat;
+background-size:contain;margin:1.55rem 0 0 .76rem;}
+.section1 ul li:nth-child(3) h2{padding:.3rem 0 .2rem .85rem;}
+
+.section1 ul li:nth-child(4) .pic{width:2.56rem;height:2.69rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney12.png") no-repeat;
+background-size:contain;margin:1.45rem 0 0 .6rem;}
+.section1 ul li:nth-child(4) h2{padding:.485rem 0 .2rem .85rem;}
+.section1 h4{font-size:.14rem;color:#000;text-align:center;padding:.8rem 0;}
+
+.section2{background:#fff8ee;}
+.section2 .title h3{width:5.55rem;height:.52rem;line-height:.52rem;background:#faba60;
+	color:#fff;margin:0 auto;text-align: center;font-size: .3rem;letter-spacing: .1rem;}
+.section2 .title h4{width:5.55rem;height:.6rem;line-height:.6rem;text-align: center;
+margin:0 auto;font-size: .3rem;}
+.section2 ul li:nth-child(1){height:2.09rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney04.jpg") no-repeat;
+background-size:contain;}
+.section2 ul li:nth-child(2){height:1.92rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney05.jpg") no-repeat;
+background-size:contain;margin-top:.45rem;}
+.section2 ul li:nth-child(3){height:1.87rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney06.jpg") no-repeat;
+background-size:contain;margin-top:.45rem;}
+.section2 ul li:nth-child(4){height:2.16rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney07.jpg") no-repeat;
+background-size:contain;margin-top:.45rem;}
+.section2 ul li:nth-child(5){height:4.08rem;background: url("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/borrowMoney08.jpg") no-repeat;
+background-size:contain;margin:.45rem 0 .74rem 0;}
+
+.footer{width:100%;height:.75rem;background:#ff702e;text-align: center;position:fixed;bottom: 0;}
+.footer a{font-size: .36rem;color:#fff;line-height: .75rem;letter-spacing: .1rem;}
