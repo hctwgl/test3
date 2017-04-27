@@ -47,7 +47,7 @@ public class CheckFaceApi implements ApiHandle {
 		AfUserApiCallLimitDo callLimitDo = afUserApiCallLimitService.selectByUserIdAndType(context.getUserId(), ApiCallType.YITU_FACE.getCode());
 		if (callLimitDo == null) {
 			callLimitDo = new AfUserApiCallLimitDo();
-			callLimitDo.setType(ApiCallType.YITU_CARD.getCode());
+			callLimitDo.setType(ApiCallType.YITU_FACE.getCode());
 			callLimitDo.setUserId(context.getUserId());
 			afUserApiCallLimitService.addUserApiCallLimit(callLimitDo);
 		}
