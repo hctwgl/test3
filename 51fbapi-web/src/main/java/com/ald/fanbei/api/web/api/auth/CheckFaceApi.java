@@ -10,15 +10,18 @@ import com.ald.fanbei.api.biz.bo.YituFaceLivingRespBo;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserApiCallLimitService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.yitu.YituUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfUserApiCallLimitDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -34,6 +37,8 @@ public class CheckFaceApi implements ApiHandle {
 	AfUserApiCallLimitService afUserApiCallLimitService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfUserAuthService afUserAuthService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -51,7 +56,7 @@ public class CheckFaceApi implements ApiHandle {
 			callLimitDo.setUserId(context.getUserId());
 			afUserApiCallLimitService.addUserApiCallLimit(callLimitDo);
 		}
-		if (callLimitDo.getDisableStatus().equals("Y")) {
+		if (callLimitDo.getDisableStatus().equals(YesNoStatus.YES.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.API_CALL_NUM_OVERFLOW);
 		}
 		try {
@@ -59,10 +64,13 @@ public class CheckFaceApi implements ApiHandle {
 			afUserApiCallLimitService.addVisitNum(context.getUserId(), ApiCallType.YITU_FACE.getCode());
 			Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YITU_FACE.getCode()).getValue(), 0);
 			if (maxNum - callLimitDo.getCallNum() <= 0) {
-				callLimitDo.setDisableStatus("Y");
+				callLimitDo.setDisableStatus(YesNoStatus.YES.getCode());
 				afUserApiCallLimitService.updateUserApiCallLimit(callLimitDo);
 			}
 			if (bo.getPair_verify_result().equals(YituFaceLivingRespBo.RESULT_TRUE)) {
+				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
+				auth.setFacesStatus(YesNoStatus.YES.getCode());
+				afUserAuthService.updateUserAuth(auth);
 				return resp;
 			} else {
 				throw new FanbeiException(FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
