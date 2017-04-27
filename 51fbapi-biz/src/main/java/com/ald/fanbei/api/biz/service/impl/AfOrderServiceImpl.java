@@ -879,7 +879,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		afAgentOrderDo.setOrderId(orderId);
 		afAgentOrderDo.setStatus("BUY");
-		
+		afAgentOrderDo.setGmtAgentBuy(new Date());
 		afAgentOrderService.updateAgentOrder(afAgentOrderDo);
 		
 		return afUserOrderDao.addUserOrder(order);
