@@ -749,13 +749,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				try {
 					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {} refundNo = {}", new Object[]{orderId,userId,orderNo,refundAmount,totalAmount,payType,payTradeNo,refundNo});
 					AfOrderDo orderInfo = null;
-					PayType type = PayType.findRoleTypeByCode(payType);
-					BigDecimal refundedAmount = afOrderRefundDao.calculateTotalRefundAmount(orderId);
-					BigDecimal totalRefundAmount = refundAmount.add(refundedAmount == null ? BigDecimal.ZERO : refundedAmount);
 					//金额小于0
 					if (refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
 						throw new FanbeiException("reund amount error", FanbeiExceptionCode.REFUND_AMOUNT_ERROR);
 					}
+					PayType type = PayType.findRoleTypeByCode(payType);
+					//已经退款金额
+					BigDecimal refundedAmount = afOrderRefundDao.calculateTotalRefundAmount(orderId);
+					BigDecimal totalRefundAmount = refundAmount.add(refundedAmount == null ? BigDecimal.ZERO : refundedAmount);
 					//总退款金额大于订单金额
 					if (totalRefundAmount.compareTo(totalAmount) > 0) {
 						throw new FanbeiException("reund total amount error", FanbeiExceptionCode.REFUND_TOTAL_AMOUNT_ERROR);
