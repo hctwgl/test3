@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        #set($version="2017042501")
+        #set($version="2017042701")
         #set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,7 +21,7 @@
         <link rel="stylesheet" type="text/css" href="/dist/css/base.css?version=$version">
         <script type="text/javascript" src="$commonUrl/common/js/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="$commonUrl/common/js/vue.min.js"></script>
-        <script type="text/javascript" src="$commonUrl/common/js/layer.js"></script>
+        <script type="text/javascript" src="/dist/js/layer.js"></script>
         <script type="text/javascript" src="/dist/js/base.js?version=$version"></script>
         <script type="text/javascript">
             // 判断rem字体大小

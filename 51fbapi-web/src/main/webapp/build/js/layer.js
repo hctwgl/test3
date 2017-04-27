@@ -97,7 +97,7 @@
 			e = d.substring(0, d.lastIndexOf("/") + 1);
 		c.getAttribute("merge") || document.head.appendChild(function() {
 			var a = b.createElement("link");
-			return a.href = "http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/css/layer.css", a.type = "text/css", a.rel = "styleSheet", a.id = "layermcss", a
+			return a.href = "../../dist/css/layer.css", a.type = "text/css", a.rel = "styleSheet", a.id = "layermcss", a
 		}())
 	}()
 }(window);

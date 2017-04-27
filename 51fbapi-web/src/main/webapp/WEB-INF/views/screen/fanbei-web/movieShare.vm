@@ -64,10 +64,8 @@
         <p>5.本次活动的最终解释权归51返呗APP官方所有。</p><br>
         <p class="help">获取更多帮助，请拨打客服电话 ： 0571-88193918</p>
     </section>
-    
 
     <div class="shareBtn" onclick="shareBtn()">立抢2元（无门槛代金券）</div>
-    <!-- <script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script> -->
     <script type="text/javascript" src="/dist/activity/04/movieShare.js?version=$version"></script>
 </body>
 </html>

@@ -25,7 +25,7 @@ gulp.task('clean', function(cb) {
 gulp.task('es6', function() {
     return gulp.src(['build/**/*.js'])
         .pipe(sourcemaps.init())
-        // .pipe(plumber())
+        .pipe(plumber())
         .pipe(babel({presets: ['es2015']}))
         .pipe(cached('js'))
         .pipe(uglify())                  //压缩
