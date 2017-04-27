@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
@@ -22,6 +23,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -39,6 +41,8 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 	AfOrderService afOrderService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfBorrowService afBorrowService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -89,6 +93,12 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String remark = afAgentOrderDo.getRemark();
 		String gmtCreate = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT,afOrderDo.getGmtCreate());
 		String payType =  afOrderDo.getPayType().equals("AP")?"返呗支付":"其他支付方式";
+		// 取出一共分几期
+		AfBorrowDo borrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
+		if(borrowDo != null){
+			String nper = borrowDo.getNper().toString(); // 分几期	
+			payType =  afOrderDo.getPayType().equals("AP")?"返呗支付"+nper+"期":"其他支付方式";
+		}
 		String gmtPay = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT,afOrderDo.getGmtPay());
 		/**
 		 * 支付状态【N:(notpay)未支付,D:(dealing)支付中,P:(payed)已经支付,R:(refund)退款】
