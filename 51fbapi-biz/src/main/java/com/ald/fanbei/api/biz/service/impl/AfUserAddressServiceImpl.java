@@ -69,6 +69,13 @@ public class AfUserAddressServiceImpl implements AfUserAddressService {
 	}
 
 
+	@Override
+	public int getCountOfAddressByUserId(Long userId) {
+		
+		return afUserAddressDao.getCountOfAddressByUserId(userId);
+	}
+
+
 
 
 }

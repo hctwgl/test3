@@ -54,13 +54,20 @@ public class ChangeUserAddressApi implements ApiHandle {
 		}
 		
 		Long userId = context.getUserId();
+		// 取消上一个默认地址
 		if(StringUtils.equals(isDefault, YesNoStatus.YES.getCode())){
 			AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressDefaultByUserId(userId);
-			if(defauleDo!=null &&addressId!=defauleDo.getRid()){
+			if(defauleDo!=null && addressId!=defauleDo.getRid()){
 				defauleDo.setIsDefault(YesNoStatus.NO.getCode());
 				afUserAddressService.updateUserAddress(defauleDo);
 			}
+		}else{
+			// 如果是最后一个地址,则为默认地址
+			if(afUserAddressService.getCountOfAddressByUserId(userId) <= 1){
+				isDefault = YesNoStatus.YES.getCode();
+			}
 		}
+		
 		
 		AfUserAddressDo addressDo = new AfUserAddressDo();
 		addressDo.setRid(addressId);

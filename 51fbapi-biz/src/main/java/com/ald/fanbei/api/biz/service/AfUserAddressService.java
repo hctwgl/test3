@@ -55,4 +55,11 @@ public interface AfUserAddressService {
 	    * 默认地址被删除 , 重新设置默认地址
 	    */
 	   int reselectTheDefaultAddress(Long userId);
+	   
+	   /**
+	    * 通过userId获取未被删地址的数量
+	    * @param userId
+	    * @return
+	    */
+	   int getCountOfAddressByUserId(Long userId);
 }

@@ -59,6 +59,13 @@ public interface AfUserAddressDao {
 	    * @return
 	    */
 	   int reselectTheDefaultAddress(@Param("userId") Long userId);
+	   
+	   /**
+	    * 通过userId获取用户未被删除掉的地址数量
+	    * @param userId
+	    * @return
+	    */
+	   int getCountOfAddressByUserId(@Param("userId") Long userId);
 
 	    
 }

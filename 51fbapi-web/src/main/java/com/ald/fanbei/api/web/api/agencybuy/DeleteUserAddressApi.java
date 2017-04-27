@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -36,7 +37,7 @@ public class DeleteUserAddressApi implements ApiHandle {
 		Long userId = context.getUserId();
 		if(afUserAddressService.deleteUserAddress(addressId) > 0){
 		 if(afUserAddressService.selectUserAddressByrid(userId)!= null){
-			if(StringUtils.isNotBlank(isDefault)){
+			if(StringUtils.equals(isDefault, YesNoStatus.YES.getCode())){
 				if (afUserAddressService.reselectTheDefaultAddress(userId) > 0){
 					return resp;
 				}

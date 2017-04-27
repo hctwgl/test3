@@ -94,6 +94,7 @@
 	</select>
 	
 	<update id="reselectTheDefaultAddress" >
+	<!-- 	LIMT 1作用:是只修改第一条数据 -->
 		UPDATE
 			af_user_address 
 		SET 
@@ -106,4 +107,15 @@
 		LIMIT 
 			1
 	</update>
+	
+	<select id="getCountOfAddressByUserId" resultType="java.lang.Integer">	
+		SELECT 
+			COUNT(*) 
+		FROM 
+			af_user_address 
+		WHERE
+			is_delete = 0 
+		AND
+			user_id = #{userId}
+	</select>
 </mapper>
