@@ -581,7 +581,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		logger.info("updateOrder begin orderInfo = {}" , afOrder);
 		return orderDao.updateOrder(afOrder);
 	}
-
+	
 	@Override
 	public int dealBoluomeOrder(final AfOrderDo afOrder) {
 		logger.info("dealBoluomeOrder begin , afOrder = {}"+afOrder);
@@ -742,25 +742,25 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Override
 	public int dealBrandOrderRefund(final Long orderId,final Long userId, final Long bankId, final String orderNo, final String thirdOrderNo,
-			final BigDecimal refundAmount, final BigDecimal totalAmount, final String payType, final String payTradeNo) {
+			final BigDecimal refundAmount, final BigDecimal totalAmount, final String payType, final String payTradeNo, final String refundNo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {}", new Object[]{orderId,userId,orderNo,refundAmount,totalAmount,payType,payTradeNo});
+					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {} refundNo = {}", new Object[]{orderId,userId,orderNo,refundAmount,totalAmount,payType,payTradeNo,refundNo});
 					AfOrderDo orderInfo = null;
-					PayType type = PayType.findRoleTypeByCode(payType);
-					BigDecimal refundedAmount = afOrderRefundDao.calculateTotalRefundAmount(orderId);
-					BigDecimal totalRefundAmount = refundAmount.add(refundedAmount == null ? BigDecimal.ZERO : refundedAmount);
 					//金额小于0
 					if (refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
 						throw new FanbeiException("reund amount error", FanbeiExceptionCode.REFUND_AMOUNT_ERROR);
 					}
+					PayType type = PayType.findRoleTypeByCode(payType);
+					//已经退款金额
+					BigDecimal refundedAmount = afOrderRefundDao.calculateTotalRefundAmount(orderId);
+					BigDecimal totalRefundAmount = refundAmount.add(refundedAmount == null ? BigDecimal.ZERO : refundedAmount);
 					//总退款金额大于订单金额
 					if (totalRefundAmount.compareTo(totalAmount) > 0) {
 						throw new FanbeiException("reund total amount error", FanbeiExceptionCode.REFUND_TOTAL_AMOUNT_ERROR);
 					}
-					String refundNo = generatorClusterNo.getRefundNo(new Date());
 					switch (type) {
 					case WECHAT:
 						//微信退款
@@ -771,7 +771,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.WECHAT,StringUtils.EMPTY, null,"菠萝觅微信退款"));
-							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
+							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount,refundNo);
 						}
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
@@ -821,7 +821,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							}
 						} else {
 							afBorrowService.dealAgentPayConsumeApply(accountInfo, borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, thirdOrderNo, borrowInfo.getNper());
-							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount);
+							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount, refundNo);
 						}
 						break;
 					case BANK:
@@ -839,6 +839,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("bank refund upsResult = {}", upsResult);
 						if(!upsResult.isSuccess()){
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"菠萝觅银行卡退款"));
+							refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
+							afOrderRefundDao.updateOrderRefund(refundInfo);
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						}
 						break;
@@ -849,12 +851,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return 1;
 				} catch (FanbeiException e) {
 					logger.error("dealBrandOrderRefund error = {}", e);
-					boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
+					boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount, refundNo);
 					throw new FanbeiException("reund error", e.getErrorCode());
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.error("dealBrandOrderRefund error:",e);
-					boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount);
+					boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount, refundNo);
 					return 0;
 				}
 			}
@@ -879,10 +881,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		afAgentOrderDo.setOrderId(orderId);
 		afAgentOrderDo.setStatus("BUY");
-		
+		afAgentOrderDo.setGmtAgentBuy(new Date());
 		afAgentOrderService.updateAgentOrder(afAgentOrderDo);
 		
 		return afUserOrderDao.addUserOrder(order);
 	}
-	
+
+
 }

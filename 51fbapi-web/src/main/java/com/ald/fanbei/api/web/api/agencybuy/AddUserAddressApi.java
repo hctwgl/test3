@@ -3,6 +3,8 @@
  */
 package com.ald.fanbei.api.web.api.agencybuy;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -58,11 +60,14 @@ public class AddUserAddressApi implements ApiHandle {
 
 		}
 		Long userId = context.getUserId();
+		
 		// 如果是第一个的地址  ,就自动设置为默认地址
-		AfUserAddressDo userAddressDo = afUserAddressService.selectUserAddressByrid(userId);
-		if(userAddressDo == null){
+		List<AfUserAddressDo> userAddressDo = afUserAddressService.selectUserAddressByUserId(userId);
+		if(userAddressDo.size() == 0){
 			isDefault = "Y";
 		}
+
+		
 		
 		if(StringUtils.equals(isDefault, YesNoStatus.YES.getCode())){
 			AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressDefaultByUserId(userId);

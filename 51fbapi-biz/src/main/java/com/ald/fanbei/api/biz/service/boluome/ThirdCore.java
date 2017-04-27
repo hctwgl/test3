@@ -27,6 +27,7 @@ public class ThirdCore {
 	public static final String TIME_STAMP = "timestamp";
 	public static final String APP_KEY = "appKey";
 	public static final String SIGN = "sign";
+	public static final String REFUND_NO = "refundNo";
 	private static Map<String, String> appKeyMap;
 
     /** 

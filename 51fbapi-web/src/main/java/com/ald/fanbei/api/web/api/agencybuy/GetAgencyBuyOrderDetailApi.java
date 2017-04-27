@@ -70,12 +70,12 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String goodName = afOrderDo.getGoodsName();
 		String goodsIcon = afOrderDo.getGoodsIcon();
 		Long count = NumberUtil.objToLongDefault(afOrderDo.getCount(), 1);
-		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(afOrderDo.getPriceAmount(), BigDecimal.ZERO);	// 商品的价格
-		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(afOrderDo.getPriceAmount(),BigDecimal.ZERO); // 用户填写的价格
-		String rebateAmount = ObjectUtils.toString(afOrderDo.getRebateAmount(), "0.00");
+		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(afOrderDo.getSaleAmount(), BigDecimal.ZERO);	// 商品的价格
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(afOrderDo.getActualAmount(),BigDecimal.ZERO); // 用户填写的价格
+		String rebateAmount = ObjectUtils.toString(afOrderDo.getRebateAmount(), null);
 
 		final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
-		if(rebateAmount.equals("0.00")){
+		if(NumberUtil.objToDoubleDefault(rebateAmount, 0.00) == 0.00){
 		rebateAmount = parseToVo(saleAmount,NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO),
 					NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO));	
 		}

@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,11 +46,13 @@ public class CancelAgentBuyOrder implements ApiHandle {
 		afOrderDo.setStatus("CLOSED");
 		afOrderDo.setRid(orderId);
 		
+		
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		afAgentOrderDo.setOrderId(orderId);
 		afAgentOrderDo.setCancelReason(cancelReason);
 		afAgentOrderDo.setCancelDetail(cancelDetail);
-		afAgentOrderDo.setStatus("CLOSED");
+		afAgentOrderDo.setGmtClosed(new Date());
+		
 		
 		if(afOrderService.updateOrder(afOrderDo) > 0){
 			if(afAgentOrderService.updateAgentOrder(afAgentOrderDo) > 0){

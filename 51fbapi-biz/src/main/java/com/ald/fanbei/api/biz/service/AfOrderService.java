@@ -160,13 +160,21 @@ public interface AfOrderService {
 	int dealBrandOrderSucc(String payOrderNo, String tradeNo, String payType);
 	
 	/**
-	 * 处理菠萝觅退款
-	 * @param orderInfo
+	 * 
+	 * @param orderId 订单id
+	 * @param userId 用户id
+	 * @param bankId 银行卡id
+	 * @param orderNo 订单编号
+	 * @param thirdOrderNo 第三方订单编号
+	 * @param refundAmount 退款金额
+	 * @param totalAmount 实际付款金额
+	 * @param payType 支付方式
+	 * @param payTradeNo 支付流水号
+	 * @param refundNo 退款流水号
 	 * @return
-	 * @throws Exception 
 	 */
 	int dealBrandOrderRefund(Long orderId,Long userId,  Long bankId, String orderNo, String thirdOrderNo,
-			BigDecimal refundAmount, BigDecimal totalAmount, String payType, String payTradeNo);
+			BigDecimal refundAmount, BigDecimal totalAmount, String payType, String payTradeNo, String refundNo);
 	
 	
 	/**
@@ -175,4 +183,6 @@ public interface AfOrderService {
 	 * @return
 	 */
 	String getCurrentLastPayNo(Date current);
+	
 }
+

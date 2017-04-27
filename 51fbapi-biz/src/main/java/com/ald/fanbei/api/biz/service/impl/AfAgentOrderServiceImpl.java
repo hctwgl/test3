@@ -86,30 +86,34 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 						afOrder.setSecType("TAOBAO");
 					    afOrder.setShopName("");
 					    afOrder.setGmtPayEnd(gmtPayEnd);
-			
-						TbkItemInfoGetResponse res = taobaoApiUtil.executeTakItemDetailSearch(afOrder.getNumId());
+					    try {
+					    	TbkItemInfoGetResponse res = taobaoApiUtil.executeTakItemDetailSearch(afOrder.getNumId());
+							
+							JSONObject resObj = JSON.parseObject(res.getBody());
+							JSONObject taoBaoInfo = resObj.getJSONObject("tbk_item_info_get_response").getJSONObject("results");
+
+							JSONArray items = taoBaoInfo.getJSONArray("n_tbk_item");
+							if(items.size()>0){
+								JSONObject item = (JSONObject) items.get(0);
+								afAgentOrderDo.setGoodsUrl(item.getString("item_url"));
+							    String	orderType = item.getInteger("user_type")==0?"TAOBAO":"TMALL";
+							    String price = item.getString("reserve_price");
+							    String title = item.getString("title");
+							    String pictUrl = item.getString("pict_url");
+							    String salePrice = item.getString("zk_final_price");
+							    String nick = item.getString("nick");
+							    afOrder.setPriceAmount(new BigDecimal(price));
+							    afOrder.setSaleAmount(new BigDecimal(salePrice));
+							    afOrder.setSecType(orderType);
+							    afOrder.setShopName(nick);
+							    afOrder.setGoodsName(title);
+							    afOrder.setGoodsIcon(pictUrl);
+
+							}					
+						} catch (Exception e) {
+							logger.error("this numId error_response", e);
+						}
 						
-						JSONObject resObj = JSON.parseObject(res.getBody());
-						JSONObject taoBaoInfo = resObj.getJSONObject("tbk_item_info_get_response").getJSONObject("results");
-
-						JSONArray items = taoBaoInfo.getJSONArray("n_tbk_item");
-						if(items.size()>0){
-							JSONObject item = (JSONObject) items.get(0);
-							afAgentOrderDo.setGoodsUrl(item.getString("item_url"));
-						    String	orderType = item.getInteger("user_type")==0?"TAOBAO":"TMALL";
-						    String price = item.getString("reserve_price");
-						    String title = item.getString("title");
-						    String pictUrl = item.getString("pict_url");
-						    String salePrice = item.getString("zk_final_price");
-						    String nick = item.getString("nick");
-						    afOrder.setPriceAmount(new BigDecimal(price));
-						    afOrder.setSaleAmount(new BigDecimal(salePrice));
-						    afOrder.setSecType(orderType);
-						    afOrder.setShopName(nick);
-						    afOrder.setGoodsName(title);
-						    afOrder.setGoodsIcon(pictUrl);
-
-						}					
 						afOrderDao.createOrder(afOrder);
 						afAgentOrderDo.setOrderId(afOrder.getRid());
 						afAgentOrderDao.addAgentOrder(afAgentOrderDo);
