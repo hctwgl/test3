@@ -72,7 +72,7 @@ public class BoluomeUtil extends AbstractThird{
 		return responseBo;
 	}
 	
-	public BoluomePushRefundResponseBo pushRefundStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
+	public BoluomePushRefundResponseBo pushRefundStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount, String refundNo){
 		BoluomePushRefundRequestBo reqBo = new BoluomePushRefundRequestBo();
 		reqBo.setOrderId(thirdOrderNo);
 		reqBo.setStatus(pushStatus.getCode());
@@ -80,6 +80,7 @@ public class BoluomeUtil extends AbstractThird{
 		reqBo.setUserId(userId);
 		reqBo.setTimestamp(System.currentTimeMillis());
 		reqBo.setSign(BoluomeCore.builSign(reqBo));
+		reqBo.setRefundNo(refundNo);
 		logger.info("pushRefundStatus begin, reqBo = {}", reqBo);
 		String reqResult = HttpUtil.doHttpPostJsonParam(getPushRefundUrl(), JSONObject.toJSONString(reqBo));
 		logThird(reqResult, "pushRefundStatus", reqBo);
