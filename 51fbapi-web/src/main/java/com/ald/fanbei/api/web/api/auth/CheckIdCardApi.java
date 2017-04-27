@@ -83,7 +83,7 @@ public class CheckIdCardApi implements ApiHandle {
 				}
 			}
 		} catch (Exception e) {
-			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_AUTH_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_GET_ERROR);
 		}
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 	}
