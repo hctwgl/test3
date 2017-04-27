@@ -37,7 +37,7 @@
 		select
 		<include refid="queryFields" />
 		from af_user_api_call_limit where user_id = #{userId} and type =
-		#{type}
+		#{type} limit 1
 	</select>
 
 	<update id="addVisitNum">
