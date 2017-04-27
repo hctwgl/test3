@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfIdNumberDao">
+	<sql id="queryAllFields">
+id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,valid_date_begin,valid_date_end,birthday,agency,id_front_url,id_behind_url
+	</sql>
+	
+	<insert id="addIdNumber" parameterType="AfIdNumberDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_id_number(gmt_create , gmt_modified , user_id , address , citizen_id , gender , nation , name , valid_date_begin , valid_date_end , birthday , agency , id_front_url , id_behind_url)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{userId},
+    		#{address},
+    		#{citizenId},
+    		#{gender},
+    		#{nation},
+    		#{name},
+    		#{validDateBegin},
+    		#{validDateEnd},
+    		#{birthday},
+    		#{agency},
+    		#{idFrontUrl},
+    		#{idBehindUrl}
+		)
+	</insert>
+	
+	<update id="updateIdNumber" parameterType="AfIdNumberDo" >
+		UPDATE af_id_number SET gmt_modified = NOW()
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="address != null">
+    			,address=#{address}
+			</if>
+			<if test="citizenId != null">
+    			,citizen_id=#{citizenId}
+			</if>
+			<if test="gender != null">
+    			,gender=#{gender}
+			</if>
+			<if test="nation != null">
+    			,nation=#{nation}
+			</if>
+			<if test="name != null">
+    			,name=#{name}
+			</if>
+			<if test="validDateBegin != null">
+    			,valid_date_begin=#{validDateBegin}
+			</if>
+			<if test="validDateEnd != null">
+    			,valid_date_end=#{validDateEnd}
+			</if>
+			<if test="birthday != null">
+    			,birthday=#{birthday}
+			</if>
+			<if test="agency != null">
+    			,agency=#{agency}
+			</if>
+			<if test="idFrontUrl != null">
+    			,id_front_url=#{idFrontUrl}
+			</if>
+			<if test="idBehindUrl != null">
+    			,id_behind_url=#{idBehindUrl}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
+	<update id="deleteIdNumber" parameterType="java.lang.Long" >
+		UPDATE af_id_number SET is_delete = 1 WHERE id=#{rid}
+	</update>
+		<select id="selectUserIdNumberByUserId" resultType="AfIdNumberDo">
+		SELECT
+			<include refid="queryAllFields" />
+		FROM
+			af_id_number
+		WHERE
+			is_delete = 0
+		AND
+			user_id = #{userId}
+		LIMIT 1
+	</select>
+	
+</mapper>
