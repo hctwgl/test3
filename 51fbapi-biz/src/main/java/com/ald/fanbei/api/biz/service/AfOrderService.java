@@ -175,4 +175,6 @@ public interface AfOrderService {
 	 * @return
 	 */
 	String getCurrentLastPayNo(Date current);
+	
 }
+

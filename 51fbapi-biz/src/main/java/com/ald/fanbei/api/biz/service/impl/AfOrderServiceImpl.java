@@ -581,7 +581,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		logger.info("updateOrder begin orderInfo = {}" , afOrder);
 		return orderDao.updateOrder(afOrder);
 	}
-
+	
 	@Override
 	public int dealBoluomeOrder(final AfOrderDo afOrder) {
 		logger.info("dealBoluomeOrder begin , afOrder = {}"+afOrder);
@@ -884,5 +884,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		
 		return afUserOrderDao.addUserOrder(order);
 	}
-	
+
+
 }
