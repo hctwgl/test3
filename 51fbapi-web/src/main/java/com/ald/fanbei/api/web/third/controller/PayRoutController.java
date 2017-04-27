@@ -189,7 +189,7 @@ public class PayRoutController{
         			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
         					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
 
-        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), refundInfo.getRefundNo());
         			
         		}
     			return "SUCCESS";

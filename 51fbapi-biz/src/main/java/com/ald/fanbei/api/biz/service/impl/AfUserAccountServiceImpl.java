@@ -179,7 +179,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
 	        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
 	        			
-	        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), refundInfo.getAmount());
+	        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), refundInfo.getAmount(),refundInfo.getRefundNo());
 	        		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){
 	        			//借钱
 	        			Long rid = NumberUtil.objToLong(result);

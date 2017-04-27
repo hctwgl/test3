@@ -22,6 +22,8 @@ public class BoluomePushRefundRequestBo extends HashMap<String, String> {
 	private String status;//推送状态 
 	private Long timestamp;//签名时间戳
 	private String sign;//签名参数
+	private String refundNo;//退款流水号
+	
 	/**
 	 * @return the orderId
 	 */
@@ -99,5 +101,17 @@ public class BoluomePushRefundRequestBo extends HashMap<String, String> {
 	public void setSign(String sign) {
 		this.sign = sign;
 		this.put(BoluomeCore.SIGN, sign);
+	}
+	/**
+	 * @return the refundNo
+	 */
+	public String getRefundNo() {
+		return refundNo;
+	}
+	/**
+	 * @param refundNo the refundNo to set
+	 */
+	public void setRefundNo(String refundNo) {
+		this.refundNo = refundNo;
 	}
 }
