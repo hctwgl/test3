@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.protocol.RequestDate;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
@@ -50,9 +49,9 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
 		String goodsIcon = ObjectUtils.toString(requestDataVo.getParams().get("goodsIcon"));
-		BigDecimal priceAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("priceAmount")),BigDecimal.ZERO); // 原价
-		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("priceAmount"), BigDecimal.ZERO);
-		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")),BigDecimal.ZERO);
+		BigDecimal priceAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("priceAmount"),BigDecimal.ZERO); // 原价
+		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("saleAmount"), BigDecimal.ZERO);
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 
 		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("addressId"), 0);
 		String capture = ObjectUtils.toString(requestDataVo.getParams().get("capture"));
