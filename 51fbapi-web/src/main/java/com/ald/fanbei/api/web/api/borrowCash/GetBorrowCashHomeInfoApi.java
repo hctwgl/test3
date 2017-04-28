@@ -62,7 +62,7 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 		data.put("bannerList",bannerList);
 		
 
-		data.put("canBorrow", "Y");
+		data.put("canBorrow", "N");
 		data.put("loanMoney", "1000000");
 		data.put("loanNum", "1000");
 		
