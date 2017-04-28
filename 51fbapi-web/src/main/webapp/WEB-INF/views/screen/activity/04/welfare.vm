@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/04")
+	<meta charset="UTF-8">
+	<title>51福利来袭</title>
+</head>
+<body>
+	<img src="$src/welfare1.jpg">
+	<img src="$src/welfare2.jpg">
+	<img src="$src/welfare3.jpg">
+	<img src="$src/welfare4.jpg">
+	<img src="$src/welfare5.jpg">
+</body>
+</html>
