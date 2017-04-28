@@ -27,6 +27,8 @@ public enum AfResourceSecType {
 		borrowCashLender("BORROW_CASH_LENDER", "出借人信息"),
 		borrowCashSupuerSwitch("BORROW_CASH_SUPUER_SWITCH", "借款超级开关"),
 		borrowCashTotalAmount("BORROW_CASH_TOTAL_SWITCH","每日借款借款总金额"),
+		borrowCashShowMoney("BORROW_CASH_SHOW_MONEY","显示已放款总额"),
+		borrowCashShowNum("BORROW_CASH_SHOW_NUM","显示已放款笔数"),
 
 	MODEL_URL("MODEL_URL", "本地模板H5");
 	

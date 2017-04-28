@@ -11,12 +11,18 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -32,6 +38,8 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -62,9 +70,23 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 		data.put("bannerList",bannerList);
 		
 
-		data.put("canBorrow", "N");
-		data.put("loanMoney", "1000000");
-		data.put("loanNum", "1000");
+		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
+		if (currentAmount == null) {
+			AfBorrowCacheAmountPerdayDo temp = new AfBorrowCacheAmountPerdayDo();
+			temp.setAmount(new BigDecimal(0));
+			temp.setDay(currentDay);
+			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
+			currentAmount = temp;
+		}
+		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
+				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
+			data.put("canBorrow", "N");
+		} else {
+			data.put("canBorrow", "Y");
+		}
+		data.put("loanMoney", rate.get("showMoney"));
+		data.put("loanNum", rate.get("showNum"));
 		
 		resp.setResponseData(data);
 		return resp;

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -24,10 +25,12 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -50,13 +53,15 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		List<Object> bannerList = getBannerObjectWithResourceDolist(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
@@ -66,7 +71,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("status", afBorrowCashDo.getStatus());
 			AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 
-			 if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())||StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())){
+			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())
+					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
 			}
@@ -80,14 +86,13 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
 			data.put("overdueDay", afBorrowCashDo.getOverdueDay());
-			Integer day = NumberUtil
-					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
-			Date now =DateUtil.getStartOfDate (new Date());
+			Date now = DateUtil.getStartOfDate(new Date());
 
-			if(afBorrowCashDo.getGmtArrival()!=null){
+			if (afBorrowCashDo.getGmtArrival() != null) {
 				Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
-				Date repaymentDay = DateUtil.addDays(arrivalStart, day-1);
+				Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 				data.put("repaymentDay", repaymentDay);
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(now);
@@ -96,9 +101,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
 				data.put("deadlineDay", chaTime);
 			}
-			
+
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-			
+
 			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
 			data.put("rid", afBorrowCashDo.getRid());
@@ -116,11 +121,24 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("bannerList", bannerList);
 		data.put("lender", rate.get("lender"));
 
+		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
+		if (currentAmount == null) {
+			AfBorrowCacheAmountPerdayDo temp = new AfBorrowCacheAmountPerdayDo();
+			temp.setAmount(new BigDecimal(0));
+			temp.setDay(currentDay);
+			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
+			currentAmount = temp;
+		}
+		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
+				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
+			data.put("canBorrow", "N");
+		} else {
+			data.put("canBorrow", "Y");
+		}
+		data.put("loanMoney", rate.get("showMoney"));
+		data.put("loanNum", rate.get("showNum"));
 
-		data.put("canBorrow", "N");
-		data.put("loanMoney", "1000000");
-		data.put("loanNum", "1000");
-		
 		resp.setResponseData(data);
 		return resp;
 	}
