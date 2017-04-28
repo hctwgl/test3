@@ -1,5 +1,5 @@
 /*
-* @Last Modified time: 2017-04-27 10:35:03
+* @Last Modified time: 2017-04-28 19:39:52
 * @title:  layerUi公用样式
 */
 
@@ -137,7 +137,8 @@
 }
 .layui-m-layercont {
 	padding: 50px 30px;
-	line-height: 22px; /*text-align: center*/
+	line-height: 22px; 
+	/*text-align: center*/
 }
 .layui-m-layer1 .layui-m-layercont {
 	padding: 0;
