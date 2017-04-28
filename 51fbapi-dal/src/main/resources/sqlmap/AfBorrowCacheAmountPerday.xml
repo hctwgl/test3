@@ -17,7 +17,7 @@
 	
 	<update id="updateBorrowCacheAmount" parameterType="AfBorrowCacheAmountPerdayDo" >
 		UPDATE af_borrow_cache_amount_perday SET gmt_modified = NOW()
-    		,amount=amount + #{amount}
+    		,amount=amount + #{amount},nums=nums+1
 		WHERE day = #{day}
 	</update>
 	

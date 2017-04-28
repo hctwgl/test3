@@ -127,6 +127,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			AfBorrowCacheAmountPerdayDo temp = new AfBorrowCacheAmountPerdayDo();
 			temp.setAmount(new BigDecimal(0));
 			temp.setDay(currentDay);
+			temp.setNums(0l);
 			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
 			currentAmount = temp;
 		}
@@ -136,8 +137,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else {
 			data.put("canBorrow", "Y");
 		}
-		data.put("loanMoney", rate.get("showMoney"));
-		data.put("loanNum", rate.get("showNum"));
+		BigDecimal nums = new BigDecimal((String) rate.get("nums")) ;
+		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
+		data.put("loanNum", nums.multiply(BigDecimal.valueOf(currentAmount.getNums())));
 
 		resp.setResponseData(data);
 		return resp;

@@ -85,9 +85,9 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 		} else {
 			data.put("canBorrow", "Y");
 		}
-		data.put("loanMoney", rate.get("showMoney"));
-		data.put("loanNum", rate.get("showNum"));
-		
+		BigDecimal nums = new BigDecimal((String) rate.get("nums")) ;
+		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
+		data.put("loanNum", nums.multiply(BigDecimal.valueOf(currentAmount.getNums())));
 		resp.setResponseData(data);
 		return resp;
 	}
