@@ -148,6 +148,9 @@ public class BoluomeController extends AbstractThird{
     	if (StringUtils.isNotBlank(orderType)) {
     		orderType = orderType.toUpperCase();
     	}
+    	if (StringUtils.isNotBlank(channel)) {
+    		channel = channel.toUpperCase();
+    	}
     	
     	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
     	

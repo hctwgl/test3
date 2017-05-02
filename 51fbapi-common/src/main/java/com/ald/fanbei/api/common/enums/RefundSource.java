@@ -11,8 +11,8 @@ import java.util.Map;
  */
 public enum RefundSource {
 
-	USER("1", "用户主动退款"),
-	PLANT_FORM("2", "平台退款");
+	USER("U", "用户主动退款"),
+	PLANT_FORM("P", "平台退款");
 
     private String code;
     private String name;
