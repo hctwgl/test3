@@ -105,8 +105,8 @@ public class ThirdController extends AbstractThird{
         String amount = requestParams.getString(ThirdCore.AMOUNT);
         String sign = requestParams.getString(ThirdCore.SIGN);
         String appKey = requestParams.getString(ThirdCore.APP_KEY);
-        String refundNo = params.get(ThirdCore.REFUND_NO);
-        String refundSource = params.get(ThirdCore.REFUND_SOURCE);
+        String refundNo = requestParams.getString(ThirdCore.REFUND_NO);
+        String refundSource = requestParams.getString(ThirdCore.REFUND_SOURCE);
 
         params.put(ThirdCore.ORDER_ID, orderId);
         params.put(ThirdCore.USER_ID, userId);
