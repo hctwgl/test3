@@ -547,6 +547,10 @@ public class UpsUtil extends AbstractThird {
 		if(StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity) || identity.length() != 4){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_ORDERNO_BUILD_ERROR);
 		}
+		if(!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+				Constants.INVELOMENT_TYPE_ONLINE)){
+			return StringUtil.appendStrs(SYS_KEY,method,identity,"test" + (System.currentTimeMillis()+"").substring(4));
+		}
 		return StringUtil.appendStrs(SYS_KEY,method,identity,System.currentTimeMillis());
 	}
 	
