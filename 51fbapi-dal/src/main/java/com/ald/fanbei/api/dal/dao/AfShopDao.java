@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
-import com.sun.org.glassfish.gmbal.ParameterNames;
 
 /**
  * 

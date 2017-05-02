@@ -16,7 +16,7 @@
 			id = #{shopId}
 	</select>
 	
-	<select id="getShopByPlantNameAndType" resultType="AfShopDo">
+	<select id="getShopByPlantNameAndTypeAndServiceProvider" resultType="AfShopDo">
 		SELECT
 			<include refid="queryFields" />
 		FROM
