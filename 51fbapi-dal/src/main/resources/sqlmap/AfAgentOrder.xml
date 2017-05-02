@@ -11,7 +11,7 @@
 	</sql>
 	<insert id="addAgentOrder" parameterType="AfAgentOrderDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_agent_order(order_id , user_id , province , city ,
-		 county , address , consignee , mobile , <if test="remark !=null ">remark ,</if>
+		 county , address , consignee , mobile , <if test="remark !=null ">remark ,</if><if test="goodsUrl !=null ">goods_url ,</if>
 		capture )
 		VALUES (
     		#{orderId},
@@ -23,6 +23,7 @@
     		#{consignee},
     		#{mobile},
     		<if test="remark !=null ">#{remark},</if>
+    		 <if test="goodsUrl !=null ">#{goodsUrl},</if>
     		#{capture}
 		)
 	</insert>
