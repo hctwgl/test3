@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,6 +32,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		AfOrderDo afOrderDo = new AfOrderDo();
 		afOrderDo.setRid(orderId);
 		afOrderDo.setStatus("FINISHED");
+		afOrderDo.setGmtFinished(new Date());
 		if(afOrderService.updateOrder(afOrderDo) > 0){
 			return resp;
 			}
