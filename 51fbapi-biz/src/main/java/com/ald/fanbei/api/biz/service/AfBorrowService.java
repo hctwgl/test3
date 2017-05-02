@@ -146,7 +146,7 @@ public interface AfBorrowService {
 	 * 借款金额+借款金额*退款日利率*（退款日期-借款日期+1）*（0,1）- 退款金额- 已还账单和 + 优惠和
 	 * @param borrowId 借款id
 	 * @param refundAmount 退款金额
-	 * @param refundByUser 是否由客户发起退款
+	 * @param refundByUser 是否由客户发起退款 如果是平台原因 则不会收取相关手续费
 	 * @return
 	 */
 	BigDecimal calculateBorrowAmount(Long borrowId, BigDecimal refundAmount, boolean refundByUser);

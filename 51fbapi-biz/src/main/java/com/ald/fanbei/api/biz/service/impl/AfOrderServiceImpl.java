@@ -748,7 +748,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {} refundNo = {}", new Object[]{orderId,userId,orderNo,refundAmount,totalAmount,payType,payTradeNo,refundNo});
+					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {} refundNo = {} refundSource = {}", 
+							new Object[]{orderId,userId,orderNo,refundAmount,totalAmount,payType,payTradeNo,refundNo,refundSource});
 					AfOrderDo orderInfo = null;
 					//金额小于0
 					if (refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
