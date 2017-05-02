@@ -28,6 +28,7 @@ public class ThirdCore {
 	public static final String APP_KEY = "appKey";
 	public static final String SIGN = "sign";
 	public static final String REFUND_NO = "refundNo";
+	public static final String REFUND_SOURCE = "refundSource";
 	private static Map<String, String> appKeyMap;
 
     /** 

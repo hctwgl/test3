@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfShopService;
@@ -28,8 +29,8 @@ public class AfShopServiceImpl implements AfShopService {
 	}
 
 	@Override
-	public AfShopDo getShopByPlantNameAndType(String platformName, String type) {
-		return afShopDao.getShopByPlantNameAndType(platformName, type);
+	public AfShopDo getShopByPlantNameAndTypeAndServiceProvider(String platformName, String type, String serviceProvider) {
+		return afShopDao.getShopByPlantNameAndTypeAndServiceProvider(platformName, type, serviceProvider);
 	}
 
 	@Override

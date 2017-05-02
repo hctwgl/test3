@@ -171,10 +171,11 @@ public interface AfOrderService {
 	 * @param payType 支付方式
 	 * @param payTradeNo 支付流水号
 	 * @param refundNo 退款流水号
+	 * @param refundSource 退款来源
 	 * @return
 	 */
 	int dealBrandOrderRefund(Long orderId,Long userId,  Long bankId, String orderNo, String thirdOrderNo,
-			BigDecimal refundAmount, BigDecimal totalAmount, String payType, String payTradeNo, String refundNo);
+			BigDecimal refundAmount, BigDecimal totalAmount, String payType, String payTradeNo, String refundNo, String refundSource);
 	
 	
 	/**

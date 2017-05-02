@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
+import com.sun.org.glassfish.gmbal.ParameterNames;
 
 /**
  * 
@@ -17,7 +18,7 @@ public interface AfShopDao {
 	
 	AfShopDo getShopById(@Param("shopId")Long shopId);
 	
-	AfShopDo getShopByPlantNameAndType(@Param("platformName")String platformName, @Param("type")String type);
+	AfShopDo getShopByPlantNameAndTypeAndServiceProvider(@Param("platformName")String platformName, @Param("type")String type, @Param("serviceProvider")String serviceProvider);
 	
 	List<AfShopDo> getShopList(AfShopQuery query);
 }
