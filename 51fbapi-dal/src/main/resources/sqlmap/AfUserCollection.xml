@@ -10,10 +10,10 @@
 			gmt_create,
 			gmt_modified,
 			user_id,
-			<if test="goodsId !=null ">goods_id,</if>
+			goods_id,
 			goods_name,
 			goods_icon,
-			<if test="openId !=null">open_id,</if>
+			open_id,
 			goods_url,
 			price_amount,
 			actual_amount,
@@ -24,10 +24,10 @@
 			NOW(),
 			NOW(),
 			#{userId},
-			<if test="goods_id !=null ">#{goodsId},</if>
+			#{goodsId},
 			#{goodsName},
 			#{goodsIcon},
-			<if test="open_id !=null ">#{openId},</if>
+			#{openId},
 			#{goodsUrl},			
 			#{priceAmount},
 			#{actualAmount},
