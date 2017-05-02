@@ -332,7 +332,7 @@
 		<if test="commissionAmount != null">
 		    ,commission_amount=#{commissionAmount}
 		</if>
-		where is_delete=0 and order_no = #{orderNo} and order_type !='AGENTBUY'
+		where is_delete=0 and order_no = #{orderNo} 
 	</update>
 	
 	<select id="getCurrentLastOrderNo" resultType="java.lang.String">

@@ -242,12 +242,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				applyOrder.setStatus(OrderStatus.AGENCYCOMPLETED.getCode());
 				orderDao.updateOrder(applyOrder);
 			}
-			logger.info("orderTemp2=="+JSON.toJSONString(orderTemp));
-
 			order.setUserId(orderTemp.getUserId());
 			orderTemp.setStatus(YesNoStatus.YES.getCode());
 			afOrderTempDao.updateUserOrderTemp(orderTemp);
-			logger.info("orderTemp3=="+JSON.toJSONString(orderTemp));
 
 		}
 		order.setStatus(OrderStatus.PAID.getCode());
