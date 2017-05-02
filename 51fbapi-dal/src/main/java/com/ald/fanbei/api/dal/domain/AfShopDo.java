@@ -31,6 +31,7 @@ public class AfShopDo extends AbstractSerial {
 	private String rebateUnit;//用户返利单位【RMB人民币,PERCENTAGE百分比】
 	private String status;//状态【O开启,C关闭】
 	private String platformName;//平台名称 BOLUOME
+	private String serviceProvider;//供应商编号如抠电影【kou】
 	/**
 	 * @return the rid
 	 */
@@ -234,6 +235,18 @@ public class AfShopDo extends AbstractSerial {
 	 */
 	public void setPlatformName(String platformName) {
 		this.platformName = platformName;
+	}
+	/**
+	 * @return the serviceProvider
+	 */
+	public String getServiceProvider() {
+		return serviceProvider;
+	}
+	/**
+	 * @param serviceProvider the serviceProvider to set
+	 */
+	public void setServiceProvider(String serviceProvider) {
+		this.serviceProvider = serviceProvider;
 	}
 
 }

@@ -17,7 +17,7 @@ public interface AfShopDao {
 	
 	AfShopDo getShopById(@Param("shopId")Long shopId);
 	
-	AfShopDo getShopByPlantNameAndType(@Param("platformName")String platformName, @Param("type")String type);
+	AfShopDo getShopByPlantNameAndTypeAndServiceProvider(@Param("platformName")String platformName, @Param("type")String type, @Param("serviceProvider")String serviceProvider);
 	
 	List<AfShopDo> getShopList(AfShopQuery query);
 }

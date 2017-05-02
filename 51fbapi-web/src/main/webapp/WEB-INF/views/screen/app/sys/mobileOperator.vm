@@ -27,7 +27,7 @@
     	<div class="tac mobileOperator">
             <span class="bgs_c"></span>
             <p>运营商认证申请已提交<br>请耐心等待审核结果</p>
-            <div class="tac bdr_8 bgc_orange mobileOperator_btn"><a class="fsc_f" href="https://app.51fanbei.com/app/sys/authBack">返回征信</a></div>
+            <div class="tac bdr_8 bgc_orange mobileOperator_btn"><a class="fsc_f" href="/app/sys/authBack">返回征信</a></div>
         </div>
     </body>
 </html>
