@@ -58,8 +58,6 @@ public class AddCollectionApi implements ApiHandle {
 			throw new FanbeiException("(name or openId or goodsIcon or goodsUrl ) is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		
-		
 		AfUserCollectionDo afUserCollectionDo = new AfUserCollectionDo();
 		afUserCollectionDo.setActualAmount(actualAmount);
 		afUserCollectionDo.setPriceAmount(priceAmount);
