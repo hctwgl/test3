@@ -79,8 +79,8 @@ public class BoluomeUtil extends AbstractThird{
 		reqBo.setAmount(amount);
 		reqBo.setUserId(userId);
 		reqBo.setTimestamp(System.currentTimeMillis());
-		reqBo.setSign(BoluomeCore.builSign(reqBo));
 		reqBo.setRefundNo(refundNo);
+		reqBo.setSign(BoluomeCore.builSign(reqBo));
 		logger.info("pushRefundStatus begin, reqBo = {}", reqBo);
 		String reqResult = HttpUtil.doHttpPostJsonParam(getPushRefundUrl(), JSONObject.toJSONString(reqBo));
 		logThird(reqResult, "pushRefundStatus", reqBo);
