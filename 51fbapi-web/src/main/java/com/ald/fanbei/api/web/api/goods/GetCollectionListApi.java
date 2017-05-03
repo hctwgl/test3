@@ -40,10 +40,18 @@ public class GetCollectionListApi implements ApiHandle {
 		if (userId == null) {
 			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
-		List<AfUserCollectionDo> list= afuserCollectionService.getUserCollectionListByUserId(userId);
-		
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("collectionList", JSON.toJSON(list));
+
+		if (context.getAppVersion() < 350) {
+			List<AfUserCollectionDo> list= afuserCollectionService.getUserGoodsIdCollectionListByUserId(userId);
+			data.put("collectionList", JSON.toJSON(list));
+
+		}else{
+			List<AfUserCollectionDo> list= afuserCollectionService.getUserCollectionListByUserId(userId);
+			
+			data.put("collectionList", JSON.toJSON(list));
+		}
+		
 		resp.setResponseData(data);
 
 		return resp;
