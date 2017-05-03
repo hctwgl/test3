@@ -15,7 +15,7 @@
     <select id="getBorrowByOrderId" resultType="AfBorrowDo">
 		SELECT 
 			<include refid="queryFields"/>
-		FROM af_borrow WHERE is_delete = 0 AND order_id = #{orderId}
+		FROM af_borrow WHERE is_delete = 0 AND order_id = #{orderId} LIMIT 1
     </select>
 
 	<insert id="addBorrow" keyProperty="rid" useGeneratedKeys="true" parameterType="AfBorrowDo">
