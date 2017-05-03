@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="2017042501")
+    #set($version="2017050301")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <meta charset="UTF-8">
     <title>激情4月 大片来袭</title>
@@ -9,12 +9,12 @@
 </head>
 <body>
 <input type="hidden" id="userName" name="userName" value="$!{userName}">
-<img src="/images/activity/movie_01.jpg">
+<img src="$commonUrl/app/activity/04/movie1.jpg">
 <section>
     <p>推荐一：</p>
     <p>《傲娇与偏见》 半个娱乐圈明星强势安利</p>
-    <img src="/images/activity/movie_04.jpg">
-    <p class="moreBtn" onclick="More(0)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <img src="$commonUrl/app/activity/04/movie2.jpg">
+    <p class="moreBtn" onclick="More(0)">电影详情<img class="morePic" src="$commonUrl/app/activity/04/right.png"></p>
     <div class="details">
         <p>导演: 李海蜀 / 黄彦威</p>
         <p>主演: 迪丽热巴 / 张云龙 / 高伟光 / 金晨</p>
@@ -26,8 +26,8 @@
 <section>
     <p>推荐二：</p>
     <p>经典提档之《大话西游之大圣娶亲》</p>
-    <img src="/images/activity/movie3.png">
-    <p class="moreBtn" onclick="More(1)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <img src="$commonUrl/app/activity/04/movie3.png">
+    <p class="moreBtn" onclick="More(1)">电影详情<img class="morePic" src="$commonUrl/app/activity/04/right.png"></p>
     <div class="details">
         <p>导演: 刘镇伟</p>
         <p>主演:/周星驰 / 吴孟达 / 朱茵 / 蔡少芬 / 蓝洁瑛 / 莫文蔚 / 罗家英 / 刘镇伟 / 陆树铭 / 李健仁</p>
@@ -39,8 +39,8 @@
 <section>
     <p>推荐三：</p>
     <p>童年的心声之作《蓝精灵：寻找神秘村》</p>
-    <img src="/images/activity/movie4.png">
-    <p class="moreBtn" onclick="More(2)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <img src="$commonUrl/app/activity/04/movie4.png">
+    <p class="moreBtn" onclick="More(2)">电影详情<img class="morePic" src="$commonUrl/app/activity/04/right.png"></p>
     <div class="details">
         <p>导演: 凯利•阿斯博瑞</p>
         <p>主演:曼迪•帕廷金/黛米•洛瓦托、丹尼•普迪、雷恩•威尔森</p>
@@ -49,7 +49,7 @@
     </div>
 </section>
 
-<section style="padding-bottom:2rem;border:0;font-size: .7rem">
+<section style="padding-bottom:2rem;border:0;font-size: 0.26rem">
     <p class="bold">活动时间：</p>
     <p>2017.4.25-2017.5.9  限时15天</p>
     <p class="bold">参与条件：</p>
@@ -64,6 +64,6 @@
 <p class="help">获取更多帮助，请拨打客服电话 ： 0571-88193918</p>
 
 <div class="shareBtn" onclick="shareBtn()">立抢2元电影券</div>
-<script type="text/javascript" src="/js/activity/movieShare.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/04/movieShare.js?version=$version"></script>
 </body>
 </html>
