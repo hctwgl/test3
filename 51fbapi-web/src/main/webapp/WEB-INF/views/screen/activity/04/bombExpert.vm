@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/04")
+	#set($src="http://f.51fanbei.com/h5/app/activity/04")
 	<meta charset="UTF-8">
 	<title>拆弹专家</title>
 	<style type="text/css">
@@ -14,9 +14,8 @@
 			right: 0;
 			-webkit-transform: translateY(-50%);
 			transform: translateY(-50%);
-
-			width: 1.925rem;
-			height: 4.15rem;
+			width: 0.77rem;
+			height: 1.66rem;
 			background-image: url($src/bombExpert_rulesBtn.png);
 			-webkit-background-size: cover;
 			background-size: cover;
@@ -31,7 +30,6 @@
 		<img src="$src/bombExpert4.jpg">
 		<img src="$src/bombExpert5.jpg">
 		<img src="$src/bombExpert6.jpg">
-<<<<<<< HEAD
 		<div class="bombExpert_rulesBtn" @click="bombBox"></div>
 	</div>
 	<script type="text/javascript">
@@ -46,21 +44,6 @@
                 }
             }
         });
-=======
-		<div class="bombExpert_rulesBtn"></div>
-	</div>
-	<script type="text/javascript">
-
-		$(".bombExpert_rulesBtn").click(function(){
-
-			layer.open({
-			    content: "签到规则：<br />1、每日登陆后在“每日签到”页面进行签到，连续签到达3天（28.29.30号）可获得奖励；<br />2、如连续签到中断，则活动失败；<br />3、奖励为5元（无门槛）电影还款抵用券，抵用券可用于用户在51返呗还款时使用；<br />4、禁止一切作弊手段的操作行为，包括但不限于利用平台漏洞、技术手段完成签到的行为，一经发现将收回所发奖励，必要时将采取司法手段进行维权；<br />5、在法律范围内51返呗拥有最终解释权。",
-			    btn: '我知道了'
-			});
-
-		});
-
->>>>>>> master
 	</script>
 </body>
 </html>

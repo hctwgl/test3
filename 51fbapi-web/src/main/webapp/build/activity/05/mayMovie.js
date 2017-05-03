@@ -12,6 +12,11 @@ let arr=[
     ,"故事发生在《加勒比海盗3：世界的尽头》沉船湾之战20年后。 亡灵萨拉查船长（哈维尔•巴登 Javier Bardem 饰）率领自己的亡灵海军杀出了世界的尽头，“深海阎王”威尔•特纳（奥兰多•布鲁姆 Orlando Bloom 饰）乘飞翔的荷兰人号前来追杀却被其引入百慕大三角生死未卜。 获取自由的萨拉查肆虐加勒比海，征服了整个海域，即便是手刃了“黑胡子”爱德华•蒂奇（伊恩•麦柯肖恩 Ian McShane 饰）的海盗王赫克托•巴博萨船长（杰弗里•拉什 Geoffrey Rush 饰）也难以避免心爱的安妮女王复仇号沉入大海的惨剧。 幸存下来的巴博萨在女巫Haifaa Meni(格什菲•法拉哈尼 Golshifteh Farahani 饰)口中得知了萨拉查的真实目的：为寻找他的宿敌杰克船长（约翰尼•德普 Johnny Depp 饰），遂重返皇家海军，展开了复仇旅程。 而在父亲蒂格船长（基思•理查兹 Keith Richards 饰）指引下，杰克也将乘着失而复得的黑珍珠号再次扬帆起航，率领聪明美丽的天文学家卡琳娜•史密斯（卡雅•斯考达里奥 Kaya Scodelario 饰）以及与威尔•特纳有着神秘联系的年轻皇家海军亨利（布兰顿•思怀兹 Brenton Thwaites 饰），一起去寻找唯一有可能击败萨拉查的宝物：传说中海神波塞冬的三叉戟。 加勒比的碧海之上将会燃起前所未见的硝烟。"
     ,"想要在巨星姐姐面前证明自己的18线小演员上官娣娣，和多年期待真爱却在最后被狠狠出卖的空间站黑鸟面馆老板娘许春梅，当两个人的世界以想象不到的方式不期而遇，她们的命运会发生什么样的改变?"
 ];
+let userName = "";
+if(getInfo().userName){
+    userName=getInfo().userName
+}
+
 $(function(){
     $('.movieAlert').on('click',function () {
         $('.content').html(arr[$('.movieAlert').index(this)]);
@@ -19,5 +24,30 @@ $(function(){
     });
     $('.shadow').on('click',function () {
         $(this).hide()
+    });
+    //点击抢卷按钮
+    $('.shareBtn').on('click',function () {
+        $.ajax({
+            url: 'pickBoluomeCoupon',
+            data:{'sceneId':'8139','userName':userName},
+            type: 'post',
+            success:function (data) {
+                data=eval('(' + data + ')');
+                if(data.success){
+                    requestMsg("领劵成功")
+                }else{
+                    if(data.url){
+                        if (getBlatFrom() == 2) {
+                            location.href=data.url;
+                        }else{
+                            requestMsg("请退出当前活动页面,登录后再进行领劵");
+                        }
+                    }else{
+                        requestMsg(data.msg);
+                    }
+                }
+
+            }
+        });
     })
 });
