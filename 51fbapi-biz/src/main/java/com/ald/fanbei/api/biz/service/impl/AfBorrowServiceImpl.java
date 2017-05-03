@@ -669,7 +669,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		BigDecimal repaymentAndCouponAmount = calculateRepaymentAndCouponAmount(borrowId);
 		
 		return BigDecimalUtil.add(borrowAmount, refundByUser ? BigDecimalUtil.multiply(borrowAmount, new BigDecimal(days), refundRate) : BigDecimal.ZERO, 
-				BigDecimalUtil.multiply(refundAmount, new BigDecimal("-1")), repaymentAndCouponAmount);
+				BigDecimalUtil.multiply(refundAmount, new BigDecimal("-1")), BigDecimalUtil.multiply(repaymentAndCouponAmount, new BigDecimal("-1")));
 	}
 	
 	/**
@@ -726,11 +726,16 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 								BigDecimal tempAmount = BigDecimal.ZERO;
 								logger.info(" is last one");
 								List<AfBorrowBillDo> tempBillList = afBorrowBillDao.getBillListByIds(repaymentBillLists);
-								for (int i = 0; i < repaymentBillLists.size() - 1; i ++) {
-									AfBorrowBillDo tempBillInfo = getBillFromList(tempBillList, repaymentBillLists.get(i));
-									tempAmount = BigDecimalUtil.add(tempAmount, calculateRepaymentCouponAmount(repayment, tempBillInfo));
+								//只有一个
+								if (repaymentBillLists.size() == 1) {
+									totalAmount = calculateRepaymentCouponAmount(repayment, billInfo);
+								} else {
+									for (int i = 0; i < repaymentBillLists.size() - 1; i ++) {
+										AfBorrowBillDo tempBillInfo = getBillFromList(tempBillList, repaymentBillLists.get(i));
+										tempAmount = BigDecimalUtil.add(tempAmount, calculateRepaymentCouponAmount(repayment, tempBillInfo));
+									}
+									totalAmount = BigDecimalUtil.add(totalAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
 								}
-								totalAmount = BigDecimalUtil.add(totalAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
 								continue;
 							}
 						}
