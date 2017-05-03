@@ -16,7 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfFeedBackDo;
  * @author suweili 2017年2月4日下午1:39:59
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Service("AfFeedBackService")
+@Service("afFeedBackService")
 public class AfFeedBackServiceImpl implements AfFeedBackService {
  
 	@Resource
