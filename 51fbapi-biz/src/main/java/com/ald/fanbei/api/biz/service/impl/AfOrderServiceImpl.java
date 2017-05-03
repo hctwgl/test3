@@ -809,17 +809,20 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						AfUserBankcardDo cardInfo = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 						if (borrowAmount.compareTo(BigDecimal.ZERO) < 0) {
 							//退款最后放置，因为如果其他过程抛异常就不需要退款操作
-							AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING,PayType.BANK,cardInfo.getCardNumber(),cardInfo.getBankName(),"菠萝觅银行卡退款");
+							AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, borrowAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING,PayType.BANK,cardInfo.getCardNumber(),cardInfo.getBankName(),"菠萝觅代付多余还款退款");
 							afOrderRefundDao.addOrderRefund(refundInfo);
 							UpsDelegatePayRespBo tempUpsResult = upsUtil.delegatePay(borrowAmount, accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"", 
 									cardInfo.getMobile(), cardInfo.getBankName(), cardInfo.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),orderId + StringUtils.EMPTY);
 							logger.info("agent bank refund upsResult = {}", tempUpsResult);
 							if(!tempUpsResult.isSuccess()){
-								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL,PayType.BANK,StringUtils.EMPTY, null,"菠萝觅返呗余额退款"));
+								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, borrowAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL,PayType.BANK,StringUtils.EMPTY, null,"菠萝觅代付多余还款退款"));
 								throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 							}
 						} else if (borrowAmount.compareTo(BigDecimal.ZERO) > 0){
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅代付退款"));
 							afBorrowService.dealAgentPayConsumeApply(accountInfo, borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, thirdOrderNo, borrowInfo.getNper());
+						} else {
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅代付退款"));
 						}
 						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount, refundNo);
 						break;

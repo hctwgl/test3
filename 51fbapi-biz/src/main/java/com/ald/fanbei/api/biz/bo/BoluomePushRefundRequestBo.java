@@ -113,5 +113,6 @@ public class BoluomePushRefundRequestBo extends HashMap<String, String> {
 	 */
 	public void setRefundNo(String refundNo) {
 		this.refundNo = refundNo;
+		this.put(BoluomeCore.REFUND_NO, refundNo);
 	}
 }
