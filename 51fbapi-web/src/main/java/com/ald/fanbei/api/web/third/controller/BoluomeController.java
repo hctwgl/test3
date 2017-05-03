@@ -71,10 +71,12 @@ public class BoluomeController extends AbstractThird{
     	if (sign) {
     		try {
     			AfOrderDo orderInfo = buildOrderInfo(params);
-    			if (orderInfo.getRid() == null) {
-    				afOrderService.createOrder(orderInfo);
-    			} else {
-    				afOrderService.dealBoluomeOrder(orderInfo);
+    			if (orderInfo != null) {
+    				if (orderInfo.getRid() == null) {
+    					afOrderService.createOrder(orderInfo);
+    				} else {
+    					afOrderService.dealBoluomeOrder(orderInfo);
+    				}
     			}
     			retunStr = "Successs";
     		} catch (Exception e) {
@@ -155,6 +157,10 @@ public class BoluomeController extends AbstractThird{
     	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
     	
     	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);
+    	//不是新建 单订单还没有同步完成  同步订单状态接口不会有orderType字段
+    	if(orderInfo == null && StringUtils.isBlank(orderType)) {
+    		return null;
+    	}
     	//新建
     	if (orderInfo == null) {
     		orderInfo = new AfOrderDo();
