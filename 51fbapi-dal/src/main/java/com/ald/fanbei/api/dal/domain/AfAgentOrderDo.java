@@ -33,10 +33,10 @@ public class AfAgentOrderDo extends AbstractSerial {
 	private Long agentId;
 	private Date gmtAgentBuy;
 	private Date gmtClosed;
-	private String cancelReason;
-	private String cancelDetail;
-	private String closedReason;
-	private String closedDetail;
+	private String cancelReason; // 取消理由
+	private String cancelDetail; // 取消详情
+	private String closedReason; // 关闭理由
+	private String closedDetail; // 关闭详情
 	private Long matchOrderId;
 	private Date gmtMatchOrder;
 	private String goodsUrl;

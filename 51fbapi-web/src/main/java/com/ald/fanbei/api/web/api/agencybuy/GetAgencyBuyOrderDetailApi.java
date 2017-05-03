@@ -90,7 +90,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String address = afAgentOrderDo.getAddress();
 		String mobile = afAgentOrderDo.getMobile();
 		String capture = afAgentOrderDo.getCapture();
-		String remark = afAgentOrderDo.getRemark();
+		String remark = afAgentOrderDo.getRemark(); // 用户留言
 		String gmtCreate = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT,afOrderDo.getGmtCreate());
 		String payType =  afOrderDo.getPayType().equals("AP")?"返呗支付":"其他支付方式";
 		// 取出一共分几期
@@ -111,12 +111,17 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 * WAITING_REFUND等待退款 DEAL_REFUNDING:退款中】
 		 */
 		String status = afOrderDo.getStatus();
+		// 返利时间
 		String gmtRebated = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtRebated());
 		String gmtFinished = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtFinished());
+		// 代买留言
 		String agentMessage = afAgentOrderDo.getAgentMessage();
 		String gmtAgentBuy = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtAgentBuy());
-		String closedReason = afAgentOrderDo.getClosedReason();
+		// 订单关闭理由
+		String closedReason = afAgentOrderDo.getClosedReason(); 
 		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtClosed()); // 用户取消订单时间
+		// 订单取消理由
+		String cancelReason = afAgentOrderDo.getCancelReason();
 		String numId = afOrderDo.getNumId();
 		// 根据订单状态和支付状态返回不同的值
 		/**
@@ -149,6 +154,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setGmtRebated(StringUtils.isBlank(gmtRebated)?"":gmtRebated);
 		agentOrderDetailVo.setGmtFinished(StringUtils.isBlank(gmtFinished)?"":gmtFinished);
 		agentOrderDetailVo.setClosedReason(StringUtils.isBlank(closedReason)?"":closedReason);
+		agentOrderDetailVo.setCancelReason(StringUtils.isBlank(cancelReason)?"":cancelReason);
 		agentOrderDetailVo.setGmtClosed(StringUtils.isBlank(gmtClosed)?"":gmtClosed);
 		agentOrderDetailVo.setNumId(StringUtils.isBlank(numId)?"":numId);
 		agentOrderDetailVo.setSaleAmount(saleAmount);

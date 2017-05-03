@@ -34,7 +34,8 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String gmtFinished; // 订单完成时间
 	private String agentMessage; // 代买人员的备注
 	private String gmtAgentBuy; // 代买时间
-	private String closedReason; // 取消理由
+	private String closedReason; // 关闭理由
+	private String cancelReason;// 取消理由
 	private String gmtClosed; // 用户取消时间
 	private String numId; // 商品的numId
 	private BigDecimal saleAmount; // 商品的价格
@@ -42,6 +43,12 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	
 	
 	
+	public String getCancelReason() {
+		return cancelReason;
+	}
+	public void setCancelReason(String cancelReason) {
+		this.cancelReason = cancelReason;
+	}
 	public BigDecimal getSaleAmount() {
 		return saleAmount;
 	}
