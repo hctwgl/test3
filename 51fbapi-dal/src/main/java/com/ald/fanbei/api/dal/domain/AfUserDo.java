@@ -230,4 +230,8 @@ public class AfUserDo extends AbstractSerial {
 		this.registerChannelPointId = registerChannelPointId;
 	}
 
+	
+
+	
+
 }

@@ -1,0 +1,67 @@
+body {
+  background: white;
+  font-family: '微软雅黑';
+}
+section {
+  padding: .8rem .6rem;
+  font-size: .9rem;
+  text-align: justify;
+  line-height: 1.6;
+  border-bottom: 1px dashed #fb830c;
+}
+section > p:nth-child(2) {
+  margin-bottom: .6rem;
+  line-height: 1;
+}
+.moreBtn {
+  font-size: .75rem;
+  font-weight: bold;
+  margin: .8rem 0 0 0;
+  color: #fb830c;
+  height:.8rem;
+}
+.bold {
+  font-size: .75rem;
+  font-weight: bold;
+  margin: 1.1rem 0 .6rem;
+}
+.morePic {
+  float: right;
+  width: .4rem;
+  height: .9rem;
+}
+.down {
+  transform: rotate(90deg);
+}
+.details {
+  display: none;
+  margin: .7rem 0;
+  font-size: .7rem;
+  line-height: 1.6;
+}
+.details p {
+  padding: .1rem 0;
+}
+.details p:nth-child(3) {
+  display: flex;
+  justify-content:space-between;
+  margin-bottom: 1.2rem;
+}
+.shareBtn {
+  width: 100%;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  font-size: 1.1rem;
+  border-top-left-radius: .2rem;
+  border-top-right-radius: .2rem;
+  color: white;
+  background: rgba(242, 151, 81, 0.95);
+  position: fixed;
+  bottom: 0;
+  text-align: center;
+}
+.help{
+  text-align: center;
+  margin-bottom:3rem;
+
+}

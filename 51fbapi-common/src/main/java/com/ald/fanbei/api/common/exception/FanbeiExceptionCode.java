@@ -84,9 +84,12 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_REALNAME_AUTH_ERROR("USER_REALNAME_AUTH_ERROR",1305,"user realname auth error","用户实名认证失败"),
     
 
-    USER_CARD_AUTH_ERROR("USER_CARD_AUTH_ERROR",1306,"user card auth error","身份证识别失败"),
-    USER_CARD_INFO_EXIST_ERROR("USER_CARD_INFO_EXIST_ERROR",1307,"user card exist error","用户身份证信息不存在"),
-    USER_CARD_INFO_ATYPISM_ERROR("USER_CARD_INFO_ATYPISM_ERROR",1308,"user card info atypism error","登记信息与身份证信息不符"),
+
+    USER_CARD_AUTH_ERROR("USER_CARD_AUTH_ERROR",1306,"user card auth error","身份证图片获取失败,请重试!"),
+    USER_CARD_INFO_EXIST_ERROR("USER_CARD_INFO_EXIST_ERROR",1307,"user card exist error","请先完成实名信息提交!"),
+    USER_CARD_INFO_ATYPISM_ERROR("USER_CARD_INFO_ATYPISM_ERROR",1308,"user card info atypism error","身份证信息与实名信息不符!"),
+    USER_CARD_GET_ERROR("USER_CARD_GET_ERROR",1309,"user card auth error","实名信息获取失败,请重试!"),
+    
     
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
@@ -157,6 +160,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     RISK_ADDRESSLIST_PRIMARIES_ERROR("RISK_ADDRESSLIST_PRIMARIES_ERROR",1906,"risk address list primaries error","通讯录同步失败"),
     
     AUTH_ALL_AUTH_ERROR("AUTH_ALL_AUTH_ERROR",1910,"all auth  error","信息未认证失败"),
+    API_CALL_NUM_OVERFLOW("API_CALL_NUM_OVERFLOW",1911,"api call num overflow","您的认证次数已达上限，请明日再试！"),
 
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","借钱金额或者时间有误"),

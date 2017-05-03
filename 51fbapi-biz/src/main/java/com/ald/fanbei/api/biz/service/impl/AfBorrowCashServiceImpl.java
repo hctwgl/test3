@@ -29,7 +29,6 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Resource
 	AfBorrowCashDao afBorrowCashDao;
 
-
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -37,8 +36,6 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		afBorrowCashDo.setBorrowNo(generatorClusterNo.getBorrowCashNo(currDate));
 		return afBorrowCashDao.addBorrowCash(afBorrowCashDo);
 	}
-
-
 
 	@Override
 	public int updateBorrowCash(AfBorrowCashDo afBorrowCashDo) {
@@ -63,5 +60,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Override
 	public String getCurrentLastBorrowNo(String orderNoPre) {
 		return afBorrowCashDao.getCurrentLastBorrowNo(orderNoPre);
+	}
+
+	@Override
+	public AfBorrowCashDo getBorrowCashByRishOrderNo(String rishOrderNo) {
+		return afBorrowCashDao.getBorrowCashByRishOrderNo(rishOrderNo);
 	}
 }

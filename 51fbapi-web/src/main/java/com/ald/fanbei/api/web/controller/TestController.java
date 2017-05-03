@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -27,11 +25,8 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
-import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -77,10 +72,10 @@ public class TestController {
 		return returnUrl;
 	}
 
-	@RequestMapping(value = { "/test1" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	public String goodsRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
+//	@RequestMapping(value = { "/test1" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+//	public String goodsRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
 //		afOrderService.dealMobileChargeOrder("MB17040100045", "222000");
 //		riskUtil.modify("73772", "胡潮永", "13958004662", "330624198509136450", "", "", "星耀城", "");
 //		Map<String, Object> inputData = new HashMap<String, Object>();
@@ -99,16 +94,16 @@ public class TestController {
 //
 //		SmsUtil.sendSms("15958119936", "验证码:1234");
 //		afOrderService.createOrderTrade("{'buyer_id':'AAGtxNL8AClXeBuXBPILbV-s','paid_fee':'138.00','shop_title':'佐祥车品旗舰店','is_eticket':false,'create_order_time':'2017-02-17 14:36:28','order_id':'3065189213875206','order_status':'7','seller_nick':'佐祥车品旗舰店','auction_infos':[{'detail_order_id':'3065189213875206','auction_id':'AAEnxNL_AClXeBuXBIxwBj6s','real_pay':'138.00','auction_pict_url':'i1/2208256900/TB2uxTDXNXkpuFjy0FiXXbUfFXa_!!2208256900.jpg','auction_title':'汽车载氧吧空气净化雾霾器负离子杀菌香薰除甲醛异味全自动过滤','auction_amount':'1'}]}");
-		return "succ";
-	}
+//		return "succ";
+//	}
 
-	@RequestMapping(value = { "/test2" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	public String batchRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-		riskUtil.batchRegister(5, "13958004662");
-		return "succ";
-	}
+//	@RequestMapping(value = { "/test2" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+//	public String batchRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//		riskUtil.batchRegister(5, "13958004662");
+//		return "succ";
+//	}
 
 //	@RequestMapping(value = { "/testRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 //	public String testRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -218,30 +213,41 @@ public class TestController {
 	@RequestMapping(value = { "/SyncUserAddressList/toRiskManagement" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String SyncUserAddressList(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		logger.info("------toRiskManagement-----");
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
 		int count = afUserAuthService.getUserAuthCountWithIvs_statusIsY();
 		int pageCount = (int) Math.ceil(count / 10) + 1;
+		logger.info("------toRiskManagement--count---" + count + ",pageCount=" + pageCount);
 		for (int j = 1; j <= pageCount; j++) {
 			AfUserAuthQuery query = new AfUserAuthQuery();
 			query.setPageNo(j);
-			query.setPageSize(10);
+			query.setPageSize(120);
 			List<AfUserAuthDo> list = afUserAuthService.getUserAuthListWithIvs_statusIsY(query);
+			logger.info("j=" + j + ",size=" + list.size());
 			for (int i = 0; i < list.size(); i++) {
-				AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(list.get(i).getUserId());
-				if (null != afContactsOldDo) {
-					String moblieBook = afContactsOldDo.getMobileBook();
-					String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
-					 
-					JSONArray moblieBookJsons = JSONArray.parseArray(formatMoblieBook);
-					StringBuffer data = new StringBuffer();
-					for (Object object : moblieBookJsons) {
-						JSONObject json = JSONObject.parseObject(object.toString());
-						data.append(json.getString("name")+":");
-						data.append(json.getString("phone_number")+",");
+				try{
+					AfContactsOldDo afContactsOldDo = afContactsOldService.getAfContactsByUserId(list.get(i).getUserId());
+					logger.info("i=" + i + "," + afContactsOldDo !=null?afContactsOldDo.toString():"");
+					if (null != afContactsOldDo) {
+						String moblieBook = afContactsOldDo.getMobileBook();
+						String formatMoblieBook = moblieBook.substring(moblieBook.indexOf("\"")+1,moblieBook.lastIndexOf("\""));
+						 
+						JSONArray moblieBookJsons = JSONArray.parseArray(formatMoblieBook);
+						StringBuffer data = new StringBuffer();
+						for (Object object : moblieBookJsons) {
+							JSONObject json = JSONObject.parseObject(object.toString());
+							data.append(json.getString("name")+":");
+							data.append(json.getString("phone_number")+",");
+						}
+						logger.info("i=" + i + "," + data.toString());
+						
+						riskUtil.addressListPrimaries(afContactsOldDo.getUid().toString(), data.toString().substring(0,data.toString().length()-1));
+						
 					}
-					
-					riskUtil.addressListPrimaries(afContactsOldDo.getUid().toString(), data.toString().substring(0,data.toString().length()-1));
+				}catch(Exception e){
+					e.printStackTrace();
+					logger.info("init error="+list.get(i).getUserId());
 				}
 			}
 		}

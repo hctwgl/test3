@@ -7,63 +7,67 @@
     <title>激情4月 大片来袭</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/04/movieShare.css?version=$version">
 </head>
-<body style="background-color: #fff;">
-    <input type="hidden" id="userName" name="userName" value="$!{userName}">
-    <img src="$commonUrl/app/activity/04/movie1.jpg">
-    <section style="padding-top: 0">
-        <p>推荐一：</p>
-        <p>《傲娇与偏见》 半个娱乐圈明星强势安利</p>
-        <img src="$commonUrl/app/activity/04/movie2.jpg">
-        <p class="moreBtn" onclick="More(0)">电影详情<img class="morePic" src="$commonUrl/app/activity/04/right.png"></p>
-        <div class="details">
-            <p>导演: 李海蜀 / 黄彦威</p>
-            <p>主演: 迪丽热巴 / 张云龙 / 高伟光 / 金晨</p>
-            <p><span>类型: 喜剧 / 爱情</span> <span>片长: 108分钟</span><span>评分：<span style="color:red">7.1</span></span></p>
-            <p>北漂网络写手唐楠楠（ 迪丽热巴 饰） 脑洞大于常人， 整日穿行在各种“白日 梦” 之中， 梦想着有一天能成为网文大神， 然而在她误打误撞毁掉了贱萌海龟男朱侯（ 张云龙 饰） 为追求女神精心布置的告白仪式之后， 这对冤家阴差阳错之下被迫带着各自的傲娇与偏见开始了同居生活。 朱侯的高富帅好基友萧见君（ 高伟光 饰） 因对唐楠楠一见钟情展开猛烈攻势， 却不料遭到朱侯再三阻挠。当“傲娇” 任性撞上“偏见” 无理， 一场鸡飞狗跳的脱线恋情正在袭来， 一次跨越银河系的世纪大和解即将上演。</p>
-        </div>
-    </section>
-    <section>
-        <p>推荐二：</p>
-        <p>经典提档之《大话西游之大圣娶亲》</p>
-        <img src="$commonUrl/app/activity/04/movie3.png">
-        <p class="moreBtn" onclick="More(1)">电影详情<img class="morePic" src="$commonUrl/app/activity/04/right.png"></p>
-        <div class="details">
-            <p>导演: 刘镇伟</p>
-            <p>主演:/周星驰 / 吴孟达 / 朱茵 / 蔡少芬 / 蓝洁瑛 / 莫文蔚 / 罗家英 / 刘镇伟 / 陆树铭 / 李健仁</p>
-            <p>类   型：爱情  动作  冒险  奇幻  喜剧</p>
-            <p>片长: 110分钟</p>
-            <p>评分：9.1</p>
-            <p>影片主要讲述了至尊宝为了救白晶晶而穿越回到五百年前，遇见紫霞仙子之后发生一段感情并最终成长为孙悟空的故事。紫霞和青霞原是佛祖缠在一起的灯芯，两人前世斗争激烈，紫霞夺走了至尊宝的月光宝盒，又在他的脚上印下了3颗痣。紫霞要至尊宝带她走，牛魔王要纳紫霞为妾，而牛魔王的妹妹牛香香也要嫁至尊宝，一时乱作一团，铁扇公主也赶来和牛魔王杀在一起。牛魔王擒回紫霞逼迫她与他成亲，被绑在一旁的唐僧流下了同情的泪水，至尊宝拿起金箍套在头上，他便不再是凡人了，孙悟空驾云来到牛府，要救唐僧一行去西天取经………</p>
-        </div>
-    </section>
+<body>
+<input type="hidden" id="userName" name="userName" value="$!{userName}">
+<img src="/images/activity/movie_01.jpg">
+<section>
+    <p>推荐一：</p>
+    <p>《傲娇与偏见》 半个娱乐圈明星强势安利</p>
+    <img src="/images/activity/movie_04.jpg">
+    <p class="moreBtn" onclick="More(0)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <div class="details">
+        <p>导演: 李海蜀 / 黄彦威</p>
+        <p>主演: 迪丽热巴 / 张云龙 / 高伟光 / 金晨</p>
+        <p><span>类型: 喜剧 / 爱情</span> <span>片长: 108分钟</span><span>评分：<span style="color:red">7.1</span></span></p>
+        <p>北漂网络写手唐楠楠（ 迪丽热巴 饰） 脑洞大于常人， 整日穿行在各种“白日 梦” 之中， 梦想着有一天能成为网文大神， 然而在她误打误撞毁掉了贱萌海龟男朱侯（ 张云龙 饰） 为追求女神精心布置的告白仪式之后， 这对冤家阴差阳错之下被迫带着各自的傲娇与偏见开始了同居生活。 朱侯的高富帅好基友萧见君（ 高伟光 饰） 因对唐楠楠一见钟情展开猛烈攻势， 却不料遭到朱侯再三阻挠。当“傲娇” 任性撞上“偏见” 无理， 一场鸡飞狗跳的脱线恋情正在袭来， 一次跨越银河系的世纪大和解即将上演。</p>
+    </div>
+</section>
 
-    <section>
-        <p>推荐三：</p>
-        <p>童年的心声之作《蓝精灵：寻找神秘村》</p>
-        <img src="$commonUrl/app/activity/04/movie4.png">
-        <p class="moreBtn" onclick="More(2)">电影详情<img class="morePic" src="$commonUrl/app/activity/04/right.png"></p>
-        <div class="details">
-            <p>导演: 凯利•阿斯博瑞</p>
-            <p>主演:曼迪•帕廷金/黛米•洛瓦托、丹尼•普迪、雷恩•威尔森</p>
-            <p>类   型： 动作  冒险  喜剧</p>
-            <p>片长: 90分钟</p>
-            <p>评分：8.7</p>
-            <p>剧情讲述蓝妹妹发现了一张遗落的地图，由此引发精灵们对于神秘村庄真实性的猜想。于是，满怀好奇心的蓝妹妹与聪聪、笨笨、健健四个小伙伴组成冒险小分队，背着蓝爸爸离开了精灵村，踏上了充满未知的探秘旅程。一路上，四个小伙伴为所见的新奇景物而兴奋，为陷入漆黑洞穴而慌张，上天下地一路萌行充满欢声笑语，直到他们遇到了最大的对手——格格巫。为抢先找到传说中神秘的蓝精灵村庄，格格巫用尽一切办法拦截冒险小分队，宿敌相遇一场激烈对抗在所难免，也为这场探秘之旅增加了更多的不确定性。值得注意的是，除了格格巫的追击堵截，一支头戴面具勇猛善战的蓝色娘子军也团团围住了冒险小分队</p>
-        </div>
-    </section>
+<section>
+    <p>推荐二：</p>
+    <p>经典提档之《大话西游之大圣娶亲》</p>
+    <img src="/images/activity/movie3.png">
+    <p class="moreBtn" onclick="More(1)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <div class="details">
+        <p>导演: 刘镇伟</p>
+        <p>主演:/周星驰 / 吴孟达 / 朱茵 / 蔡少芬 / 蓝洁瑛 / 莫文蔚 / 罗家英 / 刘镇伟 / 陆树铭 / 李健仁</p>
+        <p><span>类型：爱情 / 奇幻 / 喜剧</span> <span>片长: 110分钟</span><span>评分：<span style="color:red">9.1</span></span></p>
+        <p>影片主要讲述了至尊宝为了救白晶晶而穿越回到五百年前，遇见紫霞仙子之后发生一段感情并最终成长为孙悟空的故事。紫霞和青霞原是佛祖缠在一起的灯芯，两人前世斗争激烈，紫霞夺走了至尊宝的月光宝盒，又在他的脚上印下了3颗痣。紫霞要至尊宝带她走，牛魔王要纳紫霞为妾，而牛魔王的妹妹牛香香也要嫁至尊宝，一时乱作一团，铁扇公主也赶来和牛魔王杀在一起。牛魔王擒回紫霞逼迫她与他成亲，被绑在一旁的唐僧流下了同情的泪水，至尊宝拿起金箍套在头上，他便不再是凡人了，孙悟空驾云来到牛府，要救唐僧一行去西天取经………</p>
+    </div>
+</section>
 
-    <section style="padding-bottom: 2rem; border:0; font-size: 0.28rem">
-        <p class="bold">活动时间：</p>
-        <p>2017.4.25-2017.5.9  限时15天</p>
-        <p class="bold">参与条件：</p>
-        <p>注册用户并登录51返呗APP</p>
-        <p class="bold">活动规则：</p>
-        <p>1.注册用户点击“立抢2元”代金券，系统自动发放奖励,可在“我的-抵用券”中查看；</p>
-        <p>2.券的使用说明根据券面信息提示进行使用，其中2元为无门槛“抠电影”代金券，付款时可直接抵用；</p>
-        <p>3.每个用户限领1次，同一手机号码和支付宝帐号视同一个用户。如果系统监测异常帐号或分享异常手机号，该帐号将被立即限制奖励清零；</p>
-        <p>5.本次活动的最终解释权归51返呗APP官方所有。</p><br>
-        <p class="help">获取更多帮助，请拨打客服电话 ： 0571-88193918</p>
-    </section>
+<section>
+    <p>推荐三：</p>
+    <p>童年的心声之作《蓝精灵：寻找神秘村》</p>
+    <img src="/images/activity/movie4.png">
+    <p class="moreBtn" onclick="More(2)">电影详情<img class="morePic" src="/images/activity/right.png"></p>
+    <div class="details">
+        <p>导演: 凯利•阿斯博瑞</p>
+        <p>主演:曼迪•帕廷金/黛米•洛瓦托、丹尼•普迪、雷恩•威尔森</p>
+        <p><span>类型： 动作 / 冒险 / 喜剧</span> <span>片长: 90分钟</span><span>评分：<span style="color:red">8.7</span></span></p>
+        <p>剧情讲述蓝妹妹发现了一张遗落的地图，由此引发精灵们对于神秘村庄真实性的猜想。于是，满怀好奇心的蓝妹妹与聪聪、笨笨、健健四个小伙伴组成冒险小分队，背着蓝爸爸离开了精灵村，踏上了充满未知的探秘旅程。一路上，四个小伙伴为所见的新奇景物而兴奋，为陷入漆黑洞穴而慌张，上天下地一路萌行充满欢声笑语，直到他们遇到了最大的对手——格格巫。为抢先找到传说中神秘的蓝精灵村庄，格格巫用尽一切办法拦截冒险小分队，宿敌相遇一场激烈对抗在所难免，也为这场探秘之旅增加了更多的不确定性。值得注意的是，除了格格巫的追击堵截，一支头戴面具勇猛善战的蓝色娘子军也团团围住了冒险小分队</p>
+    </div>
+</section>
+
+<section style="padding-bottom:2rem;border:0;font-size: .7rem">
+    <p class="bold">活动时间：</p>
+    <p>2017.4.25-2017.5.9  限时15天</p>
+    <p class="bold">参与条件：</p>
+    <p>注册用户并登录51返呗APP</p>
+    <p class="bold">活动规则：</p>
+    <p>1.注册用户点击“立抢2元”代金券，系统自动发放奖励,可在“我的-抵用券”中查看；</p>
+    <p>2.券的使用说明根据券面信息提示进行使用，其中2元为无门槛“抠电影”代金券，付款时可直接抵用；</p>
+    <p>3.每个用户限领1次，同一手机号码和支付宝帐号视同一个用户。如果系统监测异常帐号或分享异常手机号，该帐号将被立即限制奖励清零；</p>
+    <p>5.本次活动的最终解释权归51返呗APP官方所有。</p>
+</section>
+
+<p class="help">获取更多帮助，请拨打客服电话 ： 0571-88193918</p>
+
+<div class="shareBtn" onclick="shareBtn()">立抢2元电影券</div>
+<script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
+
+<script type="text/javascript" src="/js/activity/movieShare.js?version=$version"></script>
+
 
     <div class="shareBtn" onclick="shareBtn()">立抢2元（无门槛代金券）</div>
     <script type="text/javascript" src="/dist/activity/04/movieShare.js?version=$version"></script>

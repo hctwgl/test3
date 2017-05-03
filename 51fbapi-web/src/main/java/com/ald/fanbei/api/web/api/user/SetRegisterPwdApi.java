@@ -9,6 +9,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -17,8 +18,10 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfPromotionChannelPointDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -41,6 +44,8 @@ public class SetRegisterPwdApi implements ApiHandle {
 	AfSmsRecordService afSmsRecordService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource 
+	AfPromotionChannelPointService afPromotionChannelPointService;
 
 	
     @Override
@@ -51,6 +56,7 @@ public class SetRegisterPwdApi implements ApiHandle {
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
         String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
         String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
+        String registerChannelPointId = ObjectUtils.toString(requestDataVo.getParams().get("channelPointId"), null);
         
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
@@ -95,6 +101,14 @@ public class SetRegisterPwdApi implements ApiHandle {
         userDo.setMobile(userName);
         userDo.setNick(nick);
         userDo.setPassword(password);
+//        userDo.setRegisterChannelId(registerChannelId);
+        if(registerChannelPointId != null){
+        	AfPromotionChannelPointDo channelPointDo = afPromotionChannelPointService.getPoint("Andriod",registerChannelPointId);
+        	if(channelPointDo != null){
+        		userDo.setRegisterChannelPointId(channelPointDo.getId());
+        		userDo.setRegisterChannelId(channelPointDo.getChannelId());
+        	}
+        }
         afUserService.addUser(userDo);
 
         
