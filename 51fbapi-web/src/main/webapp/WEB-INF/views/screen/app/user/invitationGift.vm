@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
+    	#set($commonUrl="http://f.51fanbei.com/h5")
 		<title>邀请有奖</title>
 	    <style type="text/css">
 	    	.invitationGift_wrap{
