@@ -595,7 +595,7 @@ public class RiskUtil extends AbstractThird {
 		List<RiskAddressListDetailBo> detailBos = new ArrayList<RiskAddressListDetailBo>();
 		RiskAddressListDetailBo bo = new RiskAddressListDetailBo();
 		bo.setNickname(StringUtil.filterEmoji(detail.getFriendNick()));
-		bo.setPhone(detail.getFriendPhone().trim());
+		bo.setPhone(detail.getFriendPhone().replaceAll(" ", ""));
 		bo.setRelation(detail.getRelation());
 		detailBos.add(bo);
 
