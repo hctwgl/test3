@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfShopDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,creator,modifier,name,description,type,shop_url,icon,logo,commission_amount,commission_unit,rebate_amount,rebate_unit,status,platform_name
+		id rid,gmt_create,gmt_modified,creator,modifier,name,description,type,shop_url,icon,logo,commission_amount,commission_unit,rebate_amount,rebate_unit,status,platform_name,service_provider
 	</sql>
 	
 	<select id="getShopById" resultType="AfShopDo">
@@ -16,7 +16,7 @@
 			id = #{shopId}
 	</select>
 	
-	<select id="getShopByPlantNameAndType" resultType="AfShopDo">
+	<select id="getShopByPlantNameAndTypeAndServiceProvider" resultType="AfShopDo">
 		SELECT
 			<include refid="queryFields" />
 		FROM
@@ -27,6 +27,9 @@
 			platform_name = #{platformName}
 		AND
 			type = #{type}
+		AND
+			service_provider = #{serviceProvider}
+		LIMIT 1
 	</select>
 	
 	<select id="getShopList" parameterType="AfShopQuery"  resultType="AfShopDo">

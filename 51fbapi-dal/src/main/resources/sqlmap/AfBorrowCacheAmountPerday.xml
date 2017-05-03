@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowCacheAmountPerdayDao">
 	<sql id="queryAllFields">
-		id,gmt_create,gmt_modified,day,amount
+		id,gmt_create,gmt_modified,day,amount,nums
 	</sql>
 
 	<insert id="addBorrowCacheAmountPerday" parameterType="AfBorrowCacheAmountPerdayDo" useGeneratedKeys="true" keyProperty="rid">
@@ -17,7 +17,7 @@
 	
 	<update id="updateBorrowCacheAmount" parameterType="AfBorrowCacheAmountPerdayDo" >
 		UPDATE af_borrow_cache_amount_perday SET gmt_modified = NOW()
-    		,amount=amount + #{amount}
+    		,amount=amount + #{amount},nums=nums+1
 		WHERE day = #{day}
 	</update>
 	

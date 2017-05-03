@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
     	#set($version="2017042402")
-		#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
+		#set($commonUrl="http://f.51fanbei.com/h5")
 		<title>领取优惠券</title>
 		<link rel="stylesheet" type="text/css" href="/dist/css/user/receiveCoupons.css?version=$version">
     </head>

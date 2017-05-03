@@ -52,13 +52,11 @@ public class AddCollectionApi implements ApiHandle {
 		String goodsIcon = ObjectUtils.toString(params.get("goodsIcon"), "").toString();
 		String goodsUrl = ObjectUtils.toString(params.get("goodsUrl"), "").toString();
 
-		Long goodsId = NumberUtil.objToLongDefault(params.get("goodsId"), 0);
+		Long goodsId = NumberUtil.objToLongDefault(params.get("goodsId"), 0L);
 		if (StringUtils.isEmpty(name) && StringUtils.isEmpty(openId) && StringUtils.isEmpty(goodsIcon)
 				&& StringUtils.isEmpty(goodsUrl)) {
 			throw new FanbeiException("(name or openId or goodsIcon or goodsUrl ) is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}
-		
-		
 		
 		AfUserCollectionDo afUserCollectionDo = new AfUserCollectionDo();
 		afUserCollectionDo.setActualAmount(actualAmount);

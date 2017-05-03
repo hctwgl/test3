@@ -51,15 +51,12 @@ public class SaveIdNumberApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_INFO_EXIST_ERROR);
 		} else {
 			AfUserDo afUserDo = afUserService.getUserById(userId);
-			afUserDo.setRealName(idNumberDo.getName());
-			afUserService.updateUser(afUserDo);
+
 
 			AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
-			accountDo.setRealName(idNumberDo.getName());
-			accountDo.setIdNumber(idNumberDo.getCitizenId());
-			afUserAccountService.updateUserAccount(accountDo);
+			
 
-			if (StringUtil.isBlank(accountDo.getIdNumber())&&StringUtil.isBlank(accountDo.getRealName())) {
+			if (StringUtil.isBlank(accountDo.getOpenId())) {
 				RiskRespBo riskResp = riskUtil.register(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
 						accountDo.getAlipayAccount(), accountDo.getAddress());
 				if(!riskResp.isSuccess()){
@@ -72,6 +69,15 @@ public class SaveIdNumberApi implements ApiHandle {
           			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
           		}
 			}
+
+			
+			afUserDo.setRealName(idNumberDo.getName());
+			afUserService.updateUser(afUserDo);
+			
+			accountDo.setRealName(idNumberDo.getName());
+			accountDo.setIdNumber(idNumberDo.getCitizenId());
+			afUserAccountService.updateUserAccount(accountDo);
+
 
 			return resp;
 		}

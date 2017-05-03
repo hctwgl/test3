@@ -18,7 +18,7 @@ import com.ald.fanbei.api.dal.domain.AfUserCollectionDo;
  * @author suweili 2017年2月25日下午2:26:53
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Service("AfuserCollectionService")
+@Service("afuserCollectionService")
 public class AfuserCollectionServiceImpl implements AfuserCollectionService {
 
 	@Resource
@@ -51,10 +51,14 @@ public class AfuserCollectionServiceImpl implements AfuserCollectionService {
 		return afUserCollectionDao.deleteUserCollectionGoods(afUserCollectionDo);
 	}
 
-
 	@Override
 	public Integer getUserCollectionCountByGoodsId(AfUserCollectionDo afUserCollectionDo) {
 		return afUserCollectionDao.getUserCollectionCountByGoodsId(afUserCollectionDo);
+	}
+
+	@Override
+	public List<AfUserCollectionDo> getUserGoodsIdCollectionListByUserId(Long userId) {
+		return afUserCollectionDao.getUserGoodsIdCollectionListByUserId(userId);
 	}
 
 }

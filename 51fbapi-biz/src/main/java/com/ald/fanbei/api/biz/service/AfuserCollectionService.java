@@ -32,6 +32,13 @@ public interface AfuserCollectionService {
 	 */
 	List<AfUserCollectionDo> getUserCollectionListByUserId(Long userId);
 	/**
+	 * 根据userId获取用户收藏列表
+	 * @param userId
+	 * @return
+	 */
+	List<AfUserCollectionDo> getUserGoodsIdCollectionListByUserId(Long userId);
+	
+	/**
 	 * 根据收藏id获取收藏信息
 	 * @param rid
 	 * @return

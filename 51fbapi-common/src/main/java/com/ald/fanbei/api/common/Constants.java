@@ -12,7 +12,8 @@ public class Constants {
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
 	public static final long SECOND_OF_ONE_DAY = 24 * 60 * 60l;
-	public static final long SECOND_OF_ONE_WEEK = 90 * 24 * 60 * 60l;
+
+	public static final long SECOND_OF_ONE_WEEK = 7 * 24 * 60 * 60l;
 
 	public static final int MINITS_OF_2HOURS = 120;
 	public static final int MINITS_OF_HALF_HOUR = 30;
@@ -93,6 +94,7 @@ public class Constants {
 	public static final String RES_CREDIT_SCORE = "CREDIT_SCORE";
 	public static final String APPLY_BRROW_CASH_WHITE_LIST = "APPLY_BRROW_CASH_WHITE_LIST";
 	public static final String RES_REFUND_RATE = "REFUND_RATE";
+
 	// 为了审核定义字段
 	public static final String RES_IS_FOR_AUTH = "IS_FOR_AUTH";
 
@@ -113,6 +115,9 @@ public class Constants {
 	public static final String CONFKEY_TONGDUN_PARTNER_HOST = "fbapi.tongdun.partner.host";
 	public static final String CONFKEY_TONGDUN_PARTNER_CODE = "fbapi.tongdun.partner.code";
 	public static final String CONFKEY_TONGDUN_PARTNER_KEY = "fbapi.tongdun.partner.key";
+
+	public static final String CONFKEY_TONGDUN_PARTNER_WEBHOST = "fbapi.tongdun.partner.webhost";
+
 	public static final String CONFKEY_TONGDUN_APP_NAME = "fbapi.tongdun.app.name";
 	public static final String CONFKEY_YOUDUN_HOST = "fbapi.youdun.host";
 	public static final String CONFKEY_YOUDUN_PUBKEY = "fbapi.youdun.pubkey";
@@ -144,6 +149,7 @@ public class Constants {
 	public static final String CACHEKEY_REPAYNO = "ala_repay_no";
 	public static final String CACHEKEY_REFUND_NO_LOCK = "ala_refund_no_lock";
 	public static final String CACHEKEY_REFUND_NO = "ala_brefund_no";
+
 	public static final String CONFIG_KEY_LOCK_TRY_TIMES = "fbapi.sync.lock.try.times";
 	public static final String CONFKEY_KXG_URL_CHARGE = "fbapi.kxg.url.charge";
 	public static final String CONFKEY_KXG_PASSWORD = "fbapi.kxg.password";
@@ -180,4 +186,7 @@ public class Constants {
 	public static final String CONFKEY_YITU_KEY = "fbapi.yitu.key";
 	public static final String CONFKEY_YITU_DEFINED_CONTENT = "fbapi.yitu.definedContent";
 	public static final String CONFKEY_YITU_PEM_PATH = "fbapi.yitu.pemPath";
+	// 三方接口调用限制
+	public static final String API_CALL_LIMIT = "API_CALL_LIMIT";
+
 }

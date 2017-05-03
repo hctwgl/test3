@@ -63,6 +63,7 @@ public class ThirdController extends AbstractThird{
             String orderId = params.get(ThirdCore.ORDER_ID);
             String plantform = params.get(ThirdCore.PLANT_FORM);
             String refundNo = params.get(ThirdCore.REFUND_NO);
+            String refundSource = params.get(ThirdCore.REFUND_SOURCE);
             BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(params.get(ThirdCore.AMOUNT), null);
             AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
             if (orderInfo == null) {
@@ -70,7 +71,7 @@ public class ThirdController extends AbstractThird{
             }
 
             afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(),orderInfo.getThirdOrderNo() ,refundAmount, orderInfo.getActualAmount(),
-                    orderInfo.getPayType(), orderInfo.getPayTradeNo(), refundNo);
+                    orderInfo.getPayType(), orderInfo.getPayTradeNo(), refundNo, refundSource);
 
             result.setData(resultData);
         } catch (FanbeiException e) {
@@ -104,7 +105,8 @@ public class ThirdController extends AbstractThird{
         String amount = requestParams.getString(ThirdCore.AMOUNT);
         String sign = requestParams.getString(ThirdCore.SIGN);
         String appKey = requestParams.getString(ThirdCore.APP_KEY);
-        String refundNo = params.get(ThirdCore.REFUND_NO);
+        String refundNo = requestParams.getString(ThirdCore.REFUND_NO);
+        String refundSource = requestParams.getString(ThirdCore.REFUND_SOURCE);
 
         params.put(ThirdCore.ORDER_ID, orderId);
         params.put(ThirdCore.USER_ID, userId);
@@ -114,6 +116,7 @@ public class ThirdController extends AbstractThird{
         params.put(ThirdCore.APP_KEY, appKey);
         params.put(ThirdCore.AMOUNT, amount);
         params.put(ThirdCore.REFUND_NO, refundNo);
+        params.put(ThirdCore.REFUND_SOURCE, refundSource);
         return params;
     }
 

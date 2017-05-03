@@ -143,14 +143,18 @@ public class BoluomeController extends AbstractThird{
     	String createdTime = params.get(BoluomeCore.CREATED_TIME);
     	String expiredTime = params.get(BoluomeCore.EXPIRED_TIME);
     	String detailUrl = params.get(BoluomeCore.DETAIL_URL);
+    	String channel = params.get(BoluomeCore.CHANNEL);
     	
     	if (StringUtils.isNotBlank(orderType)) {
     		orderType = orderType.toUpperCase();
     	}
+    	if (StringUtils.isNotBlank(channel)) {
+    		channel = channel.toUpperCase();
+    	}
     	
     	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
     	
-    	AfShopDo shopInfo = afShopService.getShopByPlantNameAndType(ShopPlantFormType.BOLUOME.getCode(), orderType);
+    	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);
     	//新建
     	if (orderInfo == null) {
     		orderInfo = new AfOrderDo();

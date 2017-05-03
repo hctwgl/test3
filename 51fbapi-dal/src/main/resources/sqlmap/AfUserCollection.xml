@@ -48,7 +48,21 @@
 			gmt_create 
 		DESC
 	</select>
-	
+	<select id="getUserGoodsIdCollectionListByUserId" resultType="AfUserCollectionDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_collection
+		WHERE
+			is_delete=0 
+		AND 
+		    goods_id <![CDATA[  >  ]]> 0
+		AND
+			user_id = #{userId} 
+		ORDER BY
+			gmt_create 
+		DESC
+	</select>
 	
 	<update id="updateUserCollectionGoods"  parameterType="AfUserCollectionDo" >
 		UPDATE 
@@ -121,7 +135,7 @@
 			user_id = #{userId} 
 		AND
 			goods_id = #{goodsId}
-			
+		AND open_id = #{openId}	
 		
 	</select>
 	

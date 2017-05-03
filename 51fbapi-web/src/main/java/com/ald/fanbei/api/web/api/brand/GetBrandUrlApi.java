@@ -60,7 +60,7 @@ public class GetBrandUrlApi implements ApiHandle {
 			logger.error("shopId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		String shopUrl = shopInfo.getShopUrl() + "/" + shopInfo.getType().toLowerCase() + "?";
+		String shopUrl = shopInfo.getShopUrl() + "/" + "?";
 		
 		buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
 		buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, context.getMobile());

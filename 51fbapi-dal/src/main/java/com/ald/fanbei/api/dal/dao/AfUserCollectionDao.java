@@ -33,6 +33,10 @@ public interface AfUserCollectionDao {
 	 * @return
 	 */
 	List<AfUserCollectionDo> getUserCollectionListByUserId(@Param("userId")Long userId);
+	
+	List<AfUserCollectionDo> getUserGoodsIdCollectionListByUserId(@Param("userId")Long userId);
+
+	
 	/**
 	 * 根据收藏id获取收藏信息
 	 * @param rid

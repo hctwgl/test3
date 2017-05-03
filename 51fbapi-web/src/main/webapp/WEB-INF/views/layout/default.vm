@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         #set($version="2017042701")
-        #set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
+        #set($commonUrl="http://f.51fanbei.com/h5")
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="renderer" content="webkit">
