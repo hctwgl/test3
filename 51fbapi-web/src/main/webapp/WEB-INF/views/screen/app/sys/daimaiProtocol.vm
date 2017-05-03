@@ -3,19 +3,20 @@
     <head>
 		<title>代买协议</title>
 	    <style type="text/css">
-	    	.authorizeProtocol{
+	    	.daimaiProtocol{
 	    		padding: 0.2rem;
                 line-height: 0.48rem;
 	    		text-align: Justify;
 				text-justify: inter-ideograph;
 	    	}
-            .authorizeProtocol span{
+            .daimaiProtocol span{
                 font-weight: bold;
             }
 	    </style>
     </head>
     <body style="background-color: #fff;">
-    	<div class="authorizeProtocol">
+    	<div class="daimaiProtocol">
+            <h2>代买协议</h2>
             <p>
                 《51返呗在线进件手机运营商服务协议》（以下简称“本协议”）由浙江阿拉丁电子商务股份有限公司和您签订。为明确用户在接受和提供本手机客户端服务过程中的权利义务，特制订本协议。您在通过本手机客户端查询个人手机运营商信息前，请仔细阅读本协议的全部条款，一经点击“同意”，则协议生效。如果您是本手机客户端的日常用户，请随时关注本协议的更新。<br>
                 <span>第一条 用户的权利和义务</span><br>
