@@ -219,11 +219,13 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					//授权账户可用金额变更
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(repayment.getUserId());
+					logger.info("repayment=" + repayment);
 					account.setJfbAmount(repayment.getJfbAmount().multiply(new BigDecimal(-1)));
 
 					account.setUcAmount(cashAmount.multiply(new BigDecimal(-1)));
 					account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
 					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
+					logger.info("account=" + account);
 					afUserAccountDao.updateUserAccount(account);
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT,billDo.getPrincipleAmount(),repayment.getUserId(), repayment.getRid()));
 					return 1l;
