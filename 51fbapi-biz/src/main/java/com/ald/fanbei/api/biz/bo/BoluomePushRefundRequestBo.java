@@ -48,7 +48,7 @@ public class BoluomePushRefundRequestBo extends HashMap<String, String> {
 	 */
 	public void setUserId(Long userId) {
 		this.userId = userId;
-		this.put(BoluomeCore.USER_ID, orderId);
+		this.put(BoluomeCore.USER_ID, userId+StringUtils.EMPTY);
 	}
 	/**
 	 * @return the amount
