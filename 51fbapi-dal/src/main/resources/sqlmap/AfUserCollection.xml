@@ -56,7 +56,7 @@
 		WHERE
 			is_delete=0 
 		AND 
-		    goods_id <![CDATA[  >=  ]]> 0
+		    goods_id <![CDATA[  >  ]]> 0
 		AND
 			user_id = #{userId} 
 		ORDER BY
