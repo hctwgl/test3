@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	#set($version="2017042502")
-	#set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
+	#set($commonUrl="http://f.51fanbei.com/h5")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/extendRegister.css?version=$version">
 </head>

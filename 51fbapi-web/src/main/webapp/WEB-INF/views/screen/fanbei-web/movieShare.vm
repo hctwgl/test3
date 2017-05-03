@@ -2,7 +2,7 @@
 <html>
 <head>
     #set($version="2017042501")
-    #set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
+    #set($commonUrl="http://f.51fanbei.com/h5")
     <meta charset="UTF-8">
     <title>激情4月 大片来袭</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/04/movieShare.css?version=$version">
@@ -64,12 +64,6 @@
 <p class="help">获取更多帮助，请拨打客服电话 ： 0571-88193918</p>
 
 <div class="shareBtn" onclick="shareBtn()">立抢2元电影券</div>
-<script type="text/javascript" src="/js/common/jquery-2.2.4.min.js"></script>
-
 <script type="text/javascript" src="/js/activity/movieShare.js?version=$version"></script>
-
-
-    <div class="shareBtn" onclick="shareBtn()">立抢2元（无门槛代金券）</div>
-    <script type="text/javascript" src="/dist/activity/04/movieShare.js?version=$version"></script>
 </body>
 </html>

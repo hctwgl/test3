@@ -2,7 +2,7 @@
 <html>
 <head>
     #set($version="2017042601")
-    #set($commonUrl="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5")
+    #set($commonUrl="http://f.51fanbei.com/h5")
     <title>商品列表模版</title>
     <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
     <link rel="stylesheet" type="text/css" href="/dist/css/goods/goodsListModel.css?version=$version">
@@ -14,7 +14,7 @@
 
     #if($!{goodsList.size()}==0)
         <div class="nullPrompt">
-            <img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/images/040101wuyouhui.png">
+            <img src="$commonUrl/common/images/040101wuyouhui.png">
             <span class="fsc_6">暂无商品</span>
         </div>
     #else
