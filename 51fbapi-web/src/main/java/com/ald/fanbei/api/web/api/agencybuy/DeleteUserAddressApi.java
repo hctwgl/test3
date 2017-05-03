@@ -28,27 +28,31 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class DeleteUserAddressApi implements ApiHandle {
 	@Resource
 	AfUserAddressService afUserAddressService;
-	
+
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("addressId"), 0);
-		String isDefault = ObjectUtils.toString(requestDataVo.getParams().get("addressId"),null);
+	public ApiHandleResponse process(RequestDataVo requestDataVo,
+			FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
+				FanbeiExceptionCode.SUCCESS);
+		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams()
+				.get("addressId"), 0);
+		String isDefault = ObjectUtils.toString(
+				requestDataVo.getParams().get("isDefault"), null);
 		Long userId = context.getUserId();
-		if(afUserAddressService.deleteUserAddress(addressId) > 0){
-		 if(afUserAddressService.selectUserAddressByrid(userId)!= null){
-			if(StringUtils.equals(isDefault, YesNoStatus.YES.getCode())){
-				if (afUserAddressService.reselectTheDefaultAddress(userId) > 0){
-					return resp;
+		if (afUserAddressService.deleteUserAddress(addressId) > 0) {
+			if (StringUtils.equals(isDefault, YesNoStatus.YES.getCode())) {
+				if ((afUserAddressService.selectUserAddressByUserId(userId) != null)) {
+					if (afUserAddressService.reselectTheDefaultAddress(userId) > 0) {
+						return resp;
+					}
 				}
+			} else {
+				return resp;
 			}
-		 }else
-		 {
-			 return resp;
-		 }
 		}
 
-		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
+		return new ApiHandleResponse(requestDataVo.getId(),
+				FanbeiExceptionCode.FAILED);
 	}
 
 }
