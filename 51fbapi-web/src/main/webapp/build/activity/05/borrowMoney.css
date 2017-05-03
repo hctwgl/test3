@@ -47,7 +47,7 @@ background-size:contain;margin-top:.45rem;}
 .section2 ul li:nth-child(4){height:2.16rem;background: url("http://f.51fanbei.com/h5/app/activity/05/borrowMoney07.jpg") no-repeat;
 background-size:contain;margin-top:.45rem;}
 .section2 ul li:nth-child(5){height:4.08rem;background: url("http://f.51fanbei.com/h5/app/activity/05/borrowMoney08.jpg") no-repeat;
-background-size:contain;margin:.45rem 0 .74rem 0;}
+background-size:contain;margin:.45rem 0 0 0;}
 
 .footer{width:100%;height:.75rem;background:#ff702e;text-align: center;position:fixed;bottom: 0;}
 .footer a{font-size: .36rem;color:#fff;line-height: .75rem;letter-spacing: .1rem;}

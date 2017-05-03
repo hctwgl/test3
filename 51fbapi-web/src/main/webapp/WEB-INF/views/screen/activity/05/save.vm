@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+	#set($commonUrl="http://f.51fanbei.com/h5/app/activity/05")
     <meta charset="UTF-8">
     <title>拯救剁手党</title>
 </head>
 <body>
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_01.png">
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_02.png">
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_03.png">
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_04.png">
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_05.png">
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_06.png">
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_07.png">
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_08.png">
-	<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05/buy_09.jpg">
+	<img src="$commonUrl/buy_01.png">
+	<img src="$commonUrl/buy_02.png">
+	<img src="$commonUrl/buy_03.png">
+	<img src="$commonUrl/buy_04.png">
+	<img src="$commonUrl/buy_05.png">
+	<img src="$commonUrl/buy_06.png">
+	<img src="$commonUrl/buy_07.png">
+	<img src="$commonUrl/buy_08.png">
+	<img src="$commonUrl/buy_09.jpg">
 </body>
 </html>

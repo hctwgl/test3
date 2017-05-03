@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version=version)
-	#set($src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/app/activity/05")
+    #set($version="2017050301")
 	<title>借钱宝典</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/05/borrowMoney.css?version=$version">
 </head>
@@ -44,7 +43,20 @@
 			<li></li><li></li><li></li><li></li><li></li>
 		</ul>
 	</div>
-	<div class="footer"><a class="borrow">立即申请借钱</a></div>
-<script type="text/javascript" src="/dist/activity/05/borrowMoney.js?version=$version"></script>
+	
+	<!-- <div class="footer"><a class="borrow">立即申请借钱</a></div>
+	<script type="text/javascript">
+		var userName=getInfo().userName;
+
+		$(function(){
+			$(".borrow").click(function(){
+				if(userName!=''){
+					location.href="/fanbei-web/opennative?name=BORROW_MONEY";
+				}else{
+					location.href="/fanbei-web/opennative?name=APP_LOGIN";
+				}
+			})
+		})
+	</script> -->
 </body>
 </html>
