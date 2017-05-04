@@ -734,7 +734,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 										AfBorrowBillDo tempBillInfo = getBillFromList(tempBillList, repaymentBillLists.get(i));
 										tempAmount = BigDecimalUtil.add(tempAmount, calculateRepaymentCouponAmount(repayment, tempBillInfo));
 									}
-									totalAmount = BigDecimalUtil.add(totalAmount, BigDecimalUtil.subtract(repayment.getActualAmount(), tempAmount));
+									BigDecimal finalRepaymentActualAmount = BigDecimalUtil.add(repayment.getActualAmount(), BigDecimalUtil.divide(repayment.getJfbAmount(), new BigDecimal("100")), repayment.getRebateAmount());
+									totalAmount = BigDecimalUtil.add(totalAmount, BigDecimalUtil.subtract(finalRepaymentActualAmount, tempAmount));
 								}
 								continue;
 							}

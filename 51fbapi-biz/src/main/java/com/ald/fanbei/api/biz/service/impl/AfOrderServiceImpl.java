@@ -650,6 +650,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setActualAmount(saleAmount);
 					orderInfo.setBankId(payId);
 					if(payId < 0 ){
+						orderInfo.setPayType(PayType.WECHAT.getCode());
 						orderDao.updateOrder(orderInfo);
 						//微信支付
 						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,PayOrderSource.BRAND_ORDER.getCode());
@@ -796,7 +797,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						accountInfo.setUsedAmount(usedAmount);
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						//增加Account记录
-						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, orderId));
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, borrowInfo.getRid()));
 						
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
 						
