@@ -60,7 +60,7 @@ public class GetBrandUrlApi implements ApiHandle {
 			logger.error("shopId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		String shopUrl = shopInfo.getShopUrl() + "/" +  + "?";
+		String shopUrl = shopInfo.getShopUrl() + "/"  + "?";
 		
 		//TODO DELETE
 //		String shopUrl = StringUtils.EMPTY;
