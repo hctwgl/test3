@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util.yitu;
 
 import java.security.PublicKey;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.YituFaceCardReqBo;
@@ -36,7 +37,10 @@ public class YituUtil extends AbstractThird {
 		String url = getIp() + "/face/basic/ocr";
 		String result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
 		YituFaceCardRespBo respBo1 = JSONObject.parseObject(result, YituFaceCardRespBo.class);
-		logger.info(StringUtil.appendStrs("yitu checkCard front params=|", requestBody, "|,reqResult=", result));
+
+		YituFaceCardReqBo logBo = new YituFaceCardReqBo(); 
+		BeanUtils.copyProperties(bo, logBo,new String[]{"user_info"});
+		logger.info(StringUtil.appendStrs("yitu checkCard front params=|", JSON.toJSONString(logBo), "|,reqResult=", result));
 		if (respBo1.getRtn() == 0 && respBo1.getIdcard_ocr_result().getIdcard_type() != -1) {
 			pic = FileHelper.getImageBase64Content(filePath2);
 			bo = new YituFaceCardReqBo();
@@ -46,7 +50,8 @@ public class YituUtil extends AbstractThird {
 			signature = signature(requestBody);
 			result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
 			YituFaceCardRespBo respBo2 = JSONObject.parseObject(result, YituFaceCardRespBo.class);
-			logger.info(StringUtil.appendStrs("yitu checkCard back params=|", requestBody, "|,reqResult=", result));
+			BeanUtils.copyProperties(bo, logBo,new String[]{"user_info"});
+			logger.info(StringUtil.appendStrs("yitu checkCard back params=|", JSON.toJSONString(logBo), "|,reqResult=", result));
 			if (respBo2.getRtn() == 0 && respBo2.getIdcard_ocr_result().getIdcard_type() != -1) {
 				respBo1.getIdcard_ocr_result().setAgency(respBo2.getIdcard_ocr_result().getAgency());
 				respBo1.getIdcard_ocr_result().setValid_date_begin(respBo2.getIdcard_ocr_result().getValid_date_begin());
@@ -79,7 +84,9 @@ public class YituUtil extends AbstractThird {
 		String url = getIp() + "/face/v1/algorithm/recognition/face_pair_verification";
 		String result = HttpRequestHelper.sendPost(url, getAccessId(), signature, requestBody);
 		YituFaceLivingRespBo respBo = JSONObject.parseObject(result, YituFaceLivingRespBo.class);
-		logger.info(StringUtil.appendStrs("yitu checkLiving params=|", requestBody, "|,reqResult=", result));
+		YituFaceLivingReqBo logBo = new YituFaceLivingReqBo();
+		BeanUtils.copyProperties(bo, logBo,new String[]{"database_image_content"});
+		logger.info(StringUtil.appendStrs("yitu checkLiving params=|", JSON.toJSONString(logBo), "|,reqResult=", result));
 		if (respBo.getRtn() == 0) {
 			return respBo;
 		} else {
