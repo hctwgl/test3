@@ -55,28 +55,28 @@ public class GetBrandUrlApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-//		AfShopDo shopInfo = afShopService.getShopById(shopId);
-//		if (shopInfo ==  null) {
-//			logger.error("shopId is invalid");
-//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-//		}
-//		String shopUrl = shopInfo.getShopUrl() + "/" +  + "?";
-		
-		//TODO DELETE
-		String shopUrl = StringUtils.EMPTY;
-		if(shopId == 2L){
-			shopUrl = "https://91ala.otosaas.com/shengxian?";
-		}else if(shopId == 1L){
-			shopUrl = "https://91ala.otosaas.com/dianying?";
-		}else if (shopId == 4L) {
-			shopUrl = "https://91ala.otosaas.com/menpiao?";
-		} else if (shopId == 5L) {
-			shopUrl = "https://91ala.otosaas.com/piaowu?";
-		} else if (shopId == 6L) {
-			shopUrl = "https://91ala.otosaas.com/jiayouka?";
-		} else if (shopId == 7L) {
-			shopUrl = "https://91ala.otosaas.com/chongzhi?";
+		AfShopDo shopInfo = afShopService.getShopById(shopId);
+		if (shopInfo ==  null) {
+			logger.error("shopId is invalid");
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
+		String shopUrl = shopInfo.getShopUrl() + "/" + shopInfo.getType().toLowerCase() + "?";
+		
+//		//TODO DELETE
+//		String shopUrl = StringUtils.EMPTY;
+//		if(shopId == 2L){
+//			shopUrl = "https://91ala.otosaas.com/shengxian?";
+//		}else if(shopId == 1L){
+//			shopUrl = "https://91ala.otosaas.com/dianying?";
+//		}else if (shopId == 4L) {
+//			shopUrl = "https://91ala.otosaas.com/menpiao?";
+//		} else if (shopId == 5L) {
+//			shopUrl = "https://91ala.otosaas.com/piaowu?";
+//		} else if (shopId == 6L) {
+//			shopUrl = "https://91ala.otosaas.com/jiayouka?";
+//		} else if (shopId == 7L) {
+//			shopUrl = "https://91ala.otosaas.com/chongzhi?";
+//		}
 			
 		
 		buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
