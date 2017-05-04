@@ -66,6 +66,7 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -791,7 +792,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("dealBrandOrderRefund borrowAmount = {}", borrowAmount);
 						
 						//更新账户金额
-						BigDecimal usedAmount = BigDecimalUtil.subtract(accountInfo.getUsedAmount(), borrowInfo.getAmount());
+						BigDecimal usedAmount = BigDecimalUtil.subtract(accountInfo.getUsedAmount(), calculateUsedAmount(borrowInfo));
 						accountInfo.setUsedAmount(usedAmount);
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						//增加Account记录
@@ -863,6 +864,30 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+	}
+	
+	/**
+	 * 获取应该退多少额度
+	 * @param borrowInfo
+	 * @return
+	 */
+	private BigDecimal calculateUsedAmount(AfBorrowDo borrowInfo) {
+		List<AfBorrowBillDo> repaymentedBillList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowInfo.getRid(), BorrowBillStatus.YES.getCode());
+		if (CollectionUtils.isEmpty(repaymentedBillList)) {
+			return borrowInfo.getAmount();
+		} else {
+			if (borrowInfo.getNper().equals(borrowInfo.getNperRepayment())) {
+				//如果已经还清
+				return borrowInfo.getAmount();
+			} else {
+				//算还了几期金额
+				BigDecimal totalAmount = BigDecimal.ZERO;
+				for (AfBorrowBillDo billInfo : repaymentedBillList) {
+					totalAmount = BigDecimalUtil.add(totalAmount, billInfo.getPrincipleAmount());
+				}
+				return borrowInfo.getAmount().subtract(totalAmount);
+			}
+		}
 	}
 
 	@Override
