@@ -796,7 +796,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						accountInfo.setUsedAmount(usedAmount);
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						//增加Account记录
-						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, orderId));
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, borrowInfo.getRid()));
 						
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
 						
