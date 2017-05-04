@@ -28,6 +28,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -46,6 +48,8 @@ import com.ald.fanbei.api.common.util.HttpsUtil;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class WxpayCore {
+	
+	 protected static Logger   logger           = LoggerFactory.getLogger(WxpayCore.class);
 	
 	/**
 	 * 发起退款请求
@@ -147,7 +151,7 @@ public class WxpayCore {
 		String outTradeNo = orderNo;
 		String body = goodsName;
 		Map<String,Object> orderData = new HashMap<String,Object>();
-
+		logger.info("wx pay order notifyUrl"+ notifyUrl);
 		if(Constants.INVELOMENT_TYPE_ONLINE.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE))){
 			orderData.put("total_fee", BigDecimalUtil.multiply(totalFee, new BigDecimal(100)).intValue()+"");
 		}else{

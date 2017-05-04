@@ -445,6 +445,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setRemark(remark);
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
+		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");
 /*		reqBo.setRealName("王宝");宝付测试
 		reqBo.setPhone("18066542211");
 		reqBo.setBankCode("ABC");
