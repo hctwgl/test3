@@ -39,18 +39,22 @@ public class DeleteUserAddressApi implements ApiHandle {
 		String isDefault = ObjectUtils.toString(
 				requestDataVo.getParams().get("isDefault"), null);
 		Long userId = context.getUserId();
-		if (afUserAddressService.deleteUserAddress(addressId) > 0) {
-			if (StringUtils.equals(isDefault, YesNoStatus.YES.getCode())) {
-				if ((afUserAddressService.selectUserAddressByUserId(userId) != null)) {
-					if (afUserAddressService.reselectTheDefaultAddress(userId) > 0) {
-						return resp;
+		if (afUserAddressService.getCountOfAddressByUserId(userId) > 1){ // 地址数量是一个的话 就不删除
+			if (afUserAddressService.deleteUserAddress(addressId) > 0) {
+				if (StringUtils.equals(isDefault, YesNoStatus.YES.getCode())) {
+					if ((afUserAddressService.selectUserAddressByUserId(userId) != null)) {
+						if (afUserAddressService.reselectTheDefaultAddress(userId) > 0) {
+							return resp;
+						}
 					}
+				} else {
+					return resp;
 				}
-			} else {
-				return resp;
 			}
+		}else{
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.CHANG_ADDRESS_ERROR);
 		}
-
 		return new ApiHandleResponse(requestDataVo.getId(),
 				FanbeiExceptionCode.FAILED);
 	}
