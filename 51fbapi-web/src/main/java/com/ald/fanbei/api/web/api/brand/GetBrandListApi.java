@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,44 @@ public class GetBrandListApi implements ApiHandle {
 				}
 			});
 		}
+		//TODO DELETE
+		AfShopVo lvmama = new AfShopVo();
+		lvmama.setRid(4l);
+		lvmama.setName("驴妈妈");
+		lvmama.setRebateAmount(new BigDecimal("4.00"));
+		lvmama.setRebateUnit("PERCENTAGE");
+		lvmama.setType("JIPIAO");
+		lvmama.setIcon("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/online/1210844b0574300d.jpg");
+		
+		
+		AfShopVo xishiqu = new AfShopVo();
+		xishiqu.setRid(5l);
+		xishiqu.setName("西十区");
+		xishiqu.setRebateAmount(new BigDecimal("4.00"));
+		xishiqu.setRebateUnit("PERCENTAGE");
+		xishiqu.setType("PIAOWU");
+		xishiqu.setIcon("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/online/31bed7771a561817.jpg");
+		
+		AfShopVo jiayouka = new AfShopVo();
+		jiayouka.setRid(6l);
+		jiayouka.setName("加油卡");
+		jiayouka.setRebateAmount(new BigDecimal("4.00"));
+		jiayouka.setRebateUnit("PERCENTAGE");
+		jiayouka.setType("JIAYOUKA");
+		jiayouka.setIcon("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/online/13bb56e96390e73b.jpg");
+		
+		AfShopVo huafei = new AfShopVo();
+		huafei.setRid(7l);
+		huafei.setName("加油卡");
+		huafei.setRebateAmount(new BigDecimal("4.00"));
+		huafei.setRebateUnit("PERCENTAGE");
+		huafei.setType("JIAYOUKA");
+		huafei.setIcon("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/online/13bb56e96390e73b.jpg");
+		
+		resultList.add(lvmama);
+		resultList.add(xishiqu);
+		resultList.add(jiayouka);
+		resultList.add(huafei);
 		resp.addResponseData("shopList", resultList);
 		resp.addResponseData("pageNo", pageNo);
 		return resp;
