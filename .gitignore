@@ -1,34 +1,3 @@
-<<<<<<< HEAD
-/*/.settings
-/*/logs
-/*/target
-/logs
-/*/.classpath
-/*/*.bak
-/*/.project
-/*/*.log
-/*/*.log.*
-/.project
-/.settings
-/*/bin
-/upload
-/51fbapi-web/pom.xml~
-/assembly.xml~
-/pom.xml~
-/target/51fbapi.tar.gz
-/51fbapi-web/config.client.cache
-/51fbapi-web/configuration/*
-/target/51fbapi.tar.gz
-/antx.properties~
-/mvn.log
-.DS_Store
-51fbapi-web/.DS_Store
-1
-.idea/
-node_modules
-*.map
-/log4j.xml
-=======
 /*/.settings
 /*/logs
 /*/target
@@ -56,4 +25,6 @@ node_modules
 1
 .idea
 node_modules
->>>>>>> master
+*.iml
+*.cache
+*.map
