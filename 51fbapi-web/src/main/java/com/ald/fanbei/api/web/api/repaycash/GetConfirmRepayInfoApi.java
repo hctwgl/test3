@@ -104,7 +104,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			
 			
 			BigDecimal temAmount =BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
-			if(temAmount.compareTo(repaymentAmount)<-1){
+			if(temAmount.compareTo(repaymentAmount)<0){
 				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 			}
 		}
@@ -114,12 +114,12 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		if(coupon!=null){
 			showAmount = BigDecimalUtil.add(actualAmount, coupon.getAmount());
 		}
-		if(userDto.getRebateAmount().compareTo(userAmount)<-1){
+		if(userDto.getRebateAmount().compareTo(userAmount)<0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 		}
 		
 		BigDecimal jfb=BigDecimalUtil.divide(jfbAmount, new BigDecimal(100));
-		if(userDto.getJfbAmount().compareTo(jfbAmount)<-1){
+		if(userDto.getJfbAmount().compareTo(jfbAmount)<0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 
 		}
