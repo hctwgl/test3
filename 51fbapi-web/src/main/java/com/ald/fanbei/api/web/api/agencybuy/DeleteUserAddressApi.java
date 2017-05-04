@@ -3,6 +3,8 @@
  */
 package com.ald.fanbei.api.web.api.agencybuy;
 
+import java.io.StringWriter;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,6 +40,10 @@ public class DeleteUserAddressApi implements ApiHandle {
 				.get("addressId"), 0);
 		String isDefault = ObjectUtils.toString(
 				requestDataVo.getParams().get("isDefault"), null);
+		if(addressId == 0 || StringUtils.isBlank(isDefault)){
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		}
 		Long userId = context.getUserId();
 		if (afUserAddressService.getCountOfAddressByUserId(userId) > 1){ // 地址数量是一个的话 就不删除
 			if (afUserAddressService.deleteUserAddress(addressId) > 0) {
