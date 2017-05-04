@@ -73,6 +73,7 @@ public class CheckFaceApi implements ApiHandle {
 			if (bo.getPair_verify_result().equals(YituFaceLivingRespBo.RESULT_TRUE)) {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
+				auth.setYdStatus(YesNoStatus.YES.getCode());
 				afUserAuthService.updateUserAuth(auth);
 				return resp;
 			} else {
