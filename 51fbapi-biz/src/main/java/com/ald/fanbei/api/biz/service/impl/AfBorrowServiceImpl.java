@@ -287,6 +287,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							AfResourceDo resourceInfo = afResourceDao.getSingleResourceBytype(Constants.RES_DIRECT_TRANS_CREDIT_SCORE);
 							if (userDto.getCreditScore() >= Integer.valueOf(resourceInfo.getValue())) {
 								borrow =  buildBorrow(name,BorrowType.CONSUME_TEMP,userDto.getUserId(), amount,cardId,nper,perAmount, BorrowStatus.TRANSED.getCode());
+								borrow.setGmtTransed(new Date());
 								//新增借款信息
 								afBorrowDao.addBorrow(borrow);
 								//直接打款
@@ -772,6 +773,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public AfBorrowDo getBorrowByOrderIdAndStatus(Long orderId, String status) {
+		return afBorrowDao.getBorrowByOrderIdAndStatus(orderId, status);
 	}
 	
 }

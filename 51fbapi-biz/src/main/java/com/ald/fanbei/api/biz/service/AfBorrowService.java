@@ -110,6 +110,13 @@ public interface AfBorrowService {
     AfBorrowDo getBorrowByOrderId(Long orderId);
     
     /**
+     * 通过订单id 并且状态获取借款信息
+     * @param id
+     * @return
+     */
+    AfBorrowDo getBorrowByOrderIdAndStatus(Long orderId, String status);
+    
+    /**
      * 获取借款商品信息
      * @param borrowId
      * @return

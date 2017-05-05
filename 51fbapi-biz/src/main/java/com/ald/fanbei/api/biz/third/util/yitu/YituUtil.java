@@ -106,7 +106,6 @@ public class YituUtil extends AbstractThird {
 	private String signature(String requestBody) throws Exception {
 		PublicKey publicKey = EncryptionHelper.RSAHelper.loadPublicKey(getPemPath());
 		String signature = HttpRequestHelper.generateSignature(publicKey, getAccessKey(), requestBody, getUserDefinedContent());
-		logger.info(StringUtil.appendStrs("Yitu signature requestBody=", requestBody, "|,signature=", signature));
 		return signature;
 	}
 
