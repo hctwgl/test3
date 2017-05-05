@@ -775,10 +775,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		return null;
 	}
 
-	@Override
-	public AfBorrowDo getBorrowByOrderIdAndStatus(Long orderId, String status) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public AfBorrowDo getBorrowByOrderIdAndStatus(Long orderId, String status) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 	
 }
