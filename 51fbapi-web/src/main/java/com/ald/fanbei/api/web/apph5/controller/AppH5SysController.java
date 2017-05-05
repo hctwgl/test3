@@ -99,6 +99,8 @@ public class AppH5SysController extends BaseController {
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
+		model.put("amountLower", borrowAmount);
+		model.put("poundage", consumeDo.getValue1());
 
 		Date date = new Date();
 		DateUtil.addMonths(date, nper);
