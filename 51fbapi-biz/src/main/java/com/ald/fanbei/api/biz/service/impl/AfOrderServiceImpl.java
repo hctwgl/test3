@@ -786,7 +786,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
 						
-						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderIdAndStatus(orderInfo.getRid(), BorrowStatus.TRANSED.getCode());
 						
 						//重新需要生成账单的金额
 						BigDecimal borrowAmount = afBorrowService.calculateBorrowAmount(borrowInfo.getRid(), refundAmount, refundSource.equals(RefundSource.USER.getCode()));
