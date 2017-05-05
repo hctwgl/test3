@@ -15,7 +15,7 @@
 			province = #{province}
 		AND
 			company = #{company}
-		and is_delete = 0
+		and is_delete = 0 LIMIT 1
 	</select>
 	
 	
