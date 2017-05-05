@@ -1,21 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="UTF-8">
 		<title>51返呗用户注册协议</title>
-	    <style type="text/css">
-	    	.registerProtocol{
-                padding: 0.2rem;
-                line-height: 0.48rem;
-	    		text-align: Justify;
-				text-justify: inter-ideograph;
-	    	}
-            .registerProtocol span{
-                font-weight: bold;
-            }
-	    </style>
     </head>
     <body style="background-color: #fff;">
-    	<div class="registerProtocol">
+    	<div class="protocol">
             <p>
                 <span>尊敬的用户：</span><br>
                 欢迎您注册成为51返呗用户，在注册前请您仔细阅读如下服务条款：<br>

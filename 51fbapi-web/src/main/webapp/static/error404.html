@@ -22,11 +22,18 @@
         })(document, window);
     </script>
 	<style type="text/css">
+		.error404_wrap{
+			text-align: center;
+		}
 		.error404_wrap figure{
 			width: 1.9rem;
 			height: 1.66rem;
-			background-image: url(http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/images/shibai.png);
+			background-image: url(http://f.51fanbei.com/h5/common/images/shibai.png);
 		    margin: 2.8rem auto 0.4rem;
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-ms-background-size: cover;
+			background-size: cover;
 		}
 		.error404_wrap .error404_refresh{
 			width: 2.0rem;
@@ -34,14 +41,16 @@
 			line-height: 0.6rem;
 			margin: 1.2rem auto 0;
 			border-radius: 0.08rem;
+			text-align: center;
+			border: 1px solid #CBCBCB;
 		}
 	</style>
 </head>
 <body>
-	<div class="tac error404_wrap clearfix">
-		<figure class="bgs_c"></figure>
+	<div class="error404_wrap clearfix">
+		<figure></figure>
 		<h2>哎呀...您访问的页面找不到了，请先歇一会儿</h2>
-		<div class="tac bdc_cb error404_refresh">重新查看页面</div>
+		<div class="error404_refresh">重新查看页面</div>
 	</div>
 	<script type="text/javascript">
 		$(function(){
