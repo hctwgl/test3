@@ -1,8 +1,8 @@
 /*
-* @Author: Yangyang
+* @Author: yoe
 * @Date:   2017-02-18 16:32:54
-* @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-18 19:31:41
+* @Last Modified by:   yoe
+* @Last Modified time: 2017-05-05 16:08:51
 * @title:  公用的样式
 */
 
@@ -41,11 +41,32 @@
 .bs_bb { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 
 /*公用的缺省页*/
-.nullPrompt { text-align: center; }
-.nullPrompt img { width: 2.4rem; height: 2.14rem; margin: 2.4rem auto 0.5rem; }
+.nullPrompt {
+	text-align: center;
+	img{
+		width: 2.4rem;
+		height: 2.14rem;
+		margin: 2.4rem auto 0.5rem;
+	}
+}
 
 /*公用title*/
 /*.baseP { width: 100%; height: 1.0rem; line-height: 1.0rem; text-align: center; position: absolute; top: 0 }*/
+
+/*协议公用的样式*/
+.protocol{
+	padding: 0.2rem;
+    line-height: 0.48rem;
+	text-align: Justify;
+	text-justify: inter-ideograph;
+	h2{
+		text-align: center;
+        margin-bottom: 0.2rem;
+	}
+	span{
+		font-weight: bold;
+	}
+}
 
 
 

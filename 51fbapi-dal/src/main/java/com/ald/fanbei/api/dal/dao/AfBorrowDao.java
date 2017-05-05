@@ -58,4 +58,12 @@ public interface AfBorrowDao {
      * @return
      */
     AfBorrowDo getBorrowByOrderId(Long orderId);
+    
+    /**
+     * 通过订单id 并且状态获取借款信息
+     * @param id
+     * @return
+     */
+    AfBorrowDo getBorrowByOrderIdAndStatus(@Param("orderId")Long orderId, @Param("status")String status);
+    
 }

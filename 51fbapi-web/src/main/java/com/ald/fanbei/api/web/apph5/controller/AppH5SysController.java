@@ -39,9 +39,11 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.NperDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 /**
  * @类描述：
@@ -62,7 +64,64 @@ public class AppH5SysController extends BaseController {
 
 	@Resource
 	AfResourceService afResourceService;
+	
+	@RequestMapping(value = { "fenqiServiceProtocol" }, method = RequestMethod.GET)
+	public void fenqiServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 
+		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0) ;
+		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"),
+				new BigDecimal(0));
+	
+		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+		
+		Long userId = afUserDo.getRid();
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		if (accountDo == null) {
+			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+
+		model.put("idNumber", accountDo.getIdNumber());
+		model.put("realName", accountDo.getRealName());
+		AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
+		AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
+		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
+
+		model.put("lender",  lenderDo.getValue());//出借人
+		model.put("mobile",  afUserDo.getMobile());//联系电话
+		List<NperDo> list= JSONArray.parseArray(consumeDo.getValue(),NperDo.class); 
+		List<NperDo> overduelist= JSONArray.parseArray(consumeOverdueDo.getValue(),NperDo.class); 
+		model.put("lateFeeRate", consumeOverdueDo.getValue1());
+		if(StringUtils.isNotBlank(consumeOverdueDo.getValue2())){
+			String[] amounts = consumeOverdueDo.getValue2().split(",");
+			model.put("lateFeeMin", new BigDecimal(amounts[0]));
+			model.put("lateFeeMax", new BigDecimal(amounts[1]));
+		}
+		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
+		model.put("amountLower", borrowAmount);
+		model.put("poundage", consumeDo.getValue1());
+
+		Date date = new Date();
+		model.put("gmtStart", date);
+		model.put("gmtEnd", DateUtil.addMonths(date, nper));
+
+
+		for (NperDo nperDo : list) {
+			if(nperDo.getNper() == nper){
+				model.put("yearRate", nperDo.getRate());
+			}
+		}
+		for (NperDo nperDo : overduelist) {
+			if(nperDo.getNper() == nper){
+				model.put("overdueRate", nperDo.getRate());
+			}
+		}
+		
+		logger.info(JSON.toJSONString(model));
+	}
+	
+	
 	@RequestMapping(value = { "cashLoanProtocol" }, method = RequestMethod.GET)
 	public void cashLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 

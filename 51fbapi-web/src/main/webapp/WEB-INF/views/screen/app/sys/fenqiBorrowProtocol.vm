@@ -1,21 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="UTF-8">
 		<title>返呗分期支付协议</title>
-	    <style type="text/css">
-	    	.fenqiBorrowProtocol{
-	    		padding: 0.2rem;
-                line-height: 0.48rem;
-                text-align: Justify;
-                text-justify: inter-ideograph;
-	    	}
-            .fenqiBorrowProtocol span{
-                font-weight: bold;
-            }
-	    </style>
     </head>
     <body style="background-color: #fff;">
-    	<div class="fenqiBorrowProtocol">
+    	<div class="protocol">
             <p>
                 甲方：【系统填充】<br>
                 乙方：浙江名恒投资管理有限公司<br>
