@@ -15,6 +15,7 @@
 			province = #{province}
 		AND
 			company = #{company}
+		and is_delete = 0
 	</select>
 	
 	
