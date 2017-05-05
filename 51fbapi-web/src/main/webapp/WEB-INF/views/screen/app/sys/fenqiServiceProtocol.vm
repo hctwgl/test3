@@ -22,7 +22,7 @@
 	</style>
 </head>
 <body style="background-color: #fff;">
-	<div class="protocol">
+	<div class="protocol fenqiServiceProtocol">
         <h2>借款合同</h2>
         <p>
             甲方（借款人）：$!{realName}<br>
@@ -42,12 +42,12 @@
 			<ul>
 				<li><i>借款本金</i><i>￥$!{amountLower}</i></li>
 				<li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
-				<li><i>年利率</i><i>$!{yearRate}%</i></li>
+				<li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li>
 				<li><i>借款期限</i><i>$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd")至$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
 				<li><i>还款方式</i><i>等额本息还款</i></li>
 				<li><i>还款日</i><i>每月20日</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
-				<li><i>手续费率</i><i>$!{poundage}</i></li>
+				<li><i>手续费率</i><i>{{changeRate($!{poundage})}}</i></li>
 			</ul><br>
 			
 			<span>第二条 借款发放</span><br>
@@ -77,14 +77,9 @@
 			1、如果甲方未按照本合同履行还款义务，应立即偿还拖欠款项，并按本条规定向乙方支付违约金，乙方有权要求甲方立即偿还拖欠款项和逾期费用。<br>
 			2、逾期费用按照逾期天数分期计算，逾期天数是指每一期未全额支付的款项已逾期的天数。<br>
 			3、每期逾期费用计算方式：<br>
-			【逾期费用=[逾期天数]×[当期借款剩余应还本息] ×逾期利率（<span>$!{overdueRate}%</span>）+滞纳金（若有）】。<br>
-			4、滞纳金：甲方逾期还款超过7日，乙方每日按当期借款剩余应还本息的 <span>$!{lateFeeRate}%</span> 收取滞纳金，最低 <span>$!{lateFeeMin}</span> 元，最高 <span>$!{lateFeeMax}</span> 元。<br>
-			5、还款顺序：甲方同意按下列顺序清偿债务：<br>
-			（1）乙方实现债权的费用；<br>
-			（2）违约金；<br>
-			（3）利息；<br>
-			（4）本金。<br>
-			乙方有权根据甲方实际还款情况变更上述顺序。<br><br>
+			【逾期费用=[逾期天数]×[当期借款剩余应还本息] ×逾期利率（<span>{{changeRate($!{overdueRate})}}</span>）+滞纳金（若有）】。<br>
+			4、滞纳金：甲方逾期还款超过7日，乙方每日按当期借款剩余应还本息的 <span>{{changeRate($!{lateFeeRate})}}</span> 收取滞纳金，最低 <span>$!{lateFeeMin}</span> 元，最高 <span>$!{lateFeeMax}</span> 元。<br>
+			5、还款顺序：甲方同意按下列顺序清偿债务：（1）乙方实现债权的费用；（2）违约金；（3）利息；（4）本金。乙方有权根据甲方实际还款情况变更上述顺序。<br><br>
 
 			<span>第六条 甲方权利和义务</span><br>
 			1、甲方必须按时足额向乙方支付每期应还本金和利息，并应积极配合乙方对甲方的信用、借款的使用及偿还情况等进行监督。<br>
@@ -130,5 +125,33 @@
 			4、本协议若有修改或者补充的，均由丙方以电子文本形式在其平台及合作方处进行公布，修改后或者补充后的内容与本协议有冲突的，以修改后或者补充后的效力为准。<br>
         </p>   
     </div>
+    <script type="text/javascript">
+            new Vue({
+                el:'.fenqiServiceProtocol',
+                methods:{
+                    changeRate: function(num){ // 利率截取最后两位小数
+                        var rate=num;
+                        rate = rate*100;   //截取小数点后4位
+                        // rate = parseFloat(rate);
+                        rate = rate+'%';
+                        return rate;
+                    },
+                    changePrincipal: function(principalNum){ // 本金金额保留二位小数
+
+                        principalNum = parseFloat(principalNum);
+                        principalNum = principalNum.toFixed(2);     //截取小数点后2位
+                        return principalNum;
+                    },
+                    changeDailyRate: function(dailyRate){ // 日利率/365
+
+                        dailyRate = dailyRate/360; // 日利率
+                        dailyRate = (dailyRate*100).toFixed(4);   //截取小数点后4位
+                        dailyRate = parseFloat(dailyRate);
+                        dailyRate = dailyRate+'%';
+                        return dailyRate;
+                    }
+                }
+            });
+        </script>
 </body>
 </html>
