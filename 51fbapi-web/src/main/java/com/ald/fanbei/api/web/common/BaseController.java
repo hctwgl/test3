@@ -104,7 +104,7 @@ public abstract class BaseController {
             }
             if (biLogger.isInfoEnabled()){
                 biLogger.info(StringUtil.appendStrs("reqD=" , requestDataVo==null?reqData:requestDataVo , 
-                		";resD=" , requestDataVo!=null&&"/system/getArea".equals(requestDataVo.getMethod())?resultStr.length()+"":resultStr
+                		";resD=" , requestDataVo!=null&&("/system/getArea".equals(requestDataVo.getMethod())||"/auth/checkFaceApi".equals(requestDataVo.getMethod()))?resultStr.length()+"":resultStr
                         , ";rmtIP=" , CommonUtil.getIpAddr(request)
                         , ";exeT=" , (calEnd.getTimeInMillis() - calStart.getTimeInMillis())
                         , ";intefN=" , request.getRequestURI()));
