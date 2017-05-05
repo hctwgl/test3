@@ -29,7 +29,7 @@ $(function(){
     $('.shareBtn').on('click',function () {
         $.ajax({
             url: 'pickBoluomeCoupon',
-            data:{'sceneId':'837','userName':userName},
+            data:{'sceneId':'275','userName':userName},
             type: 'post',
             success:function (data) {
                 data=eval('(' + data + ')');
@@ -37,7 +37,11 @@ $(function(){
                     requestMsg("领劵成功")
                 }else{
                     if(data.url){
-                        location.href=data.url;
+                        if (getBlatFrom() == 2) {
+                            location.href=data.url;
+                        }else{
+                            requestMsg("请退出当前活动页面,登录后再进行领劵");
+                        }
                     }else{
                         requestMsg(data.msg);
                     }
