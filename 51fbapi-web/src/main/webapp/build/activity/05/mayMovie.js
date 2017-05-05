@@ -29,7 +29,7 @@ $(function(){
     $('.shareBtn').on('click',function () {
         $.ajax({
             url: 'pickBoluomeCoupon',
-            data:{'sceneId':'387','userName':userName},
+            data:{'sceneId':'275','userName':userName},
             type: 'post',
             success:function (data) {
                 data=eval('(' + data + ')');
