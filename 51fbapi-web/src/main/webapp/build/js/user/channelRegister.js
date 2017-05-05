@@ -2,13 +2,12 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-05 10:08:10
+* @Last Modified time: 2017-05-05 10:11:39
 */
 
 
 var sessionId = $("#sessionId").val();
 var tdHost = $("#tdHost").val();
-var _fmOpt;
 // 同盾校验编号的sessionId
  (function() {
     var _fmOpt = {
