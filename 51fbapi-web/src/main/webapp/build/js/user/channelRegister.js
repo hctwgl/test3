@@ -1,20 +1,20 @@
 /*
-* @Author: Yangyang
+* @Author: yoe
 * @Date:   2017-04-12 10:53:28
-* @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-18 16:29:31
-* @title:  渠道注册
+* @Last Modified by:   yoe
+* @Last Modified time: 2017-05-05 10:08:10
 */
 
 
 var sessionId = $("#sessionId").val();
 var tdHost = $("#tdHost").val();
+var _fmOpt;
 // 同盾校验编号的sessionId
  (function() {
-     _fmOpt = {
+    var _fmOpt = {
          partner: 'alading',
          appName: 'register_professional_web',
-         token: sessionId,
+         token: sessionId
      };
      var cimg = new Image(1,1);
      cimg.onload = function() {
@@ -26,8 +26,6 @@ var tdHost = $("#tdHost").val();
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
  	// alert(json.msg);
  })();
-
-
 
 // 判断手机号、接收验证码
 $(function(){
