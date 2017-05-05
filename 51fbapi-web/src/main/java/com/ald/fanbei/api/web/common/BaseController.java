@@ -96,7 +96,7 @@ public abstract class BaseController {
         } catch (Exception e) {
             exceptionresponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
             resultStr = JSON.toJSONString(exceptionresponse);
-            logger.error("system exception id=" + (requestDataVo == null?reqData:requestDataVo.getId()), e);
+            logger.error("system exception id=" + (requestDataVo == null||(requestDataVo!=null&&"/auth/checkFaceApi".equals(requestDataVo.getMethod())"/auth/checkFaceApi".equals(requestDataVo.getMethod())"/auth/checkFaceApi".equals(requestDataVo.getMethod()))?reqData:requestDataVo.getId()), e);
         } finally {
             Calendar calEnd = Calendar.getInstance();
             if(StringUtils.isNotBlank(reqData)){
