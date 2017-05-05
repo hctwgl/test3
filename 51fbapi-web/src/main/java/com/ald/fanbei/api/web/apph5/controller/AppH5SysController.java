@@ -65,8 +65,8 @@ public class AppH5SysController extends BaseController {
 	@Resource
 	AfResourceService afResourceService;
 	
-	@RequestMapping(value = { "loanInstallmentProtocol" }, method = RequestMethod.GET)
-	public void loanInstallmentProtocol(HttpServletRequest request, ModelMap model) throws IOException {
+	@RequestMapping(value = { "fenqiServiceProtocol" }, method = RequestMethod.GET)
+	public void fenqiServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0) ;
