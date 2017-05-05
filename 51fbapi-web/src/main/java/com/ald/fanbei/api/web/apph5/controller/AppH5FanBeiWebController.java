@@ -4,6 +4,8 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -69,7 +73,10 @@ public class AppH5FanBeiWebController extends BaseController {
 
 	@Resource
 	AfCouponService afCouponService;
-
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserCouponDao afUserCouponDao;
 	@Resource
@@ -206,6 +213,8 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
+	
+	
 	
 	@ResponseBody
 	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

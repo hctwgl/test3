@@ -228,8 +228,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		AfOrderDo order = new AfOrderDo();
 		order.setOrderNo(orderNo);
 		if(orderTemp != null){
-			logger.info("orderTemp1=="+JSON.toJSONString(orderTemp));
-
 			if (orderTemp.getOrderId() > 0) {
 				logger.info("orderTemp1=="+JSON.toJSONString(orderTemp));
 
