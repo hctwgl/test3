@@ -103,9 +103,8 @@ public class AppH5SysController extends BaseController {
 		model.put("poundage", consumeDo.getValue1());
 
 		Date date = new Date();
-		DateUtil.addMonths(date, nper);
 		model.put("gmtStart", date);
-		model.put("gmtEnd", date);
+		model.put("gmtEnd", DateUtil.addMonths(date, nper));
 
 
 		for (NperDo nperDo : list) {
