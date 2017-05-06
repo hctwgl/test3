@@ -87,7 +87,7 @@ public class YituUtil extends AbstractThird {
 		YituFaceLivingReqBo logBo = new YituFaceLivingReqBo();
 		BeanUtils.copyProperties(bo, logBo,new String[]{"database_image_content","query_image_package"});
 		JSONObject jobj = JSONObject.parseObject(result);
-		jobj.put("query_image_contents", "");
+		jobj.put("query_image_package_result", "");
 		logger.info(StringUtil.appendStrs("yitu checkLiving params=|", JSON.toJSONString(logBo), "|,reqResult=", jobj.toJSONString()));
 		if (respBo.getRtn() == 0) {
 			return respBo;
