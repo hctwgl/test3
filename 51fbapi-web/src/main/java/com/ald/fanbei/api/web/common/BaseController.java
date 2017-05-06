@@ -96,14 +96,14 @@ public abstract class BaseController {
         } catch (Exception e) {
             exceptionresponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
             resultStr = JSON.toJSONString(exceptionresponse);
-            logger.error("system exception id=" + (requestDataVo == null||(requestDataVo!=null&&"/auth/checkFaceApi".equals(requestDataVo.getMethod()))?reqData:requestDataVo.getId()), e);
+            logger.error("system exception id=" + (requestDataVo == null?reqData:requestDataVo.getId()), e);
         } finally {
             Calendar calEnd = Calendar.getInstance();
             if(StringUtils.isNotBlank(reqData)){
                 reqData = reqData.replace("\r", "").replace("\n", "").replace(" ", "");
             }
             if (biLogger.isInfoEnabled()){
-                biLogger.info(StringUtil.appendStrs("reqD=" , requestDataVo==null?reqData:requestDataVo , 
+                biLogger.info(StringUtil.appendStrs("reqD=" , requestDataVo==null||(requestDataVo!=null&&"/auth/checkFaceApi".equals(requestDataVo.getMethod()))?reqData:requestDataVo , 
                 		";resD=" , requestDataVo!=null&&("/system/getArea".equals(requestDataVo.getMethod())||"/auth/checkFaceApi".equals(requestDataVo.getMethod()))?resultStr.length()+"":resultStr
                         , ";rmtIP=" , CommonUtil.getIpAddr(request)
                         , ";exeT=" , (calEnd.getTimeInMillis() - calStart.getTimeInMillis())
