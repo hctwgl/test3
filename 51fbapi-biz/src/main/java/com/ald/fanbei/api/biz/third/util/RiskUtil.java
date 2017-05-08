@@ -159,7 +159,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, phone));
 		reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, idNo));
 		reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, email));
-		String reqResult = HttpUtil.httpPost(getUrl() + "/modules/api/user/register.htm", reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/register.htm", reqBo);
 		logThird(reqResult, "register", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
@@ -213,7 +213,7 @@ public class RiskUtil extends AbstractThird {
 				batchBo.setCount((count - pageSize * (pageCount - 1)) + "");
 			}
 			batchBo.setSignInfo(SignUtil.sign(createLinkString(batchBo), PRIVATE_KEY));
-			String reqResult = HttpUtil.httpPost(getUrl() + "/modules/api/user/action/batchRemove.htm", batchBo);
+			String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/batchRemove.htm", batchBo);
 			logThird(reqResult, "batchRegister_" + j, batchBo);
 		}
 	}
@@ -254,7 +254,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, phone));
 		reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, idNo));
 		reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, email));
-		String reqResult = HttpUtil.httpPost(getUrl() + "/modules/api/user/modify.htm", reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/modify.htm", reqBo);
 		logThird(reqResult, "modify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
@@ -288,7 +288,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setReqExt("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/risk/verify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		String reqResult = HttpUtil.httpPost(getUrl() + "/modules/api/risk/verify.htm", reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/verify.htm", reqBo);
 		logThird(reqResult, "verify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -336,7 +336,7 @@ public class RiskUtil extends AbstractThird {
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("verify", borrowId, content, url);
 
-		String reqResult = HttpUtil.httpPost(url, reqBo);
+		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "verify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
@@ -499,7 +499,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setOrderNo(getOrderNo("oper", userName.substring(userName.length() - 4, userName.length())));
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		String reqResult = HttpUtil.httpPost(getUrl() + "/modules/api/risk/operator.htm", reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/operator.htm", reqBo);
 		logThird(reqResult, "operator", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_OPERATOR_ERROR);

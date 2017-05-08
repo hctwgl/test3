@@ -98,68 +98,68 @@ public class HttpUtil {
         return result;
     }
 
-    /**
-     * 发送post请求
-     * 
-     * @param url
-     * @param paramsMap
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     */
-    public static String httpPost(String url, Map<String, String> paramsMap) {
-    	logger.info("httpPost begin url = {}, paramsMap = {}",url, paramsMap);
-        HttpClientBuilder builder = HttpClientBuilder.create();
-        CloseableHttpClient httpClient = builder.build();
-        // 要传递的参数
-        List<NameValuePair> query = new ArrayList<NameValuePair>();
-        for (String name : paramsMap.keySet()) {
-            NameValuePair paramItem = new BasicNameValuePair(name, paramsMap.get(name));
-            query.add(paramItem);
-        }
-        if (url.indexOf("?") > 0) {
-            url = url + "&";
-        } else {
-            url = url + "?";
-        }
-        url = url + URLEncodedUtils.format(query, CharEncoding.UTF_8);
-        HttpUriRequest request = new HttpPost(url);
-        HttpResponse response = null;
-        HttpPost postMethod = new HttpPost();
-        postMethod.setURI(request.getURI());
-        postMethod.setHeader("content-type", "application/json;charset=utf-8");
-        try {
-            response = httpClient.execute(postMethod);
-            HttpEntity entity = response.getEntity();
-            // System.out.println(response.getStatusLine());
-            // 显示结果
-            if (!url.contains("preview")) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
-
-                String line = null;
-                StringBuffer sb = new StringBuffer();
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                reader.close();
-                logger.info("httpPost result = {}",sb.toString());
-                return sb.toString();
-            } else {
-                BufferedInputStream bi = new BufferedInputStream(entity.getContent());
-                FileOutputStream fo = new FileOutputStream(new File("D:/picture/" + new Date().getTime() + ".jpg"));
-                int readByte = 0;
-                while ((readByte = bi.read()) != -1) {
-                    fo.write(readByte);
-                }
-                bi.close();
-                fo.close();
-                return null;
-            }
-        } catch (Exception e) {
-            logger.error("httpPost", e);
-            return "";
-        }
-    }
+//    /**
+//     * 发送post请求
+//     * 
+//     * @param url
+//     * @param paramsMap
+//     * @return
+//     * @throws ClientProtocolException
+//     * @throws IOException
+//     */
+//    public static String httpPost(String url, Map<String, String> paramsMap) {
+//    	logger.info("httpPost begin url = {}, paramsMap = {}",url, paramsMap);
+//        HttpClientBuilder builder = HttpClientBuilder.create();
+//        CloseableHttpClient httpClient = builder.build();
+//        // 要传递的参数
+//        List<NameValuePair> query = new ArrayList<NameValuePair>();
+//        for (String name : paramsMap.keySet()) {
+//            NameValuePair paramItem = new BasicNameValuePair(name, paramsMap.get(name));
+//            query.add(paramItem);
+//        }
+//        if (url.indexOf("?") > 0) {
+//            url = url + "&";
+//        } else {
+//            url = url + "?";
+//        }
+//        url = url + URLEncodedUtils.format(query, CharEncoding.UTF_8);
+//        HttpUriRequest request = new HttpPost(url);
+//        HttpResponse response = null;
+//        HttpPost postMethod = new HttpPost();
+//        postMethod.setURI(request.getURI());
+//        postMethod.setHeader("content-type", "application/json;charset=utf-8");
+//        try {
+//            response = httpClient.execute(postMethod);
+//            HttpEntity entity = response.getEntity();
+//            // System.out.println(response.getStatusLine());
+//            // 显示结果
+//            if (!url.contains("preview")) {
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
+//
+//                String line = null;
+//                StringBuffer sb = new StringBuffer();
+//                while ((line = reader.readLine()) != null) {
+//                    sb.append(line);
+//                }
+//                reader.close();
+//                logger.info("httpPost result = {}",sb.toString());
+//                return sb.toString();
+//            } else {
+//                BufferedInputStream bi = new BufferedInputStream(entity.getContent());
+//                FileOutputStream fo = new FileOutputStream(new File("D:/picture/" + new Date().getTime() + ".jpg"));
+//                int readByte = 0;
+//                while ((readByte = bi.read()) != -1) {
+//                    fo.write(readByte);
+//                }
+//                bi.close();
+//                fo.close();
+//                return null;
+//            }
+//        } catch (Exception e) {
+//            logger.error("httpPost", e);
+//            return "";
+//        }
+//    }
 
     /**
      * 发送POST请求，将参数放置到BODY里边

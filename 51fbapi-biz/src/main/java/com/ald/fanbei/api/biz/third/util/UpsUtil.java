@@ -138,7 +138,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		try {
 			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
-			String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+			String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 			logThird(reqResult, "delegatePay", reqBo);
 			if(StringUtil.isBlank(reqResult)){
 				UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
@@ -190,7 +190,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authPay");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog("", cardNo, "authPay", orderNo, "", "", userNo));
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "authPay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_PAY_ERROR);
@@ -231,7 +231,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authPayConfirm");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog("", cardNo, "authPayConfirm", orderNo, "", "", userNo));
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "authPayConfirm", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_PAY_CONFIRM_ERROR);
@@ -260,7 +260,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setTradeNo(tradeNo);
 		reqBo.setTradeType(tradeType);
 		
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "queryTrade", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_TRADE_ERROR);
@@ -300,7 +300,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "", userNo));
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
@@ -334,7 +334,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignValidNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog("", cardNo, "authSignValid", orderNo, verifyCode, "smsCode", userNo));
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSignValid", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
@@ -360,7 +360,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setStartDate(startDate);
 		reqBo.setEndDate(endDate);
 		
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "queryAuthSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_AUTH_SIGN_ERROR);
@@ -396,7 +396,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(notifyUrl);
 		reqBo.setRemark(remark);
 		
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "signDelay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_SIGN_DELAY_ERROR);
@@ -453,7 +453,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertNo("320301198502169142");*/
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "collect", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
@@ -494,7 +494,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setPaymentDetails(paymentDetails);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "batchDelegatePay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_BATCH_DELEGATE_ERR);
@@ -524,7 +524,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/signRelease");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "signRelease", orderNo, "", "", userNo));
-		String reqResult = HttpUtil.httpPost(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "signRelease", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.SIGN_RELEASE_ERROR);
