@@ -116,7 +116,7 @@ public abstract class BaseController {
 					}
 				}
 				biLogger.info(StringUtil.appendStrs("reqD=", req, ";resD=",
-						requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod()) || "/auth/checkFaceApi".equals(requestDataVo.getMethod()))
+						requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod()))
 								? resultStr.length() + "" : resultStr,
 						";rmtIP=", CommonUtil.getIpAddr(request), ";exeT=", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), ";intefN=", request.getRequestURI()));
 			}
