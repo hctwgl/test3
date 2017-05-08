@@ -189,7 +189,7 @@ public class GetBrandCouponListApi implements ApiHandle {
 		map.put("type", "1");
 		map.put("pageIndex", "1");
 		map.put("pageSize", "10");
-		String str = HttpUtil.httpPost(ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/promotion/get_coupon_list", null);
+		String str = HttpUtil.post(ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/promotion/get_coupon_list", null);
 		System.out.println(str);
 	}
 
