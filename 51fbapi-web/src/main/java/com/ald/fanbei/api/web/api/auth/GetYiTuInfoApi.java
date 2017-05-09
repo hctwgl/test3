@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserApiCallLimitService;
 import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper;
 import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper.RSAHelper.PublicKeyException;
@@ -18,6 +20,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfUserApiCallLimitDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -32,7 +35,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class GetYiTuInfoApi implements ApiHandle {
 	@Resource
 	AfUserApiCallLimitService afUserApiCallLimitService;
-
+	@Resource
+	AfResourceService afResourceService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -41,6 +45,11 @@ public class GetYiTuInfoApi implements ApiHandle {
 
 		AfUserApiCallLimitDo faceDo = afUserApiCallLimitService.selectByUserIdAndType(userId, ApiCallType.YITU_FACE.getCode());
 		AfUserApiCallLimitDo cardDo = afUserApiCallLimitService.selectByUserIdAndType(userId, ApiCallType.YITU_CARD.getCode());
+		Integer maxNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YITU_CARD.getCode()).getValue(), 0);
+		Integer maxfaceNum = NumberUtil.objToIntDefault(afResourceService.getConfigByTypesAndSecType(Constants.API_CALL_LIMIT, ApiCallType.YITU_FACE.getCode()).getValue(), 0);
+
+		data.put("cardMaxNum", maxNum);
+		data.put("faceMaxNum", maxfaceNum);
 
 		if(faceDo ==null){
 			data.put("faceCount", 0);
