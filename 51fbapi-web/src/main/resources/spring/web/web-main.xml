@@ -196,6 +196,8 @@
 				<entry key="/auth/checkFaceApi" value-ref="checkFaceApi" />
 				<entry key="/auth/getYiTuInfo" value-ref="getYiTuInfoApi" />
 				<entry key="/auth/uploadYiTuCount" value-ref="uploadYiTuCountApi" />
+				<entry key="/auth/submitIdNumberInfo" value-ref="submitIdNumberInfoApi" />
+				
 				
 
 				<!-- borrow -->

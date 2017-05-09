@@ -32,6 +32,9 @@ public class AfIdNumberDo extends AbstractSerial {
 	private String agency;
 	private String idFrontUrl;
 	private String idBehindUrl;
+	private String faceUrl;
+
+	
 	/**
 	 * @return the rid
 	 */
@@ -189,6 +192,18 @@ public class AfIdNumberDo extends AbstractSerial {
 	 */
 	public void setIdBehindUrl(String idBehindUrl) {
 		this.idBehindUrl = idBehindUrl;
+	}
+	/**
+	 * @return the faceUrl
+	 */
+	public String getFaceUrl() {
+		return faceUrl;
+	}
+	/**
+	 * @param faceUrl the faceUrl to set
+	 */
+	public void setFaceUrl(String faceUrl) {
+		this.faceUrl = faceUrl;
 	}
 	
 	
