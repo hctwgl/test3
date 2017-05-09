@@ -194,6 +194,7 @@
 				<entry key="/auth/checkIdCardApi" value-ref="checkIdCardApi" />
 				<entry key="/auth/updateIdCardApi" value-ref="updateIdCardApi" />
 				<entry key="/auth/checkFaceApi" value-ref="checkFaceApi" />
+				<entry key="/auth/getYiTuInfo" value-ref="getYiTuInfoApi" />
 				
 
 				<!-- borrow -->
