@@ -107,6 +107,7 @@
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				<value>/brand/getBrandList</value>
 				<value>/system/checkVersion</value>
+				<value>/system/AppLaunchImage</value>
 			</list>
 		</constructor-arg>
 	</bean>
