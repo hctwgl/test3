@@ -188,5 +188,6 @@ public class Constants {
 	public static final String CONFKEY_YITU_PEM_PATH = "fbapi.yitu.pemPath";
 	// 三方接口调用限制
 	public static final String API_CALL_LIMIT = "API_CALL_LIMIT";
+	
 
 }
