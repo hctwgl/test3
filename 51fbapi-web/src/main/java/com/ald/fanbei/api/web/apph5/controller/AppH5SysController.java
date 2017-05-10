@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRescourceLogService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -37,6 +38,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfResourceLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.NperDo;
@@ -61,20 +63,21 @@ public class AppH5SysController extends BaseController {
 	AfUserService afUserService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfRescourceLogService afRescourceLogService;
 
 	@Resource
 	AfResourceService afResourceService;
-	
+
 	@RequestMapping(value = { "fenqiServiceProtocol" }, method = RequestMethod.GET)
 	public void fenqiServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0) ;
-		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"),
-				new BigDecimal(0));
-	
+		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
+		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
+
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-		
+
 		Long userId = afUserDo.getRid();
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
 		if (accountDo == null) {
@@ -84,16 +87,19 @@ public class AppH5SysController extends BaseController {
 
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
-		AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
-		AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
-		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
+		AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(),
+				AfResourceSecType.borrowConsume.getCode());
+		AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(
+				AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
+		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(),
+				AfResourceSecType.borrowCashLender.getCode());
 
-		model.put("lender",  lenderDo.getValue());//出借人
-		model.put("mobile",  afUserDo.getMobile());//联系电话
-		List<NperDo> list= JSONArray.parseArray(consumeDo.getValue(),NperDo.class); 
-		List<NperDo> overduelist= JSONArray.parseArray(consumeOverdueDo.getValue(),NperDo.class); 
+		model.put("lender", lenderDo.getValue());// 出借人
+		model.put("mobile", afUserDo.getMobile());// 联系电话
+		List<NperDo> list = JSONArray.parseArray(consumeDo.getValue(), NperDo.class);
+		List<NperDo> overduelist = JSONArray.parseArray(consumeOverdueDo.getValue(), NperDo.class);
 		model.put("lateFeeRate", consumeOverdueDo.getValue1());
-		if(StringUtils.isNotBlank(consumeOverdueDo.getValue2())){
+		if (StringUtils.isNotBlank(consumeOverdueDo.getValue2())) {
 			String[] amounts = consumeOverdueDo.getValue2().split(",");
 			model.put("lateFeeMin", new BigDecimal(amounts[0]));
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
@@ -106,22 +112,20 @@ public class AppH5SysController extends BaseController {
 		model.put("gmtStart", date);
 		model.put("gmtEnd", DateUtil.addMonths(date, nper));
 
-
 		for (NperDo nperDo : list) {
-			if(nperDo.getNper() == nper){
+			if (nperDo.getNper() == nper) {
 				model.put("yearRate", nperDo.getRate());
 			}
 		}
 		for (NperDo nperDo : overduelist) {
-			if(nperDo.getNper() == nper){
+			if (nperDo.getNper() == nper) {
 				model.put("overdueRate", nperDo.getRate());
 			}
 		}
-		
+
 		logger.info(JSON.toJSONString(model));
 	}
-	
-	
+
 	@RequestMapping(value = { "cashLoanProtocol" }, method = RequestMethod.GET)
 	public void cashLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 
@@ -129,7 +133,7 @@ public class AppH5SysController extends BaseController {
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"),
 				new BigDecimal(0));
-	
+
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		if (afUserDo == null) {
 			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -145,14 +149,15 @@ public class AppH5SysController extends BaseController {
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
 		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 
 		BigDecimal bankService = bankRate.multiply(bankDouble);
-		BigDecimal overdue = bankService.divide(new BigDecimal(360), 6, RoundingMode.HALF_UP).add(poundage).add(overduePoundage);
+		BigDecimal overdue = bankService.divide(new BigDecimal(360), 6, RoundingMode.HALF_UP).add(poundage)
+				.add(overduePoundage);
 
 		model.put("yearRate", bankService);
 		model.put("overdueRate", overdue);
@@ -161,27 +166,25 @@ public class AppH5SysController extends BaseController {
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 		if (borrowId > 0) {
-            AfBorrowCashDo  afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
-			model.put("gmtCreate", afBorrowCashDo.getGmtCreate());//出借人
+			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+			model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借人
 
-            if(afBorrowCashDo!=null){
-        		model.put("borrowNo", afBorrowCashDo.getBorrowNo());
-        		if(StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode())||StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())){
-            		model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-            		Integer day = NumberUtil
-        					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-            		Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
-    				Date repaymentDay = DateUtil.addDays(arrivalStart, day-1);
-    				model.put("repaymentDay", repaymentDay);
-    				model.put("lender",  rate.get("lender"));//出借人
-    				model.put("lenderIdNumber",  rate.get("lenderIdNumber"));
-    				model.put("lenderIdAmount", afBorrowCashDo.getAmount());
+			if (afBorrowCashDo != null) {
+				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
+				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode())
+						|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
+					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
+					Integer day = NumberUtil.objToIntDefault(
+							AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
+					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
+					model.put("repaymentDay", repaymentDay);
+					model.put("lender", rate.get("lender"));// 出借人
+					model.put("lenderIdNumber", rate.get("lenderIdNumber"));
+					model.put("lenderIdAmount", afBorrowCashDo.getAmount());
+				}
 
-
-        		}
-
-
-            }
+			}
 		}
 
 		logger.info(JSON.toJSONString(model));
@@ -287,8 +290,9 @@ public class AppH5SysController extends BaseController {
 		return temp;
 	}
 
-	public Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> list) {
+	public Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> list, Long borrowId) {
 		Map<String, Object> data = new HashMap<String, Object>();
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 
 		for (AfResourceDo afResourceDo : list) {
 			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
@@ -300,26 +304,73 @@ public class AppH5SysController extends BaseController {
 				} else if (StringUtils.equals(afResourceDo.getSecType(),
 						AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
 					data.put("bankDouble", afResourceDo.getValue());
+					if (afBorrowCashDo != null) {
+						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(
+								AfResourceType.borrowRate.getCode(),
+								AfResourceSecType.BorrowCashBaseBankDouble.getCode(), afBorrowCashDo.getGmtCreate());
+						if (logDo != null) {
+							AfResourceDo borrow=JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+							data.put("bankDouble", borrow.getValue());
+						}
+					}
 
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashPoundage.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashPoundage.getCode())) {
 					data.put("poundage", afResourceDo.getValue());
+					
+					if (afBorrowCashDo != null) {
+						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(
+								AfResourceType.borrowRate.getCode(),
+								AfResourceSecType.BorrowCashPoundage.getCode(), afBorrowCashDo.getGmtCreate());
+						if (logDo != null) {
+							AfResourceDo borrow=JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+							data.put("poundage", borrow.getValue());
+						}
+					}
 
 				} else if (StringUtils.equals(afResourceDo.getSecType(),
 						AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
 					data.put("overduePoundage", afResourceDo.getValue());
-
+					if (afBorrowCashDo != null) {
+						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(
+								AfResourceType.borrowRate.getCode(),
+								AfResourceSecType.BorrowCashOverduePoundage.getCode(), afBorrowCashDo.getGmtCreate());
+						if (logDo != null) {
+							AfResourceDo borrow=JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+							data.put("overduePoundage", borrow.getValue());
+						}
+					}
 				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())) {
 					data.put("bankRate", afResourceDo.getValue());
-				}
-				else if(StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashLender.getCode())){
-					 data.put("lender", afResourceDo.getValue());
-					 data.put("lenderIdNumber", afResourceDo.getValue1());
+					if (afBorrowCashDo != null) {
+						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(
+								AfResourceType.borrowRate.getCode(),
+								AfResourceSecType.BaseBankRate.getCode(), afBorrowCashDo.getGmtCreate());
+						if (logDo != null) {
+							AfResourceDo borrow=JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+							data.put("bankRate", borrow.getValue());
+						}
+					}
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashLender.getCode())) {
+					data.put("lender", afResourceDo.getValue());
+					data.put("lenderIdNumber", afResourceDo.getValue1());
+					if (afBorrowCashDo != null) {
+						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(
+								AfResourceType.borrowRate.getCode(),
+								AfResourceSecType.borrowCashLender.getCode(), afBorrowCashDo.getGmtCreate());
+						if (logDo != null) {
+							AfResourceDo borrow=JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+							data.put("lender", borrow.getValue());
+							data.put("lenderIdNumber", borrow.getValue1());
 
+						}
+					}
 				}
 			} else {
 				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
 					data.put("borrowCashDay", afResourceDo.getValue());
-
+					
 				}
 			}
 		}

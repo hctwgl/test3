@@ -5,13 +5,16 @@ package com.ald.fanbei.api.web.api.system;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.CheckVersionBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -21,6 +24,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONArray;
 
 /**
  * 提供给验证版本使用
@@ -38,16 +42,35 @@ public class CheckVersionApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+        Map<String, Object> params = requestDataVo.getParams();
         AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
         if (resourceInfo == null) {
         	resp.addResponseData("isForAuth", YesNoStatus.NO.getCode());
         } 
         //需要打开为了审核的相关版本
-        List<String> needAuthVersion = Arrays.asList(resourceInfo.getValue().split(","));
-        if (needAuthVersion.contains(context.getAppVersion() + StringUtils.EMPTY)) {
-        	resp.addResponseData("isForAuth" , YesNoStatus.YES.getCode());
+        //VALUE是为了IOS审核
+        if(requestDataVo.getId().startsWith("i")) {
+        	List<String> needAuthVersion = Arrays.asList(resourceInfo.getValue().split(","));
+        	if (needAuthVersion.contains(context.getAppVersion() + StringUtils.EMPTY)) {
+        		resp.addResponseData("isForAuth" , YesNoStatus.YES.getCode());
+        	} else {
+        		resp.addResponseData("isForAuth" , YesNoStatus.NO.getCode());
+        	}
         } else {
-        	resp.addResponseData("isForAuth" , YesNoStatus.NO.getCode());
+        //VALUE1是为了Android审核
+        	String androidCheckVersion = resourceInfo.getValue1();
+        	if (StringUtils.isBlank(androidCheckVersion)) {
+        		resp.addResponseData("isForAuth", YesNoStatus.NO.getCode());
+        	} else {
+        		List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
+        		String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
+        		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
+        		if (array.contains(desVersion)) {
+        			resp.addResponseData("isForAuth", YesNoStatus.YES.getCode());
+        		} else {
+        			resp.addResponseData("isForAuth", YesNoStatus.NO.getCode());
+        		}
+        	}
         }
         return resp;
 	}
