@@ -1,22 +1,20 @@
 
+
+var userName = "";
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
+
 $(function(){
-
-    var userName = "";
-    if(getInfo().userName){
-        userName=getInfo().userName
-        alert(username)
-    }
-
 	//点击购买
 	$('.buy').click(function(){
-        alert(11111);
         $.ajax({
             url: '/fanbei-web/getBrandUrl',
             data:{'shopId':'17','userName':userName},
             type: 'POST',
             success:function (data) {
                 alert(data) 
-                alert(username)               
+                alert(userName)               
                 data=eval('(' + data + ')');
                 if(data.success){
                    location.href=data.url;
@@ -26,12 +24,12 @@ $(function(){
 
             }
         });
-	})
+	});
 
     //点击抢优惠券	 
 	$('.saleOff').click(function(){
         $.ajax({
-            url: 'pickBoluomeCoupon',
+            url: '/fanbei-web/pickBoluomeCoupon',
             data:{'sceneId':'387','userName':userName},
             type: 'POST',
             success:function (data) {
@@ -51,6 +49,6 @@ $(function(){
                 }
             }
         });
-	})
+	});
 
-})
+});
