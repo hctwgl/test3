@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017051018")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/05")
+	<title>母亲节快乐</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/05/montherDay.css?version=$version">
+</head>
+<body>
+<header>
+   <img src="$commonUrl/mumday01.jpg">
+   <img src="$commonUrl/mumday02.jpg">
+   <img src="$commonUrl/mumday24.jpg">
+</header>
+<div class="cont clearfix">
+   <div class="left"><img src="$commonUrl/mumday06.jpg"></div>
+   <div class="left"><img src="$commonUrl/mumday05.jpg"></div>
+</div>
+<div class="food">
+   <div class="title"><img src="$commonUrl/mumday07.jpg"></div>
+   <ul class="foodList  clearfix">
+      <img src="$commonUrl/mumday25.jpg">
+     </ul>
+</div>
+<div class="buy buy01"><div class="clickBuy"></div></div>
+<div class="fruit"><img src="$commonUrl/mumday16.jpg"></div>
+<img src="$commonUrl/mumday29.jpg">
+<img src="$commonUrl/mumday19.jpg"><br/>
+<img src="$commonUrl/mumday22.jpg">
+<div class="buy buy02"></div>
+<div class="words">
+   <h2>主题</h2>
+   <p>感恩母亲节，吃遍全世界！</p>
+   <h3>活动时间：</h3>
+   <p>限2017.5.12-2017.5.14</p>
+   <h3>活动规则：</h3>
+   <p><span>1</span>.注册用户点击“5元”代金券，系统自动发<br/>
+    放奖励，可在“我的-抵用券”中查看；<br/>
+    <span>2</span>.券的使用说明根据券面信息提示进行使用，<br/>
+    其中5元为无门槛“易果生鲜”代金券，使用的有效时间为领券当天起3天有效； <br/>
+    <span>3</span>.每个用户限领1次，同一手机号码和支付<br/>
+    帐号或分享异常手机号，该帐号将被立即限制奖励清零；<br/>
+    <span>4</span>.本次活动的最终解释权归51返呗APP官方所有。</p>
+</div>
+
+<div class="clickVoucher">
+   <h3>感恩母亲节<br/>Happy Mother's Day</h3>
+   <h4>立即抢<span>5</span>元代金券</h4>
+</div>
+<script type="text/javascript" src="/dist/activity/05/montherDay.js?version=$version"></script>
+</body>
+</html>
