@@ -60,6 +60,7 @@ public class SampleCodeV1PairVerify {
 		 * Step 2 生成 signature
 		 */
 	    PublicKey publicKey = EncryptionHelper.RSAHelper.loadPublicKey(pemPath);
+	    
 	    String signature = HttpRequestHelper.generateSignature(publicKey, accessKey, requestBodyString, userDefinedContent);
 		System.out.println("生成signature : " + signature);
 	    
