@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -657,5 +658,45 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
 		}
 	}
-
+	/**
+	 * @方法描述：用户白名单信息同步
+	 * 
+	 * @author fumeiai 2017年5月11日上午11:21
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param data
+	 *            --通讯录信息，格式为 张三:15888881111&15811234444,李四:15888881111&15811234444
+	 * @return
+	 * @throws Exception
+	 *             
+	 * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+	 */
+	public int addwhiteUser(Long consumerNo) {
+		AfUserAccountDto afUserAccountDto = afUserAccountService.getUserInfoByUserId(consumerNo);
+		WhiteUserRequestBo reqBo = new WhiteUserRequestBo();
+		reqBo.setConsumerNo(consumerNo.toString());
+		reqBo.setRealName(afUserAccountDto.getRealName());
+		reqBo.setPhone(afUserAccountDto.getMobile());
+		reqBo.setIdNo(afUserAccountDto.getIdNumber());
+		reqBo.setGrantAmount(afUserAccountDto.getAuAmount().toString());
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		reqBo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, afUserAccountDto.getRealName()));
+		reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, afUserAccountDto.getMobile()));
+		reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, afUserAccountDto.getIdNumber()));
+//		String reqResult = HttpUtil.post("http://192.168.96.139:80/modules/api/user/whiteuser.htm", reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/whiteuser.htm", reqBo);
+		logThird(reqResult, "addwhiteUser", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.ADD_WHITE_USER_PRIMARIES_ERROR);
+		}
+		JSONObject result = JSONObject.parseObject(reqResult);
+		if (result.get("code").equals("0000")) {
+			return 1;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
+		}
+	}
+	
+	
 }
