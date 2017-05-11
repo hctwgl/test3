@@ -145,6 +145,16 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		// card.setBankName("中国农业银行");
 		// card.setCardNumber("6228480322828314011");
 		// ---------------------------------------------
+
+		///// 临时处理，如果当天内有申请，以最后一条的状态为准 start hy 2017年5月11日09:54:20//////
+		AfBorrowCashDo dayCash = afBorrowCashService.getUserDayLastBorrowCash(userId);
+		boolean doRish = true;
+		if (dayCash != null && dayCash.getStatus().equals(AfBorrowCashStatus.closed.getCode())) {
+			doRish = false;
+		}
+
+		///// 临时处理，如果当天内有申请，以最后一条的状态为准 end hy 2017年5月11日09:54:20//////
+
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
@@ -164,13 +174,10 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		cashDo.setRid(borrowId);
 
 		try {
-			///// 临时处理，如果当天内有申请，以最后一条的状态为准 start hy 2017年5月11日09:54:20//////
-			AfBorrowCashDo dayCash = afBorrowCashService.getUserDayLastBorrowCash(userId);
-			if (dayCash != null&&dayCash.getStatus().equals(AfBorrowCashStatus.closed.getCode())) {
+			/// 临时解决方案
+			if (doRish) {
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
-
-			///// 临时处理，如果当天内有申请，以最后一条的状态为准 end hy 2017年5月11日09:54:20//////
 
 			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
 					afBorrowCashDo.getBorrowNo());
