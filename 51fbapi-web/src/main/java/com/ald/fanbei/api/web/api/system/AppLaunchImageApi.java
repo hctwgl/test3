@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 @Component("AppLaunchImageApi")
 public class AppLaunchImageApi implements ApiHandle{
 
-	private static final String RESOURCE_TYPE = "appLaunchImage";
+	private static final String RESOURCE_TYPE = "APP_LAUNCH_IMAGE";
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -31,7 +31,7 @@ public class AppLaunchImageApi implements ApiHandle{
 		JSONObject data = new JSONObject();
 		if (resourceDo != null){
 			data.put("imageUrl", resourceDo.getValue());
-			
+			data.put("advertiseUrl", resourceDo.getValue1());	
 		}
 		response.setResponseData(data);
 		return response;
