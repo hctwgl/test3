@@ -394,7 +394,7 @@
 			id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 			status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,num_id,
 			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider
 		FROM
 			af_order a
 		WHERE
@@ -416,7 +416,7 @@
 			id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 			status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,num_id,
 			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider
 		FROM
 			af_order a
 		WHERE
