@@ -10,7 +10,7 @@ $(function(){
 	$('.buy').click(function(){
         $.ajax({
             url: '/fanbei-web/getBrandUrl',
-            data:{'shopId':'17','userName':userName},
+            data:{'shopId':'2','userName':userName},
             type: 'POST',
             success:function (data) {
                 data=eval('(' + data + ')');
@@ -27,7 +27,7 @@ $(function(){
 	$('.saleOff').click(function(){
         $.ajax({
             url: '/fanbei-web/pickBoluomeCoupon',
-            data:{'sceneId':'387','userName':userName},
+            data:{'sceneId':'8139','userName':userName},
             type: 'POST',
             success:function (data) {
                 data=eval('(' + data + ')');

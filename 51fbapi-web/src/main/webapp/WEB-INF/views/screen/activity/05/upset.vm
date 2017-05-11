@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017051101")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/05")
+	<meta charset="UTF-8">
+	<title>扎心了，老铁！借钱不用还</title>
+</head>
+<body>
+	<img src="$commonUrl/upset01.jpg">
+	<img src="$commonUrl/upset02.jpg">
+	<img src="$commonUrl/upset03.jpg">
+	<img src="$commonUrl/upset04.jpg">
+</body>
+</html>
