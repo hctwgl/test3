@@ -166,7 +166,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		try {
 			///// 临时处理，如果当天内有申请，以最后一条的状态为准 start hy 2017年5月11日09:54:20//////
 			AfBorrowCashDo dayCash = afBorrowCashService.getUserDayLastBorrowCash(userId);
-			if (dayCash != null&&dayCash.getReviewStatus().equals(AfBorrowCashStatus.closed.getCode())) {
+			if (dayCash != null&&dayCash.getStatus().equals(AfBorrowCashStatus.closed.getCode())) {
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
 
