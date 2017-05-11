@@ -13,15 +13,12 @@ $(function(){
             data:{'shopId':'17','userName':userName},
             type: 'POST',
             success:function (data) {
-                alert(data) 
-                alert(userName)               
                 data=eval('(' + data + ')');
                 if(data.success){
                    location.href=data.url;
                 }else{
                    location.href=data.url; 
                 }
-
             }
         });
 	});
