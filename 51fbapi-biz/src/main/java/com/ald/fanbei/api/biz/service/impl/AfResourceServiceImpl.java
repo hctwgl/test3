@@ -49,7 +49,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			list = afResourceDao.getConfigByTypes(type);
 			data.put(type, list);
-			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_CONFIG_TYPES_LIST.getCode(), SerializeUtil.serialize(data));
+			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_CONFIG_TYPES_LIST.getCode(), data);
 		} else {
 			list = data.get(type);
 		}
@@ -63,8 +63,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		data = (data == null ? new HashMap<String, List<AfResourceDo>>() : data);
 		if (data.get(type) == null) {
 			list = afResourceDao.getResourceListByType(type);
-			data.put(type, list);
-			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_TYPE_LIST.getCode(), SerializeUtil.serialize(data));
+			if (list != null) {
+				data.put(type, list);
+				bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_TYPE_LIST.getCode(), data);
+			}
 		} else {
 			list = data.get(type);
 		}
@@ -74,12 +76,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 	@Override
 	public AfResourceDo getSingleResourceBytype(String type) {
 		AfResourceDo afResourceDo;
-		HashMap<String, AfResourceDo> data = (HashMap <String, AfResourceDo>) bizCacheUtil.getObject(CacheConstants.RESOURCE.RESOURCE_TYPE_DO.getCode());
+		HashMap<String, AfResourceDo> data = (HashMap<String, AfResourceDo>) bizCacheUtil.getObject(CacheConstants.RESOURCE.RESOURCE_TYPE_DO.getCode());
 		data = (data == null ? new HashMap<String, AfResourceDo>() : data);
 		if (data.get(type) == null) {
 			afResourceDo = afResourceDao.getSingleResourceBytype(type);
 			data.put(type, afResourceDo);
-			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_TYPE_DO.getCode(), SerializeUtil.serialize(data));
+			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_TYPE_DO.getCode(), data);
 		} else {
 			afResourceDo = data.get(type);
 		}
@@ -91,12 +93,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 		AfResourceDo afResourceDo;
 		HashMap<String, AfResourceDo> data = (HashMap<String, AfResourceDo>) bizCacheUtil.getObject(CacheConstants.RESOURCE.RESOURCE_TYPE_SEC_DO.getCode());
 		data = (data == null ? new HashMap<String, AfResourceDo>() : data);
-		if (data.get(type+secType) == null) {
+		if (data.get(type + secType) == null) {
 			afResourceDo = afResourceDao.getConfigByTypesAndSecType(type, secType);
-			data.put(type+secType, afResourceDo);
-			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_TYPE_SEC_DO.getCode(), SerializeUtil.serialize(data));
+			data.put(type + secType, afResourceDo);
+			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_TYPE_SEC_DO.getCode(), data);
 		} else {
-			afResourceDo = data.get(type+secType);
+			afResourceDo = data.get(type + secType);
 		}
 		return afResourceDo;
 	}
@@ -109,7 +111,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			list = afResourceDao.getResourceListByTypeOrderBy(type);
 			data.put(type, list);
-			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_TYPE_LIST_ORDER_BY.getCode(), SerializeUtil.serialize(data));
+			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_TYPE_LIST_ORDER_BY.getCode(), data);
 		} else {
 			list = data.get(type);
 		}
@@ -121,12 +123,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 		AfResourceDo afResourceDo;
 		HashMap<String, AfResourceDo> data = (HashMap<String, AfResourceDo>) bizCacheUtil.getObject(CacheConstants.RESOURCE.RESOURCE_ID_DO.getCode());
 		data = (data == null ? new HashMap<String, AfResourceDo>() : data);
-		if (data.get(rid+"") == null) {
+		if (data.get(rid + "") == null) {
 			afResourceDo = afResourceDao.getResourceByResourceId(rid);
-			data.put(rid+"", afResourceDo);
-			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_ID_DO.getCode(), SerializeUtil.serialize(data));
+			data.put(rid + "", afResourceDo);
+			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_ID_DO.getCode(), data);
 		} else {
-			afResourceDo = data.get(rid+"");
+			afResourceDo = data.get(rid + "");
 		}
 		return afResourceDo;
 	}
@@ -139,7 +141,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			list = afResourceDao.getOneToManyResourceOrderByBytype(type);
 			data.put(type, list);
-			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_ONE_TO_MANY_TYPE_LIST.getCode(), SerializeUtil.serialize(data));
+			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_ONE_TO_MANY_TYPE_LIST.getCode(), data);
 		} else {
 			list = data.get(type);
 		}
@@ -154,7 +156,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			list = afResourceDao.getResourceHomeListByTypeOrderBy(type);
 			data.put(type, list);
-			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_HOME_LIST_ORDER_BY.getCode(),data);
+			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_HOME_LIST_ORDER_BY.getCode(), data);
 		} else {
 			list = data.get(type);
 		}

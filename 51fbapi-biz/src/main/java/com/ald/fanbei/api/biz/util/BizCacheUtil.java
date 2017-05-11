@@ -76,6 +76,23 @@ public class BizCacheUtil extends AbstractThird {
 			logger.error("saveObject", e);
 		}
 	}
+	
+	public void saveObjectForever(final String key, final Serializable seriObj) {
+		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || seriObj == null) {
+			return;
+		}
+		try {
+			redisTemplate.execute(new RedisCallback<Object>() {
+				@Override
+				public Object doInRedis(RedisConnection connection) throws DataAccessException {
+					connection.set(redisTemplate.getStringSerializer().serialize(key), SerializeUtil.serialize(seriObj));
+					return null;
+				}
+			});
+		} catch (Exception e) {
+			logger.error("saveObject", e);
+		}
+	}
 
 	/**
 	 * 获取缓存对象
