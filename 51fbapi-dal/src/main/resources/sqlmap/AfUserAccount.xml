@@ -191,4 +191,16 @@
 			c.is_delete = 0 and c.real_name !='' and c.id_number !=''
 	</select>
 	
+	<select id="getUserInfoByUserId" resultType="AfUserAccountDto">
+		SELECT 
+			<include refid="queryWithUserFields" />
+		FROM 
+			af_user_account c
+		LEFT JOIN
+			af_user u
+		ON
+			u.is_delete = 0 and u.id = c.user_id
+		WHERE
+			c.is_delete = 0 and u.id = #{userId}	
+	</select>
 </mapper>
