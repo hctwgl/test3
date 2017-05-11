@@ -204,7 +204,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					if (allAmount.compareTo(repayAllAmount) == 0) {
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						// 在此处调用 风控接口存入白名单 add by fumeiai
-						riskUtil.addwhiteUser(afBorrowCashDo.getUserId());
+						try {
+							riskUtil.addwhiteUser(afBorrowCashDo.getUserId());
+						} catch (Exception e) {
+							logger.error("加入白名单失败",e);
+						}
 					}
 					bcashDo.setRepayAmount(repayAllAmount);
 

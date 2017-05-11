@@ -293,7 +293,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
 			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 			Map<String, String> buildParams = new HashMap<String, String>();
-			if (shopId == null || StringUtils.isEmpty(userName)) {
+			if (shopId == null) {
 				logger.error("shopId is empty");
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
 			}
@@ -304,7 +304,7 @@ public class AppH5FanBeiWebController extends BaseController {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
 			}
 			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
-			if (afUserDo == null) {
+			if (StringUtils.isEmpty(userName) || afUserDo == null) {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
 				return H5CommonResponse
 						.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
