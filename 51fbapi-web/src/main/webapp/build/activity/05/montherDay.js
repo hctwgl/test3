@@ -1,14 +1,18 @@
+
 $(function(){
+
     var userName = "";
-     if(getInfo().userName){
-         userName=getInfo().userName
-         alert(username)
-     }
+    if(getInfo().userName){
+        userName=getInfo().userName
+        alert(username)
+    }
+
 	//点击购买
-	 $('.buy').click(function(){
+	$('.buy').click(function(){
+        alert(11111);
         $.ajax({
-            url: 'getBrandUrl',
-            data:{'shopId':'17','userName':'13989455620'},
+            url: '/fanbei-web/getBrandUrl',
+            data:{'shopId':'17','userName':userName},
             type: 'POST',
             success:function (data) {
                 alert(data) 
@@ -22,7 +26,7 @@ $(function(){
 
             }
         });
-	 })
+	})
 
     //点击抢优惠券	 
 	$('.saleOff').click(function(){
