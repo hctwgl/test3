@@ -8,7 +8,7 @@ $(function(){
      if(getInfo().userName){
          userName=getInfo().userName
      }
-	 $('.clickVoucher').click(function(){
+	 $('.saleOff').click(function(){
         $.ajax({
             url: 'pickBoluomeCoupon',
             data:{'sceneId':'387','userName':userName},
