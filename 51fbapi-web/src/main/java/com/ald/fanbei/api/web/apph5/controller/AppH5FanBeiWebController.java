@@ -4,8 +4,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,8 +23,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -46,6 +46,7 @@ import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
@@ -85,6 +86,8 @@ public class AppH5FanBeiWebController extends BaseController {
     TokenCacheUtil tokenCacheUtil;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfShopService afShopService;
 
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
@@ -272,6 +275,56 @@ public class AppH5FanBeiWebController extends BaseController {
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+		}
+
+	}
+	
+	/**
+	 * 获取菠萝觅跳转地址
+	 * @param request
+	 * @param model
+	 * @return
+	 * @throws IOException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getBrandUrl", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String getBrandUrl(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
+			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			Map<String, String> buildParams = new HashMap<String, String>();
+			if (shopId == null || StringUtils.isEmpty(userName)) {
+				logger.error("shopId is empty");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+			}
+			
+			AfShopDo shopInfo = afShopService.getShopById(shopId);
+			if (shopInfo ==  null) {
+				logger.error("shopId is invalid");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+						.toString();
+			}
+			String shopUrl = shopInfo.getShopUrl() + "?";
+			
+			buildParams.put(BoluomeCore.CUSTOMER_USER_ID, afUserDo.getRid() + StringUtil.EMPTY);
+			buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, afUserDo.getMobile());
+			buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() + StringUtil.EMPTY);
+			
+			String sign =  BoluomeCore.buildSignStr(buildParams);
+			buildParams.put(BoluomeCore.SIGN, sign);
+			String paramsStr = BoluomeCore.createLinkString(buildParams);
+			
+			return H5CommonResponse.getNewInstance(true, "成功", shopUrl + paramsStr, null).toString();
+
+		} catch (Exception e) {
+			logger.error("getBrandUrl , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "操作失败", "", null).toString();
 		}
 
 	}

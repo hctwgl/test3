@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 
@@ -65,5 +66,12 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Override
 	public AfBorrowCashDo getBorrowCashByRishOrderNo(String rishOrderNo) {
 		return afBorrowCashDao.getBorrowCashByRishOrderNo(rishOrderNo);
+	}
+
+	@Override
+	public AfBorrowCashDo getUserDayLastBorrowCash(Long userId) {
+		Date startTime = DateUtil.getToday();
+		Date endTime = DateUtil.getTodayLast();
+		return afBorrowCashDao.getUserDayLastBorrowCash(userId,startTime,endTime);
 	}
 }
