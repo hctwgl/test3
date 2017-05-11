@@ -1,14 +1,31 @@
 $(function(){
-	//点击购买
-	 $('.buy').click(function(){
-        location.href="http://91ala.test.otosaas.com/shengxian";
-	 })
-    //点击抢优惠券
-	 var userName = "";
+    var userName = "";
      if(getInfo().userName){
          userName=getInfo().userName
+         alert(username)
      }
-	 $('.saleOff').click(function(){
+	//点击购买
+	 $('.buy').click(function(){
+        $.ajax({
+            url: 'getBrandUrl',
+            data:{'shopId':'17','userName':'13989455620'},
+            type: 'POST',
+            success:function (data) {
+                alert(data) 
+                alert(username)               
+                data=eval('(' + data + ')');
+                if(data.success){
+                   location.href=data.url;
+                }else{
+                   location.href=data.url; 
+                }
+
+            }
+        });
+	 })
+
+    //点击抢优惠券	 
+	$('.saleOff').click(function(){
         $.ajax({
             url: 'pickBoluomeCoupon',
             data:{'sceneId':'387','userName':userName},
@@ -28,8 +45,8 @@ $(function(){
                         requestMsg(data.msg);
                     }
                 }
-
             }
         });
-	 })
+	})
+
 })
