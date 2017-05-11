@@ -193,6 +193,7 @@ public class BoluomeController extends AbstractThird{
     		orderInfo.setTradeNo(StringUtils.EMPTY);
     		orderInfo.setMobile(userPhone);
     		orderInfo.setBankId(0l);
+    		orderInfo.setServiceProvider(channel);
     		
     		calculateOrderRebateAmount(orderInfo, shopInfo);
     	} else {
