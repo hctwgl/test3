@@ -391,6 +391,7 @@ public class RiskUtil extends AbstractThird {
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 			// 判断是否在白名单里面
 			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+			logger.info("whiteListInfo===" + whiteListInfo);
 			if (whiteListInfo != null) {
 				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
 					@Override
