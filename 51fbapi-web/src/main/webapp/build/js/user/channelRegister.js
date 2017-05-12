@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-05 10:11:39
+* @Last Modified time: 2017-05-12 11:35:16
 */
 
 
@@ -78,60 +78,76 @@ $(function(){
 	
 	$(".register_submitBtn").click(function(){ // 完成注册提交
 
-		// md5加密
 		var register_password = $("#register_password").val();
-		// 正则判断密码为6-18位字母+字符的组合
-		var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;			  
-		var password = pwdReg.test(register_password);
-		
-		if ( password ) {
-			var password_md5 = String(CryptoJS.MD5(register_password));
+        var mobileNum = $("#register_mobile").val();
 
-			if ($("#input_check").is(":checked")) { // 判断当前是否选中
+        if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)){ // 判断电话开头
 
-				var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
-				var mobileNum = $("#register_mobile").val();
-				var register_verification = $("#register_verification").val();
-				var channelCode = $("#channelCode").val();
-				var pointCode = $("#pointCode").val();
 
-				var passwordLength = register_password.length;
-				if (passwordLength >= 6) {
-					_taq.push({convert_id:"59212981134", event_type:"form"})
-					$.ajax({ // 设置登录密码
-						url: "/app/user/commitChannelRegister",
-						type: 'POST',
-						dataType: 'JSON',
-						data: {
-							registerMobile: mobileNum,
-							smsCode: register_verification,
-							password: password_md5,
-							recommendCode: recommendCode,
-							channelCode: channelCode,
-							pointCode: pointCode
-						},
-						success: function(returnData){
-							if ( returnData.success ) {
-								window.location.href = returnData.url;
-							} else {
-								requestMsg(returnData.msg);
-							}
-						},
-						error: function(){
-					        requestMsg("注册失败");
+			// md5加密
+			// var register_password = $("#register_password").val();
+			// 正则判断密码为6-18位字母+字符的组合
+			// var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;	  
+			// var password = pwdReg.test(register_password);
+			
+			// if ( password ) {
+				
+
+				if ($("#input_check").is(":checked")) { // 判断当前是否选中
+
+					// 正则判断密码为6-18位字母+字符的组合
+					var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;	  
+					var password = pwdReg.test(register_password);
+
+					if ( password ) {
+
+						var password_md5 = String(CryptoJS.MD5(register_password));  // md5加密
+
+						// var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
+
+						var register_verification = $("#register_verification").val();
+						var channelCode = $("#channelCode").val();
+						var pointCode = $("#pointCode").val();
+
+						var passwordLength = register_password.length;
+						if (passwordLength >= 6) {
+							_taq.push({convert_id:"59212981134", event_type:"form"})
+							$.ajax({ // 设置登录密码
+								url: "/app/user/commitChannelRegister",
+								type: 'POST',
+								dataType: 'JSON',
+								data: {
+									registerMobile: mobileNum,
+									smsCode: register_verification,
+									password: password_md5,
+									recommendCode: recommendCode,
+									channelCode: channelCode,
+									pointCode: pointCode
+								},
+								success: function(returnData){
+									if ( returnData.success ) {
+										window.location.href = returnData.url;
+									} else {
+										requestMsg(returnData.msg);
+									}
+								},
+								error: function(){
+							        requestMsg("注册失败");
+								}
+							})
+						} else {
+							requestMsg("请填写6-18位的数字、字母、字符组成的密码");
 						}
-					})
+					}else{
+						requestMsg("请输入数字和字符组合的密码");
+					}
+
 				} else {
-					requestMsg("请填写6-18位的数字、字母、字符组成的密码");
+					requestMsg("请阅读并同意《51返呗用户注册协议》");
 				}
-
-			} else {
-				requestMsg("请阅读并同意《51返呗用户注册协议》");
-			}
-
-		}else{
-			requestMsg("请输入数字和字符组合的密码");
-		}
+		} else{
+            requestMsg("请填写正确的手机号");
+        }
 	});
 });
 
