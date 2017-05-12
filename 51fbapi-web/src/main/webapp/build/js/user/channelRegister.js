@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-12 11:35:16
+* @Last Modified time: 2017-05-12 11:46:36
 */
 
 
@@ -63,7 +63,8 @@ $(function(){
 						$(".register_codeBtn span").text(timerS+" s");
              			timerInterval = setInterval(timeFunction,1000);
     				} else {
-    					requestMsg(returnData.msg);
+    					// requestMsg(returnData.msg);
+    					requestMsg("请填写正确的手机号");
     				}
     			},
     			error: function(){
