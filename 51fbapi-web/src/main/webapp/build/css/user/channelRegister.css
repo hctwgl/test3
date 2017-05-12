@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:47:30
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-05 15:46:16
+* @Last Modified time: 2017-05-12 10:48:37
 */
 
 
@@ -45,6 +45,16 @@
 	width: 7.5rem;
 	height: 13.63rem;
 	background-image: url("@{url}/channelRegister/channelRegister6.jpg");
+}
+
+.channelRegister7{
+	width: 7.5rem;
+	height: 13.34rem;
+	background-image: url("@{url}/channelRegister/channelRegister7.jpg")
+}
+
+.channelRegister .channelRegisterUl6{
+	padding-top: 7.8rem;
 }
 
 .channelRegister ul{
@@ -124,15 +134,21 @@ input:-ms-input-placeholder{
 	color: #BFBFBF;
 }
 
-.register_submitBtn_wrap{
+.register_submitBtn_wrap,.channelRegisterBtn6{
 	width: 5.31rem;
 	height: 1.18rem;
-	background-image: url("@{url}/channelRegister/channel_btn4.png");
 	margin: 0 auto;
 }
+.register_submitBtn_wrap{
+	background-image: url("@{url}/channelRegister/channel_btn4.png");
+}
+.channelRegisterBtn6{
+	background-image: url("@{url}/channelRegister/channel_btn6.png");
+}
+
 .register_submitBtn{
 	width: 5.31rem;
-	margin-top: 0.26rem;
+	margin-top: 0.3rem;
 }
 /*协议*/
 .register_checkbox{
@@ -192,4 +208,7 @@ input:-ms-input-placeholder{
 }
 .copyright6{
 	background-color: #140605;
+}
+.copyright7{
+	background-color: #FFEE8C;
 }
