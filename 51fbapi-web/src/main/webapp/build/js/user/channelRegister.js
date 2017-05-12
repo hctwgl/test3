@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-12 11:54:12
+* @Last Modified time: 2017-05-12 13:17:20
 */
 
 
@@ -93,7 +93,7 @@ $(function(){
 
 					var password_md5 = String(CryptoJS.MD5(register_password));  // md5加密
 
-					// var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
+					var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
 
 					var register_verification = $("#register_verification").val();
 					var channelCode = $("#channelCode").val();
