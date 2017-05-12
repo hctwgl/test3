@@ -176,6 +176,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		try {
 			/// 临时解决方案
 			if (!doRish) {
+				logger.info("风控拒绝过");
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
 
