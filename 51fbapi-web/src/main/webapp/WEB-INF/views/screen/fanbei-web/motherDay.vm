@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017051101")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/05")
+<title>母亲节快乐</title>
+<link rel="stylesheet" type="text/css" href="/dist/activity/05/motherDay.css?version=$version">
+</head>
+<body>
+<img src="$commonUrl/mumday01.jpg">
+<img src="$commonUrl/mumday02.jpg">
+<img src="$commonUrl/mumday24.jpg">
+<div class="cont clearfix">
+   <div class="left"><img src="$commonUrl/mumday06.jpg"></div>
+   <div class="left"><img src="$commonUrl/mumday05.jpg"></div>
+</div>
+<div class="food">
+   <div class="title"><img src="$commonUrl/mumday07.jpg"></div>
+   <ul class="foodList  clearfix">
+      <img src="$commonUrl/mumday25.jpg">
+     </ul>
+</div>
+<div class="buy buy01"></div>
+<div class="fruit"><img src="$commonUrl/mumday16.jpg"></div>
+<img src="$commonUrl/mumday29.jpg">
+<img src="$commonUrl/mumday19.jpg"><br/>
+<img src="$commonUrl/mumday22.jpg">
+<div class="buy buy02"></div>
+<div class="footer">
+   <div class="words"><img src="$commonUrl/mumday28_01.jpg"></div>
+   <div class="saleOff"><img src="$commonUrl/mumday30.jpg"></div>
+</div>
+
+<script type="text/javascript" src="/dist/activity/05/motherDay.js?version=$version"></script>
+</body>
+</html>
