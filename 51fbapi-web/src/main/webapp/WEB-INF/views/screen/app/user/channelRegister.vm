@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017051203")
+	#set($version="2017051501")
 	#set($commonUrl="http://f.51fanbei.com/h5")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -72,7 +72,7 @@
 					register_submitBtn_wrap
 				#end
 	      	">
-	      		<button class="fs_32 fsc_1 register_submitBtn btnC_gray">立即注册</button>
+	      		<button class="fsc_1 register_submitBtn btnC_gray">立即注册</button>
 	      	</div>
 	      	<div class="tal register_checkbox clearfix">
 	      		<input type="checkbox" class="input_check" id="input_check">
