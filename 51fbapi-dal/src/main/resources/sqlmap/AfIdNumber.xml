@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfIdNumberDao">
 	<sql id="queryAllFields">
-id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,valid_date_begin,valid_date_end,birthday,agency,id_front_url,id_behind_url
+id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,valid_date_begin,valid_date_end,birthday,agency,id_front_url,id_behind_url,face_url
 	</sql>
 	
 	<insert id="addIdNumber" parameterType="AfIdNumberDo" useGeneratedKeys="true" keyProperty="rid">
@@ -62,6 +62,9 @@ id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,val
 			</if>
 			<if test="idBehindUrl != null">
     			,id_behind_url=#{idBehindUrl}
+			</if>
+			<if test="faceUrl != null">
+    			,face_url=#{faceUrl}
 			</if>
 		WHERE id = #{rid}
 	</update>
