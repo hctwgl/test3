@@ -185,6 +185,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(outTradeNo);
+					logger.info("repayment=" + repayment);
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 						return 0l;
 					}
