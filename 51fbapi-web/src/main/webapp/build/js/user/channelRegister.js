@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-12 13:17:20
+* @Last Modified time: 2017-05-15 09:59:32
 */
 
 
@@ -49,27 +49,33 @@ $(function(){
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
 
-		if ( (isState==0 || !isState) && mobileNum.length==11 && !isNaN(mobileNum) ){	
-	     	$.ajax({
-    			url: "/app/user/getRegisterSmsCode",
-    			type: "POST",
-    			dataType: "JSON",
-    			data: {
-    				mobile: mobileNum
-    			},
-    			success: function(returnData){
-    				if (returnData.success) {
-    					$(".register_codeBtn").attr("isState",1);
-						$(".register_codeBtn span").text(timerS+" s");
-             			timerInterval = setInterval(timeFunction,1000);
-    				} else {
-    					requestMsg("请填写正确的手机号");
-    				}
-    			},
-    			error: function(){
-		      		requestMsg("请求失败");
-    			}
-    		})
+		if ( (isState==0 || !isState) && mobileNum.length==11 && !isNaN(mobileNum) ){
+
+			if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)){ // 判断电话开头
+
+		     	$.ajax({
+	    			url: "/app/user/getRegisterSmsCode",
+	    			type: "POST",
+	    			dataType: "JSON",
+	    			data: {
+	    				mobile: mobileNum
+	    			},
+	    			success: function(returnData){
+	    				if (returnData.success) {
+	    					$(".register_codeBtn").attr("isState",1);
+							$(".register_codeBtn span").text(timerS+" s");
+	             			timerInterval = setInterval(timeFunction,1000);
+	    				} else {
+	    					requestMsg(returnData.msg);
+	    				}
+	    			},
+	    			error: function(){
+			      		requestMsg("请求失败");
+	    			}
+	    		})
+    		} else{
+	            requestMsg("请填写正确的手机号");
+	        }
 		} else{
 	  		requestMsg("请填写正确的手机号");
 		}
@@ -86,13 +92,12 @@ $(function(){
 			if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
 				// 正则判断密码为6-18位字母+字符的组合
-				var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;	  
+				var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
 				var password = pwdReg.test(register_password);
 
 				if ( password ) {
 
 					var password_md5 = String(CryptoJS.MD5(register_password));  // md5加密
-
 					var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
 
 					var register_verification = $("#register_verification").val();
