@@ -76,7 +76,7 @@ public class SaveIdNumberApi implements ApiHandle {
 			
 			accountDo.setRealName(idNumberDo.getName());
 			accountDo.setIdNumber(idNumberDo.getCitizenId());
-			afUserAccountService.updateUserAccount(accountDo);
+			afUserAccountService.updateUserAccountRealNameAndIdNumber(accountDo);
 
 
 			return resp;
