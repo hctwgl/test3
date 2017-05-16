@@ -51,10 +51,10 @@
     			,account_name=#{accountName}
 			</if>
 			<if test="content != null">
-				,content = {content}
+				,content = #{content}
 			</if>
 			<if test="resource != null">
-				,resource = {resource}
+				,resource = #{resource}
 			</if>
 		WHERE id = #{rid}
 	</update>

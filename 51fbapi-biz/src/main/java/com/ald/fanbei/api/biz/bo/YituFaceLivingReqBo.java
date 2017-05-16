@@ -17,7 +17,7 @@ public class YituFaceLivingReqBo {
 	private boolean query_image_package_check_anti_eye_blockage = true;// 是否开启眼部遮挡检测
 	private boolean query_image_package_check_anti_hole = true;// 是否开启防孔洞检测
 	private boolean query_image_package_return_image_list = true;// 是否返回大礼包中解出的图片列表
-	private Integer query_image_type = 2;// 查询图片的类型 类证件照 = 301 类证件照(手持身份证场景)=
+	private Integer query_image_type = 301;// 查询图片的类型 类证件照 = 301 类证件照(手持身份证场景)=
 											// 302 类证件照(VTM场景)= 303 芯片照 = 4
 											// 身份证翻拍照 = 2
 	private String database_image_content;// 登记照片(JPG)的Base64编码

@@ -256,5 +256,9 @@ public class AfRepaymentBorrowCashDo extends AbstractSerial {
 		this.jfbAmount = jfbAmount;
 	}
 	
+	@Override
+	public String toString() {
+		return "AfRepaymentBorrowCashDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", name=" + name + ", repayNo=" + repayNo + ", repaymentAmount=" + repaymentAmount + ", actualAmount=" + actualAmount + ", borrowId=" + borrowId + ", payTradeNo=" + payTradeNo + ", tradeNo=" + tradeNo + ", userCouponId=" + userCouponId + ", couponAmount=" + couponAmount + ", rebateAmount=" + rebateAmount + ", status=" + status + ", userId=" + userId + ", cardNumber=" + cardNumber + ", cardName=" + cardName + ", jfbAmount=" + jfbAmount + "]";
+	}
 	
 }

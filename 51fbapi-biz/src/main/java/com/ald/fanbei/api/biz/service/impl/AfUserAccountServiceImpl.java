@@ -125,7 +125,12 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 			AfUserAccountQuery query) {
 		return afUserAccountDao.getUserAndAccountListWithHasRealName(query);
 	}
-
+	
+	@Override
+	public AfUserAccountDto getUserInfoByUserId(Long userId) {
+		return afUserAccountDao.getUserInfoByUserId(userId);
+	}
+	
 	@Override
 	public int dealUserDelegatePayError(final String merPriv,final Long result) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {

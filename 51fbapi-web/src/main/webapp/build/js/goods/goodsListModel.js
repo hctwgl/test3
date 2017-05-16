@@ -1,9 +1,8 @@
 /*
-* @Author: Yangyang
+* @Author: yoe
 * @Date:   2017-02-23 14:11:41
-* @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-26 10:31:23
-* @title:  商品列表页
+* @Last Modified by:   yoe
+* @Last Modified time: 2017-05-11 14:21:03
 */
 
 
@@ -80,8 +79,8 @@ var addModel = function addModel(goodsList) {
     var html = '';
     for (var j = 0; j < goodsList.length; j++) {
         // 售价
-        var priceAmount = toDecimal2(goodsList[j].priceAmount);
-        var amountAmountSplitArr = priceAmount.split(".");
+        var saleAmount = toDecimal2(goodsList[j].saleAmount);
+        var amountAmountSplitArr = saleAmount.split(".");
         var amountAmountPriceInteger = amountAmountSplitArr[0];
         var amountAmountPriceDecimal = amountAmountSplitArr[1];
         // 返利

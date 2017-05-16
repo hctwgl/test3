@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017050501")
+	#set($version="2017051501")
 	#set($commonUrl="http://f.51fanbei.com/h5")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -40,9 +40,15 @@
 				channelRegister4
 			#elseif( $!{style} == 5 )
 				channelRegister6
+			#elseif( $!{style} == 6 )
+				channelRegister7
 			#end
 		">
-			<ul>
+			<ul class="
+				#if( $!{style} == 6 )
+					channelRegisterUl6
+				#end
+			">
 		        <li class="tal bgs_c">
 			    	<input type="text" class="fs_28 bs_bb register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号">
 			    	<span class="register_required">*</span>
@@ -59,7 +65,15 @@
 		        	<span class="register_required">*</span>
 		        </li>
 	        </ul>
-	      	<div class="tac bgs_c register_submitBtn_wrap"><button class="fs_32 fsc_1 register_submitBtn btnC_gray">立即注册</button></div>
+	      	<div class="tac bgs_c 
+	      		#if( $!{style} == 6 )
+					channelRegisterBtn6
+				#else
+					register_submitBtn_wrap
+				#end
+	      	">
+	      		<button class="fsc_1 register_submitBtn btnC_gray">立即注册</button>
+	      	</div>
 	      	<div class="tal register_checkbox clearfix">
 	      		<input type="checkbox" class="input_check" id="input_check">
 	        	<label for="input_check" class="bgs_c register_checkbox_bg"></label>
@@ -78,6 +92,8 @@
 				copyright3
 			#elseif( $!{style} == 5 )
 				copyright6
+			#elseif( $!{style} == 6 )
+				copyright7
 			#end
 		">
 	  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918

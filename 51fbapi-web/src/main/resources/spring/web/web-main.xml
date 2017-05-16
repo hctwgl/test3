@@ -107,6 +107,7 @@
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				<value>/brand/getBrandList</value>
 				<value>/system/checkVersion</value>
+				<value>/system/AppLaunchImage</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -173,6 +174,8 @@
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
 				<entry key="/system/checkVersion" value-ref="checkVersionApi" />
+				<entry key="/system/AppLaunchImage" value-ref="AppLaunchImageApi" />
+				
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />

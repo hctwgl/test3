@@ -16,35 +16,39 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfUserAccountService {
-	
+
 	/**
 	 * 获取账户信息
+	 * 
 	 * @param userId
 	 * @return
 	 */
 	AfUserAccountDo getUserAccountByUserId(Long userId);
-	
+
 	/**
 	 * 添加用户余额账户信息
+	 * 
 	 * @param accountDo
 	 * @return
 	 */
 	int addUserAccount(AfUserAccountDo accountDo);
-	
+
 	/**
 	 * 修改账户信息
+	 * 
 	 * @param accountDo
 	 * @return
 	 */
 	int updateUserAccount(AfUserAccountDo afUserAccountDo);
-	
+
 	/**
 	 * 获取用户账号关联信息
+	 * 
 	 * @param userId
 	 * @return
 	 */
 	AfUserAccountDto getUserAndAccountByUserId(Long userId);
-	
+
 	/**
 	 * 增加记录
 	 * 
@@ -52,22 +56,32 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	int addUserAccountLog(AfUserAccountLogDo afUserAccountLogDo);
-	
+
 	/**
 	 * 获取明细列表
+	 * 
 	 * @param query
 	 * @return
 	 */
 	List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query);
-	
+
 	int getUserAccountCountWithHasRealName();
-	
+
 	List<AfUserAccountDto> getUserAndAccountListWithHasRealName(AfUserAccountQuery query);
-	
+
 	/**
 	 * 代付失败处理
+	 * 
 	 * @param merPriv
 	 * @return
 	 */
-	int dealUserDelegatePayError(String merPriv,Long result);
+	int dealUserDelegatePayError(String merPriv, Long result);
+	
+	/**
+	 * 获取用户信息
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	AfUserAccountDto getUserInfoByUserId(Long userId);
 }
