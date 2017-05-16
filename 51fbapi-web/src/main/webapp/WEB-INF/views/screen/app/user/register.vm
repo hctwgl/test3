@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017051601")
+    	#set($version="2017051603")
     	#set($commonUrl="http://f.51fanbei.com/h5")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/dist/css/user/register.css?version=$version">
