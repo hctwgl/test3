@@ -20,139 +20,161 @@ public interface AfBorrowBillDao {
 
 	/**
 	 * 获取某月账单列表
+	 * 
 	 * @param query
 	 * @return
 	 */
 	List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query);
-	
+
 	/**
 	 * 获取所有借款账单记录
+	 * 
 	 * @param query
 	 * @return
 	 */
 	List<AfBorrowBillDo> getBillListByBorrowIdAndStatus(@Param("borrowId") Long borrowId, @Param("status") String status);
-	
+
 	/**
 	 * 获取所有借款账单记录
+	 * 
 	 * @param query
 	 * @return
 	 */
-	List<AfBorrowBillDo> getBillListByIds(@Param("items")List<Long> billIds);
-	
+	List<AfBorrowBillDo> getBillListByIds(@Param("items") List<Long> billIds);
+
 	/**
 	 * 获取本期总额
+	 * 
 	 * @param userId
 	 * @param billYear
 	 * @param billMonth
 	 * @param status
 	 * @return
 	 */
-	public BigDecimal getMonthlyBillByStatus(@Param("userId")Long userId, @Param("billYear")int billYear,
-			@Param("billMonth")int billMonth, @Param("status")String status);
-	
+	public BigDecimal getMonthlyBillByStatus(@Param("userId") Long userId, @Param("billYear") int billYear, @Param("billMonth") int billMonth, @Param("status") String status);
+
 	/**
 	 * 获取用户全部账单
+	 * 
 	 * @param userId
 	 * @return
 	 */
-	public List<AfBorrowTotalBillDo> getUserFullBillList(@Param("userId")
-			Long userId);
-	
+	public List<AfBorrowTotalBillDo> getUserFullBillList(@Param("userId") Long userId);
+
 	/**
 	 * 获取账单详情信息
+	 * 
 	 * @param rid
 	 * @return
 	 */
-	public AfBorrowBillDo getBorrowBillById(@Param("rid")Long rid);
-	
+	public AfBorrowBillDo getBorrowBillById(@Param("rid") Long rid);
+
 	/**
 	 * 获取借款账单总额
+	 * 
 	 * @param borrowId
 	 * @return
 	 */
-	BigDecimal getBorrowBillByBorrowId(@Param("borrowId")Long borrowId);
-	
+	BigDecimal getBorrowBillByBorrowId(@Param("borrowId") Long borrowId);
+
 	/**
 	 * 获取借款账单关联信息
+	 * 
 	 * @param rid
 	 * @return
 	 */
-	AfBorrowBillDto getBorrowBillDtoById(@Param("rid")Long rid);
-	
+	AfBorrowBillDto getBorrowBillDtoById(@Param("rid") Long rid);
+
 	/**
 	 * 获取用户某期全部账单
+	 * 
 	 * @param userId
 	 * @param billYear
 	 * @param billMonth
 	 * @return
 	 */
-	AfBorrowBillDo getTotalMonthlyBillByUserId(@Param("userId")Long userId,@Param("billYear")int billYear,@Param("billMonth")int billMonth);
-	
+	AfBorrowBillDo getTotalMonthlyBillByUserId(@Param("userId") Long userId, @Param("billYear") int billYear, @Param("billMonth") int billMonth);
+
 	/**
 	 * 获取账单金额,本金总额
+	 * 
 	 * @param ids
 	 * @return
 	 */
-	public AfBorrowBillDo getBillAmountByIds(@Param("ids")List<String> ids);
-	
+	public AfBorrowBillDo getBillAmountByIds(@Param("ids") List<String> ids);
+
 	/**
 	 * 变更账单状态
+	 * 
 	 * @param ids
 	 * @return
 	 */
-	int updateBorrowBillStatusByIds(@Param("ids")List<String> ids,@Param("status")String status,@Param("repaymentId")Long repaymentId);
-	
+	int updateBorrowBillStatusByIds(@Param("ids") List<String> ids, @Param("status") String status, @Param("repaymentId") Long repaymentId);
+
+	/**
+	 * 变更账单状态
+	 * 
+	 * @param id
+	 * @return
+	 */
+	int updateBorrowBillStatusById(@Param("id") String id, @Param("status") String status, @Param("repaymentId") Long repaymentId, @Param("couponAmount") BigDecimal couponAmount, @Param("jfbAmount") BigDecimal jfbAmountAvg, @Param("rebateAmount") BigDecimal rebateAmountAvg);
+
 	/**
 	 * 获取未还款账单数量
+	 * 
 	 * @param year
 	 * @param month
 	 * @param userId
 	 * @return
 	 */
-	int getUserMonthlyBillNotpayCount(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId);
-	
+	int getUserMonthlyBillNotpayCount(@Param("year") int year, @Param("month") int month, @Param("userId") Long userId);
+
 	/**
 	 * 修改总账单状态
+	 * 
 	 * @param year
 	 * @param month
 	 * @param userId
 	 * @param status
 	 * @return
 	 */
-	int updateTotalBillStatus(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId,
-			@Param("status")String status);
-	
+	int updateTotalBillStatus(@Param("year") int year, @Param("month") int month, @Param("userId") Long userId, @Param("status") String status);
+
 	/**
 	 * 获取现金借款的账单金额
+	 * 
 	 * @param ids
 	 * @return
 	 */
-	AfBorrowBillDo getBillAmountByCashIds(@Param("ids")List<String> ids);
-	
+	AfBorrowBillDo getBillAmountByCashIds(@Param("ids") List<String> ids);
+
 	/**
 	 * 获取账单数量
+	 * 
 	 * @param year
 	 * @param month
 	 * @param userId
 	 * @return
 	 */
-	int getUserMonthlyBillTotalCount(@Param("year")int year, @Param("month")int month, @Param("userId")Long userId);
-	
-	int getBorrowBillWithNoPayByUserId(@Param("userId")Long userId);
-	
+	int getUserMonthlyBillTotalCount(@Param("year") int year, @Param("month") int month, @Param("userId") Long userId);
+
+	int getBorrowBillWithNoPayByUserId(@Param("userId") Long userId);
+
 	/**
 	 * 统一修改所有账单的状态
+	 * 
 	 * @param borrowId
 	 * @param status
 	 * @return
 	 */
-	int updateBorrowBillStatusByBorrowId(@Param("borrowId")Long borrowId, @Param("status")String status);
-	
+	int updateBorrowBillStatusByBorrowId(@Param("borrowId") Long borrowId, @Param("status") String status);
+
 	/**
 	 * 更改未还款账单状态
+	 * 
 	 * @param borrowId
 	 * @param status
 	 * @return
 	 */
-	int updateNotRepayedBillStatus(@Param("borrowId")Long borrowId, @Param("status")String status);
+	int updateNotRepayedBillStatus(@Param("borrowId") Long borrowId, @Param("status") String status);
 }

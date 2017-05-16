@@ -123,7 +123,26 @@
 		)
 	</update>
     
-    
+    <update id="updateBorrowBillStatusById">
+    	UPDATE 
+		  af_borrow a,
+		  af_borrow_bill b 
+		SET
+		  a.gmt_modified = NOW(),
+		  b.gmt_modified = NOW(),
+		  b.status = #{status},
+		  b.repayment_id = #{repaymentId},
+		  b.couponAmount = #{couponAmount},
+		  b.jfbAmount = #{jfbAmount},
+		  b.rebateAmount = #{rebateAmount},
+		  a.nper_repayment = a.nper_repayment + 1,
+		  a.repay_prin_amount = a.repay_prin_amount + b.principle_amount 
+		WHERE b.is_delete = 0 
+		  AND a.is_delete = 0 
+		  AND a.id = b.borrow_id
+		  AND b.id = #{id}
+	</update>   
+ 
     <update id="updateTotalBillStatus">
 		update af_borrow_total_bill  set gmt_modified=NOW(),status=#{status}
 		WHERE is_delete=0

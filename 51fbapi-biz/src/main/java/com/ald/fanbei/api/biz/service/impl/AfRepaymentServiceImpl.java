@@ -194,29 +194,30 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
-					if(YesNoStatus.YES.getCode().equals(repayment.getStatus())){
+					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 						return 0l;
 					}
-					//变更还款记录为已还款
-					afRepaymentDao.updateRepayment(RepaymentStatus.YES.getCode(),tradeNo, repayment.getRid());
+					// 变更还款记录为已还款
+					afRepaymentDao.updateRepayment(RepaymentStatus.YES.getCode(), tradeNo, repayment.getRid());
 					AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(repayment.getBillIds());
 					AfUserDo userDo = afUserService.getUserById(repayment.getUserId());
-					//变更账单 借款表状态
-					afBorrowBillService.updateBorrowBillStatusByIds(repayment.getBillIds(), BorrowBillStatus.YES.getCode(),repayment.getRid());
-					//判断该期是否还清，如已还清，更新total_bill 状态
+					// 变更账单 借款表状态
+					afBorrowBillService.updateBorrowBillStatusByIds(repayment.getBillIds(), BorrowBillStatus.YES.getCode(), repayment.getRid(), 
+							repayment.getCouponAmount(), repayment.getJfbAmount(), repayment.getRebateAmount());
+					// 判断该期是否还清，如已还清，更新total_bill 状态
 					int count = afBorrowBillService.getUserMonthlyBillNotpayCount(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid());
-					if(count==0){
+					if (count == 0) {
 						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.YES.getCode());
-						pushService.repayBillSuccess(userDo.getUserName(), billDo.getBillYear()+"", String.format("%02d", billDo.getBillMonth()));
-					}else{
+						pushService.repayBillSuccess(userDo.getUserName(), billDo.getBillYear() + "", String.format("%02d", billDo.getBillMonth()));
+					} else {
 						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.PART.getCode());
 					}
-					//优惠券设置已使用
+					// 优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
-					//获取现金借款还款本金
+					// 获取现金借款还款本金
 					AfBorrowBillDo cashBill = afBorrowBillService.getBillAmountByCashIds(repayment.getBillIds());
-					BigDecimal cashAmount = cashBill==null?BigDecimal.ZERO:cashBill.getPrincipleAmount();
-					//授权账户可用金额变更
+					BigDecimal cashAmount = cashBill == null ? BigDecimal.ZERO : cashBill.getPrincipleAmount();
+					// 授权账户可用金额变更
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(repayment.getUserId());
 					logger.info("repayment=" + repayment);
@@ -227,11 +228,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
 					logger.info("account=" + account);
 					afUserAccountDao.updateUserAccount(account);
-					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT,billDo.getPrincipleAmount(),repayment.getUserId(), repayment.getRid()));
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.info("dealRepaymentSucess error",e);
+					logger.info("dealRepaymentSucess error", e);
 					return 0l;
 				}
 			}

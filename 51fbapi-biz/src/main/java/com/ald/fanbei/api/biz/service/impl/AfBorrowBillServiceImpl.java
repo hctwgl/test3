@@ -22,23 +22,22 @@ import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afBorrowBillService")
-public class AfBorrowBillServiceImpl implements AfBorrowBillService{
+public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 	@Resource
 	private AfBorrowBillDao afBorrowBillDao;
-	
+
 	@Override
 	public List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query) {
 		return afBorrowBillDao.getMonthBillList(query);
 	}
-	
+
 	@Override
-	public BigDecimal getMonthlyBillByStatus(Long userId, int billYear,
-			int billMonth, String status) {
+	public BigDecimal getMonthlyBillByStatus(Long userId, int billYear, int billMonth, String status) {
 		BigDecimal amount = afBorrowBillDao.getMonthlyBillByStatus(userId, billYear, billMonth, status);
-		return amount==null?BigDecimal.ZERO:amount;
+		return amount == null ? BigDecimal.ZERO : amount;
 	}
-	
+
 	@Override
 	public List<AfBorrowTotalBillDo> getUserFullBillList(Long userId) {
 		return afBorrowBillDao.getUserFullBillList(userId);
@@ -50,8 +49,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService{
 	}
 
 	@Override
-	public AfBorrowBillDo getTotalMonthlyBillByUserId(Long userId,
-			int billYear, int billMonth) {
+	public AfBorrowBillDo getTotalMonthlyBillByUserId(Long userId, int billYear, int billMonth) {
 		return afBorrowBillDao.getTotalMonthlyBillByUserId(userId, billYear, billMonth);
 	}
 
@@ -59,10 +57,30 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService{
 	public AfBorrowBillDo getBillAmountByIds(String ids) {
 		return afBorrowBillDao.getBillAmountByIds(StringUtil.splitToList(ids, ","));
 	}
-
+	/**
+	 * update by fumeiai 在af_borrow_bill表里增加了coupon_amount(优惠减免),jfb_amount(集分宝抵扣),rebate_amount(返利抵扣)
+	 * 在还款成功的时候，将优惠值平分到每个账单里
+	 */
 	@Override
-	public int updateBorrowBillStatusByIds(String ids, String status,Long repaymentId) {
-		return afBorrowBillDao.updateBorrowBillStatusByIds(StringUtil.splitToList(ids, ","), status,repaymentId);
+	public int updateBorrowBillStatusByIds(String ids, String status, Long repaymentId, BigDecimal couponAmount, BigDecimal jfbAmount, BigDecimal rebateAmount) {
+		List<String> idsList = StringUtil.splitToList(ids, ",");
+		BigDecimal billNum = new BigDecimal(idsList.size());
+		BigDecimal couponAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
+		BigDecimal jfbAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
+		BigDecimal rebateAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
+		int resultCode = 1;
+		for (int i = 0; i < idsList.size(); i++) {
+			if (i == idsList.size() - 1) {
+				int flag = afBorrowBillDao.updateBorrowBillStatusById(idsList.get(i), status, repaymentId, couponAmount.subtract(couponAmountAvg.multiply(new BigDecimal(idsList.size() - 1))), 
+						jfbAmount.subtract(jfbAmountAvg.multiply(new BigDecimal(idsList.size() - 1))), rebateAmount.subtract(rebateAmountAvg.multiply(new BigDecimal(idsList.size() - 1))));
+				resultCode = resultCode * flag;
+			} else {
+				int flag = afBorrowBillDao.updateBorrowBillStatusById(idsList.get(i), status, repaymentId, couponAmountAvg, jfbAmountAvg, rebateAmountAvg);
+				resultCode = resultCode * flag;
+			}
+		}
+		// return afBorrowBillDao.updateBorrowBillStatusByIds(StringUtil.splitToList(ids, ","), status, repaymentId);
+		return resultCode;
 	}
 
 	@Override
@@ -71,8 +89,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService{
 	}
 
 	@Override
-	public int updateTotalBillStatus(int year, int month, Long userId,
-			String status) {
+	public int updateTotalBillStatus(int year, int month, Long userId, String status) {
 		return afBorrowBillDao.updateTotalBillStatus(year, month, userId, status);
 	}
 
