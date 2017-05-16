@@ -122,6 +122,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			afIdNumberDo.setRid(numberDo.getRid());
 			Integer count = 0;
 			count = afIdNumberService.updateIdNumber(afIdNumberDo);
+			logger.info("id number change"+count);
 			if (count > 0) {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
@@ -132,7 +133,9 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				afUserDo.setRid(userId);
 				afUserDo.setRealName(numberDo.getName());
 				afUserService.updateUser(afUserDo);
+
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
+				logger.info("id number account realname="+accountDo.getRealName()+"realname="+numberDo.getName());
 
 				AfUserAccountDo account = new AfUserAccountDo();
 				account.setRid(accountDo.getRid());
