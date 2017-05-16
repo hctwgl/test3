@@ -134,12 +134,11 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				afUserDo.setRealName(numberDo.getName());
 				afUserService.updateUser(afUserDo);
 
-				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
-				logger.info("id number account realname="+accountDo.getRealName()+"realname="+numberDo.getName());
+				logger.info("id number account realname="+numberDo.getName());
 
 				AfUserAccountDo account = new AfUserAccountDo();
-				account.setRid(accountDo.getRid());
 				account.setRealName(numberDo.getName());
+				account.setUserId(userId);
 				account.setIdNumber(numberDo.getCitizenId());
 				afUserAccountService.updateUserAccount(account);
 				return resp;
