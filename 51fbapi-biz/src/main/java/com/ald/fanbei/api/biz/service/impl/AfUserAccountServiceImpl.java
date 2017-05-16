@@ -201,4 +201,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		});
 	}
 
+	@Override
+	public void updateUserAccountRealNameAndIdNumber(AfUserAccountDto accountDo) {
+		afUserAccountDao.updateUserAccountRealNameAndIdNumber(accountDo);
+	}
+
 }

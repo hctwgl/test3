@@ -203,4 +203,14 @@
 		WHERE
 			c.is_delete = 0 and u.id = #{userId}	
 	</select>
+	<update id="updateUserAccountRealNameAndIdNumber" parameterType="AfUserAccountDo" >
+		UPDATE af_user_account SET gmt_modified = NOW()
+			<if test="idNumber != null">
+    			,id_number=#{idNumber}
+			</if>
+			<if test="realName != null">
+    			,real_name=#{realName}
+			</if>
+		WHERE user_id = #{userId}
+	</update>
 </mapper>

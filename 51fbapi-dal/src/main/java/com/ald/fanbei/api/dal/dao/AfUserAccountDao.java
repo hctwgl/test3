@@ -67,4 +67,6 @@ public interface AfUserAccountDao {
 	 * @return
 	 */
 	AfUserAccountDto getUserInfoByUserId(Long userId);
+
+	void updateUserAccountRealNameAndIdNumber(AfUserAccountDto accountDo);
 }

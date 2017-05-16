@@ -12,6 +12,7 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 /**
  * 
  * @类描述：
+ * 
  * @author Xiaotianjian 2017年1月19日下午4:04:58
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -76,7 +77,7 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	int dealUserDelegatePayError(String merPriv, Long result);
-	
+
 	/**
 	 * 获取用户信息
 	 * 
@@ -84,4 +85,11 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	AfUserAccountDto getUserInfoByUserId(Long userId);
+
+	/**
+	 * 更新用户实名和身份证
+	 * 
+	 * @param accountDo
+	 */
+	void updateUserAccountRealNameAndIdNumber(AfUserAccountDto accountDo);
 }
