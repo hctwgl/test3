@@ -82,15 +82,19 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			afIdNumberDo.setNation(nation);
 			afIdNumberDo.setValidDateBegin(validDateBegin);
 			afIdNumberDo.setValidDateEnd(validDateEnd);
-			AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
-			if (accountDo != null) {
-				if(StringUtils.isNotBlank(accountDo.getRealName())&&StringUtils.isNotBlank(accountDo.getIdNumber()))
-				{
-					if(!StringUtils.equals(accountDo.getRealName(), name)||!StringUtils.equals(accountDo.getIdNumber(), citizenId)){
-						logger.error(FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR.getErrorMsg());
-						
-						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR);
-
+			AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
+			if (StringUtils.equals(auth.getFacesStatus(), YesNoStatus.YES.getCode())
+					|| StringUtils.equals(auth.getYdStatus(), YesNoStatus.YES.getCode())) {
+				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
+				if (accountDo != null) {
+					if (StringUtils.isNotBlank(accountDo.getRealName())
+							&& StringUtils.isNotBlank(accountDo.getIdNumber())) {
+						if (!StringUtils.equals(accountDo.getRealName(), name)
+								|| !StringUtils.equals(accountDo.getIdNumber(), citizenId)) {
+							logger.error(FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR.getErrorMsg());
+							return new ApiHandleResponse(requestDataVo.getId(),
+									FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR);
+						}
 					}
 				}
 			}
@@ -104,15 +108,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			}
 
 			if (count > 0) {
-				AfUserDo afUserDo = new AfUserDo();
-				afUserDo.setRid(userId);
-				afUserDo.setRealName(name);
-				afUserService.updateUser(afUserDo);
-				AfUserAccountDo account = new AfUserAccountDo();
-				account.setRid(accountDo.getRid());
-				account.setRealName(name);
-				account.setIdNumber(citizenId);
-				afUserAccountService.updateUserAccount(account);
+
 				return resp;
 			}
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
@@ -131,6 +127,18 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
 				auth.setYdStatus(YesNoStatus.YES.getCode());
 				afUserAuthService.updateUserAuth(auth);
+
+				AfUserDo afUserDo = new AfUserDo();
+				afUserDo.setRid(userId);
+				afUserDo.setRealName(numberDo.getName());
+				afUserService.updateUser(afUserDo);
+				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
+
+				AfUserAccountDo account = new AfUserAccountDo();
+				account.setRid(accountDo.getRid());
+				account.setRealName(numberDo.getName());
+				account.setIdNumber(numberDo.getCitizenId());
+				afUserAccountService.updateUserAccount(account);
 				return resp;
 
 			}
