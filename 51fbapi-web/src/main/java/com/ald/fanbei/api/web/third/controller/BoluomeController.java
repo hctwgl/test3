@@ -75,6 +75,7 @@ public class BoluomeController extends AbstractThird{
     				if (orderInfo.getRid() == null) {
     					afOrderService.createOrder(orderInfo);
     				} else {
+    					Thread.sleep(4000);
     					afOrderService.dealBoluomeOrder(orderInfo);
     				}
     			}
