@@ -724,7 +724,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
 					orderInfo.setPayType(payType);
 					orderInfo.setGmtPay(new Date());
-					orderInfo.setTradeNo(tradeNo);
+					orderInfo.setTradeNo("12345678899");
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 					boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
