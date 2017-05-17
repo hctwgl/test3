@@ -133,6 +133,14 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setPhone(phone);
 		reqBo.setBankName(bankName);
 		reqBo.setBankCode(bankCode);
+		if(Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)))
+		{
+			reqBo.setBankName("工商银行");
+			reqBo.setBankCode("ICBC");
+			reqBo.setRealName("张宝");
+			reqBo.setCardNo("6222020111122220000");
+
+		}
 		reqBo.setPurpose(purpose);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
