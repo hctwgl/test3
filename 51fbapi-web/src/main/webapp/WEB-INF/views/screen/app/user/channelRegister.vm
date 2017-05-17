@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017051501")
+	#set($version="2017051702")
 	#set($commonUrl="http://f.51fanbei.com/h5")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -29,7 +29,7 @@
 	<input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
 	<input type="hidden" id="tdHost" value="$!{tdHost}">
 	<div class="channelRegister_wrap">
-		<div class="bgs_c channelRegister 
+		<div class="channelRegister
 			#if( $!{style} == 1 )
 				channelRegister1
 			#elseif( $!{style} == 2 )
@@ -49,41 +49,46 @@
 					channelRegisterUl6
 				#end
 			">
-		        <li class="tal bgs_c">
-			    	<input type="text" class="fs_28 bs_bb register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号">
+		        <li>
+			    	<input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号">
 			    	<span class="register_required">*</span>
 		        </li>
-	    	    <li class="tal clearfix">
-	    	    	<div class="fl bgs_c register_verification_main">
-			        	<input type="text" class="fl fs_28 register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+	    	    <li class="clearfix">
+	    	    	<div class="register_verification_main">
+			        	<input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
 	    	    	</div>
-		        	<span class="fr tac bgs_c register_codeBtn"><span>获取验证码</span></span>
+		        	<!-- <button class="register_codeBtn"><span>获取验证码</span></button> -->
+		        	<button class="register_codeBtn">获取验证码</button>
 		        	<span class="register_required">*</span>
 		        </li>
-		        <li class="tal bgs_c">
-		        	<input type="password" class="fs_28 register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18">
+		        <li>
+		        	<input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18">
 		        	<span class="register_required">*</span>
 		        </li>
 	        </ul>
-	      	<div class="tac bgs_c 
+	      	<div class="
 	      		#if( $!{style} == 6 )
 					channelRegisterBtn6
 				#else
 					register_submitBtn_wrap
 				#end
 	      	">
-	      		<button class="fsc_1 register_submitBtn btnC_gray">立即注册</button>
+	      		<button class="register_submitBtn btnC_gray">立即注册</button>
 	      	</div>
-	      	<div class="tal register_checkbox clearfix">
+	      	<div class="clearfix register_checkbox">
 	      		<input type="checkbox" class="input_check" id="input_check">
-	        	<label for="input_check" class="bgs_c register_checkbox_bg"></label>
-	      		<p class="fl fs_24 fsc_f clearfix"><span class="fl">阅读并同意</span><a class="fl fsc_f" href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+	        	<label for="input_check"></label>
+	      		<p class="clearfix
+	      			#if( $!{style} == 6 )
+						register_checkbox6
+					#end
+	      		"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
 	      	</div>
 		</div>
 		#if( $!{style} == 4 )
 			<div class="bgs_c channelRegister5"></div>
 		#end
-		<div class="tac fsc_f channelRegister_copyright 
+		<div class="channelRegister_copyright 
 			#if( $!{style} == 1 )
 				copyright1
 			#elseif( $!{style} == 2 || $!{style} == 4)
