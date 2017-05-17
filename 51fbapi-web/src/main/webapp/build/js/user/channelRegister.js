@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-17 11:26:25
+* @Last Modified time: 2017-05-17 21:00:56
 */
 
 
@@ -72,6 +72,7 @@ $(function(){
 
     				} else {
     					requestMsg(returnData.msg);
+    					$(".register_codeBtn").removeAttr("disabled");
     				}
     			},
     			error: function(){
