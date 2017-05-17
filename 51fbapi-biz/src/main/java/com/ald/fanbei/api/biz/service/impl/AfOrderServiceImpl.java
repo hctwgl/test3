@@ -649,6 +649,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setBankId(payId);
 					if(payId < 0 ){
 						orderInfo.setPayType(PayType.WECHAT.getCode());
+						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						//微信支付
 						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,PayOrderSource.BRAND_ORDER.getCode());
@@ -681,6 +682,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if(null == cardInfo){
 							throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 						}
+						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						//银行卡支付 代收
 						UpsCollectRespBo respBo = upsUtil.collect(tradeNo,saleAmount, userId+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
