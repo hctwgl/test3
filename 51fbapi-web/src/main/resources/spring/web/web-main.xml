@@ -108,6 +108,7 @@
 				<value>/brand/getBrandList</value>
 				<value>/system/checkVersion</value>
 				<value>/system/AppLaunchImage</value>
+				<value>/system/appPopImage</value>
 			</list>
 		</constructor-arg>
 	</bean>
