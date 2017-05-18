@@ -1,0 +1,65 @@
+/*
+* @Author: yoe
+* @Date:   2017-02-13 14:20:33
+* @Last Modified by:   yoe
+* @Last Modified time: 2017-05-18 16:25:51
+* @title:  领取优惠券
+*/
+
+
+@url: "https://fs.51fanbei.com/h5/app/images/user";
+
+.receiveCoupons_main{
+	margin-top: 0.8rem;
+	li,.receiveCoupons_ylq,.receiveCoupons_ylw{
+		position: relative;
+		width: 7.24rem;
+		height: 2.28rem;
+		margin: 0 auto 0.2rem;
+		background-image: url("@{url}/0206yhq.png");
+		-webkit-background-size: cover;
+		background-size: cover;
+		.receiveCoupons_priceInfo{
+			float: left;
+			width: 2.6rem;
+			height: 1.7rem;
+			line-height: 1.7rem;
+			text-align: center;
+			margin-left: -0.06rem;
+			font-size: 0.5rem;
+			color: #3cafe7;
+			span{
+				margin-left: -0.06rem;
+				font-size: 0.92rem;
+			}
+		}
+		.receiveCoupons_text{
+			float: left;
+			font-size: 0.24rem;
+			color: #666;
+			height: 1.62rem;
+			p:nth-child(1){
+				margin-top: 0.22rem;
+				font-size: 0.32rem;
+				color: #111;
+			}
+			p:nth-child(2){
+				margin: 0.056rem 0;
+			}
+		}
+		.receiveCoupons_date{
+			text-align: left;
+			color: #666;
+			height: 0.52rem;
+			line-height: 0.52rem;
+			padding-left: 0.3rem;
+			font-size: 0.22rem;
+		}
+	}
+	.receiveCoupons_ylq{
+		background-image: url("@{url}/0206yhqlq.png");
+	}
+	.receiveCoupons_ylw{
+		background-image: url("@{url}/0206yhqylw.png");
+	}
+}
