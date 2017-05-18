@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	#set($commonUrl="http://f.51fanbei.com/h5/app/activity/05")
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/05")
     <meta charset="UTF-8">
     <title>分期无忧</title>
 </head>
