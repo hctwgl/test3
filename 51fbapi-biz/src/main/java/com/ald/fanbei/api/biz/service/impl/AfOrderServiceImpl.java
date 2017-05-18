@@ -711,11 +711,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Override
 	public int dealBrandOrderSucc(final String payOrderNo, final String tradeNo, final String payType) {
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 					if (orderInfo == null 
    						 || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
 						return 0;
@@ -729,7 +729,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
-					boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -738,6 +737,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+		if (result == 1) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+		}
+		return result;
 	}
 
 	@Override
