@@ -50,7 +50,7 @@ public interface AfGoodsService {
 	 * @param messageContent
 	 * @return
 	 */
-	int updateTaobaoInfo(String messageContent);
+	int updateTaobaoInfo(String messageContent, String messageType);
 	
 	/**
 	 * 淘宝商品下架
