@@ -8,7 +8,7 @@ $(function(){
 	$('.shareBtn').click(function(){
         $.ajax({
             url: '/fanbei-web/pickBoluomeCoupon',
-            data:{'sceneId':'390','userName':userName},
+            data:{'sceneId':'8139','userName':userName},
             type: 'POST',
             success:function (data) {
                 data=eval('(' + data + ')');
