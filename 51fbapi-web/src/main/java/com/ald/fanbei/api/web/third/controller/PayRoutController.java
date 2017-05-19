@@ -30,12 +30,9 @@ import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UpsLogStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
@@ -178,18 +175,12 @@ public class PayRoutController{
         		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
         			//退款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
-        			
         			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-        			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
-        			afOrderService.updateOrder(orderInfo);
         			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
-    				refundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
-    				afOrderRefundService.updateOrderRefund(refundInfo);
         			//ups打款记录
         			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
         					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
-
-        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), refundInfo.getRefundNo());
+        			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo);
         			
         		}
     			return "SUCCESS";
