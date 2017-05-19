@@ -75,9 +75,8 @@ public abstract class BaseController {
 		RequestDataVo requestDataVo = null;
 		try {
 			// 检查参数是否为空
-			logger.info("---1");
 			reqData = checkCommonParam(reqData, request, isForQQ);
-			logger.info("---2" + reqData);
+
 			// if (StringUtils.isBlank(reqData)) {
 			// exceptionresponse =
 			// buildErrorResult(FanbeExceptionCode.REQUEST_PARAM_NOT_EXIST,
@@ -86,14 +85,12 @@ public abstract class BaseController {
 			// }
 			// 解析参数（包括请求头中的参数和报文体中的参数）
 			requestDataVo = parseRequestData(reqData, request);
-			logger.info(requestDataVo.getId() + "---3" + requestDataVo);
 
 			// 验证参数、签名
 			FanbeiContext contex = doCheck(requestDataVo);
 
 			// 处理业务
 			resultStr = doProcess(requestDataVo, contex, request);
-			logger.info(requestDataVo.getId() + "---4" + resultStr);
 		} catch (FanbeiException e) {
 			exceptionresponse = buildErrorResult(e.getErrorCode(), request);
 			resultStr = JSON.toJSONString(exceptionresponse);
