@@ -54,12 +54,17 @@ public class SaveIdNumberApi implements ApiHandle {
 			AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 
 			try {
+				RiskRespBo riskResp = riskUtil.register(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
+						accountDo.getAlipayAccount(), accountDo.getAddress());
+				if(!riskResp.isSuccess()){
+          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+          		}
+			} catch (Exception e) {
 				RiskRespBo riskResp = riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
 						accountDo.getAlipayAccount(), accountDo.getAddress(), accountDo.getOpenId());
 				if (!riskResp.isSuccess()) {
 					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 				}
-			} catch (Exception e) {
 				logger.error("更新风控用户失败：" + idNumberDo.getUserId());
 			}
 
