@@ -324,10 +324,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
 									card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
 							if(!upsResult.isSuccess()){
-								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo,order.getActualAmount(), order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(),payOrderNo));
+								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo,order.getActualAmount(), order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(),upsResult.getOrderNo()));
 								pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
 							}else{
-                            	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo,order.getActualAmount(), order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH,PayType.BANK,card.getCardNumber(), card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(),payOrderNo));
+                            	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo,order.getActualAmount(), order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH,PayType.BANK,card.getCardNumber(), card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(),upsResult.getOrderNo()));
 							}
 						}
 						newOrder.setStatus(OrderStatus.CLOSED.getCode());
@@ -379,10 +379,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 try {
                                     String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
                                     if (!"SUCCESS".equals(refundResult)) {
-                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL,PayType.WECHAT,StringUtils.EMPTY,null,"充值失败微信退款",RefundSource.PLANT_FORM.getCode(), StringUtils.EMPTY));
+                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL,PayType.WECHAT,StringUtils.EMPTY,null,"充值失败微信退款",RefundSource.PLANT_FORM.getCode(), order.getPayTradeNo()));
             							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
                                     }else{
-                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH,PayType.WECHAT,StringUtils.EMPTY,null,"充值失败微信退款",RefundSource.PLANT_FORM.getCode(), StringUtils.EMPTY));
+                                    	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH,PayType.WECHAT,StringUtils.EMPTY,null,"充值失败微信退款",RefundSource.PLANT_FORM.getCode(), order.getPayTradeNo()));
                                     }
                                 } catch (Exception e) {
                                     pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
@@ -394,10 +394,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId() + "",
                                         card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02", OrderType.MOBILE.getCode(), "");
                                 if (!upsResult.isSuccess()) {
-                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(), StringUtils.EMPTY));
+                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(), upsResult.getOrderNo()));
         							pushService.refundMobileError(userDo.getUserName(), order.getGmtCreate());
                                 }else{
-                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(), StringUtils.EMPTY));
+                                	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), orderNo, OrderRefundStatus.FINISH,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(), upsResult.getOrderNo()));
                                 }
                             }
                             // 支付成功后,直接返利
