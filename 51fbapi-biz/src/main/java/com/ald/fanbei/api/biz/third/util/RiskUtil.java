@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
-import com.ald.fanbei.api.biz.bo.RiskBatchRemoveReqBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
@@ -188,34 +187,26 @@ public class RiskUtil extends AbstractThird {
 			query.setPageNo(j);
 			query.setPageSize(pageSize);
 			List<AfUserAccountDto> list = afUserAccountService.getUserAndAccountListWithHasRealName(query);
-			List<RiskRegisterReqBo> reqList = new ArrayList<RiskRegisterReqBo>();
 			for (int i = 0; i < list.size(); i++) {
 				AfUserAccountDto accountDto = list.get(i);
 				RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
-				reqBo.setTradeNo(accountDto.getUserId() + "");
-				reqBo.setConsumerNo(accountDto.getUserId() + "");
+				reqBo.setConsumerNo(accountDto.getUserId()+"");
+				reqBo.setRealName(accountDto.getRealName());
+				reqBo.setPhone(accountDto.getMobile());
+				reqBo.setIdNo(accountDto.getIdNumber());
+				reqBo.setEmail(accountDto.getEmail());
 				reqBo.setAlipayNo(accountDto.getAlipayAccount());
 				reqBo.setAddress(accountDto.getAddress());
 				reqBo.setChannel(CHANNEL);
 				reqBo.setReqExt("");
-				reqBo.setRealName(accountDto.getRealName());
-				reqBo.setPhone(StringUtil.isBlank(accountDto.getMobile()) ? accountDto.getUserName() : accountDto.getMobile());
-				reqBo.setIdNo(accountDto.getIdNumber());
-				reqBo.setEmail(accountDto.getEmail());
-				reqBo.setOpenId(accountDto.getOpenId());
-				reqList.add(reqBo);
+				reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+				reqBo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getRealName()));
+				reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getMobile()));
+				reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getIdNumber()));
+				reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getEmail()));
+				String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/register.htm", reqBo);
+				logThird(reqResult, "register", reqBo);
 			}
-			RiskBatchRemoveReqBo batchBo = new RiskBatchRemoveReqBo();
-			batchBo.setOrderNo(getOrderNo("bath", userName.substring(userName.length() - 4, userName.length())));
-			batchBo.setDetails(JSON.toJSONString(reqList));
-			if (j < pageCount) {
-				batchBo.setCount(pageSize + "");
-			} else {
-				batchBo.setCount((count - pageSize * (pageCount - 1)) + "");
-			}
-			batchBo.setSignInfo(SignUtil.sign(createLinkString(batchBo), PRIVATE_KEY));
-			String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/batchRemove.htm", batchBo);
-			logThird(reqResult, "batchRegister_" + j, batchBo);
 		}
 	}
 
