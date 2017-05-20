@@ -683,13 +683,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 						}
 						logger.info("payBrandOrder orderInfo = {}", orderInfo);
-						orderDao.updateOrder(orderInfo);
 						//银行卡支付 代收
 						UpsCollectRespBo respBo = upsUtil.collect(tradeNo,saleAmount, userId+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
 								cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
 						if(!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
+						orderInfo.setPayTradeNo(respBo.getOrderNo());
+						orderDao.updateOrder(orderInfo);
 						Map<String,Object> newMap = new HashMap<String,Object>();
 						newMap.put("outTradeNo", respBo.getOrderNo());
 						newMap.put("tradeNo", respBo.getTradeNo());
