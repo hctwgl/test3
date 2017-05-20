@@ -822,9 +822,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							logger.info("agent bank refund upsResult = {}", tempUpsResult);
 							if(!tempUpsResult.isSuccess()){
 								refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
-								refundInfo.setOrderNo(tempUpsResult.getOrderNo());
+								refundInfo.setPayTradeNo(tempUpsResult.getOrderNo());
 								afOrderRefundDao.updateOrderRefund(refundInfo);
 								throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+							} else {
+								refundInfo.setPayTradeNo(tempUpsResult.getOrderNo());
+								afOrderRefundDao.updateOrderRefund(refundInfo);
 							}
 						} else if (borrowAmount.compareTo(BigDecimal.ZERO) > 0){
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅代付退款生成新账单" + borrowAmount.abs(),refundSource,StringUtils.EMPTY));

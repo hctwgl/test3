@@ -176,9 +176,8 @@ public class PayRoutController{
         			//退款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
         			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-        			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
         			//ups打款记录
-        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
         					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
         			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo);
         			
