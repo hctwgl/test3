@@ -37,5 +37,5 @@ public interface AfOrderRefundService {
 	 * @param orderRefundInfo
 	 * @return
 	 */
-	int dealWithOrderRefund(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo);
+	int dealWithOrderRefund(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo, boolean isBoluome);
 }

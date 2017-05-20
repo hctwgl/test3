@@ -48,7 +48,6 @@ import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 /**
  *@类现描述：
@@ -179,9 +178,17 @@ public class PayRoutController{
         			//ups打款记录
         			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
         					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
-        			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo);
-        			
+        			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, true);
+        		} else if (UserAccountLogType.AGENT_BUY_BANK_REFUND.getCode().equals(merPriv)) {//代买
+        			//退款记录
+        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+        			//ups打款记录
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
+        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+        			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, false);
         		}
+    			
     			return "SUCCESS";
 			}else{//代付失败
 				

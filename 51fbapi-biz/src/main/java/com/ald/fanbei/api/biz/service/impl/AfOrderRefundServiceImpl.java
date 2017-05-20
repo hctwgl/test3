@@ -63,7 +63,7 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 
 	@Override
 	public int dealWithOrderRefund(final AfOrderRefundDo orderRefundInfo,
-			final AfOrderDo orderInfo) {
+			final AfOrderDo orderInfo, final boolean isBoluome) {
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
@@ -79,10 +79,12 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 				return 1;
 			}
 		});
-		if (result == 1) {
-			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderRefundInfo.getRefundNo());
-		} else {
-			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderRefundInfo.getRefundNo());
+		if (isBoluome) {
+			if (result == 1) {
+				boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderRefundInfo.getRefundNo());
+			} else {
+				boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderRefundInfo.getRefundNo());
+			}
 		}
 		return result;
 	}
