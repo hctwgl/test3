@@ -836,6 +836,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//银行卡退款
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
+						
 						AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING,PayType.BANK,card.getCardNumber(),card.getBankName(),"菠萝觅银行卡退款",refundSource,payTradeNo);
 						afOrderRefundDao.addOrderRefund(refundInfo);
 						orderInfo = new AfOrderDo();
@@ -846,10 +847,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),refundInfo.getRid() + StringUtils.EMPTY);
 						logger.info("bank refund upsResult = {}", upsResult);
 						if(!upsResult.isSuccess()){
-							refundInfo.setOrderNo(upsResult.getOrderNo());
 							refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
+							refundInfo.setPayTradeNo(upsResult.getOrderNo());
 							afOrderRefundDao.updateOrderRefund(refundInfo);
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+						} else {
+							refundInfo.setPayTradeNo(upsResult.getOrderNo());
+							afOrderRefundDao.updateOrderRefund(refundInfo);
 						}
 						break;
 					default:
