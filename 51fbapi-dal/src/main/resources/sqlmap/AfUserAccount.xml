@@ -175,7 +175,7 @@
 		FROM 
 			af_user_account c
 		WHERE
-			c.is_delete = 0 and c.real_name !='' and c.id_number !='' and c.id >360519
+			c.is_delete = 0 and c.real_name !='' and c.id_number !='' 
 	</select>
 
 	<select id="getUserAndAccountListWithHasRealName" resultType="AfUserAccountDto">
@@ -188,7 +188,7 @@
 		ON
 			u.is_delete = 0 and u.id = c.user_id
 		WHERE
-			c.is_delete = 0 and c.real_name !='' and c.id_number !='' and c.id >360519
+			c.is_delete = 0 and c.real_name !='' and c.id_number !='' and c.id >344819
 	</select>
 	
 	<select id="getUserInfoByUserId" resultType="AfUserAccountDto">
