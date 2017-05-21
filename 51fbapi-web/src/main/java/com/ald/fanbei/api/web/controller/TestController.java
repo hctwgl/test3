@@ -97,13 +97,13 @@ public class TestController {
 //		return "succ";
 //	}
 
-	@RequestMapping(value = { "/test2" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	public String batchRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-		riskUtil.batchRegister(5, "13958004662");
-		return "succ";
-	}
+//	@RequestMapping(value = { "/test2" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+//	public String batchRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//		riskUtil.batchRegister(5, "13958004662");
+//		return "succ";
+//	}
 
 //	@RequestMapping(value = { "/testRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 //	public String testRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
