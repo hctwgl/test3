@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.YituFaceCardRespBo;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -99,8 +99,23 @@ public class UpdateIdCardApi implements ApiHandle {
 				}
 			}
 
-			riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
-					accountDo.getAddress(), accountDo.getOpenId());
+			
+			try {
+				RiskRespBo riskResp = riskUtil.register(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
+						accountDo.getAlipayAccount(), accountDo.getAddress());
+				if(!riskResp.isSuccess()){
+          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+          		}
+			} catch (Exception e) {
+				RiskRespBo riskResp = riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
+						accountDo.getAlipayAccount(), accountDo.getAddress(), accountDo.getOpenId());
+				if (!riskResp.isSuccess()) {
+					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+				}
+				logger.error("更新风控用户失败：" + idNumberDo.getUserId());
+			}
+//			riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
+//					accountDo.getAddress(), accountDo.getOpenId());
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR);
 		}
