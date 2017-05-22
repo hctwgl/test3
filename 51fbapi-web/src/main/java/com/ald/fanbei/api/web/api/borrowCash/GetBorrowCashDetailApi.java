@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.Constants;
@@ -23,6 +24,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -43,7 +45,9 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfUserAccountService afUserAccountService;
-
+	@Resource
+	AfRenewalDetailService afRenewalDetailService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -86,9 +90,12 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 			Date repaymentDay = DateUtil.addDays(DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival()), day - 1);
 			data.put("gmtLastRepay", repaymentDay);
 		}
-
-		data.put("isRenewal", "N");
-		if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
+		
+		data.put("renewalStatus", "N");
+		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+		if(afRenewalDetailDo!=null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
+			data.put("renewalStatus", "P");
+		} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
 			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
 			BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 			AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
@@ -98,11 +105,11 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 
 			long currentTime = System.currentTimeMillis();
 			Date nowDate = new Date(currentTime);
-			long betweenGmtArrival = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtArrival(), nowDate);
+			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), nowDate);
 			BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
 			// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
-			if (betweenDuedate.compareTo(new BigDecimal(betweenGmtArrival)) > 0 && waitPaidAmount.compareTo(amount_limit) > 0) {
-				data.put("isRenewal", "Y");
+			if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) > 0) {
+				data.put("renewalStatus", "Y");
 				data.put("renewalDay", allowRenewalDay);
 				data.put("renewalAmount", waitPaidAmount);
 			}

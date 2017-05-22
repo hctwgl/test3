@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+#set($version="20170518")
+#set($src="https://fs.51fanbei.com/h5/app/activity/05")
+<title>当怪物来敲门</title>
+<style type="text/css">
+   .tenyuan{width:100%;height:1.58rem;background:url("$src/kouMovie002.jpg") no-repeat;
+   background-size: cover;position:relative;}
+   .shareBtn{width:2.92rem;height:1.27rem;position:absolute;margin: auto;top: 0; left: 0; 
+   	bottom: 0; right: 0;}
+</style>
+</head>
+<body>
+<img src="$src/kouMovie001.jpg">
+<div class="tenyuan">
+   <div class="shareBtn"></div>
+</div>
+<img src="$src/kouMovie003.jpg">
+<img src="$src/kouMovie004.jpg">
+<script type="text/javascript" src="/dist/activity/05/kouMovie.js?version=$version"></script>
+</body>
+</html>

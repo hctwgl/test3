@@ -50,11 +50,11 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String rishOrderNo;
 
 	private Date gmtPlanRepayment;// 预计还款时间
-	private BigDecimal sumRate; // 累计利息
-	private BigDecimal sumOverdue; // 累计滞纳金
-	private BigDecimal sumRenewalPoundage; // 累计续期手续费
-	private BigDecimal sumRebate; // 累计使用账户余额
-	private BigDecimal sumJfb; // 累计使用集分宝
+	private BigDecimal sumRate = BigDecimal.ZERO; // 累计利息
+	private BigDecimal sumOverdue = BigDecimal.ZERO; // 累计滞纳金
+	private BigDecimal sumRenewalPoundage = BigDecimal.ZERO; // 累计续期手续费
+	private BigDecimal sumRebate = BigDecimal.ZERO; // 累计使用账户余额
+	private BigDecimal sumJfb = BigDecimal.ZERO; // 累计使用集分宝
 	private int renewalNum; //累计续期次数
 	/**
 	 * @return the gmtClose

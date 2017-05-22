@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.bo.TaobaoItemInfoBo;
 import com.ald.fanbei.api.biz.bo.TaobaoResultBo;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -46,22 +47,25 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.updateSubscribeStatus(bo.getItem_id(), "N", "CANCEL");
 	}
 	@Override
-	public int updateTaobaoInfo(String messageContent) {
-		logger.info("updateTaobaoInfo begin, messageContent = {}", messageContent);
+	public int updateTaobaoInfo(String messageContent, String messageType) {
+		logger.info(messageType+" updateTaobaoInfo begin, messageContent = {}", messageContent);
 		TaobaoResultBo bo = JSONObject.parseObject(messageContent, TaobaoResultBo.class);
 		AfGoodsDo goodsInfo = parseBoToDo(bo);
 		return afGoodsDao.updateTaobaoGoodsInfo(goodsInfo);
 	}
 	
-	private AfGoodsDo parseBoToDo(TaobaoResultBo bo) {
+	private static AfGoodsDo parseBoToDo(TaobaoResultBo bo) {
 		AfGoodsDo goodsInfo = new AfGoodsDo();
 		goodsInfo.setNumId(bo.getItem_id());
-		goodsInfo.setPriceAmount(bo.getPrice());
-		goodsInfo.setSaleAmount(bo.getPromotion_price());
-		if(null != bo.getImg_urls()){
-			goodsInfo.setGoodsIcon(bo.getImg_urls()[0]);
+		TaobaoItemInfoBo itemInfo = bo.getItem_info();
+		if (itemInfo != null) {
+			goodsInfo.setPriceAmount(itemInfo.getPrice());
+			goodsInfo.setSaleAmount(itemInfo.getPromotion_price());
+			if(null != itemInfo.getImg_urls()){
+				goodsInfo.setGoodsIcon(itemInfo.getImg_urls().getString(0));
+			}
+			goodsInfo.setName(itemInfo.getTitle());
 		}
-		goodsInfo.setName(bo.getTitle());
 		return goodsInfo;
 	}
 	

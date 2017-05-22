@@ -2,15 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderRefundDao">
 	<sql id="queryAllFields">
-		id rid,gmt_create,gmt_modified,amount,user_id,order_id,order_no,status,refund_no,type,account_number,account_name,content,resource
+		id rid,gmt_create,gmt_modified,amount,actual_amount,user_id,order_id,order_no,status,refund_no,type,account_number,account_name,content,resource,pay_trade_no
 	</sql>
 	
 	<insert id="addOrderRefund" parameterType="AfOrderRefundDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_order_refund(gmt_create , gmt_modified , amount , user_id , order_id , order_no , status,refund_no,type,account_number,account_name,content,resource)
+		INSERT INTO af_order_refund(gmt_create , gmt_modified , amount ,actual_amount, user_id , order_id , order_no , status,refund_no,type,account_number,account_name,content,resource,pay_trade_no)
 		VALUES (
     		NOW(),
     		NOW(),
     		#{amount},
+    		#{actualAmount},
     		#{userId},
     		#{orderId},
     		#{orderNo},
@@ -20,7 +21,8 @@
     		#{accountNumber},
     		#{accountName},
     		#{content},
-    		#{resource}
+    		#{resource},
+    		#{payTradeNo}
 		)
 	</insert>
 	
@@ -28,6 +30,9 @@
 		UPDATE af_order_refund SET gmt_modified = NOW()
 			<if test="amount != null">
     			,amount=#{amount}
+			</if>
+			<if test="actualAmount != null">
+    			,actual_amount=#{actualAmount}
 			</if>
 			<if test="userId != null">
     			,user_id=#{userId}
@@ -56,6 +61,10 @@
 			<if test="resource != null">
 				,resource = #{resource}
 			</if>
+			<if test="payTradeNo != null">
+				,pay_trade_no = #{payTradeNo}
+			</if>
+			
 		WHERE id = #{rid}
 	</update>
 	

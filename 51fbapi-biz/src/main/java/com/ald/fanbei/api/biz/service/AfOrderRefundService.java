@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.Date;
 
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 
 /**
@@ -30,4 +31,11 @@ public interface AfOrderRefundService {
 	 * @return
 	 */
 	AfOrderRefundDo getRefundInfoById(Long refundId);
+	
+	/**
+	 * 处理退款订单
+	 * @param orderRefundInfo
+	 * @return
+	 */
+	int dealWithOrderRefund(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo, boolean isBoluome);
 }

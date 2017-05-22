@@ -664,7 +664,7 @@ public class UpsUtil extends AbstractThird {
 	
 	private static BigDecimal setActualAmount(BigDecimal amount){
 		if(!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
-			amount = new BigDecimal("0.41").setScale(2);
+			amount = amount.setScale(2,BigDecimal.ROUND_HALF_UP);
 		}else{
 			amount = amount.setScale(2,BigDecimal.ROUND_HALF_UP);
 		}

@@ -83,8 +83,8 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			afIdNumberDo.setValidDateBegin(validDateBegin);
 			afIdNumberDo.setValidDateEnd(validDateEnd);
 			AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
-			if (StringUtils.equals(auth.getFacesStatus(), YesNoStatus.YES.getCode())
-					|| StringUtils.equals(auth.getYdStatus(), YesNoStatus.YES.getCode())) {
+			if (StringUtils.equals(auth.getBankcardStatus(), YesNoStatus.YES.getCode())
+					) {
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 				if (accountDo != null) {
 					if (StringUtils.isNotBlank(accountDo.getRealName())

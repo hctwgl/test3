@@ -80,6 +80,7 @@ public class BoluomeController extends AbstractThird{
     			}
     			retunStr = "Successs";
     		} catch (Exception e) {
+    			logger.error("error message " + e);
     			retunStr = "error";
     			throw e;
     		}
@@ -155,7 +156,7 @@ public class BoluomeController extends AbstractThird{
     	}
     	
     	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
-    	
+    	thirdLog.info("buildOrderInfo begin orderInfo = {}" + orderInfo);
     	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);
     	//不是新建 单订单还没有同步完成  同步订单状态接口不会有orderType字段
     	if(orderInfo == null && StringUtils.isBlank(orderType)) {
