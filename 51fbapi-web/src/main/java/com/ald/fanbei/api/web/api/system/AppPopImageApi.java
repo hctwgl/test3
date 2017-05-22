@@ -15,10 +15,10 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONObject;
 
 
-@Component("AppLaunchImageApi")
-public class AppLaunchImageApi implements ApiHandle{
+@Component("appPopImageApi")
+public class AppPopImageApi implements ApiHandle {
 
-	private static final String RESOURCE_TYPE = "APP_LAUNCH_IMAGE";
+private static final String RESOURCE_TYPE = "APP_POP_IMAGE";
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -32,9 +32,10 @@ public class AppLaunchImageApi implements ApiHandle{
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 		}
 		JSONObject data = new JSONObject();
-		data.put("imageUrl", resourceDo.getValue());
-		data.put("advertiseUrl", resourceDo.getValue1());	
-
+		if (resourceDo != null){
+			data.put("imageUrl", resourceDo.getValue());
+			data.put("advertiseUrl", resourceDo.getName());	
+		}
 		response.setResponseData(data);
 		return response;
 	}

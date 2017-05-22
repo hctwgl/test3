@@ -176,6 +176,7 @@
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
 				<entry key="/system/checkVersion" value-ref="checkVersionApi" />
 				<entry key="/system/AppLaunchImage" value-ref="AppLaunchImageApi" />
+				<entry key="/system/appPopImage" value-ref="appPopImageApi" />
 				
 
 				<!-- auth模块 -->

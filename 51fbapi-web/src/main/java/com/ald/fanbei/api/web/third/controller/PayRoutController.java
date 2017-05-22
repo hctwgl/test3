@@ -31,12 +31,9 @@ import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UpsLogStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
@@ -52,7 +49,6 @@ import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 /**
  * @类现描述：
@@ -112,88 +108,87 @@ public class PayRoutController {
 		}
 		return "succ";
 	}
-
-	@RequestMapping(value = { "/authSignValidNotify" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String authSignValidNotify(HttpServletRequest request, HttpServletResponse response) {
-		for (String paramKey : request.getParameterMap().keySet()) {
-			System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
-		}
-		return "succ";
-	}
-
-	@RequestMapping(value = { "/authPay" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String authPay(HttpServletRequest request, HttpServletResponse response) {
-		for (String paramKey : request.getParameterMap().keySet()) {
-			System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
-		}
-		return "succ";
-	}
-
-	@RequestMapping(value = { "/authPayConfirm" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String authPayConfirm(HttpServletRequest request, HttpServletResponse response) {
-		for (String paramKey : request.getParameterMap().keySet()) {
-			System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
-		}
-		return "succ";
-	}
-
-	@RequestMapping(value = { "/delegatePay" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String delegatePay(HttpServletRequest request, HttpServletResponse response) {
-		String outTradeNo = request.getParameter("orderNo");
-		String merPriv = request.getParameter("merPriv");
-		String tradeState = request.getParameter("tradeState");
-		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
-		logger.info("delegatePay begin merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result, ",outTradeNo=" + outTradeNo);
-		try {
-			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代付成功
-				if (UserAccountLogType.CASH.getCode().equals(merPriv)) {// 现金借款
-					// 生成账单
-					AfBorrowDo borrow = afBorrowService.getBorrowById(result);
-					afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
-							result + StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
-					afBorrowService.cashBillTransfer(borrow, afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
-				} else if (UserAccountLogType.CONSUME.getCode().equals(merPriv)) {// 分期借款
-					// 生成账单
-					AfBorrowDo borrow = afBorrowService.getBorrowById(result);
-					afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
-							result + StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
-					afBorrowService.consumeBillTransfer(afBorrowService.getBorrowById(result), afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
-				} else if (UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)) {// 提现
-					AfCashRecordDo record = new AfCashRecordDo();
-					record.setRid(result);
-					record.setStatus("TRANSED");
-					afCashRecordDao.updateCashRecord(record);
-				} else if (UserAccountLogType.BorrowCash.getCode().equals(merPriv)) {// 借款
-					Long rid = NumberUtil.objToLong(result);
-					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
-					afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
-					afBorrowCashService.updateBorrowCash(afBorrowCashDo);
-				} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {// 菠萝觅银行卡退款
-					// 退款记录
-					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
-
-					AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-					orderInfo.setStatus(OrderStatus.CLOSED.getCode());
-					afOrderService.updateOrder(orderInfo);
-					AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
-					refundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
-					afOrderRefundService.updateOrderRefund(refundInfo);
-					// ups打款记录
-					afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
-							result + StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
-
-					boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), 
-							orderInfo.getSaleAmount(), refundInfo.getRefundNo());
-
-				}
-				return "SUCCESS";
-			} else {// 代付失败
-
-				if (afUserAccountService.dealUserDelegatePayError(merPriv, result) > 0) {
+    
+    @RequestMapping(value = {"/authSignValidNotify"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String authSignValidNotify(HttpServletRequest request, HttpServletResponse response){
+    	for(String paramKey:request.getParameterMap().keySet()){
+    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    	}
+    	return "succ";
+    }
+    
+    @RequestMapping(value = {"/authPay"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String authPay(HttpServletRequest request, HttpServletResponse response){
+    	for(String paramKey:request.getParameterMap().keySet()){
+    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    	}
+    	return "succ";
+    }
+    
+    @RequestMapping(value = {"/authPayConfirm"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String authPayConfirm(HttpServletRequest request, HttpServletResponse response){
+    	for(String paramKey:request.getParameterMap().keySet()){
+    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    	}
+    	return "succ";
+    }
+    
+    @RequestMapping(value = {"/delegatePay"}, method = RequestMethod.POST)
+    @ResponseBody
+	public String delegatePay(HttpServletRequest request, HttpServletResponse response){
+    	String outTradeNo = request.getParameter("orderNo");
+    	String merPriv = request.getParameter("merPriv");
+    	String tradeState = request.getParameter("tradeState");
+    	long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
+    	logger.info("delegatePay begin merPriv="+merPriv+",tradeState="+tradeState+",reqExt="+result,",outTradeNo="+outTradeNo);
+    	try {
+    		if(TRADE_STATUE_SUCC.equals(tradeState)){//代付成功
+    			if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
+    				//生成账单
+    				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
+    				afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
+    						result+StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+    				afBorrowService.cashBillTransfer(borrow, afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
+        		}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
+        			//生成账单
+        			AfBorrowDo borrow = afBorrowService.getBorrowById(result);
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
+    						result+StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+    				afBorrowService.consumeBillTransfer(afBorrowService.getBorrowById(result), afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
+        		}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
+        			AfCashRecordDo record = new AfCashRecordDo();
+        			record.setRid(result);
+        			record.setStatus("TRANSED");
+        			afCashRecordDao.updateCashRecord(record);
+        		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){//借款
+        			Long rid = NumberUtil.objToLong(result);
+        			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
+        			afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
+        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+        		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
+        			//退款记录
+        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+        			//ups打款记录
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
+        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+        			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, true);
+        		} else if (UserAccountLogType.AGENT_BUY_BANK_REFUND.getCode().equals(merPriv)) {//代买
+        			//退款记录
+        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+        			//ups打款记录
+        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
+        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+        			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, false);
+        		}
+    			
+    			return "SUCCESS";
+			}else{//代付失败
+				if(afUserAccountService.dealUserDelegatePayError(merPriv, result)>0){
 					return "SUCCESS";
 				}
 			}

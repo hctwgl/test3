@@ -26,7 +26,8 @@ public enum UserAccountLogType {
 	
 	WX_REFUND("WX_REFUND","微信退款"),
 	AP_REFUND("AP_REFUND", "代付退款"),
-	BANK_REFUND("BANK_REFUND", "银行卡退款"),
+	BANK_REFUND("BANK_REFUND", "菠萝觅银行卡退款"),
+	AGENT_BUY_BANK_REFUND("AGENT_BUY_BANK_REFUND", "代买银行卡退款"),
 	REPAYMENT("REPAYMENT", "还款"),
 	REPAYMENTCASH("REPAYMENTCASH", "借钱还款"),
 	RENEWAL_PAY("RENEWAL_PAY", "续期支付"),
