@@ -100,7 +100,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 		if(afBorrowCashDo!=null){
 		
-			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 			
 			
 			BigDecimal temAmount =BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
