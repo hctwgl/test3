@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>首页frame</title>
+	<style type="text/css">
+		.box1{
+			width: 100%;
+			height: 100%;
+			position: fixed;
+			top: 0;
+			left: 0;
+			background-color: rgba(0,0,0,.8);
+		}
+		.box3{
+			width: 5.0rem;
+			height: 5.0rem;
+			background-color: pink;
+			position: absolute;
+			top: 3.0rem;
+			left: 50%;
+			-webkit-transform: translateX(-50%);
+			transform: translateX(-50%);
+			z-index: 5;
+		}
+		.box2{
+			width: 1.0rem;
+			height: 1.0rem;
+			line-height: 1.0rem;
+			text-align: center;
+			color: #fff;
+			font-size: 30px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			padding-top: 6.0rem;
+			-webkit-transform: translate(-50%,-50%);
+			transform: translate(-50%,-50%);
+		}
+	</style>
+</head>
+<body>
+	<div class="box1">
+		<div class="box3"><a href="https://app.51fanbei.com/fanbei-web/mayMovie"></a></div>
+		<div class="box2" @click="bombBox">X</div>
+	</div>
+	<!-- <iframe src="" frameborder="0"></iframe> -->
+	<script type="text/javascript">
+		
+		new Vue({
+		    el:'.footer',
+		    methods:{
+		        closeWebview: function(){ // 关闭首页弹窗
+		            /*window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"邀请有礼123","content":"51返呗邀请456","shareUrl":"https://app.51fanbei.com/fanbei-web/mayMovie"}';*/
+
+		            // alert("调用了方法");
+		            
+		            window.demo.clickOnAndroid();
+
+		        }
+		    }
+		});
+
+
+	</script>
+</body>
+</html>
