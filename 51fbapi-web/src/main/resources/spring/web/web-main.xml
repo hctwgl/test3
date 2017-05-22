@@ -238,6 +238,10 @@
 				<entry key="/borrowCash/getBorrowCashDetail" value-ref="getBorrowCashDetailApi" />
 				<entry key="/borrowCash/getBorrowCashList" value-ref="getBorrowCashListApi" />
 				<entry key="/borrowCash/getBorrowOverdueList" value-ref="getBorrowOverdueListApi" />
+				<entry key="/borrowCash/applyRenewal" value-ref="applyRenewalApi" />
+				<entry key="/borrowCash/confirmRenewalPay" value-ref="confirmRenewalPayApi" />	
+				<entry key="/borrowCash/getRenewalList" value-ref="getRenewalListApi" />	
+				<entry key="/borrowCash/getRenewalDetail" value-ref="getRenewalDetailApi" />
 				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />

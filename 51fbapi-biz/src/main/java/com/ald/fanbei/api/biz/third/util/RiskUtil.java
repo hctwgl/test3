@@ -41,6 +41,7 @@ import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -414,6 +415,12 @@ public class RiskUtil extends AbstractThird {
 						card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02", 
 						UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
+				
+				Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+				Date arrivalStart = DateUtil.getStartOfDate(currDate);
+				Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
+				cashDo.setGmtPlanRepayment(repaymentDay);
+				
 				if (!upsResult.isSuccess()) {
 					logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 					cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());

@@ -38,15 +38,15 @@ public interface AfRenewalDetailDao {
 	 * @param 开始条数
 	 * @return
 	 */
-	List<AfRenewalDetailDo> getRenewalListByBorrowId(Long borrowId, Integer start);
-
+	List<AfRenewalDetailDo> getRenewalListByBorrowId(@Param("borrowId") Long borrowId, @Param("start") Integer start);
+	
 	/**
 	 * 续借详情
 	 * 
 	 * @param rId
 	 * @return
 	 */
-	public AfRenewalDetailDo getRenewalDetailByRenewalId(Long rId);
+	public AfRenewalDetailDo getRenewalDetailByRenewalId(@Param("rId") Long rId);
 
 	/**
 	 * 获取最新的续借信息
@@ -54,6 +54,6 @@ public interface AfRenewalDetailDao {
 	 * @param borrowId
 	 * @return
 	 */
-	public AfRenewalDetailDo getRenewalDetailByBorrowId(Long borrowId);
+	public AfRenewalDetailDo getRenewalDetailByBorrowId(@Param("borrowId") Long borrowId);
 
 }

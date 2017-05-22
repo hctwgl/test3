@@ -105,7 +105,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 
 			long currentTime = System.currentTimeMillis();
 			Date nowDate = new Date(currentTime);
-			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), nowDate);
+			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate, afBorrowCashDo.getGmtPlanRepayment());
 			BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
 			// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 			if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) > 0) {

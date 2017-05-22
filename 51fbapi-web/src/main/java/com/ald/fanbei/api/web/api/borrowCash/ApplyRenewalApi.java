@@ -11,12 +11,14 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -33,6 +35,8 @@ public class ApplyRenewalApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -46,7 +50,12 @@ public class ApplyRenewalApi implements ApiHandle {
 		}
 
 		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo);
-
+		
+		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(afBorrowCashDo.getUserId());
+		
+		data.put("rebateAmount", userDto.getRebateAmount());
+		data.put("jfbAmount", userDto.getJfbAmount());
+		
 		resp.setResponseData(data);
 
 		return resp;

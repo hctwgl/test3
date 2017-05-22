@@ -115,7 +115,7 @@
 	<select id="getRenewalDetailByRenewalId" resultType="AfRenewalDetailDo">
 		select 
 			<include refid="queryFields"/> 
-		from af_renewal_detail WHERE is_delete=0 and rid=#{rId};
+		from af_renewal_detail WHERE is_delete=0 and id=#{rId};
 	</select>
 	
 	<select id="getRenewalDetailByBorrowId" resultType="AfRenewalDetailDo">

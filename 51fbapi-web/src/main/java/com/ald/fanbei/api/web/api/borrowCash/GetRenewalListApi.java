@@ -56,7 +56,7 @@ public class GetRenewalListApi implements ApiHandle {
 		data.put("renewalDay", afRenewalDetailDo.getRenewalDay());// 续期天数
 		data.put("status", afRenewalDetailDo.getStatus());// 续期状态【A:新建状态，P:处理中, Y:续期成功 , N:续期失败】
 		data.put("renewalPayAmount", afRenewalDetailDo.getPriorInterest().add(afRenewalDetailDo.getPriorOverdue().add(afRenewalDetailDo.getNextPoundage())));// 续期应缴费用(利息+手续费+滞纳金)
-		data.put("gmtCreate", afRenewalDetailDo.getRid());// 申请时间
+		data.put("gmtCreate", afRenewalDetailDo.getGmtCreate().getTime());// 申请时间
 
 		return data;
 

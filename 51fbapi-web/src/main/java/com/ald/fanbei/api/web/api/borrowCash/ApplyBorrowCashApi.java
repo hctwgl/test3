@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
@@ -28,6 +25,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -166,6 +164,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
+		
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 
 		Long borrowId = afBorrowCashDo.getRid();
@@ -221,6 +220,11 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal rateAmount = BigDecimalUtil.multiply(serviceAmountDay, new BigDecimal(day));
 		BigDecimal poundageBig = BigDecimalUtil.multiply(poundageAmountDay, new BigDecimal(day));
 
+		AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
+		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）
+		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
+		BigDecimal baseBankRate = new BigDecimal(baseBankRateResource.getValue());// 央行基准利率
+		
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
 		afBorrowCashDo.setAmount(amount);
 		afBorrowCashDo.setCardName(afUserBankcardDo.getBankName());
@@ -236,7 +240,9 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		afBorrowCashDo.setRateAmount(rateAmount);
 		afBorrowCashDo.setPoundage(poundageBig);
 		afBorrowCashDo.setAddress(address);
-		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(BigDecimalUtil.subtract(amount, rateAmount), poundageBig));
+		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(amount, poundageBig));
+		afBorrowCashDo.setPoundageRate(borrowCashPoundage);
+		afBorrowCashDo.setBaseBankRate(baseBankRate);
 		return afBorrowCashDo;
 	}
 

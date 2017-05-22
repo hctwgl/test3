@@ -160,9 +160,11 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					} else {
 						afBorrowCashDo.setGmtPlanRepayment(DateUtil.addDays(now, afRenewalDetailDo.getRenewalDay()));
 					}
+					afBorrowCashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(afBorrowCashDo.getOverdueAmount()).add(afBorrowCashDo.getRateAmount()));//累计已还款金额
+					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getOverdueAmount());//累计滞纳金
 					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);// 滞纳金置0
+					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));// 累计利息
 					afBorrowCashDo.setRateAmount(rateAmount);// 利息改成续期后的
-					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(rateAmount));// 累计利息
 					afBorrowCashDo.setSumJfb(afBorrowCashDo.getSumJfb().add(afRenewalDetailDo.getJfbAmount()));// 累计使用集分宝
 					afBorrowCashDo.setSumRebate(afBorrowCashDo.getSumRebate().add(afRenewalDetailDo.getRebateAmount()));// 累计使用账户余额
 					afBorrowCashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage().add(afRenewalDetailDo.getRenewalAmount()));// 累计续期手续费
