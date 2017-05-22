@@ -174,14 +174,12 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	        			orderInfo.setStatus(OrderStatus.PAID.getCode());
 	        			afOrderService.updateOrder(orderInfo);
 	        			
-	        			AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(orderInfo.getBankId());
-	        			
 	        			//订单退款记录
 	    				refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
 	    				afOrderRefundService.updateOrderRefund(refundInfo);
 	    				
 	        			//ups打款记录
-	        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(cardInfo.getBankName(), cardInfo.getCardNumber(), "delegatePay", orderInfo.getOrderNo(), 
+	        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
 	        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
 	        			
 	        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), refundInfo.getAmount(),refundInfo.getRefundNo());

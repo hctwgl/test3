@@ -18,6 +18,7 @@ public class AfOrderRefundDo extends AbstractSerial {
 	private Date gmtCreate;
 	private Date gmtModified;
 	private BigDecimal amount;
+	private BigDecimal actualAmount;
 	private Long userId;
 	private Long orderId;
 	private String orderNo;
@@ -28,6 +29,7 @@ public class AfOrderRefundDo extends AbstractSerial {
 	private String accountName;
 	private String content;
 	private String resource;
+	private String payTradeNo;
 	
 	
 	/**
@@ -197,6 +199,30 @@ public class AfOrderRefundDo extends AbstractSerial {
 	 */
 	public void setResource(String resource) {
 		this.resource = resource;
+	}
+	/**
+	 * @return the actualAmount
+	 */
+	public BigDecimal getActualAmount() {
+		return actualAmount;
+	}
+	/**
+	 * @param actualAmount the actualAmount to set
+	 */
+	public void setActualAmount(BigDecimal actualAmount) {
+		this.actualAmount = actualAmount;
+	}
+	/**
+	 * @return the payTradeNo
+	 */
+	public String getPayTradeNo() {
+		return payTradeNo;
+	}
+	/**
+	 * @param payTradeNo the payTradeNo to set
+	 */
+	public void setPayTradeNo(String payTradeNo) {
+		this.payTradeNo = payTradeNo;
 	}
 	
 	

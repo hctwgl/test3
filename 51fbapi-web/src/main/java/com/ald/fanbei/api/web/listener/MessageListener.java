@@ -79,15 +79,15 @@ public class MessageListener implements ApplicationListener<ContextRefreshedEven
 		            			break;
 		            		case "taobao_tae_ItemTitleChange":
 		            			//名称title发生变化
-		            			afGoodsService.updateTaobaoInfo(message.getContent());
+		            			afGoodsService.updateTaobaoInfo(message.getContent(),"taobao_tae_ItemTitleChange");
 		            			break;
 		            		case "taobao_tae_ItemImageChange":
 		            			//商品主图变化
-		            			afGoodsService.updateTaobaoInfo(message.getContent());
+		            			afGoodsService.updateTaobaoInfo(message.getContent(),"taobao_tae_ItemImageChange");
 		            			break;
 		            		case "taobao_tae_ItemPriceChange":
 		            			//商品最低价格变化 
-		            			afGoodsService.updateTaobaoInfo(message.getContent());
+		            			afGoodsService.updateTaobaoInfo(message.getContent(),"taobao_tae_ItemPriceChange");
 		            			break;
 		            		case "taobao_tae_ItemDownShelf":
 		            			//淘宝商品下架

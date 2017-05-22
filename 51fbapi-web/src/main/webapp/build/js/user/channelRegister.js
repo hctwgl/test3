@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-15 09:59:32
+* @Last Modified time: 2017-05-17 21:00:56
 */
 
 
@@ -34,12 +34,16 @@ $(function(){
 	function timeFunction(){ // 60s倒计时
         timerS--;
         if (timerS<=0) {
+
+        	$(".register_codeBtn").removeAttr("disabled");
+
          	$(".register_codeBtn").text("获取验证码");
          	clearInterval(timerInterval);
          	timerS = 60;
 			$(".register_codeBtn").attr("isState",0);
+
         } else {
-         	$(".register_codeBtn span").text(timerS+" s");
+         	$(".register_codeBtn").text(timerS+" s");         	
         }
 	};
 
@@ -48,34 +52,34 @@ $(function(){
 
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
+		
+		if ( (isState==0 || !isState) && !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){ // 验证码不能为空、判断电话开头
+				
+			$(".register_codeBtn").attr("disabled",true);
+			$.ajax({
+    			url: "/app/user/getRegisterSmsCode",
+    			type: "POST",
+    			dataType: "JSON",
+    			data: {
+    				mobile: mobileNum
+    			},
+    			success: function(returnData){
+    				if (returnData.success) {
 
-		if ( (isState==0 || !isState) && mobileNum.length==11 && !isNaN(mobileNum) ){
+    					$(".register_codeBtn").attr("isState",1);
+						$(".register_codeBtn").text(timerS+" s");
+             			timerInterval = setInterval(timeFunction,1000);
 
-			if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)){ // 判断电话开头
+    				} else {
+    					requestMsg(returnData.msg);
+    					$(".register_codeBtn").removeAttr("disabled");
+    				}
+    			},
+    			error: function(){
+		      		requestMsg("请求失败");
+    			}
+    		})
 
-		     	$.ajax({
-	    			url: "/app/user/getRegisterSmsCode",
-	    			type: "POST",
-	    			dataType: "JSON",
-	    			data: {
-	    				mobile: mobileNum
-	    			},
-	    			success: function(returnData){
-	    				if (returnData.success) {
-	    					$(".register_codeBtn").attr("isState",1);
-							$(".register_codeBtn span").text(timerS+" s");
-	             			timerInterval = setInterval(timeFunction,1000);
-	    				} else {
-	    					requestMsg(returnData.msg);
-	    				}
-	    			},
-	    			error: function(){
-			      		requestMsg("请求失败");
-	    			}
-	    		})
-    		} else{
-	            requestMsg("请填写正确的手机号");
-	        }
 		} else{
 	  		requestMsg("请填写正确的手机号");
 		}
@@ -84,61 +88,69 @@ $(function(){
 	
 	$(".register_submitBtn").click(function(){ // 完成注册提交
 
+		// md5加密
 		var register_password = $("#register_password").val();
+		var password_md5 = String(CryptoJS.MD5(register_password));
+		var passwordLength = register_password.length;
+
+		// 正则判断密码为6-18位字母+字符的组合
+		var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
+		var password = pwdReg.test(register_password);
+
         var mobileNum = $("#register_mobile").val();
+        var register_verification = $("#register_verification").val();
+		var channelCode = $("#channelCode").val();
+		var pointCode = $("#pointCode").val();
 
-        if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)){ // 判断电话开头
+		var isState = $(".register_codeBtn").attr("isState");
 
-			if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
-				// 正则判断密码为6-18位字母+字符的组合
-				var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
-				var password = pwdReg.test(register_password);
+		if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
 
-				if ( password ) {
+			if ( register_verification != "" ) { // 验证码不能为空
 
-					var password_md5 = String(CryptoJS.MD5(register_password));  // md5加密
-					var recommendCode = getUrl("recommendCode"); // 从分享链接中获取code
+				if ( password && 6 <= passwordLength <= 18 ) { // 密码6-18位
 
-					var register_verification = $("#register_verification").val();
-					var channelCode = $("#channelCode").val();
-					var pointCode = $("#pointCode").val();
+					if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
-					var passwordLength = register_password.length;
-					if (passwordLength >= 6) {
-						_taq.push({convert_id:"59212981134", event_type:"form"})
-						$.ajax({ // 设置登录密码
-							url: "/app/user/commitChannelRegister",
-							type: 'POST',
-							dataType: 'JSON',
-							data: {
-								registerMobile: mobileNum,
-								smsCode: register_verification,
-								password: password_md5,
-								recommendCode: recommendCode,
-								channelCode: channelCode,
-								pointCode: pointCode
-							},
-							success: function(returnData){
-								if ( returnData.success ) {
-									window.location.href = returnData.url;
-								} else {
-									requestMsg(returnData.msg);
+						if ( $(".register_codeBtn").attr("isState") == 1 ) {
+
+							_taq.push({convert_id:"59212981134", event_type:"form"})
+							$.ajax({ // 设置登录密码
+								url: "/app/user/commitChannelRegister",
+								type: 'POST',
+								dataType: 'JSON',
+								data: {
+									registerMobile: mobileNum,
+									smsCode: register_verification,
+									password: password_md5,
+									channelCode: channelCode,
+									pointCode: pointCode
+								},
+								success: function(returnData){
+									if ( returnData.success ) {
+										$(".register_submitBtn").attr("disabled",true);
+										window.location.href = returnData.url;
+									} else {
+										requestMsg(returnData.msg);
+									}
+								},
+								error: function(){
+							        requestMsg("注册失败");
 								}
-							},
-							error: function(){
-						        requestMsg("注册失败");
-							}
-						})
+							})
+
+						} else {
+							requestMsg("请输入正确的验证码");
+						}
 					} else {
-						requestMsg("请填写6-18位的数字、字母、字符组成的密码");
+						requestMsg("请阅读并同意《51返呗用户注册协议》");
 					}
 				}else{
-					requestMsg("请输入数字和字符组合的密码");
+					requestMsg("请填写6-18位的数字、字母、字符组成的密码");
 				}
-
 			} else {
-				requestMsg("请阅读并同意《51返呗用户注册协议》");
+				requestMsg("请输入验证码");
 			}
 		} else{
             requestMsg("请填写正确的手机号");
@@ -146,18 +158,3 @@ $(function(){
 	});
 });
 
-// 点击眼睛显示密码
-$(function(){
-
-	$(".register_passwordEyeClosed").click(function() {
-		
-		var passwordType = $(".register_password").attr("type");
-		if (passwordType == "password") {
-			$(".register_password").attr("type","text");
-			$(this).addClass("register_passwordEye");
-		} else {
-			$(".register_password").attr("type","password");
-			$(this).removeClass("register_passwordEye");
-		}
-	});
-});
