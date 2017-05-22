@@ -132,9 +132,9 @@
 		  b.gmt_modified = NOW(),
 		  b.status = #{status},
 		  b.repayment_id = #{repaymentId},
-		  b.couponAmount = #{couponAmount},
-		  b.jfbAmount = #{jfbAmount},
-		  b.rebateAmount = #{rebateAmount},
+		  b.coupon_amount = #{couponAmount},
+		  b.jfb_amount = #{jfbAmount},
+		  b.rebate_amount = #{rebateAmount},
 		  a.nper_repayment = a.nper_repayment + 1,
 		  a.repay_prin_amount = a.repay_prin_amount + b.principle_amount 
 		WHERE b.is_delete = 0 
