@@ -29,6 +29,7 @@ public enum UserAccountLogType {
 	BANK_REFUND("BANK_REFUND", "银行卡退款"),
 	REPAYMENT("REPAYMENT", "还款"),
 	REPAYMENTCASH("REPAYMENTCASH", "借钱还款"),
+	RENEWAL_PAY("RENEWAL_PAY", "续期支付"),
 
 	REBATE_CASH("REBATE_CASH", "返利现金"),
 	REBATE_JFB("REBATE_JFB", "返利集分宝"),

@@ -117,7 +117,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		AfRepaymentBorrowCashDo repay = new AfRepaymentBorrowCashDo();
 		repay.setActualAmount(actualAmount);
 		repay.setBorrowId(borrowId);
-		;
 		repay.setJfbAmount(jfbAmount);
 		repay.setPayTradeNo(payTradeNo);
 		repay.setRebateAmount(rebateAmount);

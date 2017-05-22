@@ -3,16 +3,16 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowCashDao">
 	<sql id="queryFields">
 		id
-		rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address,gmt_close,rish_order_no
+		rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address,gmt_close,rish_order_no,
+		gmt_plan_repayment gmtPlanRepayment, waitpaid_amount waitPaidAmount,waitpaid_rate waitPaidRate, waitpaid_overdue waitPaidOverdue,
+		renewal_poundage renewalPoundage,gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num
 	</sql>
 
 	<insert id="addBorrowCash" parameterType="AfBorrowCashDo"
 		useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO
-		af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type
-		, amount , status , card_number , card_name , poundage , rate_amount ,
-		latitude , longitude , province ,arrival_amount, city ,
-		county,address)
+		af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type, amount , status , card_number , card_name , poundage , rate_amount ,
+		latitude , longitude , province ,arrival_amount, city , county,address,sum_rate)
 		VALUES (
 		NOW(),
 		NOW(),
@@ -31,12 +31,13 @@
 		#{arrivalAmount},
 		#{city},
 		#{county},
-		#{address}
+		#{address},
+		#{sumRate}
 		)
 	</insert>
+
 	<update id="updateBorrowCash" parameterType="AfBorrowCashDo">
 		UPDATE af_borrow_cash SET gmt_modified = NOW()
-
 		<if test="borrowNo != null">
 			,borrow_no=#{borrowNo}
 		</if>
@@ -88,12 +89,9 @@
 		<if test="gmtClose != null">
 			,gmt_close=#{gmtClose}
 		</if>
-
 		<if test="poundage != null">
 			,poundage=#{poundage}
 		</if>
-
-
 		<if test="overdueStatus != null">
 			,overdue_status=#{overdueStatus}
 		</if>
@@ -105,10 +103,31 @@
 		</if>
 		<if test="repayAmount != null">
 			,repay_amount=#{repayAmount}
-
 		</if>
 		<if test="rishOrderNo != null">
 			,rish_order_no=#{rishOrderNo}
+		</if>
+
+		<if test="gmtPlanRepayment != null">
+			,gmt_plan_repayment=#{gmtPlanRepayment}
+		</if>
+		<if test="sumRate != null">
+			,sum_rate=#{sumRate}
+		</if>
+		<if test="sumOverdue != null">
+			,sum_overdue=#{sumOverdue}
+		</if>
+		<if test="sumJfb != null">
+			,sum_jfb=#{sumJfb}
+		</if>
+		<if test="sumRebate != null">
+			,sum_rebate=#{sumRebate}
+		</if>
+		<if test="sumRenewalPoundage != null">
+			,sum_renewal_poundage=#{sumRenewalPoundage}
+		</if>
+		<if test="renewalNum != null">
+			,renewal_num=#{renewalNum}
 		</if>
 		WHERE id = #{rid}
 	</update>
@@ -186,7 +205,7 @@
 		WHERE
 		is_delete = 0
 		AND
-		user_id = #{userId} 
+		user_id = #{userId}
 		and  <![CDATA[ gmt_create  >=  #{startTime}  ]]>
 		and  <![CDATA[ gmt_create  <=  #{endTime}  ]]>
 		ORDER BY gmt_create DESC LIMIT 1;

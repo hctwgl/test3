@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
@@ -78,4 +75,5 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	AfBorrowCashDo getUserDayLastBorrowCash(Long userId);
+
 }

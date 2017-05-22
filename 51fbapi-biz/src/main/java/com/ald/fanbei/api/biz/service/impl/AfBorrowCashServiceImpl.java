@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.util.Date;
@@ -9,12 +6,19 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 
 /**
@@ -26,14 +30,29 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 @Service("afBorrowCashService")
 public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCashService {
 	@Resource
-	GeneratorClusterNo generatorClusterNo;
+	UpsUtil upsUtil;
 	@Resource
 	AfBorrowCashDao afBorrowCashDao;
-
+	@Resource
+	AfResourceService afResourceService;
+	@Resource
+	AfUserBankcardDao afUserBankcardDao;
+	@Resource
+	GeneratorClusterNo generatorClusterNo;
+	@Resource
+	AfRenewalDetailDao afRenewalDetailDao;
+	@Resource
+	TransactionTemplate transactionTemplate;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfUserAccountDao afUserAccountDao;
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
+	
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
-
 		afBorrowCashDo.setBorrowNo(generatorClusterNo.getBorrowCashNo(currDate));
 		return afBorrowCashDao.addBorrowCash(afBorrowCashDo);
 	}
@@ -72,6 +91,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public AfBorrowCashDo getUserDayLastBorrowCash(Long userId) {
 		Date startTime = DateUtil.getToday();
 		Date endTime = DateUtil.getTodayLast();
-		return afBorrowCashDao.getUserDayLastBorrowCash(userId,startTime,endTime);
+		return afBorrowCashDao.getUserDayLastBorrowCash(userId, startTime, endTime);
 	}
+
 }

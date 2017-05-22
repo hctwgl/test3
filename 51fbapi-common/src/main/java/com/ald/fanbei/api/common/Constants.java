@@ -63,11 +63,12 @@ public class Constants {
 	public static final String DEFAULT_PAY_PURPOSE = "付款";
 	public static final String DEFAULT_WX_PAY_NAME = "微信";
 	public static final String DEFAULT_USER_ACCOUNT = "账户余额";
+	public static final String DEFAULT_BANK_PAY = "银行卡";
 	public static final String DEFAULT_SERVICE_PHONE = "0571-88193918";
 	public static final String DEFAULT_REPAYMENT_NAME = "主动还款-";
 	public static final String DEFAULT_BRAND_SHOP = "品牌订单支付";
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
-
+	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// cache keys
 	public static final String CACHEKEY_USER_TOKEN = "user_token$";
 	public static final String CACHEKEY_APK_NEWEST_VERSION = "apk_newest_version$";
@@ -94,7 +95,18 @@ public class Constants {
 	public static final String RES_CREDIT_SCORE = "CREDIT_SCORE";
 	public static final String APPLY_BRROW_CASH_WHITE_LIST = "APPLY_BRROW_CASH_WHITE_LIST";
 	public static final String RES_REFUND_RATE = "REFUND_RATE";
-
+	public static final String RES_BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
+	//续期天数限制
+	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
+	//允许续期的天数
+	public static final String RES_ALLOW_RENEWAL_DAY = "ALLOW_RENEWAL_DAY";
+	//续期的距离预计还款日的最小天数差
+	public static final String RES_BETWEEN_DUEDATE = "BETWEEN_DUEDATE";
+	//未还款金额限制，只有在未还款金额大于这个金额时才能续期
+	public static final String RES_AMOUNT_LIMIT = "AMOUNT_LIMIT";
+	//央行基准利率
+	public static final String RES_BASE_BANK_RATE = "BASE_BANK_RATE";
+	
 	// 为了审核定义字段
 	public static final String RES_IS_FOR_AUTH = "IS_FOR_AUTH";
 

@@ -1,0 +1,145 @@
+package com.ald.fanbei.api.web.api.borrowCash;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.web.common.ApiHandle;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
+
+/**
+ * @类描述：续期确认支付
+ * 
+ * @author fumeiai 2017年5月18日 上午11:54:04
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
+@Component("confirmRenewalPayApi")
+public class ConfirmRenewalPayApi implements ApiHandle {
+	BigDecimal showAmount;
+	@Resource
+	AfResourceService afResourceService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfUserCouponService afUserCouponService;
+	@Resource
+	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserBankcardService afUserBankcardService;
+	@Resource
+	AfRenewalDetailService afRenewalDetailService;
+
+	@Override
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		Long userId = context.getUserId();
+		BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repaymentAmount")), BigDecimal.ZERO);
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")), BigDecimal.ZERO);
+
+		BigDecimal userAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
+
+		Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
+		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
+		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
+		BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
+
+		if (borrowId == 0) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+		}
+
+		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
+		if (userDto == null) {
+			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		if (cardId != -1) {
+			String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
+			if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			}
+		}
+
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+		if (afBorrowCashDo == null || !ObjectUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
+			throw new FanbeiException("Nothing order can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
+		}
+
+		showAmount = actualAmount;
+
+		if (userDto.getRebateAmount().compareTo(userAmount) < 0) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+		}
+
+		BigDecimal jfb = BigDecimalUtil.divide(jfbAmount, new BigDecimal(100));
+		if (userDto.getJfbAmount().compareTo(jfbAmount) < 0) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+
+		}
+
+		showAmount = BigDecimalUtil.add(showAmount, jfb);
+		showAmount = BigDecimalUtil.add(showAmount, userAmount);
+
+		if (repaymentAmount.compareTo(showAmount) != 0) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+		}
+
+		Map<String, Object> map;
+		if (cardId == -2) {// 余额支付
+			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, borrowId, cardId, userId, "", userDto);
+
+			resp.addResponseData("refId", map.get("refId"));
+			resp.addResponseData("type", map.get("type"));
+		} else if (cardId == -1) {// 微信支付
+			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, borrowId, cardId, userId, "", userDto);
+
+			resp.setResponseData(map);
+		} else if (cardId > 0) {// 银行卡支付
+			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+			if (null == card) {
+				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+			}
+			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+
+			// 代收
+			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
+			if (!upsResult.isSuccess()) {
+				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			}
+			Map<String, Object> newMap = new HashMap<String, Object>();
+			newMap.put("outTradeNo", upsResult.getOrderNo());
+			newMap.put("tradeNo", upsResult.getTradeNo());
+			newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
+			newMap.put("refId", map.get("refId"));
+			newMap.put("type", map.get("type"));
+
+			resp.setResponseData(newMap);
+		}
+
+		return resp;
+	}
+
+}

@@ -737,6 +737,21 @@ public class DateUtil {
     }
 
     /**
+     * 计算两日期之间相差的天数
+     * 
+     * @param cal1
+     * @param cal2
+     * @return
+     */
+    public static long getNumberOfDatesBetween(Date before, Date end) {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(before);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(end);
+        return getNumberOfDaysBetween(cal1, cal2);
+    }
+    
+    /**
      * 返回两个时间间隔的小时数
      * 
      * @param before 起始时间
@@ -1009,7 +1024,21 @@ public class DateUtil {
 //        System.out.println(isBetweenDateRange(new Date(), new Date(System.currentTimeMillis()-1), new Date()));
 //        System.out.println(new Date());
 //        System.out.println(addHoures(new Date(), 1));
+    	long currentTime = System.currentTimeMillis();
+    	Date nowDate = new Date(currentTime);
+    	String ff = "2017-05-18";SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			long betweenGmtArrival = DateUtil.getNumberOfDatesBetween(sdf.parse(ff), nowDate);
+			System.out.println(betweenGmtArrival);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
     	System.out.println(getNowYearMonthDay());
+    	
+    	Date endDate = DateUtil.addDays(nowDate, 7);
+    	System.out.println(sdf.format(endDate)+"================="+endDate.after(nowDate));
+    	
     }
 
 }

@@ -13,7 +13,7 @@ public enum PayOrderSource {
 	BORROW("BORROW","借款"),
 	BORROWCASH("BORROWCASH","借钱"),
 	REPAYMENTCASH("REPAYMENTCASH","借钱还款"),
-
+	RENEWAL_PAY("RENEWAL_PAY", "续期支付"),
 	REPAYMENT("REPAYMENT","还款");
 
 	public String code;

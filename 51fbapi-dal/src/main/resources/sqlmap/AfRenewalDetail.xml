@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfRenewalDetailDao">
+	<sql id="queryFields">
+		id rid, gmt_create, gmt_modified, borrow_id, status, gmt_plan_repayment, 
+		renewal_amount, prior_interest, prior_overdue, next_poundage, jfb_amount, rebate_amount,
+		actual_amount, user_id, card_name,card_number, pay_trade_no, trade_no, renewal_day, poundage_rate, base_bank_rate
+	</sql>
+	
+	<insert id="addRenewalDetail" parameterType="AfRenewalDetailDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_renewal_detail(gmt_create, gmt_modified, borrow_id, status, gmt_plan_repayment, 
+		renewal_amount, prior_interest, prior_overdue, next_poundage, jfb_amount, rebate_amount,
+		actual_amount, user_id, card_name,card_number, pay_trade_no, trade_no, renewal_day, poundage_rate, base_bank_rate)
+		VALUES (
+		NOW(),
+		NOW(),
+		#{borrowId},
+		#{status},
+		#{gmtPlanRepayment},
+		#{renewalAmount},
+		#{priorInterest},
+		#{priorOverdue},
+		#{nextPoundage},
+		#{jfbAmount},
+		#{rebateAmount},
+		#{actualAmount},
+		#{userId},
+		#{cardName},
+		#{cardNumber},
+		#{payTradeNo},
+		#{tradeNo},
+		#{renewalDay},
+		#{poundageRate},
+		#{baseBankRate}
+		)
+	</insert>
+	
+	<update id="updateRenewalDetail" parameterType="AfRenewalDetailDo">
+		UPDATE af_renewal_detail SET gmt_modified = NOW()
+		<if test="status != null">
+			,status=#{status}
+		</if>
+		<if test="gmtPlanRepayment != null">
+			,gmt_plan_repayment=#{gmtPlanRepayment}
+		</if>
+		<if test="renewalAmount != null">
+			,renewal_amount=#{renewalAmount}
+		</if>
+		<if test="priorInterest != null">
+			,prior_interest=#{priorInterest}
+		</if>
+		<if test="priorOverdue != null">
+			,prior_overdue=#{priorOverdue}
+		</if>
+		<if test="nextPoundage != null">
+			,next_poundage=#{nextPoundage}
+		</if>
+		<if test="jfbAmount != null">
+			,jfb_amount=#{jfbAmount}
+		</if>
+		<if test="rebateAmount != null">
+			,rebate_amount=#{rebateAmount}
+		</if>
+		<if test="actualAmount != null">
+			,actual_amount=#{actualAmount}
+		</if>
+		<if test="userId != null">
+			,user_id=#{userId}
+		</if>
+		<if test="cardName != null">
+			,card_name=#{cardName}
+		</if>
+		<if test="cardNumber != null">
+			,card_number=#{cardNumber}
+		</if>
+		<if test="payTradeNo != null">
+			,pay_trade_no=#{payTradeNo}
+		</if>
+		<if test="tradeNo != null">
+			,trade_no=#{tradeNo}
+		</if>
+		<if test="renewalDay != null">
+			,renewal_day=#{renewalDay}
+		</if>
+		<if test="poundageRate != null">
+			,poundage_rate=#{poundageRate}
+		</if>
+		<if test="baseBankRate != null">
+			,base_bank_rate=#{baseBankRate}
+		</if>		
+		WHERE id = #{rid}
+	</update>
+
+	<select id="getRenewalDetailByPayTradeNo" resultType="AfRenewalDetailDo">
+		select 
+			<include refid="queryFields"/> 
+		from af_renewal_detail WHERE is_delete=0 and pay_trade_no=#{payTradeNo};
+	</select>
+
+	<select id="getRenewalListByBorrowId" resultType="AfRenewalDetailDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_renewal_detail
+		WHERE
+		is_delete = 0
+		AND
+		borrow_id = #{borrowId}
+		ORDER BY
+		gmt_create DESC
+		LIMIT
+		#{start},20
+	</select>
+	
+	<select id="getRenewalDetailByRenewalId" resultType="AfRenewalDetailDo">
+		select 
+			<include refid="queryFields"/> 
+		from af_renewal_detail WHERE is_delete=0 and rid=#{rId};
+	</select>
+	
+	<select id="getRenewalDetailByBorrowId" resultType="AfRenewalDetailDo">
+		select 
+			<include refid="queryFields"/> 
+		from af_renewal_detail WHERE borrow_id=#{borrowId} ORDER BY gmt_create DESC LIMIT 1 
+	</select>	
+</mapper>
