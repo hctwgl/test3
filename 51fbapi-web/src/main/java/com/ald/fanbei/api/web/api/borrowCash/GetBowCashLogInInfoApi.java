@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
@@ -111,7 +112,25 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
 			data.put("rid", afBorrowCashDo.getRid());
 			
+			data.put("renewalStatus", "N");
 			AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+			if(afRenewalDetailDo!=null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
+				data.put("renewalStatus", "P");
+			} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
+				AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
+				BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差
+				AfResourceDo amountResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
+				BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制 
+
+				long currentTime = System.currentTimeMillis();
+				Date nowDate = new Date(currentTime);
+				long betweenGmtArrival = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtArrival(), nowDate);
+				BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
+				// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
+				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtArrival)) > 0 && waitPaidAmount.compareTo(amount_limit) > 0) {
+					data.put("renewalStatus", "Y");
+				}
+			}
 		}
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
