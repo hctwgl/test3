@@ -209,7 +209,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
 
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
-					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 					
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
 					bcashDo.setRid(afBorrowCashDo.getRid());
@@ -273,7 +273,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 					// 累计使用余额
 					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
-					logger.info("afBorrowCashDo=" + afBorrowCashDo);
 					bcashDo.setRepayAmount(repayAmount);
 
 					afBorrowCashService.updateBorrowCash(bcashDo);
