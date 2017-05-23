@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAccountDao">
 	<sql id="queryAllFields">
 		id rid,gmt_modified,user_id,user_name,au_amount,used_amount,freeze_amount,score,alipay_account,rebate_amount,id_number,
-		real_name,jfb_amount,password,salt,fail_count,uc_amount,bind_card,credit_score,open_id
+		real_name,jfb_amount,password,salt,fail_count,uc_amount,bind_card,credit_score,open_id,borrow_cash_amount
 	</sql>
 	
 	<sql id="queryWithUserFields">
@@ -150,6 +150,9 @@
 			</if>
 			<if test="openId != null">
     			,open_id=#{openId}
+			</if>
+				<if test="borrowCashAmount != null">
+    			,borrow_cash_amount=#{borrowCashAmount}
 			</if>
 		WHERE id = #{rid}
 	</update>

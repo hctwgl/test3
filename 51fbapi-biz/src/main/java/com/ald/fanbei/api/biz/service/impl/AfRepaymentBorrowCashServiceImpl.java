@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
@@ -28,10 +29,13 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -39,6 +43,7 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
@@ -75,6 +80,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 	@Resource
 	private AfUserBankcardDao afUserBankcardDao;
+	@Resource
+	private AfResourceService afResourceService;
 
 	@Resource
 	AfUserService afUserService;
@@ -202,9 +209,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
 					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
-					// BigDecimal showAmount =
-					// BigDecimalUtil.subtract(allAmount,
-					// afBorrowCashDo.getRepayAmount());
+					
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
 					bcashDo.setRid(afBorrowCashDo.getRid());
 					BigDecimal repayAllAmount = afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(repayment.getBorrowId());
@@ -215,6 +220,22 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 							riskUtil.addwhiteUser(afBorrowCashDo.getUserId());
 						} catch (Exception e) {
 							logger.error("加入白名单失败", e);
+						}
+						
+						//提升借款额度
+						AfUserAccountDo accountBorrowDo= afUserAccountDao.getUserAccountInfoByUserId(repayment.getUserId());
+						BigDecimal accountBorrowAoumt = accountBorrowDo.getBorrowCashAmount();
+						AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashMoreAmount.getCode());
+						BigDecimal max = NumberUtil.objToBigDecimalDefault(resourceDo.getValue(), BigDecimal.ZERO);
+						BigDecimal addAmount = NumberUtil.objToBigDecimalDefault(resourceDo.getValue1(), BigDecimal.ZERO);
+						if(max.compareTo(accountBorrowAoumt)>0){
+							if(addAmount.compareTo(max.subtract(accountBorrowAoumt))<=0){
+								AfUserAccountDo accountChange = new AfUserAccountDo();
+								accountChange.setRid(accountBorrowDo.getRid());
+								BigDecimal borrowAccountNew = accountBorrowAoumt.add(addAmount);
+								accountChange.setBorrowCashAmount(borrowAccountNew.compareTo(max)>0?max:borrowAccountNew);
+								afUserAccountDao.updateOriginalUserAccount(accountChange);
+							}
 						}
 					}
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 start
@@ -250,10 +271,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
 					bcashDo.setRepayAmount(repayAllAmount);
 
-					// bcashDo.setRepayAmount(repayment.getRepaymentAmount());
-					// if(showAmount.compareTo(repayment.getRepaymentAmount())==0){
-					// bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
-					// }
+
 					afBorrowCashService.updateBorrowCash(bcashDo);
 					// 优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());

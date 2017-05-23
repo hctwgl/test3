@@ -67,11 +67,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
+
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");
 		} else {
 			data.put("status", afBorrowCashDo.getStatus());
-			AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())
 					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
@@ -90,13 +91,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
 			data.put("overdueDay", afBorrowCashDo.getOverdueDay());
-//			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
 			Date now = DateUtil.getStartOfDate(new Date());
 
 			if (afBorrowCashDo.getGmtArrival() != null) {
-//				Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
-//				Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
+
 				Date repaymentDay = afBorrowCashDo.getGmtPlanRepayment();
 				data.put("repaymentDay", repaymentDay);
 				Calendar calendar = Calendar.getInstance();
@@ -136,7 +135,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
-
+        
 		data.put("bankDoubleRate", bankService.toString());
 		data.put("poundageRate", rate.get("poundage"));
 		data.put("overdueRate", rate.get("overduePoundage"));
@@ -145,7 +144,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 		data.put("bannerList", bannerList);
 		data.put("lender", rate.get("lender"));
-
+       if(account!=null){
+   		data.put("maxAmount", account.getBorrowCashAmount().stripTrailingZeros().toPlainString());
+       }
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
 		if (currentAmount == null) {

@@ -33,6 +33,7 @@ public class AfUserAccountDo extends AbstractSerial {
 	private String bindCard;//是否绑卡：Y：绑卡：N：未绑卡
 	private Integer creditScore;//信用分
 	private String openId;//芝麻信用openId
+	private BigDecimal borrowCashAmount;//借款最高金额
 
 	/**
 	 * @return the bindCard
@@ -180,5 +181,17 @@ public class AfUserAccountDo extends AbstractSerial {
 	}
 	public void setOpenId(String openId) {
 		this.openId = openId;
+	}
+	/**
+	 * @return the borrowCashAmount
+	 */
+	public BigDecimal getBorrowCashAmount() {
+		return borrowCashAmount;
+	}
+	/**
+	 * @param borrowCashAmount the borrowCashAmount to set
+	 */
+	public void setBorrowCashAmount(BigDecimal borrowCashAmount) {
+		this.borrowCashAmount = borrowCashAmount;
 	}
 }
