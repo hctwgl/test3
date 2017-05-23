@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017050301")
 	<title>借钱宝典</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/05/borrowMoney.css?version=$version">
 </head>
@@ -44,19 +43,33 @@
 		</ul>
 	</div>
 	
-	<!-- <div class="footer"><a class="borrow">立即申请借钱</a></div>
+	<div class="footer" @click="goBorrowMoney"><a class="borrow">立即申请借钱</a></div>
 	<script type="text/javascript">
-		var userName=getInfo().userName;
+		new Vue({
+		    el:'.footer',
+		    methods:{
+		        goBorrowMoney: function(){ // 跳转借钱
 
-		$(function(){
-			$(".borrow").click(function(){
-				if(userName!=''){
-					location.href="/fanbei-web/opennative?name=BORROW_MONEY";
-				}else{
-					location.href="/fanbei-web/opennative?name=APP_LOGIN";
-				}
-			})
-		})
-	</script> -->
+		            var appVersion = getInfo().appVersion.replace(/\./g,"");
+		            var appSystem = getInfo().id.substr(0,2);
+
+		            if ( appSystem == "i_" ) {
+
+		                if ( appVersion <= "350" ) {
+		                    requestMsg("你的版本过低请升级");
+		                } else {
+		                    window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY&config={"configType":"login"}';
+		                }
+		            } else if( appSystem == "a_" ){
+		                if ( appVersion <= "351" ) {
+		                    requestMsg("你的版本过低请升级");
+		                } else {
+		                    window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY&config={"configType":"login"}';
+		                }
+		            }
+		        }
+		    }
+		});
+	</script>
 </body>
 </html>

@@ -12,13 +12,16 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -45,6 +48,8 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfIdNumberService afIdNumberService;
+	@Resource
+	RiskUtil riskUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -141,6 +146,24 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				account.setUserId(userId);
 				account.setIdNumber(numberDo.getCitizenId());
 				afUserAccountService.updateUserAccount(account);
+				
+				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
+				try {
+					RiskRespBo riskResp = riskUtil.register(userId + "", numberDo.getName(), accountDo.getMobile(), numberDo.getCitizenId(), accountDo.getEmail(),
+							accountDo.getAlipayAccount(), numberDo.getAddress());
+					if(!riskResp.isSuccess()){
+	          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+	          		}
+				} catch (Exception e) {
+					RiskRespBo riskResp = riskUtil.modify(userId + "", numberDo.getName(), accountDo.getMobile(), numberDo.getCitizenId(), accountDo.getEmail(),
+							accountDo.getAlipayAccount(), numberDo.getAddress(), accountDo.getOpenId());
+					if (!riskResp.isSuccess()) {
+						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+					}
+					logger.error("更新风控用户失败：" + accountDo.getUserId());
+				}
+
+				
 				return resp;
 
 			}
