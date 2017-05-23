@@ -39,8 +39,8 @@
 			af_shop
 		WHERE
 			is_delete = 0
-		AND
-			status = 'O'
+		<!-- AND
+			status = 'O' -->
 		ORDER BY sort DESC, gmt_modified DESC
 	</select>
 	
