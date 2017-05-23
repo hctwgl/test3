@@ -6,18 +6,12 @@ package com.ald.fanbei.api.common.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 /**
  *@类描述：金额相关计算
  *@author 何鑫 2017年1月18日  12:51:33
  *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class BigDecimalUtil {
-	
-	private static final Logger logger = LoggerFactory.getLogger(BigDecimalUtil.class);
 	
 	public static final BigDecimal ONE_HUNDRED = new BigDecimal("100.00");
 	
@@ -210,11 +204,8 @@ public class BigDecimalUtil {
 	
 	public static int getCreditScore(BigDecimal zmScore,BigDecimal fqzScore,BigDecimal tdScore,
 			BigDecimal zmRate,BigDecimal fqzRate,BigDecimal tzRate){
-		logger.info("getCreditScore begin  zmScore = {}, fqzScore = {}, tdScore = {}, zmRate = {}, fqzRate = {}, tzRate = {}",
-				new Object[]{zmScore,fqzScore,tdScore,zmRate,fqzRate,tzRate});
 		BigDecimal v1 = zmScore.divide(new BigDecimal(950),4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(10)).multiply(zmRate);
 		BigDecimal v2 = fqzScore.multiply(new BigDecimal(0.1)).multiply(fqzRate);
-		BigDecimal v3 = (new BigDecimal(100).subtract(tdScore)).multiply(new BigDecimal(0.1)).multiply(tzRate);
-		return v1.add(v2).add(v3).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+		return v1.add(v2).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 	}
 }
