@@ -180,10 +180,7 @@ public class AppH5SysController extends BaseController {
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
-					
-					AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(),
-							AfResourceSecType.borrowCashLender.getCode());
-					model.put("lender", lenderDo.getValue());// 出借人
+					model.put("lender", rate.get("lender"));// 出借人
 					model.put("lenderIdNumber", rate.get("lenderIdNumber"));
 					model.put("lenderIdAmount", afBorrowCashDo.getAmount());
 				}
