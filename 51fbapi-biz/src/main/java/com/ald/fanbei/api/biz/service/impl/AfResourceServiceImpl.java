@@ -165,12 +165,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 
 	@Override
 	public List<AfResourceDo> selectBorrowHomeConfigByAllTypes() {
-		List<AfResourceDo> list = bizCacheUtil.getObjectList(CacheConstants.RESOURCE.RESOURCE_BORROW_CONFIG_LIST.getCode());
-		if (list == null) {
-			list = afResourceDao.selectBorrowHomeConfigByAllTypes();
-			bizCacheUtil.saveObjectList(CacheConstants.RESOURCE.RESOURCE_BORROW_CONFIG_LIST.getCode(), list);
-		}
-		return list;
+//		List<AfResourceDo> list = bizCacheUtil.getObjectList(CacheConstants.RESOURCE.RESOURCE_BORROW_CONFIG_LIST.getCode());
+//		if (list == null) {
+//			list = afResourceDao.selectBorrowHomeConfigByAllTypes();
+//			bizCacheUtil.saveObjectList(CacheConstants.RESOURCE.RESOURCE_BORROW_CONFIG_LIST.getCode(), list);
+//		}
+		return afResourceDao.selectBorrowHomeConfigByAllTypes();
 	}
 
 }
