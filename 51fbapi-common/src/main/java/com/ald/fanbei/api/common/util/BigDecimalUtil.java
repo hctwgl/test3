@@ -6,12 +6,18 @@ package com.ald.fanbei.api.common.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  *@类描述：金额相关计算
  *@author 何鑫 2017年1月18日  12:51:33
  *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class BigDecimalUtil {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BigDecimalUtil.class);
 	
 	public static final BigDecimal ONE_HUNDRED = new BigDecimal("100.00");
 	
