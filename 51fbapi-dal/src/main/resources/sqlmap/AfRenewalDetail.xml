@@ -96,13 +96,14 @@
 
 	<select id="getRenewalListByBorrowId" resultType="AfRenewalDetailDo">
 		SELECT
-		<include refid="queryFields" />
+			<include refid="queryFields" />
 		FROM
 		af_renewal_detail
 		WHERE
 		is_delete = 0
 		AND
 		borrow_id = #{borrowId}
+		and status != 'A'
 		ORDER BY
 		gmt_create DESC
 		LIMIT

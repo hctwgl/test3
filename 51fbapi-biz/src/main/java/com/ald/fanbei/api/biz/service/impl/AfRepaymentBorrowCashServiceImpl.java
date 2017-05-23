@@ -213,7 +213,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
 					bcashDo.setRid(afBorrowCashDo.getRid());
 					BigDecimal repayAllAmount = afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(repayment.getBorrowId());
-					if (allAmount.compareTo(repayAllAmount) == 0) {
+					if (allAmount.compareTo(afBorrowCashDo.getRepayAmount().add(repayAllAmount)) == 0) {
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						// 在此处调用 风控接口存入白名单 add by fumeiai
 						try {
@@ -228,7 +228,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashMoreAmount.getCode());
 						BigDecimal max = NumberUtil.objToBigDecimalDefault(resourceDo.getValue(), BigDecimal.ZERO);
 						BigDecimal addAmount = NumberUtil.objToBigDecimalDefault(resourceDo.getValue1(), BigDecimal.ZERO);
-						if(max.compareTo(accountBorrowAoumt)>0){
+						if(max.compareTo(accountBorrowAoumt)>0) {
 							if(addAmount.compareTo(max.subtract(accountBorrowAoumt))<=0){
 								AfUserAccountDo accountChange = new AfUserAccountDo();
 								accountChange.setRid(accountBorrowDo.getRid());
@@ -240,15 +240,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					}
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 start
 					BigDecimal tempRepayAmount = BigDecimal.ZERO;
-					tempRepayAmount = repayAllAmount;
+					tempRepayAmount = repayment.getRepaymentAmount();
 					if (tempRepayAmount.compareTo(afBorrowCashDo.getRateAmount()) > 0) {
 						bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), afBorrowCashDo.getRateAmount()));
 						bcashDo.setRateAmount(BigDecimal.ZERO);
 						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getRateAmount());
 					} else {
-						bcashDo.setSumRate(BigDecimalUtil.add(bcashDo.getSumRate(), repayAllAmount));
-						bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(repayAllAmount));
-						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, repayAllAmount);
+						bcashDo.setSumRate(BigDecimalUtil.add(bcashDo.getSumRate(), tempRepayAmount));
+						bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
+						tempRepayAmount = BigDecimal.ZERO;
 					}
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 end
 
@@ -261,15 +261,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						bcashDo.setOverdueAmount(BigDecimal.ZERO);
 						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getOverdueAmount());
 					} else {
-						bcashDo.setSumOverdue(BigDecimalUtil.add(bcashDo.getSumOverdue(), repayAllAmount));
-						bcashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(repayAllAmount));
-						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getOverdueAmount());
+						bcashDo.setSumOverdue(BigDecimalUtil.add(bcashDo.getSumOverdue(), tempRepayAmount));
+						bcashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(tempRepayAmount));
+						tempRepayAmount = BigDecimal.ZERO;
 					}
 					// 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 end
 
 					// 累计使用余额
 					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
-					bcashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(repayAllAmount));
+					bcashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(repayment.getRepaymentAmount()));
 
 					afBorrowCashService.updateBorrowCash(bcashDo);
 					// 优惠券设置已使用
