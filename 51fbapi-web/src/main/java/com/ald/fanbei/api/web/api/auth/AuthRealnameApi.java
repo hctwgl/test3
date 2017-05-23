@@ -62,31 +62,31 @@ public class AuthRealnameApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
-		String reportId = TongdunUtil.applyPreloan(account.getIdNumber(), account.getRealName(), context.getMobile(), null);
-		if(StringUtil.isBlank(reportId)){
-			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
-		}
-		CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
-		TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
-		while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
-			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
-			authResult = TongdunUtil.queryPreloan(reportId);
-		}
+//		String reportId = TongdunUtil.applyPreloan(account.getIdNumber(), account.getRealName(), context.getMobile(), null);
+//		if(StringUtil.isBlank(reportId)){
+//			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
+//		}
+//		CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+//		TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
+//		while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
+//			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+//			authResult = TongdunUtil.queryPreloan(reportId);
+//		}
 		
 		//存库，更新userAuth状态
-		AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
-		afAuthTdDo.setReportId(reportId);
-		afAuthTdDo.setAuthResult(authResult.getResultStr());
-		afAuthTdDo.setUserId(context.getUserId());
-		afAuthTdService.addAuthTd(afAuthTdDo);
+//		AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
+//		afAuthTdDo.setReportId(reportId);
+//		afAuthTdDo.setAuthResult(authResult.getResultStr());
+//		afAuthTdDo.setUserId(context.getUserId());
+//		afAuthTdService.addAuthTd(afAuthTdDo);
 		
-		if(!authResult.isSuccess()){
-			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
-		}
+//		if(!authResult.isSuccess()){
+//			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
+//		}
 		
 		AfUserAuthDo userAuthDo = new AfUserAuthDo();
 		userAuthDo.setUserId(context.getUserId());
-		userAuthDo.setRealnameScore(authResult.getFinalScore());
+		userAuthDo.setRealnameScore(0);
 		userAuthDo.setRealnameStatus(YesNoStatus.YES.getCode());
 		userAuthDo.setGmtRealname(new Date());
 		afUserAuthService.updateUserAuth(userAuthDo);

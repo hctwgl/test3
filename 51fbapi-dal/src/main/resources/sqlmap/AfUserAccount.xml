@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAccountDao">
 	<sql id="queryAllFields">
 		id rid,gmt_modified,user_id,user_name,au_amount,used_amount,freeze_amount,score,alipay_account,rebate_amount,id_number,
-		real_name,jfb_amount,password,salt,fail_count,uc_amount,bind_card,credit_score,open_id
+		real_name,jfb_amount,password,salt,fail_count,uc_amount,bind_card,credit_score,open_id,borrow_cash_amount
 	</sql>
 	
 	<sql id="queryWithUserFields">
@@ -151,6 +151,9 @@
 			<if test="openId != null">
     			,open_id=#{openId}
 			</if>
+				<if test="borrowCashAmount != null">
+    			,borrow_cash_amount=#{borrowCashAmount}
+			</if>
 		WHERE id = #{rid}
 	</update>
 
@@ -175,7 +178,7 @@
 		FROM 
 			af_user_account c
 		WHERE
-			c.is_delete = 0 and c.real_name !='' and c.id_number !=''
+			c.is_delete = 0 and c.real_name !='' and c.id_number !='' 
 	</select>
 
 	<select id="getUserAndAccountListWithHasRealName" resultType="AfUserAccountDto">
@@ -188,7 +191,7 @@
 		ON
 			u.is_delete = 0 and u.id = c.user_id
 		WHERE
-			c.is_delete = 0 and c.real_name !='' and c.id_number !=''
+			c.is_delete = 0 and c.real_name !='' and c.id_number !='' and c.id >344819
 	</select>
 	
 	<select id="getUserInfoByUserId" resultType="AfUserAccountDto">

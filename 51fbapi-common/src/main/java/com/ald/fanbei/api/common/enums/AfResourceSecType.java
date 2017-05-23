@@ -31,6 +31,10 @@ public enum AfResourceSecType {
 		borrowCashShowNum("BORROW_CASH_SHOW_NUM","显示已放款笔数"),
 		borrowConsume("BORROW_CONSUME","消费分期利率设置"),
 		borrowConsumeOverdue("BORROW_CONSUME_OVERDUE","消费分期逾期利率"),
+		
+		borrowCashMoreAmount("BORROW_CASH_MORE_AMOUNT","借钱可提升最高额度以及每次可提升金额"),
+
+		
 	MODEL_URL("MODEL_URL", "本地模板H5");
 
 
