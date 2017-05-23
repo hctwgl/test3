@@ -358,7 +358,7 @@ public class AppH5SysController extends BaseController {
 					if (afBorrowCashDo != null) {
 						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(
 								AfResourceType.borrowRate.getCode(),
-								AfResourceSecType.borrowCashLender.getCode(), afBorrowCashDo.getGmtCreate());
+								AfResourceSecType.borrowCashLenderForCash.getCode(), afBorrowCashDo.getGmtCreate());
 						if (logDo != null) {
 							AfResourceDo borrow=JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
 							data.put("lender", borrow.getValue());
