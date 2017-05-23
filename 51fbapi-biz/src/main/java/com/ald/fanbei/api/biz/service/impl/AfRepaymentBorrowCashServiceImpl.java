@@ -269,6 +269,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 					// 累计使用余额
 					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
+					logger.info("afBorrowCashDo=" + afBorrowCashDo);
 					bcashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(repayment.getRepaymentAmount()));
 
 					afBorrowCashService.updateBorrowCash(bcashDo);
