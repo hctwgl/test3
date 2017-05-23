@@ -56,6 +56,7 @@ public class GetRenewalDetailApi implements ApiHandle {
 		data.put("cardName", afRenewalDetailDo.getCardName());//支付方式（卡名称）
 		data.put("tradeNo", afRenewalDetailDo.getTradeNo());//支付编号
 		data.put("gmtCreate", afRenewalDetailDo.getGmtCreate().getTime());//创建时间
+		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());//续借编号
 		
 		return data;
 
