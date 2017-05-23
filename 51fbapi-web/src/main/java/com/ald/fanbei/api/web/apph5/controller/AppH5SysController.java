@@ -149,6 +149,7 @@ public class AppH5SysController extends BaseController {
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		logger.info(JSON.toJSONString(list));
 		Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
