@@ -78,13 +78,13 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
 			}
-			 data.put("jfbAmount", account.getJfbAmount());
+			data.put("jfbAmount", account.getJfbAmount());
 
 			data.put("rebateAmount", account.getRebateAmount());
-			
+
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
-			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount());
+			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
@@ -112,16 +112,16 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
 			data.put("rid", afBorrowCashDo.getRid());
-			
+
 			data.put("renewalStatus", "N");
 			AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
-			if(afRenewalDetailDo!=null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
+			if (afRenewalDetailDo != null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
 				data.put("renewalStatus", "P");
 			} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
 				AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
 				BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差
 				AfResourceDo amountResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
-				BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制 
+				BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制
 
 				long currentTime = System.currentTimeMillis();
 				Date nowDate = new Date(currentTime);
@@ -162,7 +162,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else {
 			data.put("canBorrow", "Y");
 		}
-		BigDecimal nums = new BigDecimal((String) rate.get("nums")) ;
+		BigDecimal nums = new BigDecimal((String) rate.get("nums"));
 		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
 		data.put("loanNum", nums.multiply(BigDecimal.valueOf(currentAmount.getNums())));
 
