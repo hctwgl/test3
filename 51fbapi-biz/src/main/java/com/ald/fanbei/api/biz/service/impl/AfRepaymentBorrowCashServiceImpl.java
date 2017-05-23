@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.jetty.util.log.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -212,8 +213,10 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
 					bcashDo.setRid(afBorrowCashDo.getRid());
-					BigDecimal repayAllAmount = afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(repayment.getBorrowId());
-					BigDecimal repayAmount = repayAllAmount.add(afBorrowCashDo.getRepayAmount());
+//					BigDecimal repayAllAmount = afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(repayment.getBorrowId());
+					BigDecimal nowRepayAmount = repayment.getRepaymentAmount();
+					BigDecimal repayAmount = nowRepayAmount.add(afBorrowCashDo.getRepayAmount());
+					logger.info("repayAmount=" + repayAmount);
 					if (allAmount.compareTo(repayAmount) == 0) {
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						// 在此处调用 风控接口存入白名单 add by fumeiai
