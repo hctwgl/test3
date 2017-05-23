@@ -352,7 +352,7 @@ public class AppH5SysController extends BaseController {
 						}
 					}
 				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceSecType.borrowCashLender.getCode())) {
+						AfResourceSecType.borrowCashLenderForCash.getCode())) {
 					data.put("lender", afResourceDo.getValue());
 					data.put("lenderIdNumber", afResourceDo.getValue1());
 					if (afBorrowCashDo != null) {
