@@ -213,7 +213,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
 					bcashDo.setRid(afBorrowCashDo.getRid());
 					BigDecimal repayAllAmount = afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(repayment.getBorrowId());
-					if (allAmount.compareTo(afBorrowCashDo.getRepayAmount().add(repayAllAmount)) == 0) {
+					BigDecimal repayAmount = repayAllAmount.add(afBorrowCashDo.getRepayAmount());
+					if (allAmount.compareTo(repayAmount) == 0) {
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						// 在此处调用 风控接口存入白名单 add by fumeiai
 						try {
@@ -270,7 +271,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					// 累计使用余额
 					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
 					logger.info("afBorrowCashDo=" + afBorrowCashDo);
-					bcashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(repayment.getRepaymentAmount()));
+					bcashDo.setRepayAmount(repayAmount);
 
 					afBorrowCashService.updateBorrowCash(bcashDo);
 					// 优惠券设置已使用
