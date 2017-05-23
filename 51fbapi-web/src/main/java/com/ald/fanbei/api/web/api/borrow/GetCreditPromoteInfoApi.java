@@ -112,7 +112,7 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		contactorModel.put("contactorType", authDo.getContactorType());
 
 		data.put("creditModel", creditModel);
-		data.put("rrCreditStatus", authDo.getRealnameStatus());
+		data.put("rrCreditStatus", YesNoStatus.YES.getCode());
 		data.put("mobileStatus", authDo.getMobileStatus());
 		data.put("teldirStatus", authDo.getTeldirStatus());
 		data.put("zmModel", zmModel);
