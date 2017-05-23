@@ -28,7 +28,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
@@ -89,7 +88,6 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
-			data.put("overdueDay", afBorrowCashDo.getOverdueDay());
 //			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
 			Date now = DateUtil.getStartOfDate(new Date());
@@ -106,11 +104,16 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
 				data.put("deadlineDay", chaTime);
 			}
-
-			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-
-			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
+			// 如果预计还款日在今天之前，且为待还款状态，则已逾期，逾期天数=现在减去预计还款日
+			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED") && afBorrowCashDo.getGmtPlanRepayment().before(now)) {
+				long day = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), now);
+				data.put("overdueDay", day);
+				data.put("overdueStatus", "Y");
+			}
+			
+			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
+			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("rid", afBorrowCashDo.getRid());
 
 			data.put("renewalStatus", "N");
@@ -165,7 +168,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		BigDecimal nums = new BigDecimal((String) rate.get("nums"));
 		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
 		data.put("loanNum", nums.multiply(BigDecimal.valueOf(currentAmount.getNums())));
-
+		
 		resp.setResponseData(data);
 		return resp;
 	}

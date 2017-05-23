@@ -106,6 +106,8 @@ public class Constants {
 	public static final String RES_AMOUNT_LIMIT = "AMOUNT_LIMIT";
 	//央行基准利率
 	public static final String RES_BASE_BANK_RATE = "BASE_BANK_RATE";
+	//借钱最高倍数
+	public static final String RES_BORROW_CASH_BASE_BANK_DOUBLE = "BORROW_CASH_BASE_BANK_DOUBLE";
 	
 	// 为了审核定义字段
 	public static final String RES_IS_FOR_AUTH = "IS_FOR_AUTH";

@@ -220,11 +220,6 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal rateAmount = BigDecimalUtil.multiply(serviceAmountDay, new BigDecimal(day));
 		BigDecimal poundageBig = BigDecimalUtil.multiply(poundageAmountDay, new BigDecimal(day));
 
-		AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
-		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）
-		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
-		BigDecimal baseBankRate = new BigDecimal(baseBankRateResource.getValue());// 央行基准利率
-		
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
 		afBorrowCashDo.setAmount(amount);
 		afBorrowCashDo.setCardName(afUserBankcardDo.getBankName());
@@ -241,8 +236,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		afBorrowCashDo.setPoundage(poundageBig);
 		afBorrowCashDo.setAddress(address);
 		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(amount, poundageBig));
-		afBorrowCashDo.setPoundageRate(borrowCashPoundage);
-		afBorrowCashDo.setBaseBankRate(baseBankRate);
+		afBorrowCashDo.setPoundageRate(poundage);
+		afBorrowCashDo.setBaseBankRate(bankRate);
 		return afBorrowCashDo;
 	}
 

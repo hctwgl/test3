@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -113,7 +114,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		afRenewalDetailDo.setRid(rid);
 		return afRenewalDetailDao.updateRenewalDetail(afRenewalDetailDo);
 	}
-	
+
 	@Override
 	public long dealRenewalFail(String outTradeNo, String tradeNo) {
 		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByPayTradeNo(outTradeNo);
@@ -122,10 +123,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		}
 		AfUserDo userDo = afUserService.getUserById(afRenewalDetailDo.getUserId());
 		pushService.repayRenewalFail(userDo.getUserName());
-		
+
 		return dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), afRenewalDetailDo.getRid());
 	}
-	
+
 	@Override
 	public long dealRenewalSucess(final String outTradeNo, final String tradeNo) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
@@ -146,10 +147,13 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					temRenewalDetail.setTradeNo(tradeNo);
 					temRenewalDetail.setRid(afRenewalDetailDo.getRid());
 					afRenewalDetailDao.updateRenewalDetail(temRenewalDetail);
-
+					
+					AfResourceDo bankDoubleResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_BASE_BANK_DOUBLE);
+					BigDecimal bankDouble = new BigDecimal(bankDoubleResource.getValue());// 借钱最高倍数
+					
 					// 未还金额 = 借款金额 - 已还金额
 					BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
-					BigDecimal rateAmount = BigDecimalUtil.multiply(waitPaidAmount, afRenewalDetailDo.getBaseBankRate());
+					BigDecimal rateAmount = BigDecimalUtil.multiply(waitPaidAmount, afRenewalDetailDo.getBaseBankRate()).multiply(bankDouble).multiply(new BigDecimal(afRenewalDetailDo.getRenewalDay()).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP));
 
 					Date gmtPlanRepayment = afBorrowCashDo.getGmtPlanRepayment();
 					Date now = new Date(System.currentTimeMillis());
@@ -162,15 +166,15 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 						Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(now, afRenewalDetailDo.getRenewalDay() - 1));
 						afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					}
-					
-					afBorrowCashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(afBorrowCashDo.getOverdueAmount()).add(afBorrowCashDo.getRateAmount()));//累计已还款金额
-					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getOverdueAmount());//累计滞纳金
+
+					afBorrowCashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(afRenewalDetailDo.getPriorInterest()).add(afRenewalDetailDo.getPriorOverdue()).add(afRenewalDetailDo.getNextPoundage()));// 累计已还款金额
+					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getOverdueAmount());// 累计滞纳金
 					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);// 滞纳金置0
 					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));// 累计利息
 					afBorrowCashDo.setRateAmount(rateAmount);// 利息改成续期后的
 					afBorrowCashDo.setSumJfb(afBorrowCashDo.getSumJfb().add(afRenewalDetailDo.getJfbAmount()));// 累计使用集分宝
 					afBorrowCashDo.setSumRebate(afBorrowCashDo.getSumRebate().add(afRenewalDetailDo.getRebateAmount()));// 累计使用账户余额
-					afBorrowCashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage().add(afRenewalDetailDo.getRenewalAmount()));// 累计续期手续费
+					afBorrowCashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage().add(afRenewalDetailDo.getNextPoundage()));// 累计续期手续费
 					afBorrowCashDo.setRenewalNum(afBorrowCashDo.getRenewalNum() + 1);// 累计续期次数
 					afBorrowCashService.updateBorrowCash(afBorrowCashDo);
 
@@ -182,10 +186,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					afUserAccountDao.updateUserAccount(account);
 
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.RENEWAL_PAY, afRenewalDetailDo.getRebateAmount(), afRenewalDetailDo.getUserId(), afRenewalDetailDo.getRid()));
-					
+
 					AfUserDo userDo = afUserService.getUserById(afBorrowCashDo.getUserId());
 					pushService.repayRenewalSuccess(userDo.getUserName());
-					
+
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
