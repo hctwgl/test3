@@ -269,8 +269,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 					// 累计使用余额
 					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
-					bcashDo.setRepayAmount(repayAllAmount);
-
+					bcashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(repayAllAmount));
 
 					afBorrowCashService.updateBorrowCash(bcashDo);
 					// 优惠券设置已使用
@@ -283,13 +282,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
 					afUserAccountDao.updateUserAccount(account);
-					afUserAccountLogDao
-							.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.info("dealRepaymentSucess error", e);
-
 					return 0l;
 				}
 			}

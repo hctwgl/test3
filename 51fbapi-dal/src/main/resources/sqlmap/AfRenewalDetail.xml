@@ -79,9 +79,6 @@
 		<if test="tradeNo != null">
 			,trade_no=#{tradeNo}
 		</if>
-		<if test="renewalDay != null">
-			,renewal_day=#{renewalDay}
-		</if>
 		<if test="poundageRate != null">
 			,poundage_rate=#{poundageRate}
 		</if>
