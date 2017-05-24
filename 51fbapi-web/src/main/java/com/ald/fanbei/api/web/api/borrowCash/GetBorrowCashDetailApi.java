@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.Constants;
@@ -47,6 +48,8 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfRenewalDetailService afRenewalDetailService;
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -63,8 +66,10 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		if (afBorrowCashDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
-
+		BigDecimal paidAmount =afRepaymentBorrowCashService.getRepaymentAllAmountByBorrowId(rid);
+		
 		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo);
+		data.put("paidAmount", paidAmount);
 		data.put("rebateAmount", account.getRebateAmount());
 		data.put("jfbAmount", account.getJfbAmount());
 
@@ -114,7 +119,6 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 				data.put("renewalAmount", waitPaidAmount);
 			}
 		}
-
 		data.put("type", borrowCashType.getCode());
 		data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 		data.put("rejectReason", afBorrowCashDo.getReviewDetails());
@@ -126,7 +130,6 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 		data.put("gmtClose", afBorrowCashDo.getGmtClose());
 
-		data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
