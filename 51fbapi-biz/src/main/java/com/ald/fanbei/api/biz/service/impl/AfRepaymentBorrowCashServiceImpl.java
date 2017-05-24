@@ -225,22 +225,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						} catch (Exception e) {
 							logger.error("加入白名单失败", e);
 						}
-						
-						//提升借款额度
-						AfUserAccountDo accountBorrowDo= afUserAccountDao.getUserAccountInfoByUserId(repayment.getUserId());
-						BigDecimal accountBorrowAoumt = accountBorrowDo.getBorrowCashAmount();
-						AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashMoreAmount.getCode());
-						BigDecimal max = NumberUtil.objToBigDecimalDefault(resourceDo.getValue(), BigDecimal.ZERO);
-						BigDecimal addAmount = NumberUtil.objToBigDecimalDefault(resourceDo.getValue1(), BigDecimal.ZERO);
-						if(max.compareTo(accountBorrowAoumt)>0) {
-							if(addAmount.compareTo(max.subtract(accountBorrowAoumt))<=0){
-								AfUserAccountDo accountChange = new AfUserAccountDo();
-								accountChange.setRid(accountBorrowDo.getRid());
-								BigDecimal borrowAccountNew = accountBorrowAoumt.add(addAmount);
-								accountChange.setBorrowCashAmount(borrowAccountNew.compareTo(max)>0?max:borrowAccountNew);
-								afUserAccountDao.updateOriginalUserAccount(accountChange);
-							}
-						}
+						increaseBorrowCashAccount(afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());
+
 					}
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 start
 					BigDecimal tempRepayAmount = BigDecimal.ZERO;
@@ -296,7 +282,26 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			}
 		});
 	}
-
+	
+	private void increaseBorrowCashAccount(BigDecimal borrowAmount,Long userId){
+		//提升借款额度
+		AfUserAccountDo accountBorrowDo= afUserAccountDao.getUserAccountInfoByUserId(userId);
+		BigDecimal accountBorrowAoumt = accountBorrowDo.getBorrowCashAmount();
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashMoreAmount.getCode());
+		BigDecimal max = NumberUtil.objToBigDecimalDefault(resourceDo.getValue(), BigDecimal.ZERO);
+		BigDecimal addRate = NumberUtil.objToBigDecimalDefault(resourceDo.getValue1(), BigDecimal.ZERO);
+		BigDecimal addAmount = accountBorrowAoumt.multiply(addRate).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_CEILING).multiply(new BigDecimal(100));
+		if(max.compareTo(accountBorrowAoumt)>0) {
+			
+			if(addAmount.compareTo(max.subtract(accountBorrowAoumt))<=0){
+				AfUserAccountDo accountChange = new AfUserAccountDo();
+				accountChange.setRid(accountBorrowDo.getRid());
+				BigDecimal borrowAccountNew = accountBorrowAoumt.add(addAmount);
+				accountChange.setBorrowCashAmount(borrowAccountNew.compareTo(max)>0?max:borrowAccountNew);
+				afUserAccountDao.updateOriginalUserAccount(accountChange);
+			}
+		}
+	}
 	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type, BigDecimal amount, Long userId, Long repaymentId) {
 		// 增加account变更日志
 		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
