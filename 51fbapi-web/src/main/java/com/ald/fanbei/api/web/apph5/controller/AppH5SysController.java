@@ -206,7 +206,7 @@ public class AppH5SysController extends BaseController {
 
 		model.put("realName", accountDo.getRealName());//借款人
 		model.put("idNumber", accountDo.getIdNumber());//身份证号
-		model.put("phone", accountDo.getIdNumber());//联系方式
+		model.put("phone", userName);//联系方式
 		model.put("email", afUserDo.getEmail());//电子邮箱	 
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
