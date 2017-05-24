@@ -290,16 +290,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashMoreAmount.getCode());
 		BigDecimal max = NumberUtil.objToBigDecimalDefault(resourceDo.getValue(), BigDecimal.ZERO);
 		BigDecimal addRate = NumberUtil.objToBigDecimalDefault(resourceDo.getValue1(), BigDecimal.ZERO);
-		BigDecimal addAmount = accountBorrowAoumt.multiply(addRate).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_CEILING).multiply(new BigDecimal(100));
+		BigDecimal addAmount = borrowAmount.multiply(addRate).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_CEILING).multiply(new BigDecimal(100));
 		if(max.compareTo(accountBorrowAoumt)>0) {
 			
-			if(addAmount.compareTo(max.subtract(accountBorrowAoumt))<=0){
-				AfUserAccountDo accountChange = new AfUserAccountDo();
-				accountChange.setRid(accountBorrowDo.getRid());
-				BigDecimal borrowAccountNew = accountBorrowAoumt.add(addAmount);
-				accountChange.setBorrowCashAmount(borrowAccountNew.compareTo(max)>0?max:borrowAccountNew);
-				afUserAccountDao.updateOriginalUserAccount(accountChange);
-			}
+			
+			AfUserAccountDo accountChange = new AfUserAccountDo();
+			accountChange.setRid(accountBorrowDo.getRid());
+			BigDecimal borrowAccountNew = accountBorrowAoumt.add(addAmount);
+			accountChange.setBorrowCashAmount(borrowAccountNew.compareTo(max)>0?max:borrowAccountNew);
+			afUserAccountDao.updateOriginalUserAccount(accountChange);
 		}
 	}
 	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type, BigDecimal amount, Long userId, Long repaymentId) {
