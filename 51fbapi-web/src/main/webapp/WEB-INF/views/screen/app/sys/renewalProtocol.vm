@@ -23,7 +23,7 @@
 </head>
 <body style="background-color: #fff;">
 	<div class="protocol fenqiServiceProtocol">
-        <span class="tac" style="width: 100%;">个人现金服务合同</span><br><br>
+        <span class="tac" style="width: 100%;">续借协议</span><br><br>
         <p>
             甲方（借款人）： $!{realName}<br>
             身份证号：$!{idNumber}<br>
