@@ -185,7 +185,7 @@ public class AppH5SysController extends BaseController {
 		logger.info(JSON.toJSONString(model));
 	}
 
-	@RequestMapping(value = { "renewalLoanProtocol" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "renewalProtocol" }, method = RequestMethod.GET)
 	public void renewalLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
