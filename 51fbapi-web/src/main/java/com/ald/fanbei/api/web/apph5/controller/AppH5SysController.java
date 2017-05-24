@@ -182,7 +182,7 @@ public class AppH5SysController extends BaseController {
 					model.put("repaymentDay", repaymentDay);
 					
 					AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(),
-							AfResourceSecType.borrowCashLender.getCode());
+							AfResourceSecType.borrowCashLenderForCash.getCode());
 					model.put("lender", lenderDo.getValue());// 出借人
 					model.put("lenderIdNumber", rate.get("lenderIdNumber"));
 					model.put("lenderIdAmount", afBorrowCashDo.getAmount());
