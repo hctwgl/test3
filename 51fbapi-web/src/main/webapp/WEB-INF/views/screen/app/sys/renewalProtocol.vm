@@ -23,7 +23,7 @@
 </head>
 <body style="background-color: #fff;">
 	<div class="protocol fenqiServiceProtocol">
-        <h2>续借合同</h2>
+        <span class="tac" style="width: 100%;">个人现金服务合同</span><br><br>
         <p>
             甲方（借款人）： $!{realName}<br>
             身份证号：$!{idNumber}<br>
@@ -42,13 +42,15 @@
 			<ul>
 				<li style="padding-left: 0.2rem;">原始借款信息</li>
 				<li><i>原始借款协议编号</i><i>$!{borrowNo}</i></li>
-				<li><i>借款本金</i><i>￥$!{amountLower}</i>，大写人民币$!{amountCapital}</li>
+				<li><i>借款本金</i><i>￥$!{amountLower}</i></li>
+				<li><i>大写金额</i><i>$!{amountCapital}</i></li>
 				<li><i>日利率</i><i>{{changeDailyRate($!{yearRate})}}</i></li>
-				<li><i>借款期限</i><i>#if($!{gmtBorrowEnd})$dateUtil.formatDate($!{gmtBorrowEnd},"yyyy-MM-dd")#end</i></li>
+				<li><i>借款期限</i><i>#if($!{gmtBorrowBegin})$dateUtil.formatDate($!{gmtBorrowBegin},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtBorrowEnd},"yyyy-MM-dd")#end</i></li>
 				<li style="padding-left: 0.2rem;">续借信息</li>
-				<li><i>续借金额</i><i>￥$!{renewalAmountLower}</i>，大写人民币$!{renewalAmountCapital}</li>
+				<li><i>续借金额</i><i>￥$!{renewalAmountLower}</i></li>
+				<li><i>大写金额</i><i>$!{renewalAmountCapital}</i></li>
 				<li><i>日利率</i><i>{{changeDailyRate($!{yearRate})}}</i></li>
-				<li><i>借款期限</i><i>#if($!{gmtRenewalEnd})$dateUtil.formatDate($!{gmtRenewalEnd},"yyyy-MM-dd")#end</i></li>
+				<li><i>借款期限</i><i>$dateUtil.formatDate($!{gmtRenewalBegin},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtRenewalEnd},"yyyy-MM-dd")</i></li>
 				<li><i>还款方式</i><i>一次性还本付息</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
 				<li><i>还款日</i><i>#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
