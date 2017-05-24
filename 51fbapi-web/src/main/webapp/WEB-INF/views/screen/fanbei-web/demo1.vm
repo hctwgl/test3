@@ -21,7 +21,7 @@
 
                 // var appVersion = "3.4.2";
 
-                var appVersion = getInfo().appVersion.replace(/\./g,"");
+                /*var appVersion = getInfo().appVersion.replace(/\./g,"");
                 var appSystem = getInfo().id.substr(0,2);
 
                 if ( appSystem == "i_" ) {
@@ -38,7 +38,11 @@
                     } else {
                         window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
                     }
-                }
+                }*/
+
+
+                window.location.href = 'tel://' + '10086';
+
             }
         }
     });

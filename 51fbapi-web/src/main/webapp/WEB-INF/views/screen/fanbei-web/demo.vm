@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017051101")
+    #set($version="2017052302")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/05")
 <title>母亲节快乐</title>
 <link rel="stylesheet" type="text/css" href="/dist/activity/05/motherDay.css?version=$version">
@@ -13,40 +13,6 @@
 </div>
 
 <script type="text/javascript" src="/dist/activity/05/demo.js?version=$version"></script>
-<!-- <script type="text/javascript">
 
-    new Vue({
-        el:'.footer',
-        methods:{
-            bombBox: function(){ // 规则弹窗
-
-                // var appVersion = "3.4.2";
-                
-                var appVersion = getInfo().appVersion.replace(/\./g,"");
-                var appSystem = getInfo().id.substr(0,2);
-
-                if ( appSystem == "i_" ) {
-
-                    if ( appVersion <= "350" ) {
-                        requestMsg("你的版本过低请升级");
-                    } else {
-
-                        window.location.href = '/fanbei-web/opennative?name=APP_SIGNIN&config={"configType":"login"}';
-
-                    }
-                } else if( appSystem == "a_" ){
-
-                    if ( appVersion <= "351" ) {
-                        requestMsg("你的版本过低请升级");
-                    } else {
-                        window.location.href = '/fanbei-web/opennative?name=APP_SIGNIN&config={"configType":"login"}';
-                    }
-                }
-
-
-            }
-        }
-    });
-</script> -->
 </body>
 </html>

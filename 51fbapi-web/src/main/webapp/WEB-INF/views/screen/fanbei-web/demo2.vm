@@ -14,6 +14,11 @@
 
 <script type="text/javascript">
 
+    var userName = "";
+    if(getInfo().userName){
+        userName=getInfo().userName;
+    };
+
     new Vue({
         el:'.footer',
         methods:{
@@ -21,7 +26,7 @@
 
                 // var appVersion = "3.4.2";
 
-                var appVersion = getInfo().appVersion.replace(/\./g,"");
+                /*var appVersion = getInfo().appVersion.replace(/\./g,"");
                 var appSystem = getInfo().id.substr(0,2);  // 截取appId的开头
 
                 if ( appSystem == "i_" ) {
@@ -39,7 +44,10 @@
                     } else {
                         window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"邀请有礼0517","content":"五月电影0517","shareUrl":"https://app.51fanbei.com/fanbei-web/mayMovie"}';
                     }
-                }
+                }*/
+
+
+
             }
         }
     });

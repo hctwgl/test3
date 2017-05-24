@@ -3,7 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.system;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -44,32 +43,30 @@ public class CheckVersionApi implements ApiHandle {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
         Map<String, Object> params = requestDataVo.getParams();
         AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
+        String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
         if (resourceInfo == null) {
         	resp.addResponseData("isForAuth", YesNoStatus.NO.getCode());
         } 
         //需要打开为了审核的相关版本
         //VALUE是为了IOS审核
         if(requestDataVo.getId().startsWith("i")) {
-        	List<String> needAuthVersion = Arrays.asList(resourceInfo.getValue().split(","));
-        	if (needAuthVersion.contains(context.getAppVersion() + StringUtils.EMPTY)) {
-        		resp.addResponseData("isForAuth" , YesNoStatus.YES.getCode());
+        	String iosCheckVersion = resourceInfo.getValue();
+        	if (StringUtils.isBlank(iosCheckVersion)) {
+        		resp.addResponseData("isForAuth", YesNoStatus.NO.getCode());
         	} else {
-        		resp.addResponseData("isForAuth" , YesNoStatus.NO.getCode());
+        		List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
+        		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
+    			resp.addResponseData("isForAuth", array.contains(desVersion) ? YesNoStatus.YES.getCode() : YesNoStatus.NO.getCode());
         	}
         } else {
-        //VALUE1是为了Android审核
-        	String androidCheckVersion = resourceInfo.getValue1();
+        //VALUE2是为了Android审核
+        	String androidCheckVersion = resourceInfo.getValue2();
         	if (StringUtils.isBlank(androidCheckVersion)) {
         		resp.addResponseData("isForAuth", YesNoStatus.NO.getCode());
         	} else {
         		List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
-        		String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
         		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-        		if (array.contains(desVersion)) {
-        			resp.addResponseData("isForAuth", YesNoStatus.YES.getCode());
-        		} else {
-        			resp.addResponseData("isForAuth", YesNoStatus.NO.getCode());
-        		}
+        		resp.addResponseData("isForAuth", array.contains(desVersion) ? YesNoStatus.YES.getCode() : YesNoStatus.NO.getCode());
         	}
         }
         return resp;
