@@ -50,7 +50,7 @@
 				<li><i>续借金额</i><i>￥$!{renewalAmountLower}</i></li>
 				<li><i>大写金额</i><i>$!{renewalAmountCapital}</i></li>
 				<li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li>
-				<li><i>借款期限</i><i>$dateUtil.formatDate($!{gmtRenewalBegin},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtRenewalEnd},"yyyy-MM-dd")</i></li>
+				<li><i>续款期限</i><i>$dateUtil.formatDate($!{gmtRenewalBegin},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtRenewalEnd},"yyyy-MM-dd")</i></li>
 				<li><i>还款方式</i><i>一次性还本付息</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
 				<li><i>还款日</i><i>#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
