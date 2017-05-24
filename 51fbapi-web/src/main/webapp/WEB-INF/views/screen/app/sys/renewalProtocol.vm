@@ -25,9 +25,9 @@
 	<div class="protocol fenqiServiceProtocol">
         <h2>续借合同</h2>
         <p>
-            甲方（借款人）：<!-- $!{realName} --><br>
-            身份证号：<!-- $!{idNumber} --><br>
-            联系方式：<!-- $!{mobile} --><br><br>
+            甲方（借款人）： $!{realName}<br>
+            身份证号：$!{idNumber}<br>
+            联系方式： $!{phone}<br><br>
 
             乙方（出借人）：$!{lender}<br>
             丙方：浙江阿拉丁电子商务股份有限公司<br><br>
@@ -41,17 +41,17 @@
             <span>第一条 续借信息</span><br>
 			<ul>
 				<li style="padding-left: 0.2rem;">原始借款信息</li>
-				<li><i>原始借款协议编号</i><i><!-- $!{amountLower} --></i></li>
-				<li><i>借款本金</i><i>￥<!-- $!{amountLower} --></i>，大写人民币<!-- $!{amountCapital} -->123</li>
-				<li><i>日利率</i><i><!-- {{changeRate($!{yearRate})}} -->按%计算利息</i></li>
-				<li><i>借款期限</i><i></i></li>
+				<li><i>原始借款协议编号</i><i>$!{borrowNo}</i></li>
+				<li><i>借款本金</i><i>￥$!{amountLower}</i>，大写人民币$!{amountCapital}</li>
+				<li><i>日利率</i><i>{{changeDailyRate($!{yearRate})}}</i></li>
+				<li><i>借款期限</i><i>#if($!{gmtBorrowEnd})$dateUtil.formatDate($!{gmtBorrowEnd},"yyyy-MM-dd")#end</i></li>
 				<li style="padding-left: 0.2rem;">续借信息</li>
-				<li><i>续借金额</i><i>￥<!-- $!{amountLower} --></i>，大写人民币<!-- $!{amountCapital} -->123</li>
-				<li><i>日利率</i><i><!-- {{changeRate($!{yearRate})}} -->按%计算利息</i></li>
-				<li><i>借款期限</i><i></i></li>
+				<li><i>续借金额</i><i>￥$!{renewalAmountLower}</i>，大写人民币$!{renewalAmountCapital}</li>
+				<li><i>日利率</i><i>{{changeDailyRate($!{yearRate})}}</i></li>
+				<li><i>借款期限</i><i>#if($!{gmtRenewalEnd})$dateUtil.formatDate($!{gmtRenewalEnd},"yyyy-MM-dd")#end</i></li>
 				<li><i>还款方式</i><i>一次性还本付息</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
-				<li><i>还款日</i><i></i></li>
+				<li><i>还款日</i><i>#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
 			</ul><br>
 
 			<span>第二条 续借约定</span><br>
@@ -130,20 +130,33 @@
                         return rate;
                     },
                     changePrincipal: function(principalNum){ // 本金金额保留二位小数
-
                         principalNum = parseFloat(principalNum);
                         principalNum = principalNum.toFixed(2);     //截取小数点后2位
                         return principalNum;
                     },
                     changeDailyRate: function(dailyRate){ // 日利率/365
-
                         dailyRate = dailyRate/360; // 日利率
                         dailyRate = (dailyRate*100).toFixed(4);   //截取小数点后4位
                         dailyRate = parseFloat(dailyRate);
-                        dailyRate = dailyRate+'%';
+                        if(dailyRate){
+                            dailyRate = dailyRate+'%';
+                        }else{
+                            dailyRate = '';
+                        }
                         return dailyRate;
+                    },
+                    formatDateTime:function (date) {
+                        var y = date.getFullYear();
+                        var m = date.getMonth() + 1;
+                        m = m < 10 ? ('0' + m) : m;
+                        var d = date.getDate();
+                        d = d < 10 ? ('0' + d) : d;
+                        var h = date.getHours();
+                        var minute = date.getMinutes();
+                        minute = minute < 10 ? ('0' + minute) : minute;
+                        return y + '-' + m + '-' + d+' '+h+':'+minute;
                     }
-                }
+            }
             });
         </script>
 </body>
