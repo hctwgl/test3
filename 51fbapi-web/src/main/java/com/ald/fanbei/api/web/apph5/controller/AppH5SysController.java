@@ -191,6 +191,8 @@ public class AppH5SysController extends BaseController {
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		Long renewalId = NumberUtil.objToLongDefault(request.getParameter("renewalId"), 0l);
+		int renewalDay = NumberUtil.objToIntDefault(request.getParameter("renewalDay"), 0);
+		BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("renewalAmount"), BigDecimal.ZERO);
 		
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		if (afUserDo == null) {
@@ -213,19 +215,8 @@ public class AppH5SysController extends BaseController {
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble);
-
 		model.put("yearRate", bankService);
-		if (renewalId > 0) {
-			AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByRenewalId(renewalId);
-			model.put("renewalAmountLower", afRenewalDetailDo.getRenewalAmount());//续借金额小写
-			model.put("renewalAmountCapital", toCapital(afRenewalDetailDo.getRenewalAmount().doubleValue()));//续借金额大写	
-			Date gmtRenewalBegin = afRenewalDetailDo.getGmtCreate();
-			Date gmtRenewalEnd = DateUtil.addDays(gmtRenewalBegin, afRenewalDetailDo.getRenewalDay() - 1);
-			model.put("gmtRenewalBegin", gmtRenewalBegin);
-			model.put("gmtRenewalEnd", gmtRenewalEnd);
-			model.put("repaymentDay", gmtRenewalEnd);
-		}
-
+		
 		if (borrowId > 0) {
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
@@ -241,7 +232,51 @@ public class AppH5SysController extends BaseController {
 					model.put("lender", rate.get("lender"));// 出借人
 				}
 			}
+			
+			if (renewalId > 0) {
+				AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByRenewalId(renewalId);
+				Date gmtCreate = afRenewalDetailDo.getGmtCreate();
+				Date gmtPlanRepayment = afRenewalDetailDo.getGmtPlanRepayment();
+				// 如果预计还款时间在申请日期之后，则在原预计还款时间的基础上加上续期天数，否则在申请日期的基础上加上续期天数，作为新的续期截止时间
+				if (gmtPlanRepayment.after(gmtCreate)) {
+					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay() - 1));
+					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+					model.put("gmtRenewalBegin", gmtPlanRepayment);
+					model.put("gmtRenewalEnd", repaymentDay);
+					model.put("repaymentDay", repaymentDay);
+				} else {
+					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtCreate, afRenewalDetailDo.getRenewalDay() - 1));
+					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+					model.put("gmtRenewalBegin", gmtCreate);
+					model.put("gmtRenewalEnd", repaymentDay);
+					model.put("repaymentDay", repaymentDay);
+				}
+				model.put("renewalAmountLower", afRenewalDetailDo.getRenewalAmount());//续借金额小写
+				model.put("renewalAmountCapital", toCapital(afRenewalDetailDo.getRenewalAmount().doubleValue()));//续借金额大写	
+//				Date gmtRenewalBegin = afRenewalDetailDo.getGmtCreate();
+//				Date gmtRenewalEnd = DateUtil.addDays(gmtRenewalBegin, afRenewalDetailDo.getRenewalDay() - 1);
+			} else {
+				Date gmtPlanRepayment = afBorrowCashDo.getGmtPlanRepayment();
+				Date now = new Date(System.currentTimeMillis());
+				// 如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的续期截止时间
+				if (gmtPlanRepayment.after(now)) {
+					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtPlanRepayment, renewalDay - 1));
+					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+					model.put("gmtRenewalBegin", gmtPlanRepayment);
+					model.put("gmtRenewalEnd", repaymentDay);
+					model.put("repaymentDay", repaymentDay);
+				} else {
+					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(now, renewalDay - 1));
+					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+					model.put("gmtRenewalBegin", now);
+					model.put("gmtRenewalEnd", repaymentDay);
+					model.put("repaymentDay", repaymentDay);
+				}
+				model.put("renewalAmountLower", renewalAmount);//续借金额小写
+				model.put("renewalAmountCapital", toCapital(renewalAmount.doubleValue()));//续借金额大写	
+			}
 		}
+		
 		logger.info(JSON.toJSONString(model));
 	}
 
