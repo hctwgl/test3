@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-17 21:00:56
+* @Last Modified time: 2017-05-25 19:07:45
 */
 
 
@@ -35,27 +35,27 @@ $(function(){
         timerS--;
         if (timerS<=0) {
 
-        	$(".register_codeBtn").removeAttr("disabled");
+        	$("#register_codeBtn").removeAttr("disabled");
 
-         	$(".register_codeBtn").text("获取验证码");
+         	$("#register_codeBtn").text("获取验证码");
          	clearInterval(timerInterval);
          	timerS = 60;
-			$(".register_codeBtn").attr("isState",0);
+			$("#register_codeBtn").attr("isState",0);
 
         } else {
-         	$(".register_codeBtn").text(timerS+" s");         	
+         	$("#register_codeBtn").text(timerS+" s");         	
         }
 	};
 
 	// 获取验证码
-	$(".register_codeBtn").click(function(){
+	$("#register_codeBtn").click(function(){
 
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
 		
 		if ( (isState==0 || !isState) && !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){ // 验证码不能为空、判断电话开头
 				
-			$(".register_codeBtn").attr("disabled",true);
+			$("#register_codeBtn").attr("disabled",true);
 			$.ajax({
     			url: "/app/user/getRegisterSmsCode",
     			type: "POST",
@@ -66,13 +66,13 @@ $(function(){
     			success: function(returnData){
     				if (returnData.success) {
 
-    					$(".register_codeBtn").attr("isState",1);
-						$(".register_codeBtn").text(timerS+" s");
+    					$("#register_codeBtn").attr("isState",1);
+						$("#register_codeBtn").text(timerS+" s");
              			timerInterval = setInterval(timeFunction,1000);
 
     				} else {
     					requestMsg(returnData.msg);
-    					$(".register_codeBtn").removeAttr("disabled");
+    					$("#register_codeBtn").removeAttr("disabled");
     				}
     			},
     			error: function(){
@@ -102,7 +102,7 @@ $(function(){
 		var channelCode = $("#channelCode").val();
 		var pointCode = $("#pointCode").val();
 
-		var isState = $(".register_codeBtn").attr("isState");
+		var isState = $("#register_codeBtn").attr("isState");
 
 
 		if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
@@ -113,7 +113,7 @@ $(function(){
 
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
 
-						if ( $(".register_codeBtn").attr("isState") == 1 ) {
+						if ( $("#register_codeBtn").attr("isState") == 1 ) {
 
 							_taq.push({convert_id:"59212981134", event_type:"form"})
 							$.ajax({ // 设置登录密码

@@ -15,7 +15,7 @@
 		background-size: cover;
 		ul{
 			padding-top: 8.48rem;
-			li{
+			li,.channelRegisterLi{
 				position: relative;
 				text-align: left;
 				width: 5.01rem;
@@ -44,13 +44,64 @@
 				input:-ms-input-placeholder{
 					color: #BFBFBF;
 				}
+				.phoneIcon,.licIcon,.clockIcon{
+					position: absolute;
+					top: 50%;
+					left: 20px;
+					-webkit-transform: translateY(-50%);
+					transform: translateY(-50%);
+				}
+				.phoneIcon{
+					width: 0.37rem;
+					height: 0.54rem;
+					background-image: url("@{url}/channelRegister/phone.png");
+					-webkit-background-size: cover;
+					background-size: cover;
+				}
+				.licIcon{
+					width: 0.44rem;
+					height: 0.55rem;
+					background-image: url("@{url}/channelRegister/lic.png");
+					-webkit-background-size: cover;
+					background-size: cover;
+				}
+				.clockIcon{
+					width: 0.46rem;
+					height: 0.55rem;
+					background-image: url("@{url}/channelRegister/clock.png");
+					-webkit-background-size: cover;
+					background-size: cover;
+				}
+			}
+			.channelRegisterLi2{
+				width: 5.96rem;
+			}
+			.channelRegisterLi input,.register_verification_left input{
+				padding-left: 0.7rem;
+				font-size: 0.32rem;
+			}
+			li.channelRegisterLi:first-child,li.channelRegisterLi:nth-child(3){
+				width: 5.96rem;
+				height: 0.96rem;
+				background-image: url("@{url}/channelRegister/btn_form1.png");
+				input{
+					// width: 4.6rem;
+				}
 			}
 			li:first-child,li:nth-child(3){
 				height: 0.87rem;
 				background-image: url("@{url}/channelRegister/channel_btn1.png");
 				input{
-					width: 4.6rem;
+					// width: 4.6rem;
 				}
+			}
+			.register_verification_left{
+				float: left;
+				width: 3.98rem;
+				height: 0.96rem;
+				background-image: url("@{url}/channelRegister/btn_form2.png");
+				-webkit-background-size: cover;
+				background-size: cover;
 			}
 			.register_verification_main{
 				float: left;
@@ -75,6 +126,15 @@
 				background-size: cover;
 				color: #fd7923;
 			}
+			.register_codeBtn_right{
+				float: right;
+				width: 1.78rem;
+				height: 0.96rem;
+				border-radius: 0.48rem;
+				background-color: #FFE400;
+				color: #0364B1;
+				font-size: 0.32rem;
+			}
 			.register_required{
 				color: red;
 				position: absolute;
@@ -88,6 +148,9 @@
 		}
 		.channelRegisterUl6{
 			padding-top: 7.8rem;
+		}
+		.channelRegisterUl78{
+			padding-top: 7.1rem;
 		}
 		.register_submitBtn_wrap,.channelRegisterBtn6{
 			width: 5.31rem;
@@ -110,12 +173,39 @@
 			background-image: url("@{url}/channelRegister/channel_btn6.png");
 			margin-bottom: 0.25rem;
 		}
+		.channelRegisterBtn78{
+			width: 6.02rem;
+			height: 1.07rem;
+			line-height: 0.95rem;
+			text-align: center;
+			margin: 0 auto;
+			background-image: url("@{url}/channelRegister/bigbutton.png");
+			-webkit-background-size: cover;
+			background-size: cover;
+		}
+		.channelRegisterBtn78 .register_submitBtn{
+			font-size: 0.38rem;
+			color: #0364B1;
+		}
 		/*协议*/
-		.register_checkbox{
+		.register_checkbox78{
+			width: 5.96rem;
+			padding-top: 0.4rem;
+		} 
+		.register_checkbox78 .input_check+label{
+			margin-top: 0.2rem;
+		}
+		.register_checkbox78 .color78{
+			font-size: 0.28rem;
+			a{
+				color: #FFE400;
+			}
+		}
+		.register_checkbox,.register_checkbox78{
 			position: relative;
 			height: 0.36rem;
 			line-height: 0.36rem;
-			 margin: 0.16rem 1.35rem 0; 
+			margin: 0.16rem 1.35rem 0; 
 			text-align: left;
 			.input_check {
 			    visibility: hidden;
@@ -158,6 +248,13 @@
 					color: #111;
 				}
 			}
+			.register_checkboxP{
+				font-size: 0.3rem;
+				color: #fff;
+				a{
+					color: #FFE400;
+				}
+			}
 		}
 		input,button{
 			background-color: transparent;
@@ -192,6 +289,15 @@
 		height: 13.34rem;
 		background-image: url("@{url}/channelRegister/channelRegister7.jpg")
 	}
+
+	 .channelRegister8{
+		height: 15.7rem;
+		background-image: url("@{url}/channelRegister/channelRegister7_1.jpg")
+	}
+	.channelRegister9{
+		height: 15.7rem;
+		background-image: url("@{url}/channelRegister/channelRegister8.jpg")
+	} 
 	.channelRegister_copyright{
 		width: 7.5rem;
 		height: 0.45rem;
@@ -213,11 +319,15 @@
 	.copyright4{
 		background-color: #F34636;
 	}
-	.copyright6{
+	.copyright5{
 		background-color: #140605;
 	}
-	.copyright7{
+	.copyright6{
 		background-color: #FFEE8C;
 		color: #111;
+	}
+	.copyright78{
+		background-color: #0065B5;
+		color: #fff;
 	}
 }
