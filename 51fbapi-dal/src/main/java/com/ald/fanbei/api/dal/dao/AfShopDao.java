@@ -20,4 +20,12 @@ public interface AfShopDao {
 	AfShopDo getShopByPlantNameAndTypeAndServiceProvider(@Param("platformName")String platformName, @Param("type")String type, @Param("serviceProvider")String serviceProvider);
 	
 	List<AfShopDo> getShopList(AfShopQuery query);
+	
+	
+	/**
+	 * 获取预发布环境的商城
+	 * @param query
+	 * @return
+	 */
+	List<AfShopDo> getPreEnvShopList(AfShopQuery query);
 }

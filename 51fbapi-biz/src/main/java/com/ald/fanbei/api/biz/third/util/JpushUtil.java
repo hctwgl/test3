@@ -203,7 +203,7 @@ public class JpushUtil extends AbstractThird{
 		Builder build = Options.newBuilder();
 		build.setSendno(Options.sendno().getSendno());
 		String invelmentType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-		if(!StringUtils.isBlank(invelmentType)&&Constants.INVELOMENT_TYPE_ONLINE.equals(invelmentType)){
+		if(!StringUtils.isBlank(invelmentType)&&(Constants.INVELOMENT_TYPE_ONLINE.equals(invelmentType) || Constants.INVELOMENT_TYPE_PRE_ENV.equals(invelmentType))){
 			on_line= true;
 		}
 		build.setApnsProduction(on_line);

@@ -7,6 +7,8 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfShopDao;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
@@ -34,7 +36,13 @@ public class AfShopServiceImpl implements AfShopService {
 
 	@Override
 	public List<AfShopDo> getShopList(AfShopQuery query) {
-		return afShopDao.getShopList(query);
+		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+			return afShopDao.getShopList(query);
+		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+			return afShopDao.getPreEnvShopList(query);
+		}
+		return null;
 	}
 
 }
