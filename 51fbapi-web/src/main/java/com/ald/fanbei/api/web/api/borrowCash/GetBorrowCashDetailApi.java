@@ -27,6 +27,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -110,11 +111,15 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 			BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
 			// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 			if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) >= 0) {
-				data.put("renewalStatus", "Y");
 				data.put("renewalDay", allowRenewalDay);
 				data.put("renewalAmount", waitPaidAmount);
+				AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
+				if (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P")) {
+					data.put("renewalStatus", "Y");
+				}
 			}
 		}
+		
 		data.put("type", borrowCashType.getCode());
 		data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 		data.put("rejectReason", afBorrowCashDo.getReviewDetails());
