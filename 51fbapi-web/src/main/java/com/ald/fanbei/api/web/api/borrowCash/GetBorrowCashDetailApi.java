@@ -114,9 +114,9 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 				data.put("renewalDay", allowRenewalDay);
 				data.put("renewalAmount", waitPaidAmount);
 				AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
-				if (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P")) {
+				if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
 					data.put("renewalStatus", "Y");
-				}
+				} 
 			}
 		}
 		
