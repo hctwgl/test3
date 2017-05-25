@@ -118,7 +118,7 @@
 		borrow_id =
 		#{borrowCashId}
 		AND
-		status != 'A'
+		status != 'A' AND status != 'R' 
 		ORDER BY
 		gmt_create DESC
 
