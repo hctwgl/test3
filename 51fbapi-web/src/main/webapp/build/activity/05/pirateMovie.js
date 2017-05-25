@@ -34,7 +34,19 @@ $(function(){
 
     //点击一起出发吧
     $('.go').click(function(){
-      location.href="kouMovie";
+      $.ajax({
+            url: '/fanbei-web/getBrandUrl',
+            data:{'shopId':'2','userName':userName},
+            type: 'POST',
+            success:function (data) {
+                data=eval('(' + data + ')');
+                if(data.success){
+                   location.href=data.url;
+                }else{
+                   requestMsg(data.msg);
+                }
+            }
+        });
     })
 
 })
