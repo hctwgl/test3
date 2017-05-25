@@ -47,8 +47,8 @@
         <li><i>还款方式</i><i>到期一次性还本付息</i></li>
         <li><i>还款日</i><i>#if($!{gmtPlanRepayment})$dateUtil.formatDate($!{gmtPlanRepayment},"yyyy-MM-dd")#end</i></li>
         <li><i>借款用途</i><i>个人消费</i></li>
-        <li><i>手续费率</i><i>$!{poundageRate}</i></li>
-        <li><i>逾期手续费率</i><i>$!{overduePoundageRate}</i></li>
+        <li><i>手续费率</i><i>#if($!{poundageRate}){{changeRate($!{poundageRate})}}#end</i></li>
+        <li><i>逾期手续费率</i><i>#if($!{overduePoundageRate}){{changeRate($!{overduePoundageRate})}}#end</i></li>
     </ul><br>
 
     <span>第二条 借款发放</span><br>
