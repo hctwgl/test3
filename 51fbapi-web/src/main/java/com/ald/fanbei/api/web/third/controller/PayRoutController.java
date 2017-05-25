@@ -149,14 +149,16 @@ public class PayRoutController {
     			if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
     				//生成账单
     				AfBorrowDo borrow = afBorrowService.getBorrowById(result);
-    				afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
-    						result+StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+    				//TODO 更新打款记录状态
+//    				afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
+//    						result+StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
     				afBorrowService.cashBillTransfer(borrow, afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
         		}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
         			//生成账单
         			AfBorrowDo borrow = afBorrowService.getBorrowById(result);
-        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
-    						result+StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+        			//TODO 更新打款记录状态
+//        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(borrow.getCardName(), borrow.getCardNumber(), "delegatePay", borrow.getOrderNo(), 
+//    						result+StringUtils.EMPTY, merPriv, borrow.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
     				afBorrowService.consumeBillTransfer(afBorrowService.getBorrowById(result), afUserAccountService.getUserAccountByUserId(borrow.getUserId()));
         		}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
         			AfCashRecordDo record = new AfCashRecordDo();
@@ -172,17 +174,17 @@ public class PayRoutController {
         			//退款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
         			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-        			//ups打款记录
-        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
-        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+        			//TODO 更新打款记录状态
+//        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
+//        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
         			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, true);
         		} else if (UserAccountLogType.AGENT_BUY_BANK_REFUND.getCode().equals(merPriv)) {//代买
         			//退款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
         			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-        			//ups打款记录
-        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
-        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
+        			//TODO 更新打款记录状态
+//        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
+//        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.SUCCESS.getCode()));
         			afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, false);
         		}
     			

@@ -177,10 +177,10 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	        			//订单退款记录
 	    				refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
 	    				afOrderRefundService.updateOrderRefund(refundInfo);
-	    				
-	        			//ups打款记录
-	        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
-	        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
+	    				//TODO 更新打款记录状态
+//	        			//ups打款记录
+//	        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
+//	        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
 	        			
 	        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), refundInfo.getAmount(),refundInfo.getRefundNo());
 	        		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){
