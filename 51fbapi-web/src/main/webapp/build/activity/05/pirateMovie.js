@@ -36,7 +36,7 @@ $(function(){
     $('.go').click(function(){
       $.ajax({
             url: '/fanbei-web/getBrandUrl',
-            data:{'shopId':'2','userName':userName},
+            data:{'shopId':'1','userName':userName},
             type: 'POST',
             success:function (data) {
                 data=eval('(' + data + ')');

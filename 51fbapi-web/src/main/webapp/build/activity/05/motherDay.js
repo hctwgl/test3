@@ -17,7 +17,7 @@ $(function(){
                 if(data.success){
                    location.href=data.url;
                 }else{
-                   location.href=data.url; 
+                   requestMsg(data.msg);
                 }
             }
         });
