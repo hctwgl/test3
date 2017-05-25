@@ -89,12 +89,8 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 		}
 		AfBorrowCashType borrowCashType = AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType());
-		Integer day = NumberUtil.objToIntDefault(borrowCashType.getCode(), 7);
 
-		if (afBorrowCashDo.getGmtArrival() != null) {
-			Date repaymentDay = DateUtil.addDays(DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival()), day - 1);
-			data.put("gmtLastRepay", repaymentDay);
-		}
+		data.put("gmtLastRepay", afBorrowCashDo.getGmtPlanRepayment());
 		
 		data.put("renewalStatus", "N");
 		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());

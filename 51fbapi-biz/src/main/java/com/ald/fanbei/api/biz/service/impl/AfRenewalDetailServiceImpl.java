@@ -151,9 +151,11 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					AfResourceDo bankDoubleResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_BASE_BANK_DOUBLE);
 					BigDecimal bankDouble = new BigDecimal(bankDoubleResource.getValue());// 借钱最高倍数
 					
-					// 未还金额 = 借款金额 - 已还金额
-					BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
-					BigDecimal rateAmount = BigDecimalUtil.multiply(waitPaidAmount, afRenewalDetailDo.getBaseBankRate()).multiply(bankDouble).multiply(new BigDecimal(afRenewalDetailDo.getRenewalDay()).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP));
+					//未还金额
+					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
+					BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+					
+					BigDecimal rateAmount = BigDecimalUtil.multiply(waitPaidAmount, afRenewalDetailDo.getBaseBankRate(), bankDouble, new BigDecimal(afRenewalDetailDo.getRenewalDay()).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP));
 
 					Date gmtPlanRepayment = afBorrowCashDo.getGmtPlanRepayment();
 					Date now = new Date(System.currentTimeMillis());
