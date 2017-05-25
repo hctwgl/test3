@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.log.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
@@ -225,7 +227,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						} catch (Exception e) {
 							logger.error("加入白名单失败", e);
 						}
-						increaseBorrowCashAccount(afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());
+						increaseBorrowCashAccount(afBorrowCashDo,afBorrowCashDo.getUserId());
 
 					}
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 start
@@ -283,17 +285,18 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		});
 	}
 	
-	private void increaseBorrowCashAccount(BigDecimal borrowAmount,Long userId){
+	private void increaseBorrowCashAccount(AfBorrowCashDo afBorrowCashDo,Long userId){
 		//提升借款额度
+		
+		BigDecimal borrowAmount = afBorrowCashDo.getAmount();
 		AfUserAccountDo accountBorrowDo= afUserAccountDao.getUserAccountInfoByUserId(userId);
 		BigDecimal accountBorrowAoumt = accountBorrowDo.getBorrowCashAmount();
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashMoreAmount.getCode());
 		BigDecimal max = NumberUtil.objToBigDecimalDefault(resourceDo.getValue(), BigDecimal.ZERO);
 		BigDecimal addRate = NumberUtil.objToBigDecimalDefault(resourceDo.getValue1(), BigDecimal.ZERO);
-		BigDecimal addAmount = borrowAmount.multiply(addRate).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_CEILING).multiply(new BigDecimal(100));
-		if(max.compareTo(accountBorrowAoumt)>0) {
-			
-			
+		BigDecimal addAmount = borrowAmount.multiply(addRate).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_DOWN).multiply(new BigDecimal(100));
+
+		if(max.compareTo(accountBorrowAoumt)>0&& StringUtils.equals(afBorrowCashDo.getType(), AfBorrowCashType.FOURTEEN.getName())) {
 			AfUserAccountDo accountChange = new AfUserAccountDo();
 			accountChange.setRid(accountBorrowDo.getRid());
 			BigDecimal borrowAccountNew = accountBorrowAoumt.add(addAmount);
