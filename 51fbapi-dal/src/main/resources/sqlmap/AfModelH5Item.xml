@@ -41,17 +41,17 @@
 			af_model_h5_item a2 
 		ON 
 			a1.id = a2.item_value2  
-		GROUP BY a1.id
-		HAVING
+		WHERE
 			 a1.type ='CATEGORY' 
 		AND 
 			a1.model_id=#{modelId}
 		AND
 			a1.is_delete = 0
-		
-		order by
+		GROUP BY a1.id
+		ORDER BY
 			a1.sort 
 		desc
+		
 	</select>
 	<select id="getModelH5ItemCategoryListByModelId" resultType="AfModelH5ItemDo">
 		SELECT
