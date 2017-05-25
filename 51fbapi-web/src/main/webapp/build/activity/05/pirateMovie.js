@@ -7,7 +7,7 @@ if(getInfo().userName){
 };
 $(function(){
     var currentStamp = Date.parse(new Date());
-    var activityTime = "2017-05-26 10:00:00";
+    var activityTime = "2017-05-20 10:00:00";
     var activityStamp = Date.parse(activityTime);
      //点击立抢10元优惠券
     $('.grabTenyuan').click(function(){
@@ -16,29 +16,11 @@ $(function(){
         	$(".tips").fadeIn();
         	setTimeout('$(".tips").fadeOut()', 2000);
         } else {
-                $.ajax({
-                url: '/fanbei-web/pickBoluomeCoupon',
-                data:{'sceneId':'8139','userName':userName},
-                type: 'POST',
-                success:function (data) {
-                    data=eval('(' + data + ')');
-                    if(data.success){
-                        requestMsg("领劵成功");
-                    }else{
-                        if(data.url){
-                            if (getBlatFrom() == 2) {
-                                location.href=data.url;
-                            }else{
-                                requestMsg("请退出当前活动页面,登录后再进行领劵");
-                            }
-                        }else{
-                            requestMsg(data.msg);
-                        }
-                    }
-                }
-              });    
+              loginSuccess(userName)
            }       
-    })
+    });
+
+
 
     //点击规则
     $('.clickRule').click(function(){
@@ -57,3 +39,33 @@ $(function(){
 
 })
 
+function loginSuccess(obj) {
+    userName=obj;
+    $.ajax({
+        url: '/fanbei-web/pickBoluomeCoupon',
+        data:{'sceneId':'8168','userName':userName},
+        type: 'POST',
+        success:function (data) {
+            data=eval('(' + data + ')');
+            if(data.success){
+                requestMsg("领劵成功");
+            }else{
+                if(data.url){
+                    if (getBlatFrom() == 2) {
+                        location.href=data.url;
+                    }else{
+                        var appVersion = getInfo().appVersion.replace(/\./g,"");
+                        if ( appVersion < "360" ) {
+                            requestMsg("请退出当前活动页面,登录后再进行领劵");
+                        } else {
+                            location.href=data.url;
+                        }
+                    }
+                }else{
+                    requestMsg(data.msg);
+                }
+            }
+        }
+    });
+
+}
