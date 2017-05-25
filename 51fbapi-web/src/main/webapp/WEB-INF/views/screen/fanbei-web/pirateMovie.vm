@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="201705251700")
+    #set($src="https://fs.51fanbei.com/h5/app/activity/05")
+    <title>加勒比海盗5</title>
+    <style type="text/css">
+        .movieBg{position:absolute;height:38.82rem;}
+        .grabTenyuan{width:2.78rem;height:.94rem;position:absolute;top:6.98rem;left:2.36rem;}
+        .tips{width:4rem;height:1rem;position:absolute;top:5.5rem;left:1.75rem;background:#efefef;
+            border-radius: 0.1rem;text-align: center;display:none;}
+        .tips p{line-height:1rem;}
+        .clickRule{width:.92rem;height:1.27rem;position:absolute;top:10.19rem;right:0;}
+        .mask{position:absolute;background:black;opacity:.5;width:100%;height:38.82rem;
+            z-index:10;display:none;}
+        .rule{width:6.31rem;height:6.81rem;position:fixed;z-index:100;top:2.25rem;
+            left:.5rem;display:none;}
+        .go{width:2.74rem;height:.92rem;position:absolute;top:36.86rem;left:2.36rem;}
+    </style>
+</head>
+<body>
+<img class="movieBg" src="$src/pirateMovie01.jpg">
+<div class="grabTenyuan"></div>
+<div class="tips"><p>很抱歉，活动尚未开始！</p></div>
+<div class="clickRule"></div>
+<div class="mask"></div>
+<div class="rule"><img src="$src/pirateMovie02.png"></div>
+<div class="go"></div>
+
+<script type="text/javascript" src="/dist/activity/05/pirateMovie.js?version=$version"></script>
+</body>
+</html>
