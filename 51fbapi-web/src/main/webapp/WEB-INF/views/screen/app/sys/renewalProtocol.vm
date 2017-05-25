@@ -54,8 +54,8 @@
 				<li><i>还款方式</i><i>到期一次性还本付息</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
 				<li><i>还款日</i><i>#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
-				<li><i>手续费率</i><i>$!{dayRate}</i></li>
-				<li><i>逾期手续费率</i><i>$!{dayRate}</i></li>
+				<li><i>手续费率</i><i>{{changeRate($!{poundageRate})}}</i></li>
+				<li><i>逾期手续费率</i><i>{{changeRate($!{overduePoundageRate})}}</i></li>
 			</ul><br>
 
 			<span>第二条 续借约定</span><br>
