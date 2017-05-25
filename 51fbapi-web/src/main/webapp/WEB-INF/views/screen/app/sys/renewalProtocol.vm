@@ -126,41 +126,18 @@
                 methods:{
                     changeRate: function(num){ // 利率截取最后两位小数
                         var rate=num;
-                        rate = rate*100;   //截取小数点后4位
+                        rate = (rate*100).toFixed(4);   //截取小数点后4位
                         // rate = parseFloat(rate);
                         if(rate){
-                            rate = rate+'%';
+                            return rate+'%';
                         }else{
-                            rate = '';
+                            return '';
                         }
-                        return rate;
                     },
                     changePrincipal: function(principalNum){ // 本金金额保留二位小数
                         principalNum = parseFloat(principalNum);
                         principalNum = principalNum.toFixed(2);     //截取小数点后2位
                         return principalNum;
-                    },
-                    changeDailyRate: function(dailyRate){ // 日利率/365
-                        dailyRate = dailyRate/360; // 日利率
-                        dailyRate = (dailyRate*100).toFixed(4);   //截取小数点后4位
-                        dailyRate = parseFloat(dailyRate);
-                        if(dailyRate){
-                            dailyRate = dailyRate+'%';
-                        }else{
-                            dailyRate = '';
-                        }
-                        return dailyRate;
-                    },
-                    formatDateTime:function (date) {
-                        var y = date.getFullYear();
-                        var m = date.getMonth() + 1;
-                        m = m < 10 ? ('0' + m) : m;
-                        var d = date.getDate();
-                        d = d < 10 ? ('0' + d) : d;
-                        var h = date.getHours();
-                        var minute = date.getMinutes();
-                        minute = minute < 10 ? ('0' + minute) : minute;
-                        return y + '-' + m + '-' + d+' '+h+':'+minute;
                     }
             }
             });
