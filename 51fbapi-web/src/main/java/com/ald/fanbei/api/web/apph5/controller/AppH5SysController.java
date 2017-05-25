@@ -238,7 +238,8 @@ public class AppH5SysController extends BaseController {
 					model.put("gmtBorrowEnd", repaymentDay);//借款结束日	 
 					model.put("amountCapital", toCapital(afBorrowCashDo.getAmount().doubleValue()));
 					model.put("amountLower", afBorrowCashDo.getAmount());
-					model.put("lender", rate.get("lender"));// 出借人
+					AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+					model.put("lender", lenderDo.getValue());// 出借人
 				}
 			}
 			
