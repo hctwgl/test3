@@ -19,7 +19,25 @@
 </body>
 <script>
 	function borrow() {
-        location.href=location.href+"?name=BORROW_MONEY"
+
+		var appVersion = getInfo().appVersion.replace(/\./g,"");
+        var appSystem = getInfo().id.substr(0,2);
+
+        if ( appSystem == "i_" ) {
+
+            if ( appVersion <= "350" ) {
+                requestMsg("你的版本过低请升级");
+            } else {
+                window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
+            }
+        } else if( appSystem == "a_" ){
+
+            if ( appVersion <= "351" ) {
+                requestMsg("你的版本过低请升级");
+            } else {
+                window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
+            }
+        }
     }
 </script>
 </html>
