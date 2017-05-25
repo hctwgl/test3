@@ -26,7 +26,6 @@
 <div class="mask"></div>
 <div class="rule"><img src="$src/pirateMovie02.png"></div>
 <div class="go"></div>
-
 <script type="text/javascript" src="/dist/activity/05/pirateMovie.js?version=$version"></script>
 </body>
 </html>
