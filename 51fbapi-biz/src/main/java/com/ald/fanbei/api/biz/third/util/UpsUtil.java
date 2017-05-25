@@ -548,8 +548,8 @@ public class UpsUtil extends AbstractThird {
 		if(StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity) || identity.length() != 4){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_ORDERNO_BUILD_ERROR);
 		}
-		if(!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-				Constants.INVELOMENT_TYPE_ONLINE)){
+		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+				Constants.INVELOMENT_TYPE_TEST)){
 			return StringUtil.appendStrs(SYS_KEY,method,identity,"test" + (System.currentTimeMillis()+"").substring(4));
 		}
 		return StringUtil.appendStrs(SYS_KEY,method,identity,System.currentTimeMillis());
@@ -605,7 +605,8 @@ public class UpsUtil extends AbstractThird {
     	param.put("out_refund_no", out_refund_no);
     	param.put("out_trade_no", out_trade_no);
     	
-    	if(Constants.INVELOMENT_TYPE_ONLINE.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE))){
+    	if(Constants.INVELOMENT_TYPE_ONLINE.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE))
+    			|| Constants.INVELOMENT_TYPE_PRE_ENV.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE))){
 			param.put("refund_fee", order_refund_fee);
 			param.put("total_fee", order_total_fee);
 		}else{
@@ -655,8 +656,8 @@ public class UpsUtil extends AbstractThird {
 	}
 	
 	private static BigDecimal setActualAmount(BigDecimal amount){
-		if(!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_ONLINE)){
-			amount = new BigDecimal("0.41").setScale(2);
+		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
+			amount = amount.setScale(2,BigDecimal.ROUND_HALF_UP);
 		}else{
 			amount = amount.setScale(2,BigDecimal.ROUND_HALF_UP);
 		}
