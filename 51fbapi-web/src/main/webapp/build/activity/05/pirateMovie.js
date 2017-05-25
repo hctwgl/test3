@@ -41,9 +41,9 @@ $(function(){
             success:function (data) {
                 data=eval('(' + data + ')');
                 if(data.success){
-                   location.href=data.url;
+                    location.href=data.url;    
                 }else{
-                   requestMsg(data.msg);
+                   location.href=data.url;
                 }
             }
         });
