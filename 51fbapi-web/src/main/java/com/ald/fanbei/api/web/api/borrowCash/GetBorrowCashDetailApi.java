@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -67,9 +68,8 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 		BigDecimal paidAmount =afRepaymentBorrowCashService.getRepaymentAllAmountByBorrowId(rid);
-		
 		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo);
-		data.put("paidAmount", paidAmount);
+		data.put("paidAmount", NumberUtil.objToBigDecimalDefault(paidAmount, BigDecimal.ZERO));
 		data.put("rebateAmount", account.getRebateAmount());
 		data.put("jfbAmount", account.getJfbAmount());
 
