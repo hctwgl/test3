@@ -168,7 +168,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					}
 
 					afBorrowCashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(afRenewalDetailDo.getPriorInterest()).add(afRenewalDetailDo.getPriorOverdue()));// 累计已还款金额
-					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getOverdueAmount());// 累计滞纳金
+					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getSumOverdue().add(afBorrowCashDo.getOverdueAmount()));// 累计滞纳金
 					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);// 滞纳金置0
 					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));// 累计利息
 					afBorrowCashDo.setRateAmount(rateAmount);// 利息改成续期后的

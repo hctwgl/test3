@@ -122,7 +122,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		data.put("type", borrowCashType.getCode());
 		data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 		data.put("rejectReason", afBorrowCashDo.getReviewDetails());
-		data.put("serviceAmount", BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), afBorrowCashDo.getPoundage()));
+		data.put("serviceAmount", afBorrowCashDo.getPoundage());
 		data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 		data.put("borrowNo", afBorrowCashDo.getBorrowNo());
 		data.put("bankCard", afBorrowCashDo.getCardNumber());
