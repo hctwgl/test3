@@ -254,7 +254,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("repayRenewalFail,pid=", pid));
-			String msgContext = "亲，您的续借申请失败，请联系客服咨询原因！";
+			String msgContext = "亲，您的续借申请失败，请重新申请！";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
