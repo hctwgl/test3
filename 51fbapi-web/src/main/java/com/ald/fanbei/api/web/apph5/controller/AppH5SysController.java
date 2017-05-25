@@ -240,13 +240,13 @@ public class AppH5SysController extends BaseController {
 				Date gmtPlanRepayment = afRenewalDetailDo.getGmtPlanRepayment();
 				// 如果预计还款时间在申请日期之后，则在原预计还款时间的基础上加上续期天数，否则在申请日期的基础上加上续期天数，作为新的续期截止时间
 				if (gmtPlanRepayment.after(gmtCreate)) {
-					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay() - 1));
+					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay()));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					model.put("gmtRenewalBegin", gmtPlanRepayment);
 					model.put("gmtRenewalEnd", repaymentDay);
 					model.put("repaymentDay", repaymentDay);
 				} else {
-					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtCreate, afRenewalDetailDo.getRenewalDay() - 1));
+					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtCreate, afRenewalDetailDo.getRenewalDay()));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					model.put("gmtRenewalBegin", gmtCreate);
 					model.put("gmtRenewalEnd", repaymentDay);
@@ -255,19 +255,19 @@ public class AppH5SysController extends BaseController {
 				model.put("renewalAmountLower", afRenewalDetailDo.getRenewalAmount());//续借金额小写
 				model.put("renewalAmountCapital", toCapital(afRenewalDetailDo.getRenewalAmount().doubleValue()));//续借金额大写	
 //				Date gmtRenewalBegin = afRenewalDetailDo.getGmtCreate();
-//				Date gmtRenewalEnd = DateUtil.addDays(gmtRenewalBegin, afRenewalDetailDo.getRenewalDay() - 1);
+//				Date gmtRenewalEnd = DateUtil.addDays(gmtRenewalBegin, afRenewalDetailDo.getRenewalDay());
 			} else {
 				Date gmtPlanRepayment = afBorrowCashDo.getGmtPlanRepayment();
 				Date now = new Date(System.currentTimeMillis());
 				// 如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的续期截止时间
 				if (gmtPlanRepayment.after(now)) {
-					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtPlanRepayment, renewalDay - 1));
+					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtPlanRepayment, renewalDay));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					model.put("gmtRenewalBegin", gmtPlanRepayment);
 					model.put("gmtRenewalEnd", repaymentDay);
 					model.put("repaymentDay", repaymentDay);
 				} else {
-					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(now, renewalDay - 1));
+					Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(now, renewalDay));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					model.put("gmtRenewalBegin", now);
 					model.put("gmtRenewalEnd", repaymentDay);
