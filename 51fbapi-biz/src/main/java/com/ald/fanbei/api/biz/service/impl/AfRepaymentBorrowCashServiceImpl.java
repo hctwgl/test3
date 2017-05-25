@@ -201,12 +201,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 						return 0l;
 					}
-					AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
-					temRepayMent.setStatus(AfBorrowCashRepmentStatus.YES.getCode());
-					temRepayMent.setTradeNo(tradeNo);
-					temRepayMent.setRid(repayment.getRid());
-					// 变更还款记录为已还款
-					afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
 
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
 					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
@@ -273,6 +267,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
 					afUserAccountDao.updateUserAccount(account);
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
+					
+					AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
+					temRepayMent.setStatus(AfBorrowCashRepmentStatus.YES.getCode());
+					temRepayMent.setTradeNo(tradeNo);
+					temRepayMent.setRid(repayment.getRid());
+					// 变更还款记录为已还款
+					afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();

@@ -58,7 +58,7 @@ public class ApplyRenewalApi implements ApiHandle {
 		}
 		
 		AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
-		if (null != afRepaymentBorrowCashDo && StringUtils.equals(afBorrowCashDo.getStatus(), "P")) {
+		if (null != afRepaymentBorrowCashDo && StringUtils.equals(afRepaymentBorrowCashDo.getStatus(), "P")) {
 			throw new FanbeiException("There is a repayment is processing", FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
 		} 
 		
