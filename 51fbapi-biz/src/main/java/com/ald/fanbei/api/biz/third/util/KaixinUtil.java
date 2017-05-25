@@ -116,7 +116,8 @@ public class KaixinUtil extends AbstractThird{
 			body.put("pay_password", TDES.encrypt(getPayPwd(), getKey()));
 			body.put("order_no", order_no);
 			if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-					Constants.INVELOMENT_TYPE_ONLINE)){
+					Constants.INVELOMENT_TYPE_ONLINE) || StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+							Constants.INVELOMENT_TYPE_PRE_ENV)){
 				body.put("account_no", account_no);
 				body.put("face_price", face_price);
 			}else{

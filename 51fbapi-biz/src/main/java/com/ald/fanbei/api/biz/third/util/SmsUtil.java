@@ -263,8 +263,8 @@ public class SmsUtil extends AbstractThird {
 	 */
 	private static SmsResult sendSmsToDhst(String mobiles, String content) {
 		SmsResult result = new SmsResult();
-		if (!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-				Constants.INVELOMENT_TYPE_ONLINE)) {
+		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+				Constants.INVELOMENT_TYPE_TEST)) {
 			result.setSucc(true);
 			result.setResultStr("test");
 			return result;
@@ -360,8 +360,8 @@ public class SmsUtil extends AbstractThird {
 	 * @return
 	 */
 	private int addSmsRecord(SmsType smsType, String mobile, String verifyCode, Long userId, SmsResult smsResult) {
-		if (!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-				Constants.INVELOMENT_TYPE_ONLINE)) {
+		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+				Constants.INVELOMENT_TYPE_TEST)) {
 			verifyCode = TEST_VERIFY_CODE;
 		}
 		AfSmsRecordDo recordDo = new AfSmsRecordDo();

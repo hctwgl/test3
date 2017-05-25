@@ -152,7 +152,7 @@ public class WxpayCore {
 		String body = goodsName;
 		Map<String,Object> orderData = new HashMap<String,Object>();
 		logger.info("wx pay order notifyUrl"+ notifyUrl);
-		if(Constants.INVELOMENT_TYPE_ONLINE.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE))){
+		if(Constants.INVELOMENT_TYPE_ONLINE.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)) ||Constants.INVELOMENT_TYPE_PRE_ENV.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE))){
 			orderData.put("total_fee", BigDecimalUtil.multiply(totalFee, new BigDecimal(100)).intValue()+"");
 		}else{
 			orderData.put("total_fee", "1");

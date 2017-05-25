@@ -8,22 +8,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.TongdunResultBo;
 import com.ald.fanbei.api.biz.service.AfAuthTdService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAuthTdDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -44,8 +39,6 @@ import com.alibaba.fastjson.JSONObject;
 @Component("authRealnameApi")
 public class AuthRealnameApi implements ApiHandle {
 	
-	private static final String TONGDUN_CODE_WAIT_FOR_REPORT = "204";//还未出报告
-	
 	@Resource
 	private AfAuthTdService afAuthTdService;
 	@Resource
@@ -62,27 +55,6 @@ public class AuthRealnameApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
-//		String reportId = TongdunUtil.applyPreloan(account.getIdNumber(), account.getRealName(), context.getMobile(), null);
-//		if(StringUtil.isBlank(reportId)){
-//			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
-//		}
-//		CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
-//		TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
-//		while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
-//			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
-//			authResult = TongdunUtil.queryPreloan(reportId);
-//		}
-		
-		//存库，更新userAuth状态
-//		AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
-//		afAuthTdDo.setReportId(reportId);
-//		afAuthTdDo.setAuthResult(authResult.getResultStr());
-//		afAuthTdDo.setUserId(context.getUserId());
-//		afAuthTdService.addAuthTd(afAuthTdDo);
-		
-//		if(!authResult.isSuccess()){
-//			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
-//		}
 		
 		AfUserAuthDo userAuthDo = new AfUserAuthDo();
 		userAuthDo.setUserId(context.getUserId());

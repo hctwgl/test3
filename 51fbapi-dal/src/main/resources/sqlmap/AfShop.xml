@@ -44,4 +44,14 @@
 		ORDER BY sort DESC, gmt_modified DESC
 	</select>
 	
+	<select id="getPreEnvShopList" parameterType="AfShopQuery"  resultType="AfShopDo">
+		SELECT
+			<include refid="queryFields" />
+		FROM
+			af_shop
+		WHERE
+			is_delete = 0
+		ORDER BY sort DESC, gmt_modified DESC
+	</select>
+	
 </mapper>

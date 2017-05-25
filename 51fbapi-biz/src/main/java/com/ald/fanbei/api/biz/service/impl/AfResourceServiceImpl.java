@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.SerializeUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
@@ -49,7 +46,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			list = afResourceDao.getConfigByTypes(type);
 			data.put(type, list);
-			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_CONFIG_TYPES_LIST.getCode(), data);
+			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_CONFIG_TYPES_LIST.getCode(), data);
 		} else {
 			list = data.get(type);
 		}
@@ -65,7 +62,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 			list = afResourceDao.getResourceListByType(type);
 			if (list != null) {
 				data.put(type, list);
-				bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_TYPE_LIST.getCode(), data);
+				bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_TYPE_LIST.getCode(), data);
 			}
 		} else {
 			list = data.get(type);
@@ -81,7 +78,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			afResourceDo = afResourceDao.getSingleResourceBytype(type);
 			data.put(type, afResourceDo);
-			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_TYPE_DO.getCode(), data);
+			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_TYPE_DO.getCode(), data);
 		} else {
 			afResourceDo = data.get(type);
 		}
@@ -96,7 +93,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type + secType) == null) {
 			afResourceDo = afResourceDao.getConfigByTypesAndSecType(type, secType);
 			data.put(type + secType, afResourceDo);
-			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_TYPE_SEC_DO.getCode(), data);
+			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_TYPE_SEC_DO.getCode(), data);
 		} else {
 			afResourceDo = data.get(type + secType);
 		}
@@ -111,7 +108,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			list = afResourceDao.getResourceListByTypeOrderBy(type);
 			data.put(type, list);
-			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_TYPE_LIST_ORDER_BY.getCode(), data);
+			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_TYPE_LIST_ORDER_BY.getCode(), data);
 		} else {
 			list = data.get(type);
 		}
@@ -126,7 +123,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(rid + "") == null) {
 			afResourceDo = afResourceDao.getResourceByResourceId(rid);
 			data.put(rid + "", afResourceDo);
-			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_ID_DO.getCode(), data);
+			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_ID_DO.getCode(), data);
 		} else {
 			afResourceDo = data.get(rid + "");
 		}
@@ -141,7 +138,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			list = afResourceDao.getOneToManyResourceOrderByBytype(type);
 			data.put(type, list);
-			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_ONE_TO_MANY_TYPE_LIST.getCode(), data);
+			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_ONE_TO_MANY_TYPE_LIST.getCode(), data);
 		} else {
 			list = data.get(type);
 		}
@@ -156,7 +153,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		if (data.get(type) == null) {
 			list = afResourceDao.getResourceHomeListByTypeOrderBy(type);
 			data.put(type, list);
-			bizCacheUtil.saveObjectForever(CacheConstants.RESOURCE.RESOURCE_HOME_LIST_ORDER_BY.getCode(), data);
+			bizCacheUtil.saveObject(CacheConstants.RESOURCE.RESOURCE_HOME_LIST_ORDER_BY.getCode(), data);
 		} else {
 			list = data.get(type);
 		}
