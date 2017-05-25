@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/05")
+    <meta charset="UTF-8">
+    <title>浓情放粽</title>
+</head>
+<body>
+	<img src="$commonUrl/DragonBoat_01.jpg">
+	<img src="$commonUrl/DragonBoat_02.jpg">
+	<img src="$commonUrl/DragonBoat_03.jpg">
+	<img src="$commonUrl/DragonBoat_04.jpg">
+	<img src="$commonUrl/DragonBoat_05.jpg">
+	<img src="$commonUrl/DragonBoat_06.jpg">
+	<img src="$commonUrl/DragonBoat_07.jpg">
+	<img src="$commonUrl/DragonBoat_08.jpg">
+	<img src="$commonUrl/DragonBoat_09.jpg">
+	<img onclick="borrow()" style="width:6.82rem;height:1.08rem;position: fixed;left:.34rem;bottom:.2rem" src="$commonUrl/button.png">
+</body>
+<script>
+	function borrow() {
+
+		var appVersion = getInfo().appVersion.replace(/\./g,"");
+        var appSystem = getInfo().id.substr(0,2);
+
+        if ( appSystem == "i_" ) {
+
+            if ( appVersion <= "350" ) {
+                requestMsg("你的版本过低请升级");
+            } else {
+                window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
+            }
+        } else if( appSystem == "a_" ){
+
+            if ( appVersion <= "351" ) {
+                requestMsg("你的版本过低请升级");
+            } else {
+                window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
+            }
+        }
+    }
+</script>
+</html>

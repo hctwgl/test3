@@ -145,6 +145,8 @@ public class AppH5SysController extends BaseController {
 
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
+		model.put("email", afUserDo.getEmail());//电子邮箱	 
+		model.put("phone", userName);//联系方式
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
@@ -152,13 +154,14 @@ public class AppH5SysController extends BaseController {
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
 		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 
-		BigDecimal bankService = bankRate.multiply(bankDouble);
-		BigDecimal overdue = bankService.divide(new BigDecimal(360), 6, RoundingMode.HALF_UP).add(poundage).add(overduePoundage);
+		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
+		BigDecimal overdue = bankService.add(poundage).add(overduePoundage);
 
-		model.put("yearRate", bankService);
-		model.put("overdueRate", overdue);
-		model.put("poundage", poundage);
-
+		model.put("dayRate", bankService);//日利率
+		model.put("overdueRate", overdue);//逾期费率（日）
+		model.put("poundageRate", poundage);//手续费率
+		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
+		
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 		if (borrowId > 0) {
@@ -218,6 +221,11 @@ public class AppH5SysController extends BaseController {
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		model.put("dayRate", bankService);
 		
+		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
+		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
+		model.put("poundageRate", poundage);//手续费率
+		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
+		
 		if (borrowId > 0) {
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
@@ -230,7 +238,8 @@ public class AppH5SysController extends BaseController {
 					model.put("gmtBorrowEnd", repaymentDay);//借款结束日	 
 					model.put("amountCapital", toCapital(afBorrowCashDo.getAmount().doubleValue()));
 					model.put("amountLower", afBorrowCashDo.getAmount());
-					model.put("lender", rate.get("lender"));// 出借人
+					AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+					model.put("lender", lenderDo.getValue());// 出借人
 				}
 			}
 			

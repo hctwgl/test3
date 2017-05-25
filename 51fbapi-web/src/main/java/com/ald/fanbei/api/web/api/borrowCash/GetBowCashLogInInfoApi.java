@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.Constants;
@@ -31,6 +32,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -56,6 +58,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -93,7 +97,6 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			Date now = DateUtil.getStartOfDate(new Date());
 
 			if (afBorrowCashDo.getGmtArrival() != null) {
-
 				Date repaymentDay = afBorrowCashDo.getGmtPlanRepayment();
 				data.put("repaymentDay", repaymentDay);
 				Calendar calendar = Calendar.getInstance();
@@ -131,7 +134,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
 				// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) >= 0) {
-					data.put("renewalStatus", "Y");
+					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
+					if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
+						data.put("renewalStatus", "Y");
+					} 
 				}
 			}
 		}
