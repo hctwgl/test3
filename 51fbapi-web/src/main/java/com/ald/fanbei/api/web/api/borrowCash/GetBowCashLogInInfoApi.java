@@ -96,20 +96,17 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
 			Date now = DateUtil.getStartOfDate(new Date());
 
-			if (afBorrowCashDo.getGmtArrival() != null) {
-				Date repaymentDay = afBorrowCashDo.getGmtPlanRepayment();
-				data.put("repaymentDay", repaymentDay);
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(now);
-				Calendar calendarRepay = Calendar.getInstance();
-				calendarRepay.setTime(repaymentDay);
-				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
-				data.put("deadlineDay", chaTime);
-			}
 			data.put("overdueStatus", "N");
 			// 如果预计还款日在今天之前，且为待还款状态，则已逾期，逾期天数=现在减去预计还款日
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED") && afBorrowCashDo.getGmtPlanRepayment().before(now)) {
 				long day = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), now);
+				data.put("repaymentDay", afBorrowCashDo.getGmtPlanRepayment());
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(now);
+				Calendar calendarRepay = Calendar.getInstance();
+				calendarRepay.setTime(afBorrowCashDo.getGmtPlanRepayment());
+				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
+				data.put("deadlineDay", chaTime);
 				data.put("overdueDay", day);
 				data.put("overdueStatus", "Y");
 			}
