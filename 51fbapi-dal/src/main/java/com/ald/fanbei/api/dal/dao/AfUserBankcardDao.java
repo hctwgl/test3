@@ -82,4 +82,13 @@ public interface AfUserBankcardDao {
 	 * @return
 	 */
 	int getUserBankByCardNo(@Param("cardNumber")String cardNumber);
+
+	/**
+	 * 根据卡号查询银行卡的其他信息
+	 * 
+	 * @param cardNo
+	 * @return
+	 */
+	AfUserBankcardDo getUserBankcardByCardNo(@Param("cardNumber") String cardNumber);
+	
 }

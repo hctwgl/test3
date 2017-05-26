@@ -168,4 +168,16 @@
 		AND
 			status = 'B'
 	</select>
+	
+	<select id="getUserBankcardByCardNo" resultType="AfUserBankcardDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND 
+			card_number = #{cardNumber} 
+	</select>
+	
 </mapper>
