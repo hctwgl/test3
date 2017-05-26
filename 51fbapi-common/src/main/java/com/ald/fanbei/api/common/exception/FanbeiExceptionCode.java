@@ -200,7 +200,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
 
     //系统升级该code不能随便修改
-    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1.借钱版块新增续期功能 2.借钱版块新增还款自动提额功能 3.其他细节优化"),
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1.借钱版块新增续期功能\n 2.借钱版块新增还款自动提额功能\n 3.其他细节优化\n"),
 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
