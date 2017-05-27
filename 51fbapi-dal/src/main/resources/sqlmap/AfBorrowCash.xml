@@ -12,7 +12,7 @@
 		useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO
 		af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type, amount , status , card_number , card_name , poundage , rate_amount ,
-		latitude , longitude , province ,arrival_amount, city , county,address,sum_rate)
+		latitude , longitude , province ,arrival_amount, city , county, address, poundage_rate, base_bank_rate)
 		VALUES (
 		NOW(),
 		NOW(),
@@ -32,7 +32,8 @@
 		#{city},
 		#{county},
 		#{address},
-		#{sumRate}
+		#{poundageRate},
+		#{baseBankRate}
 		)
 	</insert>
 
