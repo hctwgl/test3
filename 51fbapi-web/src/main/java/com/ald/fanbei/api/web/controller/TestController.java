@@ -269,27 +269,27 @@ public class TestController {
 		return "succ";
 	}
 	
-	@RequestMapping(value = { "/wxRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
-	public String wxRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-		JSONObject json = JSONObject.parseObject(body);
-//		List<AfRepaymentBorrowCashDo> AfRepaymentBorrowCashList = afRepaymentBorrowCashDao.getRepaymentBorrowCashByBorrowId();
-//		for (AfRepaymentBorrowCashDo afRepaymentBorrowCashDo : AfRepaymentBorrowCashList) {
-//			
+//	@RequestMapping(value = { "/wxRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+//	public String wxRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//		JSONObject json = JSONObject.parseObject(body);
+////		List<AfRepaymentBorrowCashDo> AfRepaymentBorrowCashList = afRepaymentBorrowCashDao.getRepaymentBorrowCashByBorrowId();
+////		for (AfRepaymentBorrowCashDo afRepaymentBorrowCashDo : AfRepaymentBorrowCashList) {
+////			
+////		}
+//		String orderNo = json.getString("orderNo");
+//		String payTradeNo = json.getString("payTradeNo");
+//		BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
+//		BigDecimal totalAmount = NumberUtil.objToBigDecimalDefault(json.getString("totalAmount"), null);
+//		logger.info("wxRefund begin wxRefund is orderNo = {}, payTradeNo = {}, refundAmount = {}, refundAmount = {}", new Object[] { orderNo, payTradeNo, refundAmount, totalAmount });
+//		if (StringUtils.isEmpty(orderNo) || StringUtils.isEmpty(payTradeNo) || refundAmount == null || totalAmount == null) {
+//			return "";
 //		}
-		String orderNo = json.getString("orderNo");
-		String payTradeNo = json.getString("payTradeNo");
-		BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
-		BigDecimal totalAmount = NumberUtil.objToBigDecimalDefault(json.getString("totalAmount"), null);
-		logger.info("wxRefund begin wxRefund is orderNo = {}, payTradeNo = {}, refundAmount = {}, refundAmount = {}", new Object[] { orderNo, payTradeNo, refundAmount, totalAmount });
-		if (StringUtils.isEmpty(orderNo) || StringUtils.isEmpty(payTradeNo) || refundAmount == null || totalAmount == null) {
-			return "";
-		}
-		String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
-		logger.info("wxRefund refundResult = {}", refundResult);
-		return "succ";
-	}
+//		String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
+//		logger.info("wxRefund refundResult = {}", refundResult);
+//		return "succ";
+//	}
 	
 
 	/**
