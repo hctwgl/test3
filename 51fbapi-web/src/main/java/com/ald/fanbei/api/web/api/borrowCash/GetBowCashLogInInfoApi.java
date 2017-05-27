@@ -101,17 +101,17 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			// 如果预计还款日在今天之前，且为待还款状态，则已逾期，逾期天数=现在减去预计还款日
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED") && afBorrowCashDo.getGmtPlanRepayment().before(now)) {
 				long day = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), now);
+				data.put("overdueDay", day);
+				data.put("overdueStatus", "Y");
+			}
+			if (afBorrowCashDo.getGmtPlanRepayment() != null){
+				data.put("repaymentDay", afBorrowCashDo.getGmtPlanRepayment());
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(now);
 				Calendar calendarRepay = Calendar.getInstance();
 				calendarRepay.setTime(afBorrowCashDo.getGmtPlanRepayment());
 				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
 				data.put("deadlineDay", chaTime);
-				data.put("overdueDay", day);
-				data.put("overdueStatus", "Y");
-			}
-			if (afBorrowCashDo.getGmtPlanRepayment() != null){
-				data.put("repaymentDay", afBorrowCashDo.getGmtPlanRepayment());
 			}
 				
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
