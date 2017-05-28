@@ -108,7 +108,7 @@
 					register_checkbox
 				#end
 	      	">
-	      		<input type="checkbox" class="input_check" id="input_check">
+	      		<input type="checkbox" class="input_check" id="input_check" checked="checked">
 	        	<label for="input_check"></label>
 	      		<p class="clearfix
 	      			#if( $!{style} == 6 )
