@@ -633,7 +633,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 							return borrow.getRid();
 						}
 					}
-					return 0l;
+					return 1l;
 				} catch (Exception e) {
 					logger.info("dealBrandConsumeApply error:"+e);
 					status.setRollbackOnly();
