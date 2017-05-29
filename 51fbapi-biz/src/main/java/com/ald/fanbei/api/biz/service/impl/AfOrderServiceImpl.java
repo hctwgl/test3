@@ -685,7 +685,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}
 						// 在申请代买的时候就会扣去额度，如果审批不同过的话再加上响应的额度
 						afBorrowService.dealAgentPayConsumeApply(userAccountInfo, orderInfo.getActualAmount(),
-								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
+								orderInfo.getGoodsName(), nper, orderInfo.getRid(),
 								orderInfo.getOrderNo(), null);
 
 						// 最后调用风控控制
