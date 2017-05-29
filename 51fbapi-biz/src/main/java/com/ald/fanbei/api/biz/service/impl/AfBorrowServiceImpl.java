@@ -582,11 +582,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
+					logger.info("1");
 					//修改用户账户信息
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUsedAmount(amount);
 					account.setUserId(userDto.getUserId());
 					afUserAccountDao.updateUserAccount(account);
+
+					logger.info("2");
 					//获取借款分期配置信息
 					AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME);
 					if(null == resource){
@@ -601,9 +604,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 						rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
 						rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
 					}
+
+					logger.info("3:"+resource.getValue());
 					JSONArray array = JSON.parseArray(resource.getValue());
 					//如果是重新生成的账单，需要原来账单的总期数
 					Integer realTotalNper = totalNper == null ? nper : totalNper;
+
+					logger.info("4:"+realTotalNper);
 					for (int i = 0; i < array.size(); i++) {
 						JSONObject obj = array.getJSONObject(i);
 						if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
@@ -629,10 +636,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 											8,BigDecimal.ROUND_HALF_UP),totalPoundage,BorrowBillStatus.NO);
 							//新增借款账单
 							afBorrowDao.addBorrowBill(billList);
-							
+
+							logger.info("6:");
 							return borrow.getRid();
 						}
 					}
+
+					logger.info("5:");
 					return 1l;
 				} catch (Exception e) {
 					logger.info("dealBrandConsumeApply error:"+e);
