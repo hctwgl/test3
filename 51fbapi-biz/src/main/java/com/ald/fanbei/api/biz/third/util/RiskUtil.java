@@ -443,7 +443,7 @@ public class RiskUtil extends AbstractThird {
 						orderDao.updateOrder(orderInfo);
 						
 						//TODO:返回值
-						return null;
+						return 1L;
 					}
 				} catch (Exception e) {
 					logger.info("asyPayOrder error:" + e);
@@ -451,7 +451,7 @@ public class RiskUtil extends AbstractThird {
 					throw e;
 				}
 
-				return null;
+				return 1L;
 			}
 
 		});
