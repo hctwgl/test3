@@ -72,6 +72,13 @@ public interface AfOrderDao {
 	 * @param rid
 	 * @return
 	 */
+	public AfOrderDo getOrderInfoByRiskOrderNo(@Param("riskOrderNo")String riskOrderNo);
+	
+	/**
+	 * 获取订单详情
+	 * @param rid
+	 * @return
+	 */
 	public AfOrderDo getOrderInfoByPayOrderNo(@Param("payTradeNo")String payTradeNo);
 	
 	/**

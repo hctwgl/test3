@@ -52,10 +52,25 @@ public class AfOrderDo extends AbstractSerial{
 	private Long bankId;
 	private Date gmtPayEnd;//截止支付时间
 	private String serviceProvider;
+	private int  nper;//分期数
+	private String riskOrderNo;//风控订单号
 	
 	public Long getRid() {
 		return rid;
 	}
+	public int getNper() {
+		return nper;
+	}
+	public String getRiskOrderNo() {
+		return riskOrderNo;
+	}
+	public void setRiskOrderNo(String riskOrderNo) {
+		this.riskOrderNo = riskOrderNo;
+	}
+	public void setNper(int nper) {
+		this.nper = nper;
+	}
+
 	public void setRid(Long rid) {
 		this.rid = rid;
 	}

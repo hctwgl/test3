@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,6 +14,9 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
@@ -26,9 +30,11 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -40,7 +46,8 @@ import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -54,17 +61,23 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
+import com.alibaba.druid.sql.visitor.functions.Now;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.api.internal.parser.json.ObjectJsonParser;
 
 /**
  * 
@@ -77,7 +90,8 @@ public class RiskUtil extends AbstractThird {
 	private static String url = null;
 	private static String notifyHost = null;
 	private static String PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANXSVyvH4C55YKzvTUCN0fvrpKjIC5lBzDe6QlHCeMZaMmnhJpG/O+aao0q7vwnV08nk14woZEEVHbNHCHcfP+gEIQ52kQvWg0L7DUS4JU73pXRQ6MyLREGHKT6jgo/i1SUhBaaWOGI9w5N2aBxj1DErEzI7TA1h/M3Ban6J5GZrAgMBAAECgYAHPIkquCcEK6Nz9t1cc/BJYF5AQBT0aN+qeylHbxd7Tw4puy78+8XhNhaUrun2QUBbst0Ap1VNRpOsv5ivv2UAO1wHqRS8i2kczkZQj8vcCZsRh3jX4cZru6NoBb6QTTFRS6DRh06iFm0NgBPfzl9PSc3VwGpdj9ZhMO+oTYPBwQJBAPApB74XhZG7DZVpCVD2rGmE0pAlO85+Dxr2Vle+CAgGdtw4QBq89cA/0TvqHPC0xZaYWK0N3OOlRmhO/zRZSXECQQDj7JjxrUaKTdbS7gD88qLZBbk8c07ghO0qDCpp8J2U6D9baVBOrkcz+fTh7B8LzyCo5RY8vk61v/rYqcgk1F+bAkEAvYkELUfPCGZBoCsXSSiEhXpn248nFh5yuWq0VecJ25uObtqN7Qw4PxOeg9SOJoHkdqehRGJuc9LaMDQ4QQ4+YQJAJaIaOsVWgV2K2/cKWLmjY9wLEs0jN/Uax7eMhUOCcWTLmUdRSDyEazOZWHhJRATmKpzwyATQMDhLrdySvGoIgwJBALusECkz5zT4lIujwUNO30LlO8PKPCSKiiQJk4pN60pv2AFX4s2xVdZlXsFJh6btIJ9CGrMvEmogZTIGWq1xOFs=";
-	// private static String PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDV0lcrx+AueWCs701AjdH766SoyAuZQcw3ukJRwnjGWjJp4SaRvzvmmqNKu78J1dPJ5NeMKGRBFR2zRwh3Hz/oBCEOdpEL1oNC+w1EuCVO96V0UOjMi0RBhyk+o4KP4tUlIQWmljhiPcOTdmgcY9QxKxMyO0wNYfzNwWp+ieRmawIDAQAB";
+	// private static String PUBLIC_KEY =
+	// "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDV0lcrx+AueWCs701AjdH766SoyAuZQcw3ukJRwnjGWjJp4SaRvzvmmqNKu78J1dPJ5NeMKGRBFR2zRwh3Hz/oBCEOdpEL1oNC+w1EuCVO96V0UOjMi0RBhyk+o4KP4tUlIQWmljhiPcOTdmgcY9QxKxMyO0wNYfzNwWp+ieRmawIDAQAB";
 	private static String TRADE_RESP_SUCC = "0000";
 	private static String CHANNEL = "51fb";
 	private static String SYS_KEY = "01";
@@ -95,6 +109,8 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	CommitRecordUtil commitRecordUtil;
 	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfResourceService afResourceService;
@@ -108,6 +124,12 @@ public class RiskUtil extends AbstractThird {
 	AfAuthContactsService afAuthContactsService;
 	@Resource
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
+	@Resource
+	AfOrderDao orderDao;
+	@Resource
+	TransactionTemplate transactionTemplate;
+	@Resource 
+	AfAgentOrderService afAgentOrderService;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -144,7 +166,8 @@ public class RiskUtil extends AbstractThird {
 	 *            --地址
 	 * @return
 	 */
-	public RiskRespBo register(String consumerNo, String realName, String phone, String idNo, String email, String alipayNo, String address) {
+	public RiskRespBo register(String consumerNo, String realName, String phone, String idNo, String email,
+			String alipayNo, String address) {
 		RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setRealName(realName);
@@ -191,7 +214,7 @@ public class RiskUtil extends AbstractThird {
 			for (int i = 0; i < list.size(); i++) {
 				AfUserAccountDto accountDto = list.get(i);
 				RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
-				reqBo.setConsumerNo(accountDto.getUserId()+"");
+				reqBo.setConsumerNo(accountDto.getUserId() + "");
 				reqBo.setRealName(accountDto.getRealName());
 				reqBo.setPhone(accountDto.getMobile());
 				reqBo.setIdNo(accountDto.getIdNumber());
@@ -230,7 +253,8 @@ public class RiskUtil extends AbstractThird {
 	 *            --地址
 	 * @return
 	 */
-	public RiskRespBo modify(String consumerNo, String realName, String phone, String idNo, String email, String alipayNo, String address, String openId) {
+	public RiskRespBo modify(String consumerNo, String realName, String phone, String idNo, String email,
+			String alipayNo, String address, String openId) {
 		RiskModifyReqBo reqBo = new RiskModifyReqBo();
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setRealName(realName);
@@ -269,6 +293,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param scene
 	 * @return
 	 */
+	@Deprecated
 	public RiskVerifyRespBo verify2(String consumerNo, String scene, String cardNo) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length())));
@@ -306,9 +331,10 @@ public class RiskUtil extends AbstractThird {
 	 * @param scene
 	 * @return
 	 */
-	public RiskVerifyRespBo verify(String consumerNo, String scene, String cardNo, String appName, String ipAddress, String blackBox, String borrowId) {
+	public RiskVerifyRespBo verify(String consumerNo, String scene, String cardNo, String appName, String ipAddress,
+			String blackBox, String borrowId, String notifyUrl,String orderNo) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
-		reqBo.setOrderNo(getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length())));
+		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setChannel(CHANNEL);
 		reqBo.setScene(scene);
@@ -322,7 +348,11 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setReqExt("");
 
-		reqBo.setNotifyUrl(getNotifyHost() + "/third/risk/verify");
+		// 给一个默认值
+		if (StringUtil.isBlank(notifyUrl)) {
+			notifyUrl = "/third/risk/verify";
+		}
+		reqBo.setNotifyUrl(getNotifyHost() + notifyUrl);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/examine/verify.htm";
@@ -348,6 +378,86 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
+	 * 
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param userName
+	 *            --用户名
+	 * @return
+	 */
+
+	public long asyPayOrder(final String code, final String data, final String msg, final String signInfo) {
+		return transactionTemplate.execute(new TransactionCallback<Long>() {
+
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				try {
+					// 增加事务
+					RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+					reqBo.setCode(code);
+					reqBo.setData(data);
+					reqBo.setMsg(msg);
+					reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+					logThird(signInfo, "asyPayOrder", reqBo);
+					if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验证签名成功
+						logger.info("reqBo.getSignInfo()" + reqBo.getSignInfo());
+						JSONObject obj = JSON.parseObject(data);
+						String orderNo = obj.getString("orderNo");
+
+						// 添加一个根据风控号查找记录的方法
+						AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
+						//如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
+						JSONObject object=JSON.parseObject(data);
+						
+						logger.info("risk_result =" + object.get("result").toString());
+						
+						if (!object.get("result").toString().equals("10")) {
+							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+							logger.info("updateOrder orderInfo = {}", orderInfo);
+							int re=orderDao.updateOrder(orderInfo);
+							//审批不通过时，让额度还原到以前
+							
+							AfUserAccountDo userAccountInfo = afUserAccountService
+									.getUserAccountByUserId(orderInfo.getUserId());
+							//TODO:额度增加，而非减少
+							BigDecimal usedAmount = orderInfo.getActualAmount().multiply(new BigDecimal(-1));
+							afBorrowService.dealAgentPayConsumeApply(userAccountInfo,
+									usedAmount, orderInfo.getGoodsName(), orderInfo.getNper(),
+									orderInfo.getRid(), orderInfo.getOrderNo(), null);
+							AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+							afAgentOrderDo.setClosedReason("风控审批失败");
+							afAgentOrderDo.setGmtClosed(new Date());
+							return new Long(String.valueOf(re));
+						}
+						
+						// 审批通过时
+						orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+						orderInfo.setStatus(OrderStatus.PAID.getCode());
+						//关闭订单时间和原因的更新
+						
+						logger.info("updateOrder orderInfo = {}", orderInfo);
+						orderDao.updateOrder(orderInfo);
+						
+						//TODO:返回值
+						return null;
+					}
+				} catch (Exception e) {
+					logger.info("asyPayOrder error:" + e);
+					status.setRollbackOnly();
+					throw e;
+				}
+
+				return null;
+			}
+
+		});
+	}
+
+	/**
 	 * 风控异步审核
 	 * 
 	 * @param consumerNo
@@ -370,9 +480,9 @@ public class RiskUtil extends AbstractThird {
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
 			String result = obj.getString("result");//
 			AfBorrowCashDo cashDo = new AfBorrowCashDo();
-//			cashDo.setRishOrderNo(orderNo);
+			// cashDo.setRishOrderNo(orderNo);
 			Date currDate = new Date();
-			
+
 			AfUserDo afUserDo = afUserService.getUserById(consumerNo);
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
 			cashDo.setRid(afBorrowCashDo.getRid());
@@ -382,36 +492,34 @@ public class RiskUtil extends AbstractThird {
 			List<String> whiteIdsList = new ArrayList<String>();
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 			// 判断是否在白名单里面
-			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+			AfResourceDo whiteListInfo = afResourceService
+					.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
 			logger.info("whiteListInfo===" + whiteListInfo);
 			if (whiteListInfo != null) {
-				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
-					@Override
-					public String convert(String source) {
-						return source.trim();
-					}
-				});
+				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
+						new Converter<String, String>() {
+							@Override
+							public String convert(String source) {
+								return source.trim();
+							}
+						});
 			}
 
-			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + afUserDo.getUserName() + ",isContain=" + whiteIdsList.contains(afUserDo.getUserName()));
+			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + afUserDo.getUserName() + ",isContain="
+					+ whiteIdsList.contains(afUserDo.getUserName()));
 			if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
-				
+
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 				// 审核通过
 				cashDo.setGmtArrival(currDate);
 				cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
 				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(consumerNo);
 				// 打款
-				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", 
-						card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02", 
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
+						userDto.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", card.getMobile(),
+						card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
 						UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-				
-				Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-				Date arrivalStart = DateUtil.getStartOfDate(currDate);
-				Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
-				cashDo.setGmtPlanRepayment(repaymentDay);
-				
 				if (!upsResult.isSuccess()) {
 					logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 					cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
@@ -463,7 +571,9 @@ public class RiskUtil extends AbstractThird {
 			String value = params.get(key);
 			prestr = prestr + value;
 			/*
-			 * if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符 prestr = prestr + key + "=" + value; } else { prestr = prestr + key + "=" + value + "&"; }
+			 * if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符 prestr = prestr + key
+			 * + "=" + value; } else { prestr = prestr + key + "=" + value +
+			 * "&"; }
 			 */
 		}
 
@@ -478,8 +588,9 @@ public class RiskUtil extends AbstractThird {
 	 * @param identity
 	 *            身份标识（固定4位）
 	 */
-	private static String getOrderNo(String method, String identity) {
-		if (StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity) || identity.length() != 4) {
+	public  String getOrderNo(String method, String identity) {
+		if (StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity)
+				|| identity.length() != 4) {
 			throw new FanbeiException(FanbeiExceptionCode.UPS_ORDERNO_BUILD_ERROR);
 		}
 		return StringUtil.appendStrs(SYS_KEY, method, identity, System.currentTimeMillis());
@@ -562,10 +673,32 @@ public class RiskUtil extends AbstractThird {
 	 * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
 	 */
 	/*
-	 * public RiskAddressListRespBo addressListPrimaries(String consumerNo,List<AfAuthContactsDo> details) {
+	 * public RiskAddressListRespBo addressListPrimaries(String
+	 * consumerNo,List<AfAuthContactsDo> details) {
 	 * 
-	 * RiskAddressListReqBo reqBo = new RiskAddressListReqBo(); reqBo.setConsumerNo(consumerNo); List<RiskAddressListDetailBo> detailBos = new ArrayList<RiskAddressListDetailBo>(); for (int i = 0; i < details.size(); i++) { RiskAddressListDetailBo bo = new RiskAddressListDetailBo(); bo.setNickname(StringUtil.filterEmoji(details.get(i).getFriendNick())); bo.setPhone(details.get(i).getFriendPhone()); detailBos.add(bo); } if(detailBos.size()==0){ return null; } String uuid = UUID.randomUUID().toString(); reqBo.setOrderNo(getOrderNo("addr", uuid.substring(uuid.length() - 4, uuid.length()))); reqBo.setCount(detailBos.size() + ""); reqBo.setDetails(JSON.toJSONString(detailBos)); reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY)); String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/adrressList/remove.htm", reqBo); logThird(reqResult, "addressListPrimaries", reqBo); if (StringUtil.isBlank(reqResult)) { throw new
-	 * FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR); } RiskAddressListRespBo riskResp = JSONObject.parseObject(reqResult, RiskAddressListRespBo.class); if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) { riskResp.setSuccess(true); return riskResp; } else { throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR); }
+	 * RiskAddressListReqBo reqBo = new RiskAddressListReqBo();
+	 * reqBo.setConsumerNo(consumerNo); List<RiskAddressListDetailBo> detailBos
+	 * = new ArrayList<RiskAddressListDetailBo>(); for (int i = 0; i <
+	 * details.size(); i++) { RiskAddressListDetailBo bo = new
+	 * RiskAddressListDetailBo();
+	 * bo.setNickname(StringUtil.filterEmoji(details.get(i).getFriendNick()));
+	 * bo.setPhone(details.get(i).getFriendPhone()); detailBos.add(bo); }
+	 * if(detailBos.size()==0){ return null; } String uuid =
+	 * UUID.randomUUID().toString(); reqBo.setOrderNo(getOrderNo("addr",
+	 * uuid.substring(uuid.length() - 4, uuid.length())));
+	 * reqBo.setCount(detailBos.size() + "");
+	 * reqBo.setDetails(JSON.toJSONString(detailBos));
+	 * reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+	 * String reqResult = HttpUtil.post(getUrl() +
+	 * "/modules/api/user/action/adrressList/remove.htm", reqBo);
+	 * logThird(reqResult, "addressListPrimaries", reqBo); if
+	 * (StringUtil.isBlank(reqResult)) { throw new
+	 * FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR); }
+	 * RiskAddressListRespBo riskResp = JSONObject.parseObject(reqResult,
+	 * RiskAddressListRespBo.class); if (riskResp != null &&
+	 * TRADE_RESP_SUCC.equals(riskResp.getCode())) { riskResp.setSuccess(true);
+	 * return riskResp; } else { throw new
+	 * FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR); }
 	 * 
 	 * }
 	 */
@@ -606,7 +739,8 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/linkman/remove.htm", reqBo);
 		// 测试
-		// String reqResult = HttpUtil.post("http://60.190.230.35:52637" + "/modules/api/user/action/linkman/remove.htm", reqBo);
+		// String reqResult = HttpUtil.post("http://60.190.230.35:52637" +
+		// "/modules/api/user/action/linkman/remove.htm", reqBo);
 
 		logThird(reqResult, "addressContactsPrimaries", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
@@ -629,7 +763,8 @@ public class RiskUtil extends AbstractThird {
 	 * @param consumerNo
 	 *            --用户唯一标识
 	 * @param data
-	 *            --通讯录信息，格式为 张三:15888881111&15811234444,李四:15888881111&15811234444
+	 *            --通讯录信息，格式为
+	 *            张三:15888881111&15811234444,李四:15888881111&15811234444
 	 * @return
 	 * @throws Exception
 	 *             传入更新的通讯录为空
@@ -657,6 +792,7 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
 		}
 	}
+
 	/**
 	 * @方法描述：用户白名单信息同步
 	 * 
@@ -665,10 +801,11 @@ public class RiskUtil extends AbstractThird {
 	 * @param consumerNo
 	 *            --用户唯一标识
 	 * @param data
-	 *            --通讯录信息，格式为 张三:15888881111&15811234444,李四:15888881111&15811234444
+	 *            --通讯录信息，格式为
+	 *            张三:15888881111&15811234444,李四:15888881111&15811234444
 	 * @return
 	 * @throws Exception
-	 *             
+	 * 
 	 * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
 	 */
 	public int addwhiteUser(Long consumerNo) {
@@ -683,7 +820,9 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, afUserAccountDto.getRealName()));
 		reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, afUserAccountDto.getMobile()));
 		reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, afUserAccountDto.getIdNumber()));
-//		String reqResult = HttpUtil.post("http://192.168.96.139:80/modules/api/user/whiteuser.htm", reqBo);
+		// String reqResult =
+		// HttpUtil.post("http://192.168.96.139:80/modules/api/user/whiteuser.htm",
+		// reqBo);
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/whiteuser.htm", reqBo);
 		logThird(reqResult, "addwhiteUser", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
@@ -696,6 +835,39 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
 		}
 	}
-	
-	
+
+	/**
+	 * @方法描述：查询用户额度
+	 * 
+	 * @author maqiaopan 2017年5月25日 14:30:28
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @return BigDecimal
+	 * @throws Exception
+	 * 
+	 * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+	 */
+	public BigDecimal queryAmount(Long consumerNo) {
+		BigDecimal bigDecimal = BigDecimal.ZERO;
+		Map<String, String> params = new HashMap<>();
+		params.put("consumerNo", consumerNo.toString());
+		String signInfo = SignUtil.sign(createLinkString(params), PRIVATE_KEY);
+		params.put("signInfo", signInfo);
+
+		String reqResult = HttpUtil.post(getUrl() + "modules/api/risk/verify.htm", params);
+		logThird(reqResult, "queryAmount", params);
+
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.QUERY_GRANT_AMOUNT_ERROR);
+		}
+		JSONObject result = JSONObject.parseObject(reqResult);
+		String data = result.getString("data");
+		JSONObject amount = JSONObject.parseObject(data);
+		String grantAmount = amount.getString("amount");
+		bigDecimal.add(new BigDecimal(grantAmount));
+
+		return bigDecimal;
+
+	}
 }

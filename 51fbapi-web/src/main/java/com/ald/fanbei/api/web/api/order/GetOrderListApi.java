@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -59,7 +60,11 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setGoodsName(order.getGoodsName());
 		vo.setOrderId(order.getRid());
 		vo.setOrderNo(order.getOrderNo());
-		vo.setOrderStatus(order.getStatus());
+		String status =  order.getStatus();
+		if (status.equals(OrderStatus.DEALING.getCode())) {
+			status =OrderStatus.PAID.getCode();
+		}
+		vo.setOrderStatus(status);
 		vo.setRebateAmount(order.getRebateAmount());
 		vo.setType(order.getOrderType());
 		vo.setSaleAmount(order.getSaleAmount());

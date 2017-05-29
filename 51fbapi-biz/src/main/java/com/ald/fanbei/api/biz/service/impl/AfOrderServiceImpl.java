@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -54,6 +56,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
@@ -148,6 +151,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	UpsUtil upsUtil;
 	@Resource
 	AfAgentOrderService afAgentOrderService;
+
+	@Resource
+	RiskUtil riskUtil;
+	
 	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:"+content);
@@ -633,77 +640,109 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public Map<String, Object> payBrandOrder(final Long payId, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper) {
+	public Map<String, Object> payBrandOrder(final Long payId, final Long orderId, final Long userId,
+			final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount,
+			final Integer nper, final String appName, final String ipAddress) {
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
 				try {
 					Date currentDate = new Date();
 					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
-					Map<String,Object> resultMap = new HashMap<String,Object>();
-					AfOrderDo orderInfo = new AfOrderDo();
+					Map<String, Object> resultMap = new HashMap<String, Object>();
+					AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);// new
+																						// AfOrderDo();
+					// 查卡号，用于调用风控接口
+					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+
 					orderInfo.setRid(orderId);
 					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setGmtPay(currentDate);
 					orderInfo.setActualAmount(saleAmount);
 					orderInfo.setBankId(payId);
-					if(payId < 0 ){
+					if (payId < 0) {
 						orderInfo.setPayType(PayType.WECHAT.getCode());
 						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
-						//微信支付
-						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,PayOrderSource.BRAND_ORDER.getCode());
+						// 微信支付
+						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,
+								PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
-						//代付
+						// 代付
+						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+						orderInfo.setStatus(OrderStatus.DEALING.getCode());
 						orderInfo.setPayType(PayType.AGENT_PAY.getCode());
-						orderInfo.setPayStatus(PayStatus.PAYED.getCode());
-						orderInfo.setStatus(OrderStatus.PAID.getCode());
+
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+
+						logger.info("updateOrder orderInfo = {}", orderInfo);
+						orderDao.updateOrder(orderInfo);
+						BigDecimal useableAmount = userAccountInfo.getAuAmount()
+								.subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+
 						if (useableAmount.compareTo(saleAmount) < 0) {
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 						}
-						logger.info("payBrandOrder orderInfo = {}", orderInfo);
+						// 在申请代买的时候就会扣去额度，如果审批不同过的话再加上响应的额度
+						afBorrowService.dealAgentPayConsumeApply(userAccountInfo, orderInfo.getActualAmount(),
+								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
+								orderInfo.getOrderNo(), null);
+
+						// 最后调用风控控制
+						logger.info("verify userId" + userId);
+
+						String cardNo = card.getCardNumber();
+						String riskOrderNo = riskUtil.getOrderNo("vefy",
+								cardNo.substring(cardNo.length() - 4, cardNo.length()));
+						orderInfo.setRiskOrderNo(riskOrderNo);
 						orderDao.updateOrder(orderInfo);
-						
-						afBorrowService.dealAgentPayConsumeApply(userAccountInfo, saleAmount, goodsName, nper, orderId, orderNo, null);
-						
+
+						try {
+							riskUtil.verify(ObjectUtils.toString(userId, ""), "40",
+									card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, StringUtil.EMPTY,
+									"/third/risk/payOrder",riskOrderNo);
+						} catch (Exception e) {
+							//throw new FanbeiException();
+							e.printStackTrace();
+						}
+
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
 						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 						orderInfo.setStatus(OrderStatus.DEALING.getCode());
-						
+
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-						
+
 						AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
-						
-						resultMap = new HashMap<String,Object>();
-						
-						if(null == cardInfo){
+
+						resultMap = new HashMap<String, Object>();
+
+						if (null == cardInfo) {
 							throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 						}
 						logger.info("payBrandOrder orderInfo = {}", orderInfo);
-						//银行卡支付 代收
-						UpsCollectRespBo respBo = upsUtil.collect(tradeNo,saleAmount, userId+"", userAccountInfo.getRealName(), cardInfo.getMobile(), 
-								cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02",OrderType.BOLUOME.getCode());
-						if(!respBo.isSuccess()) {
+						orderDao.updateOrder(orderInfo);
+						// 银行卡支付 代收
+						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
+								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
+								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
+								"品牌订单支付", "02", OrderType.BOLUOME.getCode());
+						if (!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
-						orderInfo.setPayTradeNo(respBo.getOrderNo());
-						orderDao.updateOrder(orderInfo);
-						Map<String,Object> newMap = new HashMap<String,Object>();
+						Map<String, Object> newMap = new HashMap<String, Object>();
 						newMap.put("outTradeNo", respBo.getOrderNo());
 						newMap.put("tradeNo", respBo.getTradeNo());
 						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
 						resultMap.put("resp", respBo);
 					}
-			 		return resultMap;
+					return resultMap;
 				} catch (FanbeiException exception) {
-					logger.error("payBrandOrder faied e = {}", exception );
+					logger.error("payBrandOrder faied e = {}", exception);
 					throw new FanbeiException("bank card pay error", exception.getErrorCode());
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.error("payBrandOrder faied e = {}", e );
+					logger.error("payBrandOrder faied e = {}", e);
 					throw e;
 				}
 			}
