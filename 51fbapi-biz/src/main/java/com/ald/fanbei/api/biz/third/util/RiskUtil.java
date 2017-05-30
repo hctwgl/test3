@@ -644,9 +644,15 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		logThird(signInfo, "operatorNotify", reqBo);
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			
+			
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if(StringUtil.equals("50", result)){
+				//TODO 不做任何更新
+				return 0;
+			}
 			AfUserAuthDo auth = new AfUserAuthDo();
 			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 			auth.setGmtMobile(new Date());
