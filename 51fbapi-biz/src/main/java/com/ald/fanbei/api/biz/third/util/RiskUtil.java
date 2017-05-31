@@ -412,7 +412,8 @@ public class RiskUtil extends AbstractThird {
 						JSONObject object = JSON.parseObject(data);
 
 						logger.info("risk_result =" + object.get("result").toString());
-
+						AfUserAccountDo userAccountInfo = afUserAccountService
+								.getUserAccountByUserId(orderInfo.getUserId());
 						if (!object.get("result").toString().equals("10")) {
 							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
@@ -420,8 +421,7 @@ public class RiskUtil extends AbstractThird {
 							int re = orderDao.updateOrder(orderInfo);
 							// 审批不通过时，让额度还原到以前
 
-							AfUserAccountDo userAccountInfo = afUserAccountService
-									.getUserAccountByUserId(orderInfo.getUserId());
+							
 							// TODO:额度增加，而非减少
 							BigDecimal usedAmount = orderInfo.getActualAmount();
 							afBorrowService.dealAgentPayClose(userAccountInfo, usedAmount, orderInfo.getRid());
@@ -433,6 +433,11 @@ public class RiskUtil extends AbstractThird {
 							jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 							return new Long(String.valueOf(re));
 						}
+
+						// 在风控审批通过后额度不变生成账单
+						afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
+								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
+								orderInfo.getOrderNo(), null);
 
 						// 审批通过时
 						orderInfo.setPayStatus(PayStatus.PAYED.getCode());

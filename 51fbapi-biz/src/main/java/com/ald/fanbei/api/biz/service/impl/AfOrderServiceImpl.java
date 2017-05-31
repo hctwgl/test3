@@ -676,6 +676,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
+						orderInfo.setNper(nper);
 						orderDao.updateOrder(orderInfo);
 						BigDecimal useableAmount = userAccountInfo.getAuAmount()
 								.subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
@@ -683,10 +684,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if (useableAmount.compareTo(saleAmount) < 0) {
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 						}
-						// 在申请代买的时候就会扣去额度，如果审批不同过的话再加上响应的额度
-						afBorrowService.dealAgentPayConsumeApply(userAccountInfo, orderInfo.getActualAmount(),
-								orderInfo.getGoodsName(), nper, orderInfo.getRid(),
-								orderInfo.getOrderNo(), null);
+						// 修改用户账户信息
+						AfUserAccountDo account = new AfUserAccountDo();
+						account.setUsedAmount(orderInfo.getActualAmount());
+						account.setUserId(userAccountInfo.getUserId());
+						afUserAccountDao.updateUserAccount(account);
 
 						// 最后调用风控控制
 						logger.info("verify userId" + userId);

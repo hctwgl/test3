@@ -91,9 +91,12 @@ public interface AfBorrowService {
 
 	/**
 	 * 
-	 * @param userDto 需要操作的用户
-	 * @param amount 退回可用额度
-	 * @param orderId 订单id
+	 * @param userDto
+	 *            需要操作的用户
+	 * @param amount
+	 *            退回可用额度
+	 * @param orderId
+	 *            订单id
 	 * @return
 	 */
 	public long dealAgentPayClose(AfUserAccountDo userDto, BigDecimal amount, Long orderId);
@@ -204,4 +207,28 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	BigDecimal calculateBorrowAmount(Long borrowId, BigDecimal refundAmount, boolean refundByUser);
+
+	/**
+	 * 代付分期
+	 * 
+	 * @param userDto
+	 *            --
+	 * @param amount
+	 *            --金额
+	 * @param cardId
+	 *            --银行卡id
+	 * @param name
+	 *            --借款名称
+	 * @param nper
+	 *            --分期数
+	 * @param orderId
+	 *            订单id
+	 * @param orderNo
+	 *            订单编号
+	 * @param totalNper
+	 *            原来订单总分期数 为重新生成账单使用，当第一次生成账单 该值为null
+	 * @return
+	 */
+	Long dealAgentPayConsumeRisk(AfUserAccountDo userDto, BigDecimal amount, String goodsName, int nper, Long rid,
+			String orderNo, Integer totalNper);
 }
