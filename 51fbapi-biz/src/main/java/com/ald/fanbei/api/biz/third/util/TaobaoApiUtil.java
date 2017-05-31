@@ -148,7 +148,7 @@ public class TaobaoApiUtil extends AbstractThird {
 		logger.info("executeTaeItemDetailSearch start,numId={}",numId);
 		TaobaoClient client = getTaobaoClient();
 		TbkItemRecommendGetRequest req = new TbkItemRecommendGetRequest();
-		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS));
+		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS));
 		Long numIdL = NumberUtil.objToLongDefault(numId, 0L);
 		req.setNumIid(numIdL);
 

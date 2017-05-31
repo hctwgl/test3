@@ -52,6 +52,8 @@ public class AfOrderDo extends AbstractSerial{
 	private Long bankId;
 	private Date gmtPayEnd;//截止支付时间
 	private String serviceProvider;
+	private Integer nper;
+	
 	
 	public Long getRid() {
 		return rid;
@@ -298,5 +300,17 @@ public class AfOrderDo extends AbstractSerial{
 	 */
 	public void setServiceProvider(String serviceProvider) {
 		this.serviceProvider = serviceProvider;
+	}
+	/**
+	 * @return the nper
+	 */
+	public Integer getNper() {
+		return nper;
+	}
+	/**
+	 * @param nper the nper to set
+	 */
+	public void setNper(Integer nper) {
+		this.nper = nper;
 	}
 }

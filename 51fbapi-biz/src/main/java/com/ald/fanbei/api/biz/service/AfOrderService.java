@@ -153,6 +153,13 @@ public interface AfOrderService {
 	Map<String,Object> payBrandOrder(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper);
 	
 	/**
+	 * 代买分期支付
+	 * 
+	 * @return
+	 */
+	Map<String,Object> payAgencyOrder( AfOrderDo orderInfo);
+
+	/**
 	 * 处理菠萝觅回调订单 
 	 * @param payOrderNo
 	 * @param tradeNo

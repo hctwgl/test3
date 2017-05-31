@@ -163,7 +163,9 @@
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
-				<entry key="/good/getGoodsDetailInfo" value-ref="getGoodsDetailInfoApi" />
+				<entry key="/good/getGoodsTkRate" value-ref="getGoodsTkRateApi" />
+				<entry key="/good/getRecommendGoods" value-ref="getRecommendGoodsApi" />
+
 
 				<!-- 订单Order -->
 				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />
@@ -255,6 +257,10 @@
 				<entry key="/agencyBuy/getAgencyBuyOrderDetail" value-ref="GetAgencyBuyOrderDetailApi" />
 				<entry key="/agencyBuy/cancelAgencyBuyOrder" value-ref="cancelAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder" value-ref="completedAgencyBuyOrderApi" />
+				<entry key="/agencyBuy/getAgencyNperInfo" value-ref="getAgencyNperInfoApi" />
+				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
+				
+				
 				<!--运营接口-->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />
 

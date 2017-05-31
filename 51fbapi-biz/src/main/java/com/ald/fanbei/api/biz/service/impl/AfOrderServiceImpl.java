@@ -928,5 +928,41 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return afUserOrderDao.addUserOrder(order);
 	}
 
+	
+	@Override
+	public Map<String, Object> payAgencyOrder(final AfOrderDo orderInfo) {
+		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+			@Override
+			public Map<String, Object> doInTransaction(TransactionStatus status) {
+				try {
+					Map<String,Object> resultMap = new HashMap<String,Object>();
+
+					//代付
+					orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+					BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+					if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
+						throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+					}
+					logger.info("payAgencyOrder orderInfo = {}", orderInfo);
+					orderDao.updateOrder(orderInfo);
+					
+					afBorrowService.dealAgentPayAgencyPayConsumeApply(orderInfo,userAccountInfo.getUserName());
+					
+			 		return resultMap;
+				} catch (FanbeiException exception) {
+					logger.error("payAgencyOrder faied e = {}", exception );
+					throw new FanbeiException("bank card pay error", exception.getErrorCode());
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("payAgencyOrder faied e = {}", e );
+					throw e;
+				}
+			}
+		});
+	}
+
 
 }
