@@ -30,7 +30,7 @@
 		    <artifactId>spring-test</artifactId>
 		    <version>4.2.1.RELEASE</version>
 		</dependency>
-				<dependency>
+	<!-- 	<dependency>
 			<groupId>third.taobao.sdk</groupId>
 			<artifactId>taobao-sdk</artifactId>
 			<version>20170204</version>
@@ -41,12 +41,12 @@
 		  <artifactId>taobao-sdk-source</artifactId>
 		  <version>20170204</version>
 		  <classifier>source</classifier>
-		</dependency>
-		<dependency>
+		</dependency> -->
+		<!-- <dependency>
 		  <groupId>tt</groupId>
 		  <artifactId>taobao</artifactId>
 		  <version>20170207</version>
-		</dependency>
+		</dependency> -->
 		
 	</dependencies>
 	<build>

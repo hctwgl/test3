@@ -166,7 +166,6 @@ public class TaobaoApiUtil extends AbstractThird {
 //		TaobaoClient client = getTaobaoClient();
 		TaobaoClient client = getTaobaoLianMengClient();
 
-		
 		TbkItemInfoGetRequest req = new TbkItemInfoGetRequest();
 		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS));
 		req.setPlatform(1L);

@@ -43,29 +43,29 @@
 			<artifactId>jpush-client</artifactId>
 			<version>3.2.15</version>
 		</dependency>
-		
+
 		<dependency>
-	        <groupId>cn.jpush.api</groupId>
-	        <artifactId>jiguang-common</artifactId>
-	        <version>1.0.1</version>
-    	</dependency>
-    	
-    	<dependency>
-	        <groupId>io.netty</groupId>
-	        <artifactId>netty-all</artifactId>
-	        <version>4.1.6.Final</version>
-	        <scope>compile</scope>
-	    </dependency>
-	    <dependency>
-	        <groupId>com.google.code.gson</groupId>
-	        <artifactId>gson</artifactId>
-	        <version>2.3</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>org.slf4j</groupId>
-	        <artifactId>slf4j-api</artifactId>
-	        <version>1.7.7</version>
-	    </dependency>
+			<groupId>cn.jpush.api</groupId>
+			<artifactId>jiguang-common</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.6.Final</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.7</version>
+		</dependency>
 
 		<dependency>
 			<groupId>third.51fanbei.sdk</groupId>
@@ -78,19 +78,7 @@
 			<artifactId>taobao-sdk</artifactId>
 			<version>20170204</version>
 		</dependency>
-		
-		<dependency>
-		  <groupId>third.taobao.sdk</groupId>
-		  <artifactId>taobaolianmeng-sdk</artifactId>
-		  <version>20170420</version>
-		</dependency>
-		
-		<dependency>
-		  <groupId>third.taobao.sdk</groupId>
-		  <artifactId>taobaolianmeng-sdk</artifactId>
-		  <version>20170420</version>
-		  <classifier>source</classifier>
-		</dependency>
+
 
 		<dependency>
 			<groupId>third.taobao.sdk</groupId>
@@ -98,6 +86,26 @@
 			<version>20170204</version>
 			<classifier>source</classifier>
 		</dependency>
+
+
+	
+
+	<dependency>
+			<groupId>third.taobaolianmeng.sdk</groupId>
+			<artifactId>taobao-sdk</artifactId>
+			<version>20170420</version>
+		</dependency>
+			<dependency>
+			<groupId>third.taobaolianmeng.sdk</groupId>
+			<artifactId>taobao-sdk-source</artifactId>
+			<version>20170420</version>
+			<classifier>source</classifier>
+		</dependency>
+		<!-- <dependency>
+		  <groupId>tt</groupId>
+		  <artifactId>taobao</artifactId>
+		  <version>20170207</version>
+		</dependency> -->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
