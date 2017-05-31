@@ -159,7 +159,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setNumId(StringUtils.isBlank(numId)?"":numId);
 		agentOrderDetailVo.setSaleAmount(saleAmount);
 		agentOrderDetailVo.setActualAmount(actualAmount);
-		
+		agentOrderDetailVo.setNper(afOrderDo.getNper());
 
 		return agentOrderDetailVo;
 	}

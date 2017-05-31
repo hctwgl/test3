@@ -43,8 +43,7 @@ public class GetRecommendGoodsApi implements ApiHandle {
 		try {
 			List<Object> list = new ArrayList<Object>();
 
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("numIid", "524010015574,524009251672");
+		
 			
 			List<NTbkItem>	nTbkItemList1 = taobaoApiUtil.executeTaeItemRecommendSearch("524010015574").getResults();
 			List<NTbkItem>	nTbkItemList2 = taobaoApiUtil.executeTaeItemRecommendSearch("524009251672").getResults();
