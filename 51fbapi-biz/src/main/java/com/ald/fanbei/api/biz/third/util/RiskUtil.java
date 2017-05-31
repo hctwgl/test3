@@ -127,7 +127,7 @@ public class RiskUtil extends AbstractThird {
 	AfOrderDao orderDao;
 	@Resource
 	TransactionTemplate transactionTemplate;
-	@Resource 
+	@Resource
 	AfAgentOrderService afAgentOrderService;
 
 	private static String getUrl() {
@@ -331,7 +331,7 @@ public class RiskUtil extends AbstractThird {
 	 * @return
 	 */
 	public RiskVerifyRespBo verify(String consumerNo, String scene, String cardNo, String appName, String ipAddress,
-			String blackBox, String borrowId, String notifyUrl,String orderNo) {
+			String blackBox, String borrowId, String notifyUrl, String orderNo) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
@@ -408,41 +408,41 @@ public class RiskUtil extends AbstractThird {
 
 						// 添加一个根据风控号查找记录的方法
 						AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
-						//如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
-						JSONObject object=JSON.parseObject(data);
-						
+						// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
+						JSONObject object = JSON.parseObject(data);
+
 						logger.info("risk_result =" + object.get("result").toString());
-						
+
 						if (!object.get("result").toString().equals("10")) {
 							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 							logger.info("updateOrder orderInfo = {}", orderInfo);
-							int re=orderDao.updateOrder(orderInfo);
-							//审批不通过时，让额度还原到以前
-							
+							int re = orderDao.updateOrder(orderInfo);
+							// 审批不通过时，让额度还原到以前
+
 							AfUserAccountDo userAccountInfo = afUserAccountService
 									.getUserAccountByUserId(orderInfo.getUserId());
-							//TODO:额度增加，而非减少
-							BigDecimal usedAmount = orderInfo.getActualAmount().multiply(new BigDecimal(-1));
-							afBorrowService.dealAgentPayConsumeApply(userAccountInfo,
-									usedAmount, orderInfo.getGoodsName(), orderInfo.getNper(),
-									orderInfo.getRid(), orderInfo.getOrderNo(), null);
-							AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+							// TODO:额度增加，而非减少
+							BigDecimal usedAmount = orderInfo.getActualAmount();
+							afBorrowService.dealAgentPayClose(userAccountInfo, usedAmount, orderInfo.getRid());
+							AfAgentOrderDo afAgentOrderDo = afAgentOrderService
+									.getAgentOrderByOrderId(orderInfo.getRid());
 							afAgentOrderDo.setClosedReason("风控审批失败");
 							afAgentOrderDo.setGmtClosed(new Date());
+
 							jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 							return new Long(String.valueOf(re));
 						}
-						
+
 						// 审批通过时
 						orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 						orderInfo.setStatus(OrderStatus.PAID.getCode());
-						//关闭订单时间和原因的更新
-						
+						// 关闭订单时间和原因的更新
+
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
-						
-						//TODO:返回值
+
+						// TODO:返回值
 						return 1L;
 					}
 				} catch (Exception e) {
@@ -520,11 +520,12 @@ public class RiskUtil extends AbstractThird {
 						card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
 						UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-				Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+				Integer day = NumberUtil
+						.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 				Date arrivalStart = DateUtil.getStartOfDate(currDate);
 				Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 				cashDo.setGmtPlanRepayment(repaymentDay);
-				
+
 				if (!upsResult.isSuccess()) {
 					logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 					cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
@@ -593,7 +594,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param identity
 	 *            身份标识（固定4位）
 	 */
-	public  String getOrderNo(String method, String identity) {
+	public String getOrderNo(String method, String identity) {
 		if (StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity)
 				|| identity.length() != 4) {
 			throw new FanbeiException(FanbeiExceptionCode.UPS_ORDERNO_BUILD_ERROR);
@@ -648,13 +649,12 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		logThird(signInfo, "operatorNotify", reqBo);
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
-			
-			
+
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
-			if(StringUtil.equals("50", result)){
-				//TODO 不做任何更新
+			if (StringUtil.equals("50", result)) {
+				// TODO 不做任何更新
 				return 0;
 			}
 			AfUserAuthDo auth = new AfUserAuthDo();
