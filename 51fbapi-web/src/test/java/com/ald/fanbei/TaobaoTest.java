@@ -4,6 +4,7 @@ import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.TaeItemsListRequest;
+import com.taobao.api.response.TaeItemsListResponse;
 
 
 
@@ -16,12 +17,12 @@ import com.taobao.api.request.TaeItemsListRequest;
  */
 public class TaobaoTest {
 	public static void main(String[] args) throws ApiException {
-		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23427320", "f96804bd151c12114fa51ddb1bff91b6");
+//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23427320", "f96804bd151c12114fa51ddb1bff91b6");
 		
-		TaeItemsListRequest req = new TaeItemsListRequest();
-		req.setFields("title,nick,pic_url,location,cid,price,post_fee,promoted_service,ju,shop_name");
-		req.setNumIids("542598579311");
-		System.out.println(client.execute(req).getBody());
+//		TaeItemsListRequest req = new TaeItemsListRequest();
+//		req.setFields("title,nick,pic_url,location,cid,price,post_fee,promoted_service,ju,shop_name");
+//		req.setNumIids("542598579311");
+//		System.out.println(client.execute(req).getBody());
 		
 //		TaobaoClient client = new DefaultTaobaoClient("", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
 //		AtbItemsDetailGetRequest req = new AtbItemsDetailGetRequest();
@@ -51,40 +52,40 @@ public class TaobaoTest {
 //		System.out.println(rsp.getBody());
 		
 		
-		
-//		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-//		AtbItemsGetRequest req = new AtbItemsGetRequest();
-//		req.setArea("杭州");
-//		req.setAutoSend("true");
-//		req.setCid(123L);
-//		req.setEndCommissionNum("10000");
-//		req.setEndCommissionRate("2345");
-//		req.setEndCredit("1heart");
-//		req.setEndPrice("999");
-//		req.setEndTotalnum("10");
-//		req.setFields("open_iid,title,nick,pic_url,price,commission,commission_rate,commission_num,commission_volume,seller_credit_score,item_location,volume");
-//		req.setGuarantee("true");
-//		req.setRealDescribe("true");
-//		req.setKeyword("男装");
-//		req.setCashCoupon("true");
-//		req.setVipCard("true");
-//		req.setPageNo(1L);
-//		req.setPageSize(40L);
-//		req.setOverseasItem("true");
-//		req.setOnemonthRepair("true");
-//		req.setSevendaysReturn("true");
-//		req.setSort("price_desc");
-//		req.setStartCommissionNum("1000");
-//		req.setStartCommissionRate("1234");
-//		req.setStartCredit("1heart");
-//		req.setStartPrice("1");
-//		req.setStartTotalnum("1");
-//		req.setSupportCod("true");
-//		req.setMallItem("true");
-//		AtbItemsGetResponse rsp = client.execute(req);
-//		System.out.println(rsp.getBody());
-//		System.out.println(JSON.parse(rsp.getBody()));
-		
+	/*	
+		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+		AtbItemsGetRequest req = new AtbItemsGetRequest();
+		req.setArea("杭州");
+		req.setAutoSend("true");
+		req.setCid(123L);
+		req.setEndCommissionNum("10000");
+		req.setEndCommissionRate("2345");
+		req.setEndCredit("1heart");
+		req.setEndPrice("999");
+		req.setEndTotalnum("10");
+		req.setFields("open_iid,title,nick,pic_url,price,commission,commission_rate,commission_num,commission_volume,seller_credit_score,item_location,volume");
+		req.setGuarantee("true");
+		req.setRealDescribe("true");
+		req.setKeyword("男装");
+		req.setCashCoupon("true");
+		req.setVipCard("true");
+		req.setPageNo(1L);
+		req.setPageSize(40L);
+		req.setOverseasItem("true");
+		req.setOnemonthRepair("true");
+		req.setSevendaysReturn("true");
+		req.setSort("price_desc");
+		req.setStartCommissionNum("1000");
+		req.setStartCommissionRate("1234");
+		req.setStartCredit("1heart");
+		req.setStartPrice("1");
+		req.setStartTotalnum("1");
+		req.setSupportCod("true");
+		req.setMallItem("true");
+		AtbItemsGetResponse rsp = client.execute(req);
+		System.out.println(rsp.getBody());
+		System.out.println(JSON.parse(rsp.getBody()));
+		*/
 		
 		
 //		//淘宝客，搜索商品，没有返利
@@ -106,14 +107,14 @@ public class TaobaoTest {
 //		System.out.println(rsp.getParams());
 		
 		//获取淘宝客返利
-//		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
-//		TaeItemsListRequest req1 = new TaeItemsListRequest();
-//		req1.setFields("title,nick,price");
-//		req1.setNumIids("25354992789");
-//		TaeItemsListResponse rsp1 = client1.execute(req1);
-//		System.out.println(rsp1.getBody());
-//		System.out.println(rsp1.getItems());
-//		System.out.println(rsp1.getParams());
+		TaobaoClient client1 = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
+		TaeItemsListRequest req1 = new TaeItemsListRequest();
+		req1.setFields("title,nick,price");
+		req1.setNumIids("25354992789");
+		TaeItemsListResponse rsp1 = client1.execute(req1);
+		System.out.println(rsp1.getBody());
+		System.out.println(rsp1.getItems());
+		System.out.println(rsp1.getParams());
 		
 		
 //		req.setIsTmall(false);

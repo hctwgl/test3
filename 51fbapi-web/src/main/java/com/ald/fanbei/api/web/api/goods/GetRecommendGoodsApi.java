@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
@@ -43,15 +42,21 @@ public class GetRecommendGoodsApi implements ApiHandle {
 
 		try {
 			List<Object> list = new ArrayList<Object>();
+
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("numIid", "524010015574,524009251672");
 			
+			List<NTbkItem>	nTbkItemList1 = taobaoApiUtil.executeTaeItemRecommendSearch("524010015574").getResults();
+			List<NTbkItem>	nTbkItemList2 = taobaoApiUtil.executeTaeItemRecommendSearch("524009251672").getResults();
+			List<NTbkItem>	nTbkItemList3 = taobaoApiUtil.executeTaeItemRecommendSearch("533803157219").getResults();
+			List<NTbkItem>	nTbkItemList4 = taobaoApiUtil.executeTaeItemRecommendSearch("524776152072").getResults();
+
 			
-			List<NTbkItem>	nTbkItemList = taobaoApiUtil.executeTaeItemRecommendSearch("524010015574,524009251672").getResults();
-			if (null != nTbkItemList && nTbkItemList.size() > 0) {
-				for (NTbkItem item : nTbkItemList) {
-					list.add(goodsInfoWithNTbkItem(item));
-				}
-				
-			}
+			goodsInfoWithTbkItemList(nTbkItemList1,list);
+			goodsInfoWithTbkItemList(nTbkItemList2,list);
+			goodsInfoWithTbkItemList(nTbkItemList3,list);
+			goodsInfoWithTbkItemList(nTbkItemList4,list);
+
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("goodsList", list);
 			resp.setResponseData(data);
@@ -65,12 +70,22 @@ public class GetRecommendGoodsApi implements ApiHandle {
 		}
 
 	}
+	
+	public void goodsInfoWithTbkItemList(List<NTbkItem> nTbkItemList,List<Object> list) {
+		
+		if (null != nTbkItemList && nTbkItemList.size() > 0) {
+			for (NTbkItem item : nTbkItemList) {
+				list.add(goodsInfoWithNTbkItem(item));
+			}
+			
+		}
+	}
 
 	public Map<String, Object> goodsInfoWithNTbkItem(NTbkItem item) {
 		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(item.getZkFinalPrice(), BigDecimal.ZERO);
 	    BigDecimal rebateAmount = NumberUtil.objToBigDecimalDefault(item.getTkRate(), BigDecimal.ZERO).divide(new BigDecimal(100)).multiply(saleAmount);
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("numIid", item.getNumIid());
+		data.put("numId", item.getNumIid());
 		data.put("saleAmount", saleAmount);
 		data.put("rebateAmount", rebateAmount);
 		data.put("goodsName", item.getTitle());

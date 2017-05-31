@@ -104,6 +104,8 @@ public class GetAgencyNperInfoApi implements ApiHandle {
 				attrs.put("poundageAmount", totalAmount.subtract(goodsAmount));
 				attrs.put("totalAmount", totalAmount);
 				attrs.put("freeMonth", "");//免息月份
+				attrs.put("freeAmount", 0);//免息月份
+
 				list.add(attrs);
 			}
 		}

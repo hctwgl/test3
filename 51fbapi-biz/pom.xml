@@ -73,39 +73,35 @@
 			<version>20170119133446</version>
 		</dependency>
 
+		<!-- <dependency> <groupId>third.taobao.sdk</groupId> <artifactId>taobao-sdk</artifactId> 
+			<version>20170204</version> </dependency> <dependency> <groupId>third.taobao.sdk</groupId> 
+			<artifactId>taobao-sdk-source</artifactId> <version>20170204</version> <classifier>source</classifier> 
+			</dependency> -->
 		<dependency>
 			<groupId>third.taobao.sdk</groupId>
 			<artifactId>taobao-sdk</artifactId>
-			<version>20170204</version>
+			<version>20170505</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>third.taobao.sdk</groupId>
 			<artifactId>taobao-sdk-source</artifactId>
-			<version>20170204</version>
+			<version>20170505</version>
 			<classifier>source</classifier>
 		</dependency>
 
-
-	
-
-	<dependency>
+	<!-- 	<dependency>
 			<groupId>third.taobaolianmeng.sdk</groupId>
 			<artifactId>taobao-sdk</artifactId>
-			<version>20170420</version>
+			<version>20170528</version>
 		</dependency>
-			<dependency>
+		<dependency>
 			<groupId>third.taobaolianmeng.sdk</groupId>
 			<artifactId>taobao-sdk-source</artifactId>
-			<version>20170420</version>
+			<version>20170528</version>
 			<classifier>source</classifier>
-		</dependency>
-		<!-- <dependency>
-		  <groupId>tt</groupId>
-		  <artifactId>taobao</artifactId>
-		  <version>20170207</version>
 		</dependency> -->
+		<!-- <dependency> <groupId>tt</groupId> <artifactId>taobao</artifactId> 
+			<version>20170207</version> </dependency> -->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>

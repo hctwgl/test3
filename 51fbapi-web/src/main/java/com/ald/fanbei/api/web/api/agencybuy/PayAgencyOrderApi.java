@@ -40,7 +40,7 @@ public class PayAgencyOrderApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
+		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"), "").toString();
 
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"),null);
 		
