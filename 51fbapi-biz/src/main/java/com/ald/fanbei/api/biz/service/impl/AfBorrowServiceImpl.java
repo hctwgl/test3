@@ -876,12 +876,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					account.setUserId(userDto.getUserId());
 					afUserAccountDao.updateUserAccount(account);
 
-					AfBorrowDo borrow = afBorrowDao.getBorrowByOrderId(orderId);
-					if (borrow != null) {
-						afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.CLOSED.getCode());
-						afBorrowBillDao.updateBorrowBillStatusByBorrowId(borrow.getRid(), BorrowBillStatus.CLOSE.getCode());
-					}
-					
 					return 1l;
 				} catch (Exception e) {
 					logger.info("dealAgentPayClose error:" + e);
@@ -962,7 +956,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 					return 1l;
 				} catch (Exception e) {
-					logger.info("dealBrandConsumeApply error:" + e);
+					logger.info("dealAgentPayConsumeRisk error:" + e);
 					status.setRollbackOnly();
 					return 0l;
 				}

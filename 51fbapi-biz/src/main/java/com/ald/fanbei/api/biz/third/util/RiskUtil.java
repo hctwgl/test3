@@ -423,7 +423,7 @@ public class RiskUtil extends AbstractThird {
 
 							
 							// TODO:额度增加，而非减少
-							BigDecimal usedAmount = orderInfo.getActualAmount();
+							BigDecimal usedAmount = orderInfo.getActualAmount().multiply(BigDecimal.valueOf(-1));
 							afBorrowService.dealAgentPayClose(userAccountInfo, usedAmount, orderInfo.getRid());
 							AfAgentOrderDo afAgentOrderDo = afAgentOrderService
 									.getAgentOrderByOrderId(orderInfo.getRid());
