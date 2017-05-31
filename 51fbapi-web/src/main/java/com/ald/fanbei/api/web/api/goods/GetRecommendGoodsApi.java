@@ -14,10 +14,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -25,7 +29,7 @@ import com.taobao.api.ApiException;
 import com.taobao.api.domain.NTbkItem;
 
 /**
- * @类描述：
+ * @类描述：推荐商品
  * 
  * @author suweili 2017年5月31日上午9:46:28
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -34,28 +38,24 @@ import com.taobao.api.domain.NTbkItem;
 public class GetRecommendGoodsApi implements ApiHandle {
 	@Resource
 	TaobaoApiUtil taobaoApiUtil;
+	
+	@Resource
+	AfResourceService  afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
-
+		
 		try {
 			List<Object> list = new ArrayList<Object>();
+			AfResourceDo resource = afResourceService.getSingleResourceBytype(AfResourceType.agencyRecommendGoods.getCode());
+			String[] numIdList= resource.getValue().split(",");
+			for (String numId : numIdList) {
+				List<NTbkItem>	nTbkItemList = taobaoApiUtil.executeTaeItemRecommendSearch(numId).getResults();
+				goodsInfoWithTbkItemList(nTbkItemList,list);
 
-		
-			
-			List<NTbkItem>	nTbkItemList1 = taobaoApiUtil.executeTaeItemRecommendSearch("524010015574").getResults();
-			List<NTbkItem>	nTbkItemList2 = taobaoApiUtil.executeTaeItemRecommendSearch("524009251672").getResults();
-			List<NTbkItem>	nTbkItemList3 = taobaoApiUtil.executeTaeItemRecommendSearch("533803157219").getResults();
-			List<NTbkItem>	nTbkItemList4 = taobaoApiUtil.executeTaeItemRecommendSearch("524776152072").getResults();
-
-			
-			goodsInfoWithTbkItemList(nTbkItemList1,list);
-			goodsInfoWithTbkItemList(nTbkItemList2,list);
-			goodsInfoWithTbkItemList(nTbkItemList3,list);
-			goodsInfoWithTbkItemList(nTbkItemList4,list);
-
+			}
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("goodsList", list);
 			resp.setResponseData(data);

@@ -53,6 +53,7 @@ public class GetGoodsTkRateApi implements ApiHandle {
 			}
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("tkRate", tkRate);
+			data.put("tkRateUrl", "");
 			resp.setResponseData(data);
 			return resp;
 
