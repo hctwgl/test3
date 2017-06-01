@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -49,10 +50,14 @@ public class GetRecommendGoodsApi implements ApiHandle {
 		try {
 			List<Object> list = new ArrayList<Object>();
 			AfResourceDo resource = afResourceService.getSingleResourceBytype(AfResourceType.agencyRecommendGoods.getCode());
+			AfResourceDo resourceRebate = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.AppRebateRate.getCode());
+//					getSingleResourceBytype(AfResourceType.agencyRecommendGoods.getCode());
+			BigDecimal rateRebate = new BigDecimal(resourceRebate.getValue());
+			
 			String[] numIdList= resource.getValue().split(",");
 			for (String numId : numIdList) {
 				List<NTbkItem>	nTbkItemList = taobaoApiUtil.executeTaeItemRecommendSearch(numId).getResults();
-				goodsInfoWithTbkItemList(nTbkItemList,list);
+				goodsInfoWithTbkItemList(nTbkItemList,list, rateRebate);
 
 			}
 			Map<String, Object> data = new HashMap<String, Object>();
@@ -69,23 +74,25 @@ public class GetRecommendGoodsApi implements ApiHandle {
 
 	}
 	
-	public void goodsInfoWithTbkItemList(List<NTbkItem> nTbkItemList,List<Object> list) {
+	public void goodsInfoWithTbkItemList(List<NTbkItem> nTbkItemList,List<Object> list,BigDecimal rateRebate) {
 		
 		if (null != nTbkItemList && nTbkItemList.size() > 0) {
 			for (NTbkItem item : nTbkItemList) {
-				list.add(goodsInfoWithNTbkItem(item));
+				list.add(goodsInfoWithNTbkItem(item, rateRebate));
 			}
 			
 		}
 	}
 
-	public Map<String, Object> goodsInfoWithNTbkItem(NTbkItem item) {
+	public Map<String, Object> goodsInfoWithNTbkItem(NTbkItem item,BigDecimal rateRebate) {
 		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(item.getZkFinalPrice(), BigDecimal.ZERO);
 	    BigDecimal rebateAmount = NumberUtil.objToBigDecimalDefault(item.getTkRate(), BigDecimal.ZERO).divide(new BigDecimal(100)).multiply(saleAmount);
-		Map<String, Object> data = new HashMap<String, Object>();
+		
+	    
+	    Map<String, Object> data = new HashMap<String, Object>();
 		data.put("numId", item.getNumIid());
 		data.put("saleAmount", saleAmount);
-		data.put("rebateAmount", rebateAmount);
+		data.put("rebateAmount", rebateAmount.multiply(rateRebate));
 		data.put("goodsName", item.getTitle());
 		data.put("goodsIcon", item.getPictUrl());
 		data.put("goodsUrl", item.getItemUrl());
