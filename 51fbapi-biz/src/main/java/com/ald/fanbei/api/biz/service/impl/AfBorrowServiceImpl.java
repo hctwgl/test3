@@ -17,6 +17,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
@@ -46,6 +47,7 @@ import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowInterestDo;
@@ -113,6 +115,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 	AfBorrowBillDao afBorrowBillDao;
 	@Resource
 	AfRepaymentDao afRepaymentDao;
+	
+	@Resource
+	AfAgentOrderService afAgentOrderService;
 	
 	@Override
 	public Date getReyLimitDate(String billType,Date now){
@@ -789,39 +794,27 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					//获取借款分期配置信息
-					AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME);
-					if(null == resource){
-						resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME);
-						bizCacheUtil.saveObject(Constants.CACHEKEY_BORROW_CONSUME, resource, Constants.SECOND_OF_HALF_HOUR);
-					}
 					BigDecimal money = amount;//借款金额
-					BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
-					BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
-					String[] range = StringUtil.split(resource.getValue2(), ",");
-					if(null != range && range.length==2){
-						rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
-						rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
+					Integer realTotalNper = totalNper == null ? nper : totalNper;					
+					JSONObject borrowRate = borrowRateWithResource(realTotalNper);
+					if(borrowRate==null){
+						return 0l;
 					}
-					JSONArray array = JSON.parseArray(resource.getValue());
-					//如果是重新生成的账单，需要原来账单的总期数
-					Integer realTotalNper = totalNper == null ? nper : totalNper;
-					for (int i = 0; i < array.size(); i++) {
-						JSONObject obj = array.getJSONObject(i);
-						if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
-							BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, 
-									nper,new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd);//总手续费
-							BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, nper, 
-									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
-											8,BigDecimal.ROUND_HALF_UP), totalPoundage);//每期账单金额
-							AfBorrowDo borrow =  buildAgentPayBorrow(name,BorrowType.TOCONSUME,userDto.getUserId(), amount, nper,perAmount, BorrowStatus.APPLY.getCode(), orderId, orderNo);
-							//新增借款信息
-							afBorrowDao.addBorrow(borrow);
-						
-							return borrow.getRid();
-						}
-					}
-					return 0l;
+					AfAgentOrderDo agentOrderDo = new AfAgentOrderDo();
+					agentOrderDo.setOrderId(orderId);
+					agentOrderDo.setBorrowRate(borrowRate.toJSONString());
+					afAgentOrderService.updateAgentOrder(agentOrderDo);
+					BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, 
+							nper,borrowRate.getBigDecimal("poundageRate") ,borrowRate.getBigDecimal("rangeBegin")  ,borrowRate.getBigDecimal("rangeEnd") );//总手续费
+					BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, nper, 
+							new BigDecimal(borrowRate.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
+									8,BigDecimal.ROUND_HALF_UP), totalPoundage);//每期账单金额
+					AfBorrowDo borrow =  buildAgentPayBorrow(name,BorrowType.TOCONSUME,userDto.getUserId(), amount, nper,perAmount, BorrowStatus.APPLY.getCode(), orderId, orderNo);
+					//新增借款信息
+					afBorrowDao.addBorrow(borrow);
+				
+					return borrow.getRid();
+					
 				} catch (Exception e) {
 					logger.info("dealAgentPayApplyConsumeApply error:"+e);
 					status.setRollbackOnly();
@@ -830,14 +823,19 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 			}
 		});
 	}
-	public JSONObject borrowRateWithResource(){
+	
+	/**
+	 * 获取分期借款费率信息
+	 * @param realTotalNper
+	 * @return
+	 */
+	public JSONObject borrowRateWithResource(Integer realTotalNper){
 		//获取借款分期配置信息
 		AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME);
 		if(null == resource){
 			resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME);
 			bizCacheUtil.saveObject(Constants.CACHEKEY_BORROW_CONSUME, resource, Constants.SECOND_OF_HALF_HOUR);
 		}
-		BigDecimal money = BigDecimal.ZERO;//借款金额
 		BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
 		BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
 		String[] range = StringUtil.split(resource.getValue2(), ",");
@@ -847,13 +845,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 		}
 		JSONArray array = JSON.parseArray(resource.getValue());
 		//如果是重新生成的账单，需要原来账单的总期数
-		Integer realTotalNper = 0;
 		JSONObject borrowRate =null;
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject obj = array.getJSONObject(i);
 			if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
-	
-			
+				obj.put("rangeBegin", rangeBegin);
+				obj.put("rangeEnd", rangeEnd);
+				obj.put("poundageRate", new BigDecimal(resource.getValue1()));
+
 				borrowRate = obj;
 			}
 		}
@@ -872,52 +871,46 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService{
 					account.setUsedAmount(orderInfo.getActualAmount());
 					account.setUserId(orderInfo.getUserId());
 					afUserAccountDao.updateUserAccount(account);
-					//获取借款分期配置信息
-					AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME);
-					if(null == resource){
-						resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME);
-						bizCacheUtil.saveObject(Constants.CACHEKEY_BORROW_CONSUME, resource, Constants.SECOND_OF_HALF_HOUR);
-					}
+					
+					AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+					
+	
 					BigDecimal money = orderInfo.getActualAmount();//借款金额
-					BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
-					BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
-					String[] range = StringUtil.split(resource.getValue2(), ",");
-					if(null != range && range.length==2){
-						rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
-						rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
+					
+					if(agentOrderDo ==null){
+						return 0l;
+
 					}
-					JSONArray array = JSON.parseArray(resource.getValue());
 					//如果是重新生成的账单，需要原来账单的总期数
 					Integer realTotalNper = orderInfo.getNper();
-					for (int i = 0; i < array.size(); i++) {
-						JSONObject obj = array.getJSONObject(i);
-						if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
-							BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, 
-									realTotalNper,new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd);//总手续费
-							BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, realTotalNper, 
-									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
-											8,BigDecimal.ROUND_HALF_UP), totalPoundage);//每期账单金额
-							AfBorrowDo borrow =  afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
-							afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
-							//直接打款
-							afBorrowLogDao.addBorrowLog(buildBorrowLog(userName,orderInfo.getUserId(),borrow.getRid(),BorrowLogStatus.TRANSED.getCode()));
-							//新增借款日志
-							afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,orderInfo.getActualAmount(), orderInfo.getUserId(), borrow.getRid()));
-							
-							//总账单金额
-							BigDecimal totalBillAMount = BigDecimalUtil.getConsumeTotalAmount(money, borrow.getNper(), 
-									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
-											8,BigDecimal.ROUND_HALF_UP), totalPoundage);
-							List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CONSUME,borrow,perAmount,totalBillAMount,
-									BigDecimal.ZERO,new BigDecimal(obj.getString("rate")).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
-											8,BigDecimal.ROUND_HALF_UP),totalPoundage,BorrowBillStatus.NO);
-							//新增借款账单
-							afBorrowDao.addBorrowBill(billList);
-							
-							return borrow.getRid();
-						}
-					}
+					JSONObject borrowRate = JSON.parseObject(agentOrderDo.getBorrowRate()) ;
+
+					BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, 
+							realTotalNper,borrowRate.getBigDecimal("poundageRate") ,borrowRate.getBigDecimal("rangeBegin")  ,borrowRate.getBigDecimal("rangeEnd") );//总手续费
+					BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(money, realTotalNper, 
+							new BigDecimal(borrowRate.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
+									8,BigDecimal.ROUND_HALF_UP), totalPoundage);//每期账单金额
+					
+					
+					AfBorrowDo borrow =  afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
+					afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
+					//直接打款
+					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName,orderInfo.getUserId(),borrow.getRid(),BorrowLogStatus.TRANSED.getCode()));
+					//新增借款日志
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,orderInfo.getActualAmount(), orderInfo.getUserId(), borrow.getRid()));
+					
+					//总账单金额
+					BigDecimal totalBillAMount = BigDecimalUtil.getConsumeTotalAmount(money, borrow.getNper(), 
+							new BigDecimal(borrowRate.getString(Constants.DEFAULT_RATE)).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
+									8,BigDecimal.ROUND_HALF_UP), totalPoundage);
+					List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CONSUME,borrow,perAmount,totalBillAMount,
+							BigDecimal.ZERO,new BigDecimal(borrowRate.getString("rate")).divide(new BigDecimal(Constants.MONTH_OF_YEAR),
+									8,BigDecimal.ROUND_HALF_UP),totalPoundage,BorrowBillStatus.NO);
+					//新增借款账单
+					afBorrowDao.addBorrowBill(billList);
+					
 					return 0l;
+				
 				} catch (Exception e) {
 					logger.info("dealBrandConsumeApply error:"+e);
 					status.setRollbackOnly();
