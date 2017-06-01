@@ -103,6 +103,8 @@
 				<value>/user/logout</value>
 				<value>/good/getBrandShopList</value>
 				<value>/good/getGoodsDetailInfo</value>
+				<value>/good/getGoodsTkRate</value>
+				
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				<value>/brand/getBrandList</value>
