@@ -167,6 +167,7 @@
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
 				<entry key="/good/getGoodsTkRate" value-ref="getGoodsTkRateApi" />
 				<entry key="/good/getRecommendGoods" value-ref="getRecommendGoodsApi" />
+				<entry key="/good/getGoodsDetailInfo" value-ref="getGoodsDetailInfoApi" />
 
 
 				<!-- 订单Order -->
