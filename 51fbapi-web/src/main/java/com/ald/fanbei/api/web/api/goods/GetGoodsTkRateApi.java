@@ -47,7 +47,7 @@ AfResourceService afResourceService;
 		
 //		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
 		AfResourceDo resource = afResourceService.getSingleResourceBytype(AfResourceType.AgencyRebateInfo.getCode());
-		String tkRate = "%15";
+		String tkRate = "15%";
 		String urlLast ="/app/sys/goodsRebateExplain";
 
 		if(resource !=null){
