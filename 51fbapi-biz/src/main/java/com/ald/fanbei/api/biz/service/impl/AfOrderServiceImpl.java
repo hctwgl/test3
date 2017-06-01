@@ -938,7 +938,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					Map<String,Object> resultMap = new HashMap<String,Object>();
 					Date currentDate = new Date();
 					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
-					AfOrderDo orderInfo = new AfOrderDo();
 					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setGmtPay(currentDate);
 					//代付
