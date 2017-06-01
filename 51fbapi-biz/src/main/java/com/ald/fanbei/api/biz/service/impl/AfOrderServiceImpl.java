@@ -936,7 +936,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
 				try {
 					Map<String,Object> resultMap = new HashMap<String,Object>();
-
+					Date currentDate = new Date();
+					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
+					AfOrderDo orderInfo = new AfOrderDo();
+					orderInfo.setPayTradeNo(tradeNo);
+					orderInfo.setGmtPay(currentDate);
 					//代付
 					orderInfo.setPayType(PayType.AGENT_PAY.getCode());
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
