@@ -14,8 +14,10 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -52,8 +54,9 @@ public class GetGoodsTkRateApi implements ApiHandle {
 				tkRate =NumberUtil.objToIntDefault(nTbkItemList.get(0).getTkRate(), 0)/100+"%";
 			}
 			Map<String, Object> data = new HashMap<String, Object>();
+			String url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+"/activity/04/fullFree";
 			data.put("tkRate", tkRate);
-			data.put("tkRateUrl", "");
+			data.put("tkRateUrl", url);
 			resp.setResponseData(data);
 			return resp;
 
