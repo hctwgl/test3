@@ -62,7 +62,15 @@ public class ChangeUserAddressApi implements ApiHandle {
 				afUserAddressService.updateUserAddress(defauleDo);
 			}
 		}else{
-			// 如果是最后一个地址,则为默认地址
+			// 不能从一个默认到不默认地址改变
+			
+			AfUserAddressDo userAddressDo = afUserAddressService.selectUserAddressByrid(addressId);
+			if(userAddressDo != null){
+				if(!StringUtils.equals(userAddressDo.getIsDefault(), isDefault)){
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANG_DEFAULT_ADDRESS_ERROR);
+				}
+			}
+			
 			if(afUserAddressService.getCountOfAddressByUserId(userId) <= 1){
 				isDefault = YesNoStatus.YES.getCode();
 			}
