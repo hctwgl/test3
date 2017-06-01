@@ -23,7 +23,7 @@ public interface AfAppUpgradeDao {
 	 * @param versionCode
 	 * @return
 	 */
-	AfAppUpgradeDo getNewestIOSVersionBySpecify(@Param("versionCode")Integer versionCode);
+	AfAppUpgradeDo getNewestIOSVersionBySpecify(@Param("versionCode")Integer versionCode,@Param("appCode")String appCode);
 
 
 }

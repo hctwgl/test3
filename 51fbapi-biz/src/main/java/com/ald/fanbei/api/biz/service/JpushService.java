@@ -113,5 +113,9 @@ public interface JpushService {
 	 * @param date
 	 */
 	public void repayRenewalFail(String userName);
-	
+	/**
+	 * 代付申请失败
+	 */
+	public void dealBorrowApplyFail(String userName,Date date);
+
 }

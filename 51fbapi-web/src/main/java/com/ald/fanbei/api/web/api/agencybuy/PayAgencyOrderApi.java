@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -43,7 +44,8 @@ public class PayAgencyOrderApi implements ApiHandle {
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"), "").toString();
 
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"),null);
-		
+		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+		String ipAddress = CommonUtil.getIpAddr(request);
 		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
 		
 		if (orderInfo ==  null) {
@@ -64,7 +66,9 @@ public class PayAgencyOrderApi implements ApiHandle {
 			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
-			Map<String,Object> result = afOrderService.payAgencyOrder( orderInfo);
+			
+//			Map<String,Object> result = afOrderService.payAgencyOrder( orderInfo);
+			Map<String,Object> result = afOrderService.payBrandOrder(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress);
 
 			resp.setResponseData(result);
 

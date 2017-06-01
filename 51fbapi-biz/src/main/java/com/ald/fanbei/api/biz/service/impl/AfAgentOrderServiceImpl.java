@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
@@ -63,6 +64,9 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	AfBorrowService afBorrowService;
+	
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public int addAgentOrder(AfAgentOrderDo afAgentOrderDo) {
@@ -207,7 +211,10 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 
 					afAgentOrderDo.setOrderId(afOrder.getRid());
 					afAgentOrderDao.addAgentOrder(afAgentOrderDo);
-					orderBorrowInfo(afOrder);
+					if(nper > 0){
+						orderBorrowInfo(afOrder);
+					}
+				
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -230,9 +237,12 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 		if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 		}
-
-		afBorrowService.dealAgentPayApplyConsumeApply(userAccountInfo, orderInfo.getActualAmount(),
-				orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(), orderInfo.getOrderNo(), null);
+		JSONObject borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
+		afOrderDao.updateOrder(orderInfo);
+		AfAgentOrderDo agentOrderDo = new AfAgentOrderDo();
+		agentOrderDo.setOrderId(orderInfo.getRid());
+		agentOrderDo.setBorrowRate(borrowRate.toJSONString());
+		afAgentOrderDao.updateAgentOrder(agentOrderDo);
 
 	}
 

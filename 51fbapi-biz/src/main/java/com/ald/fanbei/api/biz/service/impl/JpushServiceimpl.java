@@ -265,5 +265,21 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			logger.info("repayRenewalFail error", e);
 		}
 	}
-	
+	@Override
+	public void dealBorrowApplyFail(String userName, Date date) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("dealBorrowApplyFail,pid=",pid,",date=",date));
+			String msgContext = "亲，您的信用还需努力，本次分期购买申请没有通过。继续保持好的信用生活习惯，离下次成功只差一步了。";
+			Map<String,String> extras = new HashMap<String,String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis()+"");
+			extras.put(PUSH_JUMP_TYPE, "210");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("分期购买申请审核失败", msgContext, extras, new String[]{userName});
+		} catch (Exception e) {
+			logger.info("dealBorrowApplyFail error",e);
+		}
+		
+	}
 }

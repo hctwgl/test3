@@ -88,7 +88,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
-			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(),
+					afBorrowCashDo.getSumRate());
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
@@ -100,6 +101,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			// 如果预计还款日在今天之前，且为待还款状态，则已逾期，逾期天数=现在减去预计还款日
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED") && afBorrowCashDo.getGmtPlanRepayment().before(now)) {
 				long day = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), now);
+				data.put("overdueDay", day);
+				data.put("overdueStatus", "Y");
+			}
+			if (afBorrowCashDo.getGmtPlanRepayment() != null){
 				data.put("repaymentDay", afBorrowCashDo.getGmtPlanRepayment());
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(now);
@@ -107,10 +112,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				calendarRepay.setTime(afBorrowCashDo.getGmtPlanRepayment());
 				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
 				data.put("deadlineDay", chaTime);
-				data.put("overdueDay", day);
-				data.put("overdueStatus", "Y");
 			}
-			
+				
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("rid", afBorrowCashDo.getRid());
@@ -134,14 +137,14 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
 					if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
 						data.put("renewalStatus", "Y");
-					} 
+					}
 				}
 			}
 		}
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
-        
+
 		data.put("bankDoubleRate", bankService.toString());
 		data.put("poundageRate", rate.get("poundage"));
 		data.put("overdueRate", rate.get("overduePoundage"));
@@ -150,9 +153,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 		data.put("bannerList", bannerList);
 		data.put("lender", rate.get("lender"));
-       if(account!=null){
-   		data.put("maxAmount", account.getBorrowCashAmount().stripTrailingZeros().toPlainString());
-       }
+		if (account != null) {
+			data.put("maxAmount", account.getBorrowCashAmount().stripTrailingZeros().toPlainString());
+		}
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
 		if (currentAmount == null) {
@@ -172,7 +175,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		BigDecimal nums = new BigDecimal((String) rate.get("nums"));
 		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
 		data.put("loanNum", nums.multiply(BigDecimal.valueOf(currentAmount.getNums())));
-		
+
 		resp.setResponseData(data);
 		return resp;
 	}

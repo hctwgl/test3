@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.dal.domain;
 
 import java.math.BigDecimal;
@@ -52,12 +53,25 @@ public class AfOrderDo extends AbstractSerial{
 	private Long bankId;
 	private Date gmtPayEnd;//截止支付时间
 	private String serviceProvider;
-	private Integer nper;
-	
+	private int  nper;//分期数
+	private String riskOrderNo;//风控订单号
 	
 	public Long getRid() {
 		return rid;
 	}
+	public int getNper() {
+		return nper;
+	}
+	public String getRiskOrderNo() {
+		return riskOrderNo;
+	}
+	public void setRiskOrderNo(String riskOrderNo) {
+		this.riskOrderNo = riskOrderNo;
+	}
+	public void setNper(int nper) {
+		this.nper = nper;
+	}
+
 	public void setRid(Long rid) {
 		this.rid = rid;
 	}
@@ -301,16 +315,5 @@ public class AfOrderDo extends AbstractSerial{
 	public void setServiceProvider(String serviceProvider) {
 		this.serviceProvider = serviceProvider;
 	}
-	/**
-	 * @return the nper
-	 */
-	public Integer getNper() {
-		return nper;
-	}
-	/**
-	 * @param nper the nper to set
-	 */
-	public void setNper(Integer nper) {
-		this.nper = nper;
-	}
 }
+

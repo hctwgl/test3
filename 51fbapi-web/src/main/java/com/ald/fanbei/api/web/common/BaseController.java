@@ -174,12 +174,16 @@ public abstract class BaseController {
 		if (requestDataVo.getId() != null && requestDataVo.getId().indexOf("i_") == 0 && context.getAppVersion() == 121) {
 			throw new FanbeiException("系统维护中", FanbeiExceptionCode.SYSTEM_REPAIRING_ERROR);
 		}
-
-		if (requestDataVo.getId().startsWith("i")) {
-			AfAppUpgradeDo afAppUpgradeDo = afAppUpgradeService.getNewestIOSVersionBySpecify(context.getAppVersion());
+		String idName = requestDataVo.getId();
+		if (idName.startsWith("i")) {
+			String[] strs = idName.split("_");
+			String name =idName.substring(idName.lastIndexOf("_")+1) ;
+			if(strs.length==3){
+				name ="www";
+			}
+			AfAppUpgradeDo afAppUpgradeDo = afAppUpgradeService.getNewestIOSVersionBySpecify(context.getAppVersion(),name);
 			if (afAppUpgradeDo != null && StringUtils.equals(afAppUpgradeDo.getIsForce(), YesNoStatus.YES.getCode())) {
 				throw new FanbeiException("system update", FanbeiExceptionCode.SYSTEM_UPDATE);
-
 			}
 		}
 

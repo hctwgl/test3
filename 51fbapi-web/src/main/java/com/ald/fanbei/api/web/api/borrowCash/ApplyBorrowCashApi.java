@@ -179,12 +179,15 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
 
-			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
-					afBorrowCashDo.getBorrowNo());
-
-			cashDo.setRishOrderNo(result.getOrderNo());
+			String cardNo = card.getCardNumber();
+			String riskOrderNo = riskUtil.getOrderNo("vefy",
+					cardNo.substring(cardNo.length() - 4, cardNo.length()));
+			cashDo.setRishOrderNo(riskOrderNo);
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
+			
+			RiskVerifyRespBo result = riskUtil.verify(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
+					afBorrowCashDo.getBorrowNo(), null,riskOrderNo);
 
 			return resp;
 		} catch (Exception e) {

@@ -51,10 +51,12 @@ public class AfAppUpgradeServiceImpl implements AfAppUpgradeService {
         return result;
 	}
 
-	
 	@Override
-	public AfAppUpgradeDo getNewestIOSVersionBySpecify(Integer versionCode) {
-		return afAppUpgradeDao.getNewestIOSVersionBySpecify(versionCode);
+	public AfAppUpgradeDo getNewestIOSVersionBySpecify(Integer versionCode, String channelCode) {
+		return afAppUpgradeDao.getNewestIOSVersionBySpecify(versionCode, channelCode);
 	}
+
+	
+
 
 }

@@ -43,7 +43,7 @@
 			<include refid="queryAllFields" />
 		FROM af_app_upgrade 
 		WHERE is_delete = 0 
-		AND status = 'O'  AND type ='I'
+		AND status = 'O'  AND type ='I' AND app_code= #{appCode}
 		AND #{versionCode} BETWEEN min_version AND max_version 
 		ORDER BY version_code DESC
 		LIMIT 1
