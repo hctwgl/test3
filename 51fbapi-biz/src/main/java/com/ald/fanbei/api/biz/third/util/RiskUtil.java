@@ -429,7 +429,7 @@ public class RiskUtil extends AbstractThird {
 									.getAgentOrderByOrderId(orderInfo.getRid());
 							afAgentOrderDo.setClosedReason("风控审批失败");
 							afAgentOrderDo.setGmtClosed(new Date());
-
+							afAgentOrderService.updateAgentOrder(afAgentOrderDo);
 							jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 							return new Long(String.valueOf(re));
 						}

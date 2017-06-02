@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
@@ -101,6 +102,10 @@ public interface AfBorrowService {
 	 */
 	public long dealAgentPayClose(AfUserAccountDo userDto, BigDecimal amount, Long orderId);
 
+
+	public long dealAgentPayAgencyPayConsumeApply(AfOrderDo orderInfo,String userName);
+
+	
 	/**
 	 * 获取最近借款号
 	 * 

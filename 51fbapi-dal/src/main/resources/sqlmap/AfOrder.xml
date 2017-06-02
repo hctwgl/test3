@@ -7,7 +7,12 @@
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no
 	</sql>
-	
+	<sql id="queryAllFields">
+		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
+		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
+		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper
+	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
 		    gmt_create ,
@@ -39,6 +44,8 @@
 			<if test="commissionAmount != null" >
 			commission_amount,
 			</if>
+			nper,
+			
 			mobile,
 			bank_id
 			<if test="gmtPayEnd != null" >
@@ -93,6 +100,7 @@
 		    <if test="commissionAmount != null" >
 		    	#{commissionAmount},
 		    </if>
+		    #{nper},
 		    #{mobile},
 		    #{bankId}
 		    <if test="gmtPayEnd != null">
@@ -347,7 +355,7 @@
 	
 	<select id="getOrderInfoById" resultType="AfOrderDo">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryAllFields"/>
 		FROM
 			af_order
 		WHERE
@@ -548,7 +556,7 @@
 	
 	<select id="getOrderById" resultType="AfOrderDo">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryAllFields"/>
 		FROM
 			af_order 
 		WHERE

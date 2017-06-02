@@ -28,6 +28,8 @@ public enum AfResourceType {
 
 	AppDownloadUrl("APP_DOWNLOAD_URL", "app下载地址"),
 	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),
+	AgencyRebateInfo("AGENCY_REBATE_INFO", "返利教程"),
+
 	
 	//借钱模块
 	BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
@@ -48,6 +50,7 @@ public enum AfResourceType {
 
 
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
+	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
 
 	
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置");
