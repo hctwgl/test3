@@ -528,7 +528,7 @@ public class RiskUtil extends AbstractThird {
 				Integer day = NumberUtil
 						.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 				Date arrivalStart = DateUtil.getStartOfDate(currDate);
-				Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
+				Date repaymentDay = DateUtil.addDays(arrivalStart, day);
 				cashDo.setGmtPlanRepayment(repaymentDay);
 
 				if (!upsResult.isSuccess()) {
