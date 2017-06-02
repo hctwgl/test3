@@ -1,0 +1,76 @@
+@width:5.94rem;
+@scrollWidth:16.5rem;
+@dollHeight:1.16rem;
+@url:"https://fs.51fanbei.com/h5/app/activity/06/";
+
+.modelPic{
+    width:7.5rem;
+}
+.container{
+    width:@width;
+    height:4.5rem;
+    top:1.89rem;
+    left:.77rem;
+    position: absolute;
+    overflow: hidden;
+}
+#claw{
+    width:.91rem;
+    height:3.93rem;
+    background: url("@{url}ni_claw1.png") no-repeat;
+    background-size: auto 100%;
+    position: absolute;
+    left:2.6rem;
+    top:-1.4rem;
+    z-index: 100;
+}
+#terrace{
+    position: absolute;
+    width:@width;
+    height:.36rem;
+    bottom:0;
+}
+#scroll{
+    width:@scrollWidth;
+    height:@dollHeight;
+    margin-top:-@dollHeight;
+    margin-left:-@scrollWidth;
+}
+.doll{
+    height:@dollHeight;
+    display: inline-block;
+    width:0;
+    margin-right:1.65rem
+}
+.doll-main{
+    width:1.1rem;
+    height:@dollHeight;
+    float:left;
+    top:-@dollHeight;
+    background-size: 100% 100%;
+    background-position: center bottom;
+
+}
+.play{
+    position: absolute;
+    width:3.12rem;
+    height:.84rem;
+    top:7.08rem;
+    left:2.17rem;
+}
+.button{
+    position: absolute;
+    width:3.12rem;
+    height:.84rem;
+    border:0;
+    background: url("@{url}ni_button.png");
+    background-size: 100% 100%;
+    top:0;
+    left:0;
+
+}
+.button>p{
+    font-size: .32rem;
+    color: #fff;
+    margin-top: -.3rem;
+}
