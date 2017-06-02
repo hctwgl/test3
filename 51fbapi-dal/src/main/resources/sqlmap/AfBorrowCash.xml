@@ -132,9 +132,6 @@
 		<if test="renewalNum != null">
 			,renewal_num=#{renewalNum}
 		</if>
-		<if test="rishOrderNo != null">
-			rish_order_no = #{rishOrderNo}
-		</if>
 		WHERE id = #{rid}
 	</update>
 
