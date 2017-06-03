@@ -45,6 +45,7 @@ public class GetLoanSupermarketListApi implements ApiHandle {
 			supermarketList.add(objectWithAfLoanSupermarketDo(afLoanSupermarketDo));
 		}
 		data.put("supermarketList", supermarketList);
+		data.put("currPageNo", pageNo);
 		resp.setResponseData(data);
 		return resp;
 	}
