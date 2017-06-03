@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -41,12 +40,10 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 	AfResourceService afResourceService;
 	@Resource
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
-@Resource
-SmsUtil smsUtil;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		smsUtil.sendBorrowCashCode("15658132627", "1234");
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		List<Object> bannerList = getBannerObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
