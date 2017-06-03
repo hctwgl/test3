@@ -4,7 +4,7 @@
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>game</title>
-    <link rel="stylesheet" href="/dist/activity/06/game.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
 </head>
 <body>
 <img class="modelPic" src="$commonUrl/ni_1.jpg">
@@ -24,6 +24,56 @@
 </div>
 <div id="time"></div>
 <div id="alert"></div>
-<script src="/dist/activity/06/game.js"></script>
+<div id="scrollData">
+   <div class="personName">中奖名单</div>
+   <!--滚轮-->
+   <div id="roll">
+       <ul> 
+         <li>
+            <div class="personImg"></div>
+            <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
+         </li>
+         <li>
+            <div class="personImg"></div>
+            <h2><span>15777777777</span>获得<span>100抵10元优惠券</span></h2>
+         </li>
+         <li>
+            <div class="personImg"></div>
+            <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
+         </li>
+         <li>
+            <div class="personImg"></div>
+            <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
+         </li>
+       </ul>
+   </div>
+</div>
+<div id="allToy">
+   <div class="gotoTop"></div> 
+   <h3>五娃已集齐，请静等开奖！</h3>
+   <ul id="toys">
+     <li>
+        <img  class="img01" src="$commonUrl/ni_6.png">
+        <span>2</span>
+     </li>
+     <li>
+        <img  class="img01" src="$commonUrl/ni_7.png">
+        <span>2</span>
+     </li>
+     <li>
+        <img  class="img01" src="$commonUrl/ni_8.png">
+        <span>2</span>
+     </li>
+     <li>
+        <img  class="img01" src="$commonUrl/ni_9.png">
+        <span>2</span>
+     </li>
+     <li>
+        <img class="img02" src="$commonUrl/ni_11.png">
+        <span>2</span>
+     </li>
+   </ul>
+</div>
+<script type="text/javascript" src="/dist/activity/06/game.js"></script>
 </body>
 </html>

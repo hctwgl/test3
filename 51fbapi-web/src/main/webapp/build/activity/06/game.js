@@ -82,3 +82,20 @@ $('#startBtn').click(function () {
     sixGame.start();
     $(this).hide()
 });
+
+//滚轮事件
+function AutoScroll(obj) {
+    $(obj).find("ul:first").animate({
+        marginTop: "-1rem"
+    },
+    500,
+    function() {
+        $(this).css({
+            marginTop: "0"
+        }).find("li:first").appendTo(this);
+    });
+}
+$(document).ready(function() {
+    setInterval('AutoScroll("#roll")', 1000);
+    
+});
