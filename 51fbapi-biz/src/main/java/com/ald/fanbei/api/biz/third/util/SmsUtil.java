@@ -55,6 +55,7 @@ public class SmsUtil extends AbstractThird {
 	private static String BIND_TEMPLATE = "验证码为:&param1;您正在51返呗绑定手机号，请在30分钟内完成";
 	private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
 	private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
+	private static String BORROWCASH_TEMPLATE = "您的借款&param1元，已经入账到尾号&param2的银行卡，请核实[51返呗提醒您，任何电话索要银行卡号、要求存入银行卡现金的行为都是诈骗]";
 
 	private static String TEST_VERIFY_CODE = "888888";
 
@@ -85,6 +86,20 @@ public class SmsUtil extends AbstractThird {
 		String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
 		SmsResult smsResult = sendSmsToDhst(mobile, content);
 		this.addSmsRecord(SmsType.REGIST, mobile, verifyCode, 0l, smsResult);
+		return smsResult.isSucc();
+	}
+	
+	/**
+	 * 借款成功发送短信提醒用户
+	 * 
+	 * @param mobile
+	 * @param content
+	 */
+	public  boolean sendBorrowCashCode(String mobile,String amount,String bank) {
+		String temp = BORROWCASH_TEMPLATE.replace("&param1", amount);
+		String content = temp.replace("&param2", bank);
+
+		SmsResult smsResult = sendSmsToDhst(mobile, content);
 		return smsResult.isSucc();
 	}
 
@@ -263,12 +278,12 @@ public class SmsUtil extends AbstractThird {
 	 */
 	private static SmsResult sendSmsToDhst(String mobiles, String content) {
 		SmsResult result = new SmsResult();
-		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-				Constants.INVELOMENT_TYPE_TEST)) {
-			result.setSucc(true);
-			result.setResultStr("test");
-			return result;
-		}
+//		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+//				Constants.INVELOMENT_TYPE_TEST)) {
+//			result.setSucc(true);
+//			result.setResultStr("test");
+//			return result;
+//		}
 		Map<String, String> paramsMap = new HashMap<String, String>();
 		paramsMap.put("account", ACCOUNT);
 		paramsMap.put("password", DigestUtil.MD5(getPassword()).toLowerCase());
