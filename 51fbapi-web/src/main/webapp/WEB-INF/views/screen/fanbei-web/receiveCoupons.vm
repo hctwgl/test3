@@ -9,25 +9,19 @@
 </head>
 <body>
 <div id="getCoupon">
-    <input type="hidden" id="totalCoupon" name="totalCoupon" value=$jsonUtil.toJSONString($!{totalCoupon})>
+    <input type="hidden" id="couponList" name="couponList" value=$jsonUtil.toJSONString($!{couponList})>
 	<input type="hidden" id="userName" name="userName" value="$!{userName}">
-	#if($!{totalCoupon.size()}==0)
+	#if($!{couponList.size()}==0)
 	   <div class="noCoupon">暂无优惠券</div> 
 	#end
-	<ul class="couponList">
-	    #foreach($item in $!{totalCoupon})
-		   <li class="couponLi #if($!{item.quotaAlready} >= $!{item.quota})
-						receiveCoupons_ylw
-					#elseif($!{item.userAlready} >= $!{item.limitCount})
-						receiveCoupons_ylq
-					#end
-					">
+	<ul class="List">
+	    #foreach($item in $!{couponList})
+		   <li class="couponLi">
 		       <p class="positionYuan positionYuan01"></p>
                <p class="positionYuan positionYuan02"></p>
-		   	   <div class="couponKind"><img src="$commonUrl/getCoupon01.png"></div>
+		   	   <div class="couponKind"><img src="$commonUrl/getCoupon02.png"></div>
 		   	   <div class="couponTop">
 		   	   	   <p class="cashCoupon">$!{item.name}</p>
-		   	   	   <p class="timeOver">(即将过期)</p>
 		   	   	   <p class="couponSize">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></p>
 		   	   	   <p class="expiryDate">有效期$dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
 		   	   	   <p class="fullCut">满$!{item.limitAmount}元可用</p>
@@ -36,6 +30,7 @@
 		   </li>
 		#end
 	</ul>
+	<p class="myCoupon">查看我的优惠券</p>
 </div>
 
 <script type="text/javascript" src="/dist/activity/06/receiveCoupons.js?version=$version"></script>
