@@ -43,6 +43,7 @@ public enum AfResourceType {
 	
 	registTongdunSwitch("REGIST_TONGDUN_SWITCH", "注册同盾风控"),
 	loginTongdunSwitch("LOGIN_TONGDUN_SWITCH", "登录同盾风控"),
+	promotionTongdunSwitch("PROMOTION_TONGDUN_SWITCH", "渠道推广同盾风控"),
 	TRADE_TONGDUN_SWITCH("TRADE_TONGDUN_SWITCH", "借钱申请同盾风控"),
 	tradeTongdunSwitch("TRADE_TONGDUN_SWITCH", "交易申请同盾风控"),
 
