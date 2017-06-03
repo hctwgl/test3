@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	<meta charset="UTF-8">
+	<title>年中盛宴攻略</title>
+	<style type="text/css">
+		.feastRaiders2{
+			position: relative;
+		}
+		a{
+			position: absolute;
+			right: 1.54rem;
+			bottom: 0.6rem;
+			width: 2.05rem;
+			height: 0.6rem;
+		}
+	</style>
+</head>
+<body>
+	<img src="$commonUrl/feastRaiders1.png">
+	<div class="feastRaiders2">
+		<img src="$commonUrl/feastRaiders2.png">
+		<a href="https://www.baidu.com"></a>
+	</div>
+	<img src="$commonUrl/feastRaiders3.png">
+	<img src="$commonUrl/feastRaiders4.png">
+</body>
+</html>
