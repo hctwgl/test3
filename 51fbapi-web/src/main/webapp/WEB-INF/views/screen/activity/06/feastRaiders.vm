@@ -25,5 +25,27 @@
 	</div>
 	<img src="$commonUrl/feastRaiders3.png">
 	<img src="$commonUrl/feastRaiders4.png">
+	<script type="text/javascript">
+		// 调用客户端的分享
+		var retrunNum = getBlatFrom();  // retrunNum为1表示是Android
+
+		function shareData(){
+			// 分享内容
+			var dataObj = {
+				'shareAppTitle': '年中盛宴攻略',
+				'shareAppContent': '分享年中盛宴攻略赢取大奖',
+				'shareAppImage': 'https://fs.51fanbei.com/h5/app/activity/05/mumday28_01.jpg',
+				'shareAppUrl': 'https://www.baidu.com'
+			};
+
+			var dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
+
+			if ( retrunNum == 1 ) {  // 调用原生方法
+				alaAndroid.shareData(dataStr);
+			} else {
+				alaIos.shareData(dataStr);
+			}
+		};
+	</script>
 </body>
 </html>
