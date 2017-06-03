@@ -122,6 +122,8 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AfAuthContactsService afAuthContactsService;
 	@Resource
+	SmsUtil smsUtil;
+	@Resource
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
 	@Resource
 	AfOrderDao orderDao;
@@ -515,6 +517,10 @@ public class RiskUtil extends AbstractThird {
 			if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
 
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+				String bankNumber = card.getCardNumber();
+				String lastBank = bankNumber.substring(bankNumber.length()-4);
+				
+				smsUtil.sendBorrowCashCode(afUserDo.getUserName(),lastBank);
 				// 审核通过
 				cashDo.setGmtArrival(currDate);
 				cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
