@@ -27,7 +27,7 @@
 <div id="scrollData">
    <div class="personName">中奖名单</div>
    <!--滚轮-->
-   <div id="roll">
+   <div class="roll roll01">
        <ul> 
          <li>
             <div class="personImg"></div>
@@ -48,8 +48,39 @@
        </ul>
    </div>
 </div>
+<div class="mask"></div>
 <div id="allToy">
-   <div class="gotoTop"></div> 
+   <div class="gotoTop"></div>
+   <div id="words">
+     <h4>立即抓取活动重讲获奖名单</h4>
+     <h5>敬请期待</h5>
+     <h6>抽奖时间为：6月18-6月20,10时、12时、14时、16时</h6>
+   </div> 
+   <div id="getPrize">
+     <h4>恭喜您，获得实物大奖！</h4>
+     <h5>请提交资料</h5>
+     <!--滚轮-->
+     <div class="roll roll02">
+         <ul> 
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15777777777</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+         </ul>
+     </div>
+   </div>
    <h3>五娃已集齐，请静等开奖！</h3>
    <ul id="toys">
      <li>

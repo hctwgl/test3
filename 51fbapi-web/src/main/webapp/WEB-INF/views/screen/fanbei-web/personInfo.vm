@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170603")
+	#set($src="https://fs.51fanbei.com/h5/app/activity/06")
+	<title>提交资料</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/personInfo.css?version=$version">
+</head>
+<body>
+  <div id="submitInfo">
+  	 <div class="prizeImg"></div>
+  	 <div class="inforimation">
+  	    <p>收货人</p>
+  	    <input type="text" placeholder="请输入收货人">
+  	 </div>
+  	 <div class="inforimation">
+  	    <p>手机号码</p>
+  	    <input type="text" placeholder="请输入手机号">
+  	 </div>
+  	 <div class="inforimation">
+  	    <p>省市选择</p>
+  	 </div>
+  	 <div class="inforimation01">
+  	    <p>详细信息</p>
+  	    <textarea placeholder="请输入详细地址(5-120个字)"></textarea>
+  	 </div>
+  	 <h3>如因个人原因造成邮寄失败，后果由个人承担。</h3>
+  	 <h4>提交</h4>
+  </div>
+<script type="text/javascript" src="/dist/activity/06/personInfo.js?version=$version"></script>
+</body>
+</html>
