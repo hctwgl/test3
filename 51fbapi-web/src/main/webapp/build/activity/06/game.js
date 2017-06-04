@@ -85,12 +85,26 @@ $('#startBtn').click(function () {
     sixGame.start();
     $(this).hide()
 });
+//阴影点击
+$('#shadow').click(function () {
+    $(this).hide();
+    $('.alert').hide()
+
+
+});
+
+
+
+
+
+
+
 
 
 //滚轮事件
-function AutoScroll(obj) {
+function AutoScroll(obj,x) {
     $(obj).find("ul:first").animate({
-        marginTop: "-1rem"
+        marginTop: x
     },
     500,
     function() {
@@ -100,11 +114,42 @@ function AutoScroll(obj) {
     });
 }
 $(document).ready(function() {
-    setInterval('AutoScroll("#roll")', 1000);
+    setInterval('AutoScroll(".roll01","-1rem")', 1000);
+    setInterval('AutoScroll(".roll02","-.55rem")', 1000);
 });
 
-//阴影点击
-$('#shadow').click(function () {
-    $(this).hide();
-    $('.alert').hide()
-});
+
+// if(活动为开始时点击立即抓取 活动时间提示出现)
+function goUp(){
+     $('.mask').css('display','block');
+     $('#allToy #getPrize').slideDown(); 
+     //$('#allToy #words').slideDown();
+     //$('#allToy h3').css('paddingTop',0); //活动未开始时 
+     $('#allToy .gotoTop').css('transform','rotate(180deg)');
+}
+function goDown(){
+     $('.mask').css('display','none');
+     $('#allToy #getPrize').slideUp();
+     //$('#allToy #words').slideUp();
+     //$('#allToy h3').css('paddingTop','.3rem');//活动未开始时
+     $('#allToy .gotoTop').css('transform','rotate(0deg)'); 
+}
+$(function(){
+    //箭头点击事件
+    var onoff=1; //加上开关
+    $('#allToy .gotoTop').click(function(){
+       if(onoff==1){
+       goUp();
+       onoff=0;
+       } else {
+       goDown();
+       onoff=1;
+       }
+    })
+    //蒙版点击事件
+    $('.mask').click(function(){
+       goDown()
+       onoff=1;
+    })
+
+})
