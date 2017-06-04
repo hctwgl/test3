@@ -18,12 +18,21 @@
         </div>
     </div>
 </div>
+<div id="time">20秒</div>
 <div class="play">
     <button id="playBtn" class="button"><p>立即抓取</p></button>
     <button id="startBtn" class="button"><p>开始游戏</p></button>
 </div>
-<div id="time"></div>
-<div id="alert"></div>
+<div id="chance">您还有0次机会</div>
+<img id="rule" src="$commonUrl/ni_rule.png">
+<div class="alert">
+    <img class="alertTitle" src="$commonUrl/ni_title.png">
+    <p>中奖通知</p>
+    <p>机会用完啦</p>
+    <p>据说换个姿势就能中奖</p>
+
+</div>
+<div id="shadow"></div>
 <div id="scrollData">
    <div class="personName">中奖名单</div>
    <!--滚轮-->
