@@ -122,14 +122,14 @@ $(document).ready(function() {
 
 // if(活动为开始时点击立即抓取 活动时间提示出现)
 function goUp(){
-     $('.mask').css('display','block');
+     $('#shadow').css('display','block');
      $('#allToy #getPrize').slideDown(); 
      //$('#allToy #words').slideDown();
      //$('#allToy h3').css('paddingTop',0); //活动未开始时 
      $('#allToy .gotoTop').css('transform','rotate(180deg)');
 }
 function goDown(){
-     $('.mask').css('display','none');
+     $('#shadow').css('display','none');
      $('#allToy #getPrize').slideUp();
      //$('#allToy #words').slideUp();
      //$('#allToy h3').css('paddingTop','.3rem');//活动未开始时
@@ -148,7 +148,7 @@ $(function(){
        }
     })
     //蒙版点击事件
-    $('.mask').click(function(){
+    $('#shadow').click(function(){
        goDown()
        onoff=1;
     })

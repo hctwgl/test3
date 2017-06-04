@@ -25,13 +25,20 @@
 </div>
 <div id="chance">您还有0次机会</div>
 <img id="rule" src="$commonUrl/ni_rule.png">
-<div class="alert">
-    <img class="alertTitle" src="$commonUrl/ni_title.png">
-    <p>中奖通知</p>
-    <p>机会用完啦</p>
-    <p>据说换个姿势就能中奖</p>
 
+<div class="alert">
+    <div class="alertTitle">中奖通知</div>
+    <p class="getState">抓取成功</p>
+    <div class="getCashCoupon">
+      <p>满<span class="limitMoney">158</span>元可用</p>
+      <p>有效期：<span class="limitDate">2017-08-08</span></p>
+      <p><span class="getMoney">20</span>元</p>
+    </div>
+    <p>据说换个姿势就能中奖</p>
+    <p>再抓一次</p>
+    <p>分享增加一次机会</p>
 </div>
+
 <div id="shadow"></div>
 
 
