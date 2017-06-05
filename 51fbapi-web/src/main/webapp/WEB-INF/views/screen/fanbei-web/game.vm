@@ -25,19 +25,26 @@
     <button id="startBtn" class="button"><p>开始游戏</p></button>
 </div>
 <div id="chance">您还有1次机会</div>
-<img id="rule" src="$commonUrl/ni_rule.png">
 
+<!--活动规则-->
+<img id="rule" src="$commonUrl/ni_rule.png">
+<div id="rules" class="alert">
+  <p class="rulesTitle">活动规则</p>
+  <p class="rulesCont">1. 每个用户每天有3次抓娃娃机会；<br/> 2. 用户将活动页面分享朋友圈或好友直接增加1次机会，每增加1位好友注册，可额外增加1次抓娃娃机会，相应的中奖机率也会提高哦，次数上不封顶；<br/> 3. 每个用户可多次集齐5个娃娃，但是抽取实物大奖的机会只有一次；<br/>4. 所获得的优惠券及现金将实时发放到51返呗APP所对应的账户；<br/>5. 同一笔订单只可以用一张券，且不可以重复叠加使用；<br/>6. 拥有相同手机号、设备、银行卡的用户，视为同一用户；<br/>7. 实物奖励中奖用户，请正确填写“奖品邮寄的地址+收件人+联系方式”，由于填写的信息有误导致奖品无法寄送给您，本公司概不负责；<br/>8. 所有实物奖品在活动结束后7个工作日内寄出，请中奖用户保持手机畅通并注意接通，逾期未接受奖品，本公司概不负责；<br/>9. 所有实物奖励如非质量问题，不予退换；<br/>10. 禁止一切作弊手段的操作行为，包括但不限于利用平台漏洞、技术手段完成游戏的行为，一经发现将收回所发奖品，必要时候将采取司法手段进行维权；<br/>11. 在法律范围内，本活动浙江阿拉丁电子商务有限公司拥有最终解释权；<br/>12. 如有任何问题，可致电客服电话：0571-88193918</p>
+  <div class="closeRules"></div>
+</div>
+<!--弹框-->
 <div class="alert">
     <div class="alertTitle">中奖通知</div>
     <p class="getState">抓取成功</p>
     <div class="getCashCoupon">
-      <p>满<span class="limitMoney">158</span>元可用</p>
-      <p>有效期：<span class="limitDate">2017-08-08</span></p>
-      <p><span class="getMoney">20</span>元</p>
+      <p class="getCouponPrize">满<span class="limitMoney">158</span>元可用</p>
+      <p class="getCouponPrize">有效期：<span class="limitDate">2017-08-08</span></p>
+      <p class="getCouponPrize"><span class="getMoney">20</span>元</p>
+      <p class="getCashPrize">获得2元现金</p>
     </div>
-    <p>据说换个姿势就能中奖</p>
-    <p>再抓一次</p>
-    <p>分享增加一次机会</p>
+    <p class="jushuo">据说换个姿势就能中奖</p>
+    <div class="tryAgain">分享增加1次机会</div>    
 </div>
 
 <div id="shadow"></div>
@@ -52,7 +59,7 @@
    <!--滚轮-->
    <div class="roll roll01">
        <ul class="awardList">
-         <li>
+         <!-- <li>
             <div class="personImg"></div>
             <h2><span>15666666666</span><span>获得100抵10元优惠券</span></h2>
          </li>
@@ -67,7 +74,7 @@
          <li>
             <div class="personImg"></div>
             <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
-         </li>
+         </li> -->
        </ul>
    </div>
 </div>
@@ -82,10 +89,13 @@
    <div id="getPrize">
      <h4>恭喜您，获得实物大奖！</h4>
      <h5>请提交资料</h5>
+     <div class="countDown">
+        <span class="span span01"></span><span class="span span01"></span><span class="span span02">:</span><span class="span span01"></span><span class="span span01"></span><span class="span span02">:</span><span class="span span01"></span><span class="span span01"></span>
+     </div>
      <!--滚轮-->
      <div class="roll roll02">
          <ul class="awardList">
-           <li>
+           <!-- <li>
               <div class="personImg"></div>
               <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
            </li>
@@ -100,7 +110,7 @@
            <li>
               <div class="personImg"></div>
               <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
-           </li>
+           </li> -->
          </ul>
      </div>
    </div>

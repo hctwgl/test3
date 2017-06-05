@@ -53,17 +53,55 @@ $.ajax({
             if(data.data.isFinish=='Y'){
                 $('#allToy').find('h3').html('五娃已集齐，请静等开奖！');
                 //开奖时间
-                if(data.data.gmt_open){
-                    if(data.data.isAward=='N'){
+                if(data.data.gmtOpen){
+                    if(data.data.isAward=='Y'){
+                        var time=0;
+
                         window.setInterval(function(){
-                            let leftTime=data.data.gmt_open-data.data.gmt_current;
-                            let leftsecond = parseInt(leftTime/1000);
-                            let day1=Math.floor(leftsecond/(60*60*24));
-                            let hour=Math.floor((leftsecond-day1*24*60*60)/3600);
-                            let minute=Math.floor((leftsecond-day1*24*60*60-hour*3600)/60);
-                            let second=Math.floor(leftsecond-day1*24*60*60-hour*3600-minute*60);
-                            let con = day1+"天"+hour+"小时"+minute+"分"+second+"秒";
-                        }, 1000);
+                            time+=1000;
+                            var hours01,hours02,minutes01,minutes02,seconds01,seconds02;                           
+                            var leftTime=data.data.gmtOpen-data.data.gmtCurrent-time;
+                            var leftsecond = parseInt(leftTime/1000);                           
+                            var hours=parseInt(leftsecond/3600);
+                            var minutes=parseInt((leftsecond%3600)/60);
+                            var seconds=(leftsecond%3600)%60;
+                            
+                            if(hours<10){
+                                 hours01='0';
+                                 hours02=hours;
+                            }else{
+                                 hours=hours.toString()
+                                 hours01=hours.slice(0,1);
+                                 hours02=hours.slice(1,2);
+                                 
+                            }
+                            if(minutes<10){
+                                 minutes01='0';
+                                 minutes02=minutes;
+                            }else{
+                                 minutes=minutes.toString()
+                                 minutes01=minutes.slice(0,1);
+                                 minutes02=minutes.slice(1,2);
+                                 
+                            }
+                            if(seconds<10){
+                                 seconds01='0';
+                                 seconds02=seconds;
+                            }else{
+                                 seconds=seconds.toString()
+                                 seconds01=seconds.slice(0,1);
+                                 seconds02=seconds.slice(1,2);
+                                 
+                            }
+
+                            //console.log(hours01+hours02+minutes01+minutes02+seconds01+seconds02)
+                            $('.countDown').find('span').eq(0).html(hours01);
+                            $('.countDown').find('span').eq(1).html(hours02);
+                            $('.countDown').find('span').eq(3).html(minutes01);
+                            $('.countDown').find('span').eq(4).html(minutes02);
+                            $('.countDown').find('span').eq(6).html(seconds01);
+                            $('.countDown').find('span').eq(7).html(seconds02);
+                        }, 1000)
                     }else{
                         if(data.data.isSubmitContacts){}
                     }
@@ -201,8 +239,15 @@ $('#shadow').click(function () {
 
 
 //--------------------------------------yun--------------------------------------------
-
-
+//活动规则
+$('#rule').click(function(){
+    $('#rules').css('display','block');
+    $('#shadow').show();
+})
+$('.closeRules').click(function(){
+    $('#rules').css('display','none');
+    $('#shadow').hide();
+})
 
 
 
@@ -229,6 +274,7 @@ $(document).ready(function() {
 function goUp(){
      $('#shadow').css('display','block');
      $('#allToy #getPrize').slideDown(); 
+     $('#allToy').css('z-index',300);
      //$('#allToy #words').slideDown();
      //$('#allToy h3').css('paddingTop',0); //活动未开始时 
      $('#allToy .gotoTop').css('transform','rotate(180deg)');
@@ -236,6 +282,7 @@ function goUp(){
 function goDown(){
      $('#shadow').css('display','none');
      $('#allToy #getPrize').slideUp();
+     $('#allToy').css('z-index',150);
      //$('#allToy #words').slideUp();
      //$('#allToy h3').css('paddingTop','.3rem');//活动未开始时
      $('#allToy .gotoTop').css('transform','rotate(0deg)'); 
