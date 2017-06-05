@@ -5,6 +5,7 @@ let userName = "";
 if(getInfo().userName){
     userName=getInfo().userName
 }
+let chance=[],isLogin,isShow;
 //数据初始化
 $.ajax({
     url:'/fanbei-web/initGame.htm',
@@ -13,9 +14,10 @@ $.ajax({
         data=eval('(' + data + ')');
         console.log(data);
         if(data.success){
-
-        //抽奖次数显示
+            isLogin=data.data.isLogin;
+        //抽奖次数显示,抽奖码获取
         $('#chance').html('您还有'+data.data.chanceCount+'次机会');
+        chance=data.data.chanceCodes.split(',');
 
         //底部娃娃数量显示
             if(data.data.item1Count>0){
@@ -40,42 +42,61 @@ $.ajax({
             }
 
         //中奖信息循环
-        let con='';
-        for(let i=0;i<data.data.awardList.length;i++){
-            con+=`<li>
-            <div class="personImg" style="background-image:url('${data.data.awardList[i].avatar}')"></div>
-            <h2><span>${data.data.awardList[i].userName}</span><span>${data.data.awardList[i].msg}</span></h2>
-         </li>`
-        }
-        $('.awardList').html(con);
+            {
+                let con='';
+                for(let i=0;i<data.data.awardList.length;i++){
+                con+=`<li>
+                <div class="personImg" style="background-image:url('${data.data.awardList[i].avatar}')"></div>
+                <h2><span>${data.data.awardList[i].userName}</span><span>${data.data.awardList[i].msg}</span></h2></li>`
+                }$('.awardList').html(con);
+            }
+            {
+                let con='';
+                for(let i=0;i<data.data.entityAwardList.length;i++){
+                con+=`<li>
+                <div class="personImg" style="background-image:url('${data.data.entityAwardList[i].avatar}')"></div>
+                <h2><span>${data.data.entityAwardList[i].userName}</span><span>${data.data.entityAwardList[i].msg}</span></h2></li>`}
+                $('.entityAwardList').html(con);
+            }
 
-            //是否集齐五娃
+         //是否集齐五娃
             if(data.data.isFinish=='Y'){
                 $('#allToy').find('h3').html('五娃已集齐，请静等开奖！');
+                $('#getPrize h4').html('618活动抽奖获奖名单');
+
                 //开奖时间
                 if(data.data.gmt_open){
-                    if(data.data.isAward=='N'){
-                        window.setInterval(function(){
-                            let leftTime=data.data.gmt_open-data.data.gmt_current;
-                            let leftsecond = parseInt(leftTime/1000);
-                            let day1=Math.floor(leftsecond/(60*60*24));
-                            let hour=Math.floor((leftsecond-day1*24*60*60)/3600);
-                            let minute=Math.floor((leftsecond-day1*24*60*60-hour*3600)/60);
-                            let second=Math.floor(leftsecond-day1*24*60*60-hour*3600-minute*60);
-                            let con = day1+"天"+hour+"小时"+minute+"分"+second+"秒";
+                    $('#dollRoll').show();
+                    //五娃是否中奖
+                    if (data.data.isAward == 'N') {
+                        window.setInterval(function () {
+                            let leftTime = data.data.gmt_open - data.data.gmt_current;
+                            let leftsecond = parseInt(leftTime / 1000);
+                            let day1 = Math.floor(leftsecond / (60 * 60 * 24));
+                            let hour = Math.floor((leftsecond - day1 * 24 * 60 * 60) / 3600);
+                            let minute = Math.floor((leftsecond - day1 * 24 * 60 * 60 - hour * 3600) / 60);
+                            let second = Math.floor(leftsecond - day1 * 24 * 60 * 60 - hour * 3600 - minute * 60);
+                            let con = day1 + "天" + hour + "小时" + minute + "分" + second + "秒";
                         }, 1000);
-                    }else{
-                        if(data.data.isSubmitContacts){}
+                    } else {
+                        if(data.data.awardInfo.type=='L'){
+                            $('#getPrize h4').html('恭喜您获得幸运大奖！');
+                            $('#getPrize h5').html('奖项已发送至:我的-抵用券');
+                        }else if(data.data.awardInfo.type=='Y'){
+                            $('#getPrize h4').html('恭喜您获得实物大奖！');
+                            if (data.data.isSubmitContacts=='Y') {
+                                $('#getPrize h5').html('奖项已发送至您的收货地址');
+                            }else{
+                                $('#getPrize h5').html('请提交资料');
+
+                            }
+                        }
+
                     }
 
                 }
 
-
             }
-
-
-
-
 
         }
     }
@@ -99,20 +120,36 @@ class game{
         this.run();
         clearTimeout(this.Countdown);
         this.Countdown=setTimeout(function(){                             //结束倒计时
-            self.alertMsg('end');
+            if(isShow!='No'){
+                self.alertMsg('end');
+            }
+
         },20000);
     }
     run(){
         this.doll();
-        clearInterval(this.startMove);
-        this.startMove=setInterval(function () {           //舞台开始滚动
-            if(this.num>=0){
-                this.num=-8.25;
-                $('#scroll').animate({marginLeft:this.num+'rem'},0,'linear');
+        let self=this;
+        // clearInterval(this.startMove);
+        // this.startMove=setInterval(function () {           //舞台开始滚动
+        //     if(this.num>=0){
+        //         this.num=-8.25;
+        //         $('#scroll').animate({marginLeft:this.num+'rem'},0,'linear');
+        //     }
+        //     this.num=(Math.round(this.num*1000)+1650)/1000;    //避免浮点数错误
+        //     $('#scroll').animate({marginLeft:this.num+'rem'},1000,'linear');
+        // }.bind(this),1000);
+
+        function smove() {           //舞台开始滚动
+            if(self.num>=0){
+                self.num=-8.25;
+                $('#scroll').animate({marginLeft:self.num+'rem'},0,'linear');
             }
-            this.num=(Math.round(this.num*1000)+1650)/1000;    //避免浮点数错误
-            $('#scroll').animate({marginLeft:this.num+'rem'},1000,'linear');
-        }.bind(this),1000);
+            self.num=(Math.round(self.num*1000)+1650)/1000;    //避免浮点数错误
+            $('#scroll').animate({marginLeft:self.num+'rem'},1000,'linear',function () {
+                smove()
+            });
+        }
+        smove()
     }
     reset(){
         $('#scroll').animate({marginLeft:this.init.num+'rem'},0,'linear');
@@ -126,30 +163,28 @@ class game{
         }.bind(this),1000);
     }
     doll(){
-        let dollNum=[5,2,6,1,8,5,2,6,1,8];
+        let dollNum=[1,2,3,4,5,1,2,3,4,5];
         let con='';
         for(let i=0;i<dollNum.length;i++){
             con+=`<span data-prop="${dollNum[i]}" class="doll"><div class="doll-main" style="background-image: url('https://fs.51fanbei.com/h5/app/activity/06/ni_boll${dollNum[i]}.png')"></div></span>`
         }
         $('#scroll').html(con)
     }
-    alertMsg(state){
-        let data={result:'N'};
-        if(state=='end'){
+    alertMsg(state,item){
+        isShow='No';
+        let data={result:'N',code:chance[1]};
+       if(state=='claw'){
+            data={result:'Y',item:item,code:chance[1]};
+       }
+        $.ajax({
+            url:'/fanbei-web/submitGameResult',
+            type:'post',
+            data:data,
+            success:function (data) {
+                console.log(data)
+            }
+        });
 
-        }else if(state=='claw'){
-            data={result:'Y'};
-        }
-        // $.ajax({
-        //     url:'/game/submitGameResult',
-        //     type:'post',
-        //     data:{result:'N',},
-        //     success:function (data) {
-        //
-        //     }
-        //
-        // });
-        console.log(data)
         $('#shadow').show();
         $('#startBtn').show();
     }
@@ -164,12 +199,12 @@ class game{
                 if(dollLeft>(clawLeft-10) && dollLeft<(clawLeft+35)){          //判断钩子与娃娃是否重合，减的越大越偏右
                     let dataProp=doll.attr('data-prop');
                     console.log('ok');
-                    if(Math.floor(Math.random()*10+1)>3){                 //随机能否抓到娃娃
+                    if(Math.floor(Math.random()*10+1)>0){                 //随机能否抓到娃娃
                         $('#claw').css('backgroundImage','url(https://fs.51fanbei.com/h5/app/activity/06/ni_claw2.png)'); //钩子变为收缩样式
                         doll.find('.doll-main').css({position:'absolute',left:'2.47rem'})       //娃娃脱离文档流并跟着上升
                             .animate({top:'-2.2rem'},800,function () {
                                 $('.doll[data-prop='+dataProp+']').css('visibility','hidden');
-                                self.alertMsg('claw');
+                                self.alertMsg('claw',dataProp);
                             })
                     }
                 }
@@ -183,12 +218,18 @@ class game{
 let sixGame= new game(16.5,20);
 sixGame.run();
 $('#startBtn').click(function () {
-    if(userName){
-        sixGame.start();
-        $(this).hide()
+    if(isLogin=='Y'){         //是否登录
+        if(chance.length<=1){              //否是 有机会
+            $('#shadow').show();
+        }else{
+            sixGame.start();
+            $(this).hide();
+            console.log(chance)
+        }
     }else{
         window.location.href = '/fanbei-web/opennative?name=APP_LOGIN';
     }
+
 });
 //阴影点击
 $('#shadow').click(function () {
@@ -228,14 +269,14 @@ $(document).ready(function() {
 // if(活动为开始时点击立即抓取 活动时间提示出现)
 function goUp(){
      $('#shadow').css('display','block');
-     $('#allToy #getPrize').slideDown(); 
+     $('#getPrize').slideDown();
      //$('#allToy #words').slideDown();
      //$('#allToy h3').css('paddingTop',0); //活动未开始时 
      $('#allToy .gotoTop').css('transform','rotate(180deg)');
 }
 function goDown(){
      $('#shadow').css('display','none');
-     $('#allToy #getPrize').slideUp();
+     $('#getPrize').slideUp();
      //$('#allToy #words').slideUp();
      //$('#allToy h3').css('paddingTop','.3rem');//活动未开始时
      $('#allToy .gotoTop').css('transform','rotate(0deg)'); 
