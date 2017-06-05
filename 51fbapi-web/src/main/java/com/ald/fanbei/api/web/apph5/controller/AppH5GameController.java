@@ -155,6 +155,34 @@ public class AppH5GameController  extends BaseController{
 				resultData.put("gmtEnd", couponDo.getGmtEnd().getTime());
 			}
 			
+			return H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
+		}finally{
+			logger.info("日志");//TODO
+		}
+	}
+	
+	@RequestMapping(value = "submitContract", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String submitContract(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String,Object> resultData = new HashMap<String, Object>(); 
+		try{
+			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
+			String name = request.getParameter("name");
+			String mobilePhone = request.getParameter("mobilePhone");
+			String address = request.getParameter("address");
+			if(StringUtil.isEmpty(appInfotext) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
+				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
+			}
+			JSONObject appInfo = JSON.parseObject(appInfotext);
+			String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
+			
+			JSONObject contractsObj = new JSONObject();
+			contractsObj.put("name", name);
+			contractsObj.put("mobilePhone", mobilePhone);
+			contractsObj.put("address", address);
+			
+			AfUserDo userInfo = afUserService.getUserByUserName(userName);
+			afGameAwardService.updateContact(userInfo.getRid(), contractsObj.toString());
 			return H5CommonResponse.getNewInstance(true, "获取成功", "", resultData).toString();
 		}finally{
 			logger.info("日志");//TODO
@@ -267,18 +295,6 @@ public class AppH5GameController  extends BaseController{
 		return gameInitVo;
 	}
 	
-//	private Date parseSendAwardTime(String rule){
-//		JSONArray ruleArray = JSON.parseArray(rule);
-//		long minTime = Long.MAX_VALUE;
-//		for(int i = 0 ;i < ruleArray.size();i++){
-//			JSONObject temp = ruleArray.getJSONObject(i);
-//			if(minTime > DateUtil.parseDate(temp.getString(""), df))
-//		}
-//		
-//		return null;
-//	}
-	
-
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request,
 			boolean isForQQ) {
