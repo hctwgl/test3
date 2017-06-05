@@ -26,7 +26,7 @@
 	<select id="getLatestRecord" resultType="AfGameResultDo">
 		SELECT 
 			<include refid="queryFields"/>
-		FROM af_game_result WHERE is_delete = 0 ORDER BY id DESC LIMIT 20;
+		FROM af_game_result WHERE is_delete = 0 AND lottery_result > 0 ORDER BY id DESC LIMIT 20;
 	</select>
 	
 	<select id="getResultDtoByUserId" resultType="AfGameResultDto">

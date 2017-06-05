@@ -14,6 +14,8 @@ public enum CouponType {
 	COMMON("COMMON", "通用"),
 	MOBILE("MOBILE", "手机充值"),
 	REPAYMENT("REPAYMENT", "还款"),
+	FULLVOUCHER("FULLVOUCHER", "满减券"),
+	CASH("CASH", "现金"),
 	REBATE("REBATE", "返现(签到、注册)");
 
     private String code;

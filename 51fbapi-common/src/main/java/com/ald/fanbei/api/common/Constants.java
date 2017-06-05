@@ -80,6 +80,7 @@ public class Constants {
 	public static final String CACHEKEY_GAMECONF_INFO  = "gameconf_info$";
 	public static final String CACHEKEY_LATESTAWARD_LIST  = "latest_award_list$";
 	public static final String CACHEKEY_LATEST_GAMEERSULT_LIST = "latest_gameresult_list$";
+	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";

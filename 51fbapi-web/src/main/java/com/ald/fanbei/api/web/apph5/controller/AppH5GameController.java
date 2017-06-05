@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameAwardService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.biz.service.AfGameConfService;
@@ -24,15 +26,21 @@ import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
 import com.ald.fanbei.api.dal.domain.AfGameChanceDo;
 import com.ald.fanbei.api.dal.domain.AfGameConfDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfGameFivebabyDo;
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -68,6 +76,8 @@ public class AppH5GameController  extends BaseController{
 	AfGameAwardService afGameAwardService;
 	@Resource
 	AfUserService afUserService;
+	@Resource
+	AfCouponService afCouponService;
 	
 	
 	/**
@@ -127,30 +137,30 @@ public class AppH5GameController  extends BaseController{
 	public String initGame(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		System.out.println("---------");
 		try{
-		Long userId = 1l;//TODO 
-		
-		//游戏配置
-		AfGameDo gameDo = afGameService.getByCode("catch_doll");
-		List<AfGameConfDo> gameConfDo = afGameConfService.getByGameId(gameDo.getRid());
-		
-		//最近20条抓娃娃中奖列表
-		List<AfGameResultDo> latestResultList= afGameResultService.getLatestRecord();
-		//最近20条发奖列表
-		List<AfGameAwardDo> latestAwardList= afGameAwardService.getLatestAwards();
-		
-		AfGameFivebabyDo fivebabyDo = null;
-		List<AfGameChanceDo> gameChanceList = null;
-		AfGameAwardDo awardDo = null;
-		if(userId > 0l){//TODO 判断用户登录
-			//获取中奖想信息
-			fivebabyDo = afGameFivebabyService.getByUserId(userId);
-			//用户抓娃娃机会
-			gameChanceList = afGameChanceService.getByUserId(userId, DateUtil.formatDate(new Date(), DateUtil.DEFAULT_PATTERN.substring(2)));
-			//用户中奖情况
-			awardDo = afGameAwardService.getByUserId(userId);
-		}
-		AfGameInitVo initResult = this.buildGameInitVo(gameDo, gameConfDo, latestResultList, latestAwardList, gameChanceList, fivebabyDo, awardDo, userId>0l);
-		return H5CommonResponse.getNewInstance(true, "获取成功", "", initResult).toString();
+			Long userId = 1l;//TODO 
+			
+			//游戏配置
+			AfGameDo gameDo = afGameService.getByCode("catch_doll");
+			List<AfGameConfDo> gameConfDo = afGameConfService.getByGameId(gameDo.getRid());
+			
+			//最近20条抓娃娃中奖列表
+			List<AfGameResultDo> latestResultList= afGameResultService.getLatestRecord();
+			//最近20条发奖列表
+			List<AfGameAwardDo> latestAwardList= afGameAwardService.getLatestAwards();
+			
+			AfGameFivebabyDo fivebabyDo = null;
+			List<AfGameChanceDo> gameChanceList = null;
+			AfGameAwardDo awardDo = null;
+			if(userId > 0l){//TODO 判断用户登录
+				//获取中奖想信息
+				fivebabyDo = afGameFivebabyService.getByUserId(userId);
+				//用户抓娃娃机会
+				gameChanceList = afGameChanceService.getByUserId(userId, DateUtil.formatDate(new Date(), DateUtil.DEFAULT_PATTERN.substring(2)));
+				//用户中奖情况
+				awardDo = afGameAwardService.getByUserId(userId);
+			}
+			AfGameInitVo initResult = this.buildGameInitVo(gameDo, gameConfDo, latestResultList, latestAwardList, gameChanceList, fivebabyDo, awardDo, userId>0l);
+			return H5CommonResponse.getNewInstance(true, "获取成功", "", initResult).toString();
 		}finally{
 			logger.info("日志");//TODO
 		}
@@ -193,12 +203,15 @@ public class AppH5GameController  extends BaseController{
 		
 		//设置下一个开奖时间
 		gameInitVo.setGmtCurrent(System.currentTimeMillis());
+		Long gmtOpen = 0l;
 		for(AfGameConfDo item:gameConfDo){
 			if("P".equals(item.getType())){
-				Date latestAwardTime = parseSendAwardTime(item.getRule());
-				gameInitVo.setGmtOpen(latestAwardTime==null?null:latestAwardTime.getTime());
+				if(gmtOpen == 0l || gmtOpen > item.getGmtSend().getTime()){
+					gmtOpen = item.getGmtSend().getTime();
+				}
 			}
 		}
+		gameInitVo.setGmtOpen(gmtOpen);
 		
 		//用户机会信息
 		if(gameChanceList != null){
@@ -234,7 +247,16 @@ public class AppH5GameController  extends BaseController{
 				AfGameInitVo.AwardUserVo awardUser = new AfGameInitVo().new AwardUserVo();
 				awardUser.setAvatar(item.getUserAvata());
 				awardUser.setUserName(item.getUserName().substring(0,3)+"****"+item.getUserName().substring(7));
-				awardUser.setMsg(item.getLotteryResult()+"中奖中奖(^.^)");//TODO 
+				AfCouponDo couponDo = afCouponService.getCouponById(item.getLotteryResult());
+				String msg = "";
+				if(CouponType.CASH.getCode().equals(couponDo.getType())){
+					msg = StringUtil.appendStrs("获得",couponDo.getAmount(),"元现金");
+				}else if(CouponType.FULLVOUCHER.getCode().equals(couponDo.getType())){
+					msg = StringUtil.appendStrs("获得满",couponDo.getLimitAmount(),"减",couponDo.getAmount(),"元的满减券");
+				}else if(CouponType.REPAYMENT.getCode().equals(couponDo.getType())){
+					msg = StringUtil.appendStrs("获得满",couponDo.getLimitAmount(),"减",couponDo.getAmount(),"元的还款券");
+				}
+				awardUser.setMsg(msg);
 				awardList.add(awardUser);
 			}
 		}
@@ -244,11 +266,18 @@ public class AppH5GameController  extends BaseController{
 		//最近20个中实物奖列表
 		List<AfGameInitVo.AwardUserVo> entityAwardList = new LinkedList<AfGameInitVo.AwardUserVo>();
 		if(latestAwardList != null){
+			List<AfResourceDo> entityAwards = afResourceService.getResourceListByType(Constants.RES_GAME_AWARD_OF_CATCH_DOLL);
+			Map<String,AfResourceDo> entityAwardMap = CollectionConverterUtil.convertToMapFromList(entityAwards, new Converter<AfResourceDo, String>() {
+				@Override
+				public String convert(AfResourceDo source) {
+					return source.getRid()+"";
+				}
+			});
 			for(AfGameAwardDo item:latestAwardList){
 				AfGameInitVo.AwardUserVo itemVo = new AfGameInitVo().new AwardUserVo();
 				itemVo.setAvatar(item.getUserAvata());
 				itemVo.setUserName(item.getUserName().substring(0,3)+"****"+item.getUserName().substring(7));
-				itemVo.setMsg("88888888");//TODO 
+				itemVo.setMsg(entityAwardMap.get(item.getAwardId()+"").getValue2()); 
 				entityAwardList.add(itemVo);
 			}
 		}
@@ -267,11 +296,16 @@ public class AppH5GameController  extends BaseController{
 		return gameInitVo;
 	}
 	
-	private Date parseSendAwardTime(String rule){
-//		JSONArray 
-		
-		return null;
-	}
+//	private Date parseSendAwardTime(String rule){
+//		JSONArray ruleArray = JSON.parseArray(rule);
+//		long minTime = Long.MAX_VALUE;
+//		for(int i = 0 ;i < ruleArray.size();i++){
+//			JSONObject temp = ruleArray.getJSONObject(i);
+//			if(minTime > DateUtil.parseDate(temp.getString(""), df))
+//		}
+//		
+//		return null;
+//	}
 	
 
 	@Override

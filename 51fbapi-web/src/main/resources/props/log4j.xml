@@ -74,54 +74,54 @@
 	<!-- [公共Logger] 控制台STDOUT - jboss -->
 	<logger name="org.jboss" additivity="true">
 		<level value="${fbapi.log.level}" />
-<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
-<!-- 	 [公共Logger] 控制台STDOUT - STDOUT --> 
+	<!-- [公共Logger] 控制台STDOUT - STDOUT --> 
 	<logger name="STDOUT" additivity="true">
 		<level value="${fbapi.log.level}" />
-<appender-ref ref="STDOUT_APPENDER" />
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	<!-- [应用Logger] BI日志 -->
 	<logger name="FANBEI_BI" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_BI_APPENDER" />
-<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	<!-- [应用Logger] THIRD日志 -->
 	<logger name="FANBEI_THIRD" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_THIRD_APPENDER" />
-<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 	
 	<!-- fanbei web logger -->
 	<logger name="com.ald.fanbei" additivity="true">
 		<level value="${fbapi.log.level}" />
-<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 	
 	<!-- fanbei dal logger -->
 	<logger name="com.ald.fanbei.api.dal" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_DAL_APPENDER" />
-<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	<!-- [框架Logger] 数据访问层 - Ibatis -->
 	<logger name="com.ibatis" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_DAL_APPENDER" />
-<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	<!-- [框架Logger] 数据访问层 - SQL -->
 	<logger name="java.sql" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_DAL_APPENDER" />
-<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	
@@ -129,6 +129,6 @@
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="DEFAULT_APPENDER" />
 		<appender-ref ref="ERROR_APPENDER" />
-<!-- 		<appender-ref ref="STDOUT_APPENDER" /> -->
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</root>
 </log4j:configuration>
