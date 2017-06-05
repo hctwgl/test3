@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017052701")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
+	<meta charset="UTF-8">
+	<title>活动分会场</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/selectedHomeList.css?version=$version">
+</head>
+<body>
+	<div class="selectedHomeListWrap">
+		<div class="boutiqueHome">
+			<h2>精品推荐</h2>
+			<ul>
+				<li class="clearfix">
+					<a href="">
+						<span class="banner"></span>
+						<button>马上抢</button>
+						<div class="boutiqueHomeContent">
+							<p>618折上折更有超级返利</p>
+							<p>￥5.2</p>
+							<p>返利￥1.2</p>
+						</div>
+					</a>
+				</li>
+				<li class="clearfix">
+					<a href="">
+						<span class="banner"></span>
+						<button>马上抢</button>
+						<div class="boutiqueHomeContent">
+							<p>618折上折更有超级返利</p>
+							<p>￥5.2</p>
+							<p>返利￥1.2</p>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div class="selectedHomeList">
+			<ul class="selectedHomeListNav">
+				<li>新机专场</li>
+				<li>电脑办公</li>
+				<li>娱乐影音</li>
+				<li>大小家电</li>
+				<li>日常囤货</li>
+			</ul>
+		</div>
+	</div>
+##	<script type="text/javascript" src="/dist/activity/06/selectedHomeList.js?version=$version"></script>
+</body>
+</html>
