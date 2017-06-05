@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGameResultDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,game_id,user_id,user_name,user_avata,result,item,code,lottery_result
+	</sql>
+	<sql id="queryDtoFields">
+		result,item,lottery_result
+	</sql>
+	<insert id="addGameResult" parameterType="AfGameResultDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_game_result(gmt_create , gmt_modified,game_id , user_id , user_name , user_avata , result , item , code , lottery_result)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{gameId},
+    		#{userId},
+    		#{userName},
+    		#{userAvata},
+    		#{result},
+    		#{item},
+    		#{code},
+    		#{lotteryResult}
+		)
+	</insert>
+	
+	<select id="getLatestRecord" resultType="AfGameResultDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_result WHERE is_delete = 0 ORDER BY id DESC LIMIT 20;
+	</select>
+	
+	<select id="getResultDtoByUserId" resultType="AfGameResultDto">
+		SELECT 
+			<include refid="queryDtoFields"/>
+		FROM af_game_result WHERE is_delete = 0 AND user_id = #{userId};
+	</select>
+	
+</mapper>

@@ -11,7 +11,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
@@ -38,6 +40,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	TransactionTemplate transactionTemplate;
 	@Resource
 	CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	@Override
 	public int addUser(final AfUserDo afUserDo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -78,7 +82,17 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 	@Override
 	public AfUserDo getUserByUserName(String userName) {
-		return afUserDao.getUserByUserName(userName);
+		String key = Constants.CACHEKEY_USER_NAME + userName;
+		AfUserDo userInfo = (AfUserDo)bizCacheUtil.getObject(key);
+		if(userInfo != null){
+			return userInfo;
+		}
+		
+		userInfo = afUserDao.getUserByUserName(userName);
+		if(userInfo != null){
+			bizCacheUtil.saveObject(key, userInfo);
+		}
+		return userInfo;
 	}
 
 	@Override

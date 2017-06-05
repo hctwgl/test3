@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGameChanceDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,user_id,type,day,total_count,used_count,codes
+	</sql>
+	
+	<insert id="addGameChance" parameterType="AfGameChanceDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_game_chance(gmt_create , gmt_modified , user_id , type , day , total_count , used_count , codes)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{userId},
+    		#{type},
+    		#{day},
+    		#{totalCount},
+    		#{usedCount},
+    		#{codes}
+		)
+	</insert>
+	
+	<update id="updateGameChance" parameterType="AfGameChanceDo" >
+		UPDATE af_game_chance SET gmt_modified = NOW()
+			<if test="usedCount != null">
+    			,used_count=used_count + 1
+			</if>
+			<if test="codes != null">
+    			,codes=#{codes}
+			</if>
+		WHERE id=#{rid}
+	</update>
+	
+	<select id="getByUserId" resultType="AfGameChanceDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_chance WHERE is_delete = 0 AND user_id=#{userId} AND type='I'
+		UNION
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_chance WHERE is_delete = 0 AND user_id=#{userId} AND day=#{day}
+	</select>
+	
+	<select id="getByUserIdType" resultType="AfGameChanceDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_chance WHERE is_delete = 0 AND user_id=#{userId} AND type=#{type}
+			<if test="day != null">
+				AND day = #{day}
+			</if>
+	</select>
+	
+</mapper>
