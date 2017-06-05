@@ -7,34 +7,77 @@ if(getInfo().userName){
 }
 //数据初始化
 $.ajax({
-    url:'/order/payResultOfAlipay',
+    url:'/fanbei-web/initGame.htm',
     type:'post',
     success:function (data) {
-        $('#chance').html('您还有'+data.chanceCount+'次机会');
+        data=eval('(' + data + ')');
+        console.log(data);
+        if(data.success){
+
+        //抽奖次数显示
+        $('#chance').html('您还有'+data.data.chanceCount+'次机会');
+
+        //底部娃娃数量显示
+            if(data.data.item1Count>0){
+            $('#toys').find('img').eq(0).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll5.png').css('width','61%');
+            $('#toys').find('span').eq(0).html(data.data.item1Count)
+            }
+            if(data.data.item2Count>0){
+                $('#toys').find('img').eq(1).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll2.png').css('width','61%');
+                $('#toys').find('span').eq(1).html(data.data.item2Count)
+            }
+            if(data.data.item3Count>0){
+                $('#toys').find('img').eq(2).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll6.png').css('width','61%');
+                $('#toys').find('span').eq(2).html(data.data.item3Count)
+            }
+            if(data.data.item4Count>0){
+                $('#toys').find('img').eq(3).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll1.png').css('width','61%');
+                $('#toys').find('span').eq(3).html(data.data.item4Count)
+            }
+            if(data.data.item5Count>0){
+                $('#toys').find('img').eq(4).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll8.png').css('width','61%');
+                $('#toys').find('span').eq(4).html(data.data.item5Count)
+            }
 
         //中奖信息循环
         let con='';
-        for(let i=0;i<data.awardList.length;i++){
+        for(let i=0;i<data.data.awardList.length;i++){
             con+=`<li>
-            <div class="personImg" style="background-image:url('${data.awardList.avatar}')"></div>
-            <h2><span>${data.awardList.userName}</span><span>${data.awardList.msg}</span></h2>
+            <div class="personImg" style="background-image:url('${data.data.awardList[i].avatar}')"></div>
+            <h2><span>${data.data.awardList[i].userName}</span><span>${data.data.awardList[i].msg}</span></h2>
          </li>`
         }
         $('.awardList').html(con);
 
-        //开奖时间
+            //是否集齐五娃
+            if(data.data.isFinish=='Y'){
+                $('#allToy').find('h3').html('五娃已集齐，请静等开奖！');
+                //开奖时间
+                if(data.data.gmt_open){
+                    if(data.data.isAward=='N'){
+                        window.setInterval(function(){
+                            let leftTime=data.data.gmt_open-data.data.gmt_current;
+                            let leftsecond = parseInt(leftTime/1000);
+                            let day1=Math.floor(leftsecond/(60*60*24));
+                            let hour=Math.floor((leftsecond-day1*24*60*60)/3600);
+                            let minute=Math.floor((leftsecond-day1*24*60*60-hour*3600)/60);
+                            let second=Math.floor(leftsecond-day1*24*60*60-hour*3600-minute*60);
+                            let con = day1+"天"+hour+"小时"+minute+"分"+second+"秒";
+                        }, 1000);
+                    }else{
+                        if(data.data.isSubmitContacts){}
+                    }
 
-        window.setInterval(function(){
-            let leftTime=data.gmt_open-data.gmt_current;
-            let leftsecond = parseInt(leftTime/1000);
-            let day1=Math.floor(leftsecond/(60*60*24));
-            let hour=Math.floor((leftsecond-day1*24*60*60)/3600);
-            let minute=Math.floor((leftsecond-day1*24*60*60-hour*3600)/60);
-            let second=Math.floor(leftsecond-day1*24*60*60-hour*3600-minute*60);
-            let con = day1+"天"+hour+"小时"+minute+"分"+second+"秒";
-        }, 1000);
+                }
 
 
+            }
+
+
+
+
+
+        }
     }
     
 });

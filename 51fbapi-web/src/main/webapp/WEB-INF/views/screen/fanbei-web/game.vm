@@ -104,27 +104,27 @@
          </ul>
      </div>
    </div>
-   <h3>五娃已集齐，请静等开奖！</h3>
+   <h3>集齐五娃赢大奖！</h3>
    <ul id="toys">
      <li>
-        <img  class="img01" src="$commonUrl/ni_boll5.png">
-        <span>2</span>
+        <img  class="img02" src="$commonUrl/ni_11.png">
+        <span>0</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_boll2.png">
-        <span>2</span>
+        <img  class="img02" src="$commonUrl/ni_11.png">
+        <span>0</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_boll6.png">
-        <span>2</span>
+        <img  class="img02" src="$commonUrl/ni_11.png">
+        <span>0</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_boll1.png">
-        <span>2</span>
+        <img  class="img02" src="$commonUrl/ni_11.png">
+        <span>0</span>
      </li>
      <li>
         <img class="img02" src="$commonUrl/ni_11.png">
-        <span>2</span>
+        <span>0</span>
      </li>
    </ul>
 </div>
