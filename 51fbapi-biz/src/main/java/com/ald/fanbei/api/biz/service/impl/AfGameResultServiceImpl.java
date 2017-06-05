@@ -150,7 +150,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 					userAwardCount = userAwardCount + 1;
 					
 					if(couponIdResultMap.get(resultItem.getLotteryResult()+"") != null){
-						couponIdResultMap.put(resultItem.getLotteryResult()+"", couponIdResultMap.get(resultItem.getLotteryResult()) + 1);
+						couponIdResultMap.put(resultItem.getLotteryResult()+"", couponIdResultMap.get(resultItem.getLotteryResult()+"") + 1);
 					}else{
 						couponIdResultMap.put(resultItem.getLotteryResult()+"", 1);
 					}
