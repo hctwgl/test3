@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017052702")
+	#set($version="2017060501")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<title>活动主题会场</title>
-	<!-- <link rel="stylesheet" type="text/css" href="/fanbei-web/dist/css/layer.css"> -->
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/activityHome.css?version=$version">
 </head>
 <body>
 	<div class="activityHomeWrap">
 		<div class="activityHomeBanner">
             <img src="https://fs.51fanbei.com/h5/app/activity/05/DragonBoat_01.jpg" calss="banner">
-			<span class="bannerBtn">去抢券</span>
+            <span class="box1">
+            	<span class="box2"></span>
+            </span>
+			<span class="box3">去抢券</span>
+			
 		</div>
-		<div class="selectedHome">
-			<h2>精选会场</h2>
+		<div class="selectedHome clearfix">
 			<ul>
 				<li><a href="">分期免息</a></li>
 				<li><a href="">高返利</a></li>
@@ -23,36 +25,45 @@
 				<li><a href="">逛逛休闲街</a></li>
 			</ul>
 		</div>
+		<!-- <p>订单已成功提交，请于<span id="hour_show"> 时</span><span id="minute_show"> 分</span>内完成支付，逾期订单将自动关闭</p> -->
+		<div class="time-item">
+
+	<span id="day_show">0天</span>
+
+	<strong id="hour_show">0时</strong>
+
+	<strong id="minute_show">0分</strong>
+
+	<strong id="second_show">0秒</strong>
+
+</div>
 		<div class="boutiqueHome">
 			<h2>精品推荐</h2>
 			<ul>
 				<li class="clearfix">
 					<a href="">
-						<span class="banner"></span>
-						<button>马上抢</button>
+						<img src="" class="banner">
 						<div class="boutiqueHomeContent">
-							<p>618折上折更有超级返利</p>
-							<p>￥5.2</p>
-							<p>返利￥1.2</p>
+							<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利更有超级返利618折上</p>
+							<p class="price"><span>￥5.2</span><span><i>返</i>￥1.2</span></p>
+							<button>马上抢</button>
 						</div>
 					</a>
 				</li>
 				<li class="clearfix">
 					<a href="">
-						<span class="banner"></span>
-						<button>马上抢</button>
+						<img src="" class="banner">
 						<div class="boutiqueHomeContent">
-							<p>618折上折更有超级返利</p>
-							<p>￥5.2</p>
-							<p>返利￥1.2</p>
+							<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
+							<p class="price"><span>￥5.2</span><span><i>返</i>￥1.2</span></p>
+							<button>马上抢</button>
 						</div>
-						
 					</a>
 				</li>
 			</ul>
-		</div>	
+		</div>
 	</div>
-	<!-- <script type="text/javascript" src="/dist/activity/06/activityHome.js?version=$version"></script> -->
+	<script type="text/javascript" src="/dist/activity/06/activityHome.js?version=$version"></script>
 	<script type="text/javascript">
 		$('.bannerBtn').click(function(event) {
 			/*alert(122222);

@@ -2,7 +2,7 @@
  * Created by yoe on 2017/5/27.
  */
 
-var addModel = function addModel(goodsList) {
+/*var addModel = function addModel(goodsList) {
     var html = '';
     for (var j = 0; j < goodsList.length; j++) {
         // 售价
@@ -37,10 +37,10 @@ var addModel = function addModel(goodsList) {
             +'</li>';
     }
     return html;
-};
+};*/
 
 // 导航tab切换
-$(function(){
+/*$(function(){
     $(window).on('scroll',function () {
         if(finished==0){
             var scrollTop = $(this).scrollTop();
@@ -80,4 +80,97 @@ $(function(){
             }
         }
     });
-});
+});*/
+
+
+
+// $(function(){
+//     function timer(intDiff){
+//         showTimerS(intDiff);
+//         intDiff--;
+//         window.setInterval(function(){
+//             showTimerS(intDiff);
+//             intDiff--;
+
+//         }, 1000);
+//     } 
+
+//     function showTimerS( diff){
+//         var day=0,
+//         hour=0,
+//         minute=0,
+//         second=0;//时间默认值        
+            
+//         if(diff > 0){
+//             day = Math.floor(diff / (60 * 60 * 24));
+//             hour = Math.floor(diff / (60 * 60)) - (day * 24);
+//             minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
+//             second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+//         }
+            
+//         if (minute <= 9) minute = '0' + minute;
+//         if (second <= 9) second = '0' + second;
+//         $('#day_show').html(day+"天");
+//         $('#hour_show').html('<s id="h"></s>'+hour+'时');
+//         $('#minute_show').html('<s></s>'+minute+'分');
+//         $('#second_show').html('<s></s>'+second+'秒');
+//     }
+
+//     var endPayTime=$("#endPayTime").val();
+//     var currentTime=$("#currentTime").val();
+//     function getLocalTime(nS) {     
+//         nS = nS.substring(0,19);    
+//         nS = nS.replace(/-/g,'/'); 
+//         return new Date(nS).getTime()/1000;      
+//     }
+
+//     // 付款倒计时
+//     var endPayTime = getLocalTime(endPayTime.valueOf());
+//     var currentTime = getLocalTime(currentTime.valueOf());
+//     var cha = endPayTime - currentTime;
+//     //alert(endPayTime+"===="+currentTime+"====="+cha);
+//     timer(cha); 
+// });
+
+
+
+
+
+
+
+
+
+// 倒计时
+var intDiff = parseInt(60);//倒计时总秒数量
+
+function timer(intDiff){
+    window.setInterval(function(){
+    var day=0,
+        hour=0,
+        minute=0,
+        second=0;//时间默认值        
+
+    if(intDiff > 0){
+        day = Math.floor(intDiff / (60 * 60 * 24));
+        hour = Math.floor(intDiff / (60 * 60)) - (day * 24);
+        minute = Math.floor(intDiff / 60) - (day * 24 * 60) - (hour * 60);
+        second = Math.floor(intDiff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+    }
+
+    if (minute <= 9) minute = '0' + minute;
+    if (second <= 9) second = '0' + second;
+    $('#day_show').html(day+"天");
+    $('#hour_show').html('<s id="h"></s>'+hour+'时');
+    $('#minute_show').html('<s></s>'+minute+'分');
+    $('#second_show').html('<s></s>'+second+'秒');
+    intDiff--;
+    }, 1000);
+}
+
+$(function(){
+    timer(intDiff);
+}); 
+
+
+
+

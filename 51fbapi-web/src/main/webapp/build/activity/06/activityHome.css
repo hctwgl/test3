@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-05-27 14:16:30
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-27 17:00:14
+* @Last Modified time: 2017-06-05 16:53:39
 */
 
 
@@ -10,23 +10,46 @@
 .activityHomeBanner{
 	position: relative;
 }
-.activityHomeBanner .bannerBtn{
-	width: 1.0rem;
-	height: 1.0rem;
+.box1{
+	width: 100%;
+	height: 0.7rem;
+	background-color: red;
 	position: absolute;
-	top: 0.2rem;
-	right: 0.2rem;
+	top: 0;
+	left: 0;
 }
-/* 精选会场 */
-.selectedHome h2{
-	line-height: 1.0rem;
+.box2{
+	width: 0.82rem;
+	height: 1.05rem;
+	background-color: pink;
+}
+.box3{
+	width: 6.11rem;
+	height: 0.8rem;
+	line-height: 0.8rem;
 	text-align: center;
+	background-color: green;
+	position: absolute;
+	bottom: 0.2rem;
+	left: 50%;
+	-webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+
+/* 精选会场 */
+.selectedHome{
+	text-align: center;
+	padding: 0.2rem;
 }
 .selectedHome li{
 	float: left;
-	width: 50%;
-	height: 100px;
+	width: 3.48rem;
+	height: 1.9rem;
 	background-color: pink;
+}
+.selectedHome li:nth-child(2n+1){
+	margin: 0 0.08rem 0.08rem 0;
 }
 /* 精品推荐 */
 .boutiqueHome h2{
@@ -37,18 +60,73 @@
 	padding: 0.2rem;
 }
 .boutiqueHome li{
-	margin-bottom: 0.2rem;
+	position: relative;
+	width: 7.1rem;
+	height: 3.0rem;
+	background-color: #fff;
+	margin-bottom: 0.3rem;
+}
+.boutiqueHome li:last-child{
+	margin-bottom: 0;   
+}
+.boutiqueHome li a{
+	color: #111;
 }
 .boutiqueHome .banner{
-	width: 2.0rem;
-	height: 2.0rem;
+	width: 3.0rem;
+	height: 3.0rem;
 	background-color: pink;
 	float: left;
-	margin-right: 0.3rem;
+}
+.boutiqueHomeContent{
+	padding-top: 0.3rem;
+	width: 3.58rem;
+	-webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    float: right;
+    margin-right: 0.3rem;
+}
+.boutiqueHomeContent .title{
+	width: 100%;
+	height: 0.8rem;
+
+	// display: -webkit-box;
+	// -webkit-box-orient: vertical;
+	// -webkit-line-clamp: 3; //文本行数
+	// overflow: hidden;
+
+	overflow : hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+
+	margin-bottom: 0.45rem;
+}
+.boutiqueHome .price{
+	font-size: 0.26rem;
+}
+.boutiqueHome .price span:nth-child(2){
+	margin-left: 0.15rem;
+	color: #f98011;
+}
+.boutiqueHome .price span:nth-child(2) i{
+	width: 0.35rem;
+	height: 0.35rem;
+	line-height: 0.35rem;
+	text-align: center;
+	border-radius: 50%;
+	background-color: #f98011;
+	color: #fff;
 }
 .boutiqueHome button{
-	width: 1.0rem;
-	height: 2.0rem;
-	background-color: pink;
-	float: right;
+	position: absolute;
+	bottom: 0.3rem;
+	right: 0.3rem;
+	width: 3.58rem;
+	height: 0.54rem;
+	border-radius: 0.04rem;
+	background-color: #f98011;
+	color: #fff;
+	font-size: 0.26rem;
 }
