@@ -84,7 +84,7 @@ public class WithdrawCashApi implements ApiHandle {
 				afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 				Long bankId = NumberUtil.objToLong(account);
 				// 判断是否是本人主卡
-				if (bankId.equals(afUserBankcardDo.getRid())) {
+				if (!bankId.equals(afUserBankcardDo.getRid())) {
 					throw new FanbeiException("the bank card must be main card",
 							FanbeiExceptionCode.APPLY_CASHED_BANK_ERROR);
 				} else {
