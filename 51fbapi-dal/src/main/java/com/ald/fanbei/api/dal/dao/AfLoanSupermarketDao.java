@@ -36,4 +36,10 @@ public interface AfLoanSupermarketDao {
 	 */
 	List<AfLoanSupermarketDo> getLoanSupermarketListOrderNo(@Param("start") Integer start);
 
+	/**
+	 * 根据贷款超市编号获取贷款超市信息
+	 * @param lsmNo
+	 * @return
+	 */
+	AfLoanSupermarketDo getLoanSupermarketByLsmNo(@Param("lsmNo") String lsmNo);
 }

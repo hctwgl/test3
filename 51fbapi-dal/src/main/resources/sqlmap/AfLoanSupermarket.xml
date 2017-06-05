@@ -76,4 +76,22 @@
 		LIMIT
 		#{start},20
 	</select>
+	
+	<select id="getLoanSupermarketByLsmNo" resultType="AfLoanSupermarketDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_loan_supermarket
+		WHERE
+		is_delete = 0
+		AND
+		status = 1
+		and
+		lsm_no = #{lsmNo}
+		ORDER BY
+		id desc
+		LIMIT 1
+	</select>
+	
+	
 </mapper>

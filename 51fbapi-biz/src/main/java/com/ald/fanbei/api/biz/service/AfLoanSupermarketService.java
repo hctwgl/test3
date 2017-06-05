@@ -29,5 +29,11 @@ public interface AfLoanSupermarketService {
 	 * @return
 	 */
 	List<AfLoanSupermarketDo> getLoanSupermarketListOrderNo(Integer start);
+	/**
+	 * 根据贷款超市编号获取贷款超市信息
+	 * @param lsmNo
+	 * @return
+	 */
+	AfLoanSupermarketDo getLoanSupermarketByLsmNo(String lsmNo);
 
 }

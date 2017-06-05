@@ -37,4 +37,9 @@ public class AfLoanSupermarketServiceImpl extends BaseService implements AfLoanS
 	public List<AfLoanSupermarketDo> getLoanSupermarketListOrderNo(Integer start){
 		return afLoanSupermarketDao.getLoanSupermarketListOrderNo(start);
 	}
+	
+	@Override
+	public AfLoanSupermarketDo getLoanSupermarketByLsmNo(String lsmNo){
+		return afLoanSupermarketDao.getLoanSupermarketByLsmNo(lsmNo);
+	}
 }
