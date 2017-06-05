@@ -10,6 +10,7 @@
 <img class="modelPic" src="$commonUrl/ni_1.jpg">
 <img class="modelPic" src="$commonUrl/ni_2.jpg">
 <img class="modelPic" src="$commonUrl/ni_3.jpg">
+<p class="title">抓娃娃抽优惠券，当集齐五个娃娃还可以额外抽取实物大奖！</p>
 <div class="container">
     <div id="claw"></div>
     <div id="terrace">
@@ -43,14 +44,14 @@
    <div class="personName">中奖名单</div>
    <!--滚轮-->
    <div class="roll roll01">
-       <ul> 
+       <ul class="awardList">
          <li>
             <div class="personImg"></div>
-            <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
+            <h2><span>15666666666</span><span>获得100抵10元优惠券</span></h2>
          </li>
          <li>
             <div class="personImg"></div>
-            <h2><span>15777777777</span>获得<span>100抵10元优惠券</span></h2>
+            <h2><span>15777777777</span><span>获得100抵10元优惠券</span></h2>
          </li>
          <li>
             <div class="personImg"></div>
@@ -76,7 +77,7 @@
      <h5>请提交资料</h5>
      <!--滚轮-->
      <div class="roll roll02">
-         <ul> 
+         <ul class="awardList">
            <li>
               <div class="personImg"></div>
               <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
@@ -99,19 +100,19 @@
    <h3>五娃已集齐，请静等开奖！</h3>
    <ul id="toys">
      <li>
-        <img  class="img01" src="$commonUrl/ni_6.png">
+        <img  class="img01" src="$commonUrl/ni_boll5.png">
         <span>2</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_7.png">
+        <img  class="img01" src="$commonUrl/ni_boll2.png">
         <span>2</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_8.png">
+        <img  class="img01" src="$commonUrl/ni_boll6.png">
         <span>2</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_9.png">
+        <img  class="img01" src="$commonUrl/ni_boll1.png">
         <span>2</span>
      </li>
      <li>

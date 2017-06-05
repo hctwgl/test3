@@ -1,6 +1,47 @@
 /**
  * Created by nizhiwei-labtop on 2017/5/31.
  */
+let userName = "";
+if(getInfo().userName){
+    userName=getInfo().userName
+}
+//数据初始化
+$.ajax({
+    url:'/order/payResultOfAlipay',
+    type:'post',
+    success:function (data) {
+        $('#chance').html('您还有'+data.chanceCount+'次机会');
+
+        //中奖信息循环
+        let con='';
+        for(let i=0;i<data.awardList.length;i++){
+            con+=`<li>
+            <div class="personImg" style="background-image:url('${data.awardList.avatar}')"></div>
+            <h2><span>${data.awardList.userName}</span><span>${data.awardList.msg}</span></h2>
+         </li>`
+        }
+        $('.awardList').html(con);
+
+        //开奖时间
+
+        window.setInterval(function(){
+            let leftTime=data.gmt_open-data.gmt_current;
+            let leftsecond = parseInt(leftTime/1000);
+            let day1=Math.floor(leftsecond/(60*60*24));
+            let hour=Math.floor((leftsecond-day1*24*60*60)/3600);
+            let minute=Math.floor((leftsecond-day1*24*60*60-hour*3600)/60);
+            let second=Math.floor(leftsecond-day1*24*60*60-hour*3600-minute*60);
+            let con = day1+"天"+hour+"小时"+minute+"分"+second+"秒";
+        }, 1000);
+
+
+    }
+    
+});
+
+
+
+//游戏
 class game{
     constructor(width,time){
         this.init={num:-(width),time:time};
@@ -10,12 +51,12 @@ class game{
 
     }
     start(){
+        let self=this;
         this.reset();
         this.run();
         clearTimeout(this.Countdown);
         this.Countdown=setTimeout(function(){                             //结束倒计时
-            $('#startBtn').show();
-            alert('游戏结束');
+            self.alertMsg('end');
         },20000);
     }
     run(){
@@ -49,11 +90,28 @@ class game{
         }
         $('#scroll').html(con)
     }
-    alertMsg(){
+    alertMsg(state){
+        let data={result:'N'};
+        if(state=='end'){
 
-
+        }else if(state=='claw'){
+            data={result:'Y'};
+        }
+        // $.ajax({
+        //     url:'/game/submitGameResult',
+        //     type:'post',
+        //     data:{result:'N',},
+        //     success:function (data) {
+        //
+        //     }
+        //
+        // });
+        console.log(data)
+        $('#shadow').show();
+        $('#startBtn').show();
     }
     claw(){
+        let self=this;
         let clawLeft=$('#claw').offset().left;
         $('.button').attr('disabled','disabled');
         $('#claw').animate({top:'-.5rem'},1500,function () {          //钩子下落
@@ -68,7 +126,7 @@ class game{
                         doll.find('.doll-main').css({position:'absolute',left:'2.47rem'})       //娃娃脱离文档流并跟着上升
                             .animate({top:'-2.2rem'},800,function () {
                                 $('.doll[data-prop='+dataProp+']').css('visibility','hidden');
-                                $('#startBtn').show();
+                                self.alertMsg('claw');
                             })
                     }
                 }
@@ -82,8 +140,12 @@ class game{
 let sixGame= new game(16.5,20);
 sixGame.run();
 $('#startBtn').click(function () {
-    sixGame.start();
-    $(this).hide()
+    if(userName){
+        sixGame.start();
+        $(this).hide()
+    }else{
+        window.location.href = '/fanbei-web/opennative?name=APP_LOGIN';
+    }
 });
 //阴影点击
 $('#shadow').click(function () {
@@ -153,4 +215,4 @@ $(function(){
        onoff=1;
     })
 
-})
+});

@@ -4,6 +4,10 @@ body{position: relative;}
 @dollHeight:1.16rem;
 @url:"https://fs.51fanbei.com/h5/app/activity/06/";
 
+.title{
+    position: absolute;
+    color:white;
+}
 .container{
     width:@width;
     height:4.5rem;
@@ -106,17 +110,17 @@ body{position: relative;}
     left:0;
     background:rgba(0,0,0,.6);
     z-index: 200;
-    //display: none;
+    display: none;
 }
 .alert{
     position: fixed;
     top:50%;
     left:50%;
-    transform:translateX(-50%,-50%);
+    transform:translate(-50%,-50%);
     z-index: 300;
     border-radius: .14rem;
     background: white;
-    //display: none;
+    display: none;
 }
 .alertTitle{
     width:4.56rem;
@@ -158,7 +162,7 @@ margin:.15rem .24rem 0 .24rem;}
 position:relative;margin-right: .24rem;}
 #allToy #toys li .img01{width:61%;height:83%;margin: .1rem auto 0 auto;}
 #allToy #toys li .img02{width:80%;height:83%;margin: .1rem auto 0 auto;}
-#allToy #toys li span{width:.23rem;height:.23rem;border-radius:50%;border:1px solid #e97804;color: #e97804;
+#allToy #toys li span{width:.23rem;height:.23rem;border-radius:50%;background:white;border:1px solid #5c00af;color: #5c00af;
     position:absolute;top: -.12rem;right: -.12rem;font-size: .2rem;font-weight: 500;text-align: center;
     line-height: .23rem;}
 
