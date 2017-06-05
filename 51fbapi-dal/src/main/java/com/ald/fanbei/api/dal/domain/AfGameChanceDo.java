@@ -10,6 +10,7 @@ public class AfGameChanceDo extends AbstractSerial{
 	private Long rid;
 	private Date gmtCreate;
 	private Date gmtModified;
+	private Long gameId;
 	private Long userId;
 	private String type;
 	private String day;
@@ -34,6 +35,13 @@ public class AfGameChanceDo extends AbstractSerial{
 	}
 	public void setGmtModified(Date gmtModified) {
 		this.gmtModified = gmtModified;
+	}
+	
+	public Long getGameId() {
+		return gameId;
+	}
+	public void setGameId(Long gameId) {
+		this.gameId = gameId;
 	}
 	public Long getUserId() {
 		return userId;

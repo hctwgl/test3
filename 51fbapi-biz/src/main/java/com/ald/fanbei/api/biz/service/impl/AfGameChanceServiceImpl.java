@@ -37,7 +37,7 @@ public class AfGameChanceServiceImpl implements AfGameChanceService {
 	}
 
 	@Override
-	public List<AfGameChanceDo> getByUserId(Long userId, String day) {
+	public List<AfGameChanceDo> getByUserId(Long gameId,Long userId, String day) {
 		
 		List<AfGameChanceDo> chanceList = afGameChanceDao.getByUserId(userId, day);
 		boolean isInitDayChanceCount = false;
@@ -53,7 +53,7 @@ public class AfGameChanceServiceImpl implements AfGameChanceService {
 			return chanceList;
 		}
 		//初始化当天抓娃娃次数
-		initCurrentDayChance(userId, day);
+		initCurrentDayChance(gameId,userId, day);
 		return afGameChanceDao.getByUserId(userId, day);
 	}
 	
@@ -62,7 +62,7 @@ public class AfGameChanceServiceImpl implements AfGameChanceService {
 	 * @param userId
 	 * @param day
 	 */
-	private void initCurrentDayChance(Long userId,String day){
+	private void initCurrentDayChance(Long gameId,Long userId,String day){
 		AfGameChanceDo afGameChanceDo = new AfGameChanceDo();
 		Set<String> codesSet = new HashSet<String>(); 
 		while(codesSet.size()< 3){

@@ -36,5 +36,5 @@ public interface AfGameChanceService {
 	 * @param userId
 	 * @return
 	 */
-	List<AfGameChanceDo> getByUserId(Long userId, String day);
+	List<AfGameChanceDo> getByUserId(Long gameId,Long userId, String day);
 }
