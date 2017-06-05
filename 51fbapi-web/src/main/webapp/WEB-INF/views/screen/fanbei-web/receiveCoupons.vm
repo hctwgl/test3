@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="20170601")
+    #set($version="20170605")
 	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>我要领券</title>
@@ -21,12 +21,16 @@
                <p class="positionYuan positionYuan02"></p>
 		   	   <div class="couponKind"><img src="$commonUrl/getCoupon02.png"></div>
 		   	   <div class="couponTop">
-		   	   	   <p class="cashCoupon">$!{item.name}</p>
+		   	   	   <p class="cashCoupon">$!{item.type}</p>
 		   	   	   <p class="couponSize">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></p>
 		   	   	   <p class="expiryDate">有效期$dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
 		   	   	   <p class="fullCut">满$!{item.limitAmount}元可用</p>
 		   	   </div>
-               <p class="clickCoupon">点击领券</p>
+		   	   #if($!{item.quota}==$!{item.quotaAlready})
+               <p class="clickCoupon clickCoupon02">已抢完</p>
+               #else
+               <p class="clickCoupon clickCoupon01">点击领券</p>
+               #end
 		   </li>
 		#end
 	</ul>
