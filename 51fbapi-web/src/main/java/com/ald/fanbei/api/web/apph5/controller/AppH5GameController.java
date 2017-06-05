@@ -39,6 +39,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 /**
  * 
@@ -48,7 +49,7 @@ import com.alibaba.fastjson.JSONObject;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/app/game/")
+@RequestMapping("/fanbei-web/")
 public class AppH5GameController  extends BaseController{
 	
 	@Resource
@@ -233,7 +234,7 @@ public class AppH5GameController  extends BaseController{
 				AfGameInitVo.AwardUserVo awardUser = new AfGameInitVo().new AwardUserVo();
 				awardUser.setAvatar(item.getUserAvata());
 				awardUser.setUserName(item.getUserName().substring(0,3)+"****"+item.getUserName().substring(7));
-				awardUser.setMsg(item.getLotteryResult()+"");//TODO 
+				awardUser.setMsg(item.getLotteryResult()+"中奖中奖(^.^)");//TODO 
 				awardList.add(awardUser);
 			}
 		}
@@ -267,6 +268,8 @@ public class AppH5GameController  extends BaseController{
 	}
 	
 	private Date parseSendAwardTime(String rule){
+//		JSONArray 
+		
 		return null;
 	}
 	
