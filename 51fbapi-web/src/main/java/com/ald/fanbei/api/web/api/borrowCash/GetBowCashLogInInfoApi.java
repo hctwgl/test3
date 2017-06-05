@@ -80,7 +80,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
-
+				
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");
 		} else {
@@ -227,10 +227,18 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("jumpPageBannerUrl", jumpPageBannerUrl);
 		
 		//还款处理中金额处理
-		//TODO
-		data.put("existRepayingMoney", YesNoStatus.NO.getCode());
-		data.put("repayingMoney", 0.0);
-		
+		String existRepayingMoney = YesNoStatus.NO.getCode();
+		BigDecimal repayingMoney = BigDecimal.valueOf(0.00);
+		//如果借款记录存在，统计还款处理中金额
+		if (afBorrowCashDo != null) {
+			repayingMoney = afRepaymentBorrowCashService.getRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
+		}
+		if(repayingMoney.compareTo(BigDecimal.ZERO)>0){
+			existRepayingMoney = YesNoStatus.YES.getCode();
+		}
+		data.put("existRepayingMoney", existRepayingMoney);
+		data.put("repayingMoney", repayingMoney);
+				
 		resp.setResponseData(data);
 		return resp;
 	}
