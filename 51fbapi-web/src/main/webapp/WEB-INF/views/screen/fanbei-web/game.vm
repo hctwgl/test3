@@ -10,6 +10,7 @@
 <img class="modelPic" src="$commonUrl/ni_1.jpg">
 <img class="modelPic" src="$commonUrl/ni_2.jpg">
 <img class="modelPic" src="$commonUrl/ni_3.jpg">
+<p class="title">抓娃娃抽优惠券，当集齐五个娃娃还可以额外抽取实物大奖！</p>
 <div class="container">
     <div id="claw"></div>
     <div id="terrace">
@@ -18,24 +19,46 @@
         </div>
     </div>
 </div>
+<div id="time">20秒</div>
 <div class="play">
     <button id="playBtn" class="button"><p>立即抓取</p></button>
     <button id="startBtn" class="button"><p>开始游戏</p></button>
 </div>
-<div id="time"></div>
-<div id="alert"></div>
+<div id="chance">您还有1次机会</div>
+<img id="rule" src="$commonUrl/ni_rule.png">
+
+<div class="alert">
+    <div class="alertTitle">中奖通知</div>
+    <p class="getState">抓取成功</p>
+    <div class="getCashCoupon">
+      <p>满<span class="limitMoney">158</span>元可用</p>
+      <p>有效期：<span class="limitDate">2017-08-08</span></p>
+      <p><span class="getMoney">20</span>元</p>
+    </div>
+    <p>据说换个姿势就能中奖</p>
+    <p>再抓一次</p>
+    <p>分享增加一次机会</p>
+</div>
+
+<div id="shadow"></div>
+
+
+##//--------------------------------------yun--------------------------------------------
+
+
+
 <div id="scrollData">
    <div class="personName">中奖名单</div>
    <!--滚轮-->
-   <div id="roll">
-       <ul> 
+   <div class="roll roll01">
+       <ul class="awardList">
          <li>
             <div class="personImg"></div>
-            <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
+            <h2><span>15666666666</span><span>获得100抵10元优惠券</span></h2>
          </li>
          <li>
             <div class="personImg"></div>
-            <h2><span>15777777777</span>获得<span>100抵10元优惠券</span></h2>
+            <h2><span>15777777777</span><span>获得100抵10元优惠券</span></h2>
          </li>
          <li>
             <div class="personImg"></div>
@@ -48,29 +71,60 @@
        </ul>
    </div>
 </div>
+<div class="mask"></div>
 <div id="allToy">
-   <div class="gotoTop"></div> 
-   <h3>五娃已集齐，请静等开奖！</h3>
+   <div class="gotoTop"></div>
+   <div id="words">
+     <h4>立即抓取活动重讲获奖名单</h4>
+     <h5>敬请期待</h5>
+     <h6>抽奖时间为：6月18-6月20,10时、12时、14时、16时</h6>
+   </div> 
+   <div id="getPrize">
+     <h4>恭喜您，获得实物大奖！</h4>
+     <h5>请提交资料</h5>
+     <!--滚轮-->
+     <div class="roll roll02">
+         <ul class="awardList">
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15777777777</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+         </ul>
+     </div>
+   </div>
+   <h3>集齐五娃赢大奖！</h3>
    <ul id="toys">
      <li>
-        <img  class="img01" src="$commonUrl/ni_6.png">
-        <span>2</span>
+        <img  class="img02" src="$commonUrl/ni_11.png">
+        <span>0</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_7.png">
-        <span>2</span>
+        <img  class="img02" src="$commonUrl/ni_11.png">
+        <span>0</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_8.png">
-        <span>2</span>
+        <img  class="img02" src="$commonUrl/ni_11.png">
+        <span>0</span>
      </li>
      <li>
-        <img  class="img01" src="$commonUrl/ni_9.png">
-        <span>2</span>
+        <img  class="img02" src="$commonUrl/ni_11.png">
+        <span>0</span>
      </li>
      <li>
         <img class="img02" src="$commonUrl/ni_11.png">
-        <span>2</span>
+        <span>0</span>
      </li>
    </ul>
 </div>

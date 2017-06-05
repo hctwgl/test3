@@ -72,9 +72,14 @@ public class Constants {
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// cache keys
 	public static final String CACHEKEY_USER_TOKEN = "user_token$";
+	public static final String CACHEKEY_USER_NAME = "user_name$";
 	public static final String CACHEKEY_APK_NEWEST_VERSION = "apk_newest_version$";
 	public static final String CACHEKEY_BORROW_CASH = "borrow_cash$";
 	public static final String CACHEKEY_BORROW_CONSUME = "borrow_consume$";
+	public static final String CACHEKEY_GAME_INFO      = "game_info$";
+	public static final String CACHEKEY_GAMECONF_INFO  = "gameconf_info$";
+	public static final String CACHEKEY_LATESTAWARD_LIST  = "latest_award_list$";
+	public static final String CACHEKEY_LATEST_GAMEERSULT_LIST = "latest_gameresult_list$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";
@@ -97,6 +102,7 @@ public class Constants {
 	public static final String APPLY_BRROW_CASH_WHITE_LIST = "APPLY_BRROW_CASH_WHITE_LIST";
 	public static final String RES_REFUND_RATE = "REFUND_RATE";
 	public static final String RES_BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
+	public static final String RES_GAME_AWARD_OF_CATCH_DOLL = "RES_GAME_AWARD_OF_CATCH_DOLL"; //抓娃娃游戏发奖 
 	//续期天数限制
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
 	//允许续期的天数
