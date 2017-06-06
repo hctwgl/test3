@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.api.system;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,19 +31,19 @@ public class GetTabbarInforApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		List<Object> tabbarInfor= getObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode()));
+		Map<String, Object> tabbarInfor= getObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode()));
 		resp.setResponseData(tabbarInfor);
 		return resp;
 	}
 	
-	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> tabbarlist) {
-		List<Object> tabbarList = new ArrayList<Object>();
+	private Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> tabbarlist) {
+		Map<String, Object> index = new HashMap<String, Object>();
 		for (AfResourceDo afResourceDo : tabbarlist) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("title", afResourceDo.getName());
 			data.put("imageUrl", afResourceDo.getValue());
 			data.put("titleColor", afResourceDo.getValue1());
-			Map<String, Object> index = new HashMap<String, Object>();
+			
 			if(StringUtils.equals(afResourceDo.getSecType(), "HOME_NOMAL")){
 				index.put("homeNomal", data);
 			}
@@ -76,10 +75,9 @@ public class GetTabbarInforApi implements ApiHandle {
 				index.put("borrowSelected", data);
 			}
 			
-			tabbarList.add(index);
 		}
 
-		return tabbarList;
+		return index;
 	}
 
 }
