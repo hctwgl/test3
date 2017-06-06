@@ -1,0 +1,2 @@
+"use strict";function timer(t){window.setInterval(function(){var o=0,s=0,h=0,i=0;t>0&&(o=Math.floor(t/86400),s=Math.floor(t/3600)-24*o,h=Math.floor(t/60)-24*o*60-60*s,i=Math.floor(t)-24*o*60*60-60*s*60-60*h),h<=9&&(h="0"+h),i<=9&&(i="0"+i),$("#day_show").html(o+"天"),$("#hour_show").html('<s id="h"></s>'+s+"时"),$("#minute_show").html("<s></s>"+h+"分"),$("#second_show").html("<s></s>"+i+"秒"),t--},1e3)}var intDiff=parseInt(60);$(function(){timer(intDiff)});
+//# sourceMappingURL=../../_srcmap/activity/06/activityHome.js.map

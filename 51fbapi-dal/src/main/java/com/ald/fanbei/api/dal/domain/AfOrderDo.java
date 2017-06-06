@@ -56,7 +56,6 @@ public class AfOrderDo extends AbstractSerial{
 	private int  nper;//分期数
 	private String riskOrderNo;//风控订单号
 	private String borrowRate;//提交订单时的费率信息
-	private Long couponId;//平台优惠券id，当在专题活动里面体现，其余时候为0
 	private BigDecimal couponAmount;//优惠金额
 	private String interestFreeJson;//免息规则Json字符串
 	
@@ -330,18 +329,6 @@ public class AfOrderDo extends AbstractSerial{
 	 */
 	public void setBorrowRate(String borrowRate) {
 		this.borrowRate = borrowRate;
-	}
-	/**
-	 * @return the couponId
-	 */
-	public Long getCouponId() {
-		return couponId;
-	}
-	/**
-	 * @param couponId the couponId to set
-	 */
-	public void setCouponId(Long couponId) {
-		this.couponId = couponId;
 	}
 	/**
 	 * @return the couponAmount
