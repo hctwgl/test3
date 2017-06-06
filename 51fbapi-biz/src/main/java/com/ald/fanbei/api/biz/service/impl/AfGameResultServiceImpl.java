@@ -21,7 +21,9 @@ import com.ald.fanbei.api.common.enums.AfGameChanceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfGameChanceDao;
@@ -64,7 +66,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	}
 
 	@Override
-	public AfGameResultDo dealWithResult(AfUserDo userInfo, String catchResult, String item, String code) {
+	public AfGameResultDo dealWithResult(AfUserDo userInfo, String catchResult, final String item, String code) {
 		AfGameResultDo gameResult = null;
 		// 验证code是否正确
 		AfGameChanceDo chanceDo = checkCode(userInfo, code);
@@ -81,9 +83,18 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		// 抓中，取配置
 		Map<String, JSONObject> itemPrizeMap = getGameConfItemPrizeMap();
 		JSONObject prizeObject = itemPrizeMap.get(item);
-		// 按概率抽奖，若该用户第一次抽奖,则必中奖；若非第一次抽奖则按概率抽奖
+		// 按概率抽奖，若该用户第一次抽奖,则必中奖；若非第一次抽奖则按对应娃娃编号配置的概率抽奖
 		List<AfGameResultDto> gameResults = afGameResultDao.getResultDtoByUserId(userInfo.getRid());
-		String couponId = this.lottery(prizeObject, gameResults);
+		List<AfGameResultDto> itemGameResults = CollectionConverterUtil.convertToListFromList(gameResults, new Converter<AfGameResultDto, AfGameResultDto>() {
+			@Override
+			public AfGameResultDto convert(AfGameResultDto source) {
+				if(item.equals(source.getItem())){
+					return source;
+				}
+				return null;
+			}
+		});
+		String couponId = this.lottery(prizeObject,itemGameResults, gameResults.size()==0?true:false);
 		
 		//新增或更新五娃记录，增加result;
 		dealWithFivebabyDao(userInfo.getRid(), item, gameResults.size()==0?true:false);
@@ -123,7 +134,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	 * @param isFirstLottery
 	 * @return
 	 */
-	private String lottery(JSONObject prizeObject,List<AfGameResultDto> gameResults){
+	private String lottery(JSONObject prizeObject,List<AfGameResultDto> gameResults,boolean isFirstLottery){
 		JSONArray rules = prizeObject.getJSONArray("prize");
 		Map<String,JSONObject> rulesMap = new HashMap<String, JSONObject>();
 		List<Integer> rates = new ArrayList<Integer>();
@@ -137,7 +148,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			rulesMap.put(rules.getJSONObject(i).getString("prize_id"), rules.getJSONObject(i));
 		}
 		//如果是第一次登录，比中奖：算法为：[如：coupon1的概率为10，coupon2的概率为8，coupon3的概率为20，则取一个小于38的随机数，若随机数落在0-9，则抽中coupon1,若落在10-17则为coupon2,若落在18-37则为coupon3]
-		if(gameResults.size() <=0){
+		if(isFirstLottery){
 			int randomVal = CommonUtil.getRandomNum(sumRate);
 			int tempValue = 0;
 			for(int i = 0 ;i < rates.size() ;i ++){
@@ -148,7 +159,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			}
 		}else{//如果不是第一次、则先计算当前中奖概率、再计算单项中奖概率，扣除已经满足奖项的概率再根据概率计算优惠券区间
 			int userAwardCount = 0;
-			Map<String,Integer> couponIdResultMap = new HashMap<String, Integer>();//优惠券中奖结果
+			Map<String,Integer> couponIdResultMap = new HashMap<String, Integer>();//用户优惠券中奖结果
 			for(int i=0;i < gameResults.size(); i ++){
 				AfGameResultDto resultItem = gameResults.get(i);
 				if("Y".equals(resultItem.getResult())){//中奖
@@ -171,7 +182,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			for(String item:couponIdResultMap.keySet()){
 				int itemIndex = prizeIds.indexOf(item);
 				BigDecimal itemRate = BigDecimalUtil.divide(couponIdResultMap.get(item), gameResults.size()).multiply(new BigDecimal(100));//用户单项中奖概率
-				if(itemRate.compareTo(new BigDecimal(rulesMap.get(item).getString("rate"))) > 0){//如果单项中奖概率已经大于配置则该项不参与抽奖
+				if(rulesMap.get(item) != null && itemRate.compareTo(new BigDecimal(rulesMap.get(item).getString("rate"))) > 0){//如果单项中奖概率已经大于配置则该项不参与抽奖
 					rulesMap.remove(item);
 					prizeIds.remove(itemIndex);
 					rates.remove(itemIndex);
