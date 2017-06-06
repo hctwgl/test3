@@ -46,6 +46,8 @@
 				channelRegister8
 			#elseif( $!{style} == 8 )
 				channelRegister9
+			#elseif( $!{style} == 9 )
+				channelRegister10
 			#end
 		">
 
