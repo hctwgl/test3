@@ -94,6 +94,7 @@ public class BoluomeUtil extends AbstractThird{
 			responseBo.setSuccess(true);
 			return responseBo;
 		}else{
+			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, false, JSONObject.toJSONString(reqBo), reqResult));
 			responseBo.setSuccess(false);
 			return responseBo;
 		}
