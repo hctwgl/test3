@@ -15,6 +15,9 @@ public enum AfResourceType {
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
 	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
+	HomeTabbar("HOME_TABBAR", "首页tabbar"),
+	
+	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
 	CodeMaxFail("CODE_MAX_FAIL", "验证码失败次数"),
 

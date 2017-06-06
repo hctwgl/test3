@@ -109,6 +109,7 @@
 				<value>/system/checkVersion</value>
 				<value>/system/AppLaunchImage</value>
 				<value>/system/appPopImage</value>
+				<value>/system/getTabbarInfor</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -177,7 +178,7 @@
 				<entry key="/system/checkVersion" value-ref="checkVersionApi" />
 				<entry key="/system/AppLaunchImage" value-ref="AppLaunchImageApi" />
 				<entry key="/system/appPopImage" value-ref="appPopImageApi" />
-				
+				<entry key="/system/getTabbarInfor" value-ref="getTabbarInforApi" />
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
