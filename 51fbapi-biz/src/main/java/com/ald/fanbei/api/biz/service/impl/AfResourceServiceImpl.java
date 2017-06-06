@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,8 +11,14 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -170,5 +177,35 @@ public class AfResourceServiceImpl implements AfResourceService {
 		}
 		return list;
 	}
+	@Override
+	public JSONObject borrowRateWithResource(Integer realTotalNper){
+		//获取借款分期配置信息
+		AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME);
+		if(null == resource){
+			resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME);
+			bizCacheUtil.saveObject(Constants.CACHEKEY_BORROW_CONSUME, resource, Constants.SECOND_OF_HALF_HOUR);
+		}
+		BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
+		BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
+		String[] range = StringUtil.split(resource.getValue2(), ",");
+		if(null != range && range.length==2){
+			rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
+			rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
+		}
+		JSONArray array = JSON.parseArray(resource.getValue());
+		//如果是重新生成的账单，需要原来账单的总期数
+		JSONObject borrowRate =null;
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject obj = array.getJSONObject(i);
+			if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
+				obj.put("rangeBegin", rangeBegin);
+				obj.put("rangeEnd", rangeEnd);
+				obj.put("poundageRate", new BigDecimal(resource.getValue1()));
 
+				borrowRate = obj;
+			}
+		}
+		
+		return borrowRate;
+	}
 }

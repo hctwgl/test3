@@ -52,7 +52,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		BigDecimal priceAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("priceAmount"),BigDecimal.ZERO); // 原价
 		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("saleAmount"), BigDecimal.ZERO);
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
-
+        Integer nper  = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
 		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("addressId"), 0);
 		String capture = ObjectUtils.toString(requestDataVo.getParams().get("capture"));
 		String remark = ObjectUtils.toString(requestDataVo.getParams().get("remark"));
@@ -86,7 +86,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setCapture(capture);
 		afAgentOrderDo.setRemark(remark);
 
-		if(afAgentOrderService.insertAgentOrder(afAgentOrderDo, afOrder)>0){
+		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder,nper)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
 			resp.setResponseData(data);;

@@ -37,6 +37,9 @@ public interface AfAgentOrderService {
 	     */
 	    int insertAgentOrder(AfAgentOrderDo afAgentOrderDo,AfOrderDo afOrder);
 	    
+	    
+	    int insertAgentOrderAndNper(AfAgentOrderDo afAgentOrderDo,AfOrderDo afOrder,Integer nper);
+	    
 	    /**
 	     * 根据orderId查询代买记录
 	     * @param orderId

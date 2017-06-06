@@ -3,7 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.agencybuy;
 
-import java.io.StringWriter;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

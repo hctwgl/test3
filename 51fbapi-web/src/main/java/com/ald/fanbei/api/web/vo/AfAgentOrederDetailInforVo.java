@@ -40,7 +40,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String numId; // 商品的numId
 	private BigDecimal saleAmount; // 商品的价格
 	private BigDecimal actualAmount; // 用户填写的金额
-	
+	private Integer nper;
 	
 	
 	public String getCancelReason() {
@@ -215,6 +215,18 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+	/**
+	 * @return the nper
+	 */
+	public Integer getNper() {
+		return nper;
+	}
+	/**
+	 * @param nper the nper to set
+	 */
+	public void setNper(Integer nper) {
+		this.nper = nper;
 	}
 	
 	

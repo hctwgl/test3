@@ -969,5 +969,62 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return afUserOrderDao.addUserOrder(order);
 	}
 
+	
+	@Override
+	public Map<String, Object> payAgencyOrder(final AfOrderDo orderInfo, final String appName, final String ipAddress) {
+		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+			@Override
+			public Map<String, Object> doInTransaction(TransactionStatus status) {
+				try {
+					Map<String,Object> resultMap = new HashMap<String,Object>();
+					Date currentDate = new Date();
+					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
+					orderInfo.setPayTradeNo(tradeNo);
+					orderInfo.setGmtPay(currentDate);
+					
+					Long userId = orderInfo.getUserId();
+					//代付
+					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+
+					orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+					BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+					if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
+						throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+					}
+					logger.info("payAgencyOrder orderInfo = {}", orderInfo);
+					String cardNo = card.getCardNumber();
+					String riskOrderNo = riskUtil.getOrderNo("vefy",
+							cardNo.substring(cardNo.length() - 4, cardNo.length()));
+					orderInfo.setRiskOrderNo(riskOrderNo);
+					
+					orderDao.updateOrder(orderInfo);
+					try {
+						riskUtil.verify(ObjectUtils.toString(userId, ""), "40",
+								card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, StringUtil.EMPTY,
+								"/third/risk/payOrder",riskOrderNo);
+					} catch (Exception e) {
+						//throw new FanbeiException();
+						e.printStackTrace();
+					}
+					
+					
+					afBorrowService.dealAgentPayAgencyPayConsumeApply(orderInfo,userAccountInfo.getUserName());
+					
+			 		return resultMap;
+				} catch (FanbeiException exception) {
+					logger.error("payAgencyOrder faied e = {}", exception );
+					throw new FanbeiException("bank card pay error", exception.getErrorCode());
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("payAgencyOrder faied e = {}", e );
+					throw e;
+				}
+			}
+		});
+	}
+
 
 }

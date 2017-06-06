@@ -41,8 +41,9 @@ public class AfAgentOrderDo extends AbstractSerial {
 	private Date gmtMatchOrder;
 	private String goodsUrl;
 	private String status; // 代买订单的状态
+	private String borrowRate; // 提交代买信息时的费率情况
 
-
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -321,6 +322,18 @@ public class AfAgentOrderDo extends AbstractSerial {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	/**
+	 * @return the borrowRate
+	 */
+	public String getBorrowRate() {
+		return borrowRate;
+	}
+	/**
+	 * @param borrowRate the borrowRate to set
+	 */
+	public void setBorrowRate(String borrowRate) {
+		this.borrowRate = borrowRate;
 	}
 	
 	

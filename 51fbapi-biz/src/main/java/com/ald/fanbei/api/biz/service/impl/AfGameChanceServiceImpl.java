@@ -74,6 +74,7 @@ public class AfGameChanceServiceImpl implements AfGameChanceService {
 		afGameChanceDo.setType(AfGameChanceType.DAY.getCode());
 		afGameChanceDo.setUsedCount(0);
 		afGameChanceDo.setUserId(userId);
+		afGameChanceDo.setGameId(gameId);
 		afGameChanceDao.addGameChance(afGameChanceDo);
 	}
 	

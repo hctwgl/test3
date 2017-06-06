@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.dal.domain;
 
 import java.math.BigDecimal;
@@ -315,3 +316,4 @@ public class AfOrderDo extends AbstractSerial{
 		this.serviceProvider = serviceProvider;
 	}
 }
+
