@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -94,6 +96,8 @@ public class AppH5GameController  extends BaseController{
 	@RequestMapping(value = "initGame", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String initGame(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Calendar calStart = Calendar.getInstance();
+		String resultStr = "";
 		try{
 			Long userId = 1l;//TODO 
 			
@@ -118,15 +122,23 @@ public class AppH5GameController  extends BaseController{
 				awardDo = afGameAwardService.getByUserId(userId);
 			}
 			AfGameInitVo initResult = this.buildGameInitVo(gameDo, gameConfDo, latestResultList, latestAwardList, gameChanceList, fivebabyDo, awardDo, userId>0l);
-			return H5CommonResponse.getNewInstance(true, "获取成功", "", initResult).toString();
+			resultStr = H5CommonResponse.getNewInstance(true, "获取成功", "", initResult).toString();
+		}catch(FanbeiException e){
+			resultStr = H5CommonResponse.getNewInstance(false, "获取失败", "", e.getErrorCode().getDesc()).toString();
+		}catch(Exception e){
+			resultStr = H5CommonResponse.getNewInstance(false, "获取失败", "", "").toString();
 		}finally{
-			logger.info("日志");//TODO
+			Calendar calEnd = Calendar.getInstance();
+			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
 		}
+		return resultStr;
 	}
 	
 	@RequestMapping(value = "submitGameResult", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String submitGameResult(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Calendar calStart = Calendar.getInstance();
+		String resultStr = "";
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
 		try{
 			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
@@ -161,15 +173,24 @@ public class AppH5GameController  extends BaseController{
 				
 			}
 			
-			return H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
+			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
+		}catch(FanbeiException e){
+			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", e.getErrorCode().getDesc()).toString();
+		}catch(Exception e){
+			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", "").toString();
 		}finally{
-			logger.info("日志");//TODO
+			Calendar calEnd = Calendar.getInstance();
+			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+//			logger.info("日志");//TODO
 		}
+		return resultStr;
 	}
 	
 	@RequestMapping(value = "submitContract", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String submitContract(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Calendar calStart = Calendar.getInstance();
+		String resultStr = "";
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
 		try{
 			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
@@ -189,10 +210,16 @@ public class AppH5GameController  extends BaseController{
 			
 			AfUserDo userInfo = afUserService.getUserByUserName(userName);
 			afGameAwardService.updateContact(userInfo.getRid(), contractsObj.toString());
-			return H5CommonResponse.getNewInstance(true, "获取成功", "", resultData).toString();
+			resultStr = H5CommonResponse.getNewInstance(true, "提交成功", "", resultData).toString();
+		}catch(FanbeiException e){
+			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", e.getErrorCode().getDesc()).toString();
+		}catch(Exception e){
+			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", "").toString();
 		}finally{
-			logger.info("日志");//TODO
+			Calendar calEnd = Calendar.getInstance();
+			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
 		}
+		return resultStr;
 	}
 	
 	
@@ -318,5 +345,5 @@ public class AppH5GameController  extends BaseController{
 			HttpServletRequest httpServletRequest) {
 		return null;
 	}
-
+	
 }
