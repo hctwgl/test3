@@ -251,6 +251,7 @@
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
 				<entry key="/borrowCash/getLoanSupermarketList" value-ref="getLoanSupermarketListApi" />
+				<entry key="/loanMarket/accessLoanSupermarket" value-ref="accessLoanSupermarketApi" />
 				
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />

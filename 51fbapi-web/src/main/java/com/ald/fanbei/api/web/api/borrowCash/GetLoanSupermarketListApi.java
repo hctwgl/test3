@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -52,11 +53,17 @@ public class GetLoanSupermarketListApi implements ApiHandle {
 
 	public Map<String, Object> objectWithAfLoanSupermarketDo(AfLoanSupermarketDo afLoanSupermarketDo) {
 		Map<String, Object> data = new HashMap<String, Object>();
+		String linkUrl = afLoanSupermarketDo.getLinkUrl();
+		if(StringUtil.isEmpty(linkUrl)){
+			linkUrl = "";
+		}else{
+			linkUrl = linkUrl.replaceAll("\\*", "\\&");
+		}
 		data.put("lsmNo", afLoanSupermarketDo.getLsmNo());
 		data.put("iconUrl", afLoanSupermarketDo.getIconUrl());
 		data.put("lsmName", afLoanSupermarketDo.getLsmName());
 		data.put("lsmIntro", afLoanSupermarketDo.getLsmIntro());
-		data.put("linkUrl", afLoanSupermarketDo.getLinkUrl());
+		data.put("linkUrl", linkUrl);
 		data.put("label", afLoanSupermarketDo.getLabel());
 		return data;
 
