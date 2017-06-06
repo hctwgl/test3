@@ -53,6 +53,7 @@ public class AccessLoanSupermarketApi extends BaseController  {
 			String lsmNo = ObjectUtils.toString(reqVo.getParams().get("lsmNo"));
 			afLoanSupermarket = afLoanSupermarketService.getLoanSupermarketByLsmNo(lsmNo);
 			String accessUrl = afLoanSupermarket.getLinkUrl();
+			accessUrl = accessUrl.replaceAll("\\*", "\\&");
 			logger.info("贷款超市请求跳转发起:"+accessUrl+"-超市id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userName:"+userName);
 			response.sendRedirect(accessUrl);
 		} catch (IOException e) {
