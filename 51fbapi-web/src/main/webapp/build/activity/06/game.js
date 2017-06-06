@@ -18,7 +18,12 @@ function dataInit() {
                 isLogin=data.data.isLogin;
                 //抽奖次数显示,抽奖码获取
                 $('#chance').html('您还有'+data.data.chanceCount+'次机会');
-                chance=data.data.chanceCodes.split(',');
+                if(data.data.chanceCodes){
+                    chance=data.data.chanceCodes.split(',');
+                }else{
+                    chance=[]
+                }
+
 
                 //底部娃娃数量显示
                 if(data.data.item1Count>0){
