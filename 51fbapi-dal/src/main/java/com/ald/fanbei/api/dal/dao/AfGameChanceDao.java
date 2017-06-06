@@ -36,4 +36,13 @@ public interface AfGameChanceDao {
 	     * @return
 	     */
 	    AfGameChanceDo getByUserIdType(@Param("userId")Long userId,@Param("type")String type,@Param("day")String day);
+	    
+	    /**
+	     * 更新邀请用户机会次数和机会码
+	     * @param rid
+	     * @param count
+	     * @param code
+	     * @return
+	     */
+	    int updateInviteGameChance(@Param("rid")Long rid,@Param("count")Integer count,@Param("code")String code);
 }
