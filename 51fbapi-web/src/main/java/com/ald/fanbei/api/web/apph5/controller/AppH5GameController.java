@@ -152,7 +152,13 @@ public class AppH5GameController  extends BaseController{
 				resultData.put("awardType", couponDo.getType());
 				resultData.put("amount", couponDo.getAmount());
 				resultData.put("limitAmount", couponDo.getLimitAmount());
-				resultData.put("gmtEnd", couponDo.getGmtEnd().getTime());
+				if("D".equals(couponDo.getExpiryType())){//固定天数
+					Date current = new Date();
+					resultData.put("gmtEnd", DateUtil.addDays(current, couponDo.getValidDays()));
+				}else{//固定时间范围
+					resultData.put("gmtEnd", couponDo.getGmtEnd());
+				}
+				
 			}
 			
 			return H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
