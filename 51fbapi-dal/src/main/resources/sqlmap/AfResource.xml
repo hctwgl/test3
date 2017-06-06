@@ -115,6 +115,18 @@
 		LIMIT 1
 	</select>
 	
+		<select id="getHomeIndexListByOrderby" resultType="AfResourceDo">
+		SELECT 
+			<include refid="queryAllFields" />
+		FROM
+			af_resource
+		WHERE 
+			type = #{type}
+		AND
+			is_delete = 0
+		order by 
+			sort 
+	</select>
 	
 	<select id="getOneToManyResourceOrderByBytype" resultType="AfResourceDo">
 		SELECT 

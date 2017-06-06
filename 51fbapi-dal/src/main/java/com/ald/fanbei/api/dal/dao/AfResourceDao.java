@@ -80,6 +80,13 @@ public interface AfResourceDao {
 	 * @return
 	 */
 	List<AfResourceDo> getOneToManyResourceOrderByBytype(@Param("type")String type);
+	
+	/**
+	 * 获取首页导航栏模块
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getHomeIndexListByOrderby(@Param("type")String type);
 
 	
 }
