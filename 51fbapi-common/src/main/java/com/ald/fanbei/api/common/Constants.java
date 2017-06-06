@@ -75,6 +75,7 @@ public class Constants {
 	public static final String CACHEKEY_APK_NEWEST_VERSION = "apk_newest_version$";
 	public static final String CACHEKEY_BORROW_CASH = "borrow_cash$";
 	public static final String CACHEKEY_BORROW_CONSUME = "borrow_consume$";
+	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -36,7 +38,9 @@ public class AuthContactsApi implements ApiHandle {
 	AfAuthContactsService afAuthContactsService;
 	@Resource
 	RiskUtil riskUtil;
-
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -54,7 +58,11 @@ public class AuthContactsApi implements ApiHandle {
 		// logger.info("同步通讯录，userId:[" + context.getUserId() + "],通讯录:" + contractsArr[i]);
 		// }
 		// riskUtil.addressListPrimaries(context.getUserId() + "", afAuthContactsDos);
+		
+		bizCacheUtil.saveObjectForever(Constants.CACHEKEY_USER_CONTACTS, contacts);
+		
 		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
+		
 		AfUserAuthDo authDo = new AfUserAuthDo();
 		authDo.setUserId(context.getUserId());
 		authDo.setTeldirStatus(YesNoStatus.YES.getCode());

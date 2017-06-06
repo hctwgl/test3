@@ -25,7 +25,9 @@ import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
+import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.bo.RiskUserInfoReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
@@ -43,6 +45,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
@@ -203,6 +206,7 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 
+	
 	/**
 	 * 老用户批量同步
 	 * 
@@ -328,7 +332,80 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
+	/**
+	 * 用户认证时调用强风控接口，进行信息同步
+	 * 
+	 * @return
+	 */
+	public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, 
+			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum) {
+		RiskRegisterStrongReqBo reqBo = new RiskRegisterStrongReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setEvent(event);
+		
+		RiskUserInfoReqBo userInfo = new RiskUserInfoReqBo();
+		userInfo.setRealName(afUserDo.getRealName());
+		userInfo.setPhone(afUserDo.getMobile());
+		userInfo.setIdNo(accountDo.getIdNumber());
+		userInfo.setEmail(afUserDo.getEmail());
+		userInfo.setAlipayNo(accountDo.getAlipayAccount());
+		userInfo.setOpenId(accountDo.getOpenId());
+		userInfo.setAddress(afUserDo.getAddress());
+		userInfo.setChannel(CHANNEL);
+		userInfo.setReqExt("");
+		userInfo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getRealName()));
+		userInfo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getMobile()));
+		userInfo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, accountDo.getIdNumber()));
+		userInfo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getEmail()));
+		reqBo.setUserInfo(userInfo);
+		
+		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS).toString();
+		reqBo.setDirectory(directory);
+		
+		JSONObject linkManInfo = new JSONObject();
+		linkManInfo.put("name", afUserAuthDo.getContactorName());
+		linkManInfo.put("relation", afUserAuthDo.getContactorType());
+		linkManInfo.put("idNo", "");
+		linkManInfo.put("phone", afUserAuthDo.getContactorMobile());
+		linkManInfo.put("reqExt", "");
+		reqBo.setLinkManInfo(Base64.encodeString(JSON.toJSONString(linkManInfo)));
+		
+		String notifyUrl = "/third/risk/registerStrongRisk";
+		JSONObject riskInfo = new JSONObject();
+		riskInfo.put("channel", CHANNEL);
+		riskInfo.put("scene", "11");
+		riskInfo.put("notifyUrl", getNotifyHost() + notifyUrl);
+		riskInfo.put("reqExt", "");
+		reqBo.setRiskInfo(Base64.encodeString(JSON.toJSONString(riskInfo)));
+		
+		JSONObject eventInfo = new JSONObject();
+//		eventInfo.put("eventType", );
+		eventInfo.put("appName", appName);
+		eventInfo.put("cardNo", cardNum);
+		eventInfo.put("blackBox", blackBox);
+		eventInfo.put("ipAddress", ipAddress);
+		
+		
+/*	reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		*/
+		
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/register.htm", reqBo);
+		logThird(reqResult, "register", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+		}
+		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+		}
+	}
+	
 	/**
 	 * 风控审批
 	 * 
@@ -832,9 +909,6 @@ public class RiskUtil extends AbstractThird {
 	 * 
 	 * @param consumerNo
 	 *            --用户唯一标识
-	 * @param data
-	 *            --通讯录信息，格式为
-	 *            张三:15888881111&15811234444,李四:15888881111&15811234444
 	 * @return
 	 * @throws Exception
 	 * 
