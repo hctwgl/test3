@@ -139,7 +139,7 @@
 		AND
 		 r1.value_4 = 'O'
 		ORDER BY 
-		r1.sort desc,r1.id desc, r2.sort desc
+		r1.sort ,r1.id , r2.sort 
 	</select>
 	
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
