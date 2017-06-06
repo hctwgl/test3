@@ -37,4 +37,12 @@ public interface AfGameChanceService {
 	 * @return
 	 */
 	List<AfGameChanceDo> getByUserId(Long gameId,Long userId, String day);
+	
+	/**
+	 * 更新邀请机会
+	 * @param gameId
+	 * @param userId
+	 * @return
+	 */
+	int updateInviteChance(Long userId);
 }

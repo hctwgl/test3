@@ -57,7 +57,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserId(afUserDo.getRid());
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
-			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid());
+			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId());
 
 					return 1;
 				} catch (Exception e) {

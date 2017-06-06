@@ -31,6 +31,17 @@
 		WHERE id=#{rid}
 	</update>
 	
+	<update id="updateInviteGameChance" >
+		UPDATE af_game_chance SET gmt_modified = NOW()
+			<if test="count != null">
+    			,total_count=total_count + 1
+			</if>
+			<if test="code != null">
+    			,codes= CONCAT(codes,",",#{code})
+			</if>
+		WHERE id=#{rid}
+	</update>
+	
 	<select id="getByUserId" resultType="AfGameChanceDo">
 		SELECT 
 			<include refid="queryFields"/>

@@ -174,7 +174,10 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			}
 			
 			BigDecimal personalRate = BigDecimalUtil.divide(sumRate, 100);//个人总体中奖概率
-			BigDecimal userRate = BigDecimalUtil.divide(userAwardCount, gameResults.size());//用户已经中奖的概率
+			BigDecimal userRate = new BigDecimal(0);//用户已经中奖的概率
+			if(gameResults.size() > 0){
+				userRate = BigDecimalUtil.divide(userAwardCount, gameResults.size());
+			}
 			if(userRate.compareTo(personalRate) >=0){//获奖概率已经大于个人总体概率
 				return null;
 			}
