@@ -4,7 +4,9 @@
 
 var couponListString = $("#couponList").val();
 var couponList = eval('(' + couponListString + ')');
+
 var userName = $("#userName").val();
+
 $(function(){
 
    // 点击领取优惠劵
@@ -46,28 +48,29 @@ $(function(){
             }
         });
         $(this).unbind("click"); // 移除当前元素的点击时间(禁止重复点击)
-    });
-
-
-    var returnNum = getBlatFrom();  // 判断1为Android，2为ios
-
-
-    /*------------跳转登陆+请求返回数据--------------*/
-    if(returnNum == 1){  // android机型
-        $(".myCoupon").click(function(){
-            alaAndroid.appLogin();  // 调用Android原生登陆
-        });
-    }else{  // ios机型
-        $(".myCoupon").click(function(){
-            alert(1)
-            alaIos.appLogin();  // 调用ios原生登陆
-        });
-    }
-
-
-    function loginSuccess(obj) {
-        location.href="/fanbei-web/opennative?name=MINE_COUPON_LIST";
-    }
+    });    
 
 });
 
+var returnNum = getBlatFrom();  // 判断1为Android，2为ios
+
+/*------------跳转登陆+请求返回数据--------------*/
+if(returnNum == 1){  // android机型
+    $(".myCoupon").click(function(){
+        alaAndroid.appLogin();  // 调用Android原生登陆
+    });
+}else{  // ios机型
+    $(".myCoupon").click(function(){
+        alaIos.appLogin();  // 调用ios原生登陆
+    });
+}
+
+
+function loginSuccess() {
+    if(returnNum == 1){  // android机型
+        var jsonString = '{"className":"com.alfl.www.user.ui.VoucherMenuActivity"}';
+        alaAndroid.openActivity(jsonString);
+    }else{  // ios机型
+        location.href="/fanbei-web/opennative?name=MINE_COUPON_LIST";
+    }
+}

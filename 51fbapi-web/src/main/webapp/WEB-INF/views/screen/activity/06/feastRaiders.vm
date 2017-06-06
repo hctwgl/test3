@@ -21,7 +21,7 @@
 	<img src="$commonUrl/feastRaiders1.png">
 	<div class="feastRaiders2">
 		<img src="$commonUrl/feastRaiders2.png">
-		<a href="https://www.baidu.com"></a>
+		<a href="888888"></a>
 	</div>
 	<img src="$commonUrl/feastRaiders3.png">
 	<img src="$commonUrl/feastRaiders4.png">
@@ -32,10 +32,10 @@
 		function shareData(){
 			// 分享内容
 			var dataObj = {
-				'shareAppTitle': '年中盛宴攻略',
-				'shareAppContent': '分享年中盛宴攻略赢取大奖',
+				'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',
+				'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',
 				'shareAppImage': 'https://fs.51fanbei.com/h5/app/activity/05/mumday28_01.jpg',
-				'shareAppUrl': 'https://www.baidu.com'
+				'shareAppUrl': 'https://app.51fanbei.com/activity/06/feastRaiders'
 			};
 
 			var dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
