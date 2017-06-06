@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -81,18 +80,6 @@ public class AppH5GameController  extends BaseController{
 	@Resource
 	AfCouponService afCouponService;
 	
-	
-	/**
-	 * 游戏初始化接口、获取游戏界面需要的相关参数，包括用户剩余的机会次数，游戏信息，游戏中奖情况等
-	 * @param request
-	 * @param model
-	 * @throws IOException
-	 */
-	@RequestMapping(value = { "indexPage" }, method = RequestMethod.GET)
-	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
-		logger.info("统计进入游戏次数");//TODO
-	}
-	
 	@RequestMapping(value = "initGame", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String initGame(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -122,11 +109,13 @@ public class AppH5GameController  extends BaseController{
 				awardDo = afGameAwardService.getByUserId(userId);
 			}
 			AfGameInitVo initResult = this.buildGameInitVo(gameDo, gameConfDo, latestResultList, latestAwardList, gameChanceList, fivebabyDo, awardDo, userId>0l);
-			resultStr = H5CommonResponse.getNewInstance(true, "获取成功", "", initResult).toString();
+			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", initResult).toString();
 		}catch(FanbeiException e){
-			resultStr = H5CommonResponse.getNewInstance(false, "获取失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("fb初始化失败",e);
 		}catch(Exception e){
-			resultStr = H5CommonResponse.getNewInstance(false, "获取失败", "", "").toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", "").toString();
+			logger.error("fb初始化失败",e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
@@ -183,7 +172,6 @@ public class AppH5GameController  extends BaseController{
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
-//			logger.info("日志");//TODO
 		}
 		return resultStr;
 	}
@@ -215,8 +203,10 @@ public class AppH5GameController  extends BaseController{
 			resultStr = H5CommonResponse.getNewInstance(true, "提交成功", "", resultData).toString();
 		}catch(FanbeiException e){
 			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("提交失败",e);
 		}catch(Exception e){
 			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", "").toString();
+			logger.error("提交失败",e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());

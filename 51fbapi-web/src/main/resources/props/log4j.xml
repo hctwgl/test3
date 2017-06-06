@@ -11,7 +11,7 @@
 		</layout>
 	</appender>
 
-	<!-- [应用Appender] 收到客户端的请求 ,bi会拉该日志文件并解析，所以一般日志请勿放这里 -->
+	<!-- [应用Appender] 收到app客户端的请求，非app接口入口日志请勿放这里 -->
 	<appender name="FANBEI_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/bi/app-bi.log" />
 		<param name="append" value="true" />
@@ -19,11 +19,11 @@
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%d %-5p %c{2} - %m%n" />
+				value="%d; %m%n" />
 		</layout>
 	</appender>
 
-	<!-- [应用Appender] 收到h5的请求 ,bi会拉该日志文件并解析，所以一般日志请勿放这里 -->
+	<!-- [应用Appender] 收到h5的请求入口日志,非h5接口日志请勿放这里 -->
 	<appender name="FANBWEBEI_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/bi/web-bi.log" />
 		<param name="append" value="true" />
@@ -31,7 +31,19 @@
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%d %-5p %c{2} - %m%n" />
+				value="%d; %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] 埋点相关日志,飞埋点日志请勿放这里 -->
+	<appender name="FANBEIMAIDIAN_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/maidian.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d; %m%n" />
 		</layout>
 	</appender>
 
@@ -42,7 +54,7 @@
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%d %-5p %c{2} - %m%n" />
+				value="%d; %m%n" />
 		</layout>
 	</appender>
 	
@@ -103,9 +115,16 @@
 	</logger>
 	
 	<!-- [应用Logger] BI日志 -->
-	<logger name="FANBEIWEB_BI" additivity="true">
+	<logger name="FBWEB_BI" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBWEBEI_BI_APPENDER" />
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
+	</logger>
+	
+	<!-- [应用Logger] BI日志 -->
+	<logger name="FBMD_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEIMAIDIAN_BI_APPENDER" />
 		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 

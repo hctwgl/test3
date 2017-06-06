@@ -43,6 +43,10 @@ public class H5Controller extends BaseController {
 	@RequestMapping(value = { "app/*", "app/goods/*", "app/user/*", "app/sys/*", "activity/*", "activity/01/*", "activity/02/*", "activity/03/*", "activity/04/*", "activity/05/*", "activity/06/*", "activity/07/*", "activity/08/*", "activity/09/*", "activity/10/*", "activity/11/*", "activity/12/*", "fanbei-web/*"}, method = RequestMethod.GET)
 	public String newVmPage(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String returnUrl = request.getRequestURI();
+		if(returnUrl.indexOf("fanbei-web/game") >=0){
+			doMaidianLog(request);
+		}
+		
 		return returnUrl;
 	}
 

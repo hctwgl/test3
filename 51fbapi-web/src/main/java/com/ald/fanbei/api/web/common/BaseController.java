@@ -51,7 +51,8 @@ public abstract class BaseController {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Logger biLogger = LoggerFactory.getLogger("FANBEI_BI");
-	protected final Logger webbiLog = LoggerFactory.getLogger("FANBEIWEB_BI");
+	protected final Logger webbiLog = LoggerFactory.getLogger("FBWEB_BI");
+	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");
 	protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 
 	@Resource
@@ -355,6 +356,22 @@ public abstract class BaseController {
 			return new String(Base64.decode(baseString));
 		}
 		return StringUtils.EMPTY;
+	}
+	
+	/**
+	 * 记录H5日志
+	 * @param request
+	 * @param respData
+	 * @param exeT
+	 */
+	protected void doMaidianLog(HttpServletRequest request){
+		JSONObject param = new JSONObject();
+		Enumeration<String> enu=request.getParameterNames();  
+		while(enu.hasMoreElements()){  
+			String paraName=(String)enu.nextElement();  
+			param.put(paraName, request.getParameter(paraName));
+		}
+		maidianLog.info(StringUtil.appendStrs("inte=",request.getRequestURI(),";ip=",CommonUtil.getIpAddr(request),";param=",param.toString()));
 	}
 	
 	/**
