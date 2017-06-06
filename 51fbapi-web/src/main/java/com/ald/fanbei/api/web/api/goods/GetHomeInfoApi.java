@@ -49,15 +49,19 @@ public class GetHomeInfoApi implements ApiHandle {
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
 		List<Object> one2TwoList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
-		List<Object> homeActivity = getOne2ManyObjectWithResourceDolist(
+		List<Object> homeActivityList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
+		List<Object> navigationList = getOne2ManyObjectWithResourceDolist(
+				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeNavigation.getCode()));
 
 		data.put("bannerList", bannerList);
 		data.put("bannerSecList", bannerSecList);
-		data.put("homeActivity",homeActivity);
+		data.put("homeActivityList",homeActivityList);
 		data.put("one2ManyList", one2ManyList);
 		data.put("one2TwoList", one2TwoList);
 		data.put("one2OneList", one2OneList);
+		data.put("navigationList", navigationList);
+		
 
 		resp.setResponseData(data);
 		return resp;

@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -46,7 +47,37 @@ public class GetTabbarInforApi implements ApiHandle {
 			data.put("imageUrl", afResourceDo.getValue());
 			data.put("titleColor", afResourceDo.getValue1());
 			Map<String, Object> index = new HashMap<String, Object>();
-			index.put(afResourceDo.getSecType(), data);
+			if(StringUtils.equals(afResourceDo.getSecType(), "HOME_NOMAL")){
+				index.put("homeNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "HOME_SELECTED")){
+				index.put("homeSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "BRAND_NOMAL")){
+				index.put("brandNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_SELECTED")){
+				index.put("brandSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "STAGING_NOMAL")){
+				index.put("stagingNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "STAGING_SELECTED")){
+				index.put("stagingSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "MAIN_NOMAL")){
+				index.put("mainNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "MAIN_SELECTED")){
+				index.put("mainSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_NOMAL")){
+				index.put("borrowNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_SELECTED")){
+				index.put("borrowSelected", data);
+			}
+			
 			tabbarList.add(index);
 		}
 
