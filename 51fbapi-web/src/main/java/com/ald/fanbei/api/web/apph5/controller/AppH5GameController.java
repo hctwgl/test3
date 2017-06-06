@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +31,9 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -89,8 +88,16 @@ public class AppH5GameController  extends BaseController{
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		try{
-			Long userId = 1l;//TODO 
+			Long userId = -1l;
 			String appInfo = getAppInfo(request.getHeader("Referer"));
+			if(!StringUtil.isEmpty(appInfo)){
+				RequestDataVo requestDavaVo = parseRequestData(appInfo, request);
+				String userName = (String)requestDavaVo.getSystem().get("userName");
+				if(CommonUtil.isMobile(userName)){
+					AfUserDo afUser = afUserService.getUserByUserName(userName);
+					userId = afUser == null?-1l:afUser.getRid();
+				}
+			}
 			//游戏配置
 			AfGameDo gameDo = afGameService.getByCode("catch_doll");
 			List<AfGameConfDo> gameConfDo = afGameConfService.getByGameId(gameDo.getRid());
@@ -330,9 +337,19 @@ public class AppH5GameController  extends BaseController{
 	}
 
 	@Override
-	public RequestDataVo parseRequestData(String requestData,
-			HttpServletRequest request) {
-		return null;
+	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
+            
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
 	}
 
 	@Override
@@ -341,10 +358,4 @@ public class AppH5GameController  extends BaseController{
 		return null;
 	}
 	
-	
-	 public static void main(String args[]){  
-	        String baseUrl = "http://192.168.96.197/fanbei-web/game?_appInfo=%7B%22id%22:%22i_BC8113F7-236D-4DA6-A5C5-B83373E92703_1496739834777_www%22,%22netType%22:%22Wifi%22,%22sign%22:%220e2830735d3aaf053d64b0ad4303cf7690fc0eaa3e9454a84415b1b123dd3de5%22,%22appVersion%22:%22361%22,%22time%22:%221496739834777%22,%22userName%22:%22BC8113F7-236D-4DA6-A5C5-B83373E92703%22%7D";  
-	        System.out.println(getQueryParams(baseUrl));
-	    }
-	 
 }
