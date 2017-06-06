@@ -176,8 +176,10 @@ public class AppH5GameController  extends BaseController{
 			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
 		}catch(FanbeiException e){
 			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("fb抽奖失败",e);
 		}catch(Exception e){
 			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", "").toString();
+			logger.error("抽奖失败",e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
