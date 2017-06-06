@@ -48,8 +48,7 @@ $(function(){
             }
         });
         $(this).unbind("click"); // 移除当前元素的点击时间(禁止重复点击)
-    });    
-
+    });
 });
 
 var returnNum = getBlatFrom();  // 判断1为Android，2为ios
@@ -68,6 +67,7 @@ if(returnNum == 1){  // android机型
 
 function loginSuccess() {
     if(returnNum == 1){  // android机型
+        alert(2222); 
         var jsonString = '{"className":"com.alfl.www.user.ui.VoucherMenuActivity"}';
         alaAndroid.openActivity(jsonString);
     }else{  // ios机型
