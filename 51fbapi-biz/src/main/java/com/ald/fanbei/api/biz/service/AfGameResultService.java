@@ -21,9 +21,9 @@ public interface AfGameResultService {
     /**
      * 处理抓娃娃结果
      * @param userInfo 用户信息
-     * @param result 抽奖结果
+     * @param catchResult 抓娃娃结果
      * @param item 娃娃编号
      * @param code 抽奖码
      */
-    void dealWithResult(AfUserDo userInfo,String result,String item,String code);
+    AfGameResultDo dealWithResult(AfUserDo userInfo,String catchResult,String item,String code);
 }

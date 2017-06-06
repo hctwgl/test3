@@ -53,5 +53,10 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 		}
 		return awardList;
 	}
+	
+	@Override
+	public int updateContact(Long userId, String contacts) {
+		return afGameAwardDao.updateContact(userId, contacts);
+	}
 
 }

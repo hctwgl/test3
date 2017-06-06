@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,6 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 /**
  * 
@@ -89,53 +89,11 @@ public class AppH5GameController  extends BaseController{
 	@RequestMapping(value = { "indexPage" }, method = RequestMethod.GET)
 	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
 		logger.info("统计进入游戏次数");//TODO
-//		initGame();
 	}
-	
-//	private void initGame(){
-//
-//		try{
-//		Long userId = 1l;//TODO 
-//		
-//		//游戏配置
-//		AfGameDo gameDo = afGameService.getByCode("catch_doll");
-//		System.out.println(gameDo);
-//		List<AfGameConfDo> gameConfDo = afGameConfService.getByGameId(gameDo.getRid());
-//		System.out.println("-2->" + gameConfDo);
-//		
-//		//最近20条抓娃娃中奖列表
-//		List<AfGameResultDo> latestResultList= afGameResultService.getLatestRecord();
-//		System.out.println("-3->" + latestResultList);
-//		//最近20条发奖列表
-//		List<AfGameAwardDo> latestAwardList= afGameAwardService.getLatestAwards();
-//		System.out.println("-4->" + latestAwardList);
-//		
-//		AfGameFivebabyDo fivebabyDo = null;
-//		List<AfGameChanceDo> gameChanceList = null;
-//		AfGameAwardDo awardDo = null;
-//		if(userId > 0l){//TODO 判断用户登录
-//			//获取中奖想信息
-//			fivebabyDo = afGameFivebabyService.getByUserId(userId);
-//			System.out.println("-5->" + fivebabyDo);
-//			//用户抓娃娃机会
-//			gameChanceList = afGameChanceService.getByUserId(userId, DateUtil.formatDate(new Date(), DateUtil.DEFAULT_PATTERN.substring(2)));
-//			System.out.println("-6->" + gameChanceList);
-//			//用户中奖情况
-//			awardDo = afGameAwardService.getByUserId(userId);
-//			System.out.println("-7->" + awardDo);
-//		}
-//		AfGameInitVo initResult = this.buildGameInitVo(gameDo, gameConfDo, latestResultList, latestAwardList, gameChanceList, fivebabyDo, awardDo, userId>0l);
-//		System.out.println("-8--" + JSON.toJSONString(initResult));
-//		}finally{
-//			logger.info("日志");//TODO
-//		}
-//		
-//	}
 	
 	@RequestMapping(value = "initGame", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String initGame(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		System.out.println("---------");
 		try{
 			Long userId = 1l;//TODO 
 			
@@ -155,7 +113,7 @@ public class AppH5GameController  extends BaseController{
 				//获取中奖想信息
 				fivebabyDo = afGameFivebabyService.getByUserId(userId);
 				//用户抓娃娃机会
-				gameChanceList = afGameChanceService.getByUserId(userId, DateUtil.formatDate(new Date(), DateUtil.DEFAULT_PATTERN.substring(2)));
+				gameChanceList = afGameChanceService.getByUserId(gameDo.getRid(),userId, DateUtil.formatDate(new Date(), DateUtil.DEFAULT_PATTERN.substring(2)));
 				//用户中奖情况
 				awardDo = afGameAwardService.getByUserId(userId);
 			}
@@ -166,25 +124,66 @@ public class AppH5GameController  extends BaseController{
 		}
 	}
 	
-	
 	@RequestMapping(value = "submitGameResult", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String submitGameResult(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String,Object> resultData = new HashMap<String, Object>(); 
 		try{
 			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 			String result = request.getParameter("result");
 			String item = request.getParameter("item");
 			String code = request.getParameter("code");
-			if(StringUtil.isEmpty(appInfotext) || StringUtil.isEmpty(result) || StringUtil.isEmpty(item) || StringUtil.isEmpty(code)){
+			if(StringUtil.isEmpty(appInfotext) || StringUtil.isEmpty(result) || StringUtil.isEmpty(code)){
 				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
+			}
+			if(StringUtil.isBlank(item)){
+				item = "0";
 			}
 	
 			JSONObject appInfo = JSON.parseObject(appInfotext);
 			String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
 			AfUserDo userInfo = afUserService.getUserByUserName(userName);
+			AfGameResultDo gameResult = afGameResultService.dealWithResult(userInfo, result, item, code);
+			if(gameResult == null || "N".equals(gameResult.getResult())){
+				resultData.put("lotteryResult", "N");
+			}else{
+				resultData.put("lotteryResult", "Y");
+				AfCouponDo couponDo = afCouponService.getCouponById(gameResult.getLotteryResult());
+				resultData.put("awardType", couponDo.getType());
+				resultData.put("amount", couponDo.getAmount());
+				resultData.put("limitAmount", couponDo.getLimitAmount());
+				resultData.put("gmtEnd", couponDo.getGmtEnd().getTime());
+			}
 			
+			return H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
+		}finally{
+			logger.info("日志");//TODO
+		}
+	}
+	
+	@RequestMapping(value = "submitContract", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String submitContract(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String,Object> resultData = new HashMap<String, Object>(); 
+		try{
+			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
+			String name = request.getParameter("name");
+			String mobilePhone = request.getParameter("mobilePhone");
+			String address = request.getParameter("address");
+			if(StringUtil.isEmpty(appInfotext) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
+				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
+			}
+			JSONObject appInfo = JSON.parseObject(appInfotext);
+			String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
 			
-			return "";
+			JSONObject contractsObj = new JSONObject();
+			contractsObj.put("name", name);
+			contractsObj.put("mobilePhone", mobilePhone);
+			contractsObj.put("address", address);
+			
+			AfUserDo userInfo = afUserService.getUserByUserName(userName);
+			afGameAwardService.updateContact(userInfo.getRid(), contractsObj.toString());
+			return H5CommonResponse.getNewInstance(true, "获取成功", "", resultData).toString();
 		}finally{
 			logger.info("日志");//TODO
 		}
@@ -296,18 +295,6 @@ public class AppH5GameController  extends BaseController{
 		return gameInitVo;
 	}
 	
-//	private Date parseSendAwardTime(String rule){
-//		JSONArray ruleArray = JSON.parseArray(rule);
-//		long minTime = Long.MAX_VALUE;
-//		for(int i = 0 ;i < ruleArray.size();i++){
-//			JSONObject temp = ruleArray.getJSONObject(i);
-//			if(minTime > DateUtil.parseDate(temp.getString(""), df))
-//		}
-//		
-//		return null;
-//	}
-	
-
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request,
 			boolean isForQQ) {

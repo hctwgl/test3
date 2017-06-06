@@ -37,4 +37,11 @@ public interface AfGameAwardService {
 	 * @return
 	 */
 	List<AfGameAwardDo> getLatestAwards();
+	
+	/**
+	 * 更新联系人
+	 * @param afGameAwardDo
+	 * @return
+	 */
+	int updateContact(Long userId,String contacts);
 }

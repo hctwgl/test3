@@ -33,4 +33,8 @@
 		FROM af_game_award WHERE is_delete = 0 ORDER BY id DESC LIMIT 20;
 	</select>
 	
+	<update id="updateContact" >
+		UPDATE af_game_award SET gmt_modified = NOW(), contacts=#{contacts} WHERE user_id=#{userId}
+	</update>
+	
 </mapper>

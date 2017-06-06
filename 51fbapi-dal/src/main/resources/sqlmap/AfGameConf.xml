@@ -14,7 +14,7 @@
 	<select id="getByGameCode" resultType="AfGameConfDo">
 		SELECT 
 			<include refid="queryFields"/>
-		FROM af_game_conf WHERE is_delete = 0 AND game_code=#gameCode#
+		FROM af_game_conf WHERE is_delete = 0 AND game_code=#{gameCode}
 	</select>
 	
 </mapper>

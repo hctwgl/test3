@@ -1,14 +1,26 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
@@ -24,6 +36,12 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 
 	@Resource
 	private AfUserCouponDao afUserCouponDao;
+	@Resource
+	private AfCouponService afCouponService;
+	@Resource
+	private AfUserAccountDao afUserAccountDao;
+	@Resource
+	private AfUserAccountLogDao afUserAccountLogDao;
 	
 	@Override
 	public List<AfUserCouponDto> getUserCouponByUser(AfUserCouponQuery query) {
@@ -72,5 +90,47 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	public List<AfUserCouponDto> getUserCouponByType(Long userId, String type) {
 		return afUserCouponDao.getUserCouponByType(userId, type);
 	}
-
+	
+	@Override
+	public void grantCoupon(Long userId, Long couponId, String sourceType, String sourceRef) {
+		AfCouponDo couponDo = afCouponService.getCouponById(couponId);
+		if(couponDo == null){
+			throw new FanbeiException("no coupon",FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR);
+		}
+		if(couponDo.getQuota().intValue() > 0 && couponDo.getQuotaAlready() >= couponDo.getQuota().intValue()){
+			throw new FanbeiException("no coupon",FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR);
+		}
+		if(couponDo.getLimitCount() > 0 && afUserCouponDao.getUserCouponByUserIdAndCouponId(userId, couponId) >= couponDo.getLimitCount()){
+			throw new FanbeiException("no coupon",FanbeiExceptionCode.USER_GET_COUPON_ERROR);
+		}
+		if(CouponType.CASH.getCode().equals(couponDo.getType())){
+			AfUserAccountDo accountDo = new AfUserAccountDo();
+			accountDo.setUserId(userId);
+			accountDo.setRebateAmount(couponDo.getAmount());
+			int count = afUserAccountDao.updateUserAccount(accountDo);
+			if(count > 0){
+				AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+				accountLog.setAmount(couponDo.getAmount());
+				accountLog.setType(sourceType);
+				accountLog.setRefId(sourceRef);
+				accountLog.setUserId(userId);
+				afUserAccountLogDao.addUserAccountLog(accountLog);
+			}
+		}else{
+			AfUserCouponDo userCoupon = new AfUserCouponDo();
+			userCoupon.setCouponId(couponId);
+			if("D".equals(couponDo.getExpiryType())){//固定天数
+				Date current = new Date();
+				userCoupon.setGmtEnd(current);
+				userCoupon.setGmtStart(DateUtil.addDays(current, couponDo.getValidDays()));
+			}else{//固定时间范围
+				userCoupon.setGmtEnd(couponDo.getGmtEnd());
+				userCoupon.setGmtStart(couponDo.getGmtStart());
+			}
+			userCoupon.setSourceType(sourceType);
+			userCoupon.setUserId(userId);
+			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
+			afUserCouponDao.addUserCoupon(userCoupon);
+		}
+	}
 }

@@ -2,14 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfGameChanceDao">
 	<sql id="queryFields">
-		id rid,gmt_create,gmt_modified,user_id,type,day,total_count,used_count,codes
+		id rid,gmt_create,gmt_modified,game_id,user_id,type,day,total_count,used_count,codes
 	</sql>
 	
 	<insert id="addGameChance" parameterType="AfGameChanceDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_game_chance(gmt_create , gmt_modified , user_id , type , day , total_count , used_count , codes)
+		INSERT INTO af_game_chance(gmt_create , gmt_modified ,game_id, user_id , type , day , total_count , used_count , codes)
 		VALUES (
     		NOW(),
     		NOW(),
+    		#{gameId},
     		#{userId},
     		#{type},
     		#{day},

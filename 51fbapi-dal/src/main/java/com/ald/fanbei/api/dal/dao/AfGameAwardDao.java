@@ -5,6 +5,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
 
 /**
@@ -21,6 +23,13 @@ public interface AfGameAwardDao {
 	 * @return
 	 */
 	int addGameAward(AfGameAwardDo afGameAwardDo);
+	
+	/**
+	 * 更新联系人
+	 * @param afGameAwardDo
+	 * @return
+	 */
+	int updateContact(@Param("userId")Long userId,@Param("contacts")String contacts);
 
 	/**
 	 * 通过用户id查询其获奖结果
