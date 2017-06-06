@@ -341,10 +341,4 @@ public class AppH5GameController  extends BaseController{
 		return null;
 	}
 	
-	
-	 public static void main(String args[]){  
-	        String baseUrl = "http://192.168.96.197/fanbei-web/game?_appInfo=%7B%22id%22:%22i_BC8113F7-236D-4DA6-A5C5-B83373E92703_1496739834777_www%22,%22netType%22:%22Wifi%22,%22sign%22:%220e2830735d3aaf053d64b0ad4303cf7690fc0eaa3e9454a84415b1b123dd3de5%22,%22appVersion%22:%22361%22,%22time%22:%221496739834777%22,%22userName%22:%22BC8113F7-236D-4DA6-A5C5-B83373E92703%22%7D";  
-	        System.out.println(getQueryParams(baseUrl));
-	    }
-	 
 }
