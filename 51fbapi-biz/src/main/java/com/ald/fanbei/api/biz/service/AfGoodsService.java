@@ -30,6 +30,13 @@ public interface AfGoodsService {
 	AfGoodsDo getGoodsById(@Param("rid")Long rid);
 	
 	/**
+	 * 通过商品numid获取商品信息
+	 * @param rid
+	 * @return
+	 */
+	AfGoodsDo getGoodsByNumId(String numId);
+	
+	/**
 	 * 订阅商品
 	 * @param messageContent
 	 * @return
@@ -58,4 +65,11 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	int cancelPublishGoods(String messageContent);
+	
+	/**
+	 * 根据商品numId获取规则json
+	 * @param numId
+	 * @return
+	 */
+	String getInterestFreeRuleJsonByGoodsNumId(String numId);
 }

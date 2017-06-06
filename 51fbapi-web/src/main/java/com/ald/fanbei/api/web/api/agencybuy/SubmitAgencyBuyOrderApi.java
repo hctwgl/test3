@@ -15,12 +15,18 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -38,6 +44,12 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 	AfAgentOrderService afAgentOrderService;
 	@Resource
 	AfUserAddressService afUserAddressService;
+	@Resource
+	AfGoodsService afGoodsService;
+	@Resource
+	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	AfSchemeGoodsService afSchemeGoodsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -58,8 +70,9 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		String remark = ObjectUtils.toString(requestDataVo.getParams().get("remark"));
 		if (  StringUtils.isBlank(numId) ) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-
 		}
+		
+		
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		AfOrderDo afOrder = new AfOrderDo();
 	
@@ -71,10 +84,10 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setGoodsName(goodsName);
 		afOrder.setNumId(numId);
 		afOrder.setOpenId(openId);
+		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if(addressDo==null){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-
 		}
 		afAgentOrderDo.setAddress(addressDo.getAddress());
 		afAgentOrderDo.setProvince(addressDo.getProvince());
@@ -85,7 +98,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setUserId(userId);
 		afAgentOrderDo.setCapture(capture);
 		afAgentOrderDo.setRemark(remark);
-
+		
 		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder,nper)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
@@ -94,7 +107,31 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 
 		}
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
-
+	}
+	
+	/**
+	 * 获取免息规则
+	 * @param numId
+	 * @return
+	 */
+	private String getInterestFreeRule(String numId) {
+		AfGoodsDo goodsInfo = afGoodsService.getGoodsByNumId(numId);
+		if (goodsInfo == null) {
+			return StringUtils.EMPTY;
+		}
+		String tags = goodsInfo.getTags();
+		if (tags.isEmpty()) {
+			return StringUtils.EMPTY;
+		}
+		AfSchemeGoodsDo schemeGoodsInfo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsInfo.getRid());
+		if (schemeGoodsInfo == null) {
+			return StringUtils.EMPTY;
+		}
+		AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(schemeGoodsInfo.getInterestFreeId());
+		if (ruleInfo == null) {
+			return StringUtils.EMPTY;
+		}
+		return ruleInfo.getRuleJson();
 	}
 
 }

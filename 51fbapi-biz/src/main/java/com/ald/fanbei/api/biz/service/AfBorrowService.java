@@ -214,10 +214,12 @@ public interface AfBorrowService {
 	BigDecimal calculateBorrowAmount(Long borrowId, BigDecimal refundAmount, boolean refundByUser);
 
 	/**
-	 * 代付分期
+	 * 生成代付借款以及账单
 	 * 
-	 * @param userDto
-	 *            --
+	 * @param userId
+	 *            --用户id
+	 * @param userName
+	 *            -用户名          
 	 * @param amount
 	 *            --金额
 	 * @param cardId
@@ -230,10 +232,12 @@ public interface AfBorrowService {
 	 *            订单id
 	 * @param orderNo
 	 *            订单编号
-	 * @param totalNper
-	 *            原来订单总分期数 为重新生成账单使用，当第一次生成账单 该值为null
+	 * @param borrowRate
+	 *            订单利率
+	 * @param interestFreeJson
+	 * 			  免息规则
 	 * @return
 	 */
-	Long dealAgentPayConsumeRisk(AfUserAccountDo userDto, BigDecimal amount, String goodsName, int nper, Long rid,
-			String orderNo, Integer totalNper);
+	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String goodsName, int nper, Long rid,
+			String orderNo, String borrowRate, String interestFreeJson);
 }

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,6 +18,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -33,6 +36,7 @@ import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -561,6 +565,78 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		}
 		return list;
 	}
+	
+	/**
+	 * 新的计息方式
+	 * @param borrow
+	 * 		  借款信息
+	 * @param poundageAmount
+	 * 		  每期手续费
+	 * @param principleAmount
+	 * 		  每期本金
+	 * @param interestAmount
+	 * 	           每期利息		
+	 * @param interestFreeJsonBo
+	 * 		免息规则 可能为空
+	 * @return
+	 */
+	private List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow, String borrowRate, String interestFreeJson) {
+		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
+		Date now = new Date();// 当前时间
+		Integer nper = borrow.getNper();
+		BigDecimal money = borrow.getAmount();// 借款金额
+		
+		BorrowRateBo borrowRateBo =  JSONObject.parseObject(borrowRate, BorrowRateBo.class);
+		Integer freeNper = 0;
+		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
+		if (CollectionUtils.isNotEmpty(interestFreeList)) {
+			for (InterestFreeJsonBo bo : interestFreeList) {
+				if (bo.getNper().equals(nper)) {
+					freeNper = bo.getFreeNper();
+					break;
+				}
+			}
+		}
+		//每期本金
+		BigDecimal principleAmount = money.divide(new BigDecimal(borrow.getNper()), 2, RoundingMode.CEILING);
+		//每期利息
+		BigDecimal interestAmount = money.multiply(borrowRateBo.getRate()).divide(
+				Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
+		//总手续费
+		BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, borrow.getNper(),
+				borrowRateBo.getRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd());
+		//每期手续费
+		BigDecimal poundageAmount = totalPoundage.divide(new BigDecimal(nper), 2, RoundingMode.CEILING);
+		
+		for (int i = 1; i <= borrow.getNper(); i++) {
+			AfBorrowBillDo bill = new AfBorrowBillDo();
+			bill.setUserId(borrow.getUserId());
+			bill.setBorrowId(borrow.getRid());
+			bill.setBorrowNo(borrow.getBorrowNo());
+			bill.setName(borrow.getName());
+			bill.setGmtBorrow(borrow.getGmtCreate());
+			Map<String, Integer> timeMap = getCurrentYearAndMonth(now);
+			bill.setBillYear(timeMap.get(Constants.DEFAULT_YEAR));
+			bill.setBillMonth(timeMap.get(Constants.DEFAULT_MONTH));
+			bill.setNper(borrow.getNper());
+			bill.setBillNper(i);
+			if (i < freeNper) {
+				bill.setInterestAmount(BigDecimal.ZERO);
+				bill.setIsFreeInterest(YesNoStatus.YES.getCode());
+			} else {
+				bill.setInterestAmount(interestAmount);
+				bill.setIsFreeInterest(YesNoStatus.NO.getCode());
+			}
+			bill.setPoundageAmount(poundageAmount);
+			bill.setPrincipleAmount(principleAmount);
+			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
+			bill.setStatus(BorrowBillStatus.NO.getCode());
+			bill.setType(BorrowType.CONSUME.getCode());
+			list.add(bill);
+			now = DateUtil.addMonths(now, 1);
+		}
+		return list;
+	}
 
 	private AfBorrowInterestDo buildBorrowInterest(Long billId, BigDecimal interest, String creator, BigDecimal money) {
 		AfBorrowInterestDo borrow = new AfBorrowInterestDo();
@@ -900,54 +976,31 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	}
 
 	@Override
-	public Long dealAgentPayConsumeRisk(final AfUserAccountDo userDto, final BigDecimal amount,final String name,
-			final int nper, final Long orderId,final String orderNo, final Integer totalNper) {
+	public Long dealAgentPayBorrowAndBill(final Long userId, final String userName, final BigDecimal amount,final String name,
+			final int nper, final Long orderId,final String orderNo, final String borrowRate,final String interestFreeJson) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					Integer realTotalNper = totalNper == null ? nper : totalNper;
-
-					JSONObject borrowRate = borrowRateWithOrder(orderId,realTotalNper);
 					
-					
-					BigDecimal money = amount;//借款金额
-					
-					
-					BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, nper,
-							borrowRate.getBigDecimal("poundageRate") ,borrowRate.getBigDecimal("rangeBegin") ,borrowRate.getBigDecimal("rangeEnd") );// 总手续费
-					BigDecimal perAmount = BigDecimalUtil.getConsumeAmount(money, nper,
-							new BigDecimal(borrowRate.getString(Constants.DEFAULT_RATE)).divide(
-									new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
-							totalPoundage);// 每期账单金额
-					AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userDto.getUserId(),
-							amount, nper, perAmount, BorrowStatus.TRANSED.getCode(), orderId, orderNo);
+					AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
+							amount, nper, BigDecimal.ZERO, BorrowStatus.TRANSED.getCode(), orderId, orderNo);
 					// 新增借款信息
 					afBorrowDao.addBorrow(borrow);
 					// 直接打款
-					afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(), userDto.getUserId(),
+					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId,
 							borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
 					// 新增借款日志
-					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,
-							amount, userDto.getUserId(), borrow.getRid()));
-
-					// 总账单金额
-					BigDecimal totalBillAMount = BigDecimalUtil.getConsumeTotalAmount(money, borrow.getNper(),
-							new BigDecimal(borrowRate.getString(Constants.DEFAULT_RATE)).divide(
-									new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
-							totalPoundage);
-					List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CONSUME, borrow, perAmount,
-							totalBillAMount, BigDecimal.ZERO,
-							new BigDecimal(borrowRate.getString("rate")).divide(
-									new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
-							totalPoundage, BorrowBillStatus.NO);
-					// 新增借款账单
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userId, borrow.getRid()));
+					
+					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, borrowRate, interestFreeJson);
+					
 					afBorrowDao.addBorrowBill(billList);
 
 					return borrow.getRid();
 
 				} catch (Exception e) {
-					logger.info("dealAgentPayConsumeRisk error:" + e);
+					logger.info("dealAgentPayBorrowAndBill error:" + e);
 					status.setRollbackOnly();
 					return 0l;
 				}
@@ -1036,6 +1089,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			}
 		});
 	}
-
+	
 
 }

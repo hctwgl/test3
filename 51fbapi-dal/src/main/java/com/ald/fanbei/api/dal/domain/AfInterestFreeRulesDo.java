@@ -20,8 +20,8 @@ private static final long serialVersionUID = 3050189614771455156L;
 	private Long rid;
 	private Date gmtCreate;
 	private Date gmtModified;
-	private String name;
-	private String ruleJson;
+	private String name;//免息规则名称
+	private String ruleJson;//规则json如[{'nper':'3','freeNper':'1'},{'nper':'6','freeNper':'5'},{'nper':'9','freeNper':'2'},{'nper':'12','freeNper':'5'}]
 	
 	/**
 	 * @return the rid

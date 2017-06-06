@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.common;
 
+import java.math.BigDecimal;
+
 /**
  * 
  * @类Constants.java 的实现描述：常量累
@@ -19,6 +21,8 @@ public class Constants {
 	public static final int MINITS_OF_HALF_HOUR = 30;
 
 	public static final int MONTH_OF_YEAR = 12;
+	
+	public static final BigDecimal DECIMAL_MONTH_OF_YEAR = new BigDecimal(Constants.MONTH_OF_YEAR);
 	//
 	public static final String REQ_PARAM_NODE_SYSTEM = "system";
 	public static final String REQ_PARAM_NODE_METHOD = "method";

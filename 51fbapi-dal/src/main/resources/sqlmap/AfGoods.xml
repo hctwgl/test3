@@ -22,6 +22,17 @@
 			is_delete=0 AND id = #{rid}
 	</select>
 	
+	<select id="getGoodsByNumId" resultType="AfGoodsDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_goods
+		WHERE
+			is_delete=0 AND num_id = #{numId}
+	</select>
+	
+	
+	
 	<select id="getGoodsByOpenId" resultType="AfGoodsDo">
 		SELECT
 			<include refid="queryFields"/>

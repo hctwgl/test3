@@ -238,6 +238,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 		}
 		JSONObject borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
+		orderInfo.setBorrowRate(borrowRate.toJSONString());
 		afOrderDao.updateOrder(orderInfo);
 		AfAgentOrderDo agentOrderDo = new AfAgentOrderDo();
 		agentOrderDo.setOrderId(orderInfo.getRid());
