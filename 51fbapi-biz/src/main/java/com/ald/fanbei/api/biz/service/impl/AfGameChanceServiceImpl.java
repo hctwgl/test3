@@ -78,5 +78,5 @@ public class AfGameChanceServiceImpl implements AfGameChanceService {
 		afGameChanceDao.addGameChance(afGameChanceDo);
 	}
 	
-
+	
 }

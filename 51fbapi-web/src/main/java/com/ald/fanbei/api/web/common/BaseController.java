@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -49,6 +51,7 @@ public abstract class BaseController {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Logger biLogger = LoggerFactory.getLogger("FANBEI_BI");
+	protected final Logger webbiLog = LoggerFactory.getLogger("FANBEIWEB_BI");
 	protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 
 	@Resource
@@ -352,5 +355,34 @@ public abstract class BaseController {
 			return new String(Base64.decode(baseString));
 		}
 		return StringUtils.EMPTY;
+	}
+	
+	/**
+	 * 记录H5日志
+	 * @param request
+	 * @param respData
+	 * @param exeT
+	 */
+	protected void doLog(HttpServletRequest request,String respData,long exeT){
+		JSONObject param = new JSONObject();
+		Enumeration<String> enu=request.getParameterNames();  
+		while(enu.hasMoreElements()){  
+			String paraName=(String)enu.nextElement();  
+			param.put(paraName, request.getParameter(paraName));
+		}
+		this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI());
+	}
+
+	/**
+	 * 记录日志
+	 * @param reqData 请求参数
+	 * @param resD 响应结果
+	 * @param httpMethod 请求方法 GET或POST
+	 * @param rmtIp 远程id
+	 * @param exeT 执行时间
+	 * @param inter 接口
+	 */
+	protected void doLog(String reqData,String resD,String httpMethod,String rmtIp,String exeT,String inter){
+		webbiLog.info(StringUtil.appendStrs("reqD=",reqData,";resD=",resD,";methd=",httpMethod,";rmtIp=",rmtIp,";exeT=",exeT,";inter=",inter));
 	}
 }
