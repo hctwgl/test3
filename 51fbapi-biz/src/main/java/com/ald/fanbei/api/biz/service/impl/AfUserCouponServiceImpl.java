@@ -121,8 +121,8 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 			userCoupon.setCouponId(couponId);
 			if("D".equals(couponDo.getExpiryType())){//固定天数
 				Date current = new Date();
-				userCoupon.setGmtEnd(current);
-				userCoupon.setGmtStart(DateUtil.addDays(current, couponDo.getValidDays()));
+				userCoupon.setGmtStart(current);
+				userCoupon.setGmtEnd(DateUtil.addDays(current, couponDo.getValidDays()));
 			}else{//固定时间范围
 				userCoupon.setGmtEnd(couponDo.getGmtEnd());
 				userCoupon.setGmtStart(couponDo.getGmtStart());
