@@ -1,11 +1,14 @@
 package com.ald.fanbei.api.web.common;
 
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -401,5 +404,38 @@ public abstract class BaseController {
 	 */
 	protected void doLog(String reqData,String resD,String httpMethod,String rmtIp,String exeT,String inter){
 		webbiLog.info(StringUtil.appendStrs("reqD=",reqData,";resD=",resD,";methd=",httpMethod,";rmtIp=",rmtIp,";exeT=",exeT,";inter=",inter));
+	}
+	
+	protected static String getAppInfo(String url) {
+		String result = "";
+		try {
+			Map<String, List<String>> params = new HashMap<String, List<String>>();
+			String[] urlParts = url.split("\\?");
+			if (urlParts.length > 1) {
+				String query = urlParts[1];
+				for (String param : query.split("&")) {
+					String[] pair = param.split("=");
+					String key = URLDecoder.decode(pair[0], "UTF-8");
+					String value = "";
+					if (pair.length > 1) {
+						value = URLDecoder.decode(pair[1], "UTF-8");
+					}
+
+					List<String> values = params.get(key);
+					if (values == null) {
+						values = new ArrayList<String>();
+						params.put(key, values);
+					}
+					values.add(value);
+				}
+			}
+			List<String> _appInfo = params.get("_appInfo");
+			if(_appInfo != null && _appInfo.size() > 0){
+				result = _appInfo.get(0);
+			}
+			return result;
+		} catch (UnsupportedEncodingException ex) {
+			throw new AssertionError(ex);
+		}
 	}
 }
