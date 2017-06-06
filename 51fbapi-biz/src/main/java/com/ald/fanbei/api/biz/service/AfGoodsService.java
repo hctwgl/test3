@@ -66,10 +66,4 @@ public interface AfGoodsService {
 	 */
 	int cancelPublishGoods(String messageContent);
 	
-	/**
-	 * 根据商品numId获取规则json
-	 * @param numId
-	 * @return
-	 */
-	String getInterestFreeRuleJsonByGoodsNumId(String numId);
 }

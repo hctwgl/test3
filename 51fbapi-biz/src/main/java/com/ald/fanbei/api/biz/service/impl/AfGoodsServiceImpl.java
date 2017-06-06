@@ -15,6 +15,7 @@ import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfInterestFreeRulesDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.alibaba.fastjson.JSONObject;
 
@@ -29,8 +30,6 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	@Resource
 	AfGoodsDao afGoodsDao;
-	@Resource
-	AfInterestFreeRulesDao afInterestFreeRulesDao;
 	@Override
 	public List<AfGoodsDo> getCateGoodsList(AfGoodsQuery query) {
 		return afGoodsDao.getCateGoodsList(query);
@@ -83,23 +82,6 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	@Override
 	public AfGoodsDo getGoodsByNumId(String numId) {
 		return afGoodsDao.getGoodsByNumId(numId);
-	}
-	@Override
-	public String getInterestFreeRuleJsonByGoodsNumId(String numId) {
-		AfGoodsDo goodsInfo = getGoodsByNumId(numId);
-		if (goodsInfo == null) {
-			return StringUtils.EMPTY;
-		}
-		String tags = goodsInfo.getTags();
-		if (tags.isEmpty()) {
-			return StringUtils.EMPTY;
-		}
-		
-		AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesDao.getById(1l);
-		if (ruleInfo == null) {
-			return StringUtils.EMPTY;
-		}
-		return ruleInfo.getRuleJson();
 	}
 
 }
