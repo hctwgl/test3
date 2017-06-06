@@ -33,9 +33,7 @@ public class GetTabbarInforApi implements ApiHandle {
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		List<Object> tabbarInfor= getObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode()));
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("tabbarInfor", tabbarInfor);
-		resp.setResponseData(data);
+		resp.setResponseData(tabbarInfor);
 		return resp;
 	}
 	
