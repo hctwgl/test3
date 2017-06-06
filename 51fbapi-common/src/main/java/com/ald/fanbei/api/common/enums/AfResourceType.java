@@ -42,6 +42,7 @@ public enum AfResourceType {
 	BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
 	BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
 	borrowRate("BORROW_RATE", "疯分期设置"),
+	RiskManagementBorrowcashLimit("RISK_MANAGEMENT_BORROWCASH_LIMIT", "风控对用户现金借款限制相关配置"),
 	
 	
 	registTongdunSwitch("REGIST_TONGDUN_SWITCH", "注册同盾风控"),

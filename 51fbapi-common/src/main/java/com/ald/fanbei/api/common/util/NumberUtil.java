@@ -72,6 +72,19 @@ public class NumberUtil {
     }
 
     /**
+     * 方法说明: 判断输入的数值是否为空或者0
+     * @param num
+     * @return
+     */
+    public static boolean isNullOrZero(Integer num){
+    	if(num==null || num==0){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
+    
+    /**
      * 无默认返回
      * <p>
      * 若obj为null，则返回null
