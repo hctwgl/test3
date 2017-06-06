@@ -221,9 +221,7 @@ public interface AfBorrowService {
 	 * @param userName
 	 *            -用户名          
 	 * @param amount
-	 *            --金额
-	 * @param cardId
-	 *            --银行卡id
+	 *            --账单金额
 	 * @param name
 	 *            --借款名称
 	 * @param nper
@@ -238,6 +236,6 @@ public interface AfBorrowService {
 	 * 			  免息规则
 	 * @return
 	 */
-	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String goodsName, int nper, Long rid,
+	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, int nper, Long orderId,
 			String orderNo, String borrowRate, String interestFreeJson);
 }

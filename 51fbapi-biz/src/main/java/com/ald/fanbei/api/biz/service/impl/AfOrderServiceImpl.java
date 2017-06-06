@@ -24,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -151,6 +152,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	UpsUtil upsUtil;
 	@Resource
 	AfAgentOrderService afAgentOrderService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@Resource
 	RiskUtil riskUtil;
@@ -677,6 +680,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderInfo.setNper(nper);
+						orderInfo.setBorrowRate(afResourceService.borrowRateWithResource(nper).toJSONString());
 						orderDao.updateOrder(orderInfo);
 						BigDecimal useableAmount = userAccountInfo.getAuAmount()
 								.subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
@@ -788,7 +792,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Override
 	public int dealBrandOrderRefund(final Long orderId,final Long userId, final Long bankId, final String orderNo, final String thirdOrderNo,
 			final BigDecimal refundAmount, final BigDecimal totalAmount, final String payType, final String payTradeNo, final String refundNo, final String refundSource) {
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
@@ -872,7 +876,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							}
 						} else if (borrowAmount.compareTo(BigDecimal.ZERO) > 0){
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅代付退款生成新账单" + borrowAmount.abs(),refundSource,StringUtils.EMPTY));
-							afBorrowService.dealAgentPayConsumeApply(accountInfo, borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, borrowInfo.getNper());
+							// 修改用户账户信息
+							AfUserAccountDo account = new AfUserAccountDo();
+							account.setUsedAmount(borrowAmount);
+							account.setUserId(accountInfo.getUserId());
+							afUserAccountDao.updateUserAccount(account);
+//							afBorrowService.dealAgentPayConsumeApply(accountInfo, borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, borrowInfo.getNper());
+							afBorrowService.dealAgentPayBorrowAndBill(accountInfo.getUserId(), accountInfo.getUserName(), borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅代付退款",refundSource,StringUtils.EMPTY));
 						}
@@ -909,16 +919,18 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return 1;
 				} catch (FanbeiException e) {
 					logger.error("dealBrandOrderRefund error = {}", e);
-					boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount, refundNo);
-					throw new FanbeiException("reund error", e.getErrorCode());
+					return 0;
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.error("dealBrandOrderRefund error:",e);
-					boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount, refundNo);
 					return 0;
 				}
 			}
 		});
+		if (result == 0) {
+			boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount, refundNo);
+		}
+		return result;
 	}
 	
 	/**

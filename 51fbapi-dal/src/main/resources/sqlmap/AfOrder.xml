@@ -13,7 +13,7 @@
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,
-		borrow_rate,coupon_id,coupon_amount,interest_free_json
+		borrow_rate,coupon_amount,interest_free_json
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
@@ -561,6 +561,15 @@
 			</if>
 			<if test="riskOrderNo != null">
     			,risk_order_no=#{riskOrderNo}
+			</if>
+			<if test="borrowRate != null">
+    			,borrow_rate=#{borrowRate}
+			</if>
+			<if test="couponAmount != null">
+    			,coupon_amount=#{couponAmount}
+			</if>
+			<if test="interestFreeJson != null">
+    			,interest_free_json=#{interestFreeJson}
 			</if>
 		WHERE id = #{rid}
 	</update>

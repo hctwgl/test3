@@ -620,7 +620,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			bill.setBillMonth(timeMap.get(Constants.DEFAULT_MONTH));
 			bill.setNper(borrow.getNper());
 			bill.setBillNper(i);
-			if (i < freeNper) {
+			if (i <= freeNper) {
 				bill.setInterestAmount(BigDecimal.ZERO);
 				bill.setIsFreeInterest(YesNoStatus.YES.getCode());
 			} else {
