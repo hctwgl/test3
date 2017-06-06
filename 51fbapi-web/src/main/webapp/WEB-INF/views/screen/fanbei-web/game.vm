@@ -6,7 +6,7 @@
     <title>game</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
 </head>
-<body>
+<body onmousewheel="return false;">
 <img class="modelPic" src="$commonUrl/ni_1.jpg">
 <img class="modelPic" src="$commonUrl/ni_2.jpg">
 <img class="modelPic" src="$commonUrl/ni_3.jpg">
