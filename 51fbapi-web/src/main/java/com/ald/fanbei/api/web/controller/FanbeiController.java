@@ -37,8 +37,8 @@ import com.alibaba.fastjson.JSONObject;
 public class FanbeiController extends BaseController {
 	
     @RequestMapping(value ={
-    	"/goods/getFootMarkList","/goods/addFootMark","/goods/getHomeInfo","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
-    	"/goods/getCateGoodsList","/good/getBrandShopList","/good/getGoodsDetailInfo"
+    	"/goods/getFootMarkList","/good/getGoodsTkRate","/goods/addFootMark","/goods/getHomeInfo","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
+    	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -59,7 +59,7 @@ public class FanbeiController extends BaseController {
     }
     //代买相关
     @RequestMapping(value ={
-    		"/agencyBuy/addUserAddress","/agencyBuy/changeUserAddress","/agencyBuy/getDefaultUserAddress","/agencyBuy/deleteUserAddress","/agencyBuy/getUserAddressList","/agencyBuy/submitAgencyBuyOrder"
+    		"/agencyBuy/addUserAddress","/agencyBuy/getAgencyNperInfo","/agencyBuy/payAgencyOrder","/agencyBuy/changeUserAddress","/agencyBuy/getDefaultUserAddress","/agencyBuy/deleteUserAddress","/agencyBuy/getUserAddressList","/agencyBuy/submitAgencyBuyOrder"
         ,"/agencyBuy/getAgencyBuyOrderDetail","/agencyBuy/cancelAgencyBuyOrder","/agencyBuy/confirmationCompletedAgencyBuyOrder"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
         @ResponseBody
         public String agencyBuyRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

@@ -31,6 +31,8 @@ public enum AfResourceType {
 
 	AppDownloadUrl("APP_DOWNLOAD_URL", "app下载地址"),
 	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),
+	AgencyRebateInfo("AGENCY_REBATE_INFO", "返利教程"),
+
 	
 	//借钱模块
 	BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
@@ -44,13 +46,15 @@ public enum AfResourceType {
 	
 	registTongdunSwitch("REGIST_TONGDUN_SWITCH", "注册同盾风控"),
 	loginTongdunSwitch("LOGIN_TONGDUN_SWITCH", "登录同盾风控"),
+	promotionTongdunSwitch("PROMOTION_TONGDUN_SWITCH", "渠道推广同盾风控"),
 	TRADE_TONGDUN_SWITCH("TRADE_TONGDUN_SWITCH", "借钱申请同盾风控"),
 	tradeTongdunSwitch("TRADE_TONGDUN_SWITCH", "交易申请同盾风控"),
 
-	tongdunAccecptLevel("TONGDUN_ACCECPT_LEVEL", "借款申请同盾风控"),
+	tongdunAccecptLevel("TONGDUN_ACCECPT_LEVEL", "同盾风控拒绝等级"),
 
 
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
+	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
 
 	
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置");

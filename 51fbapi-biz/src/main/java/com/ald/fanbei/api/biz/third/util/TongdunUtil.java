@@ -281,9 +281,9 @@ public class TongdunUtil extends AbstractThird {
 			logger.error("getLoginResult", e);
 			return;
 		}
-		String loginSwitch = resourceValueWhithType(AfResourceType.loginTongdunSwitch.getCode());
+		String promotionSwitch = resourceValueWhithType(AfResourceType.promotionTongdunSwitch.getCode());
 
-		if (StringUtil.isBlank(loginSwitch) || "0".equals(loginSwitch)) {// 验证开关关闭
+		if (StringUtil.isBlank(promotionSwitch) || "0".equals(promotionSwitch)) {// 验证开关关闭
 			return;
 		}
 

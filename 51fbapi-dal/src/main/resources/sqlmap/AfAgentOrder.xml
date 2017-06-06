@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfAgentOrderDao">
 	<sql id="queryAllFields">
 		order_id,user_id,province,city,county,address,consignee,mobile,capture,remark,agent_account,agent_message,agent_id,gmt_agent_buy,gmt_closed,cancel_reason,cancel_detail,closed_reason,
-		closed_detail,match_order_id,gmt_match_order,status
+		closed_detail,match_order_id,gmt_match_order,status,borrow_rate
 	</sql>
 	<sql id="queryFields">
 		a.order_id,a.user_id,a.province,a.city,a.county,a.address,a.consignee,a.mobile,a.capture,a.remark,a.agent_id,a.status,
@@ -92,6 +92,9 @@
 			</if>
 			<if test="gmtMatchOrder != null">
     			,gmt_match_order=#{gmtMatchOrder}
+			</if>
+			<if test="borrowRate != null">
+    			,borrow_rate=#{borrowRate}
 			</if>
 			<if test="status != null">
     			,status=#{status}

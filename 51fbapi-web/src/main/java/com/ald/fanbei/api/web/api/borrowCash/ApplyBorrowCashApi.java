@@ -112,12 +112,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 
-		// if (context.getAppVersion() >= 340) {
-		// tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox,
-		// CommonUtil.getIpAddr(request), context.getUserName(),
-		// context.getMobile(), accountDo.getIdNumber(),
-		// accountDo.getRealName(), "", requestDataVo.getMethod(), "");
-		// }
+		
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
@@ -150,7 +145,11 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		if (dayCash != null && dayCash.getStatus().equals(AfBorrowCashStatus.closed.getCode())) {
 			doRish = false;
 		}
+		BigDecimal accountBorrow = accountDo.getBorrowCashAmount();
+		if(accountBorrow.compareTo(amount)<0){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 
+		}
 		///// 临时处理，如果当天内有申请，以最后一条的状态为准 end hy 2017年5月11日09:54:20//////
 
 		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
@@ -164,6 +163,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
+		
+		
 		
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 
