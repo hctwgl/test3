@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jetty.util.log.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -342,6 +341,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	@Override
 	public BigDecimal getRepaymentAllAmountByBorrowId(Long borrowId) {
 		return afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(borrowId);
+	}
+	
+	@Override
+	public BigDecimal getRepayingTotalAmountByBorrowId(Long borrowId){
+		return afRepaymentBorrowCashDao.getRepayingTotalAmountByBorrowId(borrowId);
 	}
 
 	@Override
