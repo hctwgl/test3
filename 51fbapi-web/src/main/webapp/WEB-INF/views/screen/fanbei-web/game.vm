@@ -34,17 +34,17 @@
   <div class="closeRules"></div>
 </div>
 <!--弹框-->
-<div class="alert">
+<div id="alert" class="alert">
     <div class="alertTitle">中奖通知</div>
     <p class="getState">抓取成功</p>
-    <div class="getCashCoupon">
-      <p class="getCouponPrize">满<span class="limitMoney">158</span>元可用</p>
-      <p class="getCouponPrize">有效期：<span class="limitDate">2017-08-08</span></p>
-      <p class="getCouponPrize"><span class="getMoney">20</span>元</p>
-      <p class="getCashPrize">获得2元现金</p>
+    <div class="getCashCoupon ad">
+      <p class="getCouponPrize ad">满<span class="limitMoney">158</span>元可用</p>
+      <p class="getCouponPrize ad">有效期：<span class="limitDate">2017-08-08</span></p>
+      <p class="getCouponPrize ad"><span class="getMoney">20</span>元</p>
+      <p class="getCashPrize ad">获得2元现金</p>
     </div>
-    <p class="jushuo">据说换个姿势就能中奖</p>
-    <div class="tryAgain">分享增加1次机会</div>    
+    <p class="jushuo ad">据说换个姿势就能中奖</p>
+    <div class="tryAgain">再抓一次</div>
 </div>
 
 <div id="shadow"></div>
@@ -82,7 +82,6 @@
 <div id="allToy">
    <div class="gotoTop"></div>
    <div id="getPrize">
-<<<<<<< HEAD
        <h4>赶紧集齐五娃抽大奖！</h4>
        <h5>敬请期待</h5>
        <h6>抽奖时间为：6月18-6月20,10时、12时、14时、16时</h6>
