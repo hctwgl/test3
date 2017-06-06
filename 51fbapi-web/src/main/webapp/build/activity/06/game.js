@@ -66,46 +66,47 @@ function dataInit() {
                     $('#getPrize h4').html('618活动抽奖获奖名单');
 
                     //开奖时间
-                    if(data.data.gmt_open){
-                        $('#dollRoll').show();
+                    if(data.data.gmtOpen>0) {
+                        $('#getPrize h6').hide();
+                        if(data.data.entityAwardList.length>0){$('#dollRoll').show()}
                         //五娃是否中奖
                         if (data.data.isAward == 'N') {
-                            if(data.data.gmtOpen){
-                                let time=0;
-                                window.setInterval(function(){
-                                    time+=1000;
-                                    let hours01,hours02,minutes01,minutes02,seconds01,seconds02;
-                                    let leftTime=data.data.gmtOpen-data.data.gmtCurrent-time;
-                                    let leftsecond = parseInt(leftTime/1000);
-                                    let hours=parseInt(leftsecond/3600);
-                                    let minutes=parseInt((leftsecond%3600)/60);
-                                    let seconds=(leftsecond%3600)%60;
+                            if (data.data.gmtOpen > 0) {
+                                let time = 0;
+                                window.setInterval(function () {
+                                    time += 1000;
+                                    let hours01, hours02, minutes01, minutes02, seconds01, seconds02;
+                                    let leftTime = data.data.gmtOpen - data.data.gmtCurrent - time;
+                                    let leftsecond = parseInt(leftTime / 1000);
+                                    let hours = parseInt(leftsecond / 3600);
+                                    let minutes = parseInt((leftsecond % 3600) / 60);
+                                    let seconds = (leftsecond % 3600) % 60;
 
-                                    if(hours<10){
-                                        hours01='0';
-                                        hours02=hours;
-                                    }else{
-                                        hours=hours.toString();
-                                        hours01=hours.slice(0,1);
-                                        hours02=hours.slice(1,2);
-
-                                    }
-                                    if(minutes<10){
-                                        minutes01='0';
-                                        minutes02=minutes;
-                                    }else{
-                                        minutes=minutes.toString();
-                                        minutes01=minutes.slice(0,1);
-                                        minutes02=minutes.slice(1,2);
+                                    if (hours < 10) {
+                                        hours01 = '0';
+                                        hours02 = hours;
+                                    } else {
+                                        hours = hours.toString();
+                                        hours01 = hours.slice(0, 1);
+                                        hours02 = hours.slice(1, 2);
 
                                     }
-                                    if(seconds<10){
-                                        seconds01='0';
-                                        seconds02=seconds;
-                                    }else{
-                                        seconds=seconds.toString();
-                                        seconds01=seconds.slice(0,1);
-                                        seconds02=seconds.slice(1,2);
+                                    if (minutes < 10) {
+                                        minutes01 = '0';
+                                        minutes02 = minutes;
+                                    } else {
+                                        minutes = minutes.toString();
+                                        minutes01 = minutes.slice(0, 1);
+                                        minutes02 = minutes.slice(1, 2);
+
+                                    }
+                                    if (seconds < 10) {
+                                        seconds01 = '0';
+                                        seconds02 = seconds;
+                                    } else {
+                                        seconds = seconds.toString();
+                                        seconds01 = seconds.slice(0, 1);
+                                        seconds02 = seconds.slice(1, 2);
 
                                     }
                                     //console.log(hours01+hours02+minutes01+minutes02+seconds01+seconds02)
@@ -116,35 +117,30 @@ function dataInit() {
                                     $('.countDown').find('span').eq(6).html(seconds01);
                                     $('.countDown').find('span').eq(7).html(seconds02);
                                 }, 1000);
-                                $('#getPrize h6').hide();
                                 $('#getPrize h5').html('开奖倒计时');
                                 $('.countDown').show()
                             }
                         } else {
-                            if(data.data.awardInfo.type=='L'){
+                            if (data.data.awardInfo.type == 'G') {
                                 $('#getPrize h4').html('恭喜您获得幸运大奖！');
                                 $('#getPrize h5').html('奖项已发送至:我的-抵用券');
-                            }else if(data.data.awardInfo.type=='Y'){
+                            } else if (data.data.awardInfo.type == 'E') {
                                 $('#getPrize h4').html('恭喜您获得实物大奖！');
-                                if (data.data.isSubmitContacts=='Y') {
+                                if (data.data.isSubmitContacts == 'Y') {
                                     $('#getPrize h5').html('奖项已发送至您的收货地址');
-                                }else{
-                                    $('#getPrize h5').html('请提交资料');
+                                } else {
+                                    $('#getPrize h5').html('<a href="personinfo?url='+data.data.awardInfo.awardIcon+'">请提交资料</a>');
 
                                 }
                             }
                         }
-
                     }
-
                 }
-
             }
         }
-
     });
 }
-dataInit()
+dataInit();
 
 
 
@@ -162,21 +158,24 @@ class game{
         this.reset();
         this.doll();
         clearInterval(this.startMove);
-        this.startMove=setInterval(function () {           //舞台开始滚动
-            if(this.num>=0){
-                this.num=-8.25;
-                $('#scroll').animate({marginLeft:this.num+'rem'},0,'linear');
+        this.startMove=setInterval(function (){
+            if(self.num>=0){
+                self.num=-8.25;
+                $('#scroll').animate({marginLeft:self.num+'rem'},0,'linear');
             }
-            this.num=(Math.round(this.num*1000)+1650)/1000;    //避免浮点数错误
-            $('#scroll').animate({marginLeft:this.num+'rem'},1000,'linear');
-        }.bind(this),1000);
+            self.num=(Math.round(self.num*1000)+1650)/1000;    //避免浮点数错误
+            $('#scroll').animate({marginLeft:self.num+'rem'},1000,'linear');
+        },1000);
         clearTimeout(this.Countdown);
         this.Countdown=setTimeout(function(){                             //结束倒计时
             if(isShow!='No'){
                 self.alertMsg('end');
             }
         },20000);
-        $('.modelPic').hide();
+        setTimeout(function(){                             //结束倒计时
+            $('.modelPic').hide();
+        },1000);
+
     }
     reset(){
         $('#scroll').animate({marginLeft:this.init.num+'rem'},0,'linear');
@@ -199,12 +198,12 @@ class game{
     }
     alertMsg(state,item){
         isShow='No';
-        let data={result:'N',code:chance[1],_appInfo:'{"userName":"13955556666"}'};
+        let data={result:'N',code:chance[1]};
         if(state=='end'){
             $('.getState').html('抓取失败');
         }
        if(state=='claw'){
-            data={result:'Y',item:item,code:chance[1],_appInfo:'{"userName":"13955556666"}'};
+            data={result:'Y',item:item,code:chance[1]};
            $('.getState').html('抓取成功');
        }
         $.ajax({
@@ -220,7 +219,7 @@ class game{
 
                         $('.getCashPrize').html('获得'+data.data.amount+'元现金').show();
                         $('.getCashCoupon').show();
-                    }else if(data.data.awardType=='FULLVOUCHER'){
+                    }else{
                         $('.limitMoney').html(data.data.limitAmount);
                         $('.limitDate').html(formatDate(data.data.gmtEnd));
                         $('.getMoney').html(data.data.amount);
@@ -232,9 +231,9 @@ class game{
                 }else{
                     $('.jushuo').show();
                 }
-
                 $('.tryAgain').html('再抓一次');
                 $('#alert').show();
+                $('#shadow').show();
                 $('.tryAgain').click(function () {
                     $('#shadow').hide();
                     $('.alert').hide();
@@ -242,7 +241,6 @@ class game{
                 dataInit();
             }
         });
-        $('#shadow').show();
         $('#startBtn').show();
         $('.modelPic').show();
     }
