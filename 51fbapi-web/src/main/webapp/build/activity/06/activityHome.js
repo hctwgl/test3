@@ -141,36 +141,52 @@
 
 
 // 倒计时
-var intDiff = parseInt(60);//倒计时总秒数量
+$(function(){
 
-function timer(intDiff){
-    window.setInterval(function(){
-    var day=0,
+    // 结束时间的时间戳
+    var endDate = new Date("June 30,2017 00:00:00")
+    var endStamp = endDate.valueOf();
+
+    // 获取当前时间的时间戳
+    var now = new Date();
+    var nowTimeStamp = now.valueOf();
+
+    // 相差的时间戳
+    var differStamp = endStamp - nowTimeStamp;
+
+    var intDiff = parseInt(differStamp/1000);//倒计时总秒数量
+
+    function showTimerS( diff ){
+        var day=0,
         hour=0,
         minute=0,
         second=0;//时间默认值        
+            
+        if(diff > 0){
+            day = Math.floor(diff / (60 * 60 * 24));
+            hour = Math.floor(diff / (60 * 60)) - (day * 24);
+            minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
+            second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+        }
+            
+        if (minute <= 9) minute = '0' + minute;
+        if (second <= 9) second = '0' + second;
+        $('#day_show').html(day+"天");
+        $('#hour_show').html('<s id="h"></s>'+hour+'时');
+        $('#minute_show').html('<s></s>'+minute+'分');
+        $('#second_show').html('<s></s>'+second+'秒');
+    };
 
-    if(intDiff > 0){
-        day = Math.floor(intDiff / (60 * 60 * 24));
-        hour = Math.floor(intDiff / (60 * 60)) - (day * 24);
-        minute = Math.floor(intDiff / 60) - (day * 24 * 60) - (hour * 60);
-        second = Math.floor(intDiff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
-    }
+    function timer(intDiff){
+        showTimerS(intDiff);
+        intDiff--;
+        window.setInterval(function(){
+            showTimerS(intDiff);
+            intDiff--;
+        }, 1000);
+    };
 
-    if (minute <= 9) minute = '0' + minute;
-    if (second <= 9) second = '0' + second;
-    $('#day_show').html(day+"天");
-    $('#hour_show').html('<s id="h"></s>'+hour+'时');
-    $('#minute_show').html('<s></s>'+minute+'分');
-    $('#second_show').html('<s></s>'+second+'秒');
-    intDiff--;
-    }, 1000);
-}
-
-$(function(){
-    timer(intDiff);
-}); 
-
-
+    timer(intDiff); 
+});
 
 
