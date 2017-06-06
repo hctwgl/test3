@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameAwardService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
@@ -91,11 +92,16 @@ public class AppH5GameController  extends BaseController{
 			Long userId = -1l;
 			String appInfo = getAppInfo(request.getHeader("Referer"));
 			if(!StringUtil.isEmpty(appInfo)){
-				RequestDataVo requestDavaVo = parseRequestData(appInfo, request);
-				String userName = (String)requestDavaVo.getSystem().get("userName");
+				RequestDataVo requestDataVo = parseRequestData(appInfo, request);
+				doWebCheck(requestDataVo,false);
+				String userName = (String)requestDataVo.getSystem().get("userName");
 				if(CommonUtil.isMobile(userName)){
+					TokenBo token = tokenCacheUtil.getToken(userName);
+					if(token != null){
+						userName = token.getUserId();
+					}
 					AfUserDo afUser = afUserService.getUserByUserName(userName);
-					userId = afUser == null?-1l:afUser.getRid();
+					userId = afUser.getRid();
 				}
 			}
 			//游戏配置
@@ -140,19 +146,29 @@ public class AppH5GameController  extends BaseController{
 		String resultStr = "";
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
 		try{
-			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
+			String userName = "";
+			String appInfo = getAppInfo(request.getHeader("Referer"));
+
+			if(StringUtil.isEmpty(appInfo)){
+				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}
+			RequestDataVo requestDavaVo = parseRequestData(appInfo, request);
+			doWebCheck(requestDavaVo,true);
+			userName = (String)requestDavaVo.getSystem().get("userName");
+			if(!CommonUtil.isMobile(userName)){
+				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}
+			
 			String result = request.getParameter("result");
 			String item = request.getParameter("item");
 			String code = request.getParameter("code");
-			if(StringUtil.isEmpty(appInfotext) || StringUtil.isEmpty(result) || StringUtil.isEmpty(code)){
+			if(StringUtil.isEmpty(appInfo) || StringUtil.isEmpty(result) || StringUtil.isEmpty(code)){
 				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
 			}
 			if(StringUtil.isBlank(item)){
 				item = "0";
 			}
 	
-			JSONObject appInfo = JSON.parseObject(appInfotext);
-			String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
 			AfUserDo userInfo = afUserService.getUserByUserName(userName);
 			AfGameResultDo gameResult = afGameResultService.dealWithResult(userInfo, result, item, code);
 			if(gameResult == null || "N".equals(gameResult.getResult())){
@@ -193,6 +209,18 @@ public class AppH5GameController  extends BaseController{
 		String resultStr = "";
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
 		try{
+			String appInfo = getAppInfo(request.getHeader("Referer"));
+			String userName = "";
+			if(StringUtil.isEmpty(appInfo)){
+				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}
+			RequestDataVo requestDataVo = parseRequestData(appInfo, request);
+			doWebCheck(requestDataVo,false);
+			userName = (String)requestDataVo.getSystem().get("userName");
+			if(!CommonUtil.isMobile(userName)){
+				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}
+			
 			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 			String name = request.getParameter("name");
 			String mobilePhone = request.getParameter("mobilePhone");
@@ -200,8 +228,6 @@ public class AppH5GameController  extends BaseController{
 			if(StringUtil.isEmpty(appInfotext) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
 				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
 			}
-			JSONObject appInfo = JSON.parseObject(appInfotext);
-			String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
 			
 			JSONObject contractsObj = new JSONObject();
 			contractsObj.put("name", name);

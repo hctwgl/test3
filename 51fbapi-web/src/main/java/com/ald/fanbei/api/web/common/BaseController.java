@@ -61,7 +61,7 @@ public abstract class BaseController {
 	@Resource
 	protected ApiHandleFactory apiHandleFactory;
 	@Resource
-	TokenCacheUtil tokenCacheUtil;
+	protected TokenCacheUtil tokenCacheUtil;
 	@Resource
 	AfUserService afUserService;
 
@@ -200,6 +200,12 @@ public abstract class BaseController {
 		}
 		return context;
 	}
+	
+	protected void doWebCheck(RequestDataVo requestDataVo,boolean needToken){
+		requestDataVo.setParams(new HashMap<String, Object>());
+		this.doBaseParamCheck(requestDataVo);
+		checkWebSign(requestDataVo, needToken);
+	}
 
 	/**
 	 * 验证系统参数，验证签名
@@ -208,6 +214,44 @@ public abstract class BaseController {
 	 * @return
 	 */
 	private FanbeiContext doSystemCheck(RequestDataVo requestDataVo) {
+		FanbeiContext context = this.doBaseParamCheck(requestDataVo);
+		// 是否登录之前接口，若登录之前的接口不需要验证用户，否则需要验证用户
+		boolean beforeLogin = true;
+		beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
+		String borrowMethodName = "/borrow/getBorrowHomeInfo";
+		// TODO 设置上下文
+		if (!beforeLogin) {// 需要登录的接口
+			AfUserDo userInfo = afUserService.getUserByUserName(context.getUserName());
+			String methodString = requestDataVo.getMethod();
+			if (userInfo == null && StringUtils.equals(borrowMethodName, methodString)) {
+				throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR);
+
+			} else if (userInfo == null) {
+
+				throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			}
+			context.setUserId(userInfo.getRid());
+			context.setNick(userInfo.getNick());
+			context.setMobile(userInfo.getMobile());
+		} else if (beforeLogin && CommonUtil.isMobile(context.getUserName())) {// 不需要登录但是已经登录过
+			AfUserDo userInfo = afUserService.getUserByUserName(context.getUserName());
+			if (userInfo != null) {
+				context.setUserId(userInfo.getRid());
+				context.setNick(userInfo.getNick());
+				context.setMobile(userInfo.getMobile());
+			}
+		}
+
+		// 验证签名
+		Map<String, Object> systemMap = requestDataVo.getSystem();
+		this.checkSign(context.getAppVersion()+"" , ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE)), context.getUserName(), 
+				ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN)), ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME)), requestDataVo.getParams(), beforeLogin);
+
+		return context;
+	}
+	
+	private FanbeiContext doBaseParamCheck(RequestDataVo requestDataVo){
+
 		FanbeiContext context = new FanbeiContext();
 		if (requestDataVo == null || requestDataVo.getSystem() == null || requestDataVo.getParams() == null || requestDataVo.getMethod() == null) {
 			throw new FanbeiException("缺少系统参数", FanbeiExceptionCode.REQUEST_PARAM_SYSTEM_NOT_EXIST);
@@ -226,36 +270,6 @@ public abstract class BaseController {
 		int version = NumberUtil.objToIntDefault(systemMap.get(Constants.REQ_SYS_NODE_VERSION), 0);
 		context.setUserName(userName);
 		context.setAppVersion(version);
-		// 是否登录之前接口，若登录之前的接口不需要验证用户，否则需要验证用户
-		boolean beforeLogin = true;
-		beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
-		String borrowMethodName = "/borrow/getBorrowHomeInfo";
-		// TODO 设置上下文
-		if (!beforeLogin) {// 需要登录的接口
-			AfUserDo userInfo = afUserService.getUserByUserName(userName);
-			String methodString = requestDataVo.getMethod();
-			if (userInfo == null && StringUtils.equals(borrowMethodName, methodString)) {
-				throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR);
-
-			} else if (userInfo == null) {
-
-				throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-			}
-			context.setUserId(userInfo.getRid());
-			context.setNick(userInfo.getNick());
-			context.setMobile(userInfo.getMobile());
-		} else if (beforeLogin && CommonUtil.isMobile(userName)) {// 不需要登录但是已经登录过
-			AfUserDo userInfo = afUserService.getUserByUserName(userName);
-			if (userInfo != null) {
-				context.setUserId(userInfo.getRid());
-				context.setNick(userInfo.getNick());
-				context.setMobile(userInfo.getMobile());
-			}
-		}
-
-		// 验证签名
-		this.checkSign(appVersion, netType, userName, sign, time, requestDataVo.getParams(), beforeLogin);
-
 		return context;
 	}
 
@@ -308,6 +322,49 @@ public abstract class BaseController {
 			}
 		}
 
+		this.compareSign(signStrBefore, sign);
+
+	}
+	
+	/**
+	 * 验证签名
+	 * 
+	 * @param appVersion
+	 *            app版本
+	 * @param userName
+	 *            用户名
+	 * @param sign
+	 *            签名
+	 * @param time
+	 *            时间戳
+	 * @param params
+	 *            所有请求参数
+	 * @param needToken
+	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要
+	 */
+	private void checkWebSign(RequestDataVo requestDataVo, boolean needToken) {
+		if (Constants.SWITCH_OFF.equals(ConfigProperties.get(Constants.CONFKEY_CHECK_SIGN_SWITCH))) {
+			return;
+		}
+		
+		Map<String, Object> systemMap = requestDataVo.getSystem();
+		String appVersion = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_VERSION));
+		String netType = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE));
+		String userName = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_USERNAME));
+		String sign = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN));
+		String time = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME));
+		String signStrBefore = "appVersion=" + appVersion + "&netType=" + netType + "&time=" + time + "&userName=" + userName;
+		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+		if (needToken) {//需要登录的接口必须加token
+			if (token == null) {
+				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+			}
+			signStrBefore = signStrBefore + token.getToken();
+		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+			if(token != null){
+				signStrBefore = signStrBefore + token.getToken();
+			}
+		}
 		this.compareSign(signStrBefore, sign);
 
 	}
