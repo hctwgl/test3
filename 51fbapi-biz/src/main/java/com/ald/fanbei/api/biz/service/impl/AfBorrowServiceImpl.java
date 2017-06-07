@@ -31,6 +31,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowLogStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
@@ -239,7 +240,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	 * @return
 	 */
 	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal money, int nper,
-			BigDecimal perAmount, String status, Long orderId, String orderNo) {
+			BigDecimal perAmount, String status, Long orderId, String orderNo, String borrowRate) {
 		Date currDate = new Date();
 		AfBorrowDo borrow = new AfBorrowDo();
 		borrow.setGmtCreate(currDate);
@@ -256,6 +257,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		borrow.setRemark(name);
 		borrow.setOrderId(orderId);
 		borrow.setOrderNo(orderNo);
+		borrow.setBorrowRate(borrowRate);
+		borrow.setCalculateMethod(BorrowCalculateMethod.DENG_BEN_DENG_XI.getCode());
 		return borrow;
 	}
 
@@ -632,6 +635,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
 			bill.setStatus(BorrowBillStatus.NO.getCode());
 			bill.setType(BorrowType.CONSUME.getCode());
+			bill.setBorrowRate(borrowRate);
 			list.add(bill);
 			now = DateUtil.addMonths(now, 1);
 		}
@@ -759,7 +763,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 											new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
 									totalPoundage);// 每期账单金额
 							AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userDto.getUserId(),
-									amount, nper, perAmount, BorrowStatus.TRANSED.getCode(), orderId, orderNo);
+									amount, nper, perAmount, BorrowStatus.TRANSED.getCode(), orderId, orderNo, StringUtils.EMPTY);
 							// 新增借款信息
 							afBorrowDao.addBorrow(borrow);
 							// 直接打款
@@ -984,7 +988,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				try {
 					
 					AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
-							amount, nper, BigDecimal.ZERO, BorrowStatus.TRANSED.getCode(), orderId, orderNo);
+							amount, nper, BigDecimal.ZERO, BorrowStatus.TRANSED.getCode(), orderId, orderNo,borrowRate);
 					// 新增借款信息
 					afBorrowDao.addBorrow(borrow);
 					// 直接打款
@@ -1021,7 +1025,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			borrowRate = JSON.parseObject(agentOrderDo.getBorrowRate()) ;
 		}
 		if(borrowRate==null){
-			borrowRate = afResourceService.borrowRateWithResource(nper);
+//			borrowRate = afResourceService.borrowRateWithResource(nper);
 		}
 		return borrowRate;
 

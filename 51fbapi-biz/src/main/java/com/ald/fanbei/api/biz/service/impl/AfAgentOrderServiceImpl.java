@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -30,15 +31,12 @@ import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfAgentOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
 
@@ -237,12 +235,12 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 		if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 		}
-		JSONObject borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
-		orderInfo.setBorrowRate(borrowRate.toJSONString());
+		BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
+		orderInfo.setBorrowRate(JSONObject.toJSONString(borrowRate));
 		afOrderDao.updateOrder(orderInfo);
 		AfAgentOrderDo agentOrderDo = new AfAgentOrderDo();
 		agentOrderDo.setOrderId(orderInfo.getRid());
-		agentOrderDo.setBorrowRate(borrowRate.toJSONString());
+		agentOrderDo.setBorrowRate(JSONObject.toJSONString(borrowRate));
 		afAgentOrderDao.updateAgentOrder(agentOrderDo);
 
 	}

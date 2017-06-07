@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
@@ -177,7 +178,22 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return list;
 	}
 	@Override
-	public JSONObject borrowRateWithResource(Integer realTotalNper){
+	public BorrowRateBo borrowRateWithResource(Integer realTotalNper){
+		BorrowRateBo borrowRate = new BorrowRateBo();
+		JSONObject borrowRateJson = getBorrowRateResource(realTotalNper);
+		JSONObject borrowRateOverdueJson = getBorrowOverdueRateResource(realTotalNper);
+		borrowRate.setNper(borrowRateJson.getInteger("nper"));
+		borrowRate.setRate(borrowRateJson.getBigDecimal("rate"));
+		borrowRate.setRangeBegin(borrowRateJson.getBigDecimal("rangeBegin"));
+		borrowRate.setRangeEnd(borrowRateJson.getBigDecimal("rangeEnd"));
+		borrowRate.setPoundageRate(borrowRateOverdueJson.getBigDecimal("poundageRate"));
+		borrowRate.setOverduePoundageRate(borrowRateOverdueJson.getBigDecimal("overduePoundageRate"));
+		borrowRate.setOverdueRangeBegin(borrowRateOverdueJson.getBigDecimal("overdueRangeBegin"));
+		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
+		return borrowRate;
+	}
+	
+	private JSONObject getBorrowRateResource(Integer realTotalNper) {
 		//获取借款分期配置信息
 		AfResourceDo resource = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME);
 		if(null == resource){
@@ -193,18 +209,48 @@ public class AfResourceServiceImpl implements AfResourceService {
 		}
 		JSONArray array = JSON.parseArray(resource.getValue());
 		//如果是重新生成的账单，需要原来账单的总期数
-		JSONObject borrowRate =null;
+		JSONObject borrowRate = new JSONObject();
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject obj = array.getJSONObject(i);
 			if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
-				obj.put("rangeBegin", rangeBegin);
-				obj.put("rangeEnd", rangeEnd);
-				obj.put("poundageRate", new BigDecimal(resource.getValue1()));
-
-				borrowRate = obj;
+				borrowRate.put("nper", realTotalNper);
+				borrowRate.put("rate", obj.get(Constants.DEFAULT_RATE));
+				borrowRate.put("rangeBegin", rangeBegin);
+				borrowRate.put("rangeEnd", rangeEnd);
+				borrowRate.put("poundageRate", new BigDecimal(resource.getValue1()));
+				break;
 			}
 		}
-		
+		return borrowRate;
+	}
+	
+	private JSONObject getBorrowOverdueRateResource(Integer realTotalNper) {
+		//获取借款分期逾期配置信息
+		AfResourceDo resourceOverdue = (AfResourceDo) bizCacheUtil.getObject(Constants.CACHEKEY_BORROW_CONSUME_OVERDUE);
+		if(null == resourceOverdue){
+			resourceOverdue = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,Constants.RES_BORROW_CONSUME_OVERDUE);
+			bizCacheUtil.saveObject(Constants.CACHEKEY_BORROW_CONSUME_OVERDUE, resourceOverdue, Constants.SECOND_OF_HALF_HOUR);
+		}
+		BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
+		BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
+		String[] range = StringUtil.split(resourceOverdue.getValue2(), ",");
+		if(null != range && range.length==2){
+			rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
+			rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
+		}
+		JSONArray array = JSON.parseArray(resourceOverdue.getValue());
+		//如果是重新生成的账单，需要原来账单的总期数
+		JSONObject borrowRate = new JSONObject();
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject obj = array.getJSONObject(i);
+			if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
+				borrowRate.put("overdueRate", Constants.DEFAULT_RATE);
+				borrowRate.put("overdueRangeBegin", rangeBegin);
+				borrowRate.put("overdueRangeEnd", rangeEnd);
+				borrowRate.put("overduePoundageRate", new BigDecimal(resourceOverdue.getValue1()));
+				break;
+			}
+		}
 		return borrowRate;
 	}
 }

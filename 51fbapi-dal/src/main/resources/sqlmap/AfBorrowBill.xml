@@ -3,12 +3,15 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowBillDao">
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,user_id,borrow_id,borrow_no,name,gmt_borrow,bill_year,bill_month,nper,bill_nper,bill_amount,type,
-		status,overdue_status,overdue_days,repayment_id,principle_amount,interest_amount,overdue_interest_amount,poundage_amount,overdue_poundage_amount
+		status,overdue_status,overdue_days,repayment_id,principle_amount,interest_amount,overdue_interest_amount,poundage_amount,overdue_poundage_amount,
+		rebate_amount,is_free_interest
+		
 	</sql>
 	
 	<sql id="queryWithFields">
 		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.borrow_id,b.borrow_no,b.name,b.gmt_borrow,b.bill_year,b.bill_month,
 		b.nper,b.bill_nper,b.bill_amount,b.type,b.status,b.overdue_status,b.overdue_days,b.repayment_id,b.principle_amount,b.interest_amount,
+		b.rebate_amount,b.is_free_interest,
 		b.overdue_interest_amount,b.poundage_amount,b.overdue_poundage_amount,w.order_id,w.order_no
 	</sql>
 	

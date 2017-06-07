@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.TaobaoItemInfoBo;
@@ -12,10 +11,7 @@ import com.ald.fanbei.api.biz.bo.TaobaoResultBo;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
-import com.ald.fanbei.api.dal.dao.AfInterestFreeRulesDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.alibaba.fastjson.JSONObject;
 

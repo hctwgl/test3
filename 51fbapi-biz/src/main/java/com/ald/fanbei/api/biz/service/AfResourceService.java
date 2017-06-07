@@ -5,8 +5,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.alibaba.fastjson.JSONObject;
 
 /**
 
@@ -80,6 +80,6 @@ public interface AfResourceService {
     /*
      * 获取借款手续费等信息
      */
-   JSONObject borrowRateWithResource(Integer realTotalNper);
+    BorrowRateBo borrowRateWithResource(Integer realTotalNper);
 	
 }

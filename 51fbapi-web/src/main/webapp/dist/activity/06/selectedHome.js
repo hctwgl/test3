@@ -1,0 +1,2 @@
+"use strict";new Vue({el:"#vueCon",data:{tableUrl:"/app/activity/partActivityInfo.htm",content:[],option:{pageNum:1,pageSize:15}},created:function(){this.logData()},methods:{logData:function(){Vue.http.options.emulateJSON=!0;var t=this,o={data:JSON.stringify(t.option)};t.$http.post(t.tableUrl,o).then(function(o){t.content=o.data,console.log(o)},function(t){console.log(t)})}}});
+//# sourceMappingURL=../../_srcmap/activity/06/selectedHome.js.map

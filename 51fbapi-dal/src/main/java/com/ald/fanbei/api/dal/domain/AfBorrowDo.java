@@ -55,6 +55,10 @@ public class AfBorrowDo extends AbstractSerial{
 
 	private Date gmtTransed;//打款时间
 
+	private String borrowRate;//提交订单时的费率信息
+	
+	private String calculateMethod;//计息方式【DEBX:等额本息 DBDX:等本等息】
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -220,5 +224,34 @@ public class AfBorrowDo extends AbstractSerial{
 	public void setGmtTransed(Date gmtTransed) {
 		this.gmtTransed = gmtTransed;
 	}
+
+	/**
+	 * @return the borrowRate
+	 */
+	public String getBorrowRate() {
+		return borrowRate;
+	}
+
+	/**
+	 * @param borrowRate the borrowRate to set
+	 */
+	public void setBorrowRate(String borrowRate) {
+		this.borrowRate = borrowRate;
+	}
+
+	/**
+	 * @return the calculateMethod
+	 */
+	public String getCalculateMethod() {
+		return calculateMethod;
+	}
+
+	/**
+	 * @param calculateMethod the calculateMethod to set
+	 */
+	public void setCalculateMethod(String calculateMethod) {
+		this.calculateMethod = calculateMethod;
+	}
+
 	
 }
