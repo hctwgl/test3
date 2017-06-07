@@ -16,8 +16,7 @@ function button(){
             data: {
                 name: personName,
                 mobilePhone: personNumber,
-                address:personAddress,
-                _appInfo:'{"userName":"13955556666"}'
+                address:personAddress              
             },
             success: function(data){
             	if(data.success){
