@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:47:30
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-06-06 19:52:18
+* @Last Modified time: 2017-06-07 10:56:03
 */
 
 
@@ -131,7 +131,7 @@ input,button{
 	float: right;
 	line-height: 0.8rem;
 	text-align: center;
-	color: #fff;
+	color: #cfcfcf;
 	font-size: 0.3rem;
 	padding-left: 0;
 }
@@ -149,6 +149,26 @@ input,button{
 	color: #BFBFBF;
 }
 
+/* 规则 */
+.channel9_rule{
+	font-size: 0.2rem;
+	background-color: #181818;
+	color: #BFBFBF;
+	padding: 0.3rem;
+}
+.channel9_rule p:first-child span{
+	height: 0.36rem;
+	line-height: 0.36rem;
+	text-align: left;
+}
+.channel9_rule i{
+	width: 0.33rem;
+	height: 0.36rem;
+	background-image: url("@{url}/channel9_03.png");
+	-webkit-background-size: cover;
+	background-size: cover;
+	margin-right: 10px;
+}
 
 
 
@@ -200,13 +220,13 @@ input,button{
 	float: left;
 	font-size: 0.24rem;
 	margin-left: 0.4rem;
-	color: #fff;
+	color: #BFBFBF;
 	padding-left: 10px;
 	span,a{
 		float: left;
 	}
 	a{
-		color: #fff;
+		color: #BFBFBF;
 	}
 }
 
@@ -245,5 +265,5 @@ input,button{
 }
 .copyright9{
 	background-color: #000;
-	color: #fff;
+	color: #BFBFBF;
 }

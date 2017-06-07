@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	#set($version="2017060601")
-	#set($commonUrl="https://fs.51fanbei.com/h5")
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
 	<script type="text/javascript">;
@@ -30,23 +30,23 @@
 	<input type="hidden" id="tdHost" value="$!{tdHost}">
 	<div class="channelRegister_wrap">
 		#if( $!{style} == 1 )
-			<img src="$commonUrl/images/channel/channel1_01.jpg">
+			<img src="$commonUrl/channel1_01.jpg">
 		#elseif( $!{style} == 2 )
-			<img src="$commonUrl/images/channel/channel2_01.jpg">
+			<img src="$commonUrl/channel2_01.jpg">
 		#elseif( $!{style} == 3 )
-			<img src="$commonUrl/images/channel/channel3_01.jpg">
+			<img src="$commonUrl/channel3_01.jpg">
 		#elseif( $!{style} == 4 )
-			<img src="$commonUrl/images/channel/channel4_01.jpg">
+			<img src="$commonUrl/channel4_01.jpg">
 		#elseif( $!{style} == 5 )
-			<img src="$commonUrl/images/channel/channel5_01.jpg">
+			<img src="$commonUrl/channel5_01.jpg">
 		#elseif( $!{style} == 6 )
-			<img src="$commonUrl/images/channel/channel6_01.jpg">
+			<img src="$commonUrl/channel6_01.jpg">
 		#elseif( $!{style} == 7 )
-			<img src="$commonUrl/images/channel/channel7_01.png">
+			<img src="$commonUrl/channel7_01.png">
 		#elseif( $!{style} == 8 )
-			<img src="$commonUrl/images/channel/channel8_01.gif">
+			<img src="$commonUrl/channel8_01.gif">
 		#elseif( $!{style} == 9 )
-			<img src="$commonUrl/images/channel/channel9_01.png">
+			<img src="$commonUrl/channel9_01.png">
 		#end
 		<div class="
 			#if( $!{style} == 1 )
@@ -94,11 +94,19 @@
 	      	</div>
 	    </div>
 	    #if( $!{style} == 4 )
-			<img src="$commonUrl/images/channel/channel4_03.jpg">
+			<img src="$commonUrl/channel4_03.jpg">
 		#elseif( $!{style} == 7 || $!{style} == 8 )
-			<img src="$commonUrl/images/channel/channel7_03.png">
+			<img src="$commonUrl/channel7_03.png">
 		#elseif( $!{style} == 9 )
-			<img src="$commonUrl/images/channel/channel9_03.png">
+			<div class="channel9_rule">
+				<p><i></i><span>活动规则</span></p>
+				<p>1.活动时间：2017年6月8日--2017年6月20日；</p>
+				<p>2.此活动名额仅限前10000名，数量有限，抢完为止；</p>
+				<p>3.同一个账号、手机号、移动设备、支付卡号及账户视为同一账户，经系统检测同一IP重复注册视为无效用户；</p>
+				<p>4.如发现恶意作弊行为，将取消活动资格，活动奖励并做好封号处理。</p><br>
+
+				<p>如有任何疑问，请拨打51返呗客服热线：0571-88193918</p>
+			</div>
 		#end
 		<div class="channelRegister_copyright
 			#if( $!{style} == 1 )
