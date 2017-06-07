@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.bo;
 
-import java.math.BigDecimal;
-
 import com.ald.fanbei.api.common.AbstractSerial;
 import com.alibaba.fastjson.JSONArray;
 

@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.util.List;
-
 import com.ald.fanbei.api.dal.domain.AfGameFivebabyDo;
 
 public interface AfGameFivebabyService {

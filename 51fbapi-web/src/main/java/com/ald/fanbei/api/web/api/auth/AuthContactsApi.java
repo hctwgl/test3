@@ -13,7 +13,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -63,13 +62,13 @@ public class AuthContactsApi implements ApiHandle {
 		return resp;
 	}
 
-	private AfAuthContactsDo buildContractsDo(String contractsItem, Long userId) {
-		AfAuthContactsDo item = new AfAuthContactsDo();
-		String[] contractsItemArr = contractsItem.split(":");
-		item.setFriendNick(contractsItemArr[0]);
-		item.setFriendPhone(contractsItemArr[1]);
-		item.setUserId(userId);
-		return item;
-	}
+//	private AfAuthContactsDo buildContractsDo(String contractsItem, Long userId) {
+//		AfAuthContactsDo item = new AfAuthContactsDo();
+//		String[] contractsItemArr = contractsItem.split(":");
+//		item.setFriendNick(contractsItemArr[0]);
+//		item.setFriendPhone(contractsItemArr[1]);
+//		item.setUserId(userId);
+//		return item;
+//	}
 
 }
