@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.h5.controller;
 
 import java.io.IOException;
 
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,7 +13,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.ald.fanbei.api.biz.service.AfGameChanceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
@@ -26,8 +33,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @RequestMapping("/")
 public class H5Controller extends BaseController {
 
-	
-	
+	@Resource
+	AfGameChanceService afGameChanceService; 
 	 
 	 
 	/**
@@ -42,9 +49,19 @@ public class H5Controller extends BaseController {
 
 	@RequestMapping(value = { "app/*", "app/goods/*", "app/user/*", "app/sys/*", "activity/*", "activity/01/*", "activity/02/*", "activity/03/*", "activity/04/*", "activity/05/*", "activity/06/*", "activity/07/*", "activity/08/*", "activity/09/*", "activity/10/*", "activity/11/*", "activity/12/*", "fanbei-web/*", "fanbei-web/activity/*", "fanbei-web/app/*"}, method = RequestMethod.GET)
 	public String newVmPage(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		Cookie host = new Cookie("apihost", ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST));
+		host.setPath("/");
+		response.addCookie(host);
 		String returnUrl = request.getRequestURI();
-		if(returnUrl.indexOf("fanbei-web/game") >=0){
+		if(returnUrl.indexOf("fanbei-web/activity/game") >=0){
 			doMaidianLog(request);
+			if(returnUrl.indexOf("fanbei-web/activity/gameShare")>=0 && StringUtil.isNotBlank(request.getParameter("userName"))){//每天第一次分享增加一次机会
+				String userName = request.getParameter("userName");
+				if(CommonUtil.isMobile(userName)){
+					afGameChanceService.dealWithShareGame(userName);
+				}
+			}
 		}
 		
 		return returnUrl;
@@ -57,7 +74,8 @@ public class H5Controller extends BaseController {
 		return "/app/sys/invitationRewardRule";
 	}
 
-
+	
+	
 	
 	
 
