@@ -29,6 +29,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.AfUserOperationLogRefType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -190,27 +191,30 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		String jumpToRejectPage = YesNoStatus.NO.getCode();
 		String jumpPageBannerUrl = "";
 		
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
-		if(afResourceDo!=null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())){
-			Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
-			Date startTime = DateUtil.addDays(DateUtil.getToday(), -rejectTimePeriod);
-			Integer specNums = afBorrowCashService.getSpecBorrowCashNums(userId, AfBorrowCashReviewStatus.refuse.getCode(), startTime);
-			if(specNums!=null && specNums>0){
-				//指定日期内存在风控拒绝
-				inRejectLoan = YesNoStatus.YES.getCode();
+		if(afBorrowCashDo!=null && AfBorrowCashReviewStatus.refuse.getCode().equals(afBorrowCashDo.getReviewStatus())){
+			//借款被拒绝
+			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
+			if(afResourceDo!=null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())){
+				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
+				Date desTime = DateUtil.addDays(afBorrowCashDo.getGmtCreate(), rejectTimePeriod);
+				if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime),DateUtil.getToday())<0){
+					//风控拒绝日期内
+					inRejectLoan = YesNoStatus.YES.getCode();
+				}
 			}
-		}
-		
-		//如果存在风控限制，需校验是否需要跳转至不通过页面等信息
-		if(YesNoStatus.YES.getCode().equals(inRejectLoan)){
-			//从用户操作日志中获取用户是否存在在现金借款操作
-			AfUserOperationLogDo afUserOperationLogDo = new AfUserOperationLogDo(userId, AfUserOperationLogType.RISKBORROWCASH.getCode());
-			Integer riskBcNums = afUserOperationLogService.getNumsByUserAndType(afUserOperationLogDo);
-			if(NumberUtil.isNullOrZero(riskBcNums)){
-				jumpToRejectPage = YesNoStatus.YES.getCode();
-				//同时插入操作记录
-				afUserOperationLogService.addUserOperationLog(afUserOperationLogDo);
+			
+			//如果存在风控限制，需校验是否需要跳转至不通过页面等信息
+			if(YesNoStatus.YES.getCode().equals(inRejectLoan)){
+				//从用户操作日志中获取用户是否存在在现金借款操作
+				AfUserOperationLogDo afUserOperationLogDo = new AfUserOperationLogDo(userId, AfUserOperationLogType.RISKBORROWCASH.getCode(), AfUserOperationLogRefType.AFBORROWCASH.getCode(), afBorrowCashDo.getRid()+"");
+				Integer riskBcNums = afUserOperationLogService.getNumsByUserAndType(afUserOperationLogDo);
+				if(NumberUtil.isNullOrZero(riskBcNums)){
+					jumpToRejectPage = YesNoStatus.YES.getCode();
+					//同时插入操作记录
+					afUserOperationLogService.addUserOperationLog(afUserOperationLogDo);
+				}
 			}
+			
 		}
 		
 		//如果需要跳转至不通过页面，则获取对应banner图地址

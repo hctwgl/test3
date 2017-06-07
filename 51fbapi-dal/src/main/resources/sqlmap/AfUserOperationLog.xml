@@ -27,5 +27,9 @@
 		  	is_delete = 0 
 		AND 
 			type=#{type} 
+		AND 
+			ref_type=#{refType} 
+		AND 
+			ref_id=#{refId} 
 	</select>
 </mapper>
