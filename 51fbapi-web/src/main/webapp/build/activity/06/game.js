@@ -279,12 +279,15 @@ let sixGame= new game(16.5,20);
 sixGame.doll();
 $('#startBtn').click(function () {
     isShow='yes';
+    $('.play').animate({top:'7.1rem'},200,function () {
+        $('.play').animate({top:'7.08rem'},150)
+    });
     if(isLogin=='Y'){         //是否登录
         if(chance.length<=1||chance[1].length<5){              //否是 有机会
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"年中抓娃娃,让你一次玩个爽","content":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareUrl":"www.baidu.com"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"年中抓娃娃,让你一次玩个爽","content":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareUrl":"http://testapp.51fanbei.com/fanbei-web/gameShare"}';
                 // let retrunNum = getBlatFrom();  // retrunNum为1表示是Android
                 //     // 分享内容
                 //     let dataObj = {
