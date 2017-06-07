@@ -52,30 +52,39 @@ public class GetAgencyNperInfoApi implements ApiHandle {
     @Resource
     AfInterestFreeRulesService afInterestFreeRulesService;
 
+    private JSONObject getInterestFreeArray(String numId){
+    	JSONObject interestFreeArray = null;
+    	if (StringUtils.isBlank(numId)) {
+            return null;
+        }
+    	//获取商品信息
+        AfGoodsDo afGoodsDo = afGoodsService.getGoodsByNumId(numId);
+        if (null == afGoodsDo) {
+        	return null;
+        }
+        //通过商品查询免息规则配置
+        AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(afGoodsDo.getRid());
+        if(null == afSchemeGoodsDo){
+        	return null;
+        }
+        Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
+        AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
+        if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
+            interestFreeArray = JSON.parseObject(afInterestFreeRulesDo.getRuleJson());
+        }
+    	return interestFreeArray;
+    }
+    
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
         Map<String, Object> params = requestDataVo.getParams();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(params.get("amount"), BigDecimal.ZERO);
-        String numId = params.get("numId") + "";
-        if (StringUtils.isBlank(numId)) {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-        }
-        //获取商品信息
-        AfGoodsDo afGoodsDo = afGoodsService.getGoodsByNumId(numId);
-        if (null == afGoodsDo) {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
-        }
-        //通过商品查询免息规则配置
-        AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(afGoodsDo.getRid());
         JSONObject interestFreeArray = null;
-        if (null != afGoodsDo) {
-            AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(afSchemeGoodsDo.getInterestFreeId());
-            if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
-                interestFreeArray = JSON.parseObject(afInterestFreeRulesDo.getRuleJson());
-            }
-        }
+        
+        String numId = params.get("numId") + "";
+        interestFreeArray = getInterestFreeArray(numId);
         
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
