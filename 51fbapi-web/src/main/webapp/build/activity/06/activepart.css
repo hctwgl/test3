@@ -104,6 +104,8 @@ body {
 // 菜单栏
 .menu{
     width:100%;
+    background-color: #EEEEEE;
+    z-index:1;
 }
 .menu li{
      display:inline-block;
@@ -113,18 +115,35 @@ body {
      height:0.6rem;
      text-align:center;
      line-height: 0.6rem;
-     margin-bottom:0.1rem;
+     // margin-bottom:0.1rem;
      border:1px solid black;
+     opacity:1;
 }
 .menu a{
   color:black;
+
+
 }
-.menu li:first-child{
-     border-bottom:2px solid red;
+.menu li:hover{
+     background-color: red;
+}
+.menu .highlight{
+    background-color: red;
 }
 .cur{
   background-color:red;
 }
+.fixed{
+  position:fixed;
+  top:0;
+  left: 0;
+  width:100%;
+
+}
+.cur{
+  background-color: red;
+}
+
 // 类目图片1
   .picture-one{
     margin-top:0.25rem;
