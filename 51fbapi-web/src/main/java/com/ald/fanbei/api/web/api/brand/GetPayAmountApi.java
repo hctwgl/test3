@@ -1,17 +1,25 @@
 package com.ald.fanbei.api.web.api.brand;
 
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -21,13 +29,6 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * @author xiaotianjian 2017年3月27日上午12:58:25

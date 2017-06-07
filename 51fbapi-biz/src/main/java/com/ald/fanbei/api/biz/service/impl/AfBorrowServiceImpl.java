@@ -607,7 +607,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
 		//总手续费
 		BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, borrow.getNper(),
-				borrowRateBo.getRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd());
+				borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd());
 		//每期手续费
 		BigDecimal poundageAmount = totalPoundage.divide(new BigDecimal(nper), 2, RoundingMode.CEILING);
 		
