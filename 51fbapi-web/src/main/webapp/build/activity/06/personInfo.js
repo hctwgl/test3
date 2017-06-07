@@ -3,7 +3,8 @@
     <button class="button button-link pull-right close-picker">OK</button>\
     <h1 class="title">choose address</h1>\
     </header>'
-  });
+  }
+  );
 
 function button(){
         var personName=$('#cont1').val();
