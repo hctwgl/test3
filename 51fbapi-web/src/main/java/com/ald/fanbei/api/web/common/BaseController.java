@@ -27,6 +27,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -201,10 +202,43 @@ public abstract class BaseController {
 		return context;
 	}
 	
-	protected void doWebCheck(RequestDataVo requestDataVo,boolean needToken){
+	/**
+	 * h5接口验证，验证基础参数、签名
+	 * @param request
+	 * @param needToken
+	 * @return
+	 */
+	protected FanbeiWebContext doWebCheck(HttpServletRequest request,boolean needToken){
+		FanbeiWebContext webContext = new FanbeiWebContext();
+		String appInfo = getAppInfo(request.getHeader("Referer"));
+		//如果是测试环境
+		if(Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)) && StringUtil.isBlank(appInfo)){
+			String testUser = getTestUser(request.getHeader("Referer"));
+			if(testUser != null){
+				if("no".equals(testUser)){
+//					webContext.setUserName("no");
+					return webContext;
+				}else{
+					webContext.setUserName(testUser);
+					return webContext;
+				}
+			}
+		}
+		webContext.setAppInfo(appInfo);
+		if(StringUtil.isBlank(appInfo)){
+			if(needToken){
+				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}else{
+				return webContext;
+			}
+		}
+		RequestDataVo requestDataVo = parseRequestData(appInfo, request);
 		requestDataVo.setParams(new HashMap<String, Object>());
-		this.doBaseParamCheck(requestDataVo);
+		FanbeiContext baseContext = this.doBaseParamCheck(requestDataVo);
+		webContext.setUserName(baseContext.getUserName());
+		webContext.setAppVersion(baseContext.getAppVersion());
 		checkWebSign(requestDataVo, needToken);
+		return webContext;
 	}
 
 	/**
@@ -437,11 +471,13 @@ public abstract class BaseController {
 	/**
 	 * 记录H5日志
 	 * @param request
+	 * @param appInfo
 	 * @param respData
 	 * @param exeT
 	 */
-	protected void doLog(HttpServletRequest request,String respData,long exeT){
+	protected void doLog(HttpServletRequest request,String appInfo,String respData,long exeT){
 		JSONObject param = new JSONObject();
+		param.put("_appInfo", appInfo);
 		Enumeration<String> enu=request.getParameterNames();  
 		while(enu.hasMoreElements()){  
 			String paraName=(String)enu.nextElement();  
@@ -463,7 +499,7 @@ public abstract class BaseController {
 		webbiLog.info(StringUtil.appendStrs("reqD=",reqData,";resD=",resD,";methd=",httpMethod,";rmtIp=",rmtIp,";exeT=",exeT,";inter=",inter));
 	}
 	
-	protected static String getAppInfo(String url) {
+	private static String getAppInfo(String url) {
 		String result = "";
 		try {
 			Map<String, List<String>> params = new HashMap<String, List<String>>();
@@ -487,6 +523,39 @@ public abstract class BaseController {
 				}
 			}
 			List<String> _appInfo = params.get("_appInfo");
+			if(_appInfo != null && _appInfo.size() > 0){
+				result = _appInfo.get(0);
+			}
+			return result;
+		} catch (UnsupportedEncodingException ex) {
+			throw new AssertionError(ex);
+		}
+	}
+	
+	private static String getTestUser(String url) {
+		String result = "";
+		try {
+			Map<String, List<String>> params = new HashMap<String, List<String>>();
+			String[] urlParts = url.split("\\?");
+			if (urlParts.length > 1) {
+				String query = urlParts[1];
+				for (String param : query.split("&")) {
+					String[] pair = param.split("=");
+					String key = URLDecoder.decode(pair[0], "UTF-8");
+					String value = "";
+					if (pair.length > 1) {
+						value = URLDecoder.decode(pair[1], "UTF-8");
+					}
+
+					List<String> values = params.get(key);
+					if (values == null) {
+						values = new ArrayList<String>();
+						params.put(key, values);
+					}
+					values.add(value);
+				}
+			}
+			List<String> _appInfo = params.get("testUser");
 			if(_appInfo != null && _appInfo.size() > 0){
 				result = _appInfo.get(0);
 			}

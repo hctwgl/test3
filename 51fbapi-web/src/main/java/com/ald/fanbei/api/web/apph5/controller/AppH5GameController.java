@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameAwardService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
@@ -30,6 +29,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -88,19 +88,13 @@ public class AppH5GameController  extends BaseController{
 	public String initGame(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
+		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			Long userId = -1l;
-			String appInfo = getAppInfo(request.getHeader("Referer"));
-			if(!StringUtil.isEmpty(appInfo)){
-				RequestDataVo requestDataVo = parseRequestData(appInfo, request);
-				doWebCheck(requestDataVo,false);
-				String userName = (String)requestDataVo.getSystem().get("userName");
-				if(CommonUtil.isMobile(userName)){
-					TokenBo token = tokenCacheUtil.getToken(userName);
-					if(token != null){
-						userName = token.getUserId();
-					}
-					AfUserDo afUser = afUserService.getUserByUserName(userName);
+			context = doWebCheck(request, false);
+			if(CommonUtil.isMobile(context.getUserName()) && StringUtil.isNotBlank(context.getUserName())){
+				AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+				if(afUser != null){
 					userId = afUser.getRid();
 				}
 			}
@@ -116,7 +110,7 @@ public class AppH5GameController  extends BaseController{
 			AfGameFivebabyDo fivebabyDo = null;
 			List<AfGameChanceDo> gameChanceList = null;
 			AfGameAwardDo awardDo = null;
-			if(userId > 0l){//TODO 判断用户登录
+			if(userId > 0l){
 				//获取中奖想信息
 				fivebabyDo = afGameFivebabyService.getByUserId(userId);
 				//用户抓娃娃机会
@@ -134,7 +128,7 @@ public class AppH5GameController  extends BaseController{
 			logger.error("fb初始化失败",e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
 		}
 		return resultStr;
 	}
@@ -144,32 +138,22 @@ public class AppH5GameController  extends BaseController{
 	public String submitGameResult(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
+
+		FanbeiWebContext context = new FanbeiWebContext();
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
 		try{
-			String userName = "";
-			String appInfo = getAppInfo(request.getHeader("Referer"));
-
-			if(StringUtil.isEmpty(appInfo)){
-				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-			}
-			RequestDataVo requestDavaVo = parseRequestData(appInfo, request);
-			doWebCheck(requestDavaVo,true);
-			userName = (String)requestDavaVo.getSystem().get("userName");
-			if(!CommonUtil.isMobile(userName)){
-				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-			}
-			
+			context = doWebCheck(request, true);
 			String result = request.getParameter("result");
 			String item = request.getParameter("item");
 			String code = request.getParameter("code");
-			if(StringUtil.isEmpty(appInfo) || StringUtil.isEmpty(result) || StringUtil.isEmpty(code)){
+			if(StringUtil.isEmpty(result) || StringUtil.isEmpty(code)){
 				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
 			}
 			if(StringUtil.isBlank(item)){
 				item = "0";
 			}
 	
-			AfUserDo userInfo = afUserService.getUserByUserName(userName);
+			AfUserDo userInfo = afUserService.getUserByUserName(context.getUserName());
 			AfGameResultDo gameResult = afGameResultService.dealWithResult(userInfo, result, item, code);
 			if(gameResult == null || "N".equals(gameResult.getResult())){
 				resultData.put("lotteryResult", "N");
@@ -197,7 +181,7 @@ public class AppH5GameController  extends BaseController{
 			logger.error("抽奖失败",e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
 		}
 		return resultStr;
 	}
@@ -208,19 +192,9 @@ public class AppH5GameController  extends BaseController{
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
+		FanbeiWebContext context = new FanbeiWebContext();
 		try{
-			String appInfo = getAppInfo(request.getHeader("Referer"));
-			String userName = "";
-			if(StringUtil.isEmpty(appInfo)){
-				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-			}
-			RequestDataVo requestDataVo = parseRequestData(appInfo, request);
-			doWebCheck(requestDataVo,false);
-			userName = (String)requestDataVo.getSystem().get("userName");
-			if(!CommonUtil.isMobile(userName)){
-				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-			}
-			
+			context = doWebCheck(request, true);
 			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 			String name = request.getParameter("name");
 			String mobilePhone = request.getParameter("mobilePhone");
@@ -234,7 +208,7 @@ public class AppH5GameController  extends BaseController{
 			contractsObj.put("mobilePhone", mobilePhone);
 			contractsObj.put("address", address);
 			
-			AfUserDo userInfo = afUserService.getUserByUserName(userName);
+			AfUserDo userInfo = afUserService.getUserByUserName(context.getUserName());
 			afGameAwardService.updateContact(userInfo.getRid(), contractsObj.toString());
 			resultStr = H5CommonResponse.getNewInstance(true, "提交成功", "", resultData).toString();
 		}catch(FanbeiException e){
@@ -245,7 +219,7 @@ public class AppH5GameController  extends BaseController{
 			logger.error("提交失败",e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr, calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
 		}
 		return resultStr;
 	}
