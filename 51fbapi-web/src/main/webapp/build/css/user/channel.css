@@ -2,56 +2,25 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:47:30
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-06-07 10:56:03
+* @Last Modified time: 2017-06-07 16:39:42
 */
 
 
 @url: "https://fs.51fanbei.com/h5/app/images/user/channel";
 
-
 input,button{
 	background-color: transparent;
 }
-.commonChannelRegister{
-	width: 7.5rem;
-	height: 5.0rem;
-	-webkit-background-size: cover;
-	background-size: cover;
+.channelRegisterWrap{
+	position: relative;
 }
-
-.commonChannelRegister .register_codeBtn{
-	padding-left: 0.6rem;
+.channelRegisterWrap ul{
+	position: absolute;
+	top: 0;
+	text-align: center;
 }
-.channelRegister1{
-	background-image: url("@{url}/channel1_02.jpg");
-}
-.channelRegister2{
-	background-image: url("@{url}/channel2_02.jpg");
-}
-.channelRegister3{
-	background-image: url("@{url}/channel3_02.jpg");
-}
-.channelRegister4{
-	background-image: url("@{url}/channel4_02.jpg");
-}
-// .channelRegister5{
-// 	background-image: url("/images/channel/channel5_02.jpg");
-// }
-.channelRegister6{
-	background-image: url("@{url}/channel6_02.jpg");
-}
-.channelRegister7{
-	background-image: url("@{url}/channel7_02.png");
-}
-.channelRegister8{
-	background-image: url("@{url}/channel8_02.jpg");
-}
-.channelRegister9{
-	background-image: url("@{url}/channel9_02.png");
-}
-
-
-.commonChannelRegister li{
+.channelRegister li{
+	display: inline-block;
 	width: 5.36rem;
 	height: 0.8rem;
 	line-height: 0.8rem;
@@ -61,30 +30,33 @@ input,button{
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 }
-.commonChannelRegister li:nth-child(3){
-	margin-bottom: 0.48rem;
+.channelRegister input{
+	font-size: 0.3rem;
 }
-.commonChannelRegister li:nth-child(4){
-	width: 4.94rem;
-	text-align: center;
+.channelRegister li:nth-child(2) input{
+	width: 2.7rem;
+	height: 100%;
+}
+.channelRegister li:nth-child(2) button{
+	width: 1.8rem;
+	height: 100%;
+	font-size: 0.3rem;
+}
+.channelRegister li:nth-child(3) {
+	margin-bottom: 0.4rem;
+}
+.channelRegister li:nth-child(4) button{
+	font-size: 0.3rem;
+	width: 4.3rem;
+	height: 0.8rem;
 	line-height: 0.8rem;
-	padding-left: 0;
-}
-.channelRegister_wrap .channelRegister4 li{
-	width: 4.94rem;
-	height: 0.84rem;
-	line-height: 0.84rem;
-}
-.channelRegister6 .register_checkbox p,.channelRegister6 .register_checkbox a{
-	color: #000;
+	text-align: center;
 }
 
+/* 样式7、8 */
 .channelRegister78{
 	width: 7.5rem;
 	height: 6.76rem;
-	-webkit-background-size: cover;
-	background-size: cover;
-	
 }
 .channelRegister78 li{
 	width: 5.95rem;
@@ -120,32 +92,63 @@ input,button{
 	text-align: center;
 }
 
+/* 样式9 */
 .channelRegister9 li{
-	padding-left: 0;
+	width: 5.8rem;
+	height: 0.8rem;
+	line-height: 0.8rem;
+	text-align: left;
+	margin: 0 auto 0.25rem;
+}
+.channelRegister9 li:nth-child(3){
+	margin-bottom: 0.4rem;
+}
+.channelRegister9 li:nth-child(4){
+	text-align: center;
+	font-size: 0.3rem;
 }
 .channelRegister9 input{
 	color: #fff;
 	font-size: 0.3rem;
 }
+.channelRegister9 button{
+	width: 2.2rem;
+	height: 0.8rem;
+	line-height: 0.8rem;
+	text-align: center;
+	font-size: 0.3rem;
+	color: #111;
+}
 .channelRegister9 .register_codeBtn{
 	float: right;
+	width: 1.5rem;
 	line-height: 0.8rem;
 	text-align: center;
 	color: #cfcfcf;
 	font-size: 0.3rem;
 	padding-left: 0;
 }
+.channelRegister9 .register_submitBtn{
+	font-size: 0.3rem;
+	color: #cfcfcf;
+}
 
-.commonChannelRegister input::-webkit-input-placeholder{
+
+
+
+
+
+
+input::-webkit-input-placeholder{
 	color: #BFBFBF;
 }
-.commonChannelRegister input:-moz-placeholder{
+input:-moz-placeholder{
 	color: #BFBFBF;
 }
-.commonChannelRegister input::-moz-placeholder{
+input::-moz-placeholder{
 	color: #BFBFBF;
 }
-.commonChannelRegister input:-ms-input-placeholder{
+input:-ms-input-placeholder{
 	color: #BFBFBF;
 }
 
@@ -170,15 +173,17 @@ input,button{
 	margin-right: 10px;
 }
 
-
-
-
 /* 协议 */
+.channelRegister9 .register_checkbox{
+	width: 6.0rem;
+	margin: .16rem 1.0rem 0;
+}
 .register_checkbox,.register_checkbox78{
 	position: relative;
+	width: 5.36rem;
     height: .36rem;
     line-height: .36rem;
-    margin: .16rem 1.35rem 0;
+    margin: 0 auto;
     text-align: left;
 }
 #input_check {
@@ -220,14 +225,14 @@ input,button{
 	float: left;
 	font-size: 0.24rem;
 	margin-left: 0.4rem;
-	color: #BFBFBF;
+	color: #fff;
 	padding-left: 10px;
-	span,a{
-		float: left;
-	}
-	a{
-		color: #BFBFBF;
-	}
+}
+.register_checkbox span,.register_checkbox a{
+	float: left;
+}
+.register_checkbox a{
+	color: #fff;
 }
 
 /* 版权 */
