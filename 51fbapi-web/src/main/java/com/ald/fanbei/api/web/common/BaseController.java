@@ -54,10 +54,10 @@ import com.alibaba.fastjson.JSONObject;
 public abstract class BaseController {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final Logger biLogger = LoggerFactory.getLogger("FANBEI_BI");
-	protected final Logger webbiLog = LoggerFactory.getLogger("FBWEB_BI");
-	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");
-	protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
+	private final Logger biLogger = LoggerFactory.getLogger("FANBEI_BI");//app原生接口入口日志
+	protected final Logger webbiLog = LoggerFactory.getLogger("FBWEB_BI");//h5接口入口日志
+	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
+	protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");//第三方调用日志
 
 	@Resource
 	protected ApiHandleFactory apiHandleFactory;
@@ -216,7 +216,6 @@ public abstract class BaseController {
 			String testUser = getTestUser(request.getHeader("Referer"));
 			if(testUser != null){
 				if("no".equals(testUser)){
-//					webContext.setUserName("no");
 					return webContext;
 				}else{
 					webContext.setUserName(testUser);
@@ -453,7 +452,7 @@ public abstract class BaseController {
 	}
 	
 	/**
-	 * 记录H5日志
+	 * 记录埋点相关日志日志
 	 * @param request
 	 * @param respData
 	 * @param exeT
