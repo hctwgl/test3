@@ -296,7 +296,7 @@ public class TestController {
 //		System.out.println(refundResult);
 //		return "succ";
 //	}
-//
+	//处理菠萝觅或者代买没有生成账单的订单，重新生成账单。
 //	@RequestMapping(value = { "/dealWithBoluomeBorrow" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 //	@ResponseBody
 //	public String dealWithBoluomeBorrow(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
