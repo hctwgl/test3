@@ -98,6 +98,11 @@ public class Constants {
 	public static final String APPLY_BRROW_CASH_WHITE_LIST = "APPLY_BRROW_CASH_WHITE_LIST";
 	public static final String RES_REFUND_RATE = "REFUND_RATE";
 	public static final String RES_BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
+	
+	//risk eventType
+	public static final String EVENT_FINANCE_LIMIT = "event_finance_limit";
+	public static final String EVENT_FINANCE_COUNT = "event_finance_count";
+	
 	//续期天数限制
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
 	//允许续期的天数

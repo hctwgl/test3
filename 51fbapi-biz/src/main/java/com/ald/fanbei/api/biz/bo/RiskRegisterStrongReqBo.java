@@ -13,7 +13,8 @@ import com.alibaba.fastjson.JSONObject;
 public class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	private static final long serialVersionUID = 912277311269987519L;
-//	private String tradeNo;
+	
+	private String orderNo;
 	private String consumerNo;
 	private String event;
 	private RiskUserInfoReqBo userInfo;
@@ -21,18 +22,15 @@ public class RiskRegisterStrongReqBo extends HashMap<String, String> {
 	private String linkManInfo;
 	private String riskInfo;
 	private String eventInfo;
-	
-//	private String realName;
-//	private String phone;
-//	private String idNo;
-//	private String email;
-//	private String qq;
-//	private String alipayNo;
-//	private String openId;
-//	private String address;
-//	private String channel;
-//	private String reqExt;
 	private String signInfo;
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
 
 	public String getConsumerNo() {
 		return consumerNo;

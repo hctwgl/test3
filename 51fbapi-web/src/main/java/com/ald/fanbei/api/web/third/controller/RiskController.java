@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.web.api.brand.PayOrderApi;
 
 /**
  * @类现描述：
@@ -73,8 +72,6 @@ public class RiskController {
 			return "FAIL";
 		}
 	}
-	
-	
 
 	@RequestMapping(value = { "/operator" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -89,6 +86,27 @@ public class RiskController {
 			return "SUCCESS";
 		} else {
 			return "ERROR";
+		}
+	}
+	
+	@RequestMapping(value = { "/registerStrongRisk" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String registerStrongRisk(HttpServletRequest request, HttpServletResponse response) {
+		String code = ObjectUtils.toString(request.getParameter("code"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String msg = ObjectUtils.toString(request.getParameter("msg"));
+		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
+
+		logger.info("asyRegisterStrongRisk begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			try {
+				riskUtil.asyRegisterStrongRisk(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				return "FAIL";
+			}
+		} else {
+			return "FAIL";
 		}
 	}
 }

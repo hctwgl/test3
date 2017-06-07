@@ -59,7 +59,7 @@ public class AuthContactsApi implements ApiHandle {
 		// }
 		// riskUtil.addressListPrimaries(context.getUserId() + "", afAuthContactsDos);
 		
-		bizCacheUtil.saveObjectForever(Constants.CACHEKEY_USER_CONTACTS, contacts);
+		bizCacheUtil.saveObjectForever(Constants.CACHEKEY_USER_CONTACTS + context.getUserId(), contacts);
 		
 		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
 		

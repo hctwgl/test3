@@ -55,6 +55,7 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -109,6 +110,8 @@ public class RiskUtil extends AbstractThird {
 	TongdunUtil tongdunUtil;
 	@Resource
 	JpushService jpushService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	@Resource
 	AfUserService afUserService;
 	@Resource
@@ -332,8 +335,6 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
-	@Resource
-	BizCacheUtil bizCacheUtil;
 
 	/**
 	 * 用户认证时调用强风控接口，进行信息同步
@@ -341,10 +342,11 @@ public class RiskUtil extends AbstractThird {
 	 * @return
 	 */
 	public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, 
-			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum) {
+			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
 		RiskRegisterStrongReqBo reqBo = new RiskRegisterStrongReqBo();
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setEvent(event);
+		reqBo.setOrderNo(riskOrderNo);
 		
 		RiskUserInfoReqBo userInfo = new RiskUserInfoReqBo();
 		userInfo.setRealName(afUserDo.getRealName());
@@ -362,7 +364,7 @@ public class RiskUtil extends AbstractThird {
 		userInfo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getEmail()));
 		reqBo.setUserInfo(userInfo);
 		
-		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS).toString();
+		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo).toString();
 		reqBo.setDirectory(directory);
 		
 		JSONObject linkManInfo = new JSONObject();
@@ -382,18 +384,20 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setRiskInfo(Base64.encodeString(JSON.toJSONString(riskInfo)));
 		
 		JSONObject eventInfo = new JSONObject();
-//		eventInfo.put("eventType", );
+		eventInfo.put("eventType", Constants.EVENT_FINANCE_LIMIT);
 		eventInfo.put("appName", appName);
 		eventInfo.put("cardNo", cardNum);
 		eventInfo.put("blackBox", blackBox);
 		eventInfo.put("ipAddress", ipAddress);
+		reqBo.setRiskInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
 		
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		
-/*	reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		*/
+		String content = JSONObject.toJSONString(reqBo);
+		commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
 		
-		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/register.htm", reqBo);
-		logThird(reqResult, "register", reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
+		logThird(reqResult, "registerAndRisk", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 		}
@@ -643,7 +647,55 @@ public class RiskUtil extends AbstractThird {
 		}
 		return 0;
 	}
-
+	
+	/**
+	 * @方法描述：实名认证时风控异步审核
+	 * 
+	 * @author fumeiai 2017年6月7日  14:47:50
+	 * 
+	 * @return
+	 */
+	public int asyRegisterStrongRisk(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "asyRegisterStrongRisk", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			logger.info("asyRegisterStrongRisk reqBo.getSignInfo()" + reqBo.getSignInfo());
+			JSONObject obj = JSON.parseObject(data);
+			String limitAmount = obj.getString("Amount");
+			if (StringUtil.equals(limitAmount, ""))
+				limitAmount = "0";
+			BigDecimal au_amount = new BigDecimal(limitAmount);
+			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
+			String result = obj.getString("result");
+			 
+			if (StringUtils.equals("10", result)) {
+				AfUserAuthDo authDo = new AfUserAuthDo();
+      			authDo.setUserId(consumerNo);
+      			authDo.setRiskStatus(RiskStatus.YES.getCode());
+      			afUserAuthService.updateUserAuth(authDo);
+      			
+      			AfUserAccountDo userAccountDo = new AfUserAccountDo();
+      			userAccountDo.setUserId(consumerNo);
+      			userAccountDo.setAuAmount(au_amount);
+      			afUserAccountService.updateUserAccount(userAccountDo);
+			} else if (StringUtils.equals("30", result)) {
+				AfUserAuthDo authDo = new AfUserAuthDo();
+      			authDo.setUserId(consumerNo);
+      			authDo.setRiskStatus(RiskStatus.NO.getCode());
+      			afUserAuthService.updateUserAuth(authDo);
+      			
+      			AfUserAccountDo userAccountDo = new AfUserAccountDo();
+      			userAccountDo.setUserId(consumerNo);
+      			userAccountDo.setAuAmount(BigDecimal.ZERO);
+      			afUserAccountService.updateUserAccount(userAccountDo);
+			}
+		}
+		return 0;
+	}
 	/**
 	 * 增加当天审核的金额
 	 * 
@@ -767,50 +819,6 @@ public class RiskUtil extends AbstractThird {
 		}
 		return 0;
 	}
-
-	/**
-	 * @方法描述：同步用户通讯录
-	 * 
-	 * @author huyang 2017年4月5日上午11:41:55
-	 * 
-	 * @param consumerNo
-	 *            --用户唯一标识
-	 * 
-	 * @return
-	 * @throws Exception
-	 *             传入更新的通讯录为空
-	 * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
-	 */
-	/*
-	 * public RiskAddressListRespBo addressListPrimaries(String
-	 * consumerNo,List<AfAuthContactsDo> details) {
-	 * 
-	 * RiskAddressListReqBo reqBo = new RiskAddressListReqBo();
-	 * reqBo.setConsumerNo(consumerNo); List<RiskAddressListDetailBo> detailBos
-	 * = new ArrayList<RiskAddressListDetailBo>(); for (int i = 0; i <
-	 * details.size(); i++) { RiskAddressListDetailBo bo = new
-	 * RiskAddressListDetailBo();
-	 * bo.setNickname(StringUtil.filterEmoji(details.get(i).getFriendNick()));
-	 * bo.setPhone(details.get(i).getFriendPhone()); detailBos.add(bo); }
-	 * if(detailBos.size()==0){ return null; } String uuid =
-	 * UUID.randomUUID().toString(); reqBo.setOrderNo(getOrderNo("addr",
-	 * uuid.substring(uuid.length() - 4, uuid.length())));
-	 * reqBo.setCount(detailBos.size() + "");
-	 * reqBo.setDetails(JSON.toJSONString(detailBos));
-	 * reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-	 * String reqResult = HttpUtil.post(getUrl() +
-	 * "/modules/api/user/action/adrressList/remove.htm", reqBo);
-	 * logThird(reqResult, "addressListPrimaries", reqBo); if
-	 * (StringUtil.isBlank(reqResult)) { throw new
-	 * FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR); }
-	 * RiskAddressListRespBo riskResp = JSONObject.parseObject(reqResult,
-	 * RiskAddressListRespBo.class); if (riskResp != null &&
-	 * TRADE_RESP_SUCC.equals(riskResp.getCode())) { riskResp.setSuccess(true);
-	 * return riskResp; } else { throw new
-	 * FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR); }
-	 * 
-	 * }
-	 */
 
 	/**
 	 * @方法描述：¬ 用户联系人同步
