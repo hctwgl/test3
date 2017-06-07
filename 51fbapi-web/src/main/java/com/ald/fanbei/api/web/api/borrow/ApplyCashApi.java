@@ -21,7 +21,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -61,7 +60,7 @@ public class ApplyCashApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		BigDecimal money = NumberUtil
 				.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("money")), BigDecimal.ZERO);
-		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+//		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
 		Long userId = context.getUserId();
 		logger.info("userId=" + userId + ",money=" + money);

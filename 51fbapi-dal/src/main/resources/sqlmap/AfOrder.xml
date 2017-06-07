@@ -589,4 +589,18 @@
 		select pay_trade_no from af_order WHERE #{endDate} >= gmt_pay AND gmt_pay >=#{startDate} and gmt_pay is not null and order_type = 'BOLUOME' ORDER BY gmt_pay DESC LIMIT 1;
 	</select>
 	
+	<select id="getNoBorrowOrder" resultType="AfOrderDo">
+		select a.id rid,a.user_id,a.order_no,
+		a.goods_name,
+		a.price_amount,a.sale_amount,a.actual_amount,
+		a.shop_name,a.nper
+		from af_order a 
+		left join af_borrow b on a.id = b.`order_id`  
+		where a.order_type = 'BOLUOME' 
+		and a.status in ('PAID','FINISHED','REBATED','WAITING_REFUND','DEAL_REFUNDING') 
+		and a.pay_type = 'AP' and b.id is null
+	</select>
+	
+	
+	
 </mapper>
