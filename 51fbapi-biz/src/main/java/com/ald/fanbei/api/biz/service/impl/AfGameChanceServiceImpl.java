@@ -10,10 +10,14 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.biz.service.AfGameService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.AfGameChanceType;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -21,6 +25,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfGameChanceDao;
 import com.ald.fanbei.api.dal.domain.AfGameChanceDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 /**
  *@类现描述：
@@ -30,11 +35,16 @@ import com.ald.fanbei.api.dal.domain.AfGameDo;
  */
 @Service("afGameChanceService")
 public class AfGameChanceServiceImpl implements AfGameChanceService {
-
+	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
+	
 	@Resource
 	AfGameChanceDao afGameChanceDao;
 	@Resource
 	AfGameService afGameService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	@Resource
+	AfUserService afUserService;
 	
 	@Override
 	public int updateGameChance(AfGameChanceDo afGameChanceDo) {
@@ -100,7 +110,7 @@ public class AfGameChanceServiceImpl implements AfGameChanceService {
 				}
 			}
 		}
-		if(isHasInviteRecord){
+		if(!isHasInviteRecord){
 			AfGameChanceDo afGameChanceDo = new AfGameChanceDo();
 			Set<String> codesSet = new HashSet<String>(); 
 			while(codesSet.size()< 1){
@@ -126,5 +136,23 @@ public class AfGameChanceServiceImpl implements AfGameChanceService {
 			afGameChanceDao.updateInviteGameChance(inviteChanceDo.getRid(), 1, addCode);
 		}
 		return 0;
+	}
+	
+	@Override
+	public void dealWithShareGame(String userName) {
+		//已经增加过机会
+		Object value = bizCacheUtil.getObject(userName);
+		if(value != null){
+			return;
+		}
+		AfUserDo userDo = afUserService.getUserByUserName(userName);
+		if(userDo == null){
+			return ;
+		}
+		updateInviteChance(userDo.getRid());
+		maidianLog.info(userName + " get share chance");
+		Date current = new Date();
+		long expSecend = DateUtil.getEndOfDate(current).getTime() - current.getTime();
+		bizCacheUtil.saveObject(userName, "1", expSecend/1000);
 	}
 }

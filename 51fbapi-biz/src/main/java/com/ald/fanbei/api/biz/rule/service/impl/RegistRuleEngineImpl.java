@@ -14,9 +14,7 @@ import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.dal.dao.AfGameChanceDao;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
-import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -74,7 +72,7 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 			//邀请人获取一次抓娃娃抽奖机会
 			Long invitor = (Long)inputData.get("invitor");
 			if(invitor != null && invitor > 0l){
-				afGameChanceService.updateInviteChance(userId);
+				afGameChanceService.updateInviteChance(invitor);
 			}
 		}
 	}

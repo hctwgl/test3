@@ -5,6 +5,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfGameChanceDo;
 
 /**
@@ -45,4 +47,10 @@ public interface AfGameChanceService {
 	 * @return
 	 */
 	int updateInviteChance(Long userId);
+	
+    /**
+     * 分享游戏
+     * @param userName
+     */
+    void dealWithShareGame(@Param("userName")String userName);
 }

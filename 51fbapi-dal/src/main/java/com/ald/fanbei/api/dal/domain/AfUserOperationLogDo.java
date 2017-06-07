@@ -31,6 +31,15 @@ public class AfUserOperationLogDo extends AbstractSerial {
 		this.userId = userId;
 		this.type = type;
 	}
+	
+	public AfUserOperationLogDo(Long userId, String type, String refType,
+			String refId) {
+		super();
+		this.userId = userId;
+		this.type = type;
+		this.refType = refType;
+		this.refId = refId;
+	}
 
 
 	public Long getId() {

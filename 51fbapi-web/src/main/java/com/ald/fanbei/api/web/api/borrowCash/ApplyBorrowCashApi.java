@@ -26,7 +26,6 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -148,19 +147,18 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		//对风控拒绝通过配置化处理，按配置期限，如果期限内有拒绝，则不可申请，如果期限内无拒绝记录，则可发起申请 start  alter by ck 2017年6月13日17:47:20
 		
 		boolean doRish = true;
-//		AfBorrowCashDo dayCash = afBorrowCashService.getUserDayLastBorrowCash(userId);
-//		if (dayCash != null && dayCash.getStatus().equals(AfBorrowCashStatus.closed.getCode())) {
-//			doRish = false;
-//		}
+		AfBorrowCashDo afnewstBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 		
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
-		if(afResourceDo!=null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())){
-			Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
-			Date startTime = DateUtil.addDays(DateUtil.getToday(), -rejectTimePeriod);
-			Integer specNums = afBorrowCashService.getSpecBorrowCashNums(userId, AfBorrowCashReviewStatus.refuse.getCode(), startTime);
-			if(specNums>0){
-				//指定日期内存在风控拒绝
-				doRish = false;
+		if(afnewstBorrowCashDo!=null && AfBorrowCashReviewStatus.refuse.getCode().equals(afnewstBorrowCashDo.getReviewStatus())){
+			//借款被拒绝
+			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
+			if(afResourceDo!=null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())){
+				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
+				Date desTime = DateUtil.addDays(afnewstBorrowCashDo.getGmtCreate(), rejectTimePeriod);
+				if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime),DateUtil.getToday())<0){
+					//风控拒绝日期内
+					doRish = false;
+				}
 			}
 		}
 		//对风控拒绝通过配置化处理，按配置期限，如果期限内有拒绝，则不可申请，如果期限内无拒绝记录，则可发起申请 end alter by ck 2017年6月13日17:47:20

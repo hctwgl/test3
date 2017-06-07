@@ -476,7 +476,7 @@ public abstract class BaseController {
 	 */
 	protected void doLog(HttpServletRequest request,String appInfo,String respData,long exeT){
 		JSONObject param = new JSONObject();
-		param.put("_appInfo", appInfo);
+		param.put("_appInfo", StringUtil.isNotBlank(appInfo)?JSONObject.parse(appInfo):"");
 		Enumeration<String> enu=request.getParameterNames();  
 		while(enu.hasMoreElements()){  
 			String paraName=(String)enu.nextElement();  
