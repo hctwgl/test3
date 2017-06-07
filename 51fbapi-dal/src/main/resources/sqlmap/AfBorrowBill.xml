@@ -204,4 +204,13 @@
 		</foreach>
 		)
     </select>
+
+	<select id="getAllBorrowBillByBorrowId" resultType="AfBorrowBillDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM
+		af_borrow_bill
+		WHERE is_delete = 0
+		AND borrow_id = #{borrowId}
+	</select>
 </mapper>

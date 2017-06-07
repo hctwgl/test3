@@ -1,31 +1,34 @@
 package com.ald.fanbei.api.web.api.repayment;
 
-import java.util.Date;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfLimitDetailInfoVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -44,13 +47,11 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfRepaymentService afRepaymentService;
-	
-	@Resource
-	private AfUserBankcardService afUserBankcardService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
+
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long refId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("refId")), 0l);
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"),"");
@@ -77,7 +78,6 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 		detailInfo.setAmount(borrow.getAmount());
 		detailInfo.setNper(borrow.getNper());
 		detailInfo.setNperRepayment(borrow.getNperRepayment());
-		detailInfo.setPerAmount(borrow.getNperAmount());
 		detailInfo.setRepayPrinAmount(borrow.getRepayPrinAmount());
 		detailInfo.setNumber(borrow.getBorrowNo());
 		detailInfo.setGmtCreate(borrow.getGmtCreate());
@@ -89,8 +89,25 @@ public class GetLimitDetailInfoApi implements ApiHandle{
 			detailInfo.setPayAmount(afBorrowBillService.getBorrowBillByBorrowId(borrow.getRid()));
 		}else{
 			detailInfo.setBorrowDetail(new StringBuffer(borrow.getName()).append(borrow.getOrderNo()).toString());
+
 		}
-		
+		List<AfBorrowBillDo> BorrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(borrow.getRid());
+		BigDecimal payAmount = new BigDecimal(BigDecimal.ZERO.intValue());	//计息分期金额
+		BigDecimal freePerAmount = new BigDecimal(BigDecimal.ZERO.intValue());//免息分期金额
+		if(CollectionUtil.isEmpty(BorrowBillList)){
+			payAmount = borrow.getNperAmount();
+		}else{
+			for(AfBorrowBillDo afBorrowBillDo : BorrowBillList){
+				String IsFreeInterest = afBorrowBillDo.getIsFreeInterest();
+				if(Constants.ISFREEINTEREST_Y.equals(IsFreeInterest)){
+					freePerAmount.add(afBorrowBillDo.getBillAmount());
+				}else{
+					payAmount.add(afBorrowBillDo.getBillAmount());
+				}
+			}
+		}
+		detailInfo.setPerAmount(payAmount);
+		detailInfo.setFreePerAmount(freePerAmount);
 		return detailInfo;
 	}
 	
