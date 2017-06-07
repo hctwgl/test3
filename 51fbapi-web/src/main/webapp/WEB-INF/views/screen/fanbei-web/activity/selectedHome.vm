@@ -8,6 +8,7 @@
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/selectedHome.css?version=$version">
 </head>
 <body>
+<div id="vueCon">
 	<div class="activityHomeWrap">
 		<div class="activityHomeBanner">
 			<img src="$commonUrl/bannerBg.jpg" class="banner">
@@ -16,7 +17,7 @@
 			<div class="boutiqueHome">
 				<h2>精品推荐</h2>
 				<ul>
-					<li class="clearfix">
+					<li v-for="data in content.categoryList" class="clearfix">
 						<a href="">
 							<img src="">
 							<div class="boutiqueHomeContent clearfix">
@@ -43,6 +44,8 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript" src="/dist/activity/06/selectedHomeList.js?version=$version"></script>
+</div>
+<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<script type="text/javascript" src="/dist/activity/06/selectedHomeList.js?version=$version"></script>
 </body>
 </html>
