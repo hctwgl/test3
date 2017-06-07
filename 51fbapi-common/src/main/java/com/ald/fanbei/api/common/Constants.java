@@ -79,6 +79,7 @@ public class Constants {
 	public static final String CACHEKEY_APK_NEWEST_VERSION = "apk_newest_version$";
 	public static final String CACHEKEY_BORROW_CASH = "borrow_cash$";
 	public static final String CACHEKEY_BORROW_CONSUME = "borrow_consume$";
+	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";
@@ -93,6 +94,7 @@ public class Constants {
 	public static final String RES_THIRD_GOODS_REBATE_RATE = "THIRD_GOODS_REBATE_RATE";
 	public static final String RES_BORROW_CASH_RATE_DESC = "BORROW_CASH_RATE_DESC";
 	public static final String RES_BORROW_CONSUME = "BORROW_CONSUME";
+	public static final String RES_BORROW_CONSUME_OVERDUE = "BORROW_CONSUME_OVERDUE";
 	public static final String RES_BORROW_CASH = "BORROW_CASH";
 	public static final String RES_BORROW_RATE = "BORROW_RATE";
 	public static final String RES_BRAND_SHOP = "BRAND_SHOP";

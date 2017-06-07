@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowDao">
 	<sql id="queryFields">
 		id rid,gmt_create, gmt_modified,borrow_no,user_id,type,name,amount,status,remark,nper,nper_repayment,overdue_num,order_id,
-		nper_amount,repay_prin_amount,order_no,card_number,card_name,is_free_interest
+		nper_amount,repay_prin_amount,order_no,card_number,card_name,is_free_interest,borrow_rate,calculate_method
 	</sql>
 	
 	<select id="getBorrowById" resultType="AfBorrowDo">
@@ -43,7 +43,9 @@
 			card_name,
 			order_id,
 			order_no,
-			gmt_transed
+			gmt_transed,
+			borrow_rate,
+			calculate_method
 			)
 			VALUES
 			(
@@ -62,7 +64,9 @@
 			#{cardName},
 			#{orderId},
 			#{orderNo},
-			#{gmtTransed}
+			#{gmtTransed},
+			#{borrowRate},
+			#{calculateMethod}
 			)
 	</insert>
 	
@@ -127,7 +131,8 @@
 		  principle_amount,
 		  interest_amount,
 		  poundage_amount,
-		  is_free_interest
+		  is_free_interest,
+		  borrow_rate
 		) 
 		VALUES
 	    <foreach collection = "list" separator = "," item = "item" index = "index" > 
@@ -149,7 +154,8 @@
 	  		#{item.principleAmount},
 	  		#{item.interestAmount},
 	  		#{item.poundageAmount},
-	  		#{item.isFreeInterest}
+	  		#{item.isFreeInterest},
+	  		#{item.borrowRate}
 	  	)
 	  	</foreach> 
    </insert>
