@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.auth;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -18,6 +19,8 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -50,6 +53,8 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 	AfIdNumberService afIdNumberService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -132,6 +137,13 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
 				auth.setYdStatus(YesNoStatus.YES.getCode());
+				
+				Double similarity = (Double) bizCacheUtil.getObject(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
+				if(similarity!=null){
+					auth.setSimilarDegree(BigDecimal.valueOf(similarity));
+					bizCacheUtil.delCache(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
+				}
+				
 				afUserAuthService.updateUserAuth(auth);
 
 				AfUserDo afUserDo = new AfUserDo();
