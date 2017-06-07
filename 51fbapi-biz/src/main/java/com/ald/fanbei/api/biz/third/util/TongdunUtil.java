@@ -200,7 +200,7 @@ public class TongdunUtil extends AbstractThird {
 		}
 		if (apiResp != null && apiResp.get("final_decision") != null
 				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > 0) {
+						.indexOf(apiResp.get("final_decision") + "") > -1) {
 			logger.info(
 					"手机号码为：" + accountMobile + "的用户在app端注册的时候被拦截....同盾返回的code是...." + apiResp.get("final_decision"));
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
@@ -249,7 +249,7 @@ public class TongdunUtil extends AbstractThird {
 
 		if (apiResp != null && apiResp.get("final_decision") != null
 				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > 0) {
+						.indexOf(apiResp.get("final_decision") + "") > -1) {
 			logger.info(
 					"手机号码为：" + accountMobile + "的用户在验证登录的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
@@ -289,7 +289,7 @@ public class TongdunUtil extends AbstractThird {
 
 		if (apiResp != null && apiResp.get("final_decision") != null
 				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > 0) {
+						.indexOf(apiResp.get("final_decision") + "") > -1) {
 			logger.info(
 					"手机号码为：" + accountMobile + "的用户在验证渠道推广注册的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
@@ -342,7 +342,7 @@ public class TongdunUtil extends AbstractThird {
 		}
 		if (apiResp != null && apiResp.get("final_decision") != null
 				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > 0) {
+						.indexOf(apiResp.get("final_decision") + "") > -1) {
 			logger.info("手机号码为：" + accountMobile + ".....的用户在app端进行时候被拦截....同盾返回的code是...."
 					+ apiResp.get("final_decision"));
 			// throw new
@@ -398,7 +398,7 @@ public class TongdunUtil extends AbstractThird {
 		}
 		if (apiResp != null && apiResp.get("final_decision") != null
 				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > 0) {
+						.indexOf(apiResp.get("final_decision") + "") > -1) {
 			logger.info("手机号码为：" + accountMobile + ".....的用户在app端进行时候被拦截....同盾返回的code是...."
 					+ apiResp.get("final_decision"));
 			// throw new
