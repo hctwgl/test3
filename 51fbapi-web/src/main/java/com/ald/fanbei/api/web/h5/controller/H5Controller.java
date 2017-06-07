@@ -2,7 +2,6 @@ package com.ald.fanbei.api.web.h5.controller;
 
 import java.io.IOException;
 
-import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,12 +12,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
@@ -33,10 +29,6 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @RequestMapping("/")
 public class H5Controller extends BaseController {
 
-	@Resource
-	AfGameChanceService afGameChanceService; 
-	 
-	 
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -56,12 +48,6 @@ public class H5Controller extends BaseController {
 		String returnUrl = request.getRequestURI();
 		if(returnUrl.indexOf("fanbei-web/activity/game") >=0){
 			doMaidianLog(request);
-			if(returnUrl.indexOf("fanbei-web/activity/gameShare")>=0 && StringUtil.isNotBlank(request.getParameter("userName"))){//每天第一次分享增加一次机会
-				String userName = request.getParameter("userName");
-				if(CommonUtil.isMobile(userName)){
-					afGameChanceService.dealWithShareGame(userName);
-				}
-			}
 		}
 		
 		return returnUrl;

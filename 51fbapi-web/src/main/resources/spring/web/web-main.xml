@@ -112,6 +112,7 @@
 				<value>/system/AppLaunchImage</value>
 				<value>/system/appPopImage</value>
 				<value>/system/getTabbarInfor</value>
+				<value>/user/submitShareAction</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -153,6 +154,7 @@
 				<entry key="/user/getCollectionList" value-ref="getCollectionListApi" />
 				<entry key="/user/getMobileRechargeMoneyList" value-ref="getMobileRechargeMoneyListApi" />
 				<entry key="/user/getUserCounponListType" value-ref="getUserCounponListTypeApi" />
+				<entry key="/user/submitShareAction" value-ref="submitShareActionApi" />
 
 
 				<entry key="/user/signin" value-ref="signinApi" />

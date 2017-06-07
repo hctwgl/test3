@@ -114,7 +114,7 @@ public class AfGameChanceServiceImpl implements AfGameChanceService {
 			AfGameChanceDo afGameChanceDo = new AfGameChanceDo();
 			Set<String> codesSet = new HashSet<String>(); 
 			while(codesSet.size()< 1){
-				codesSet.add(AfGameChanceType.DAY.getCode() + CommonUtil.getRandomCharacter(5));
+				codesSet.add(AfGameChanceType.INVITE.getCode() + CommonUtil.getRandomCharacter(5));
 			}
 			afGameChanceDo.setCodes(StringUtil.turnListToStr(codesSet, ","));
 			afGameChanceDo.setDay("");
