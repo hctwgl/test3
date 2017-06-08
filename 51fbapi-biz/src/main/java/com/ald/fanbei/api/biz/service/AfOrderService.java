@@ -152,12 +152,6 @@ public interface AfOrderService {
 	 */
 	Map<String,Object> payBrandOrder(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress);
 	
-	/**
-	 * 代买分期支付
-	 * 
-	 * @return
-	 */
-	Map<String,Object> payAgencyOrder( AfOrderDo orderInfo,  String appName,  String ipAddress);
 
 	/**
 	 * 处理菠萝觅回调订单 

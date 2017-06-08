@@ -195,6 +195,35 @@ public class BigDecimalUtil {
      * 获取总手续费
      *
      * @param amount       --借款本金
+     * @param nper          --分期期数
+     * @param poundageRate --手续费率
+     * @param min          --手续费下限
+     * @param max          --手续费上限
+     * @param freeNper     --免息期数
+     * @return
+     */
+    public static BigDecimal getPerPoundage(BigDecimal amount, Integer nper, BigDecimal poundageRate, BigDecimal min, BigDecimal max, Integer freeNper) {
+    	//总手续费
+    	BigDecimal totalPoundage = amount.multiply(poundageRate).setScale(2, RoundingMode.CEILING);
+    	//每一期手续费
+    	BigDecimal perAmount = totalPoundage.divide(new BigDecimal(nper));
+        //总手续费-免息的费用
+    	BigDecimal freeAmount = BigDecimalUtil.multiply(perAmount, new BigDecimal(freeNper));
+       
+    	BigDecimal finalAmount = BigDecimalUtil.subtract(totalPoundage, freeAmount);
+     
+    	 if (min.compareTo(finalAmount) > 0) {
+    		 finalAmount = min;
+         } else if (finalAmount.compareTo(max) > 0) {
+        	 finalAmount = max;
+         }
+         return finalAmount;
+    }
+    
+    /**
+     * 减去免息手续费,计算每一期手续费
+     *
+     * @param amount       --借款本金
      * @param num          --分期期数
      * @param poundageRate --手续费率
      * @param min          --手续费下限
