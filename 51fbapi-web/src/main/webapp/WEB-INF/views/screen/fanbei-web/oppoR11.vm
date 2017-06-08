@@ -37,13 +37,13 @@
 	<p>恭喜您！预约成功！</p>
 	<p>OPPO R11将于6月22日10:00准时开售,下单购买即可享受300元立减优惠！</p>
 </div>
-<div class="fillInfo">
+<!-- <div class="fillInfo">
 	<p class="fill">填写预约信息</p>
 	<p class="phoneNum">手机号码</p>
 	<input type="text" placeholder="请填写手机号码" />
 	<p class="msg">*商品抢购前，我们将通过短信通知您</p>
 	<p class="confirm">确认</p>
-</div>
+</div> -->
 <script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
 </body>
 </html>
