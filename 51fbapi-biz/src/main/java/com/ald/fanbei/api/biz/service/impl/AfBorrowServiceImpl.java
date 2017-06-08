@@ -35,6 +35,7 @@ import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowLogStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -312,7 +313,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 						JSONObject obj = array.getJSONObject(i);
 						if (obj.getInteger(Constants.DEFAULT_NPER) == nper) {
 							BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, nper,
-									new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd);// 总手续费
+									new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd,InterestfreeCode.NO_FREE.getCode());// 总手续费
 							BigDecimal perAmount = BigDecimalUtil.getConsumeAmount(money, nper,
 									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(
 											new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
@@ -682,7 +683,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 						JSONObject obj = array.getJSONObject(i);
 						if (obj.getInteger(Constants.DEFAULT_NPER) == borrow.getNper()) {
 							BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, borrow.getNper(),
-									new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd);// 总手续费
+									new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd,InterestfreeCode.NO_FREE.getCode());// 总手续费
 							BigDecimal perAmount = BigDecimalUtil.getConsumeAmount(money, borrow.getNper(),
 									new BigDecimal(obj.getString(Constants.DEFAULT_RATE)).divide(
 											new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
