@@ -2,218 +2,226 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAccountDao">
 	<sql id="queryAllFields">
-		id rid,gmt_modified,user_id,user_name,au_amount,used_amount,freeze_amount,score,alipay_account,rebate_amount,id_number,
+		id
+		rid,gmt_modified,user_id,user_name,au_amount,used_amount,freeze_amount,score,alipay_account,rebate_amount,id_number,
 		real_name,jfb_amount,password,salt,fail_count,uc_amount,bind_card,credit_score,open_id,borrow_cash_amount
 	</sql>
-	
+
 	<sql id="queryWithUserFields">
-		c.id rid,c.user_id,c.user_name,c.au_amount,c.used_amount,c.freeze_amount,
+		c.id
+		rid,c.user_id,c.user_name,c.au_amount,c.used_amount,c.freeze_amount,
 		c.score,c.alipay_account,c.rebate_amount,c.id_number,c.jfb_amount,c.uc_amount,u.gender,u.nick,u.avatar,
 		c.real_name,u.mobile,u.recommend_code,u.email,u.address,c.password,c.salt,c.fail_count,c.credit_score,c.open_id
 	</sql>
-	
-	<select id="getUserAccountInfoByUserId" resultType="AfUserAccountDo" >
-		SELECT 
-			<include refid="queryAllFields" />
-		FROM 
-			af_user_account
+
+	<select id="getUserAccountInfoByUserId" resultType="AfUserAccountDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_user_account
 		WHERE
-			is_delete = 0 
+		is_delete = 0
 		AND
-			user_id = #{userId}	
+		user_id = #{userId}
 	</select>
 
-	<insert id="addUserAccount" parameterType="AfUserAccountDo" useGeneratedKeys="true" >
+	<insert id="addUserAccount" parameterType="AfUserAccountDo"
+		useGeneratedKeys="true">
 		INSERT INTO
-			af_user_account
-			(
-				user_id,
-				user_name
-			)
+		af_user_account
+		(
+		user_id,
+		user_name
+		)
 		VALUES
-			(
-				#{userId},
-				#{userName}
-			)
+		(
+		#{userId},
+		#{userName}
+		)
 	</insert>
-	
-	<update id="updateUserAccount" parameterType="AfUserAccountDo" >
+
+	<update id="updateUserAccount" parameterType="AfUserAccountDo">
 		UPDATE af_user_account SET gmt_modified = NOW()
-			<if test="userName != null">
-    			,user_name=#{userName}
-			</if>
-			<if test="auAmount != null">
-    			,au_amount=#{auAmount}
-			</if>
-			<if test="usedAmount != null">
-    			,used_amount=used_amount + #{usedAmount}
-			</if>
-			<if test="freezeAmount != null">
-    			,freeze_amount=freeze_amount + #{freezeAmount}
-			</if>
-			<if test="score != null">
-    			,score=#{score}
-			</if>
-			<if test="alipayAccount != null">
-    			,alipay_account=#{alipayAccount}
-			</if>
-			<if test="rebateAmount != null">
-    			,rebate_amount=rebate_amount + #{rebateAmount}
-			</if>
-			<if test="idNumber != null">
-    			,id_number=#{idNumber}
-			</if>
-			<if test="realName != null">
-    			,real_name=#{realName}
-			</if>
-			<if test="jfbAmount != null">
-    			,jfb_amount=jfb_amount + #{jfbAmount}
-			</if>
-			<if test="password != null">
-    			,password=#{password}
-			</if>
-			<if test="salt != null">
-    			,salt=#{salt}
-			</if>
-			<if test="failCount != null">
-    			,fail_count=#{failCount}
-			</if>
-			<if test="ucAmount != null">
-    			,uc_amount=uc_amount + #{ucAmount}
-			</if>
-			<if test="bindCard != null">
-    			,bind_card=#{bindCard}
-			</if>
-			<if test="creditScore != null">
-    			,credit_score=#{creditScore}
-			</if>
-			<if test="openId != null">
-    			,open_id=#{openId}
-			</if>
+		<if test="userName != null">
+			,user_name=#{userName}
+		</if>
+		<if test="auAmount != null">
+			,au_amount=#{auAmount}
+		</if>
+		<if test="usedAmount != null">
+			,used_amount=used_amount + #{usedAmount}
+		</if>
+		<if test="freezeAmount != null">
+			,freeze_amount=freeze_amount + #{freezeAmount}
+		</if>
+		<if test="score != null">
+			,score=#{score}
+		</if>
+		<if test="alipayAccount != null">
+			,alipay_account=#{alipayAccount}
+		</if>
+		<if test="rebateAmount != null">
+			,rebate_amount=rebate_amount + #{rebateAmount}
+		</if>
+		<if test="idNumber != null">
+			,id_number=#{idNumber}
+		</if>
+		<if test="realName != null">
+			,real_name=#{realName}
+		</if>
+		<if test="jfbAmount != null">
+			,jfb_amount=jfb_amount + #{jfbAmount}
+		</if>
+		<if test="password != null">
+			,password=#{password}
+		</if>
+		<if test="salt != null">
+			,salt=#{salt}
+		</if>
+		<if test="failCount != null">
+			,fail_count=#{failCount}
+		</if>
+		<if test="ucAmount != null">
+			,uc_amount=uc_amount + #{ucAmount}
+		</if>
+		<if test="bindCard != null">
+			,bind_card=#{bindCard}
+		</if>
+		<if test="creditScore != null">
+			,credit_score=#{creditScore}
+		</if>
+		<if test="openId != null">
+			,open_id=#{openId}
+		</if>
 		WHERE user_id = #{userId}
 	</update>
-	
-	<update id="updateOriginalUserAccount" parameterType="AfUserAccountDo" >
-		UPDATE 
-			af_user_account 
+
+	<update id="updateOriginalUserAccount" parameterType="AfUserAccountDo">
+		UPDATE
+		af_user_account
 		SET gmt_modified = NOW()
-			<if test="userId != null">
-    			,user_id=#{userId}
-			</if>
-			<if test="userName != null">
-    			,user_name=#{userName}
-			</if>
-			<if test="auAmount != null">
-    			,au_amount=#{auAmount}
-			</if>
-			<if test="usedAmount != null">
-    			,used_amount=#{usedAmount}
-			</if>
-			<if test="freezeAmount != null">
-    			,freeze_amount=#{freezeAmount}
-			</if>
-			<if test="score != null">
-    			,score=#{score}
-			</if>
-			<if test="alipayAccount != null">
-    			,alipay_account=#{alipayAccount}
-			</if>
-			<if test="rebateAmount != null">
-    			,rebate_amount=#{rebateAmount}
-			</if>
-			<if test="idNumber != null">
-    			,id_number=#{idNumber}
-			</if>
-			<if test="realName != null">
-    			,real_name=#{realName}
-			</if>
-			<if test="jfbAmount != null">
-    			,jfb_amount=#{jfbAmount}
-			</if>
-			<if test="password != null">
-    			,password=#{password}
-			</if>
-			<if test="salt != null">
-    			,salt=#{salt}
-			</if>
-			<if test="failCount != null">
-    			,fail_count=#{failCount}
-			</if>
-			<if test="ucAmount != null">
-    			,uc_amount=#{ucAmount}
-			</if>
-			<if test="bindCard != null">
-    			,bind_card=#{bindCard}
-			</if>
-			<if test="creditScore != null">
-    			,credit_score=#{creditScore}
-			</if>
-			<if test="openId != null">
-    			,open_id=#{openId}
-			</if>
-				<if test="borrowCashAmount != null">
-    			,borrow_cash_amount=#{borrowCashAmount}
-			</if>
+		<if test="userId != null">
+			,user_id=#{userId}
+		</if>
+		<if test="userName != null">
+			,user_name=#{userName}
+		</if>
+		<if test="auAmount != null">
+			,au_amount=#{auAmount}
+		</if>
+		<if test="usedAmount != null">
+			,used_amount=#{usedAmount}
+		</if>
+		<if test="freezeAmount != null">
+			,freeze_amount=#{freezeAmount}
+		</if>
+		<if test="score != null">
+			,score=#{score}
+		</if>
+		<if test="alipayAccount != null">
+			,alipay_account=#{alipayAccount}
+		</if>
+		<if test="rebateAmount != null">
+			,rebate_amount=#{rebateAmount}
+		</if>
+		<if test="idNumber != null">
+			,id_number=#{idNumber}
+		</if>
+		<if test="realName != null">
+			,real_name=#{realName}
+		</if>
+		<if test="jfbAmount != null">
+			,jfb_amount=#{jfbAmount}
+		</if>
+		<if test="password != null">
+			,password=#{password}
+		</if>
+		<if test="salt != null">
+			,salt=#{salt}
+		</if>
+		<if test="failCount != null">
+			,fail_count=#{failCount}
+		</if>
+		<if test="ucAmount != null">
+			,uc_amount=#{ucAmount}
+		</if>
+		<if test="bindCard != null">
+			,bind_card=#{bindCard}
+		</if>
+		<if test="creditScore != null">
+			,credit_score=#{creditScore}
+		</if>
+		<if test="openId != null">
+			,open_id=#{openId}
+		</if>
+		<if test="borrowCashAmount != null">
+			,borrow_cash_amount=#{borrowCashAmount}
+		</if>
 		WHERE id = #{rid}
 	</update>
 
-	<select id="getUserAndAccountByUserId" parameterType="java.lang.Long" resultType="AfUserAccountDto">
-		SELECT 
-			<include refid="queryWithUserFields" />
-		FROM 
-			af_user u
+	<select id="getUserAndAccountByUserId" parameterType="java.lang.Long"
+		resultType="AfUserAccountDto">
+		SELECT
+		<include refid="queryWithUserFields" />
+		FROM
+		af_user u
 		LEFT JOIN
-			af_user_account c
+		af_user_account c
 		ON
-			c.is_delete = 0 and u.id = c.user_id
+		c.is_delete = 0 and u.id = c.user_id
 		WHERE
-			u.is_delete = 0 
+		u.is_delete = 0
 		AND
-			u.id = #{userId}	
+		u.id = #{userId}
 	</select>
-	
+
 	<select id="getUserAccountCountWithHasRealName" resultType="java.lang.Integer">
-		SELECT 
-			count(1)
-		FROM 
-			af_user_account c
+		SELECT
+		count(1)
+		FROM
+		af_user_account c
 		WHERE
-			c.is_delete = 0 and c.real_name !='' and c.id_number !='' 
+		c.is_delete = 0 and c.real_name !='' and c.id_number !=''
 	</select>
 
 	<select id="getUserAndAccountListWithHasRealName" resultType="AfUserAccountDto">
-		SELECT 
-			<include refid="queryWithUserFields" />
-		FROM 
-			af_user_account c
+		SELECT
+		<include refid="queryWithUserFields" />
+		FROM
+		af_user_account c
 		LEFT JOIN
-			af_user u
+		af_user u
 		ON
-			u.is_delete = 0 and u.id = c.user_id
+		u.is_delete = 0 and u.id = c.user_id
 		WHERE
-			c.is_delete = 0 and c.real_name !='' and c.id_number !='' and c.id >344819
+		c.is_delete = 0 and c.real_name !='' and c.id_number !='' and c.id >344819
 	</select>
-	
+
 	<select id="getUserInfoByUserId" resultType="AfUserAccountDto">
-		SELECT 
-			<include refid="queryWithUserFields" />
-		FROM 
-			af_user_account c
+		SELECT
+		<include refid="queryWithUserFields" />
+		FROM
+		af_user_account c
 		LEFT JOIN
-			af_user u
+		af_user u
 		ON
-			u.is_delete = 0 and u.id = c.user_id
+		u.is_delete = 0 and u.id = c.user_id
 		WHERE
-			c.is_delete = 0 and u.id = #{userId}	
+		c.is_delete = 0 and u.id = #{userId}
 	</select>
-	<update id="updateUserAccountRealNameAndIdNumber" parameterType="AfUserAccountDo" >
+	<update id="updateUserAccountRealNameAndIdNumber" parameterType="AfUserAccountDo">
 		UPDATE af_user_account SET gmt_modified = NOW()
-			<if test="idNumber != null">
-    			,id_number=#{idNumber}
-			</if>
-			<if test="realName != null">
-    			,real_name=#{realName}
-			</if>
+		<if test="idNumber != null">
+			,id_number=#{idNumber}
+		</if>
+		<if test="realName != null">
+			,real_name=#{realName}
+		</if>
 		WHERE user_id = #{userId}
 	</update>
+
+	<select id="getCountByIdNumer" resultType="java.lang.Integer">
+		select count(1) from af_user_account a left join af_user_auth b on a.user_id = b.user_id where a.id_number=#{citizenId} and a.user_id != #{userId} and b.bankcard_status='Y'
+	</select>
 </mapper>

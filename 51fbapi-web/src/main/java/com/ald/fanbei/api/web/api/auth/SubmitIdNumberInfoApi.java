@@ -79,6 +79,12 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			String idFrontUrl = ObjectUtils.toString(params.get("idFrontUrl"), "");
 			String idBehindUrl = ObjectUtils.toString(params.get("idBehindUrl"), "");
 
+			Integer c = afUserAccountService.getCountByIdNumer(citizenId, context.getUserId());
+			if (c > 0) {
+				logger.error(FanbeiExceptionCode.USER_CARD_IS_EXIST.getErrorMsg());
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_IS_EXIST);
+			}
+
 			AfIdNumberDo afIdNumberDo = new AfIdNumberDo();
 			afIdNumberDo.setUserId(userId);
 			afIdNumberDo.setAddress(address);
@@ -93,8 +99,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			afIdNumberDo.setValidDateBegin(validDateBegin);
 			afIdNumberDo.setValidDateEnd(validDateEnd);
 			AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
-			if (StringUtils.equals(auth.getBankcardStatus(), YesNoStatus.YES.getCode())
-					) {
+			if (StringUtils.equals(auth.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 				if (accountDo != null) {
 					if (StringUtils.isNotBlank(accountDo.getRealName())
@@ -132,18 +137,18 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			afIdNumberDo.setRid(numberDo.getRid());
 			Integer count = 0;
 			count = afIdNumberService.updateIdNumber(afIdNumberDo);
-			logger.info("id number change"+count);
+			logger.info("id number change" + count);
 			if (count > 0) {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
 				auth.setYdStatus(YesNoStatus.YES.getCode());
-				
+
 				Double similarity = (Double) bizCacheUtil.getObject(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
-				if(similarity!=null){
+				if (similarity != null) {
 					auth.setSimilarDegree(BigDecimal.valueOf(similarity));
 					bizCacheUtil.delCache(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
 				}
-				
+
 				afUserAuthService.updateUserAuth(auth);
 
 				AfUserDo afUserDo = new AfUserDo();
@@ -151,31 +156,32 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				afUserDo.setRealName(numberDo.getName());
 				afUserService.updateUser(afUserDo);
 
-				logger.info("id number account realname="+numberDo.getName());
+				logger.info("id number account realname=" + numberDo.getName());
 
 				AfUserAccountDo account = new AfUserAccountDo();
 				account.setRealName(numberDo.getName());
 				account.setUserId(userId);
 				account.setIdNumber(numberDo.getCitizenId());
 				afUserAccountService.updateUserAccount(account);
-				
+
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 				try {
-					RiskRespBo riskResp = riskUtil.register(userId + "", numberDo.getName(), accountDo.getMobile(), numberDo.getCitizenId(), accountDo.getEmail(),
-							accountDo.getAlipayAccount(), numberDo.getAddress());
-					if(!riskResp.isSuccess()){
-	          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
-	          		}
+					RiskRespBo riskResp = riskUtil.register(userId + "", numberDo.getName(), accountDo.getMobile(),
+							numberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
+							numberDo.getAddress());
+					if (!riskResp.isSuccess()) {
+						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+					}
 				} catch (Exception e) {
-					RiskRespBo riskResp = riskUtil.modify(userId + "", numberDo.getName(), accountDo.getMobile(), numberDo.getCitizenId(), accountDo.getEmail(),
-							accountDo.getAlipayAccount(), numberDo.getAddress(), accountDo.getOpenId());
+					RiskRespBo riskResp = riskUtil.modify(userId + "", numberDo.getName(), accountDo.getMobile(),
+							numberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
+							numberDo.getAddress(), accountDo.getOpenId());
 					if (!riskResp.isSuccess()) {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 					}
 					logger.error("更新风控用户失败：" + accountDo.getUserId());
 				}
 
-				
 				return resp;
 
 			}
