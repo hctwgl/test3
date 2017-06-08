@@ -5,7 +5,7 @@ let userName = "";
 if(getInfo().userName){
     userName=getInfo().userName
 }
-let chance=[],isLogin,isShow;
+let chance=[],isLogin,isShow,clientRate;
 
 // 获取cookie中的apihost
 var apihost = getCookie("apihost");
@@ -37,6 +37,7 @@ function dataInit() {
             console.log(data);
             if(data.success){
                 isLogin=data.data.isLogin;
+                clientRate=data.data.clientRate||100;
                 //抽奖次数显示,抽奖码获取
                 $('#chance').html('您还有'+data.data.chanceCount+'次机会');
                 if(data.data.chanceCodes){
@@ -280,7 +281,7 @@ class game{
                 let dollLeft=doll.offset().left;
                 if(dollLeft>(clawLeft-10) && dollLeft<(clawLeft+35)){          //判断钩子与娃娃是否重合，减的越大越偏右
                     let dataProp=doll.attr('data-prop');
-                    if(Math.floor(Math.random()*10+1)>0){                 //随机能否抓到娃娃
+                    if(Math.floor(Math.random()*100+1)<clientRate){                 //随机能否抓到娃娃
                         $('#claw').css('backgroundImage','url(https://fs.51fanbei.com/h5/app/activity/06/ni_claw2.png)'); //钩子变为收缩样式
                         doll.find('.doll-main').css({position:'absolute',left:'2.47rem'})       //娃娃脱离文档流并跟着上升
                             .animate({top:'-2.2rem'},800,function () {
