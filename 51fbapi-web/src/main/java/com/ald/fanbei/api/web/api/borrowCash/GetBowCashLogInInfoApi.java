@@ -66,7 +66,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		List<Object> bannerList = getBannerObjectWithResourceDolist(
+				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
@@ -78,7 +79,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("status", afBorrowCashDo.getStatus());
 
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())
-					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
+					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())
+					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.waitTransed.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 
 			}
@@ -88,8 +90,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
-			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(),
-					afBorrowCashDo.getSumRate());
+			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
+					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
@@ -99,12 +101,13 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 			data.put("overdueStatus", "N");
 			// 如果预计还款日在今天之前，且为待还款状态，则已逾期，逾期天数=现在减去预计还款日
-			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED") && afBorrowCashDo.getGmtPlanRepayment().before(now)) {
+			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")
+					&& afBorrowCashDo.getGmtPlanRepayment().before(now)) {
 				long day = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), now);
 				data.put("overdueDay", day);
 				data.put("overdueStatus", "Y");
 			}
-			if (afBorrowCashDo.getGmtPlanRepayment() != null){
+			if (afBorrowCashDo.getGmtPlanRepayment() != null) {
 				data.put("repaymentDay", afBorrowCashDo.getGmtPlanRepayment());
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(now);
@@ -113,29 +116,36 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
 				data.put("deadlineDay", chaTime);
 			}
-				
+
 			data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 			data.put("reviewStatus", afBorrowCashDo.getReviewStatus());
 			data.put("rid", afBorrowCashDo.getRid());
 
 			data.put("renewalStatus", "N");
-			AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+			AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService
+					.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 			if (afRenewalDetailDo != null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
 				data.put("renewalStatus", "P");
 			} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
-				AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
+				AfResourceDo duedateResource = afResourceService
+						.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
 				BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差
-				AfResourceDo amountResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
+				AfResourceDo amountResource = afResourceService
+						.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
 				BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制
 
 				long currentTime = System.currentTimeMillis();
 				Date nowDate = new Date(currentTime);
-				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate, afBorrowCashDo.getGmtPlanRepayment());
+				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate,
+						afBorrowCashDo.getGmtPlanRepayment());
 				BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
 				// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
-				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) >= 0) {
-					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
-					if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
+				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0
+						&& waitPaidAmount.compareTo(amount_limit) >= 0) {
+					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService
+							.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
+					if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo
+							&& !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
 						data.put("renewalStatus", "Y");
 					}
 				}
