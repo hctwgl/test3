@@ -4,13 +4,13 @@
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>game</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css?id=31">
 </head>
 <body>
-<img src="$commonUrl/ni_1.jpg">
-<img src="$commonUrl/ni_2.jpg">
+<img src="$commonUrl/ni_1.jpg" style="width: 7.5rem;height:1.89rem">
+<img src="$commonUrl/ni_2.jpg" style="width: 7.5rem;height:4.49rem">
 <img class="modelPic" src="$commonUrl/ni_2bg.jpg">
-<img src="$commonUrl/ni_3.jpg">
+<img src="$commonUrl/ni_3.jpg" style="width: 7.5rem;height:3.28rem">
 <p class="title">抓娃娃抽优惠券，当集齐五个娃娃还可以额外抽取实物大奖！</p>
 <div class="container">
     <div id="claw"></div>
