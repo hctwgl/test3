@@ -184,6 +184,7 @@ public class Test {
 	}
 	
 //获取分页用户信息
+	@SuppressWarnings("unused")
 	private static Integer afUserInfo(int page) throws SQLException {
 		int pageCount = 80000;
 		Connection conn = getConn();

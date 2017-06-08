@@ -21,7 +21,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -69,7 +68,6 @@ public class ApplyConsumeApi implements ApiHandle {
 		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
 		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
 		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
-		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
 		int nper = NumberUtil
 				.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get(Constants.DEFAULT_NPER)), 2);
@@ -78,15 +76,6 @@ public class ApplyConsumeApi implements ApiHandle {
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
 		
-//		if (context.getAppVersion() >= 340) {
-//			if (StringUtils.isBlank(blackBox)) {
-//				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-//
-//			}
-//			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
-//					context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "",
-//					requestDataVo.getMethod(), "");
-//		}
 		if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}

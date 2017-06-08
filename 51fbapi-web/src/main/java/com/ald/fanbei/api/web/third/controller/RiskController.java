@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.web.api.brand.PayOrderApi;
 
 /**
  * @类现描述：

@@ -6,6 +6,27 @@ if(getInfo().userName){
     userName=getInfo().userName
 }
 let chance=[],isLogin,isShow;
+
+// 获取cookie中的apihost
+var apihost = getCookie("apihost");
+
+// app调用web的方法
+function alaShareData(){
+    // 分享内容
+    var dataObj = {
+        'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
+        'type': 'share', // 此页面的类型
+        'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
+        'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
+        'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+        'shareAppUrl': apihost+'/fanbei-web/activity/06/gameShare',  // 分享后的链接
+        'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
+        'sharePage': 'gameShare' // 分享的页面
+    };
+    var dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
+    return dataStr;
+};
+
 //数据初始化
 function dataInit() {
     $.ajax({
