@@ -8,12 +8,12 @@ if(getInfo().userName){
 let chance=[],isLogin,isShow,clientRate;
 
 // 获取cookie中的apihost
-var apihost = getCookie("apihost");
+let apihost = getCookie("apihost");
 
 // app调用web的方法
 function alaShareData(){
     // 分享内容
-    var dataObj = {
+    let dataObj = {
         'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
         'type': 'share', // 此页面的类型
         'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
@@ -23,7 +23,7 @@ function alaShareData(){
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'gameShare' // 分享的页面
     };
-    var dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
+    let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
     return dataStr;
 };
 
@@ -309,21 +309,9 @@ $('#startBtn').click(function () {
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"年中抓娃娃,让你一次玩个爽","content":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareUrl":"http://testapp.51fanbei.com/fanbei-web/gameShare"}';
-                // let retrunNum = getBlatFrom();  // retrunNum为1表示是Android
-                //     // 分享内容
-                //     let dataObj = {
-                //         'shareAppTitle': '年中盛宴攻略',
-                //         'shareAppContent': '分享年中盛宴攻略赢取大奖',
-                //         'shareAppImage': 'https://fs.51fanbei.com/h5/app/activity/05/mumday28_01.jpg',
-                //         'shareAppUrl': 'https://www.baidu.com'
-                //     };
-                //     let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
-                //     if ( retrunNum == 1 ) {  // 调用原生方法
-                //         alaAndroid.shareData(dataStr);
-                //     } else {
-                //         alaIos.shareData(dataStr);
-                //     }
+                // window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"年中抓娃娃,让你一次玩个爽","content":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareUrl":"http://testapp.51fanbei.com/fanbei-web/gameShare"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/fanbei-web/gameShare","isSubmit":"Y","sharePage":"gameShare"}';
+
             });
             $('#alert').show();
             $('#shadow').show();
@@ -390,7 +378,7 @@ function goDown(){
      $('#shadow').css('display','none');
      $('#getPrize').slideUp();
      $('#allToy').css('z-index',150);
-     $('#allToy .gotoTop').css('transform','rotate(0deg)'); 
+     $('#allToy .gotoTop').css('transform','rotate(0deg)');
 }
 $(function(){
     //箭头点击事件
