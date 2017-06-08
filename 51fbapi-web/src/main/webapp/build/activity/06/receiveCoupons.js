@@ -24,7 +24,10 @@ $(function(){
             success: function(returnData){
                 if (returnData.success) {
                     requestMsg("优惠劵领取成功");
-                    $(".couponLi").eq(i).find('.clickCoupon').html("去用券");                    
+                    $(".couponLi").eq(i).find('.clickCoupon').html("去用券");
+                    $(".couponLi").eq(i).find('.clickCoupon').click(function(){
+                        window.location.href = "activity/activityHome";
+                    })                   
                 } else { 
                     /*console.log(returnData)
                     console.log($('.clickCoupon').attr('dataQuota'))
