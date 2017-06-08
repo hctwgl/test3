@@ -201,6 +201,9 @@ public class Constants {
 	public static final String CONFKEY_YITU_KEY = "fbapi.yitu.key";
 	public static final String CONFKEY_YITU_DEFINED_CONTENT = "fbapi.yitu.definedContent";
 	public static final String CONFKEY_YITU_PEM_PATH = "fbapi.yitu.pemPath";
+    public static final String CACHEKEY_YITU_FACE_SIMILARITY                   = "yitu_face_similarity$";
+
+	
 	// 三方接口调用限制
 	public static final String API_CALL_LIMIT = "API_CALL_LIMIT";
 	

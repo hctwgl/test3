@@ -38,6 +38,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	TransactionTemplate transactionTemplate;
 	@Resource
 	CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
+
 	@Override
 	public int addUser(final AfUserDo afUserDo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -53,7 +54,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserId(afUserDo.getRid());
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
-			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid());
+					couponSceneRuleEnginerUtil.regist(afUserDo.getRid());
 
 					return 1;
 				} catch (Exception e) {
@@ -90,5 +91,6 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	public List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId, Integer start, Integer end) {
 		return afUserDao.getRecommendUserByRecommendId(recommendId, start, end);
 	}
+
 
 }
