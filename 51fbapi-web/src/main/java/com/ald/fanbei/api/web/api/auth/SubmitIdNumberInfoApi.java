@@ -147,7 +147,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 
 				Double similarity = (Double) bizCacheUtil.getObject(Constants.CACHEKEY_YITU_FACE_SIMILARITY+context.getUserName());
 				if (similarity != null) {
-					auth.setSimilarDegree(BigDecimal.valueOf(similarity).setScale(2,BigDecimal.ROUND_HALF_UP));
+					auth.setSimilarDegree(BigDecimal.valueOf(similarity/100).setScale(4,BigDecimal.ROUND_HALF_UP));
 					bizCacheUtil.delCache(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
 				}
 
