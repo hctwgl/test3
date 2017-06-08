@@ -79,7 +79,9 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			String idFrontUrl = ObjectUtils.toString(params.get("idFrontUrl"), "");
 			String idBehindUrl = ObjectUtils.toString(params.get("idBehindUrl"), "");
 
+			System.out.println("准备查询");
 			Integer c = afUserAccountService.getCountByIdNumer(citizenId, context.getUserId());
+			System.out.println("进入验证信息："+citizenId+";条数："+c);
 			if (c > 0) {
 				logger.error(FanbeiExceptionCode.USER_CARD_IS_EXIST.getErrorMsg());
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_IS_EXIST);
