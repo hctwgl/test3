@@ -241,9 +241,11 @@ public class AppH5FanBeiWebController extends BaseController {
 			couponDoT.setRid(couponDo.getRid());
 			couponDoT.setQuotaAlready(1);
 			afCouponService.updateCouponquotaAlreadyById(couponDoT);
+			logger.info("pick coupon success",couponDoT);
 			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
 
 		} catch (Exception e) {
+			logger.error("pick coupon error",e);
 			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
 		}
 
