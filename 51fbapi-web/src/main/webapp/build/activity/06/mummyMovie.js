@@ -1,5 +1,10 @@
 
 
+var userName = "";
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
+
 // 规则显示
 $(".clickRule").click(function(){
   $(".rule").fadeIn();
@@ -21,33 +26,31 @@ var endStamp = endDate.valueOf();
 var now = new Date();
 var nowTimeStamp = now.valueOf();
 
-$('.grabTenyuan').click(function(){
-    //判断活动时间
-    if(startStamp <= nowTimeStamp && nowTimeStamp <= startStamp && ){
+$('.mummyMovieBtn').click(function(){
+    //判断活动时
+    if(startStamp <= nowTimeStamp && nowTimeStamp <= startStamp ){
       requestMsg("很抱歉，活动尚未开始！");
-    } else {
-      loginSuccess(userName)
+    }else{
+      $.ajax({
+        url: '/fanbei-web/pickBoluomeCoupon',
+        data:{'sceneId':'8139','userName':userName},
+        type: 'POST',
+        success:function (data) {
+          data=eval('(' + data + ')');
+          if(data.success){
+              requestMsg("领劵成功");
+          }else{
+            if(data.url){
+              if (getBlatFrom() == 2) {
+                  location.href=data.url;
+              }else{
+                  requestMsg("请退出当前活动页面,登录后再进行领劵");
+              }
+            }else{
+              requestMsg(data.msg);
+            }
+          }
+        }
+      });
     }
 });
-
-// 领券
-function loginSuccess(obj) {
-  userName = obj;
-  $.ajax({
-    url: '/fanbei-web/pickBoluomeCoupon',
-    data:{'sceneId':'8267','userName':userName},
-    type: 'POST',
-    success:function (data) {
-      data=eval('(' + data + ')');
-      if(data.success){
-          requestMsg("领劵成功");
-      }else{
-        if(data.url){
-          location.href=data.url;
-        }else{
-          requestMsg(data.msg);
-        }
-      }
-    }
-  });
-}
