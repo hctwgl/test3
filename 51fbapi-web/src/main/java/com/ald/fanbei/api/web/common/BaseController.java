@@ -377,18 +377,29 @@ public abstract class BaseController {
 	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要
 	 */
 	private void checkWebSign(FanbeiWebContext webContext,RequestDataVo requestDataVo, boolean needToken) {
-		if (Constants.SWITCH_OFF.equals(ConfigProperties.get(Constants.CONFKEY_CHECK_SIGN_SWITCH))) {
-			return;
-		}
-		
+
 		Map<String, Object> systemMap = requestDataVo.getSystem();
 		String appVersion = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_VERSION));
 		String netType = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE));
 		String userName = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_USERNAME));
 		String sign = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN));
 		String time = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME));
-		String signStrBefore = "appVersion=" + appVersion + "&netType=" + netType + "&time=" + time + "&userName=" + userName;
 		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+		if (Constants.SWITCH_OFF.equals(ConfigProperties.get(Constants.CONFKEY_CHECK_SIGN_SWITCH))) {
+			if (needToken) {//需要登录的接口必须加token
+				if (token == null) {
+					throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+				}
+				webContext.setLogin(true);
+			}else{//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+				if(token != null){
+					webContext.setLogin(true);
+				}
+			}
+			return;
+		}
+		String signStrBefore = "appVersion=" + appVersion + "&netType=" + netType + "&time=" + time + "&userName=" + userName;
+//		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
 		if (needToken) {//需要登录的接口必须加token
 			if (token == null) {
 				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
