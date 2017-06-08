@@ -2,6 +2,7 @@ package com.ald.fanbei.api.common.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -222,6 +223,20 @@ public class NumberUtil {
 		}
 		return lType;
     }
+    
+    /**
+     * 保留两位小数
+     * @param d
+     * @return
+     */
+    public static String format2Str(BigDecimal d) {
+ 	    if(d == null){
+ 	    	return "0.00";
+ 	    }
+         DecimalFormat df = new DecimalFormat("0.00");
+         String ds = df.format(d);
+         return ds;
+     }
     
     /**
      * 比较数字是否在指定两个数字范围呢
