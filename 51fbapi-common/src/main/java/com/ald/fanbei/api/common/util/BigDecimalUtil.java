@@ -269,4 +269,25 @@ public class BigDecimalUtil {
         BigDecimal result = d1.divide(d2,digit,BigDecimal.ROUND_UP);
         return result;
     }
+
+    /**
+     * 除法，针对除不尽的情况做进一位处理
+     * 例如：10/3 = 3.33 进位处理 3.34
+     * @param d1    除数
+     * @param d2    被除数
+     * @param digit 保留小数点(默认两位小数)
+     * @return
+     * @author hantao
+     */
+    public static BigDecimal divHalfDown(BigDecimal d1, BigDecimal d2, Integer digit) {
+        if( null == digit){
+            digit = 2;
+        }
+        BigDecimal result = d1.divide(d2,digit,BigDecimal.ROUND_DOWN);
+        return result;
+    }
+
+    public static void main(String[] args){
+        System.out.print(BigDecimalUtil.divHalfDown(new BigDecimal("10"),new BigDecimal("3"),null));
+    }
 }
