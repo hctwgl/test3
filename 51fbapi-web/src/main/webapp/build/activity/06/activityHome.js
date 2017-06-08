@@ -1,26 +1,72 @@
 /**
  * Created by yoe on 2017/5/27.
- */
+**/
 
-/*var addModel = function addModel(goodsList) {
-    var html = '';
-    for (var j = 0; j < goodsList.length; j++) {
-        // 售价
-        var saleAmount = toDecimal2(goodsList[j].saleAmount);
-        var amountAmountSplitArr = saleAmount.split(".");
-        var amountAmountPriceInteger = amountAmountSplitArr[0];
-        var amountAmountPriceDecimal = amountAmountSplitArr[1];
-        // 返利
-        var rebateAmount = toDecimal2(goodsList[j].rebateAmount);
-        var rebateAmountSplitArr = rebateAmount.split(".");
-        var rebateAmountPriceInteger = rebateAmountSplitArr[0];
-        var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-        var goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[j].goodsId+'"}';
-        html += '<li class="goodsListModel_item">'
+let finished = 0;
+let page = 1; // 默认页数从1开始
+
+// var addModel = function addModel(goodsList) {
+//     var html = '';
+//     for (var j = 0; j < goodsList.length; j++) {
+//         // 售价
+//         var saleAmount = toDecimal2(goodsList[j].saleAmount);
+//         var amountAmountSplitArr = saleAmount.split(".");
+//         var amountAmountPriceInteger = amountAmountSplitArr[0];
+//         var amountAmountPriceDecimal = amountAmountSplitArr[1];
+//         // 返利
+//         var rebateAmount = toDecimal2(goodsList[j].rebateAmount);
+//         var rebateAmountSplitArr = rebateAmount.split(".");
+//         var rebateAmountPriceInteger = rebateAmountSplitArr[0];
+//         var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
+//         var goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[j].goodsId+'"}';
+//         html += '<li class="goodsListModel_item">'
+//                 +'<a href='+goodInfoUrl+'>'
+//                     +'<img src=" '+goodsList[j].goodsIcon+' " class="mainContent_img">'
+//                     +'<div class="goodsListModel_mainContent_wrap">'
+//                         +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
+//                         +'<p class="fs_26 fsc_red">'
+//                             +'<span>￥'+amountAmountPriceInteger+'</span><span class="fs_24">.'+amountAmountPriceDecimal+'</span>'
+//                         +'</p>'
+//                     +'</div>'
+//                     +'<div class="goodsListModel_mainContent_rebate_wrap">'
+//                         +'<div class="goodsListModel_mainContent_rebate clearfix">'
+//                             +'<span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>'
+//                             +'<p class="fl fs_24 fsc_orange">'
+//                                 +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_22">.'+rebateAmountPriceDecimal+'</span>'
+//                             +'</p>'
+//                         +'</div>'
+//                     +'</div>'
+//                 +'</a>'
+//             +'</li>';
+//     }
+//     return html;
+// };
+
+
+// 精品推荐
+var addModel = function addModel(goodsList) {
+  var html = '';
+  for (var i = 0; i < goodsList.length; i++) {
+    // 售价
+    var saleAmount = toDecimal2(goodsList[i].saleAmount);
+    var amountAmountSplitArr = saleAmount.split(".");
+    var amountAmountPriceInteger = amountAmountSplitArr[0];
+    var amountAmountPriceDecimal = amountAmountSplitArr[1];
+    // 返利
+    var rebateAmount = toDecimal2(goodsList[i].rebateAmount);
+    var rebateAmountSplitArr = rebateAmount.split(".");
+    var rebateAmountPriceInteger = rebateAmountSplitArr[0];
+    var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
+
+    var goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
+
+    html += '<h2>精品推荐</h2>'
+            +'<ul>'
+              '<li class="clearfix">'
                 +'<a href='+goodInfoUrl+'>'
-                    +'<img src=" '+goodsList[j].goodsIcon+' " class="mainContent_img">'
-                    +'<div class="goodsListModel_mainContent_wrap">'
-                        +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
+                    +'<img src="">'
+                    +'<div class="boutiqueHomeContent clearfix">'
+                        +'<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利更有超级返利618折上</p>'
                         +'<p class="fs_26 fsc_red">'
                             +'<span>￥'+amountAmountPriceInteger+'</span><span class="fs_24">.'+amountAmountPriceDecimal+'</span>'
                         +'</p>'
@@ -28,19 +74,51 @@
                     +'<div class="goodsListModel_mainContent_rebate_wrap">'
                         +'<div class="goodsListModel_mainContent_rebate clearfix">'
                             +'<span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>'
-                            +'<p class="fl fs_24 fsc_orange">'
-                                +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_22">.'+rebateAmountPriceDecimal+'</span>'
-                            +'</p>'
+                            +'<p class="price"><span>￥5.2</span><span><i>返</i>￥1.2</span></p>'
+                            +'<button>马上抢</button>'
                         +'</div>'
                     +'</div>'
                 +'</a>'
-            +'</li>';
+              +'</li>'
+            +'</ul>';
     }
     return html;
-};*/
+};
 
-// 导航tab切换
-/*$(function(){
+
+// <ul>
+//   <li class="clearfix">
+//     <a href="">
+//       <img src="">
+//       <div class="boutiqueHomeContent clearfix">
+//         <p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利更有超级返利618折上</p>
+//         <p class="price"><span>￥5.2</span><span><i>返</i>￥1.2</span></p>
+//         <button>马上抢</button>
+//       </div>
+//     </a>
+//   </li>
+//   <li class="clearfix">
+//     <a href="">
+//       <img src="">
+//       <div class="boutiqueHomeContent">
+//         <p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
+//         <div class="price">
+//           <p><i class="monthCorner"></i>￥5.2</p>
+//           <p>抢购价：￥1.2</p>
+//         </div>
+//         <button>马上抢</button>
+//       </div>
+//     </a>
+//   </li>
+// </ul>
+
+
+
+
+
+
+// 初始化页面
+$(function(){
     $(window).on('scroll',function () {
         if(finished==0){
             var scrollTop = $(this).scrollTop();
@@ -50,8 +128,8 @@
                 page++;
                 finished=1; //防止未加载完再次执行
                 $.ajax({
-                    url: "/app/goods/categoryGoodsList",
-                    type: "POST",
+                    url: "/fanbei-web/mainActivityInfo",
+                    type: "GET",
                     dataType: "JSON",
                     data: {
                         modelId : modelIdNum,
@@ -59,6 +137,7 @@
                         type: typeCurrentNum
                     },
                     success: function(returnData){
+                      console.log(returnData);
                         if (returnData.success) {
                             if(returnData.data["goodsList"]==""){
                                 var txt='<div class="loadOver"><span>没有更多了...</span></div>';
@@ -80,62 +159,7 @@
             }
         }
     });
-});*/
-
-
-
-// $(function(){
-//     function timer(intDiff){
-//         showTimerS(intDiff);
-//         intDiff--;
-//         window.setInterval(function(){
-//             showTimerS(intDiff);
-//             intDiff--;
-
-//         }, 1000);
-//     } 
-
-//     function showTimerS( diff){
-//         var day=0,
-//         hour=0,
-//         minute=0,
-//         second=0;//时间默认值        
-            
-//         if(diff > 0){
-//             day = Math.floor(diff / (60 * 60 * 24));
-//             hour = Math.floor(diff / (60 * 60)) - (day * 24);
-//             minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
-//             second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
-//         }
-            
-//         if (minute <= 9) minute = '0' + minute;
-//         if (second <= 9) second = '0' + second;
-//         $('#day_show').html(day+"天");
-//         $('#hour_show').html('<s id="h"></s>'+hour+'时');
-//         $('#minute_show').html('<s></s>'+minute+'分');
-//         $('#second_show').html('<s></s>'+second+'秒');
-//     }
-
-//     var endPayTime=$("#endPayTime").val();
-//     var currentTime=$("#currentTime").val();
-//     function getLocalTime(nS) {     
-//         nS = nS.substring(0,19);    
-//         nS = nS.replace(/-/g,'/'); 
-//         return new Date(nS).getTime()/1000;      
-//     }
-
-//     // 付款倒计时
-//     var endPayTime = getLocalTime(endPayTime.valueOf());
-//     var currentTime = getLocalTime(currentTime.valueOf());
-//     var cha = endPayTime - currentTime;
-//     //alert(endPayTime+"===="+currentTime+"====="+cha);
-//     timer(cha); 
-// });
-
-
-
-
-
+});
 
 
 
@@ -160,15 +184,15 @@ $(function(){
         var day=0,
         hour=0,
         minute=0,
-        second=0;//时间默认值        
-            
+        second=0;//时间默认值
+
         if(diff > 0){
             day = Math.floor(diff / (60 * 60 * 24));
             hour = Math.floor(diff / (60 * 60)) - (day * 24);
             minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
             second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
         }
-            
+
         if (minute <= 9) minute = '0' + minute;
         if (second <= 9) second = '0' + second;
         $('#day_show').html(day+"天");
@@ -186,7 +210,5 @@ $(function(){
         }, 1000);
     };
 
-    timer(intDiff); 
+    timer(intDiff);
 });
-
-

@@ -32,7 +32,7 @@
 					<li><a href=""><img src="$commonUrl/selectedHome4.png"></a></li>
 				</ul>
 			</div>
-			<div class="boutiqueHome">
+			<div class="boutiqueHome" id="boutiqueHome">
 				<h2>精品推荐</h2>
 				<ul>
 					<li class="clearfix">
