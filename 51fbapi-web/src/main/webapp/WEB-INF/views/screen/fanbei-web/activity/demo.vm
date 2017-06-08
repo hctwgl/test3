@@ -20,41 +20,32 @@
   var apihost = getCookie("apihost");
 
   // app调用web的方法
-  function alaShareData(){
-    var dataObj = { // 分享内容
-      "appLogin": "Y", // 是否需要登录，Y需要，N不需要
-      "type": "share", // 此页面的类型
-      "shareAppTitle": "51返呗618购物狂欢节攻略来啦！",  // 分享的title
-      'shareAppContent': "分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！",  // 分享的内容
-      "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-      "shareAppUrl": apihost+"/activity/06/feastRaiders",  // 分享后的链接
-      "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
-      "sharePage": "gameShare" // 分享的页面
-    };
-    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
-    //var dataStr = dataObj.toString();  //
-    return dataStr;
-  };
-
-// function alaShareData(){
-//   var dataStr = '{"appLogin":"Y","type":"share"}';
-//   return dataStr;
-// }
-
-
-
+  // function alaShareData(){
+  //   var dataObj = { // 分享内容
+  //     'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
+  //     'type': 'share', // 此页面的类型
+  //     'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
+  //     'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
+  //     'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+  //     'shareAppUrl': apihost+'/activity/06/feastRaiders',  // 分享后的链接
+  //     'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
+  //     'sharePage': 'gameShare' // 分享的页面
+  //   };
+  //   var dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
+  //   return dataStr;
+  // };
 
 /* ---------------------前端自己点击分享--------------------- */
-// new Vue({
-//   el:'.footer',
-//   methods:{
-//     bombBox: function(){ // 规则弹窗
-//       // 获取cookie中的apihost
-//       var apihost = getCookie("apihost");
-//       window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"51返呗618购物狂欢节攻略来啦！","shareAppContent":"分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/activity/06/feastRaiders","isSubmit":"Y","sharePage":"gameShare"}';
-//     }
-//   }
-// });
+new Vue({
+  el:'.footer',
+  methods:{
+    bombBox: function(){ // 规则弹窗
+      // 获取cookie中的apihost
+      var apihost = getCookie("apihost");
+      window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"51返呗618购物狂欢节攻略来啦！","shareAppContent":"分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/activity/06/feastRaiders","isSubmit":"Y","sharePage":"gameShare"}';
+    }
+  }
+});
 
 
 

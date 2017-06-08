@@ -36,7 +36,6 @@ import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -52,7 +51,6 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -123,8 +121,8 @@ public class AppH5FanBeiWebController extends BaseController {
 		String ids = resourceDo.getValue();
 		List<AfCouponDto> afCouponList = afCouponService.selectCouponByCouponIds(ids,userId);
 		List<Object> list = new ArrayList<Object>();
-		for (AfCouponDto afCouponDto : afCouponList) {
-			list.add(couponObjectWithAfUserCouponDto(afCouponDto));
+		for (AfCouponDto afCouponDo : afCouponList) {
+			list.add(couponObjectWithAfUserCouponDto(afCouponDo));
 		}
 		model.put("couponList", list);
 		model.put("userName", userName);
@@ -373,21 +371,18 @@ public class AppH5FanBeiWebController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.ald.fanbei.api.web.common.BaseController#parseRequestData(java.lang.
+	 * String, javax.servlet.http.HttpServletRequest)
+	 */
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        try {
-            RequestDataVo reqVo = new RequestDataVo();
-            
-            JSONObject jsonObj = JSON.parseObject(requestData);
-            reqVo.setId(jsonObj.getString("id"));
-            reqVo.setMethod(request.getRequestURI());
-            reqVo.setSystem(jsonObj);
-            
-            return reqVo;
-        } catch (Exception e) {
-            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-        }
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*

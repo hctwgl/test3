@@ -219,6 +219,7 @@ public abstract class BaseController {
 					return webContext;
 				}else{
 					webContext.setUserName(testUser);
+					webContext.setLogin(true);
 					return webContext;
 				}
 			}
@@ -236,7 +237,7 @@ public abstract class BaseController {
 		FanbeiContext baseContext = this.doBaseParamCheck(requestDataVo);
 		webContext.setUserName(baseContext.getUserName());
 		webContext.setAppVersion(baseContext.getAppVersion());
-		checkWebSign(requestDataVo, needToken);
+		checkWebSign(webContext,requestDataVo, needToken);
 		return webContext;
 	}
 
@@ -375,7 +376,7 @@ public abstract class BaseController {
 	 * @param needToken
 	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要
 	 */
-	private void checkWebSign(RequestDataVo requestDataVo, boolean needToken) {
+	private void checkWebSign(FanbeiWebContext webContext,RequestDataVo requestDataVo, boolean needToken) {
 		if (Constants.SWITCH_OFF.equals(ConfigProperties.get(Constants.CONFKEY_CHECK_SIGN_SWITCH))) {
 			return;
 		}
@@ -393,9 +394,11 @@ public abstract class BaseController {
 				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
 			}
 			signStrBefore = signStrBefore + token.getToken();
+			webContext.setLogin(true);
 		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
 			if(token != null){
 				signStrBefore = signStrBefore + token.getToken();
+				webContext.setLogin(true);
 			}
 		}
 		this.compareSign(signStrBefore, sign);

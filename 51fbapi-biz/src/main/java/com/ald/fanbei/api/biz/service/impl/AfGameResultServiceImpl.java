@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfGameConfService;
@@ -41,6 +43,8 @@ import com.alibaba.fastjson.JSONObject;
 
 @Service("afGameResultService")
 public class AfGameResultServiceImpl implements AfGameResultService {
+	
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Resource
 	AfGameResultDao afGameResultDao;
@@ -94,7 +98,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 				return null;
 			}
 		});
-		String couponId = this.lottery(prizeObject,itemGameResults, gameResults.size()==0?true:false);
+		String couponId = this.lottery(userInfo.getRid(), prizeObject,itemGameResults, gameResults.size()==0?true:false);
 		
 		//新增或更新五娃记录，增加result;
 		dealWithFivebabyDao(userInfo.getRid(), item, gameResults.size()==0?true:false);
@@ -134,7 +138,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	 * @param isFirstLottery
 	 * @return
 	 */
-	private String lottery(JSONObject prizeObject,List<AfGameResultDto> gameResults,boolean isFirstLottery){
+	private String lottery(Long userId,JSONObject prizeObject,List<AfGameResultDto> gameResults,boolean isFirstLottery){
 		JSONArray rules = prizeObject.getJSONArray("prize");
 		Map<String,JSONObject> rulesMap = new HashMap<String, JSONObject>();
 		List<Integer> rates = new ArrayList<Integer>();
@@ -147,9 +151,11 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			prizeIds.add(rules.getJSONObject(i).getString("prize_id"));
 			rulesMap.put(rules.getJSONObject(i).getString("prize_id"), rules.getJSONObject(i));
 		}
+		logger.info(userId + " lottery=" + gameResults + ";" + isFirstLottery);
 		//如果是第一次登录，比中奖：算法为：[如：coupon1的概率为10，coupon2的概率为8，coupon3的概率为20，则取一个小于38的随机数，若随机数落在0-9，则抽中coupon1,若落在10-17则为coupon2,若落在18-37则为coupon3]
 		if(isFirstLottery){
 			int randomVal = CommonUtil.getRandomNum(sumRate);
+			logger.info(userId + " randomVal=" + randomVal);
 			int tempValue = 0;
 			for(int i = 0 ;i < rates.size() ;i ++){
 				tempValue = tempValue + rates.get(i);
@@ -164,7 +170,6 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 				AfGameResultDto resultItem = gameResults.get(i);
 				if("Y".equals(resultItem.getResult())){//中奖
 					userAwardCount = userAwardCount + 1;
-					
 					if(couponIdResultMap.get(resultItem.getLotteryResult()+"") != null){
 						couponIdResultMap.put(resultItem.getLotteryResult()+"", couponIdResultMap.get(resultItem.getLotteryResult()+"") + 1);
 					}else{
@@ -196,6 +201,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			
 			if(rates.size() > 0){//还有对应的配置
 				int randomVal = CommonUtil.getRandomNum(100);
+				logger.info(userId + " randomVal=" + randomVal + ",rates=" + rates);
 				int tempValue = 0;
 				for(int i = 0 ;i < rates.size() ;i ++){
 					tempValue = tempValue + rates.get(i);
