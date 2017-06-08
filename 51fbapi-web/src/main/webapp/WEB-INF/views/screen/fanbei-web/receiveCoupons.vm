@@ -29,12 +29,12 @@
 		   	   #if($!{item.quota}==$!{item.quotaAlready})
                <p class="clickCoupon clickCoupon02">已抢完</p>
                #else
-               <p class="clickCoupon clickCoupon01">点击领券</p>
+               <p class="clickCoupon clickCoupon01" dataQuota=$!{item.quota} dataAleady=$!{item.quotaAlready}>点击领券</p>
                #end
 		   </li>
 		#end
 	</ul>
-	<p class="myCoupon">查看我的优惠券</p>
+	<!-- <p class="myCoupon">查看我的优惠券</p> -->
 </div>
 
 <script type="text/javascript" src="/dist/activity/06/receiveCoupons.js?version=$version"></script>
