@@ -228,6 +228,8 @@ public class AppH5GameController  extends BaseController{
 	private AfGameInitVo buildGameInitVo(AfGameDo gameDo,List<AfGameConfDo> gameConfDo,List<AfGameResultDo> latestResultList,List<AfGameAwardDo> latestAwardList,List<AfGameChanceDo> gameChanceList,AfGameFivebabyDo fivebabyDo,AfGameAwardDo awardDo,boolean isLogin){
 		AfGameInitVo gameInitVo = new AfGameInitVo();
 		
+		AfResourceDo clientRate = afResourceService.getSingleResourceBytype(Constants.RES_GAME_CATCH_DOLL_CLIENT_RATE);
+		gameInitVo.setClientRate(Integer.parseInt(clientRate.getValue()));
 		//游戏信息
 		if(gameDo != null){
 			gameInitVo.setTitle(gameDo.getTitle());
