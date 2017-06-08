@@ -28,7 +28,7 @@
 		   	   </div>
 		   	   #if($!{item.quota}==$!{item.quotaAlready})
                <p class="clickCoupon clickCoupon02">已抢完</p>
-               #else if($!{item.userAlready}>0)
+               #elseif($!{item.userAlready}>0)
                 <p class="clickCoupon clickCoupon01">去用券</p>               
                #else
                <p class="clickCoupon clickCoupon01" dataQuota=$!{item.quota} dataAleady=$!{item.quotaAlready}>点击领券</p>
