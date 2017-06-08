@@ -108,13 +108,13 @@ public class AppH5FanBeiWebController extends BaseController {
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
 		doMaidianLog(request);
-		FanbeiWebContext context = new FanbeiWebContext();
-		context = doWebCheck(request, false);
+		
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 		JSONObject appInfo = JSON.parseObject(appInfotext);
-	
-		AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+		String userName = ObjectUtils.toString(appInfo.get("userName"), "");
+
+		AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
 		Long userId= -1L;
 		if(afUserDo!=null){
 			
@@ -127,7 +127,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			list.add(couponObjectWithAfUserCouponDto(afCouponDto));
 		}
 		model.put("couponList", list);
-		model.put("userName", context.getUserName());
+		model.put("userName", userName);
 		logger.info(JSON.toJSONString(model));
 	}
 
