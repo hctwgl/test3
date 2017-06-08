@@ -36,6 +36,7 @@ import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -372,18 +373,21 @@ public class AppH5FanBeiWebController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.ald.fanbei.api.web.common.BaseController#parseRequestData(java.lang.
-	 * String, javax.servlet.http.HttpServletRequest)
-	 */
+	
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
+            
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
 	}
 
 	/*
