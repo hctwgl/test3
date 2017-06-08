@@ -15,6 +15,7 @@
 <p class="title">抓娃娃抽优惠券，当集齐五个娃娃还可以额外抽取实物大奖！</p>
 <div class="container">
     <div id="claw"></div>
+    <img style="display: none" src="$commonUrl/ni_claw2.png">
     <div id="terrace">
         <div id="scroll">
             <span class="doll"><div class="doll-main"></div></span>
@@ -64,18 +65,6 @@
          <!-- <li>
             <div class="personImg"></div>
             <h2><span>15666666666</span><span>获得100抵10元优惠券</span></h2>
-         </li>
-         <li>
-            <div class="personImg"></div>
-            <h2><span>15777777777</span><span>获得100抵10元优惠券</span></h2>
-         </li>
-         <li>
-            <div class="personImg"></div>
-            <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
-         </li>
-         <li>
-            <div class="personImg"></div>
-            <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
          </li> -->
        </ul>
    </div>
@@ -96,18 +85,6 @@
            <!-- <li>
               <div class="personImg"></div>
               <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
-           </li>
-           <li>
-              <div class="personImg"></div>
-              <h2><span>15777777777</span>获得<span>100抵10元优惠券</span></h2>
-           </li>
-           <li>
-              <div class="personImg"></div>
-              <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
-           </li>
-           <li>
-              <div class="personImg"></div>
-              <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
            </li> -->
          </ul>
      </div>
@@ -136,6 +113,6 @@
      </li>
    </ul>
 </div>
-<script type="text/javascript" src="/dist/activity/06/game.js?id=3"></script>
+<script type="text/javascript" src="/dist/activity/06/game.js?id=4"></script>
 </body>
 </html>

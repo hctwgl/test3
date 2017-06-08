@@ -19,7 +19,7 @@
 		   <li class="couponLi">
 		       <p class="positionYuan positionYuan01"></p>
                <p class="positionYuan positionYuan02"></p>
-		   	   <div class="couponKind"><img src="$commonUrl/getCoupon02.png"></div>
+		   	   <!-- <div class="couponKind"><img src="$commonUrl/getCoupon02.png"></div> -->
 		   	   <div class="couponTop">
 		   	   	   <p class="cashCoupon">$!{item.type}</p>
 		   	   	   <p class="couponSize">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></p>
