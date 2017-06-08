@@ -31,7 +31,7 @@
 	<select id="getByCode" resultType="AfGameDo">
 		SELECT 
 			<include refid="queryFields"/>
-		FROM af_game WHERE is_delete = 0 AND code=#{code}
+		FROM af_game WHERE is_delete = 0 AND code=#{code} LIMIT 1;
 	</select>
 	
 </mapper>
