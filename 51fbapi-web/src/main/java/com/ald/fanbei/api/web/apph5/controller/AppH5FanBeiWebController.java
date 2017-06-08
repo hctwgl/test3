@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
@@ -110,8 +111,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 		JSONObject appInfo = JSON.parseObject(appInfotext);
-		String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
-//		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		String userName = ObjectUtils.toString(appInfo.get("userName"), "");
 
 		AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
 		Long userId= -1L;
@@ -165,11 +165,14 @@ public class AppH5FanBeiWebController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/pickCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
+		
+		doMaidianLog(request);
+		FanbeiWebContext context = new FanbeiWebContext();
 		try {
+			
+			context = doWebCheck(request, true);
 			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
-
-			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 			Map<String, Object> returnData = new HashMap<String, Object>();
 
 			if (afUserDo == null) {
