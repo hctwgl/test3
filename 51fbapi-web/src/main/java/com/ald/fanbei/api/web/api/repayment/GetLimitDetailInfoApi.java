@@ -1,5 +1,15 @@
 package com.ald.fanbei.api.web.api.repayment;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
@@ -20,15 +30,6 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfLimitDetailInfoVo;
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 
