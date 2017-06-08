@@ -1,0 +1,15 @@
+$(function(){
+	$('.order').click(function(){
+		$('.mask').css('display','block');
+		$('.fillInfo').css('display','block');
+	});
+	$('.confirm').click(function(){
+		$('.fillInfo').css('display','none');
+		$('.orderSuccess').css('display','block');
+	});
+	$('.mask').click(function(){
+		$('.mask').css('display','none');
+		$('.fillInfo').css('display','none');
+		$('.orderSuccess').css('display','none');
+	});
+})
