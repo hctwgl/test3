@@ -20,7 +20,7 @@
             }
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ta, s);
         })(window);
-        
+
     </script>
 </head>
 <body>
@@ -75,7 +75,7 @@
 		#elseif( $!{style} == 9 )
 			<div class="channel9_rule">
 				<p><i></i><span>活动规则</span></p>
-				<p>1.活动时间：2017年6月8日--2017年6月20日；</p>
+				<p>1.活动时间：2017年6月9日--2017年6月25日；</p>
 				<p>2.此活动名额仅限前10000名，数量有限，抢完为止；</p>
 				<p>3.同一个账号、手机号、移动设备、支付卡号及账户视为同一账户，经系统检测同一IP重复注册视为无效用户；</p>
 				<p>4.如发现恶意作弊行为，将取消活动资格，活动奖励并做好封号处理。</p><br>
