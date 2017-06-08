@@ -3,6 +3,8 @@
  */
 package com.ald.fanbei.api.common.util;
 
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -201,14 +203,16 @@ public class BigDecimalUtil {
      * @param max          --手续费上限
      * @return
      */
-    public static BigDecimal getTotalPoundage(BigDecimal amount, int num, BigDecimal poundageRate, BigDecimal min, BigDecimal max) {
+    public static BigDecimal getTotalPoundage(BigDecimal amount, int num, BigDecimal poundageRate, BigDecimal min, BigDecimal max,String isFree) {
         amount = amount == null ? new BigDecimal(0) : amount;
         poundageRate = poundageRate == null ? new BigDecimal(0) : poundageRate;
         BigDecimal v1 = amount.multiply(poundageRate);
-        if (min.compareTo(v1) > 0) {
-            v1 = min;
-        } else if (v1.compareTo(max) > 0) {
-            v1 = max;
+        if(InterestfreeCode.NO_FREE.getCode().equals(isFree)){
+            if (min.compareTo(v1) > 0) {
+                v1 = min;
+            } else if (v1.compareTo(max) > 0) {
+                v1 = max;
+            }
         }
         return v1;
     }
