@@ -108,13 +108,13 @@ public class AppH5FanBeiWebController extends BaseController {
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
 		doMaidianLog(request);
-		
+		FanbeiWebContext context = new FanbeiWebContext();
+		context = doWebCheck(request, false);
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 		JSONObject appInfo = JSON.parseObject(appInfotext);
-		String userName = ObjectUtils.toString(appInfo.get("userName"), "");
-
-		AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+	
+		AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 		Long userId= -1L;
 		if(afUserDo!=null){
 			
@@ -123,11 +123,11 @@ public class AppH5FanBeiWebController extends BaseController {
 		String ids = resourceDo.getValue();
 		List<AfCouponDto> afCouponList = afCouponService.selectCouponByCouponIds(ids,userId);
 		List<Object> list = new ArrayList<Object>();
-		for (AfCouponDto afCouponDo : afCouponList) {
-			list.add(couponObjectWithAfUserCouponDto(afCouponDo));
+		for (AfCouponDto afCouponDto : afCouponList) {
+			list.add(couponObjectWithAfUserCouponDto(afCouponDto));
 		}
 		model.put("couponList", list);
-		model.put("userName", userName);
+		model.put("userName", context.getUserName());
 		logger.info(JSON.toJSONString(model));
 	}
 
