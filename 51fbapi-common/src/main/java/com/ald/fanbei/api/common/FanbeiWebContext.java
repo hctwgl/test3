@@ -14,6 +14,8 @@ public class FanbeiWebContext {
     private String userName;
     private String appInfo;
     private Integer appVersion;
+    private Long userId;
+    private boolean isLogin;
     
 	public String getUserName() {
 		return userName;
@@ -33,5 +35,17 @@ public class FanbeiWebContext {
 	public void setAppVersion(Integer appVersion) {
 		this.appVersion = appVersion;
 	}
-    
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	public boolean isLogin() {
+		return isLogin;
+	}
+	public void setLogin(boolean isLogin) {
+		this.isLogin = isLogin;
+	}
+	
 }

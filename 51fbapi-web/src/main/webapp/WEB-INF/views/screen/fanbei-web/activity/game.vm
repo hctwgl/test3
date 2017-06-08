@@ -8,7 +8,6 @@
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
 </head>
 <body>
-<a style="position: fixed;top:1.5rem;right:.2rem;z-index: 150" href="oppoR11"><img style="width:1.6rem;height:1.6rem" src="$commonUrl/game_oppo.png"></a>
 <img src="$commonUrl/ni_1.jpg" style="width: 7.5rem;height:1.89rem">
 <img src="$commonUrl/ni_2.jpg" style="width: 7.5rem;height:4.49rem">
 <img class="modelPic" src="$commonUrl/ni_2bg.jpg">
@@ -16,7 +15,6 @@
 <p class="title">抓娃娃抽优惠券，当集齐五个娃娃还可以额外抽取实物大奖！</p>
 <div class="container">
     <div id="claw"></div>
-    <img style="display: none" src="$commonUrl/ni_claw2.png">
     <div id="terrace">
         <div id="scroll">
             <span class="doll"><div class="doll-main"></div></span>
@@ -66,6 +64,18 @@
          <!-- <li>
             <div class="personImg"></div>
             <h2><span>15666666666</span><span>获得100抵10元优惠券</span></h2>
+         </li>
+         <li>
+            <div class="personImg"></div>
+            <h2><span>15777777777</span><span>获得100抵10元优惠券</span></h2>
+         </li>
+         <li>
+            <div class="personImg"></div>
+            <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
+         </li>
+         <li>
+            <div class="personImg"></div>
+            <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
          </li> -->
        </ul>
    </div>
@@ -86,6 +96,18 @@
            <!-- <li>
               <div class="personImg"></div>
               <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15777777777</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
+           </li>
+           <li>
+              <div class="personImg"></div>
+              <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
            </li> -->
          </ul>
      </div>
@@ -114,6 +136,6 @@
      </li>
    </ul>
 </div>
-<script type="text/javascript" src="/dist/activity/06/game.js?id=13"></script>
+<script type="text/javascript" src="/dist/activity/06/game.js?id=3"></script>
 </body>
 </html>

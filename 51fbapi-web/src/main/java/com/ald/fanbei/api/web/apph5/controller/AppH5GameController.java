@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,7 +93,7 @@ public class AppH5GameController  extends BaseController{
 		try{
 			Long userId = -1l;
 			context = doWebCheck(request, false);
-			if(CommonUtil.isMobile(context.getUserName()) && StringUtil.isNotBlank(context.getUserName())){
+			if(context.isLogin()){
 				AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
 				if(afUser != null){
 					userId = afUser.getRid();
@@ -252,15 +253,15 @@ public class AppH5GameController  extends BaseController{
 		//用户机会信息
 		if(gameChanceList != null){
 			int chanceCount = 0;
-			String chanceCodes = "";
+			List<String> chanceCodesList = new ArrayList<String>();
 			for(AfGameChanceDo item:gameChanceList){
 				chanceCount = chanceCount + (item.getTotalCount() - item.getUsedCount());
-				if(item.getTotalCount() > 0){
-					chanceCodes = chanceCodes + "," + item.getCodes();
+				if(item.getTotalCount() - item.getUsedCount() > 0){
+					chanceCodesList.addAll(CommonUtil.turnStringToList(item.getCodes(), ","));
 				}
 			}
 			gameInitVo.setChanceCount(chanceCount);
-			gameInitVo.setChanceCodes(chanceCodes);
+			gameInitVo.setChanceCodes(StringUtil.turnListToStr(chanceCodesList, ","));
 		}
 		
 		//是否被抽中将
