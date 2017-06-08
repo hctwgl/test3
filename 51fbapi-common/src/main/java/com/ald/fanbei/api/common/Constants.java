@@ -103,7 +103,9 @@ public class Constants {
 	public static final String APPLY_BRROW_CASH_WHITE_LIST = "APPLY_BRROW_CASH_WHITE_LIST";
 	public static final String RES_REFUND_RATE = "REFUND_RATE";
 	public static final String RES_BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
-	public static final String RES_GAME_AWARD_OF_CATCH_DOLL = "RES_GAME_AWARD_OF_CATCH_DOLL"; //抓娃娃游戏发奖 
+	public static final String RES_APP_POP_IMAGE        =  "APP_POP_IMAGE"; //首页弹窗配置
+	public static final String RES_GAME_AWARD_OF_CATCH_DOLL = "GAME_AWARD_OF_CATCH_DOLL"; //抓娃娃游戏发奖 
+	public static final String RES_GAME_CATCH_DOLL_CLIENT_RATE = "GAME_CATCH_DOLL_CLIENT_RATE";//抓娃娃游戏客户端抓中概率
 	//续期天数限制
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
 	//允许续期的天数

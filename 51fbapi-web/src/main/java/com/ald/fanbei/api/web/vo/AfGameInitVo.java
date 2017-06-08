@@ -12,6 +12,7 @@ import java.util.List;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class AfGameInitVo {
+	private int clientRate;//客户端中奖概率
 	private String title;
 	private String rule;
 	private String isLogin;
@@ -29,6 +30,13 @@ public class AfGameInitVo {
 	private List<AwardUserVo> awardList;//最近20条抓娃娃中奖名单
 	private List<AwardUserVo> entityAwardList;//最近20条发奖中奖名单
 	private AwardInfoVo awardInfo;//中奖信息
+	
+	public int getClientRate() {
+		return clientRate;
+	}
+	public void setClientRate(int clientRate) {
+		this.clientRate = clientRate;
+	}
 	public String getTitle() {
 		return title;
 	}
