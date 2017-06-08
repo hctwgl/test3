@@ -85,7 +85,3 @@ function loginSuccess() {
     }
 }
 
-//刷新页面
-function refresh(){
-    window.location.reload();
-}
