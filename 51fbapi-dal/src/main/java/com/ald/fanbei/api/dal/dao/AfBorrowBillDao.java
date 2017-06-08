@@ -177,4 +177,11 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	int updateNotRepayedBillStatus(@Param("borrowId") Long borrowId, @Param("status") String status);
+
+	/**
+	 * 获取当前借款所有账单
+	 * @param borrowId
+	 * @return
+	 */
+	List<AfBorrowBillDo> getAllBorrowBillByBorrowId(@Param("borrowId") Long borrowId);
 }

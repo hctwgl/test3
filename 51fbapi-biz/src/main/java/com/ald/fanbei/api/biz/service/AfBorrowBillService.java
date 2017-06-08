@@ -118,5 +118,12 @@ public interface AfBorrowBillService {
 	 */
 	BigDecimal getBorrowBillByBorrowId(Long borrowId);
 
+	/**
+	 * 获取当前借款所有账单
+	 * @param borrowId
+	 * @return
+	 */
+	List<AfBorrowBillDo> getAllBorrowBillByBorrowId(Long borrowId);
+
 	int getBorrowBillWithNoPayByUserId(Long userId);
 }

@@ -129,7 +129,7 @@
 		<if test="sumRenewalPoundage != null">
 			,sum_renewal_poundage=#{sumRenewalPoundage}
 		</if>
-		<if test="renewalNum != null">
+		<if test="renewalNum != null and renewalNum !=''">
 			,renewal_num=#{renewalNum}
 		</if>
 		WHERE id = #{rid}

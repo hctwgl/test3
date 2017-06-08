@@ -21,7 +21,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -69,7 +68,7 @@ public class ApplyConsumeApi implements ApiHandle {
 		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
 		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
 		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
-		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+//		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
 		int nper = NumberUtil
 				.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get(Constants.DEFAULT_NPER)), 2);

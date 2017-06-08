@@ -51,6 +51,18 @@ public class Constants {
 	public static final String DEFAULT_MONTH = "month";
 	public static final String DEFAULT_NPER = "nper";
 	public static final String DEFAULT_RATE = "rate";
+	/**免息期数json key**/
+	public static final String DEFAULT__FREENPER = "freeNper";
+	/**每期还款金额位数**/
+	public static final int HALFUP_DIGIT = 2;
+	/**是否免息是否还款状态--免息**/
+	public static final String ISFREEINTEREST_Y = "Y";
+	/**是否免息是否还款状态--不免息**/
+	public static final String ISFREEINTEREST_N = "N";
+
+
+
+
 
 	public static final Long INVITE_START_VALUE = 1679625L;
 	public static final String INVELOMENT_TYPE_TEST = "test";

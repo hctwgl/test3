@@ -208,6 +208,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
 					bcashDo.setRid(afBorrowCashDo.getRid());
+					bcashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
+					bcashDo.setRenewalNum(afBorrowCashDo.getRenewalNum());
 //					BigDecimal repayAllAmount = afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(repayment.getBorrowId());
 					BigDecimal nowRepayAmount = repayment.getRepaymentAmount();
 					BigDecimal repayAmount = nowRepayAmount.add(afBorrowCashDo.getRepayAmount());

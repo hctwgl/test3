@@ -46,6 +46,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<AfResourceDo> getConfigByTypes(String type) {
 		List<AfResourceDo> list;
@@ -61,6 +62,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<AfResourceDo> getResourceListByType(String type) {
 		List<AfResourceDo> list;
@@ -78,6 +80,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public AfResourceDo getSingleResourceBytype(String type) {
 		AfResourceDo afResourceDo;
@@ -93,6 +96,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDo;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public AfResourceDo getConfigByTypesAndSecType(String type, String secType) {
 		AfResourceDo afResourceDo;
@@ -108,6 +112,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDo;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<AfResourceDo> getResourceListByTypeOrderBy(String type) {
 		List<AfResourceDo> list;
@@ -123,6 +128,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public AfResourceDo getResourceByResourceId(Long rid) {
 		AfResourceDo afResourceDo;
@@ -138,6 +144,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDo;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<AfResourceDo> getOneToManyResourceOrderByBytype(String type) {
 		List<AfResourceDo> list;
@@ -153,6 +160,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<AfResourceDo> getResourceHomeListByTypeOrderBy(String type) {
 		List<AfResourceDo> list;
@@ -184,9 +192,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		JSONObject borrowRateOverdueJson = getBorrowOverdueRateResource(realTotalNper);
 		borrowRate.setNper(borrowRateJson.getInteger("nper"));
 		borrowRate.setRate(borrowRateJson.getBigDecimal("rate"));
+		borrowRate.setPoundageRate(borrowRateJson.getBigDecimal("poundageRate"));
 		borrowRate.setRangeBegin(borrowRateJson.getBigDecimal("rangeBegin"));
 		borrowRate.setRangeEnd(borrowRateJson.getBigDecimal("rangeEnd"));
-		borrowRate.setPoundageRate(borrowRateOverdueJson.getBigDecimal("poundageRate"));
+		
 		borrowRate.setOverduePoundageRate(borrowRateOverdueJson.getBigDecimal("overduePoundageRate"));
 		borrowRate.setOverdueRangeBegin(borrowRateOverdueJson.getBigDecimal("overdueRangeBegin"));
 		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
