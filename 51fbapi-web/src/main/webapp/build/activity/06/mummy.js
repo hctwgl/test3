@@ -1,4 +1,8 @@
 
+let usertName='';
+if(getInfo().userName){
+    userName=getInfo().userName
+}
 $(function(){
     //点击按钮显示弹窗
      $('.button').click(function(){
@@ -13,17 +17,16 @@ $(function(){
     //点击抢券按钮
     $('#active_btn').click(function(){
         $.ajax({
-            url: 'pickBoluomeCoupon',
+            url: '/fanbei-web/pickBoluomeCoupon.htm',
             dataType:'json',
-            data:{'sceneId':'8161','userName':userName},
-            type: 'post';
+            data:{'sceneId':'8161','userName':'userName'},
+            type: 'post',
             success:function (data) {
                 console.log(data);
-                data=eval('(' + data + ')');
                 if(data.success){
                     requestMsg("领劵成功")
                 }else{
-                    if(data.url){
+                    if(data.url=false){
                         if (getBlatFrom() == 2) {
                             location.href=data.url;
                         }else{
@@ -35,9 +38,8 @@ $(function(){
                 }
 
             }
-            console.log(1111111);
         });
-    })
 
+    })
 
 })
