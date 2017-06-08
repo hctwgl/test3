@@ -163,6 +163,8 @@ function dataInit() {
                         }
                     }
                 }
+            }else{
+                alert('初始化失败')
             }
         }
     });
@@ -332,6 +334,10 @@ $('#shadow').click(function () {
 
 
 });
+function loginSuccess() {
+    alert(1)
+    location.reload()
+}
 
 
 
