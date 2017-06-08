@@ -50,6 +50,7 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -88,6 +89,18 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfResourceService afResourceService;
 	@Resource
 	AfShopService afShopService;
+
+	/**
+	 * 首页弹窗页面
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "homepagePop" }, method = RequestMethod.GET)
+	public void homepagePop(HttpServletRequest request, ModelMap model) throws IOException {
+		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.RES_APP_POP_IMAGE);
+		model.put("redirectUrl", resourceDo.getName());
+	}
 
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
