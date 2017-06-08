@@ -60,7 +60,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-
+		logger.info("进入");
 		Map<String, Object> params = requestDataVo.getParams();
 		String type = ObjectUtils.toString(params.get("type"), "");
 		if (ApiCallType.findRoleTypeByCode(type) == null) {
@@ -79,9 +79,9 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			String idFrontUrl = ObjectUtils.toString(params.get("idFrontUrl"), "");
 			String idBehindUrl = ObjectUtils.toString(params.get("idBehindUrl"), "");
 
-			System.out.println("准备查询");
+			logger.info("准备查询");
 			Integer c = afUserAccountService.getCountByIdNumer(citizenId, context.getUserId());
-			System.out.println("进入验证信息："+citizenId+";条数："+c);
+			logger.info("进入验证信息："+citizenId+";条数："+c);
 			if (c > 0) {
 				logger.error(FanbeiExceptionCode.USER_CARD_IS_EXIST.getErrorMsg());
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_IS_EXIST);
