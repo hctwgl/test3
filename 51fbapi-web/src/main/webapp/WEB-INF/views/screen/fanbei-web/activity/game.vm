@@ -5,7 +5,7 @@
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>game</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css?id=31">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
 </head>
 <body>
 <img src="$commonUrl/ni_1.jpg" style="width: 7.5rem;height:1.89rem">
@@ -136,6 +136,6 @@
      </li>
    </ul>
 </div>
-<script type="text/javascript" src="/dist/activity/06/game.js"></script>
+<script type="text/javascript" src="/dist/activity/06/game.js?id=3"></script>
 </body>
 </html>
