@@ -98,6 +98,7 @@ public class AppH5FanBeiWebController extends BaseController {
 	 */
 	@RequestMapping(value = { "homepagePop" }, method = RequestMethod.GET)
 	public void homepagePop(HttpServletRequest request, ModelMap model) throws IOException {
+		doMaidianLog(request);
 		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.RES_APP_POP_IMAGE);
 		model.put("redirectUrl", resourceDo.getName());
 	}
