@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css?id=$version">
 </head>
 <body>
-<a style="position: fixed;top:1.5rem;right:.2rem;z-index: 150" href="oppoR11"><img style="width:1.6rem;height:1.6rem" src="$commonUrl/game_oppo.png"></a>
+<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.21rem;height:1.47rem" src="$commonUrl/R11logo.png"></a>
 <img src="$commonUrl/ni_1.jpg" style="width: 7.5rem;height:1.89rem">
 <img src="$commonUrl/ni_2.jpg" style="width: 7.5rem;height:4.49rem">
 <img class="modelPic" src="$commonUrl/ni_2bg.jpg">
