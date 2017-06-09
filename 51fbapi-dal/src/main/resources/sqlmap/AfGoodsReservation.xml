@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGoodsReservationDao">
+    <sql id="queryFields">
+        id,user_id,activity_id,goods_id,rsv_nums,rsv_no,gmt_create,gmt_modified,status,remark
+    </sql>
+ 
+    <insert id="addGoodsReservation" parameterType="AfGoodsReservationDo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO af_goods_reservation(user_id , activity_id , goods_id , rsv_nums , rsv_no , gmt_create , gmt_modified , status , remark)
+        VALUES (
+            #{userId},
+            #{activityId},
+            #{goodsId},
+            #{rsvNums},
+            #{rsvNo},
+            NOW(),
+            NOW(),
+            #{status},
+            #{remark}
+        )
+    </insert>
+    
+    <update id="updateGoodsReservation" parameterType="AfGoodsReservationDo" >
+        UPDATE af_goods_reservation SET gmt_modified = NOW()
+            <if test="userId != null">
+                ,user_id=#{userId}
+            </if>
+            <if test="activityId != null">
+                ,activity_id=#{activityId}
+            </if>
+            <if test="goodsId != null">
+                ,goods_id=#{goodsId}
+            </if>
+            <if test="rsvNums != null">
+                ,rsv_nums=#{rsvNums}
+            </if>
+            <if test="rsvNo != null">
+                ,rsv_no=#{rsvNo}
+            </if>
+            <if test="status != null">
+                ,status=#{status}
+            </if>
+            <if test="remark != null">
+                ,remark=#{remark}
+            </if>
+        WHERE id = #{id}
+    </update>
+    
+    <select id="getRevCountNumsByQueryCondition" resultType="java.lang.Integer" parameterType="AfGoodsReservationDo" >
+        SELECT
+        count(*) 
+        FROM
+        af_goods_reservation
+        WHERE
+        is_delete = 0
+        <if test="userId != null">
+               AND user_id = #{userId}
+        </if>
+        <if test="activityId != null">
+               and activity_id = #{activityId}
+        </if>
+        <if test="goodsId != null">
+               and goods_id = #{goodsId}
+        </if>
+        <if test="status != null ">
+               and status = #{status}
+        </if>
+    </select>
+    
+</mapper>

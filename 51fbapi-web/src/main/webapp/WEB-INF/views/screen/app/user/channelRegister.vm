@@ -28,6 +28,8 @@
 	<input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
 	<input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
 	<input type="hidden" id="tdHost" value="$!{tdHost}">
+	<input type="hidden" id="style" value="$!{style}">
+
 	<div class="channelRegister_wrap">
 
 		#if( $!{style} == 8 || $!{style} == 9 )
@@ -49,14 +51,23 @@
 					channelRegister78
 				#elseif( $!{style} == 9 )
 					channelRegister9
+				#elseif( $!{style} == 10 )
+						channelRegister10
 				#else
 					channelRegister
 				#end
 			">
-				<li><input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号"></li>
+				<li>
+					<input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号">
+					#if( $!{style} == 10 )
+						<button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
+					#end
+				</li>
 				<li class="clearfix">
 	    	    	<input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
-		        	<button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
+							#if( $!{style} != 10 )
+							<button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
+							#end
 		        </li>
 		        <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
 		        <li><button class="register_submitBtn" id="register_submitBtn">立即注册</button></li>
@@ -82,6 +93,20 @@
 
 				<p>如有任何疑问，请拨打51返呗客服热线：0571-88193918</p>
 			</div>
+		#elseif( $!{style} == 10 )
+			<div class="channelRegisterPopup10">
+				<div class="registerMask hide"></div>
+				<div class="registerSuss hide">
+					<!-- <i class="channelRegisterPopupIcon"></i> -->
+					<p>注册成功，248元红包已到账，赶紧下载预定吧！</p>
+					<span id="downloadApp">下载51APP</span>
+				</div>
+				<div class="registerFail hide">
+					<!-- <i class="channelRegisterPopupIcon"></i> -->
+					<p>注册注册失败，请重新注册</p>
+					<span id="repeatRegister">重新注册</span>
+				</div>
+			</div>
 		#end
 		<div class="channelRegister_copyright
 			#if( $!{style} == 1 )
@@ -98,9 +123,14 @@
 				copyright78
 			#elseif( $!{style} == 9 )
 				copyright9
+			#elseif( $!{style} == 10 )
+				copyright10
 			#end
 		">
-	  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918
+	  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918<br>
+				#if( $!{style} == 10 )
+					浙ICP备15027741号-3
+				#end
 	  	</div>
   	</div>
 	<script type="text/javascript" src="/common/js/core.js"></script>
