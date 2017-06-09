@@ -171,7 +171,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			
-			context = doWebCheck(request, true);
+			context = doWebCheck(request, false);
 			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
 			AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 			Map<String, Object> returnData = new HashMap<String, Object>();
