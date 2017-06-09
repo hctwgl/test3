@@ -123,10 +123,10 @@ public class AppH5GameController  extends BaseController{
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", initResult).toString();
 		}catch(FanbeiException e){
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("fb初始化失败",e);
+			logger.error("fb初始化失败" + context,e);
 		}catch(Exception e){
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", "").toString();
-			logger.error("fb初始化失败",e);
+			logger.error("fb初始化失败" + context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
@@ -176,10 +176,10 @@ public class AppH5GameController  extends BaseController{
 			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
 		}catch(FanbeiException e){
 			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("fb抽奖失败",e);
+			logger.error("fb抽奖失败"+context,e);
 		}catch(Exception e){
 			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", "").toString();
-			logger.error("抽奖失败",e);
+			logger.error("抽奖失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
@@ -214,10 +214,10 @@ public class AppH5GameController  extends BaseController{
 			resultStr = H5CommonResponse.getNewInstance(true, "提交成功", "", resultData).toString();
 		}catch(FanbeiException e){
 			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("提交失败",e);
+			logger.error("提交失败"+context,e);
 		}catch(Exception e){
 			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", "").toString();
-			logger.error("提交失败",e);
+			logger.error("提交失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
