@@ -98,7 +98,17 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 				return null;
 			}
 		});
-		String couponId = this.lottery(userInfo.getRid(), prizeObject,itemGameResults, gameResults.size()==0?true:false);
+		
+		//是否第一次抓中
+		boolean isFirstCatch = false;
+		for(AfGameResultDto resultItem : gameResults){
+			if("Y".equals(resultItem.getResult())){
+				isFirstCatch = true;
+				break;
+			}
+		}
+		
+		String couponId = this.lottery(userInfo.getRid(), prizeObject,itemGameResults, isFirstCatch);
 		
 		//新增或更新五娃记录，增加result;
 		dealWithFivebabyDao(userInfo.getRid(), item, gameResults.size()==0?true:false);

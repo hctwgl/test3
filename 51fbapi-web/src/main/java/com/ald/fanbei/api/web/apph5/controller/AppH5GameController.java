@@ -101,7 +101,7 @@ public class AppH5GameController  extends BaseController{
 			}
 			//游戏配置
 			AfGameDo gameDo = afGameService.getByCode("catch_doll");
-			List<AfGameConfDo> gameConfDo = afGameConfService.getByGameId(gameDo.getRid());
+			List<AfGameConfDo> gameConfDo = afGameConfService.getByGameCode("catch_doll");
 			
 			//最近20条抓娃娃中奖列表
 			List<AfGameResultDo> latestResultList= afGameResultService.getLatestRecord();
@@ -241,9 +241,10 @@ public class AppH5GameController  extends BaseController{
 		//设置下一个开奖时间
 		gameInitVo.setGmtCurrent(System.currentTimeMillis());
 		Long gmtOpen = 0l;
+		Long currentTime = new Date().getTime();
 		for(AfGameConfDo item:gameConfDo){
 			if("P".equals(item.getType())){
-				if(gmtOpen == 0l || gmtOpen > item.getGmtSend().getTime()){
+				if(item.getGmtSend().getTime() > currentTime && (gmtOpen == 0l || (gmtOpen > item.getGmtSend().getTime()))){
 					gmtOpen = item.getGmtSend().getTime();
 				}
 			}
