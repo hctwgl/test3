@@ -114,13 +114,13 @@ public class AppH5ActivityController extends BaseController {
             }
             
             
-            AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-            if(afGoodsDo==null){
-                returnData.put("status", GoodsReservationWebFailStatus.GoodsNotExist.getCode());
-                return H5CommonResponse
-                        .getNewInstance(false, GoodsReservationWebFailStatus.GoodsNotExist.getName(), "",returnData )
-                        .toString();
-            }
+//            AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+//            if(afGoodsDo==null){
+//                returnData.put("status", GoodsReservationWebFailStatus.GoodsNotExist.getCode());
+//                return H5CommonResponse
+//                        .getNewInstance(false, GoodsReservationWebFailStatus.GoodsNotExist.getName(), "",returnData )
+//                        .toString();
+//            }
             
             if(!AfCounponStatus.O.getCode().equals(currActivityResource.getValue4())){
                 returnData.put("status", GoodsReservationWebFailStatus.ReservationClosed.getCode());
