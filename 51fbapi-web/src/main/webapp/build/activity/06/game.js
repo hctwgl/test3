@@ -9,7 +9,7 @@ let chance=[],isLogin,isShow,clientRate,chanceCount;
 
 // 获取cookie中的apihost
 let apihost = getCookie("apihost");
-
+apihost=apihost.replace("\"","").replace("\"",""); //测试环境可能会在cookie上加双引号，这里做下兼容
 // app调用web的方法
 function alaShareData(){
     // 分享内容
