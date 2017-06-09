@@ -161,9 +161,12 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			prizeIds.add(rules.getJSONObject(i).getString("prize_id"));
 			rulesMap.put(rules.getJSONObject(i).getString("prize_id"), rules.getJSONObject(i));
 		}
-		logger.info(userId + " lottery=" + gameResults + ";" + isFirstLottery);
+		logger.info(userId + " lottery=" + gameResults + ";" + isFirstLottery + ";" + sumRate);
 		//如果是第一次登录，比中奖：算法为：[如：coupon1的概率为10，coupon2的概率为8，coupon3的概率为20，则取一个小于38的随机数，若随机数落在0-9，则抽中coupon1,若落在10-17则为coupon2,若落在18-37则为coupon3]
 		if(isFirstLottery){
+			if(sumRate < 1){
+				return prizeIds.get(0);
+			}
 			int randomVal = CommonUtil.getRandomNum(sumRate);
 			logger.info(userId + " randomVal=" + randomVal);
 			int tempValue = 0;
