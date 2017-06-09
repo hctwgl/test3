@@ -228,12 +228,12 @@ class game{
     }
     alertMsg(state,item){
         isShow='No';
-        let data={result:'N',code:chance[chance.length-1]};
+        let data={result:'N',code:chance[1]};
         if(state=='end'){
             $('.getState').html('抓取失败');
         }
        if(state=='claw'){
-            data={result:'Y',item:item,code:chance[chance.length-1]};
+            data={result:'Y',item:item,code:chance[1]};
            $('.getState').html('抓取成功');
        }
         $.ajax({
