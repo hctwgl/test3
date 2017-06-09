@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.auth;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -18,6 +19,8 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -50,12 +53,14 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 	AfIdNumberService afIdNumberService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-
+		logger.info("进入");
 		Map<String, Object> params = requestDataVo.getParams();
 		String type = ObjectUtils.toString(params.get("type"), "");
 		if (ApiCallType.findRoleTypeByCode(type) == null) {
@@ -74,6 +79,14 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			String idFrontUrl = ObjectUtils.toString(params.get("idFrontUrl"), "");
 			String idBehindUrl = ObjectUtils.toString(params.get("idBehindUrl"), "");
 
+			logger.info("准备查询");
+			Integer c = afUserAccountService.getCountByIdNumer(citizenId, context.getUserId());
+			logger.info("进入验证信息："+citizenId+";条数："+c);
+			if (c > 0) {
+				logger.error(FanbeiExceptionCode.USER_CARD_IS_EXIST.getErrorMsg());
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_IS_EXIST);
+			}
+
 			AfIdNumberDo afIdNumberDo = new AfIdNumberDo();
 			afIdNumberDo.setUserId(userId);
 			afIdNumberDo.setAddress(address);
@@ -88,8 +101,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			afIdNumberDo.setValidDateBegin(validDateBegin);
 			afIdNumberDo.setValidDateEnd(validDateEnd);
 			AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
-			if (StringUtils.equals(auth.getBankcardStatus(), YesNoStatus.YES.getCode())
-					) {
+			if (StringUtils.equals(auth.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 				if (accountDo != null) {
 					if (StringUtils.isNotBlank(accountDo.getRealName())
@@ -127,11 +139,18 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 			afIdNumberDo.setRid(numberDo.getRid());
 			Integer count = 0;
 			count = afIdNumberService.updateIdNumber(afIdNumberDo);
-			logger.info("id number change"+count);
+			logger.info("id number change" + count);
 			if (count > 0) {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
 				auth.setYdStatus(YesNoStatus.YES.getCode());
+
+				Double similarity = (Double) bizCacheUtil.getObject(Constants.CACHEKEY_YITU_FACE_SIMILARITY+context.getUserName());
+				if (similarity != null) {
+					auth.setSimilarDegree(BigDecimal.valueOf(similarity/100).setScale(4,BigDecimal.ROUND_HALF_UP));
+					bizCacheUtil.delCache(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
+				}
+
 				afUserAuthService.updateUserAuth(auth);
 
 				AfUserDo afUserDo = new AfUserDo();
@@ -139,7 +158,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				afUserDo.setRealName(numberDo.getName());
 				afUserService.updateUser(afUserDo);
 
-				logger.info("id number account realname="+numberDo.getName());
+				logger.info("id number account realname=" + numberDo.getName());
 
 				AfUserAccountDo account = new AfUserAccountDo();
 				account.setRealName(numberDo.getName());
@@ -149,21 +168,22 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				/* fmai_20170608去掉风控单独调用
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 				try {
-					RiskRespBo riskResp = riskUtil.register(userId + "", numberDo.getName(), accountDo.getMobile(), numberDo.getCitizenId(), accountDo.getEmail(),
-							accountDo.getAlipayAccount(), numberDo.getAddress());
-					if(!riskResp.isSuccess()){
-	          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
-	          		}
+					RiskRespBo riskResp = riskUtil.register(userId + "", numberDo.getName(), accountDo.getMobile(),
+							numberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
+							numberDo.getAddress());
+					if (!riskResp.isSuccess()) {
+						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+					}
 				} catch (Exception e) {
-					RiskRespBo riskResp = riskUtil.modify(userId + "", numberDo.getName(), accountDo.getMobile(), numberDo.getCitizenId(), accountDo.getEmail(),
-							accountDo.getAlipayAccount(), numberDo.getAddress(), accountDo.getOpenId());
+					RiskRespBo riskResp = riskUtil.modify(userId + "", numberDo.getName(), accountDo.getMobile(),
+							numberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
+							numberDo.getAddress(), accountDo.getOpenId());
 					if (!riskResp.isSuccess()) {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 					}
 					logger.error("更新风控用户失败：" + accountDo.getUserId());
 				}*/
 
-				
 				return resp;
 
 			}

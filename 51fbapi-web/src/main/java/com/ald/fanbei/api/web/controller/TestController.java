@@ -297,22 +297,22 @@ public class TestController {
 //		return "succ";
 //	}
 	//处理菠萝觅或者代买没有生成账单的订单，重新生成账单。
-//	@RequestMapping(value = { "/dealWithBoluomeBorrow" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
-//	@ResponseBody
-//	public String dealWithBoluomeBorrow(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
-//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-//		response.setContentType("application/json;charset=utf-8");
-//		List<AfOrderDo> orderList = afOrderDao.getNoBorrowOrder();
-//		if (CollectionUtils.isNotEmpty(orderList)) {
-//			for (AfOrderDo orderInfo : orderList) {
-//				AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
-//				afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
-//						orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
-//						orderInfo.getOrderNo(), null);
-//			}
-//		}
-//		return "succ";
-//	}
+	@RequestMapping(value = { "/dealWithBoluomeBorrow" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+	@ResponseBody
+	public String dealWithBoluomeBorrow(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+		response.setContentType("application/json;charset=utf-8");
+		List<AfOrderDo> orderList = afOrderDao.getNoBorrowOrder();
+		if (CollectionUtils.isNotEmpty(orderList)) {
+			for (AfOrderDo orderInfo : orderList) {
+				AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+				afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
+						orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
+						orderInfo.getOrderNo(), null);
+			}
+		}
+		return "succ";
+	}
 //	
 //
 //	/**
