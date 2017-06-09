@@ -63,7 +63,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	public List<AfGameResultDo> getLatestRecord() {//先从缓存中拿，缓存中拿不到再到表中拿，缓存在抓娃娃接口中维护
 		String cacheKey = Constants.CACHEKEY_LATEST_GAMEERSULT_LIST;
 		List<AfGameResultDo> afGameResultList = bizCacheUtil.getObjectList(cacheKey);
-		if(afGameResultList == null){
+		if(afGameResultList == null || afGameResultList.size() < 20){
 			afGameResultList =  afGameResultDao.getLatestRecord();
 		}
 		return afGameResultList;
@@ -252,9 +252,11 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	
 	
 	private void dealWithFivebabyDao(Long userId,String item,boolean isFirstAward){
+
+		AfGameFivebabyDo exitBabys = afGameFivebabyDao.getByUserId(userId);
 		AfGameFivebabyDo fiveBaby = new AfGameFivebabyDo();
 		fiveBaby.setUserId(userId);
-		if(isFirstAward){
+		if(exitBabys == null){
 			fiveBaby.setItem1Count(0);
 			fiveBaby.setItem2Count(0);
 			fiveBaby.setItem3Count(0);
@@ -273,7 +275,6 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			}
 			afGameFivebabyDao.addGameFivebaby(fiveBaby);
 		}else{
-			AfGameFivebabyDo exitBabys = afGameFivebabyDao.getByUserId(userId);
 			if("1".equals(item)){
 				fiveBaby.setItem1Count(1);
 				exitBabys.setItem1Count(exitBabys.getItem1Count()+1);
