@@ -47,7 +47,7 @@ public enum AfResourceType {
 	TRADE_TONGDUN_SWITCH("TRADE_TONGDUN_SWITCH", "借钱申请同盾风控"),
 	tradeTongdunSwitch("TRADE_TONGDUN_SWITCH", "交易申请同盾风控"),
 
-	tongdunAccecptLevel("TONGDUN_ACCECPT_LEVEL", "同盾风控拒绝等级"),
+	tongdunAccecptLevel("TONGDUN_ACCECPT_LEVEL", "同盾风控不通过等级"),
 
 
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),

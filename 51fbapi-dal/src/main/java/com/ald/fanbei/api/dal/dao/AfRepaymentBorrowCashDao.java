@@ -67,6 +67,8 @@ public interface AfRepaymentBorrowCashDao {
 	
 	AfRepaymentBorrowCashDo getRepaymentByPayTradeNo(@Param("payTradeNo") String payTradeNo);
 	
+	AfRepaymentBorrowCashDo getRepaymentByPayTradeNoWithStatusY(@Param("payTradeNo") String payTradeNo);
+	
 	/**
 	 * 根据rid获取还款信息
 	 * 
