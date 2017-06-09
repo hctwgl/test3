@@ -1,14 +1,13 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -29,23 +28,17 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.RefundSource;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -87,6 +80,10 @@ public class TestController {
 	private GeneratorClusterNo generatorClusterNo;
 	@Resource
 	AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
+	@Resource
+	AfOrderDao afOrderDao;
+	@Resource
+	AfBorrowService afBorrowService;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -272,10 +269,6 @@ public class TestController {
 //		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 //		response.setContentType("application/json;charset=utf-8");
 //		JSONObject json = JSONObject.parseObject(body);
-////		List<AfRepaymentBorrowCashDo> AfRepaymentBorrowCashList = afRepaymentBorrowCashDao.getRepaymentBorrowCashByBorrowId();
-////		for (AfRepaymentBorrowCashDo afRepaymentBorrowCashDo : AfRepaymentBorrowCashList) {
-////			
-////		}
 //		String orderNo = json.getString("orderNo");
 //		String payTradeNo = json.getString("payTradeNo");
 //		BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
@@ -286,47 +279,71 @@ public class TestController {
 //		}
 //		String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
 //		logger.info("wxRefund refundResult = {}", refundResult);
+//		System.out.println(refundResult);
 //		return "succ";
 //	}
-	
-
-	/**
-	 * 银行卡退款
-	 * @author fumeiai
-	 * @return
-	 */
-	@RequestMapping(value = { "/bankRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+	//处理菠萝觅或者代买没有生成账单的订单，重新生成账单。
+	@RequestMapping(value = { "/dealWithBoluomeBorrow" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
-	public String bankRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String dealWithBoluomeBorrow(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
-		JSONObject json = JSONObject.parseObject(body);
-//		BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
-		String payTradeNo = json.getString("payTradeNo");
-		AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(payTradeNo);
-		BigDecimal refundAmount = afRepaymentBorrowCashDo.getActualAmount();
-//		BigDecimal refundAmount = new BigDecimal(0.01).setScale(2, BigDecimal.ROUND_HALF_UP);
-		AfUserBankcardDo card = afUserBankcardDao.getUserBankcardByCardNo(afRepaymentBorrowCashDo.getCardNumber());
-		AfUserDo userDo = afUserDao.getUserById(card.getUserId());
-		UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userDo.getRealName(), card.getCardNumber(), card.getUserId()+"", 
-				card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
-		String refundNo = generatorClusterNo.getRefundNo(new Date());
-		if(!upsResult.isSuccess()){
-			AfOrderRefundDo afOrderRefundDo = BuildInfoUtil.buildOrderRefundDo(refundNo,refundAmount, refundAmount, afRepaymentBorrowCashDo.getUserId(), 0l, "", 
-					OrderRefundStatus.FAIL, PayType.BANK,card.getCardNumber(),card.getBankName(),"用户现金借中重复还款后的退款",RefundSource.PLANT_FORM.getCode(),upsResult.getOrderNo());
-			afOrderRefundDao.addOrderRefund(afOrderRefundDo);
-		} else {
-			AfOrderRefundDo afOrderRefundDo = BuildInfoUtil.buildOrderRefundDo(refundNo,refundAmount, refundAmount, afRepaymentBorrowCashDo.getUserId(), 0l, "", 
-					OrderRefundStatus.FINISH, PayType.BANK,card.getCardNumber(),card.getBankName(),"用户现金借中重复还款后的退款",RefundSource.PLANT_FORM.getCode(),upsResult.getOrderNo());
-			AfRepaymentBorrowCashDo repaymentBorrowCashDo = new AfRepaymentBorrowCashDo();
-			repaymentBorrowCashDo.setRid(afRepaymentBorrowCashDo.getRid());
-			repaymentBorrowCashDo.setStatus("R");
-			afRepaymentBorrowCashDao.updateRepaymentBorrowCash(repaymentBorrowCashDo);
-			afOrderRefundDao.addOrderRefund(afOrderRefundDo);
+		List<AfOrderDo> orderList = afOrderDao.getNoBorrowOrder();
+		if (CollectionUtils.isNotEmpty(orderList)) {
+			for (AfOrderDo orderInfo : orderList) {
+				AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+				afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
+						orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
+						orderInfo.getOrderNo(), null);
+			}
 		}
-		
 		return "succ";
 	}
+//	
+//
+//	/**
+//	 * 银行卡退款
+//	 * @author fumeiai
+//	 * @return
+//	 */
+//	@RequestMapping(value = { "/bankRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+//	@ResponseBody
+//	public String bankRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//		JSONObject json = JSONObject.parseObject(body);
+////		BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
+//		String payTradeNo = json.getString("payTradeNo");
+//		AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNoWithStatusY(payTradeNo);
+//		String message = "succ!";
+//		if (null!=afRepaymentBorrowCashDo) {
+//			BigDecimal refundAmount = afRepaymentBorrowCashDo.getActualAmount();
+////			BigDecimal refundAmount = new BigDecimal(0.01).setScale(2, BigDecimal.ROUND_HALF_UP);
+//			AfUserBankcardDo card = afUserBankcardDao.getUserBankcardByCardNo(afRepaymentBorrowCashDo.getCardNumber());
+//			AfUserDo userDo = afUserDao.getUserById(card.getUserId());
+//			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userDo.getRealName(), card.getCardNumber(), card.getUserId()+"", 
+//					card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
+//			String refundNo = generatorClusterNo.getRefundNo(new Date());
+//			if(!upsResult.isSuccess()){
+//				AfOrderRefundDo afOrderRefundDo = BuildInfoUtil.buildOrderRefundDo(refundNo,refundAmount, refundAmount, afRepaymentBorrowCashDo.getUserId(), 0l, "", 
+//						OrderRefundStatus.FAIL, PayType.BANK,card.getCardNumber(),card.getBankName(),"用户现金借中重复还款后的退款",RefundSource.PLANT_FORM.getCode(),upsResult.getOrderNo());
+//				afOrderRefundDao.addOrderRefund(afOrderRefundDo);
+//				message = "Fail!";
+//			} else {
+//				AfOrderRefundDo afOrderRefundDo = BuildInfoUtil.buildOrderRefundDo(refundNo,refundAmount, refundAmount, afRepaymentBorrowCashDo.getUserId(), 0l, "", 
+//						OrderRefundStatus.FINISH, PayType.BANK,card.getCardNumber(),card.getBankName(),"用户现金借中重复还款后的退款",RefundSource.PLANT_FORM.getCode(),upsResult.getOrderNo());
+//				AfRepaymentBorrowCashDo repaymentBorrowCashDo = new AfRepaymentBorrowCashDo();
+//				repaymentBorrowCashDo.setRid(afRepaymentBorrowCashDo.getRid());
+//				repaymentBorrowCashDo.setStatus("R");
+//				afRepaymentBorrowCashDao.updateRepaymentBorrowCash(repaymentBorrowCashDo);
+//				afOrderRefundDao.addOrderRefund(afOrderRefundDo);
+//			}
+//		} else {
+//			message = "There is no trade can refund!";
+//		}
+//		
+//		return message;
+//	}
 	
 	// TongdunUtil
 }
