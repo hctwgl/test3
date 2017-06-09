@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017060701")
+    #set($version="2017060705")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>game</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css?id=$version">
 </head>
 <body>
 <a style="position: fixed;top:1.5rem;right:.2rem;z-index: 150" href="oppoR11"><img style="width:1.6rem;height:1.6rem" src="$commonUrl/game_oppo.png"></a>
@@ -114,6 +114,6 @@
      </li>
    </ul>
 </div>
-<script type="text/javascript" src="/dist/activity/06/game.js?id=13"></script>
+<script type="text/javascript" src="/dist/activity/06/game.js?id=$version"></script>
 </body>
 </html>

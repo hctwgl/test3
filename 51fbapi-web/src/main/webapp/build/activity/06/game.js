@@ -5,7 +5,7 @@ let userName = "";
 if(getInfo().userName){
     userName=getInfo().userName
 }
-let chance=[],isLogin,isShow,clientRate;
+let chance=[],isLogin,isShow,clientRate,chanceCount;
 
 // 获取cookie中的apihost
 let apihost = getCookie("apihost");
@@ -37,6 +37,7 @@ function dataInit() {
             console.log(data);
             if(data.success){
                 isLogin=data.data.isLogin;
+                chanceCount=data.data.chanceCount;
                 clientRate=data.data.clientRate||100;
                 //抽奖次数显示,抽奖码获取
                 $('#chance').html('您还有'+data.data.chanceCount+'次机会');
@@ -164,7 +165,7 @@ function dataInit() {
                     }
                 }
             }else{
-                alert('初始化失败')
+                requestMsg('初始化失败');
             }
         }
     });
@@ -227,12 +228,12 @@ class game{
     }
     alertMsg(state,item){
         isShow='No';
-        let data={result:'N',code:chance[1]};
+        let data={result:'N',code:chance[chance.length-1]};
         if(state=='end'){
             $('.getState').html('抓取失败');
         }
        if(state=='claw'){
-            data={result:'Y',item:item,code:chance[1]};
+            data={result:'Y',item:item,code:chance[chance.length-1]};
            $('.getState').html('抓取成功');
        }
         $.ajax({
@@ -307,11 +308,10 @@ $('#startBtn').click(function () {
         $('.play').animate({top:'7.08rem'},150)
     });
     if(isLogin=='Y'){         //是否登录
-        if(chance.length<=1||chance[1].length<5){              //否是 有机会
+        if(chanceCount<1){              //否是 有机会
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                // window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"年中抓娃娃,让你一次玩个爽","content":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareUrl":"http://testapp.51fanbei.com/fanbei-web/gameShare"}';
                 window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/fanbei-web/activity/gameShare","isSubmit":"Y","sharePage":"gameShare"}';
 
             });
