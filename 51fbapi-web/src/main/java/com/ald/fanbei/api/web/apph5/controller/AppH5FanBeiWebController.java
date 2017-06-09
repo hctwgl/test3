@@ -151,7 +151,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			returnData.put("type", "还款劵");
 			
 		}else if (StringUtil.equals("FULLVOUCHER", afCouponDo.getType())) {
-			returnData.put("type", "满减卷");
+			returnData.put("type", "满减劵");
 		}else{
 			returnData.put("type", "现金劵");
 		}
