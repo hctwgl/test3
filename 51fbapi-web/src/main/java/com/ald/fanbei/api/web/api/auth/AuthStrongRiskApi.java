@@ -99,7 +99,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 					bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
 				}
 			} catch (Exception e) {
-				logger.error("更新风控用户失败：" + idNumberDo.getUserId());
+				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
 				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 			}
 

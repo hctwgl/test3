@@ -117,5 +117,20 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public int getBorrowBillWithNoPayByUserId(Long userId) {
 		return afBorrowBillDao.getBorrowBillWithNoPayByUserId(userId);
 	}
+	
+	@Override
+	public int getPaidBillNumByBorrowId(Long borrowId) {
+		return afBorrowBillDao.getPaidBillNumByBorrowId(borrowId);
+	}
 
+	@Override
+	public BigDecimal getSumIncomeByBorrowId(Long borrowId) {
+		return afBorrowBillDao.getSumIncomeByBorrowId(borrowId);
+	}
+
+	@Override
+	public Long getSumOverdueDayByBorrowId(Long borrowId) {
+		return afBorrowBillDao.getSumOverdueDayByBorrowId(borrowId);
+	}	
+	
 }

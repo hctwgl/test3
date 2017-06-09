@@ -1037,5 +1037,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		});
 	}
 
+	@Override
+	public int getBorrowNumByUserId(Long userId) {
+		return afBorrowDao.getBorrowNumByUserId(userId);
+	}
+
 
 }

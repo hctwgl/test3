@@ -94,4 +94,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return afBorrowCashDao.getUserDayLastBorrowCash(userId, startTime, endTime);
 	}
 
+	@Override
+	public int getBorrowNumByUserId(Long userId) {
+		return afBorrowCashDao.getBorrowNumByUserId(userId);
+	}
+
 }

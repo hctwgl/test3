@@ -24,14 +24,15 @@ import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
+import com.ald.fanbei.api.biz.bo.RiskRaiseQuotaReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
-import com.ald.fanbei.api.biz.bo.RiskUserInfoReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
+import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
@@ -343,53 +344,9 @@ public class RiskUtil extends AbstractThird {
 	 */
 	public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, 
 			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
-		RiskRegisterStrongReqBo reqBo = new RiskRegisterStrongReqBo();
-		reqBo.setConsumerNo(consumerNo);
-		reqBo.setEvent(event);
-		reqBo.setOrderNo(riskOrderNo);
 		
-		RiskUserInfoReqBo userInfo = new RiskUserInfoReqBo();
-		userInfo.setRealName(afUserDo.getRealName());
-		userInfo.setPhone(afUserDo.getMobile());
-		userInfo.setIdNo(accountDo.getIdNumber());
-		userInfo.setEmail(afUserDo.getEmail());
-		userInfo.setAlipayNo(accountDo.getAlipayAccount());
-		userInfo.setOpenId(accountDo.getOpenId());
-		userInfo.setAddress(afUserDo.getAddress());
-		userInfo.setChannel(CHANNEL);
-		userInfo.setReqExt("");
-		userInfo.setRealName(RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getRealName()));
-		userInfo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getMobile()));
-		userInfo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, accountDo.getIdNumber()));
-		userInfo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getEmail()));
-		reqBo.setUserInfo(userInfo);
-		
-		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo).toString();
-		reqBo.setDirectory(directory);
-		
-		JSONObject linkManInfo = new JSONObject();
-		linkManInfo.put("name", afUserAuthDo.getContactorName());
-		linkManInfo.put("relation", afUserAuthDo.getContactorType());
-		linkManInfo.put("idNo", "");
-		linkManInfo.put("phone", afUserAuthDo.getContactorMobile());
-		linkManInfo.put("reqExt", "");
-		reqBo.setLinkManInfo(Base64.encodeString(JSON.toJSONString(linkManInfo)));
-		
-		String notifyUrl = "/third/risk/registerStrongRisk";
-		JSONObject riskInfo = new JSONObject();
-		riskInfo.put("channel", CHANNEL);
-		riskInfo.put("scene", "11");
-		riskInfo.put("notifyUrl", getNotifyHost() + notifyUrl);
-		riskInfo.put("reqExt", "");
-		reqBo.setRiskInfo(Base64.encodeString(JSON.toJSONString(riskInfo)));
-		
-		JSONObject eventInfo = new JSONObject();
-		eventInfo.put("eventType", Constants.EVENT_FINANCE_LIMIT);
-		eventInfo.put("appName", appName);
-		eventInfo.put("cardNo", cardNum);
-		eventInfo.put("blackBox", blackBox);
-		eventInfo.put("ipAddress", ipAddress);
-		reqBo.setRiskInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
+		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, 
+				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, getNotifyHost());
 		
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		
@@ -442,13 +399,14 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setNotifyUrl(getNotifyHost() + notifyUrl);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "/modules/api/risk/examine/verify.htm";
+//		String url = getUrl() + "/modules/api/risk/examine/verify.htm";
+		String url = getUrl() + "/modules/api/risk/weakverify.htm";
 		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("verify", borrowId, content, url);
+		commitRecordUtil.addRecord("weakverify", borrowId, content, url);
 
 		String reqResult = HttpUtil.post(url, reqBo);
 
-		logThird(reqResult, "verify", reqBo);
+		logThird(reqResult, "weakverify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
@@ -465,7 +423,58 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
-	 * 
+	 * 风控提额
+	 * @param consumerNo
+	 * @param scene
+	 * @param orderNo
+	 * @param amount
+	 * @param income
+	 * @param overdueDay
+	 * @param borrowCount
+	 * @return
+	 */
+	public RiskVerifyRespBo raiseQuota(String consumerNo, String scene, String orderNo, BigDecimal amount, BigDecimal income, Long overdueDay, int borrowCount) {
+		RiskRaiseQuotaReqBo reqBo = new RiskRaiseQuotaReqBo();
+		reqBo.setOrderNo(orderNo);
+		reqBo.setEventType(Constants.EVENT_FINANCE_COUNT);
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setScene(scene);
+
+		JSONObject obj = new JSONObject();
+		obj.put("amount", amount);
+		obj.put("income", income);
+		obj.put("overdueDays", overdueDay);
+		obj.put("borrowCount", borrowCount);
+
+		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		reqBo.setReqExt("");
+
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/user/action/raiseQuota.htm";
+
+		String content = JSONObject.toJSONString(reqBo);
+		
+		commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
+		
+		String reqResult = HttpUtil.post(url, reqBo);
+		
+		logThird(reqResult, "raiseQuota", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+		}
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+		riskResp.setOrderNo(reqBo.getOrderNo());
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			JSONObject dataObj = JSON.parseObject(riskResp.getData());
+			riskResp.setResult(dataObj.getString("result"));
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+		}
+	}
+	/**
 	 * 
 	 * @param consumerNo
 	 *            --用户唯一标识
@@ -473,7 +482,6 @@ public class RiskUtil extends AbstractThird {
 	 *            --用户名
 	 * @return
 	 */
-
 	public long asyPayOrder(final String code, final String data, final String msg, final String signInfo) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 

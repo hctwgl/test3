@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -236,4 +238,11 @@ public interface AfBorrowService {
 	 */
 	Long dealAgentPayConsumeRisk(AfUserAccountDo userDto, BigDecimal amount, String goodsName, int nper, Long rid,
 			String orderNo, Integer totalNper);
+	
+	/**
+	 * 获取总借款次数
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(Long userId);
 }

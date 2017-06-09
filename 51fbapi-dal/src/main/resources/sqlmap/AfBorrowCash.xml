@@ -213,4 +213,9 @@
 		and  <![CDATA[ gmt_create  <=  #{endTime}  ]]>
 		ORDER BY gmt_create DESC LIMIT 1;
 	</select>
+	
+	<select id="getBorrowNumByUserId" resultType="java.lang.Integer">
+		select count(*) from `af_borrow_cash` WHERE `status` in ('FINSH', 'TRANSED') and `user_id` =#{userId}; 
+	</select>
+	
 </mapper>

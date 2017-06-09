@@ -176,4 +176,9 @@
 		WHERE
 			id = #{id}
 	</update>
+	
+	<select id="getBorrowNumByUserId" resultType="java.lang.Integer">
+		select count(*) from `af_borrow` WHERE `status` in ('TRANSED','FINISH') and `user_id` =#{userId}; 
+	</select>
+	
 </mapper>

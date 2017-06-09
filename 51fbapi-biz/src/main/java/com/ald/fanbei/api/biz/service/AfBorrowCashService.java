@@ -75,5 +75,11 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	AfBorrowCashDo getUserDayLastBorrowCash(Long userId);
-
+	
+	/**
+	 * 获取总借款次数
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(Long userId);
 }
