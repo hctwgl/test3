@@ -35,7 +35,6 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.OrderNoUtils;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -172,7 +171,7 @@ public class AppH5ActivityController extends BaseController {
             
             //预约成功，短信通知
             try {
-                smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(), goodsName, rsvNo);
+                smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile());
             } catch (Exception e) {
                 logger.error("活动产品预约成功消息通知异常userId："+afUserDo.getRid()+",",e);
             }
