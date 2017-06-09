@@ -56,7 +56,7 @@ public class SmsUtil extends AbstractThird {
 	private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
 	private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
 	private static String BORROWCASH_TEMPLATE = "您的借款审核通过，请留意您尾号&param1的银行卡资金变动，还款请使用51返呗app【任何索要银行卡号、要求存入现金的行为都是诈骗】";
-	private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前领取300元抵用券，券于22日发放至您的账户，记得查收哦！";
+	private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，你已成功获得300元抵用券，券将于22日发放至您的账户，请记得查收哦！";
 	private static String TEST_VERIFY_CODE = "888888";
 
 	// public static String sendUserName = "suweili@edspay.com";

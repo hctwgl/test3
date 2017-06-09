@@ -171,7 +171,10 @@ public class AppH5ActivityController extends BaseController {
             
             //预约成功，短信通知
             try {
-                smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile());
+                boolean result = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile());
+                if(result==false){
+                	logger.error("活动产品预约成功消息通知发送失败userId："+afUserDo.getRid());
+                }
             } catch (Exception e) {
                 logger.error("活动产品预约成功消息通知异常userId："+afUserDo.getRid()+",",e);
             }
