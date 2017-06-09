@@ -216,8 +216,12 @@ public class AppH5UserContorler extends BaseController {
 			}
 			return H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
 
+		}catch(FanbeiException e){
+			logger.error("commitRegister fanbei exception"+e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 		} catch (Exception e) {
-			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+			logger.error("commitRegister exception",e);
+			return H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 		}
 
 	}
