@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+</head>
+<link rel="stylesheet" type="text/css" href="/dist/activity/06/mummy.css">
+<body>
+    <div class="bg">
+        <!-- 阿汤哥 -->
+         <div class="tom">
+             <img src="/images/492.png" alt="">
+         </div>
+         <div class="word">
+             <img class="left" src="/images/left_02.jpg" alt="">
+             <img class="center" src="/images/center_03.jpg" alt="">
+             <img class="right" src="/images/right_05.jpg" alt="">
+         </div>
+         <div class="rob">
+             <img src="/images/rob_05.jpg" alt="">
+         </div>
+         <!-- 抢券跳转 -->
+         <div class="change" id='active_btn'>
+            <img src="/images/round_02.jpg" alt="">
+         </div>
+         <div class="bottom">
+             <img src="/images/bottom_09.jpg" alt="">
+         </div>
+         <!-- 规则按钮 -->
+         <div class="button">
+            <img src="/images/rule.png" alt="">
+         </div>
+         //弹窗
+         <div class="pop-up">
+            <img src="/images/pop-up.png" alt="">
+         </div>
+
+    </div>
+</body>
+<script src='/dist/activity/06/mummy.js'></script>
+</html>

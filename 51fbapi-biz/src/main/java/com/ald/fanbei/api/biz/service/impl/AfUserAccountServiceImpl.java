@@ -200,4 +200,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		afUserAccountDao.updateUserAccountRealNameAndIdNumber(accountDo);
 	}
 
+	@Override
+	public Integer getCountByIdNumer(String citizenId, Long userId) {
+		return afUserAccountDao.getCountByIdNumer(citizenId, userId);
+	}
+
 }

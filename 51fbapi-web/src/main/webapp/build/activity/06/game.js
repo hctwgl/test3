@@ -43,6 +43,12 @@ function dataInit() {
                 $('#chance').html('您还有'+data.data.chanceCount+'次机会');
                 if(data.data.chanceCodes){
                     chance=data.data.chanceCodes.split(',');
+                    for(var i = 0;i<chance.length;i++){
+                        if(chance[i]==''||chance[i]==null||typeof(chance[i])==undefined){
+                            chance.splice(i,1);
+                            i=i-1;
+                        }
+                    }
                 }else{
                     chance=[]
                 }
@@ -228,12 +234,12 @@ class game{
     }
     alertMsg(state,item){
         isShow='No';
-        let data={result:'N',code:chance[chance.length-1]};
+        let data={result:'N',code:chance[0]};
         if(state=='end'){
             $('.getState').html('抓取失败');
         }
        if(state=='claw'){
-            data={result:'Y',item:item,code:chance[chance.length-1]};
+            data={result:'Y',item:item,code:chance[0]};
            $('.getState').html('抓取成功');
        }
         $.ajax({

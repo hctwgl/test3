@@ -1,8 +1,8 @@
 /*
 * @Author: Yangyang
 * @Date:   2017-02-15 09:59:54
-* @Last Modified by:   yoe
-* @Last Modified time: 2017-06-07 21:43:57
+* @Last Modified by:   Marte
+* @Last Modified time: 2017-06-08 11:22:16
 * @title:  公用的
 */
 
@@ -37,7 +37,7 @@ function getInfo(){
     }else{
         return ''
     }
-    
+
 }
 
 // 处理默认的保留二位小数

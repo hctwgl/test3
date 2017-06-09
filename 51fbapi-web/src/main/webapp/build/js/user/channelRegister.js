@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-04-12 10:53:28
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-25 19:07:45
+* @Last Modified time: 2017-06-07 14:06:30
 */
 
 
@@ -86,7 +86,7 @@ $(function(){
 	});
 
 	
-	$(".register_submitBtn").click(function(){ // 完成注册提交
+	$("#register_submitBtn").click(function(){ // 完成注册提交
 
 		// md5加密
 		var register_password = $("#register_password").val();
@@ -103,7 +103,6 @@ $(function(){
 		var pointCode = $("#pointCode").val();
 
 		var isState = $("#register_codeBtn").attr("isState");
-
 
 		if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
 
@@ -129,7 +128,7 @@ $(function(){
 								},
 								success: function(returnData){
 									if ( returnData.success ) {
-										$(".register_submitBtn").attr("disabled",true);
+										$("#register_submitBtn").attr("disabled",true);
 										window.location.href = returnData.url;
 									} else {
 										requestMsg(returnData.msg);
@@ -154,7 +153,8 @@ $(function(){
 			}
 		} else{
             requestMsg("请填写正确的手机号");
-        }
+        };
+        
 	});
 });
 

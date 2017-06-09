@@ -105,4 +105,5 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		return afUserDao.getRecommendUserByRecommendId(recommendId, start, end);
 	}
 
+
 }
