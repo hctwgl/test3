@@ -39,8 +39,7 @@ function button(){
 
 //获取图片地址
 function img(){
-    var url=location.href;
-    var imgSrc=getUrl(url);
+    var imgSrc=getUrl('url');
     var str='<img src="'+imgSrc+'">';
     $('.prizeImg').append(str);   
 }
