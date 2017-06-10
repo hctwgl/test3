@@ -603,7 +603,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			}
 		}
 		//每期本金
-		BigDecimal principleAmount = money.divide(new BigDecimal(borrow.getNper()), 2, RoundingMode.CEILING);
+		BigDecimal principleAmount = money.divide(new BigDecimal(borrow.getNper()), 2, RoundingMode.DOWN);
+		//第一期本金
+		BigDecimal firstPrincipleAmount =  getFirstPrincipleAmount(money, principleAmount, freeNper);
 		//每期利息
 		BigDecimal interestAmount = money.multiply(borrowRateBo.getRate()).divide(
 				Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
@@ -631,7 +633,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				bill.setIsFreeInterest(YesNoStatus.NO.getCode());
 				bill.setPoundageAmount(poundageAmount);
 			}
-			bill.setPrincipleAmount(principleAmount);
+			if (i == 1) {
+				bill.setPrincipleAmount(firstPrincipleAmount);
+ 			} else {
+ 				bill.setPrincipleAmount(principleAmount);
+ 			}
 			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
 			bill.setStatus(BorrowBillStatus.NO.getCode());
 			bill.setType(BorrowType.CONSUME.getCode());
@@ -640,6 +646,19 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			now = DateUtil.addMonths(now, 1);
 		}
 		return list;
+	}
+	
+	/**
+	 * 获取第一期分期金额
+	 * @param amount 本金
+	 * @param principleAmount 每期金额
+	 * @param nper分期数
+	 * @return
+	 */
+	private BigDecimal getFirstPrincipleAmount(BigDecimal amount, BigDecimal principleAmount, Integer nper) {
+		//剩余期数本金之和
+		BigDecimal tempAmount = principleAmount.multiply(new BigDecimal(nper - 1));
+		return amount.subtract(tempAmount);
 	}
 
 	private AfBorrowInterestDo buildBorrowInterest(Long billId, BigDecimal interest, String creator, BigDecimal money) {
