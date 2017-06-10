@@ -18,12 +18,15 @@
 	</style>
 </head>
 <body>
-	<img src="$commonUrl/feastRaiders1.png">
+	<img src="$commonUrl/feastRaiders1.jpg">
+	<img src="$commonUrl/feastRaiders2.jpg">
 	<div class="feastRaiders2">
-		<img src="$commonUrl/feastRaiders2.png">
+		<img src="$commonUrl/feastRaiders3.jpg">
 		<a href="gameShare"></a>
 	</div>
-	<img src="$commonUrl/feastRaiders3.jpg">
-	<img src="$commonUrl/feastRaiders4.png">
+	<img src="$commonUrl/feastRaiders4.jpg">
+	<img src="$commonUrl/feastRaiders5.jpg">
+	<img src="$commonUrl/feastRaiders6.jpg">
+	<img src="$commonUrl/feastRaiders7.jpg">
 </body>
 </html>
