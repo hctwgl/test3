@@ -856,8 +856,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//修改账单状态
 						afBorrowBillDao.updateNotRepayedBillStatus(borrowInfo.getRid(), BorrowBillStatus.CLOSE.getCode());
 						//修改订单状态
-						orderInfo = new AfOrderDo();
-						orderInfo.setRid(orderId);
 						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 						orderDao.updateOrder(orderInfo);
 						
