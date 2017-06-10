@@ -58,6 +58,7 @@ public class UpdateUserInfoApi implements ApiHandle {
 		afUserDo.setProvince(StringUtils.isNotBlank(province) ? province : null);
 		afUserDo.setCity(StringUtils.isNotBlank(city) ? city : null);
 		afUserDo.setCounty(StringUtils.isNotBlank(county)?county:null);
+		afUserDo.setUserName(context.getUserName());
 		if (afUserService.updateUser(afUserDo) > 0) {
 			return resp;
 		} else {

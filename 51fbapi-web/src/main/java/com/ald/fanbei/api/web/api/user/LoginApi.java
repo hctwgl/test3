@@ -111,6 +111,7 @@ public class LoginApi implements ApiHandle {
 			AfUserDo temp = new AfUserDo();
 			temp.setRid(afUserDo.getRid());
 			temp.setFailCount(0);
+			temp.setUserName(userName);
 			afUserDo.setFailCount(0);
 			afUserService.updateUser(temp);
 		}

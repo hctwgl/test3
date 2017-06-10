@@ -143,6 +143,7 @@ public class AuthFaceApi implements ApiHandle {
 		AfUserDo afUserDo = new AfUserDo();
 		afUserDo.setRid(context.getUserId());
 		afUserDo.setRealName(realName);
+		afUserDo.setUserName(context.getUserName());
 		afUserService.updateUser(afUserDo);
 
 		// 人脸识别

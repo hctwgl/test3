@@ -156,6 +156,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				AfUserDo afUserDo = new AfUserDo();
 				afUserDo.setRid(userId);
 				afUserDo.setRealName(numberDo.getName());
+				afUserDo.setUserName(context.getUserName());
 				afUserService.updateUser(afUserDo);
 
 				logger.info("id number account realname=" + numberDo.getName());
