@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.h5.controller;
 
 import java.io.IOException;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,7 +12,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
@@ -26,10 +29,6 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @RequestMapping("/")
 public class H5Controller extends BaseController {
 
-	
-	
-	 
-	 
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -42,7 +41,15 @@ public class H5Controller extends BaseController {
 
 	@RequestMapping(value = { "app/*", "app/goods/*", "app/user/*", "app/sys/*", "activity/*", "activity/01/*", "activity/02/*", "activity/03/*", "activity/04/*", "activity/05/*", "activity/06/*", "activity/07/*", "activity/08/*", "activity/09/*", "activity/10/*", "activity/11/*", "activity/12/*", "fanbei-web/*", "fanbei-web/app/*", "fanbei-web/activity/*"}, method = RequestMethod.GET)
 	public String newVmPage(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		Cookie host = new Cookie("apihost", ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST));
+		host.setPath("/");
+		response.addCookie(host);
 		String returnUrl = request.getRequestURI();
+		if(returnUrl.indexOf("fanbei-web/activity/game") >=0){
+			doMaidianLog(request);
+		}
+		
 		return returnUrl;
 	}
 
@@ -53,7 +60,8 @@ public class H5Controller extends BaseController {
 		return "/app/sys/invitationRewardRule";
 	}
 
-
+	
+	
 	
 	
 

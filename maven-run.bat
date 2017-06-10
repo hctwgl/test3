@@ -1,6 +1,6 @@
 echo off
-
-D:
+cd %~d0
+rem D:
 SET PROJECT_HOME=%cd%
 ECHO Project HOME:"%PROJECT_HOME%"
 

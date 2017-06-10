@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -75,5 +76,12 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	AfBorrowCashDo getUserDayLastBorrowCash(Long userId);
-
+	/**
+	 * 获取某个用户某个时间后，风控拒绝的借款申请数量
+	 * @param userId
+	 * @param reviewStatus
+	 * @param startTime
+	 * @return
+	 */
+	Integer getSpecBorrowCashNums(Long userId,String reviewStatus,Date startTime);
 }

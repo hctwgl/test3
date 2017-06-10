@@ -15,6 +15,9 @@ public enum AfResourceType {
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
 	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
+	HomeTabbar("HOME_TABBAR", "首页tabbar"),
+	
+	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
 	CodeMaxFail("CODE_MAX_FAIL", "验证码失败次数"),
 
@@ -41,6 +44,7 @@ public enum AfResourceType {
 	BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
 	BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
 	borrowRate("BORROW_RATE", "疯分期设置"),
+	RiskManagementBorrowcashLimit("RISK_MANAGEMENT_BORROWCASH_LIMIT", "风控对用户现金借款限制相关配置"),
 	
 	
 	registTongdunSwitch("REGIST_TONGDUN_SWITCH", "注册同盾风控"),

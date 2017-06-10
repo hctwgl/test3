@@ -72,5 +72,12 @@ public interface AfUserCouponService {
 	 */
 	List<AfUserCouponDto> getUserCouponByType(Long userId,String type);
 	
-	
+	/**
+	 * 发放优惠券
+	 * @param userId
+	 * @param couponId
+	 * @param source_type 来源类型
+	 * @param source_ref  来源关联id
+	 */
+	void grantCoupon(Long userId,Long couponId,String sourceType,String sourceRef);
 }

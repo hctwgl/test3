@@ -21,7 +21,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -61,22 +60,11 @@ public class ApplyCashApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		BigDecimal money = NumberUtil
 				.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("money")), BigDecimal.ZERO);
-		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
 		Long userId = context.getUserId();
 		logger.info("userId=" + userId + ",money=" + money);
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 	
-//		if (context.getAppVersion() >= 340) {
-//			if (StringUtils.isBlank(blackBox)) {
-//				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-//
-//			}
-//			tongdunUtil.getBorrowCashResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),
-//					context.getUserName(), context.getMobile(), userDto.getIdNumber(), userDto.getRealName(), "",
-//					requestDataVo.getMethod(), "");
-//
-//		}
 		BigDecimal useableAmount = userDto.getAuAmount()
 				.divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE), 2, BigDecimal.ROUND_HALF_UP)
 				.subtract(userDto.getUcAmount());

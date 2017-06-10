@@ -1,10 +1,14 @@
 package com.ald.fanbei.api.web.common;
 
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +27,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -37,6 +42,7 @@ import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -48,13 +54,15 @@ import com.alibaba.fastjson.JSON;
 public abstract class BaseController {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final Logger biLogger = LoggerFactory.getLogger("FANBEI_BI");
-	protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
+	private final Logger biLogger = LoggerFactory.getLogger("FANBEI_BI");//app原生接口入口日志
+	protected final Logger webbiLog = LoggerFactory.getLogger("FBWEB_BI");//h5接口入口日志
+	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
+	protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");//第三方调用日志
 
 	@Resource
 	protected ApiHandleFactory apiHandleFactory;
 	@Resource
-	TokenCacheUtil tokenCacheUtil;
+	protected TokenCacheUtil tokenCacheUtil;
 	@Resource
 	AfUserService afUserService;
 
@@ -193,6 +201,45 @@ public abstract class BaseController {
 		}
 		return context;
 	}
+	
+	/**
+	 * h5接口验证，验证基础参数、签名
+	 * @param request
+	 * @param needToken
+	 * @return
+	 */
+	protected FanbeiWebContext doWebCheck(HttpServletRequest request,boolean needToken){
+		FanbeiWebContext webContext = new FanbeiWebContext();
+		String appInfo = getAppInfo(request.getHeader("Referer"));
+		//如果是测试环境
+		if(Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)) && StringUtil.isBlank(appInfo)){
+			String testUser = getTestUser(request.getHeader("Referer"));
+			if(testUser != null){
+				if("no".equals(testUser)){
+					return webContext;
+				}else{
+					webContext.setUserName(testUser);
+					webContext.setLogin(true);
+					return webContext;
+				}
+			}
+		}
+		webContext.setAppInfo(appInfo);
+		if(StringUtil.isBlank(appInfo)){
+			if(needToken){
+				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}else{
+				return webContext;
+			}
+		}
+		RequestDataVo requestDataVo = parseRequestData(appInfo, request);
+		requestDataVo.setParams(new HashMap<String, Object>());
+		FanbeiContext baseContext = this.doBaseParamCheck(requestDataVo);
+		webContext.setUserName(baseContext.getUserName());
+		webContext.setAppVersion(baseContext.getAppVersion());
+		checkWebSign(webContext,requestDataVo, needToken);
+		return webContext;
+	}
 
 	/**
 	 * 验证系统参数，验证签名
@@ -201,6 +248,44 @@ public abstract class BaseController {
 	 * @return
 	 */
 	private FanbeiContext doSystemCheck(RequestDataVo requestDataVo) {
+		FanbeiContext context = this.doBaseParamCheck(requestDataVo);
+		// 是否登录之前接口，若登录之前的接口不需要验证用户，否则需要验证用户
+		boolean beforeLogin = true;
+		beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
+		String borrowMethodName = "/borrow/getBorrowHomeInfo";
+		// TODO 设置上下文
+		if (!beforeLogin) {// 需要登录的接口
+			AfUserDo userInfo = afUserService.getUserByUserName(context.getUserName());
+			String methodString = requestDataVo.getMethod();
+			if (userInfo == null && StringUtils.equals(borrowMethodName, methodString)) {
+				throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR);
+
+			} else if (userInfo == null) {
+
+				throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			}
+			context.setUserId(userInfo.getRid());
+			context.setNick(userInfo.getNick());
+			context.setMobile(userInfo.getMobile());
+		} else if (beforeLogin && CommonUtil.isMobile(context.getUserName())) {// 不需要登录但是已经登录过
+			AfUserDo userInfo = afUserService.getUserByUserName(context.getUserName());
+			if (userInfo != null) {
+				context.setUserId(userInfo.getRid());
+				context.setNick(userInfo.getNick());
+				context.setMobile(userInfo.getMobile());
+			}
+		}
+
+		// 验证签名
+		Map<String, Object> systemMap = requestDataVo.getSystem();
+		this.checkSign(context.getAppVersion()+"" , ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE)), context.getUserName(), 
+				ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN)), ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME)), requestDataVo.getParams(), beforeLogin);
+
+		return context;
+	}
+	
+	private FanbeiContext doBaseParamCheck(RequestDataVo requestDataVo){
+
 		FanbeiContext context = new FanbeiContext();
 		if (requestDataVo == null || requestDataVo.getSystem() == null || requestDataVo.getParams() == null || requestDataVo.getMethod() == null) {
 			throw new FanbeiException("缺少系统参数", FanbeiExceptionCode.REQUEST_PARAM_SYSTEM_NOT_EXIST);
@@ -219,36 +304,6 @@ public abstract class BaseController {
 		int version = NumberUtil.objToIntDefault(systemMap.get(Constants.REQ_SYS_NODE_VERSION), 0);
 		context.setUserName(userName);
 		context.setAppVersion(version);
-		// 是否登录之前接口，若登录之前的接口不需要验证用户，否则需要验证用户
-		boolean beforeLogin = true;
-		beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
-		String borrowMethodName = "/borrow/getBorrowHomeInfo";
-		// TODO 设置上下文
-		if (!beforeLogin) {// 需要登录的接口
-			AfUserDo userInfo = afUserService.getUserByUserName(userName);
-			String methodString = requestDataVo.getMethod();
-			if (userInfo == null && StringUtils.equals(borrowMethodName, methodString)) {
-				throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR);
-
-			} else if (userInfo == null) {
-
-				throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-			}
-			context.setUserId(userInfo.getRid());
-			context.setNick(userInfo.getNick());
-			context.setMobile(userInfo.getMobile());
-		} else if (beforeLogin && CommonUtil.isMobile(userName)) {// 不需要登录但是已经登录过
-			AfUserDo userInfo = afUserService.getUserByUserName(userName);
-			if (userInfo != null) {
-				context.setUserId(userInfo.getRid());
-				context.setNick(userInfo.getNick());
-				context.setMobile(userInfo.getMobile());
-			}
-		}
-
-		// 验证签名
-		this.checkSign(appVersion, netType, userName, sign, time, requestDataVo.getParams(), beforeLogin);
-
 		return context;
 	}
 
@@ -304,6 +359,65 @@ public abstract class BaseController {
 		this.compareSign(signStrBefore, sign);
 
 	}
+	
+	/**
+	 * 验证签名
+	 * 
+	 * @param appVersion
+	 *            app版本
+	 * @param userName
+	 *            用户名
+	 * @param sign
+	 *            签名
+	 * @param time
+	 *            时间戳
+	 * @param params
+	 *            所有请求参数
+	 * @param needToken
+	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要
+	 */
+	private void checkWebSign(FanbeiWebContext webContext,RequestDataVo requestDataVo, boolean needToken) {
+
+		Map<String, Object> systemMap = requestDataVo.getSystem();
+		String appVersion = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_VERSION));
+		String netType = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE));
+		String userName = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_USERNAME));
+		String sign = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN));
+		String time = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME));
+		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+		if(logger.isDebugEnabled()){
+			logger.debug(userName + " token= " + token);
+		}
+		if (Constants.SWITCH_OFF.equals(ConfigProperties.get(Constants.CONFKEY_CHECK_SIGN_SWITCH))) {
+			if (needToken) {//需要登录的接口必须加token
+				if (token == null) {
+					throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+				}
+				webContext.setLogin(true);
+			}else{//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+				if(token != null){
+					webContext.setLogin(true);
+				}
+			}
+			return;
+		}
+		String signStrBefore = "appVersion=" + appVersion + "&netType=" + netType + "&time=" + time + "&userName=" + userName;
+//		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+		if (needToken) {//需要登录的接口必须加token
+			if (token == null) {
+				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+			}
+			signStrBefore = signStrBefore + token.getToken();
+			webContext.setLogin(true);
+		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+			if(token != null){
+				signStrBefore = signStrBefore + token.getToken();
+				webContext.setLogin(true);
+			}
+		}
+		this.compareSign(signStrBefore, sign);
+
+	}
 
 	/**
 	 * 比较签名值
@@ -352,5 +466,118 @@ public abstract class BaseController {
 			return new String(Base64.decode(baseString));
 		}
 		return StringUtils.EMPTY;
+	}
+	
+	/**
+	 * 记录埋点相关日志日志
+	 * @param request
+	 * @param respData
+	 * @param exeT
+	 */
+	protected void doMaidianLog(HttpServletRequest request){
+		JSONObject param = new JSONObject();
+		Enumeration<String> enu=request.getParameterNames();  
+		while(enu.hasMoreElements()){  
+			String paraName=(String)enu.nextElement();  
+			param.put(paraName, request.getParameter(paraName));
+		}
+		maidianLog.info(StringUtil.appendStrs("inte=",request.getRequestURI(),";ip=",CommonUtil.getIpAddr(request),";param=",param.toString()));
+	}
+	
+	/**
+	 * 记录H5日志
+	 * @param request
+	 * @param appInfo
+	 * @param respData
+	 * @param exeT
+	 */
+	protected void doLog(HttpServletRequest request,String appInfo,String respData,long exeT){
+		JSONObject param = new JSONObject();
+		param.put("_appInfo", StringUtil.isNotBlank(appInfo)?JSONObject.parse(appInfo):"");
+		Enumeration<String> enu=request.getParameterNames();  
+		while(enu.hasMoreElements()){  
+			String paraName=(String)enu.nextElement();  
+			param.put(paraName, request.getParameter(paraName));
+		}
+		this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI());
+	}
+
+	/**
+	 * 记录日志
+	 * @param reqData 请求参数
+	 * @param resD 响应结果
+	 * @param httpMethod 请求方法 GET或POST
+	 * @param rmtIp 远程id
+	 * @param exeT 执行时间
+	 * @param inter 接口
+	 */
+	protected void doLog(String reqData,String resD,String httpMethod,String rmtIp,String exeT,String inter){
+		webbiLog.info(StringUtil.appendStrs("reqD=",reqData,";resD=",resD,";methd=",httpMethod,";rmtIp=",rmtIp,";exeT=",exeT,";inter=",inter));
+	}
+	
+	private static String getAppInfo(String url) {
+		String result = "";
+		try {
+			Map<String, List<String>> params = new HashMap<String, List<String>>();
+			String[] urlParts = url.split("\\?");
+			if (urlParts.length > 1) {
+				String query = urlParts[1];
+				for (String param : query.split("&")) {
+					String[] pair = param.split("=");
+					String key = URLDecoder.decode(pair[0], "UTF-8");
+					String value = "";
+					if (pair.length > 1) {
+						value = URLDecoder.decode(pair[1], "UTF-8");
+					}
+
+					List<String> values = params.get(key);
+					if (values == null) {
+						values = new ArrayList<String>();
+						params.put(key, values);
+					}
+					values.add(value);
+				}
+			}
+			List<String> _appInfo = params.get("_appInfo");
+			if(_appInfo != null && _appInfo.size() > 0){
+				result = _appInfo.get(0);
+			}
+			return result;
+		} catch (UnsupportedEncodingException ex) {
+			throw new AssertionError(ex);
+		}
+	}
+	
+	private static String getTestUser(String url) {
+		String result = "";
+		try {
+			Map<String, List<String>> params = new HashMap<String, List<String>>();
+			String[] urlParts = url.split("\\?");
+			if (urlParts.length > 1) {
+				String query = urlParts[1];
+				for (String param : query.split("&")) {
+					String[] pair = param.split("=");
+					String key = URLDecoder.decode(pair[0], "UTF-8");
+					String value = "";
+					if (pair.length > 1) {
+						value = URLDecoder.decode(pair[1], "UTF-8");
+					}
+
+					List<String> values = params.get(key);
+					if (values == null) {
+						values = new ArrayList<String>();
+						params.put(key, values);
+					}
+					values.add(value);
+				}
+			}
+			List<String> _appInfo = params.get("testUser");
+			if(_appInfo != null && _appInfo.size() > 0){
+				result = _appInfo.get(0);
+			}
+			return result;
+		} catch (UnsupportedEncodingException ex) {
+			throw new AssertionError(ex);
+		}
 	}
 }

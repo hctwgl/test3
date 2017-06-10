@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+    <meta charset="UTF-8">
+    <title>game</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
+</head>
+<body>
+<img src="$commonUrl/ni_1.jpg">
+<img src="$commonUrl/ni_2.jpg">
+<img class="modelPic" src="$commonUrl/ni_2bg.jpg">
+<img src="$commonUrl/ni_3.jpg">
+<p class="title">抓娃娃抽优惠券，当集齐五个娃娃还可以额外抽取实物大奖！</p>
+<div class="container">
+    <div id="claw"></div>
+    <div id="terrace">
+        <div id="scroll">
+            <span class="doll"><div class="doll-main"></div></span>
+        </div>
+    </div>
+</div>
+<div id="time">20秒</div>
+<div class="play">
+    <button class="button"><a style="display: block;color:white;width:100%;height:100%;line-height: .6rem" href="/app/user/register">开始游戏</a></button>
+</div>
+<div id="chance">您还有1次机会</div>
+
+
+<div id="shadow"></div>
+
+
+##//--------------------------------------yun--------------------------------------------
+
+
+
+<div id="scrollData">
+    <div class="personName">中奖名单</div>
+    <!--滚轮-->
+    <div class="roll roll01">
+        <ul class="awardList">
+            <!-- <li>
+               <div class="personImg"></div>
+               <h2><span>15666666666</span><span>获得100抵10元优惠券</span></h2>
+            </li>
+            <li>
+               <div class="personImg"></div>
+               <h2><span>15777777777</span><span>获得100抵10元优惠券</span></h2>
+            </li>
+            <li>
+               <div class="personImg"></div>
+               <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
+            </li>
+            <li>
+               <div class="personImg"></div>
+               <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
+            </li> -->
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript" src="/dist/activity/06/game.js?id=4"></script>
+</body>
+</html>

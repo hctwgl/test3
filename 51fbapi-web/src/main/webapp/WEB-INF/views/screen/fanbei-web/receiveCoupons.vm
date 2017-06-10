@@ -1,47 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-    	#set($version="2017051801")
-		#set($commonUrl="https://fs.51fanbei.com/h5")
-		<title>领取优惠券</title>
-		<link rel="stylesheet" type="text/css" href="/dist/css/user/receiveCoupons.css?version=$version">
-    </head>
-    <body>
-		<input type="hidden" id="couponList" name="couponList" value=$jsonUtil.toJSONString($!{couponList})>
-		<input type="hidden" id="userName" name="userName" value="$!{userName}">
-		#if($!{couponList.size()}==0)
-	   		<div class="nullPrompt">
-	   			<img src="$commonUrl/common/images/040101wuyouhui.png">
-				<span>暂无优惠劵</span>
-	   		</div>
+<html>
+<head>
+    #set($version="20170605")
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+    <meta charset="UTF-8">
+    <title>我要领券</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/receiveCoupons.css?version=$version">
+</head>
+<body>
+<div id="getCoupon">
+    <input type="hidden" id="couponList" name="couponList" value=$jsonUtil.toJSONString($!{couponList})>
+	<input type="hidden" id="userName" name="userName" value="$!{userName}">
+	#if($!{couponList.size()}==0)
+	   <div class="noCoupon">暂无优惠券</div> 
+	#end
+	<ul class="List">
+	    #foreach($item in $!{couponList})
+		   <li class="couponLi">
+		       <p class="positionYuan positionYuan01"></p>
+               <p class="positionYuan positionYuan02"></p>
+		   	   <!-- <div class="couponKind"><img src="$commonUrl/getCoupon02.png"></div> -->
+		   	   <div class="couponTop">
+		   	   	   <p class="cashCoupon">$!{item.type}</p>
+		   	   	   <p class="couponSize">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></p>
+		   	   	   <p class="expiryDate">有效期$dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
+		   	   	   <p class="fullCut">满$!{item.limitAmount}元可用</p>
+		   	   </div>
+		   	   #if($!{item.quota}==$!{item.quotaAlready})
+               <p class="clickCoupon clickCoupon02">已抢完</p>
+               #elseif($!{item.userAlready}>0)
+                <p class="clickCoupon clickCoupon01">去用券</p>               
+               #else
+               <p class="clickCoupon clickCoupon01" dataQuota=$!{item.quota} dataAleady=$!{item.quotaAlready}>点击领券</p>
+               #end
+		   </li>
 		#end
-		<ul class="receiveCoupons_main">
-			#foreach($item in $!{couponList})
-				<li class="
-					#if($!{item.quotaAlready} >= $!{item.quota})
-						receiveCoupons_ylw
-					#elseif($!{item.userAlready} >= $!{item.limitCount})
-						receiveCoupons_ylq
-					#end
-				">
-					<div class="receiveCoupons_content clearfix">
-						<span class="receiveCoupons_priceInfo">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></span>
-						<div class="receiveCoupons_text">
-							<p>$!{item.name}</p>
-							<p>
-								#if($!{item.limitAmount}==0)
-									无限制
-								#else
-									满$!{item.limitAmount}元可使用
-								#end
-							</p>
-							<p>每人限量$!{item.limitCount}张</p>
-						</div>
-					</div>
-					<p class="receiveCoupons_date">$dateUtil.formatDate($!{item.gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
-				</li>
-			#end
-		</ul>
-		<script type="text/javascript" src="/dist/js/user/receiveCoupons.js?version=$version"></script>
-    </body>
+	</ul>
+	<!-- <p class="myCoupon">查看我的优惠券</p> -->
+</div>
+
+<script type="text/javascript" src="/dist/activity/06/receiveCoupons.js?version=$version"></script>
+</body>
 </html>

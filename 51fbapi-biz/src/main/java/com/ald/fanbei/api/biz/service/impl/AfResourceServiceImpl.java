@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author Xiaotianjian 2017年1月20日上午10:27:48
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@SuppressWarnings("unchecked")
 @Service("afResourceService")
 public class AfResourceServiceImpl implements AfResourceService {
 
@@ -206,5 +207,11 @@ public class AfResourceServiceImpl implements AfResourceService {
 		}
 		
 		return borrowRate;
+	}
+
+	@Override
+	public List<AfResourceDo> getHomeIndexListByOrderby(String type) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getHomeIndexListByOrderby(type);
 	}
 }

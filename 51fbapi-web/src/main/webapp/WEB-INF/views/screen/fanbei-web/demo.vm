@@ -7,12 +7,96 @@
 <link rel="stylesheet" type="text/css" href="/dist/activity/05/motherDay.css?version=$version">
 </head>
 <body>
+
 <div class="footer" @click="bombBox">
    <div class="words"><img src="$commonUrl/mumday28_01.jpg"></div>
    <div class="saleOff"><img src="$commonUrl/mumday30.jpg"></div>
 </div>
 
-<script type="text/javascript" src="/dist/activity/05/demo.js?version=$version"></script>
+<script type="text/javascript">
+    
+/* ---------------------分享--------------------- */
+    // 获取cookie中的apihost
+    var apihost = getCookie("apihost");
+
+    // app调用web的方法
+    function alaShareData(){
+        var dataObj = { // 分享内容
+            'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
+            'type': 'share', // 此页面的类型
+            'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
+            'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
+            'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+            'shareAppUrl': apihost+'/activity/06/feastRaiders',  // 分享后的链接
+            'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
+            'sharePage': 'gameShare' // 分享的页面
+        };
+        var dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
+        return dataStr;
+    };
+
+/* ---------------------分享--------------------- */
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<!-- <script type="text/javascript">
+    
+   
+
+    var returnNum = getBlatFrom();  // 判断1为Android，2为ios
+
+    // 客户端调用H5方法
+    function shareData(){
+
+        // 分享
+        var dataObj = {
+            'shareAppTitle': '分享抓娃娃游戏获取优惠券',
+            'shareAppContent': '抓娃娃游戏',
+            'shareAppImage': 'http://f.51fanbei.com/h5/app/activity/05/mumday28_01.jpg',
+            'shareAppUrl': 'http://www.baidu.com'
+        }
+
+        var dataStr = JSON.stringify(dataObj);  // jsons数组转换成json对象
+        console.log(dataStr);
+
+
+        if(returnNum == 1){  // android机型
+            alaAndroid.shareData(dataStr);  // 调用Android原生方法
+        }else{
+            alaIos.shareData(dataStr);  // 调用Android原生方法
+        }
+
+    }
+
+    // shareData();
+</script> -->
+
+<!-- <script type="text/javascript" src="/dist/activity/05/demo.js?version=$version"></script> -->
+<!-- <script type="text/javascript">
+	new Vue({
+        el:'.footer',
+        methods:{
+            bombBox: function(){ // 规则弹窗
+                /*window.location.href = 'tel://' + '10086';*/
+            }
+        }
+    });
+</script> -->
 
 </body>
 </html>
