@@ -31,7 +31,7 @@
 	        </ul>
 	      	<div class="register_submitBtn_wrap"><button class="register_submitBtn btnc_cf" onkeyup="changeBtn()">完成注册并下载App</button></div>
 	      	<div class="register_checkbox clearfix">
-	      		<input type="checkbox" class="input_check" id="input_check"　onkeyup="changeBtn()">
+	      		<input type="checkbox" class="input_check" id="input_check" checked="checked"　onkeyup="changeBtn()">
             	<label for="input_check"></label>
 	      		<p><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
 	      	</div>
