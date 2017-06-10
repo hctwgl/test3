@@ -84,7 +84,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public boolean sendRegistVerifyCode(String mobile) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
@@ -129,7 +129,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public boolean sendForgetPwdVerifyCode(String mobile, Long userId) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = FORGET_TEMPLATE.replace("&param1", verifyCode);
@@ -149,7 +149,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public boolean sendMobileBindVerifyCode(String mobile, Long userId) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = BIND_TEMPLATE.replace("&param1", verifyCode);
@@ -169,7 +169,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public boolean sendSetPayPwdVerifyCode(String mobile, Long userId) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = SETPAY_TEMPLATE.replace("&param1", verifyCode);
@@ -235,7 +235,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public void sendSms(String mobile, String content) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		sendSmsToDhst(mobile, content);
 	}

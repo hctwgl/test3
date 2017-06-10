@@ -35,6 +35,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
@@ -139,11 +140,15 @@ public class AppH5UserContorler extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "commitRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
+		
+		String reqData = "";
+		
 		try {
 			String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
+			reqData = StringUtil.appendStrs("web commitRegister" + mobile , ",", verifyCode,",",passwordSrc,",",recommendCode);
 
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
 			if (eUserDo != null) {
@@ -193,7 +198,6 @@ public class AppH5UserContorler extends BaseController {
 			if (!StringUtils.isBlank(recommendCode)) {
 				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 				userDo.setRecommendId(userRecommendDo.getRid());
-				;
 			}
 			afUserService.updateUser(userDo);
 
@@ -211,6 +215,8 @@ public class AppH5UserContorler extends BaseController {
 		} catch (Exception e) {
 			logger.error("commitRegister exception",e);
 			return H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
+		}finally{
+			logger.info(reqData);
 		}
 
 	}
