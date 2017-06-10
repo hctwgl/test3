@@ -196,6 +196,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		borrowRate.setRangeBegin(borrowRateJson.getBigDecimal("rangeBegin"));
 		borrowRate.setRangeEnd(borrowRateJson.getBigDecimal("rangeEnd"));
 		
+		borrowRate.setOverdueRate(borrowRateOverdueJson.getBigDecimal("overdueRate"));
 		borrowRate.setOverduePoundageRate(borrowRateOverdueJson.getBigDecimal("overduePoundageRate"));
 		borrowRate.setOverdueRangeBegin(borrowRateOverdueJson.getBigDecimal("overdueRangeBegin"));
 		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
@@ -253,7 +254,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject obj = array.getJSONObject(i);
 			if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
-				borrowRate.put("overdueRate", Constants.DEFAULT_RATE);
+				borrowRate.put("overdueRate", obj.get(Constants.DEFAULT_RATE));
 				borrowRate.put("overdueRangeBegin", rangeBegin);
 				borrowRate.put("overdueRangeEnd", rangeEnd);
 				borrowRate.put("overduePoundageRate", new BigDecimal(resourceOverdue.getValue1()));
