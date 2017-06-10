@@ -68,7 +68,8 @@ public class BorrowRateBoUtil {
 				case overdueRangeEnd:
 					bo.setOverdueRangeEnd(new BigDecimal(value));
 					break;
-				default 
+				default :
+					break;
 			}
 		}
 		return bo;
