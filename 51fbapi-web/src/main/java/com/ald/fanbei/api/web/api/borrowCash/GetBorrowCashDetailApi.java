@@ -88,10 +88,6 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 		}
-		//兼容老版本 老版本没有还款状态
-		if (AfBorrowCashStatus.repaying.getCode().equals(afBorrowCashDo.getStatus()) && appVersion < 363) {
-			data.put("status", AfBorrowCashStatus.transed.getCode());
-		}
 		
 		AfBorrowCashType borrowCashType = AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType());
 
@@ -111,8 +107,12 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 			//如果借款记录存在，统计还款处理中金额
 			BigDecimal repayingMoney = afRepaymentBorrowCashService.getRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
 			if(repayingMoney.compareTo(BigDecimal.ZERO)>0){
-			data.put("status", AfBorrowCashStatus.repaying.getCode());
-			
+				//兼容老版本 老版本没有还款状态
+				if (appVersion < 363) {
+					data.put("status", AfBorrowCashStatus.transed.getCode());
+				} else {
+					data.put("status", AfBorrowCashStatus.repaying.getCode());
+				}
 			}
 	
 			

@@ -13,7 +13,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -197,11 +196,10 @@ public class AppH5GameController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			context = doWebCheck(request, true);
-			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 			String name = request.getParameter("name");
 			String mobilePhone = request.getParameter("mobilePhone");
 			String address = request.getParameter("address");
-			if(StringUtil.isEmpty(appInfotext) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
+			if(StringUtil.isEmpty(context.getAppInfo()) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
 				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
 			}
 			
