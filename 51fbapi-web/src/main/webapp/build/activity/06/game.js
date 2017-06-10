@@ -16,8 +16,8 @@ function alaShareData(){
     let dataObj = {
         'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
         'type': 'share', // 此页面的类型
-        'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
-        'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
+        'shareAppTitle': '年中抓娃娃,让你一次玩个爽！',  // 分享的title
+        'shareAppContent': '51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~',  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
         'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
