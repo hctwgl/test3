@@ -208,6 +208,6 @@ public interface AfBorrowService {
 	 * 			  免息规则
 	 * @return
 	 */
-	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, int nper, Long orderId,
+	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, Integer nper, Long orderId,
 			String orderNo, String borrowRate, String interestFreeJson);
 }

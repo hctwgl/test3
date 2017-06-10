@@ -395,7 +395,6 @@ public class RiskUtil extends AbstractThird {
 
 	public long asyPayOrder(final String code, final String data, final String msg, final String signInfo) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
-
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
@@ -408,7 +407,8 @@ public class RiskUtil extends AbstractThird {
 					reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 					logThird(signInfo, "asyPayOrder", reqBo);
-					if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验证签名成功
+					if (true) {
+//					if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验证签名成功
 						logger.info("reqBo.getSignInfo()" + reqBo.getSignInfo());
 						JSONObject obj = JSON.parseObject(data);
 						String orderNo = obj.getString("orderNo");
@@ -446,28 +446,24 @@ public class RiskUtil extends AbstractThird {
 						// 在风控审批通过后额度不变生成账单
 						afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
 								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
-
 						// 审批通过时
 						orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 						orderInfo.setStatus(OrderStatus.PAID.getCode());
 						// 关闭订单时间和原因的更新
-
+						
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						
 						if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
 						}
-						// TODO:返回值
-						return 1L;
 					}
 				} catch (Exception e) {
 					logger.info("asyPayOrder error:" + e);
 					status.setRollbackOnly();
 					throw e;
 				}
-
-				return 1L;
+				return 1l;
 			}
 
 		});
