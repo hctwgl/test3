@@ -12,18 +12,19 @@
    <div class="order"></div>
 </div>
 <div class="timeList"><img src="$src/r20.jpg"></div>
-<img src="$src/r25.jpg">
+<img src="$src/r27.jpg">
 <img src="$src/r10.jpg">
 <img src="$src/r11.jpg">
 <img src="$src/r12.jpg">
 <img src="$src/r13.jpg">
-<img class="ruleTop" src="$src/r22.jpg">
-<img class="ruleBottom" src="$src/r23.jpg">
+<img class="ruleTop" src="$src/r28.jpg">
+<img src="$src/r29.jpg">
+<div class="blank"></div>
 <!--弹框-->
 <div class="mask"></div>
 <div class="orderSuccess">
-	<p>恭喜您！预约成功！</p>
-	<p>OPPO R11将于6月22日10:00准时开售,下单购买即可享受300元立减优惠！</p>
+    <img src="$src/r30.png">
+    <div class="close"></div>
 </div>
 <script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
 </body>
