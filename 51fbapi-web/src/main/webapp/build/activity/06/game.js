@@ -16,10 +16,10 @@ function alaShareData(){
     let dataObj = {
         'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
         'type': 'share', // 此页面的类型
-        'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
-        'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
+        'shareAppTitle': '年中抓娃娃,让你一次玩个爽！',  // 分享的title
+        'shareAppContent': '51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~',  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': 'http://testapp.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
+        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'gameShare' // 分享的页面
     };
@@ -103,14 +103,13 @@ function dataInit() {
                 //是否集齐五娃
                 if(data.data.isFinish=='Y'){
                     $('#allToy').find('h3').html('五娃已集齐，请静等开奖！');
-                    //开奖时间
-                    if(data.data.gmtOpen>0) {
                         //五娃是否中奖
                         if (data.data.isAward == 'N') {
-                                let time = 0;
+                            //开奖时间
+                            if(data.data.gmtOpen>0) {
+                                let time = 0,hours01, hours02, minutes01, minutes02, seconds01, seconds02;
                                 let starTime=setInterval(function () {
                                     time += 1000;
-                                    let hours01, hours02, minutes01, minutes02, seconds01, seconds02;
                                     let leftTime = data.data.gmtOpen - data.data.gmtCurrent - time;
                                     let leftsecond = parseInt(leftTime / 1000);
                                     let hours = parseInt(leftsecond / 3600);
@@ -144,10 +143,6 @@ function dataInit() {
                                         seconds02 = seconds.slice(1, 2);
 
                                     }
-                                    if(hours01<=0&&hours02<=0&&minutes01<=0&&minutes02<=0&&seconds01<=0&&seconds02<=0){
-                                        clearInterval(starTime);
-                                        hours01=hours02=minutes01=minutes02=seconds01=seconds02=0
-                                    }
                                     //console.log(hours01+hours02+minutes01+minutes02+seconds01+seconds02)
                                     $('.countDown').find('span').eq(0).html(hours01);
                                     $('.countDown').find('span').eq(1).html(hours02);
@@ -156,8 +151,19 @@ function dataInit() {
                                     $('.countDown').find('span').eq(6).html(seconds01);
                                     $('.countDown').find('span').eq(7).html(seconds02);
                                 }, 1000);
+                                //如果倒计时到0
+                            if(hours01<=0&&hours02<=0&&minutes01<=0&&minutes02<=0&&seconds01<=0&&seconds02<=0){
+                                clearInterval(starTime);
+                                $('#getPrize h5').html('正在抽取大奖中...');
+                            }else{
+                                if(data.data.gmtOpen>1497751200000){
+                                    $('#getPrize h4').html('很遗憾，您暂未中奖，请静等下一波！');
+                                }
                                 $('#getPrize h5').html('开奖倒计时');
                                 $('.countDown').show()
+                            }
+
+                        }
                         } else {
                             if (data.data.awardInfo.type == 'G') {
                                 $('#getPrize h4').html('恭喜您获得幸运大奖！');
@@ -168,11 +174,10 @@ function dataInit() {
                                     $('#getPrize h5').html('奖项已发送至您的收货地址');
                                 } else {
                                     $('#getPrize h5').html('<a href="personInfo?url='+data.data.awardInfo.awardIcon+'">请提交资料</a>');
-
                                 }
                             }
                         }
-                    }
+
                 }
             }else{
                 requestMsg('初始化失败');
@@ -320,7 +325,7 @@ $('#startBtn').click(function () {
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
 
             });
             $('#alert').show();

@@ -43,7 +43,7 @@
 				'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
 				'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
 				'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-				'shareAppUrl': apihost+'/fanbei-web/activity/feastRaidersShare'  // 分享后的链接
+				'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/feastRaidersShare'  // 分享后的链接
 				//'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
 				//'sharePage': 'gameShare' // 分享的页面
 			};
