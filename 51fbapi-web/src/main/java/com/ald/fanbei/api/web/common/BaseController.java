@@ -487,11 +487,11 @@ public abstract class BaseController {
 	/**
 	 * 记录H5日志
 	 * @param request
-	 * @param appInfo
 	 * @param respData
+	 * @param appInfo
 	 * @param exeT
 	 */
-	protected void doLog(HttpServletRequest request,String appInfo,String respData,long exeT){
+	protected void doLog(HttpServletRequest request,String respData,String appInfo,long exeT){
 		JSONObject param = new JSONObject();
 		param.put("_appInfo", StringUtil.isNotBlank(appInfo)?JSONObject.parse(appInfo):"");
 		Enumeration<String> enu=request.getParameterNames();  
