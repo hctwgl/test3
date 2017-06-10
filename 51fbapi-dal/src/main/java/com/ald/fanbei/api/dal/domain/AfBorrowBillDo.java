@@ -41,7 +41,6 @@ public class AfBorrowBillDo extends AbstractSerial{
 	private String  type;
 	private Integer count;//数量
 	private String isFreeInterest;//是否免息是否还款状态【Y:免息 N:不免息，】
-	private String borrowRate;//提交订单时的费率信息
 	
 	public Long getRid() {
 		return rid;
@@ -204,17 +203,5 @@ public class AfBorrowBillDo extends AbstractSerial{
 	 */
 	public void setIsFreeInterest(String isFreeInterest) {
 		this.isFreeInterest = isFreeInterest;
-	}
-	/**
-	 * @return the borrowRate
-	 */
-	public String getBorrowRate() {
-		return borrowRate;
-	}
-	/**
-	 * @param borrowRate the borrowRate to set
-	 */
-	public void setBorrowRate(String borrowRate) {
-		this.borrowRate = borrowRate;
 	}
 }

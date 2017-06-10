@@ -641,7 +641,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
 			bill.setStatus(BorrowBillStatus.NO.getCode());
 			bill.setType(BorrowType.CONSUME.getCode());
-			bill.setBorrowRate(borrowRate);
 			list.add(bill);
 			now = DateUtil.addMonths(now, 1);
 		}
