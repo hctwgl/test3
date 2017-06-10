@@ -103,11 +103,10 @@ function dataInit() {
                 //是否集齐五娃
                 if(data.data.isFinish=='Y'){
                     $('#allToy').find('h3').html('五娃已集齐，请静等开奖！');
-                    //开奖时间
-                    if(data.data.gmtOpen>0) {
                         //五娃是否中奖
                         if (data.data.isAward == 'N') {
-
+                            //开奖时间
+                            if(data.data.gmtOpen>0) {
                                 let time = 0,hours01, hours02, minutes01, minutes02, seconds01, seconds02;
                                 let starTime=setInterval(function () {
                                     time += 1000;
@@ -163,6 +162,8 @@ function dataInit() {
                                 $('#getPrize h5').html('开奖倒计时');
                                 $('.countDown').show()
                             }
+
+                        }
                         } else {
                             if (data.data.awardInfo.type == 'G') {
                                 $('#getPrize h4').html('恭喜您获得幸运大奖！');
@@ -176,7 +177,7 @@ function dataInit() {
                                 }
                             }
                         }
-                    }
+
                 }
             }else{
                 requestMsg('初始化失败');
