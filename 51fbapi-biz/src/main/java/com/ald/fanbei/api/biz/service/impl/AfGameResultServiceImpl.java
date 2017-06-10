@@ -100,7 +100,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		});
 		
 		//是否第一次抓中
-		boolean isFirstCatch = false;
+		boolean isFirstCatch = true;
 		for(AfGameResultDto resultItem : gameResults){
 			if("Y".equals(resultItem.getResult())){
 				isFirstCatch = false;
@@ -197,7 +197,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			if(gameResults.size() > 0){
 				userRate = BigDecimalUtil.divide(userAwardCount, gameResults.size());
 			}
-			if(userRate.compareTo(personalRate) >=0){//获奖概率已经大于个人总体概率
+			if(personalRate.compareTo(new BigDecimal(1)) != 0 && userRate.compareTo(personalRate) >=0){//获奖概率已经大于个人总体概率
 				return null;
 			}
 			//判断单项中间概率,如果单项概率已经大于配置的中奖概率了，不能再中该奖了

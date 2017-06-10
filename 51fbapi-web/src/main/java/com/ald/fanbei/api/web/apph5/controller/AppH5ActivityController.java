@@ -78,7 +78,8 @@ public class AppH5ActivityController extends BaseController {
             Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), null);
             //Long rsvNums = NumberUtil.objToLongDefault(request.getParameter("rsvNums"), 1L);
             Long rsvNums =  1L;
-            String goodsName = "";
+            //预约成功后发送短信开关 Y发送 N不发送
+            String sendMsgStatus = "";
             if (afUserDo == null) {
                 String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
                 returnData.put("status", GoodsReservationWebFailStatus.UserNotexist.getCode());
@@ -131,7 +132,7 @@ public class AppH5ActivityController extends BaseController {
             Map<String,Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(currActivityResource.getValue3());
             Date startTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("startTime")));
             Date endTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("endTime")));
-            goodsName = StringUtil.null2Str(jsonObjRes.get("goodsName"));
+            sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
             
             //活动开始结束校验
             Date currDate = new Date();
@@ -170,13 +171,15 @@ public class AppH5ActivityController extends BaseController {
             }
             
             //预约成功，短信通知
-            try {
-                boolean result = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile());
-                if(result==false){
-                	logger.error("活动产品预约成功消息通知发送失败userId："+afUserDo.getRid());
+            if(StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())){
+            	try {
+                    boolean result = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile());
+                    if(result==false){
+                    	logger.error("活动产品预约成功消息通知发送失败userId："+afUserDo.getRid());
+                    }
+                } catch (Exception e) {
+                    logger.error("活动产品预约成功消息通知异常userId："+afUserDo.getRid()+",",e);
                 }
-            } catch (Exception e) {
-                logger.error("活动产品预约成功消息通知异常userId："+afUserDo.getRid()+",",e);
             }
             
             returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
