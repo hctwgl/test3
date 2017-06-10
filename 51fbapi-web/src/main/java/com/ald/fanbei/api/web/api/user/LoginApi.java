@@ -117,6 +117,9 @@ public class LoginApi implements ApiHandle {
 
 		// check password
 		String inputPassword = UserUtil.getPassword(inputPassSrc, afUserDo.getSalt());
+		logger.debug("inputPassword:"+inputPassword);
+		logger.debug("password:"+afUserDo.getPassword());
+		logger.debug("equals:"+StringUtils.equals(inputPassword.trim(), afUserDo.getPassword().trim()));
 		if (!StringUtils.equals(inputPassword.trim(), afUserDo.getPassword().trim())) {
 			// fail count add 1
 			AfUserDo temp = new AfUserDo();
