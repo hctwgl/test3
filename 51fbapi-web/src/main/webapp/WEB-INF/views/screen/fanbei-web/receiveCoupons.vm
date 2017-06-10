@@ -12,7 +12,11 @@
     <input type="hidden" id="couponList" name="couponList" value=$jsonUtil.toJSONString($!{couponList})>
 	<input type="hidden" id="userName" name="userName" value="$!{userName}">
 	#if($!{couponList.size()}==0)
-	   <div class="noCoupon">暂无优惠券</div> 
+	   <!-- <div class="noCoupon">暂无优惠券</div>  -->
+     <div class="nullPrompt">
+       <img src="$commonUrl/common/images/040101wuyouhui.png">
+       <span>暂无优惠劵</span>
+     </div>
 	#end
 	<ul class="List">
 	    #foreach($item in $!{couponList})
@@ -29,7 +33,7 @@
 		   	   #if($!{item.quota}==$!{item.quotaAlready})
                <p class="clickCoupon clickCoupon02">已抢完</p>
                #elseif($!{item.userAlready}>0)
-                <p class="clickCoupon clickCoupon01">去用券</p>               
+                <p class="clickCoupon clickCoupon01">去用券</p>
                #else
                <p class="clickCoupon clickCoupon01" dataQuota=$!{item.quota} dataAleady=$!{item.quotaAlready}>点击领券</p>
                #end
