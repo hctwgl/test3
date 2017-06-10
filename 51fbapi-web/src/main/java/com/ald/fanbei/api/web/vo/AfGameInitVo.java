@@ -22,6 +22,7 @@ public class AfGameInitVo {
 	private String isAward;
 	private Long gmtCurrent;
 	private Long gmtOpen;
+	private String recommendCode;
 	private int item1Count;
 	private int item2Count;
 	private int item3Count;
@@ -139,8 +140,14 @@ public class AfGameInitVo {
 	public void setAwardInfo(AwardInfoVo awardInfo) {
 		this.awardInfo = awardInfo;
 	}
-	
-	
+	public String getRecommendCode() {
+		return recommendCode;
+	}
+	public void setRecommendCode(String recommendCode) {
+		this.recommendCode = recommendCode;
+	}
+
+
 	public class AwardInfoVo{
 		private String type;
 		private String awardName;
