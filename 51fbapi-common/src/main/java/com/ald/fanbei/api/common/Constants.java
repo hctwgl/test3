@@ -47,6 +47,7 @@ public class Constants {
 	public static final String YES = "yes";
 	public static final String NO = "no";
 	public static final String COMMA = ",";
+	public static final String SEMICOLON = ";";
 	public static final String DEFAULT_YEAR = "year";
 	public static final String DEFAULT_MONTH = "month";
 	public static final String DEFAULT_NPER = "nper";

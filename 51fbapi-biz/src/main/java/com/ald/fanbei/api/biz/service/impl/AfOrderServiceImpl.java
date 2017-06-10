@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -680,7 +682,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderInfo.setNper(nper);
-						orderInfo.setBorrowRate(JSONObject.toJSONString(afResourceService.borrowRateWithResource(nper)));
+						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
+						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
+						orderInfo.setBorrowRate(boStr);
 						orderDao.updateOrder(orderInfo);
 						BigDecimal useableAmount = userAccountInfo.getAuAmount()
 								.subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
