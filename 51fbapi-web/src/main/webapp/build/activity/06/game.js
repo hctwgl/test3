@@ -50,10 +50,7 @@ function dataInit() {
                             i=i-1;
                         }
                     }
-                }else{
-                    chance=[]
-                }
-
+                }else{chance=[]}
 
                 //底部娃娃数量显示
                 if(data.data.item1Count>0){
@@ -95,6 +92,8 @@ function dataInit() {
                     $('.entityAwardList').html(con);
                 }
 
+                //如果有人中实物大奖，就显示中奖滚轮
+                if(data.data.entityAwardList.length>0){$('#getPrize h6').hide();$('#dollRoll').show()}
                 //是否集齐五娃
                 if(data.data.isFinish=='Y'){
                     $('#allToy').find('h3').html('五娃已集齐，请静等开奖！');
@@ -102,13 +101,14 @@ function dataInit() {
 
                     //开奖时间
                     if(data.data.gmtOpen>0) {
-                        $('#getPrize h6').hide();
-                        if(data.data.entityAwardList.length>0){$('#dollRoll').show()}
+
+
+
                         //五娃是否中奖
                         if (data.data.isAward == 'N') {
                             if (data.data.gmtOpen > 0) {
                                 let time = 0;
-                                window.setInterval(function () {
+                                let starTime=setInterval(function () {
                                     time += 1000;
                                     let hours01, hours02, minutes01, minutes02, seconds01, seconds02;
                                     let leftTime = data.data.gmtOpen - data.data.gmtCurrent - time;
@@ -143,6 +143,10 @@ function dataInit() {
                                         seconds01 = seconds.slice(0, 1);
                                         seconds02 = seconds.slice(1, 2);
 
+                                    }
+                                    if(hours01<=0&&hours02<=0&&minutes01<=0&&minutes02<=0&&seconds01<=0&&seconds02<=0){
+                                        clearInterval(starTime);
+                                        hours01=hours02=minutes01=minutes02=seconds01=seconds02=0
                                     }
                                     //console.log(hours01+hours02+minutes01+minutes02+seconds01+seconds02)
                                     $('.countDown').find('span').eq(0).html(hours01);
