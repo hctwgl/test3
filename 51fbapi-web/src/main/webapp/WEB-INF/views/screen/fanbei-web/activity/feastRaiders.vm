@@ -18,17 +18,21 @@
 	</style>
 </head>
 <body>
-	<img src="$commonUrl/feastRaiders1.png">
+	<img src="$commonUrl/feastRaiders1.jpg">
+	<img src="$commonUrl/feastRaiders2.jpg">
 	<div class="feastRaiders2">
-		<img src="$commonUrl/feastRaiders2.png">
+		<img src="$commonUrl/feastRaiders3.jpg">
 		<a href="game"></a>
 	</div>
-	<img src="$commonUrl/feastRaiders3.jpg">
-	<img src="$commonUrl/feastRaiders4.png">
+	<img src="$commonUrl/feastRaiders4.jpg">
+	<img src="$commonUrl/feastRaiders5.jpg">
+	<img src="$commonUrl/feastRaiders6.jpg">
+	<img src="$commonUrl/feastRaiders7.jpg">
 	<script type="text/javascript">
 
 		// 获取cookie中的apihost
 		var apihost = getCookie("apihost");
+		apihost = apihost.replace("\"","").replace("\"",""); //测试环境可能会在cookie上加双引号，这里做下兼容
 
 		// app调用web的方法
 		function alaShareData(){
