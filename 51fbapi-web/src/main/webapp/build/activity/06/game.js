@@ -164,7 +164,7 @@ function dataInit() {
                                 if (data.data.isSubmitContacts == 'Y') {
                                     $('#getPrize h5').html('奖项已发送至您的收货地址');
                                 } else {
-                                    $('#getPrize h5').html('<a href="personinfo?url='+data.data.awardInfo.awardIcon+'">请提交资料</a>');
+                                    $('#getPrize h5').html('<a href="personInfo?url='+data.data.awardInfo.awardIcon+'">请提交资料</a>');
 
                                 }
                             }
