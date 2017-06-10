@@ -45,8 +45,7 @@ public class AddUserAddressApi implements ApiHandle {
 		String isDefault = ObjectUtils.toString(requestDataVo.getParams().get("isDefault"));
 		String consignee = ObjectUtils.toString(requestDataVo.getParams().get("consignee"));
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
-		if (StringUtils.isBlank(province) || StringUtils.isBlank(city) || StringUtils.isBlank(county)
-				|| StringUtils.isBlank(address) || StringUtils.isBlank(isDefault) || StringUtils.isBlank(consignee)
+		if (StringUtils.isBlank(province) || StringUtils.isBlank(city) || StringUtils.isBlank(address) || StringUtils.isBlank(isDefault) || StringUtils.isBlank(consignee)
 				|| StringUtils.isBlank(mobile)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 
