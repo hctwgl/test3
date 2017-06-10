@@ -68,7 +68,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 		BigDecimal paidAmount =afRepaymentBorrowCashService.getRepaymentAllAmountByBorrowId(rid);
-		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo);
+		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo, context.getAppVersion());
 		data.put("paidAmount", NumberUtil.objToBigDecimalDefault(paidAmount, BigDecimal.ZERO));
 		data.put("rebateAmount", account.getRebateAmount());
 		data.put("jfbAmount", account.getJfbAmount());
@@ -78,7 +78,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		return resp;
 	}
 
-	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo) {
+	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo, Integer appVersion) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("rid", afBorrowCashDo.getRid());
 		data.put("amount", afBorrowCashDo.getAmount());
@@ -88,6 +88,11 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 		}
+		//兼容老版本 老版本没有还款状态
+		if (AfBorrowCashStatus.repaying.getCode().equals(afBorrowCashDo.getStatus()) && appVersion < 363) {
+			data.put("status", AfBorrowCashStatus.transed.getCode());
+		}
+		
 		AfBorrowCashType borrowCashType = AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType());
 
 		data.put("gmtLastRepay", afBorrowCashDo.getGmtPlanRepayment());
