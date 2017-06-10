@@ -107,10 +107,10 @@ function dataInit() {
                     if(data.data.gmtOpen>0) {
                         //五娃是否中奖
                         if (data.data.isAward == 'N') {
-                                let time = 0;
+
+                                let time = 0,hours01, hours02, minutes01, minutes02, seconds01, seconds02;
                                 let starTime=setInterval(function () {
                                     time += 1000;
-                                    let hours01, hours02, minutes01, minutes02, seconds01, seconds02;
                                     let leftTime = data.data.gmtOpen - data.data.gmtCurrent - time;
                                     let leftsecond = parseInt(leftTime / 1000);
                                     let hours = parseInt(leftsecond / 3600);
@@ -144,10 +144,6 @@ function dataInit() {
                                         seconds02 = seconds.slice(1, 2);
 
                                     }
-                                    if(hours01<=0&&hours02<=0&&minutes01<=0&&minutes02<=0&&seconds01<=0&&seconds02<=0){
-                                        clearInterval(starTime);
-                                        hours01=hours02=minutes01=minutes02=seconds01=seconds02=0
-                                    }
                                     //console.log(hours01+hours02+minutes01+minutes02+seconds01+seconds02)
                                     $('.countDown').find('span').eq(0).html(hours01);
                                     $('.countDown').find('span').eq(1).html(hours02);
@@ -156,8 +152,17 @@ function dataInit() {
                                     $('.countDown').find('span').eq(6).html(seconds01);
                                     $('.countDown').find('span').eq(7).html(seconds02);
                                 }, 1000);
+                                //如果倒计时到0
+                            if(hours01<=0&&hours02<=0&&minutes01<=0&&minutes02<=0&&seconds01<=0&&seconds02<=0){
+                                clearInterval(starTime);
+                                $('#getPrize h5').html('正在抽取大奖中...');
+                            }else{
+                                if(data.data.gmtOpen>1497751200000){
+                                    $('#getPrize h4').html('很遗憾，您暂未中奖，请静等下一波！');
+                                }
                                 $('#getPrize h5').html('开奖倒计时');
                                 $('.countDown').show()
+                            }
                         } else {
                             if (data.data.awardInfo.type == 'G') {
                                 $('#getPrize h4').html('恭喜您获得幸运大奖！');
@@ -168,7 +173,6 @@ function dataInit() {
                                     $('#getPrize h5').html('奖项已发送至您的收货地址');
                                 } else {
                                     $('#getPrize h5').html('<a href="personInfo?url='+data.data.awardInfo.awardIcon+'">请提交资料</a>');
-
                                 }
                             }
                         }
