@@ -407,8 +407,7 @@ public class RiskUtil extends AbstractThird {
 					reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 					logThird(signInfo, "asyPayOrder", reqBo);
-					if (true) {
-//					if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验证签名成功
+					if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验证签名成功
 						logger.info("reqBo.getSignInfo()" + reqBo.getSignInfo());
 						JSONObject obj = JSON.parseObject(data);
 						String orderNo = obj.getString("orderNo");
