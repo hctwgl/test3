@@ -73,6 +73,7 @@ public class ResetPwdApi implements ApiHandle {
         userDo.setSalt(salt);
         userDo.setPassword(password);
         userDo.setFailCount(0);
+        userDo.setUserName(userName);
         afUserService.updateUser(userDo);
         
         return resp;
