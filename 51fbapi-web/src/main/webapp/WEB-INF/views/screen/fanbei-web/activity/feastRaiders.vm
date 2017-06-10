@@ -22,7 +22,7 @@
 	<img src="$commonUrl/feastRaiders2.jpg">
 	<div class="feastRaiders2">
 		<img src="$commonUrl/feastRaiders3.jpg">
-		<a href="game"></a>
+		<a href="game?addUiName=SHOWSHARE"></a>
 	</div>
 	<img src="$commonUrl/feastRaiders4.jpg">
 	<img src="$commonUrl/feastRaiders5.jpg">

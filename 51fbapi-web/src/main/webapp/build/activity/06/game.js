@@ -54,27 +54,27 @@ function dataInit() {
 
                 //底部娃娃数量显示
                 if(data.data.item1Count>0){
-                    $('#toys').find('img').eq(0).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll1.png').css('width','61%');
+                    $('#toys').find('img').eq(0).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll1.png');
                     $('#toys').find('span').eq(0).html(data.data.item1Count)
                 }
                 if(data.data.item2Count>0){
-                    $('#toys').find('img').eq(1).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll2.png').css('width','61%');
+                    $('#toys').find('img').eq(1).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll2.png');
                     $('#toys').find('span').eq(1).html(data.data.item2Count)
                 }
                 if(data.data.item3Count>0){
-                    $('#toys').find('img').eq(2).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll3.png').css('width','61%');
+                    $('#toys').find('img').eq(2).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll3.png');
                     $('#toys').find('span').eq(2).html(data.data.item3Count)
                 }
                 if(data.data.item4Count>0){
-                    $('#toys').find('img').eq(3).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll4.png').css('width','61%');
+                    $('#toys').find('img').eq(3).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll4.png');
                     $('#toys').find('span').eq(3).html(data.data.item4Count)
                 }
                 if(data.data.item5Count>0){
-                    $('#toys').find('img').eq(4).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll5.png').css('width','61%');
+                    $('#toys').find('img').eq(4).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll5.png');
                     $('#toys').find('span').eq(4).html(data.data.item5Count)
                 }
 
-                //中奖信息循环
+                //娃娃中奖信息循环
                 {
                     let con='';
                     for(let i=0;i<data.data.awardList.length;i++){
@@ -83,6 +83,8 @@ function dataInit() {
                 <h2><span>${data.data.awardList[i].userName}</span><span>${data.data.awardList[i].msg}</span></h2></li>`
                     }$('.awardList').html(con);
                 }
+
+                //实物中奖信息循环
                 {
                     let con='';
                     for(let i=0;i<data.data.entityAwardList.length;i++){
@@ -93,20 +95,18 @@ function dataInit() {
                 }
 
                 //如果有人中实物大奖，就显示中奖滚轮
-                if(data.data.entityAwardList.length>0){$('#getPrize h6').hide();$('#dollRoll').show()}
+                if(data.data.entityAwardList.length>0){
+                    $('#getPrize h6').hide();
+                    $('#getPrize h4').html('618活动抽奖获奖名单');
+                    $('#dollRoll').show();
+                }
                 //是否集齐五娃
                 if(data.data.isFinish=='Y'){
                     $('#allToy').find('h3').html('五娃已集齐，请静等开奖！');
-                    $('#getPrize h4').html('618活动抽奖获奖名单');
-
                     //开奖时间
                     if(data.data.gmtOpen>0) {
-
-
-
                         //五娃是否中奖
                         if (data.data.isAward == 'N') {
-                            if (data.data.gmtOpen > 0) {
                                 let time = 0;
                                 let starTime=setInterval(function () {
                                     time += 1000;
@@ -158,7 +158,6 @@ function dataInit() {
                                 }, 1000);
                                 $('#getPrize h5').html('开奖倒计时');
                                 $('.countDown').show()
-                            }
                         } else {
                             if (data.data.awardInfo.type == 'G') {
                                 $('#getPrize h4').html('恭喜您获得幸运大奖！');
