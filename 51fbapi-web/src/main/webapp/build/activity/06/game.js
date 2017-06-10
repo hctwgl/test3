@@ -168,7 +168,7 @@ function dataInit() {
                                 if (data.data.isSubmitContacts == 'Y') {
                                     $('#getPrize h5').html('奖项已发送至您的收货地址');
                                 } else {
-                                    $('#getPrize h5').html('<a href="personinfo?url='+data.data.awardInfo.awardIcon+'">请提交资料</a>');
+                                    $('#getPrize h5').html('<a href="personInfo?url='+data.data.awardInfo.awardIcon+'">请提交资料</a>');
 
                                 }
                             }
@@ -271,8 +271,8 @@ class game{
                     $('.jushuo').show();
                 }
                 $('.tryAgain').html('再抓一次');
-                $('#alert').fadeIn();
-                $('#shadow').fadeIn();
+                $('#alert').show();
+                $('#shadow').show();
                 $('.tryAgain').click(function () {
                     $('#shadow').hide();
                     $('.alert').hide();
@@ -324,8 +324,8 @@ $('#startBtn').click(function () {
                 window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
 
             });
-            $('#alert').fadeIn();
-            $('#shadow').fadeIn();
+            $('#alert').show();
+            $('#shadow').show();
         }else{
             sixGame.start();
             $(this).hide();
@@ -354,8 +354,8 @@ $('#shadow').click(function () {
 //--------------------------------------yun--------------------------------------------
 //活动规则
 $('#rule').click(function(){
-    $('#rules').fadeIn();
-    $('#shadow').fadeIn();
+    $('#rules').css('display','block');
+    $('#shadow').show();
 })
 $('.closeRules').click(function(){
     $('#rules').css('display','none');
@@ -385,7 +385,7 @@ $(document).ready(function() {
 
 // if(活动为开始时点击立即抓取 活动时间提示出现)
 function goUp(){
-     $('#shadow').fadeIn();
+     $('#shadow').css('display','block');
      $('#getPrize').slideDown();
      $('#allToy').css('z-index',300);
      $('#allToy .gotoTop').css('transform','rotate(180deg)');

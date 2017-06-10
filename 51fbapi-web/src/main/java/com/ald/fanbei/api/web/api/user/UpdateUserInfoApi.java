@@ -45,7 +45,7 @@ public class UpdateUserInfoApi implements ApiHandle {
 		String county = ObjectUtils.toString(params.get("county"), "").toString();
 
 		if (StringUtils.isEmpty(nick) && StringUtils.isEmpty(avatar) && StringUtils.isEmpty(province)
-				&& StringUtils.isEmpty(city) && StringUtils.isEmpty(county)) {
+				&& StringUtils.isEmpty(city)) {
 			throw new FanbeiException("(nick or avata or province or city or county) is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}
 
@@ -57,7 +57,7 @@ public class UpdateUserInfoApi implements ApiHandle {
 		afUserDo.setAvatar(StringUtils.isNotBlank(avatar) ? avatar : null);
 		afUserDo.setProvince(StringUtils.isNotBlank(province) ? province : null);
 		afUserDo.setCity(StringUtils.isNotBlank(city) ? city : null);
-		afUserDo.setCounty(StringUtils.isNotBlank(county)?county:null);
+		afUserDo.setCounty(county);
 		afUserDo.setUserName(context.getUserName());
 		if (afUserService.updateUser(afUserDo) > 0) {
 			return resp;

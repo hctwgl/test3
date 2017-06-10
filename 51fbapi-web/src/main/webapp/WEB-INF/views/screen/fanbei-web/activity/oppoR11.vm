@@ -8,24 +8,42 @@
 </head>
 <body>
 <div class="banner">
-   <img src="$src/oppo1.jpg">
+   <img src="$src/r01.jpg">
    <div class="order"></div>
 </div>
-<div class="timeList"><img src="$src/r20.jpg"></div>
-<img src="$src/r27.jpg">
+<div class="timeList">
+	<ul>
+	    <li><img src="$src/r02.jpg"></li><li><img src="$src/r03.jpg"></li>
+	    <li><img src="$src/r04.jpg"></li><li><img src="$src/r05.jpg"></li>
+    </ul>
+</div>
+<div class="kindList" >
+	<ul>
+	    <li><img src="$src/r06.jpg"></li><li><img src="$src/r07.jpg"></li>
+	    <li><img src="$src/r08.jpg"></li><li><img src="$src/r18.jpg"></li>
+    </ul>
+</div>
 <img src="$src/r10.jpg">
 <img src="$src/r11.jpg">
 <img src="$src/r12.jpg">
 <img src="$src/r13.jpg">
-<img class="ruleTop" src="$src/r28.jpg">
-<img src="$src/r29.jpg">
-<div class="blank"></div>
+<div class="rule">
+	<img src="$src/r14.jpg"><img src="$src/r15.jpg">
+	<img src="$src/r16.jpg"><img src="$src/r17.jpg">
+</div>
 <!--弹框-->
 <div class="mask"></div>
 <div class="orderSuccess">
-    <img src="$src/r30.png">
-    <div class="close"></div>
+	<p>恭喜您！预约成功！</p>
+	<p>OPPO R11将于6月22日10:00准时开售,下单购买即可享受300元立减优惠！</p>
 </div>
+<!-- <div class="fillInfo">
+	<p class="fill">填写预约信息</p>
+	<p class="phoneNum">手机号码</p>
+	<input type="text" placeholder="请填写手机号码" />
+	<p class="msg">*商品抢购前，我们将通过短信通知您</p>
+	<p class="confirm">确认</p>
+</div> -->
 <script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
 </body>
 </html>

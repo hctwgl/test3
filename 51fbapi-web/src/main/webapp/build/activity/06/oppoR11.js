@@ -39,8 +39,4 @@ $(function(){
         $('.mask').css('display','none');
         $('.orderSuccess').css('display','none');
     });
-    $('.close').click(function(){
-        $('.mask').css('display','none');
-        $('.orderSuccess').css('display','none');
-    });
 })
