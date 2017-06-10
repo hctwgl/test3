@@ -68,7 +68,9 @@ public class ResetPwdApi implements ApiHandle {
         
         String salt = afUserDo.getSalt();
         String password = UserUtil.getPassword(passwordSrc, salt);
-        
+        logger.info("reset inputPassSrc:"+passwordSrc);
+		logger.info("reset salt:"+salt);
+		logger.info("reset inputPassword:"+password);
         AfUserDo userDo = new AfUserDo();
         userDo.setRid(afUserDo.getRid());
         userDo.setSalt(salt);
