@@ -192,8 +192,8 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 				}
 			}
 			
-			BigDecimal personalRate = BigDecimalUtil.divide(sumRate, 100);//个人总体中奖概率
-			BigDecimal userRate = new BigDecimal(0);//用户已经中奖的概率
+			BigDecimal personalRate = BigDecimalUtil.divide(sumRate, 100);//单个娃娃配置的总中奖概率
+			BigDecimal userRate = new BigDecimal(0);//单个娃娃用户已经中奖的概率
 			if(gameResults.size() > 0){
 				userRate = BigDecimalUtil.divide(userAwardCount, gameResults.size());
 			}
@@ -214,8 +214,8 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			}
 			
 			if(rates.size() > 0){//还有对应的配置
-				int randomVal = CommonUtil.getRandomNum(100);
-				logger.info(userId + " randomVal=" + randomVal + ",rates=" + rates);
+				int randomVal = CommonUtil.getRandomNum(100-userRate.multiply(new BigDecimal(100)).intValue());
+				logger.info(userId + " randomVal=" + randomVal + ",userRate=" + userRate + ",rates=" + rates);
 				int tempValue = 0;
 				for(int i = 0 ;i < rates.size() ;i ++){
 					tempValue = tempValue + rates.get(i);
