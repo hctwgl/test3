@@ -66,7 +66,7 @@ public class ResetPwdApi implements ApiHandle {
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
         }
         
-        String salt = afUserDo.getSalt();
+        String salt = UserUtil.getSalt();
         String password = UserUtil.getPassword(passwordSrc, salt);
         AfUserDo userDo = new AfUserDo();
         userDo.setRid(afUserDo.getRid());
