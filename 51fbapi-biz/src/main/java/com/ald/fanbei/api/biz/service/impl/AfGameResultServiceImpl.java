@@ -257,6 +257,8 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	}
 	
 	private void dealWithCoupon(String prizeId,Map<String,JSONObject> rulesMap){
+		Date date=new Date();
+		String key = Constants.CACHEKEY_GAME_LIMIT + DateUtil.formatDate(date, DateUtil.DEFAULT_PATTERN);
 		JSONObject prizeObj = rulesMap.get(prizeId);
 		if(prizeObj == null){
 			logger.info("dealWithCoupon error:" + prizeObj + "," + prizeId);
@@ -264,7 +266,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		}
 		String type = prizeObj.getString("prize_type");
 		List<AfResourceDo> limitRes = afResourceService.getLocalByType(Constants.RES_GAME_AWARD_COUNT_LIMIT);
-		Long cashCount = (Long)bizCacheUtil.getObject(Constants.CACHEKEY_GAME_LIMIT + type);
+		Long cashCount = (Long)bizCacheUtil.getObject(key + type);
 		cashCount = cashCount == null?0l:cashCount;
 		if(CouponType.CASH.getCode().equals(type)){
 			if(cashCount + 1 > Long.parseLong(limitRes.get(0).getValue())){
@@ -283,7 +285,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 			cashCount = cashCount + 1;
 		}
 		if(cashCount > 0l){
-			bizCacheUtil.saveObject(Constants.CACHEKEY_GAME_LIMIT + type, cashCount,Constants.SECOND_OF_ONE_WEEK);
+			bizCacheUtil.saveObject(key + type, cashCount,Constants.SECOND_OF_ONE_DAY);
 		}
 	}
 	
