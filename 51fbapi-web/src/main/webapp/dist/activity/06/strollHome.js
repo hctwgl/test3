@@ -1,0 +1,2 @@
+"use strict";var userName="";getInfo().userName&&(userName=getInfo().userName,console.log(userName)),new Vue({el:"#strollHomeWrap",methods:{boluomiHome:function(e){$.ajax({url:"/fanbei-web/getBrandUrl",type:"POST",dataType:"JSON",data:{shopId:e,userName:userName},success:function(e){e.success?location.href=e.url:SrequestMsg(e.msg)},error:function(){requestMsg("请求失败")}})}}});
+//# sourceMappingURL=../../_srcmap/activity/06/strollHome.js.map
