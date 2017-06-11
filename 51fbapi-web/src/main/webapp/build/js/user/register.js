@@ -200,6 +200,7 @@ $(function(){
 									recommendCode: recommendCode
 								},
 								success: function(returnData){
+									alert(returnData);
 									if ( returnData.success ) {
 										$("#register_submitBtn").attr("disabled",true);
 										window.location.href = returnData.url;
@@ -212,7 +213,7 @@ $(function(){
 								}
 							})
 						} else {
-							requestMsg("请输入正确的验证码");
+							requestMsg("请输入正确的验证码1111111");
 						}
 					} else {
 						requestMsg("请阅读并同意《51返呗用户注册协议》");
