@@ -21,7 +21,7 @@
 				<span class="time_item" id="minute_show"></span>
 				<span class="time_item" id="second_show"></span>
 			</div>
-			<a class="goCoupons" href="/fanbei-web/receiveCoupons"></a>
+			<a class="goCoupons" href="/fanbei-web/receiveCoupons?addUiName=COUPONS"></a>
 		</div>
 		<div class="activityHomeContent">
 			<ul class="selectedHome clearfix" id="selectedHome">
