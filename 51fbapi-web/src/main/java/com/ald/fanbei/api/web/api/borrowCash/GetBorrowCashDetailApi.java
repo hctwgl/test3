@@ -103,7 +103,17 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 			BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差
 			AfResourceDo amountResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
 			BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制 
+			//如果借款记录存在，统计还款处理中金额
+			BigDecimal repayingMoney = afRepaymentBorrowCashService.getRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
+			if(repayingMoney.compareTo(BigDecimal.ZERO)>0){
+			data.put("status", AfBorrowCashStatus.repaying.getCode());
+			
+			}
+	
+			
 
+			
+			
 			long currentTime = System.currentTimeMillis();
 			Date nowDate = new Date(currentTime);
 			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate, afBorrowCashDo.getGmtPlanRepayment());

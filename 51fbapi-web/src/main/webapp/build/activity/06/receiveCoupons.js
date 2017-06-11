@@ -11,43 +11,50 @@ $(function(){
 
    // 点击领取优惠劵
     $(".couponLi").click(function(){   
-
         var i= $(this).index();
         var couponIdNum = couponList[i].rid;
-        $.ajax({
-            url: "/fanbei-web/pickCoupon",
-            type: "POST",
-            dataType: "JSON",
-            data: {
-                couponId: couponIdNum,
-                userName: userName
-            },
-            success: function(returnData){
-                if (returnData.success) {
-                    requestMsg("优惠劵领取成功");
-                    $(".couponLi").eq(i).find('.clickCoupon').html("去用券");
-                } else {                    
-                    var status = returnData.data["status"];
-                    if (status == "USER_NOT_EXIST") { // 用户不存在
-                        window.location.href = returnData.url;
-                    }
+        var currentState=$(".couponLi").eq(i).find('.clickCoupon').html();
+        if(currentState=="去用券"){
+            window.location.href = "activity/activityHome";
+        }else{
+               $.ajax({
+                    url: "/fanbei-web/pickCoupon",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        couponId: couponIdNum,
+                        userName: userName
+                    },
+                    success: function(returnData){
+                        if (returnData.success) {
+                            requestMsg("优惠劵领取成功");
+                            $(".couponLi").eq(i).find('.clickCoupon').html("去用券");
+                            $(".couponLi").eq(i).find('.clickCoupon').click(function(){
+                                window.location.href = "activity/activityHome";
+                            })                   
+                        } else {                
+                            var status = returnData.data["status"];
+                            if (status == "USER_NOT_EXIST") { // 用户不存在
+                                window.location.href = returnData.url;
+                            }
 
-                    if (status == "OVER") { // 优惠券个数超过最大领券个数
-                        requestMsg(returnData.msg);
-                        requestMsg("优惠券个数超过最大领券个数");                       
-                    }
+                            if (status == "OVER") { // 优惠券个数超过最大领券个数
+                                requestMsg(returnData.msg);
+                                requestMsg("优惠券个数超过最大领券个数");                 
+                            }
 
-                    if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                        requestMsg(returnData.msg);
-                        $(".couponLi").eq(i).css('display', 'none');;
+                            if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                                requestMsg(returnData.msg);
+                                $(".couponLi").eq(i).css('display', 'none');
+                            }
+                        }
+                    },
+                    error: function(){
+                        requestMsg("请求失败");
                     }
-                }
-            },
-            error: function(){
-                requestMsg("请求失败");
-            }
-        });
-        $(this).unbind("click"); // 移除当前元素的点击时间(禁止重复点击)
+               });
+           }
+       //$(this).unbind("click"); // 移除当前元素的点击时间(禁止重复点击)
     });
 });
 
@@ -67,10 +74,14 @@ if(returnNum == 1){  // android机型
 
 function loginSuccess() {
     if(returnNum == 1){  // android机型
-        alert(2222); 
+        //(2222); 
         var jsonString = '{"className":"com.alfl.www.user.ui.VoucherMenuActivity"}';
         alaAndroid.openActivity(jsonString);
     }else{  // ios机型
         location.href="/fanbei-web/opennative?name=MINE_COUPON_LIST";
     }
 }
+
+
+
+    

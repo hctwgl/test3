@@ -18,34 +18,15 @@
 	</style>
 </head>
 <body>
-	<img src="$commonUrl/feastRaiders1.png">
+	<img src="$commonUrl/feastRaiders1.jpg">
+	<img src="$commonUrl/feastRaiders2.jpg">
 	<div class="feastRaiders2">
-		<img src="$commonUrl/feastRaiders2.png">
+		<img src="$commonUrl/feastRaiders3.jpg">
 		<a href="gameShare"></a>
 	</div>
-	<img src="$commonUrl/feastRaiders3.jpg">
-	<img src="$commonUrl/feastRaiders4.png">
-	<script type="text/javascript">
-		// 调用客户端的分享
-		var retrunNum = getBlatFrom();  // retrunNum为1表示是Android
-
-		function shareData(){
-			// 分享内容
-			var dataObj = {
-				'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',
-				'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',
-				'shareAppImage': 'https://fs.51fanbei.com/h5/app/activity/05/mumday28_01.jpg',
-				'shareAppUrl': 'https://app.51fanbei.com/activity/06/feastRaiders'
-			};
-
-			var dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
-
-			if ( retrunNum == 1 ) {  // 调用原生方法
-				alaAndroid.shareData(dataStr);
-			} else {
-				alaIos.shareData(dataStr);
-			}
-		};
-	</script>
+	<img src="$commonUrl/feastRaiders4.jpg">
+	<img src="$commonUrl/feastRaiders5.jpg">
+	<img src="$commonUrl/feastRaiders6.jpg">
+	<img src="$commonUrl/feastRaiders7.jpg">
 </body>
 </html>

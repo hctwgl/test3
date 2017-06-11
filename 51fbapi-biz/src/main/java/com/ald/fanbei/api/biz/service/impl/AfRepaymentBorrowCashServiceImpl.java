@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -48,6 +49,7 @@ import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -92,7 +94,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	UpsUtil upsUtil;
 	@Resource
 	RiskUtil riskUtil;
-
+	@Resource
+	SmsUtil smsUtil;
+	
 	@Override
 	public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
 		return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -208,10 +212,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					
 					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
 					bcashDo.setRid(afBorrowCashDo.getRid());
+					bcashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
+					bcashDo.setRenewalNum(afBorrowCashDo.getRenewalNum());
 //					BigDecimal repayAllAmount = afRepaymentBorrowCashDao.getRepaymentAllAmountByBorrowId(repayment.getBorrowId());
 					BigDecimal nowRepayAmount = repayment.getRepaymentAmount();
 					BigDecimal repayAmount = nowRepayAmount.add(afBorrowCashDo.getRepayAmount());
 					logger.info("repayAmount=" + repayAmount);
+					
+					String nowRepayAmountStr = NumberUtil.format2Str(nowRepayAmount);
+					String notRepayMoneyStr = "";
 					if (allAmount.compareTo(repayAmount) == 0) {
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						// 在此处调用 风控接口存入白名单 add by fumeiai
@@ -222,7 +231,19 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						}
 						increaseBorrowCashAccount(afBorrowCashDo,afBorrowCashDo.getUserId());
 
+					}else{
+						notRepayMoneyStr = NumberUtil.format2Str(allAmount.subtract(repayAmount));
 					}
+					
+					//add by chengkang 待添加还款成功短信 start
+					try {
+						AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
+						smsUtil.sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), nowRepayAmountStr, notRepayMoneyStr);
+					} catch (Exception e) {
+						logger.error("还款成功发送短信异常,userId:"+afBorrowCashDo.getUserId()+",nowRepayAmount:"+nowRepayAmountStr+",notRepayMoney"+notRepayMoneyStr, e);
+					}
+					//add by chengkang 待添加还款成功短信 end
+					
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 start
 					BigDecimal tempRepayAmount = BigDecimal.ZERO;
 					tempRepayAmount = repayment.getRepaymentAmount();

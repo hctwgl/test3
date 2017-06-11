@@ -5,7 +5,28 @@ let userName = "";
 if(getInfo().userName){
     userName=getInfo().userName
 }
-let chance=[],isLogin,isShow;
+let chance=[],isLogin,isShow,clientRate,chanceCount;
+
+// 获取cookie中的apihost
+let apihost = getCookie("apihost");
+apihost=apihost.replace("\"","").replace("\"",""); //测试环境可能会在cookie上加双引号，这里做下兼容
+// app调用web的方法
+function alaShareData(){
+    // 分享内容
+    let dataObj = {
+        'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
+        'type': 'share', // 此页面的类型
+        'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
+        'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
+        'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+        'shareAppUrl': apihost+'/fanbei-web/activity/gameShare',  // 分享后的链接
+        'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
+        'sharePage': 'gameShare' // 分享的页面
+    };
+    let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
+    return dataStr;
+};
+
 //数据初始化
 function dataInit() {
     $.ajax({
@@ -16,10 +37,18 @@ function dataInit() {
             console.log(data);
             if(data.success){
                 isLogin=data.data.isLogin;
+                chanceCount=data.data.chanceCount;
+                clientRate=data.data.clientRate||100;
                 //抽奖次数显示,抽奖码获取
                 $('#chance').html('您还有'+data.data.chanceCount+'次机会');
                 if(data.data.chanceCodes){
                     chance=data.data.chanceCodes.split(',');
+                    for(var i = 0;i<chance.length;i++){
+                        if(chance[i]==''||chance[i]==null||typeof(chance[i])==undefined){
+                            chance.splice(i,1);
+                            i=i-1;
+                        }
+                    }
                 }else{
                     chance=[]
                 }
@@ -141,6 +170,8 @@ function dataInit() {
                         }
                     }
                 }
+            }else{
+                requestMsg('初始化失败');
             }
         }
     });
@@ -203,12 +234,12 @@ class game{
     }
     alertMsg(state,item){
         isShow='No';
-        let data={result:'N',code:chance[1]};
+        let data={result:'N',code:chance[0]};
         if(state=='end'){
             $('.getState').html('抓取失败');
         }
        if(state=='claw'){
-            data={result:'Y',item:item,code:chance[1]};
+            data={result:'Y',item:item,code:chance[0]};
            $('.getState').html('抓取成功');
        }
         $.ajax({
@@ -259,7 +290,7 @@ class game{
                 let dollLeft=doll.offset().left;
                 if(dollLeft>(clawLeft-10) && dollLeft<(clawLeft+35)){          //判断钩子与娃娃是否重合，减的越大越偏右
                     let dataProp=doll.attr('data-prop');
-                    if(Math.floor(Math.random()*10+1)>0){                 //随机能否抓到娃娃
+                    if(Math.floor(Math.random()*100+1)<clientRate){                 //随机能否抓到娃娃
                         $('#claw').css('backgroundImage','url(https://fs.51fanbei.com/h5/app/activity/06/ni_claw2.png)'); //钩子变为收缩样式
                         doll.find('.doll-main').css({position:'absolute',left:'2.47rem'})       //娃娃脱离文档流并跟着上升
                             .animate({top:'-2.2rem'},800,function () {
@@ -283,25 +314,12 @@ $('#startBtn').click(function () {
         $('.play').animate({top:'7.08rem'},150)
     });
     if(isLogin=='Y'){         //是否登录
-        if(chance.length<=1||chance[1].length<5){              //否是 有机会
+        if(chanceCount<1){              //否是 有机会
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"年中抓娃娃,让你一次玩个爽","content":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareUrl":"http://testapp.51fanbei.com/fanbei-web/gameShare"}';
-                // let retrunNum = getBlatFrom();  // retrunNum为1表示是Android
-                //     // 分享内容
-                //     let dataObj = {
-                //         'shareAppTitle': '年中盛宴攻略',
-                //         'shareAppContent': '分享年中盛宴攻略赢取大奖',
-                //         'shareAppImage': 'https://fs.51fanbei.com/h5/app/activity/05/mumday28_01.jpg',
-                //         'shareAppUrl': 'https://www.baidu.com'
-                //     };
-                //     let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
-                //     if ( retrunNum == 1 ) {  // 调用原生方法
-                //         alaAndroid.shareData(dataStr);
-                //     } else {
-                //         alaIos.shareData(dataStr);
-                //     }
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/fanbei-web/activity/gameShare","isSubmit":"Y","sharePage":"gameShare"}';
+
             });
             $('#alert').show();
             $('#shadow').show();
@@ -322,7 +340,12 @@ $('#shadow').click(function () {
 
 
 });
-
+// function loginSuccess(obj) {
+//     dataInit();
+//     $('#startBtn').html(isLogin);
+//     window.location.href='DragonBoat'
+// }
+//
 
 
 //--------------------------------------yun--------------------------------------------
@@ -368,7 +391,7 @@ function goDown(){
      $('#shadow').css('display','none');
      $('#getPrize').slideUp();
      $('#allToy').css('z-index',150);
-     $('#allToy .gotoTop').css('transform','rotate(0deg)'); 
+     $('#allToy .gotoTop').css('transform','rotate(0deg)');
 }
 $(function(){
     //箭头点击事件

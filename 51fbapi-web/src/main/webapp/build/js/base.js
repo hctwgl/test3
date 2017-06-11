@@ -1,8 +1,8 @@
 /*
 * @Author: Yangyang
 * @Date:   2017-02-15 09:59:54
-* @Last Modified by:   Yangyang
-* @Last Modified time: 2017-04-25 18:08:38
+* @Last Modified by:   Marte
+* @Last Modified time: 2017-06-08 11:22:16
 * @title:  公用的
 */
 
@@ -37,7 +37,7 @@ function getInfo(){
     }else{
         return ''
     }
-    
+
 }
 
 // 处理默认的保留二位小数
@@ -87,3 +87,23 @@ function formatDate(now) {
     // return "20"+year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
     return "20"+year+"-"+month+"-"+date;
 }
+
+// 获取cookie里面的参数
+function getCookie(cookie_name){
+    var allcookies = document.cookie;
+    var cookie_pos = allcookies.indexOf(cookie_name);   //索引的长度
+  
+    // 如果找到了索引，就代表cookie存在，
+    // 反之，就说明不存在。
+    if (cookie_pos != -1){  // 把cookie_pos放在值的开始，只要给值加1即可。
+        cookie_pos += cookie_name.length + 1;  // 这里容易出问题，所以请大家参考的时候自己好好研究一下
+        var cookie_end = allcookies.indexOf(";", cookie_pos);
+  
+        if (cookie_end == -1){
+            cookie_end = allcookies.length;
+        }
+  
+        var value = unescape(allcookies.substring(cookie_pos, cookie_end));  //这里就可以得到你想要的cookie的值了。。。
+    }
+    return value;
+};

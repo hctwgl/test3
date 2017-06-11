@@ -11,14 +11,39 @@
 		</layout>
 	</appender>
 
-	<!-- [应用Appender] 收到客户端的请求 ,bi会拉该日志文件并解析，所以一般日志请勿放这里 -->
+	<!-- [应用Appender] 收到app客户端的请求，非app接口入口日志请勿放这里 -->
 	<appender name="FANBEI_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/bi/app-bi.log" />
 		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%d %-5p %c{2} - %m%n" />
+				value="%d; %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] 收到h5的请求入口日志,非h5接口日志请勿放这里 -->
+	<appender name="FANBWEBEI_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/web-bi.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d; %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] 埋点相关日志,飞埋点日志请勿放这里 -->
+	<appender name="FANBEIMAIDIAN_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/maidian.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d; %m%n" />
 		</layout>
 	</appender>
 
@@ -29,7 +54,7 @@
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%d %-5p %c{2} - %m%n" />
+				value="%d; %m%n" />
 		</layout>
 	</appender>
 	
@@ -37,6 +62,7 @@
 	<appender name="DEFAULT_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/app.log" />
 		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
@@ -72,54 +98,68 @@
 	<!-- [公共Logger] 控制台STDOUT - jboss -->
 	<logger name="org.jboss" additivity="true">
 		<level value="${fbapi.log.level}" />
- 		<appender-ref ref="STDOUT_APPENDER" /> 
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
-<!-- 	 [公共Logger] 控制台STDOUT - STDOUT --> 
+	<!-- [公共Logger] 控制台STDOUT - STDOUT --> 
 	<logger name="STDOUT" additivity="true">
 		<level value="${fbapi.log.level}" />
- 		<appender-ref ref="STDOUT_APPENDER" />  
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	<!-- [应用Logger] BI日志 -->
 	<logger name="FANBEI_BI" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_BI_APPENDER" />
- 		<appender-ref ref="STDOUT_APPENDER" /> 
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
+	</logger>
+	
+	<!-- [应用Logger] BI日志 -->
+	<logger name="FBWEB_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBWEBEI_BI_APPENDER" />
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
+	</logger>
+	
+	<!-- [应用Logger] BI日志 -->
+	<logger name="FBMD_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEIMAIDIAN_BI_APPENDER" />
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	<!-- [应用Logger] THIRD日志 -->
 	<logger name="FANBEI_THIRD" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_THIRD_APPENDER" />
- 		<appender-ref ref="STDOUT_APPENDER" /> 
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 	
 	<!-- fanbei web logger -->
 	<logger name="com.ald.fanbei" additivity="true">
 		<level value="${fbapi.log.level}" />
- 		<appender-ref ref="STDOUT_APPENDER" /> 
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 	
 	<!-- fanbei dal logger -->
 	<logger name="com.ald.fanbei.api.dal" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_DAL_APPENDER" />
- 		<appender-ref ref="STDOUT_APPENDER" /> 
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	<!-- [框架Logger] 数据访问层 - Ibatis -->
 	<logger name="com.ibatis" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_DAL_APPENDER" />
- 		<appender-ref ref="STDOUT_APPENDER" /> 
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	<!-- [框架Logger] 数据访问层 - SQL -->
 	<logger name="java.sql" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_DAL_APPENDER" />
- 		<appender-ref ref="STDOUT_APPENDER" /> 
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</logger>
 
 	
@@ -127,6 +167,6 @@
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="DEFAULT_APPENDER" />
 		<appender-ref ref="ERROR_APPENDER" />
- 		<appender-ref ref="STDOUT_APPENDER" /> 
+		<!--<appender-ref ref="STDOUT_APPENDER" />-->
 	</root>
 </log4j:configuration>

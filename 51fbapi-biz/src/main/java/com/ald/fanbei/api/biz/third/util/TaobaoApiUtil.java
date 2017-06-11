@@ -47,15 +47,15 @@ public class TaobaoApiUtil extends AbstractThird {
 		}
 		return client;
 	}
-	private static TaobaoClient getTaobaoLianMengClient() {
-		if (client == null) {
-			client = new DefaultTaobaoClient(AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_LIANMENG_URL), ConfigProperties.get(Constants.CONFKEY_AES_KEY)),
-					AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_LIANMENG_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY)),
-					AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_LIANMENG_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY)));
-			return client;
-		}
-		return client;
-	}
+//	private static TaobaoClient getTaobaoLianMengClient() {
+//		if (client == null) {
+//			client = new DefaultTaobaoClient(AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_LIANMENG_URL), ConfigProperties.get(Constants.CONFKEY_AES_KEY)),
+//					AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_LIANMENG_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY)),
+//					AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_LIANMENG_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY)));
+//			return client;
+//		}
+//		return client;
+//	}
 	
 	/**
 	 * 搜索淘宝客商品，没有返利 taobao.tbk.item.get接口

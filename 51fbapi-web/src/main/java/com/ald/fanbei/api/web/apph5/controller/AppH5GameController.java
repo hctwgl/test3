@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,7 +93,7 @@ public class AppH5GameController  extends BaseController{
 		try{
 			Long userId = -1l;
 			context = doWebCheck(request, false);
-			if(CommonUtil.isMobile(context.getUserName()) && StringUtil.isNotBlank(context.getUserName())){
+			if(context.isLogin()){
 				AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
 				if(afUser != null){
 					userId = afUser.getRid();
@@ -100,7 +101,7 @@ public class AppH5GameController  extends BaseController{
 			}
 			//游戏配置
 			AfGameDo gameDo = afGameService.getByCode("catch_doll");
-			List<AfGameConfDo> gameConfDo = afGameConfService.getByGameId(gameDo.getRid());
+			List<AfGameConfDo> gameConfDo = afGameConfService.getByGameCode("catch_doll");
 			
 			//最近20条抓娃娃中奖列表
 			List<AfGameResultDo> latestResultList= afGameResultService.getLatestRecord();
@@ -122,10 +123,10 @@ public class AppH5GameController  extends BaseController{
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", initResult).toString();
 		}catch(FanbeiException e){
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("fb初始化失败",e);
+			logger.error("fb初始化失败" + context,e);
 		}catch(Exception e){
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", "").toString();
-			logger.error("fb初始化失败",e);
+			logger.error("fb初始化失败" + context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
@@ -175,10 +176,10 @@ public class AppH5GameController  extends BaseController{
 			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
 		}catch(FanbeiException e){
 			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("fb抽奖失败",e);
+			logger.error("fb抽奖失败"+context,e);
 		}catch(Exception e){
 			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", "").toString();
-			logger.error("抽奖失败",e);
+			logger.error("抽奖失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
@@ -213,10 +214,10 @@ public class AppH5GameController  extends BaseController{
 			resultStr = H5CommonResponse.getNewInstance(true, "提交成功", "", resultData).toString();
 		}catch(FanbeiException e){
 			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("提交失败",e);
+			logger.error("提交失败"+context,e);
 		}catch(Exception e){
 			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", "").toString();
-			logger.error("提交失败",e);
+			logger.error("提交失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
@@ -228,6 +229,8 @@ public class AppH5GameController  extends BaseController{
 	private AfGameInitVo buildGameInitVo(AfGameDo gameDo,List<AfGameConfDo> gameConfDo,List<AfGameResultDo> latestResultList,List<AfGameAwardDo> latestAwardList,List<AfGameChanceDo> gameChanceList,AfGameFivebabyDo fivebabyDo,AfGameAwardDo awardDo,boolean isLogin){
 		AfGameInitVo gameInitVo = new AfGameInitVo();
 		
+		AfResourceDo clientRate = afResourceService.getSingleResourceBytype(Constants.RES_GAME_CATCH_DOLL_CLIENT_RATE);
+		gameInitVo.setClientRate(Integer.parseInt(clientRate.getValue()));
 		//游戏信息
 		if(gameDo != null){
 			gameInitVo.setTitle(gameDo.getTitle());
@@ -238,9 +241,10 @@ public class AppH5GameController  extends BaseController{
 		//设置下一个开奖时间
 		gameInitVo.setGmtCurrent(System.currentTimeMillis());
 		Long gmtOpen = 0l;
+		Long currentTime = new Date().getTime();
 		for(AfGameConfDo item:gameConfDo){
 			if("P".equals(item.getType())){
-				if(gmtOpen == 0l || gmtOpen > item.getGmtSend().getTime()){
+				if(item.getGmtSend().getTime() > currentTime && (gmtOpen == 0l || (gmtOpen > item.getGmtSend().getTime()))){
 					gmtOpen = item.getGmtSend().getTime();
 				}
 			}
@@ -250,15 +254,15 @@ public class AppH5GameController  extends BaseController{
 		//用户机会信息
 		if(gameChanceList != null){
 			int chanceCount = 0;
-			String chanceCodes = "";
+			List<String> chanceCodesList = new ArrayList<String>();
 			for(AfGameChanceDo item:gameChanceList){
 				chanceCount = chanceCount + (item.getTotalCount() - item.getUsedCount());
-				if(item.getTotalCount() > 0){
-					chanceCodes = chanceCodes + "," + item.getCodes();
+				if(item.getTotalCount() - item.getUsedCount() > 0){
+					chanceCodesList.addAll(CommonUtil.turnStringToList(item.getCodes(), ","));
 				}
 			}
 			gameInitVo.setChanceCount(chanceCount);
-			gameInitVo.setChanceCodes(chanceCodes);
+			gameInitVo.setChanceCodes(StringUtil.turnListToStr(chanceCodesList, ","));
 		}
 		
 		//是否被抽中将

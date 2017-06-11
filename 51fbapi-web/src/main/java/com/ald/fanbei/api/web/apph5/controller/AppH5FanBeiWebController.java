@@ -30,11 +30,13 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -50,6 +52,7 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -89,6 +92,19 @@ public class AppH5FanBeiWebController extends BaseController {
 	@Resource
 	AfShopService afShopService;
 
+	/**
+	 * 首页弹窗页面
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "homepagePop" }, method = RequestMethod.GET)
+	public void homepagePop(HttpServletRequest request, ModelMap model) throws IOException {
+		doMaidianLog(request);
+		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.RES_APP_POP_IMAGE);
+		model.put("redirectUrl", resourceDo.getName());
+	}
+
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
 		doMaidianLog(request);
@@ -96,8 +112,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 		JSONObject appInfo = JSON.parseObject(appInfotext);
-		String userName = ObjectUtils.toString(appInfo.get("userName"), "").toString();
-//		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		String userName = ObjectUtils.toString(appInfo.get("userName"), "");
 
 		AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
 		Long userId= -1L;
@@ -108,9 +123,10 @@ public class AppH5FanBeiWebController extends BaseController {
 		String ids = resourceDo.getValue();
 		List<AfCouponDto> afCouponList = afCouponService.selectCouponByCouponIds(ids,userId);
 		List<Object> list = new ArrayList<Object>();
-		for (AfCouponDto afCouponDo : afCouponList) {
-			list.add(couponObjectWithAfUserCouponDto(afCouponDo));
+		for (AfCouponDto afCouponDto : afCouponList) {
+			list.add(couponObjectWithAfUserCouponDto(afCouponDto));
 		}
+	
 		model.put("couponList", list);
 		model.put("userName", userName);
 		logger.info(JSON.toJSONString(model));
@@ -135,7 +151,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			returnData.put("type", "还款劵");
 			
 		}else if (StringUtil.equals("FULLVOUCHER", afCouponDo.getType())) {
-			returnData.put("type", "满减卷");
+			returnData.put("type", "满减劵");
 		}else{
 			returnData.put("type", "现金劵");
 		}
@@ -151,11 +167,14 @@ public class AppH5FanBeiWebController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/pickCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
+		
+		doMaidianLog(request);
+		FanbeiWebContext context = new FanbeiWebContext();
 		try {
+			
+			context = doWebCheck(request, false);
 			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
-
-			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 			Map<String, Object> returnData = new HashMap<String, Object>();
 
 			if (afUserDo == null) {
@@ -223,9 +242,11 @@ public class AppH5FanBeiWebController extends BaseController {
 			couponDoT.setRid(couponDo.getRid());
 			couponDoT.setQuotaAlready(1);
 			afCouponService.updateCouponquotaAlreadyById(couponDoT);
+			logger.info("pick coupon success",couponDoT);
 			return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
 
 		} catch (Exception e) {
+			logger.error("pick coupon error",e);
 			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
 		}
 
@@ -355,18 +376,21 @@ public class AppH5FanBeiWebController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.ald.fanbei.api.web.common.BaseController#parseRequestData(java.lang.
-	 * String, javax.servlet.http.HttpServletRequest)
-	 */
+	
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
+            
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
 	}
 
 	/*

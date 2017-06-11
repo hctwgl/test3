@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    #set($version="2017060711")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>game</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css?id=$version">
 </head>
 <body>
-<img src="$commonUrl/ni_1.jpg">
-<img src="$commonUrl/ni_2.jpg">
+<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.21rem;height:1.47rem" src="$commonUrl/R11logo.png"></a>
+<img src="$commonUrl/ni_1.jpg" style="width: 7.5rem;height:1.89rem">
+<img src="$commonUrl/ni_2.jpg" style="width: 7.5rem;height:4.49rem">
 <img class="modelPic" src="$commonUrl/ni_2bg.jpg">
-<img src="$commonUrl/ni_3.jpg">
+<img src="$commonUrl/ni_3.jpg" style="width: 7.5rem;height:3.28rem">
 <p class="title">抓娃娃抽优惠券，当集齐五个娃娃还可以额外抽取实物大奖！</p>
 <div class="container">
     <div id="claw"></div>
+    <img style="display: none" src="$commonUrl/ni_claw2.png">
     <div id="terrace">
         <div id="scroll">
             <span class="doll"><div class="doll-main"></div></span>
@@ -63,18 +66,6 @@
          <!-- <li>
             <div class="personImg"></div>
             <h2><span>15666666666</span><span>获得100抵10元优惠券</span></h2>
-         </li>
-         <li>
-            <div class="personImg"></div>
-            <h2><span>15777777777</span><span>获得100抵10元优惠券</span></h2>
-         </li>
-         <li>
-            <div class="personImg"></div>
-            <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
-         </li>
-         <li>
-            <div class="personImg"></div>
-            <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
          </li> -->
        </ul>
    </div>
@@ -95,18 +86,6 @@
            <!-- <li>
               <div class="personImg"></div>
               <h2><span>15666666666</span>获得<span>100抵10元优惠券</span></h2>
-           </li>
-           <li>
-              <div class="personImg"></div>
-              <h2><span>15777777777</span>获得<span>100抵10元优惠券</span></h2>
-           </li>
-           <li>
-              <div class="personImg"></div>
-              <h2><span>15888888888</span>获得<span>100抵10元优惠券</span></h2>
-           </li>
-           <li>
-              <div class="personImg"></div>
-              <h2><span>15999999999</span>获得<span>100抵10元优惠券</span></h2>
            </li> -->
          </ul>
      </div>
@@ -135,6 +114,6 @@
      </li>
    </ul>
 </div>
-<script type="text/javascript" src="/dist/activity/06/game.js"></script>
+<script type="text/javascript" src="/dist/activity/06/game.js?id=$version"></script>
 </body>
 </html>

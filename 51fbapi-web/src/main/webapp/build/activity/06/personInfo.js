@@ -10,29 +10,32 @@ function button(){
         var personName=$('#cont1').val();
         var personNumber=$('#cont2').val();
         var personAddress=$('#cont3').val();
-    	   $.ajax({
-            url: "/fanbei-web/submitContract",
-            type: "POST",
-            dataType: "JSON",
-            data: {
-                name: personName,
-                mobilePhone: personNumber,
-                address:personAddress              
-            },
-            success: function(data){
-            	if(data.success){
-            		requestMsg("提交成功");
-            		location.href="game";
-            	} else{
-            		requestMsg("参数异常")
-            	}
-            },
-            error: function(){
-                requestMsg("请求失败");
-            }
-        });
-
-    }
+        if(!(/^1[34578]\d{9}$/.test(personNumber))){
+           requestMsg("手机格式不正确，请重新输入！"); 
+        }else{
+            $.ajax({
+               url: "/fanbei-web/submitContract",
+               type: "POST",
+               dataType: "JSON",
+               data: {
+                   name: personName,
+                   mobilePhone: personNumber,
+                   address:personAddress              
+               },
+               success: function(data){
+                   if(data.success){
+                       requestMsg("提交成功");
+                       location.href="game";
+                   } else{
+                       requestMsg("参数异常")
+                   }
+               },
+               error: function(){
+                   requestMsg("请求失败");
+               }
+            });
+        }
+}
 
 //获取图片地址
 function img(){

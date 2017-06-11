@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>年中主会场</title>
+	<style type="text/css">
+		.nullPrompt p{
+			font-size: 0.36rem;
+			color: #828286;
+		}
+		.nullPrompt span{
+			font-size: 0.48rem;
+			color: #f2833a;
+		}
+	</style>
+</head>
+<body>
+	<div class="nullPrompt">
+        <img src="https://fs.51fanbei.com/h5/common/icon/clarity.png">
+        <p>开始活动时间：2017-06-18</p>
+        <span>敬请期待...</span>
+    </div>
+</body>
+</html>
