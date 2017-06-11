@@ -77,6 +77,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 	@Override
 	public int updateUser(AfUserDo afUserDo) {
+		String key = Constants.CACHEKEY_USER_NAME + afUserDo.getUserName();
+		bizCacheUtil.delCache(key);
 		return afUserDao.updateUser(afUserDo);
 	}
 

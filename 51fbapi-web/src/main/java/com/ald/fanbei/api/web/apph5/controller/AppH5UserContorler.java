@@ -35,6 +35,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
@@ -139,11 +140,15 @@ public class AppH5UserContorler extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "commitRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
+		
+		String reqData = "";
+		
 		try {
 			String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
+			reqData = StringUtil.appendStrs("web commitRegister" + mobile , ",", verifyCode,",",passwordSrc,",",recommendCode);
 
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
 			if (eUserDo != null) {
@@ -183,18 +188,17 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setMobile(mobile);
 			userDo.setNick("");
 			userDo.setPassword(password);
-
+	        userDo.setRecommendId(0l);
+			if (!StringUtils.isBlank(recommendCode)) {
+				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
+				userDo.setRecommendId(userRecommendDo.getRid());
+			}
 			afUserService.addUser(userDo);
 
 			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 			// TODO 优化邀请码规则
 			String inviteCode = Long.toString(invteLong, 36);
 			userDo.setRecommendCode(inviteCode);
-			if (!StringUtils.isBlank(recommendCode)) {
-				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
-				userDo.setRecommendId(userRecommendDo.getRid());
-				;
-			}
 			afUserService.updateUser(userDo);
 
 			// 获取邀请分享地址
@@ -205,8 +209,14 @@ public class AppH5UserContorler extends BaseController {
 			}
 			return H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
 
+		}catch(FanbeiException e){
+			logger.error("commitRegister fanbei exception"+e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 		} catch (Exception e) {
-			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+			logger.error("commitRegister exception",e);
+			return H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
+		}finally{
+			logger.info(reqData);
 		}
 
 	}
@@ -322,6 +332,7 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setPassword(password);
 			userDo.setRegisterChannelId(pcp.getChannelId());
 			userDo.setRegisterChannelPointId(pcp.getId());
+			userDo.setRecommendId(0l);
 			afUserService.addUser(userDo);
 
 			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+#set($version="2017060901")
+#set($src="https://fs.51fanbei.com/h5/app/activity/06")
+	<title>OPPO R11</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/oppoR11.css?version=$version">
+</head>
+<body>
+<div class="banner">
+   <img src="$src/oppo1.jpg">
+   <div class="order"></div>
+</div>
+<div class="timeList"><img src="$src/r20.jpg"></div>
+<img src="$src/r27.jpg">
+<img src="$src/r10.jpg">
+<img src="$src/r11.jpg">
+<img src="$src/r12.jpg">
+<img src="$src/r13.jpg">
+<img class="ruleTop" src="$src/r28.jpg">
+<img src="$src/r29.jpg">
+<div class="blank"></div>
+<!--弹框-->
+<div class="mask"></div>
+<div class="orderSuccess">
+    <img src="$src/r30.png">
+    <div class="close"></div>
+</div>
+<script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
+</body>
+</html>

@@ -41,8 +41,11 @@ public class GetHomeInfoApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		List<Object> bannerList = getObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
-		List<Object> bannerSecList = getObjectWithResourceDolist(
+		List<Object> bannerSecList = new ArrayList<Object>();
+		if(context.getAppVersion() >= 363){
+			bannerSecList = getObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
+		}
 		List<Object> one2OneList = getObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
 		List<Object> one2ManyList = getOne2ManyObjectWithResourceDolist(

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017060711")
+    #set($version="2017060717")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>game</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css?id=$version">
 </head>
 <body>
-<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.21rem;height:1.47rem" src="$commonUrl/R11logo.png"></a>
+<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.06rem;height:1.53rem" src="$commonUrl/R11logo1.png"></a>
 <img src="$commonUrl/ni_1.jpg" style="width: 7.5rem;height:1.89rem">
 <img src="$commonUrl/ni_2.jpg" style="width: 7.5rem;height:4.49rem">
 <img class="modelPic" src="$commonUrl/ni_2bg.jpg">
@@ -28,7 +28,7 @@
     <button id="playBtn" class="button"><p>立即抓取</p></button>
     <button id="startBtn" class="button"><p>开始游戏</p></button>
 </div>
-<div id="chance">您还有1次机会</div>
+<div id="chance">您还有0次机会</div>
 
 <!--活动规则-->
 <img id="rule" src="$commonUrl/ni_rule.png">

@@ -11,6 +11,9 @@
 input,button{
 	background-color: transparent;
 }
+.hide{
+	display: none;
+}
 .channelRegisterWrap{
 	position: relative;
 }
@@ -141,6 +144,119 @@ input,button{
 	font-size: 0.3rem;
 	color: #cfcfcf;
 }
+/* 样式10 */
+.channelRegister10{
+	margin-top: 0.32rem;
+}
+.channelRegister10 li{
+	position: relative;
+	width: 6.5rem;
+	height: 0.8rem;
+	line-height: 0.8rem;
+	text-align: left;
+	margin: 0 auto 0.32rem;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	padding-left: 1.4rem;
+}
+.channelRegister10 li:first-child{
+	margin-top: 0.3rem;
+}
+.channelRegister10 .register_codeBtn_right{
+	color: #fff;
+	width: 2.0rem;
+	height: 0.8rem;
+	position: absolute;
+	top: 0;
+	right: 0.2rem;
+	color: #BFBFBF;
+	font-size: 0.3rem;
+}
+.channelRegister10 li:nth-child(3){
+	margin-bottom: 0.48rem;
+}
+.channelRegister10 li:nth-child(4){
+	padding-left: 0;
+	margin-bottom: 80px;
+}
+.channelRegister10 li:nth-child(4) button{
+	width: 100%;
+	line-height: 0.8rem;
+	text-align: center;
+	color: #fff;
+	font-size: 0.3rem;
+}
+.channelRegister10 input{
+	color: #fff;
+	font-size: 0.3rem;
+}
+.channelRegister10 .register_checkbox{
+	width: 4.8rem;
+}
+.channelRegister10 .register_checkbox p{
+	color: #BFBFBF;
+	a{
+		color: #BFBFBF;
+	}
+}
+/* 样式10的弹窗 */
+.channelRegisterPopup10{
+	font-size: 0.3rem;
+	text-align: center;
+}
+.channelRegisterPopup10 .registerMask{
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, 0.8);
+	width: 100%;
+	height: 19.96rem;
+	z-index: 8;
+}
+.registerSuss,.registerFail{
+	width: 5.0rem;
+	height: 4.0rem;
+	background-color: #fff;
+	border-radius: 0.2rem;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	z-index: 10;
+	padding: 1.0rem 0.5rem 0.5rem;
+}
+.channelRegisterPopup10 p{
+	text-align: Justify;
+	text-justify: inter-ideograph;
+}
+.channelRegisterPopup10 span{
+	width: 2.54rem;
+	height: 0.7rem;
+	line-height: 0.7rem;
+	text-align: center;
+	border-radius: 0.35rem;
+	background-color: #169a73;
+	color: #fff;
+	position: absolute;
+	bottom: 1.4rem;
+	left: 50%;
+	-webkit-transform: translateX(-50%);
+	transform: translateX(-50%);
+}
+/*.channelRegisterPopupIcon{
+	width: 0.35rem;
+	height: 0.35rem;
+	background-image: url("@{url}/channel10_03.png");
+	-webkit-background-size: cover;
+	background-size: cover;
+	position: absolute;
+	top: 0.4rem;
+	right: 0.4rem;
+}*/
+
+
+
 
 
 
@@ -221,13 +337,13 @@ input:-ms-input-placeholder{
 	top: 50%;
 	left: 2px;
 	-webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
-    display: inline-block;
-    width: 0.29rem;
-    height: 0.19rem;
-    content: "";
-    background-image: url("@{url}/tick.png");
-    -webkit-background-size: cover;
+  transform: translateY(-50%);
+  display: inline-block;
+  width: 0.29rem;
+  height: 0.19rem;
+  content: "";
+  background-image: url("@{url}/tick.png");
+  -webkit-background-size: cover;
 	background-size: cover;
 }
 .register_checkbox p{
@@ -280,5 +396,10 @@ input:-ms-input-placeholder{
 .copyright9{
 	width: 7.58rem;
 	background-color: #181818;
+	color: #BFBFBF;
+}
+.copyright10{
+	height: 1.0rem;
+	background-color: #000;
 	color: #BFBFBF;
 }

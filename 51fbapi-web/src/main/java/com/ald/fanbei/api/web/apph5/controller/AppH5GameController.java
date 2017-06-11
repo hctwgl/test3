@@ -13,7 +13,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -92,9 +91,10 @@ public class AppH5GameController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			Long userId = -1l;
+			AfUserDo afUser = null;
 			context = doWebCheck(request, false);
 			if(context.isLogin()){
-				AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+				afUser = afUserService.getUserByUserName(context.getUserName());
 				if(afUser != null){
 					userId = afUser.getRid();
 				}
@@ -119,7 +119,7 @@ public class AppH5GameController  extends BaseController{
 				//用户中奖情况
 				awardDo = afGameAwardService.getByUserId(userId);
 			}
-			AfGameInitVo initResult = this.buildGameInitVo(gameDo, gameConfDo, latestResultList, latestAwardList, gameChanceList, fivebabyDo, awardDo, userId>0l);
+			AfGameInitVo initResult = this.buildGameInitVo(gameDo, gameConfDo, latestResultList, latestAwardList, gameChanceList, fivebabyDo, awardDo, afUser);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", initResult).toString();
 		}catch(FanbeiException e){
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
@@ -196,11 +196,10 @@ public class AppH5GameController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			context = doWebCheck(request, true);
-			String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 			String name = request.getParameter("name");
 			String mobilePhone = request.getParameter("mobilePhone");
 			String address = request.getParameter("address");
-			if(StringUtil.isEmpty(appInfotext) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
+			if(StringUtil.isEmpty(context.getAppInfo()) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
 				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
 			}
 			
@@ -226,7 +225,7 @@ public class AppH5GameController  extends BaseController{
 	}
 	
 	
-	private AfGameInitVo buildGameInitVo(AfGameDo gameDo,List<AfGameConfDo> gameConfDo,List<AfGameResultDo> latestResultList,List<AfGameAwardDo> latestAwardList,List<AfGameChanceDo> gameChanceList,AfGameFivebabyDo fivebabyDo,AfGameAwardDo awardDo,boolean isLogin){
+	private AfGameInitVo buildGameInitVo(AfGameDo gameDo,List<AfGameConfDo> gameConfDo,List<AfGameResultDo> latestResultList,List<AfGameAwardDo> latestAwardList,List<AfGameChanceDo> gameChanceList,AfGameFivebabyDo fivebabyDo,AfGameAwardDo awardDo,AfUserDo afUser){
 		AfGameInitVo gameInitVo = new AfGameInitVo();
 		
 		AfResourceDo clientRate = afResourceService.getSingleResourceBytype(Constants.RES_GAME_CATCH_DOLL_CLIENT_RATE);
@@ -235,7 +234,8 @@ public class AppH5GameController  extends BaseController{
 		if(gameDo != null){
 			gameInitVo.setTitle(gameDo.getTitle());
 			gameInitVo.setRule(gameDo.getGameRule());
-			gameInitVo.setIsLogin(isLogin?"Y":"N");
+			gameInitVo.setIsLogin(afUser !=null?"Y":"N");
+			gameInitVo.setRecommendCode(afUser != null?afUser.getRecommendCode():"");
 		}
 		
 		//设置下一个开奖时间

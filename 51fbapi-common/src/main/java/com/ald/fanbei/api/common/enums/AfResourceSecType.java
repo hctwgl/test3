@@ -17,7 +17,11 @@ public enum AfResourceSecType {
 		GOODS_ID("GOODS_ID", "跳转商品详情"),
 		creditScoreAmount("CREDIT_SCORE_AMOUNT","征信等级"),
 	
-		//借钱模块
+
+	//活动相关
+    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
+    
+	//借钱模块
 		BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
 		BorrowCashRange("BORROW_CASH_RANGE", "借款金额"),
 		BorrowCashBaseBankDouble("BORROW_CASH_BASE_BANK_DOUBLE", "借钱最高倍数"),

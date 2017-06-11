@@ -1019,6 +1019,33 @@ public class DateUtil {
         return date;
     }
 
+    /**
+     * 返回yyyyMMdd HH:mm:ss格式日期
+     * @return
+     */
+    public static Date parseDateyyyyMMddHHmmss(String dateStr) {
+        if(dateStr == null || dateStr.length()==0){
+            return null;
+        }
+        SimpleDateFormat parser = new SimpleDateFormat(FULL_STANDARD_PATTERN);
+        try {
+            return parser.parse(dateStr);
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+    
+    /**
+     * @Title: compareDate
+     * @Description: (日期比较，如果s>=e 返回true 否则返回false)
+     * @param s
+     * @param e
+     * @return boolean
+     */
+    public static boolean compareDate(Date s, Date e) {
+        return s.getTime() >= e.getTime();
+    }
+    
     public static void main(String[] args) {
         /*
          * System.out.println(DateUtils.getFirstOfMonth(DateUtils.addMonths( DateUtils.currentDate(), -3)));

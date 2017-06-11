@@ -1,15 +1,10 @@
 /**
  * Created by nizhiwei-labtop on 2017/5/31.
  */
-let userName = "";
-if(getInfo().userName){
-    userName=getInfo().userName
-}
-let chance=[],isLogin,isShow,clientRate,chanceCount,recommendCode;
 
-// 获取url中的host
-let urlhost = window.location.host;
-
+let chance=[],isLogin,isShow,clientRate,chanceCount;
+let recommendCode = getUrl('recommendCode');
+$('.button a').attr('href','/app/user/register?recommendCode='+recommendCode)
 // app调用web的方法
 function alaShareData(){
     // 分享内容
@@ -19,7 +14,7 @@ function alaShareData(){
         'shareAppTitle': '年中抓娃娃,让你一次玩个爽！',  // 分享的title
         'shareAppContent': '51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~',  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': urlhost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
+        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'gameShare' // 分享的页面
     };
@@ -39,7 +34,6 @@ function dataInit() {
                 isLogin=data.data.isLogin;
                 chanceCount=data.data.chanceCount;
                 clientRate=data.data.clientRate||100;
-                recommendCode=data.data.recommendCode;
                 //抽奖次数显示,抽奖码获取
                 $('#chance').html('您还有'+data.data.chanceCount+'次机会');
                 if(data.data.chanceCodes){
@@ -51,28 +45,6 @@ function dataInit() {
                         }
                     }
                 }else{chance=[]}
-
-                //底部娃娃数量显示
-                if(data.data.item1Count>0){
-                    $('#toys').find('img').eq(0).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll1.png');
-                    $('#toys').find('span').eq(0).html(data.data.item1Count)
-                }
-                if(data.data.item2Count>0){
-                    $('#toys').find('img').eq(1).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll2.png');
-                    $('#toys').find('span').eq(1).html(data.data.item2Count)
-                }
-                if(data.data.item3Count>0){
-                    $('#toys').find('img').eq(2).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll3.png');
-                    $('#toys').find('span').eq(2).html(data.data.item3Count)
-                }
-                if(data.data.item4Count>0){
-                    $('#toys').find('img').eq(3).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll4.png');
-                    $('#toys').find('span').eq(3).html(data.data.item4Count)
-                }
-                if(data.data.item5Count>0){
-                    $('#toys').find('img').eq(4).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll5.png');
-                    $('#toys').find('span').eq(4).html(data.data.item5Count)
-                }
 
                 //娃娃中奖信息循环
                 {
@@ -325,7 +297,8 @@ $('#startBtn').click(function () {
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+urlhost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
+
             });
             $('#alert').show();
             $('#shadow').show();
