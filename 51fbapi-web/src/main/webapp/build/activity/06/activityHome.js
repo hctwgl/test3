@@ -85,81 +85,71 @@ var addModel = function addModel(goodsList) {
     return html;
 };
 
-
-// <ul>
-//   <li class="clearfix">
-//     <a href="">
-//       <img src="">
-//       <div class="boutiqueHomeContent clearfix">
-//         <p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利更有超级返利618折上</p>
-//         <p class="price"><span>￥5.2</span><span><i>返</i>￥1.2</span></p>
-//         <button>马上抢</button>
-//       </div>
-//     </a>
-//   </li>
-//   <li class="clearfix">
-//     <a href="">
-//       <img src="">
-//       <div class="boutiqueHomeContent">
-//         <p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
-//         <div class="price">
-//           <p><i class="monthCorner"></i>￥5.2</p>
-//           <p>抢购价：￥1.2</p>
-//         </div>
-//         <button>马上抢</button>
-//       </div>
-//     </a>
-//   </li>
-// </ul>
-
-
-
+// 初始化页面
+window.onload=function(){
+  $.ajax({
+    url: "http://192.168.96.41:8081/fanbei-web/mainActivityInfo",
+    type: "GET",
+    dataType: "JSON",
+    success: function(returnData){
+      console.log(returnData);
+      if (returnData.success) {
+        console.log(2222);
+      }else{
+        requestMsg(returnData.msg);
+      }
+    },
+    error: function(){
+      requestMsg("请求失败");
+    }
+  });
+}
 
 
 
 // 初始化页面
-$(function(){
-    $(window).on('scroll',function () {
-        if(finished==0){
-            var scrollTop = $(this).scrollTop();
-            var allHeight = $(document).height();
-            var windowHeight = $(this).height();
-            if (allHeight-windowHeight<=scrollTop+400) {
-                page++;
-                finished=1; //防止未加载完再次执行
-                $.ajax({
-                    url: "/fanbei-web/mainActivityInfo",
-                    type: "GET",
-                    dataType: "JSON",
-                    data: {
-                        modelId : modelIdNum,
-                        pageNo: page,
-                        type: typeCurrentNum
-                    },
-                    success: function(returnData){
-                      console.log(returnData);
-                        if (returnData.success) {
-                            if(returnData.data["goodsList"]==""){
-                                var txt='<div class="loadOver"><span>没有更多了...</span></div>';
-                                $("div[data-type="+typeCurrentNum+"]").append(txt);
-                            }else{
-                                var goodsList = returnData.data["goodsList"];
-                                $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").append(addModel(goodsList));
-                                finished=0
-                            }
-                        } else {
-                            requestMsg(returnData.msg);
-                        }
-                        // pageNumber(page);
-                    },
-                    error: function(){
-                        requestMsg("请求失败");
-                    }
-                });
-            }
-        }
-    });
-});
+// $(function(){
+//   $(window).on('scroll',function () {
+//     if(finished==0){
+//       var scrollTop = $(this).scrollTop();
+//       var allHeight = $(document).height();
+//       var windowHeight = $(this).height();
+//       if (allHeight-windowHeight<=scrollTop+400) {
+//         page++;
+//         finished=1; //防止未加载完再次执行
+//         $.ajax({
+//           url: "http://192.168.96.41:8081/fanbei-web/mainActivityInfo",
+//           type: "GET",
+//           dataType: "JSON",
+//           data: {
+//               modelId : modelIdNum,
+//               pageNo: page,
+//               type: typeCurrentNum
+//           },
+//           success: function(returnData){
+//             console.log(returnData);
+//             if (returnData.success) {
+//                 if(returnData.data["goodsList"]==""){
+//                   var txt='<div class="loadOver"><span>没有更多了...</span></div>';
+//                   $("div[data-type="+typeCurrentNum+"]").append(txt);
+//                 }else{
+//                   var goodsList = returnData.data["goodsList"];
+//                   $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").append(addModel(goodsList));
+//                   finished=0
+//                 }
+//             }else{
+//               requestMsg(returnData.msg);
+//             }
+//             // pageNumber(page);
+//           },
+//           error: function(){
+//             requestMsg("请求失败");
+//           }
+//         });
+//       }
+//     }
+//   });
+// });
 
 
 

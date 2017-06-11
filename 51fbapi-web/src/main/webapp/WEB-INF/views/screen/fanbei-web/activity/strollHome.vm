@@ -8,76 +8,86 @@
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/strollHome.css?version=$version">
 </head>
 <body>
-	<div class="strollHomeWrap">
-		<img src="$commonUrl/bannerBg.jpg">
+	<div class="strollHomeWrap" id="strollHomeWrap">
+		<img src="/images/activity/06/strollHomeBanner.png">
 		<div class="strollHomeContent">
-			<ul style="padding: 0.35rem;">
+			<ul class="strollHomeContentUl">
 				<li>
-					<img src="" style="width: 6.8rem; height: 2.6rem; background-color: pink;">
+					<img @click="boluomiHome(1)" src="/images/activity/06/strollHomeList1.png">
 					<ol class="otoCoupon">
 						<li>满25减5元</li>
 						<li>满60减元</li>
 					</ol>
 				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList2.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList3.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList4.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList5.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList6.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList7.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList8.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList9.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList10.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+
+
+
 			</ul>
 		</div>
 	</div>
-
-
-	<!-- <div class="activityHomeWrap"> -->
-		<!-- <div class="activityHomeBanner">
-			<img src="$commonUrl/bannerBg.jpg" class="banner">
-            <span class="bannerTitle">
-            	<span class="bannerTitleCorner"></span>
-            </span>
-            <div class="countDown" id="countDown">
-            	<h2>活动倒计时</h2>
-				<span class="time_item" id="day_show"></span>
-				<span class="time_item" id="hour_show"></span>
-				<span class="time_item" id="minute_show"></span>
-				<span class="time_item" id="second_show"></span>
-			</div>
-			<a class="goCoupons" href="/fanbei-web/receiveCoupons"></a>
-		</div> -->
-		<!-- <div class="activityHomeContent">
-			<div class="selectedHome clearfix">
-				<ul>
-					<li><a href=""><img src="$commonUrl/selectedHome1.png"></a></li>
-					<li><a href=""><img src="$commonUrl/selectedHome2.png"></a></li>
-					<li><a href=""><img src="$commonUrl/selectedHome3.png"></a></li>
-					<li><a href=""><img src="$commonUrl/selectedHome4.png"></a></li>
-				</ul>
-			</div>
-			<div class="boutiqueHome" id="boutiqueHome">
-				<h2>精品推荐</h2>
-				<ul>
-					<li class="clearfix">
-						<a href="">
-							<img src="">
-							<div class="boutiqueHomeContent clearfix">
-								<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利更有超级返利618折上</p>
-								<p class="price"><span>￥5.2</span><span><i>返</i>￥1.2</span></p>
-								<button>马上抢</button>
-							</div>
-						</a>
-					</li>
-					<li class="clearfix">
-						<a href="">
-							<img src="">
-							<div class="boutiqueHomeContent">
-								<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
-								<div class="price">
-									<p><i class="monthCorner"></i>￥5.2</p>
-									<p>抢购价：￥1.2</p>
-								</div>
-								<button>马上抢</button>
-							</div>
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div> -->
-	<script type="text/javascript" src="/dist/activity/06/activityHome.js?version=$version"></script>
+	<script type="text/javascript" src="/dist/activity/06/strollHome.js?version=$version"></script>
 </body>
 </html>
