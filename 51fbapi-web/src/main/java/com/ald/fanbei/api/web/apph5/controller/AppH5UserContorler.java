@@ -188,17 +188,17 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setMobile(mobile);
 			userDo.setNick("");
 			userDo.setPassword(password);
-
+	        userDo.setRecommendId(0l);
+			if (!StringUtils.isBlank(recommendCode)) {
+				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
+				userDo.setRecommendId(userRecommendDo.getRid());
+			}
 			afUserService.addUser(userDo);
 
 			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 			// TODO 优化邀请码规则
 			String inviteCode = Long.toString(invteLong, 36);
 			userDo.setRecommendCode(inviteCode);
-			if (!StringUtils.isBlank(recommendCode)) {
-				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
-				userDo.setRecommendId(userRecommendDo.getRid());
-			}
 			afUserService.updateUser(userDo);
 
 			// 获取邀请分享地址
@@ -332,6 +332,7 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setPassword(password);
 			userDo.setRegisterChannelId(pcp.getChannelId());
 			userDo.setRegisterChannelPointId(pcp.getId());
+			userDo.setRecommendId(0l);
 			afUserService.addUser(userDo);
 
 			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
