@@ -201,6 +201,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     
 
     GAME_CHANCE_CODE_ERROR("GAME_CHANCE_CODE_ERROR",4030,"game chance code error","无效抓娃娃机会"),
+    GAME_COUPONS_LIMIT_ERROR("GAME_COUPONS_LIMIT_ERROR",4031,"coupon limit","未中奖"),
     
     // 地址管理
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),

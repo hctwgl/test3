@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TongdunResultBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTdFraudSerVice;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -27,7 +26,6 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfTdFraudDo;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -42,8 +40,6 @@ public class TongdunUtil extends AbstractThird {
 	private static String partnerKey = null;
 	private static String appName = null;
 
-	@Resource
-	AfTdFraudSerVice afTdFraudSerVice;
 	@Resource
 	AfResourceService afResourceService;
 
@@ -189,7 +185,7 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getLoginWebResult", e);
@@ -235,7 +231,7 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getLoginResult", e);
@@ -275,7 +271,7 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getLoginResult", e);
@@ -331,7 +327,7 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getTradeResult", e);
@@ -387,7 +383,7 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getTradeResult", e);
@@ -449,15 +445,15 @@ public class TongdunUtil extends AbstractThird {
 		return params;
 	}
 
-	private void addTdFraud(String userName, String userPhone, String type, String ip, String result, String source) {
-		AfTdFraudDo tdFraud = new AfTdFraudDo();
-		tdFraud.setUserName(userName == null ? "" : userName + source);
-		tdFraud.setResult(result == null ? "" : result);
-		tdFraud.setType(type);
-		tdFraud.setUserPhone(userPhone == null ? "" : userPhone);
-		tdFraud.setIp(ip);
-		afTdFraudSerVice.addTdFraud(tdFraud);
-	}
+//	private void addTdFraud(String userName, String userPhone, String type, String ip, String result, String source) {
+//		AfTdFraudDo tdFraud = new AfTdFraudDo();
+//		tdFraud.setUserName(userName == null ? "" : userName + source);
+//		tdFraud.setResult(result == null ? "" : result);
+//		tdFraud.setType(type);
+//		tdFraud.setUserPhone(userPhone == null ? "" : userPhone);
+//		tdFraud.setIp(ip);
+//		afTdFraudSerVice.addTdFraud(tdFraud);
+//	}
 
 	private static String getPartnerHost() {
 		if (host == null) {
