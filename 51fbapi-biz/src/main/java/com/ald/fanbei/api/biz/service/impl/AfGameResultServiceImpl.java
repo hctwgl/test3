@@ -68,7 +68,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	public List<AfGameResultDo> getLatestRecord() {//先从缓存中拿，缓存中拿不到再到表中拿，缓存在抓娃娃接口中维护
 		String cacheKey = Constants.CACHEKEY_LATEST_GAMEERSULT_LIST;
 		List<AfGameResultDo> afGameResultList = bizCacheUtil.getObjectList(cacheKey);
-		if(afGameResultList == null || afGameResultList.size() < 20){
+		if(afGameResultList == null || afGameResultList.size() < 15){
 			afGameResultList =  afGameResultDao.getLatestRecord();
 		}
 		return afGameResultList;
