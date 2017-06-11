@@ -274,6 +274,7 @@ public class AppH5UserContorler extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "commitChannelRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitChannelRegister(HttpServletRequest request, ModelMap model) throws IOException {
+		String reqData = "";
 		try {
 			String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
@@ -281,6 +282,7 @@ public class AppH5UserContorler extends BaseController {
 			String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
 
+			reqData = StringUtil.appendStrs("web commitChannelRegister" + mobile , ",", verifyCode,",",passwordSrc,",",channelCode,",",pointCode);
 			
 			AfPromotionChannelPointDo pcp = afPromotionChannelPointService.getPoint(channelCode, pointCode);
 			if (pcp == null) {
@@ -352,6 +354,8 @@ public class AppH5UserContorler extends BaseController {
 
 		} catch (Exception e) {
 			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+		}finally{
+			logger.info("commitChannelRegister="+reqData);
 		}
 
 	}
