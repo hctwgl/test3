@@ -47,6 +47,13 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 
 	@Override
 	protected Map<String, List<CouponSceneRuleBo>> matchRule(Date now, Map<String, Object> inputData, Map<String, List<CouponSceneRuleBo>> rules, AfCouponSceneDo couponScene) {
+
+		//邀请人获取一次抓娃娃抽奖机会
+		Long invitor = (Long)inputData.get("invitor");
+		if(invitor != null && invitor > 0l){
+			afGameChanceService.updateInviteChance(invitor);
+		}
+		
 		List<CouponSceneRuleBo> ruleList = rules.get(REGISTKEY);
 		List<CouponSceneRuleBo> matchList = new ArrayList<CouponSceneRuleBo>();
 		for(CouponSceneRuleBo item:ruleList){
@@ -68,11 +75,6 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 			//邀请人获取优惠券
 			if(null != userId){
 				this.addUserCoupon(item, userId,CouponSenceRuleType.REGIST,null);
-			}
-			//邀请人获取一次抓娃娃抽奖机会
-			Long invitor = (Long)inputData.get("invitor");
-			if(invitor != null && invitor > 0l){
-				afGameChanceService.updateInviteChance(invitor);
 			}
 		}
 	}
