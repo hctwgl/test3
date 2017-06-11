@@ -93,5 +93,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		Date endTime = DateUtil.getTodayLast();
 		return afBorrowCashDao.getUserDayLastBorrowCash(userId, startTime, endTime);
 	}
-
+	
+	@Override
+	public Integer getSpecBorrowCashNums(Long userId,String reviewStatus,Date startTime){
+		return afBorrowCashDao.getSpecBorrowCashNums(userId, reviewStatus,startTime);
+	}
 }

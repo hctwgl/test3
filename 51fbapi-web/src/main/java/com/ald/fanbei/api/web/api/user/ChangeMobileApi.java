@@ -53,6 +53,7 @@ public class ChangeMobileApi implements ApiHandle {
 	        AfUserDo afUserDo = new AfUserDo();
 			afUserDo.setRid(userId);
 			afUserDo.setMobile(mobile);
+			afUserDo.setUserName(context.getUserName());
 			if (afUserService.updateUser(afUserDo) > 0) {
 				return resp;
 			}

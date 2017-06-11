@@ -28,3 +28,14 @@ node_modules
 *.iml
 *.cache
 *.map
+resources/props/config.properties
+resources/props/encrypt.properties
+resources/props/log4j.xml
+resources/props/velocity.properties
+resources/spring/biz-beans.xml
+resources/spring/common-beans.xml
+resources/spring/dal-beans.xml
+resources/spring/encrypt-beans.xml
+resources/spring/import-beans.xml
+resources/spring/web/web-main.xml
+resources/staging.public.pem

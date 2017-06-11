@@ -2,7 +2,7 @@
 * @Author: yoe
 * @Date:   2017-05-22 20:43:19
 * @Last Modified by:   yoe
-* @Last Modified time: 2017-05-23 18:58:59
+* @Last Modified time: 2017-06-02 21:16:28
 */
 
 
@@ -53,6 +53,33 @@ function loginSuccess(obj) {
         }
     });
 }
+
+
+
+
+// 分享
+var dataObj = {
+    'shareAppTitle': '分享抓娃娃游戏获取优惠券',
+    'shareAppContent': '抓娃娃游戏',
+    'shareAppUrl': 'www.baidu.com'
+}
+
+var dataStr = JSON.stringify(dataObj);  // jsons数组转换成json对象
+console.log(dataStr);
+
+if(returnNum == 1){  // android机型
+    alaAndroid.appLogin(dataStr);  // 调用Android原生登陆
+}
+
+function shareData(dataStr){
+    return dataStr;
+}
+
+
+
+
+
+
 
 
 

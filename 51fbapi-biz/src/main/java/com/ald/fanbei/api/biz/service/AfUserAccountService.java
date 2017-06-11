@@ -92,4 +92,12 @@ public interface AfUserAccountService {
 	 * @param accountDo
 	 */
 	void updateUserAccountRealNameAndIdNumber(AfUserAccountDto accountDo);
+
+	/***
+	 * 获取身份证号是否被其他人注册过
+	 * @param citizenId 身份证号
+	 * @param userId 用户主键
+	 * @return 被其他人使用过的次数
+	 */
+	Integer getCountByIdNumer(String citizenId, Long userId);
 }

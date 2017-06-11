@@ -22,6 +22,7 @@
 			salt,
 			nick,
 			mobile,
+			recommend_id,
 			register_channel_id,
 			register_channel_point_id
 		)
@@ -34,6 +35,7 @@
 			#{salt},
 			#{nick},
 			#{mobile},
+			#{recommendId},
 			#{registerChannelId},
 			#{registerChannelPointId}
 		)

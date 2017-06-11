@@ -50,6 +50,7 @@ public class ChangeEmailApi implements ApiHandle {
         AfUserDo afUserDo = new AfUserDo();
 		afUserDo.setRid(context.getUserId());
 		afUserDo.setEmail(email);
+		afUserDo.setUserName(context.getUserName());
 		if (afUserService.updateUser(afUserDo) > 0) {
 			return resp;
 		}
