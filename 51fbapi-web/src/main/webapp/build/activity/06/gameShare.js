@@ -4,11 +4,7 @@
 
 let chance=[],isLogin,isShow,clientRate,chanceCount;
 let recommendCode = getUrl('recommendCode');
-// $('.button a').attr('href','/app/user/register?recommendCode='+recommendCode)
-
-$('.button a').attr('href','http://testapp.51fanbei.com/app/user/channelRegister?channelCode=Xpyq1&pointCode=Xpyq2');
-
-
+$('.button a').attr('href','/app/user/register?recommendCode='+recommendCode)
 // app调用web的方法
 function alaShareData(){
     // 分享内容

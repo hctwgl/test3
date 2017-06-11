@@ -28,7 +28,7 @@
     <button id="playBtn" class="button"><p>立即抓取</p></button>
     <button id="startBtn" class="button"><p>开始游戏</p></button>
 </div>
-<div id="chance">您还有1次机会</div>
+<div id="chance">您还有0次机会</div>
 
 <!--活动规则-->
 <img id="rule" src="$commonUrl/ni_rule.png">
