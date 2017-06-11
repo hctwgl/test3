@@ -74,3 +74,16 @@ function getBlatFrom(){
     }
     return 0;
 }
+
+// 时间戳转换
+function formatDate(now) {
+    now=new Date(now/1000);
+    var year=now.getYear();
+    var month=now.getMonth()+1;
+    var date=now.getDate();
+    // var hour=now.getHours();
+    // var minute=now.getMinutes();
+    // var second=now.getSeconds();
+    // return "20"+year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
+    return "20"+year+"-"+month+"-"+date;
+}

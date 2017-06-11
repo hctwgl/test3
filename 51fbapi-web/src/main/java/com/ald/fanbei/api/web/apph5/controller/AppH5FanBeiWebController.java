@@ -91,6 +91,8 @@ public class AppH5FanBeiWebController extends BaseController {
 
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
+		doMaidianLog(request);
+		
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
 		JSONObject appInfo = JSON.parseObject(appInfotext);
@@ -125,7 +127,19 @@ public class AppH5FanBeiWebController extends BaseController {
 		returnData.put("gmtEnd", afCouponDo.getGmtEnd());
 		returnData.put("amount", afCouponDo.getAmount());
 		returnData.put("limitCount", afCouponDo.getLimitCount());
-		returnData.put("type", afCouponDo.getType());
+//		优惠券类型【MOBILE：话费充值， REPAYMENT：还款, FULLVOUCHER:满减卷,CASH:现金奖励】
+		if (StringUtil.equals("MOBILE", afCouponDo.getType())) {
+			returnData.put("type", "话费劵");
+			
+		}else if (StringUtil.equals("REPAYMENT", afCouponDo.getType())) {
+			returnData.put("type", "还款劵");
+			
+		}else if (StringUtil.equals("FULLVOUCHER", afCouponDo.getType())) {
+			returnData.put("type", "满减卷");
+		}else{
+			returnData.put("type", "现金劵");
+		}
+
 		returnData.put("quota", afCouponDo.getQuota());
 		returnData.put("quotaAlready", afCouponDo.getQuotaAlready());
 		returnData.put("userAlready", afCouponDo.getUserAlready());

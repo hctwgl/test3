@@ -44,7 +44,6 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		List<Object> bannerList = getBannerObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));

@@ -103,12 +103,16 @@
 				<value>/user/logout</value>
 				<value>/good/getBrandShopList</value>
 				<value>/good/getGoodsDetailInfo</value>
+				<value>/good/getGoodsTkRate</value>
+				
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				<value>/brand/getBrandList</value>
 				<value>/system/checkVersion</value>
 				<value>/system/AppLaunchImage</value>
 				<value>/system/appPopImage</value>
+				<value>/system/getTabbarInfor</value>
+				<value>/user/submitShareAction</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -150,6 +154,7 @@
 				<entry key="/user/getCollectionList" value-ref="getCollectionListApi" />
 				<entry key="/user/getMobileRechargeMoneyList" value-ref="getMobileRechargeMoneyListApi" />
 				<entry key="/user/getUserCounponListType" value-ref="getUserCounponListTypeApi" />
+				<entry key="/user/submitShareAction" value-ref="submitShareActionApi" />
 
 
 				<entry key="/user/signin" value-ref="signinApi" />
@@ -163,7 +168,10 @@
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
+				<entry key="/good/getGoodsTkRate" value-ref="getGoodsTkRateApi" />
+				<entry key="/good/getRecommendGoods" value-ref="getRecommendGoodsApi" />
 				<entry key="/good/getGoodsDetailInfo" value-ref="getGoodsDetailInfoApi" />
+
 
 				<!-- 订单Order -->
 				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />
@@ -177,7 +185,7 @@
 				<entry key="/system/checkVersion" value-ref="checkVersionApi" />
 				<entry key="/system/AppLaunchImage" value-ref="AppLaunchImageApi" />
 				<entry key="/system/appPopImage" value-ref="appPopImageApi" />
-				
+				<entry key="/system/getTabbarInfor" value-ref="getTabbarInforApi" />
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
@@ -245,6 +253,9 @@
 				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
+				<entry key="/borrowCash/getLoanSupermarketList" value-ref="getLoanSupermarketListApi" />
+				<entry key="/loanMarket/accessLoanSupermarket" value-ref="accessLoanSupermarketApi" />
+				
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
@@ -255,6 +266,10 @@
 				<entry key="/agencyBuy/getAgencyBuyOrderDetail" value-ref="GetAgencyBuyOrderDetailApi" />
 				<entry key="/agencyBuy/cancelAgencyBuyOrder" value-ref="cancelAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder" value-ref="completedAgencyBuyOrderApi" />
+				<entry key="/agencyBuy/getAgencyNperInfo" value-ref="getAgencyNperInfoApi" />
+				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
+				
+				
 				<!--运营接口-->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />
 

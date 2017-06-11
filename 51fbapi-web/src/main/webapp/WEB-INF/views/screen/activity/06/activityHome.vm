@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017052702")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
+	<meta charset="UTF-8">
+	<title>活动主题会场</title>
+	<!-- <link rel="stylesheet" type="text/css" href="/fanbei-web/dist/css/layer.css"> -->
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/activityHome.css?version=$version">
+</head>
+<body>
+	<div class="activityHomeWrap">
+		<div class="activityHomeBanner">
+            <img src="https://fs.51fanbei.com/h5/app/activity/05/DragonBoat_01.jpg" calss="banner">
+			<span class="bannerBtn">去抢券</span>
+		</div>
+		<div class="selectedHome">
+			<h2>精选会场</h2>
+			<ul>
+				<li><a href="">分期免息</a></li>
+				<li><a href="">高返利</a></li>
+				<li><a href="">值得买</a></li>
+				<li><a href="">逛逛休闲街</a></li>
+			</ul>
+		</div>
+		<div class="boutiqueHome">
+			<h2>精品推荐</h2>
+			<ul>
+				<li class="clearfix">
+					<a href="">
+						<span class="banner"></span>
+						<div class="boutiqueHomeContent">
+							<p>618折上折更有超级返利</p>
+							<p>￥5.2</p>
+							<p>返利￥1.2</p>
+							<button>马上抢</button>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>	
+	</div>
+	<!-- <script type="text/javascript" src="/dist/activity/06/activityHome.js?version=$version"></script> -->
+	<script type="text/javascript">
+		$('.bannerBtn').click(function(event) {
+			/*alert(122222);
+			requestMsg("hello11111");*/
+
+			window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
+		});
+	</script>
+</body>
+</html>

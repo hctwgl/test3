@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dbunit.dataset.IRowValueProvider;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -111,9 +110,6 @@ public class PayOrderApi implements ApiHandle {
 			}
 		
 			Map<String,Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),saleAmount , nper,appName,ipAddress);
-			if (payId == 0&&StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
-				boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, userId, orderInfo.getSaleAmount());
-			}
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {
 			throw new FanbeiException("pay order failed", exception.getErrorCode());

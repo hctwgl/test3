@@ -156,6 +156,24 @@
 		gmt_create DESC
 
 	</select>
+	
+	<select id="getRepaymentByPayTradeNoWithStatusY" resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		and 
+		status='Y'
+		AND 
+		pay_trade_no=#{payTradeNo}
+		ORDER BY
+		gmt_create DESC
+
+	</select>
+	
+	
 	<select id="getRepaymentAllAmountByBorrowId" 
 		resultType="java.math.BigDecimal">
 		SELECT
@@ -170,7 +188,19 @@
 
 	</select>
 	
-	
+	<select id="getRepayingTotalAmountByBorrowId" 
+		resultType="java.math.BigDecimal">
+		SELECT
+		IFNULL(SUM(repayment_amount) ,0)
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		borrow_id=#{borrowId}
+		AND `status` = 'P'
+
+	</select>
 	
 
 	<select id="getRepaymentBorrowCashByrid" parameterType="java.lang.Long"

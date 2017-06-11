@@ -2,7 +2,13 @@
 @scrollWidth:16.5rem;
 @dollHeight:1.16rem;
 @url:"https://fs.51fanbei.com/h5/app/activity/06/";
-
+body{position: relative;background:#5c00af;color:white;}
+.title{
+    position: absolute;
+    font-size: .24rem;
+    left:.54rem;
+    top:.48rem
+}
 .container{
     width:@width;
     height:4.5rem;
@@ -11,6 +17,14 @@
     position: absolute;
     overflow: hidden;
 }
+.modelPic{
+    position: absolute;
+    top:1.89rem;
+    left:0;
+    width:7.5rem;
+    height:5.03rem;
+    z-index: 130;
+}
 #claw{
     width:.91rem;
     height:3.93rem;
@@ -18,7 +32,7 @@
     background-size: auto 100%;
     position: absolute;
     left:2.6rem;
-    top:-1.4rem;
+    top:-2rem;
     z-index: 100;
 }
 #terrace{
@@ -31,7 +45,7 @@
     width:@scrollWidth;
     height:@dollHeight;
     margin-top:-@dollHeight;
-    margin-left:-@scrollWidth;
+    margin-left:-@scrollWidth/2;
 }
 .doll{
     height:@dollHeight;
@@ -71,30 +85,139 @@
     color: #fff;
     margin-top: -.3rem;
 }
+
+#time{
+    text-align: center;
+    font-size: .36rem;
+    color:#e08a0f;
+    position: absolute;
+    top:6.37rem;
+    font-weight: 600;
+    width: 100%;
+}
+#chance{
+    color:#ffe065;
+    position:absolute;
+    font-size: .26rem;
+    top:8.25rem;
+    left:50%;
+    transform:translateX(-50%)
+}
+#rule{
+    position:absolute;
+    top:7.25rem;
+    left:5.8rem;
+    width:1rem;
+    height:.49rem
+}
+#shadow{
+    width:100%;
+    height:100%;
+    position: fixed;
+    top:0;
+    left:0;
+    background:rgba(0,0,0,.6);
+    z-index: 200;
+    display: none;
+}
+.alert{
+    position: fixed;
+    top:2.57rem;
+    left:1.24rem;
+    z-index: 300;
+    border-radius: .2rem;
+    background: white;
+    display: none;
+}
+.alertTitle{
+    width:4.56rem;
+    height:1.14rem;
+    margin:-.45rem .23rem;
+    background: url("@{url}ni_title.png") no-repeat;
+    background-size:cover;
+    font-size:.36rem;
+    color:#fff;
+    text-align: center;
+    line-height: .85rem;
+}
+.alert .getState{font-size:.42rem;color:#121212;text-align: center;padding:.4rem 0 .3rem 0;}
+.alert .getCashCoupon{width:3.95rem;height:1.3rem;background: url("@{url}ni_14.png") no-repeat;
+    background-size:cover;margin:0 auto .3rem;color:#fff;position: relative;display: none;}
+.alert .getCashCoupon .getCashPrize{font-size: .42rem;line-height: 1.3rem;text-align: center;display: none;}
+.alert .getCashCoupon .getCouponPrize{display: none;}
+.alert .getCashCoupon p:nth-child(1){font-size:.24rem;padding:.3rem 0 0 .3rem;width:1.4rem;}
+.alert .getCashCoupon p:nth-child(2){font-size:.16rem;padding:.1rem 0 0 .3rem;width:2.3rem;}
+.alert .getCashCoupon p:nth-child(3){font-size:.24rem;line-height:1.3rem;position:absolute;top:0;
+    right:.2rem;}
+.alert .getCashCoupon p:nth-child(3) span{font-size:.6rem;font-weight: 500;}
+.alert .jushuo{font-size:.28rem;color:#444;width:2.8rem;margin:0 auto .3rem;display:none;}
+.alert .tryAgain{width:3.1rem;height:.7rem;background: url("@{url}ni_16.png") no-repeat;
+    background-size:cover;margin:0 auto .3rem;text-align: center;line-height: .65rem;}
+//--------------------------------------yun--------------------------------------------
+
 /*滚轮*/
 #scrollData{width:100%;height:6.6rem;background:#5c00af;}
 #scrollData .personName{width:3.15rem;height:.62rem;background: url("@{url}ni_4.png") no-repeat;
     background-size:cover;margin:0 auto;text-align: center;line-height: .55rem}
-#scrollData #roll{width:7rem;height:3.3rem;margin:.2rem 0 0 .2rem;overflow:hidden;
-border-radius: 10px;background-color: #710bcd;}
-#scrollData #roll ul{width:88%;margin:0 auto;padding-top:.2rem;}
-#scrollData #roll ul li{height:1rem;}
-#scrollData #roll ul li .personImg{width:.5rem;height:.5rem;border-radius: 50%;background:red;float:left;
-margin:.2rem .2rem 0 0;}
-#scrollData #roll ul li h2{font-size:.28rem;line-height:1rem;height:1rem;font-weight: normal;color:#fff;}
-#scrollData #roll ul li h2 span:nth-child(1){padding-right:.5rem;}
-#allToy{width:100%;height:2rem;border:1px solid #710bcd;position:fixed;bottom: 0;left:0;
-    background:#5c00af;}
+.roll01{width:7rem;overflow:hidden;border-radius: 10px;height:3.3rem;margin:.2rem 0 0 .2rem;
+    background:#710bcd;}
+.roll01 ul{width:100%;margin:0 auto;padding-top:.2rem;}
+.roll01 ul li{height:1rem;}
+.roll01 ul li .personImg{width:.5rem;height:.5rem;border-radius: 50%;background:white;float:left;
+margin:.2rem .2rem 0 .1rem;}
+.roll01 ul li h2{font-size:.28rem;line-height:1rem;height:1rem;font-weight: normal;color:#fff;}
+.roll01 ul li h2 span:nth-child(1){padding-right:2%;}
+#allToy{width:100%;border:1px solid #710bcd;position:fixed;bottom: 0;left:0;
+    background:#5c00af;z-index:150;}
+.roll02{width:6.5rem;height:.55rem;background: #fff0b6;border-radius: .04rem;overflow:hidden;
+margin:0 auto;}
+.roll02 ul{width:100%;}
+.roll02 ul li{height:.55rem;}
+.roll02 ul li .personImg{width:.3rem;height:.25rem;background:red;float:left;
+margin:.15rem .24rem 0 .24rem;}
+.roll02 ul li h2{font-size:.24rem;line-height:.55rem;height:.55rem;font-weight: normal;color:#1d1d1d;}
+.roll02 ul li h2 span:nth-child(1){padding-right:.3rem;}
+
 #allToy .gotoTop{width:.56rem;height:.56rem;background: url("@{url}ni_5.png") no-repeat;
     background-size:cover;position: absolute;top: -.28rem;left: 3.47rem;}
-#allToy h3{font-size: .24rem;text-align: center;color:#fff;padding:.3rem 0 .05rem 0;}
-#allToy #toys{width:6.93rem;padding:.1rem 0 0 .53rem;}
+#allToy h3{font-size: .24rem;text-align: center;color:#fff;padding-top:.3rem;}
+#allToy #toys{width:6.93rem;height:1.15rem;padding:.2rem 0 .1rem .53rem;}
 #allToy #toys li{width:1.08rem;height:1.15rem;border-radius:.08rem;background: #ffffff;float:left;
 position:relative;margin-right: .24rem;}
-#allToy #toys li .img01{width:61%;height:83%;margin: .1rem auto 0 auto;}
 #allToy #toys li .img02{width:80%;height:83%;margin: .1rem auto 0 auto;}
-#allToy #toys li span{width:.23rem;height:.23rem;border-radius:50%;border:1px solid #e97804;color: #e97804;
+#allToy #toys li span{width:.23rem;height:.23rem;border-radius:50%;background:white;border:1px solid #e97804;color: #e97804;
     position:absolute;top: -.12rem;right: -.12rem;font-size: .2rem;font-weight: 500;text-align: center;
     line-height: .23rem;}
+
+/*中奖弹框*/
+/*.mask{width:100%;height:100%;position: absolute;top:0;left:0;z-index:200;display:none;background:black;
+opacity: .5;}*/
+//#allToy #words{width:6.5rem;text-align: center;margin:.4rem auto .1rem auto;display:none;}
+//#allToy #words h4{font-size: .3rem;color:#fff;padding-bottom: .1rem;}
+//#allToy #words h5{font-size: .28rem;color:#fff;padding-bottom: .1rem;}
+//#allToy #words h6{font-size: .24rem;color:#151515;width:100%;height:.55rem;line-height: .55rem;
+//border-radius:.04rem;background: #fff0b6;}
+#getPrize{display:none;width:6.5rem;text-align: center;margin:.1rem auto;}
+#getPrize h4,h5{font-size: .3rem;color:#fff;height:.4rem;line-height:.4rem;
+text-align: center;}
+#getPrize h4{padding-top:.4rem;}
+#getPrize h5{padding:.15rem 0 .2rem 0;}
+#getPrize h5 a{text-decoration:underline;color:#fff;}
+#getPrize h6{font-size: .24rem;color:#151515;width:100%;height:.55rem;line-height: .55rem;
+    border-radius:.04rem;background: #fff0b6;}
+.countDown{width:3.03rem;height:.4rem;margin:0 auto .3rem;display: none}
+.countDown .span{margin-right: .1rem;}
+.countDown .span:nth-child(8){margin-right:0;}
+.countDown .span01{width:.28rem;height:.4rem;background:#fff;border-radius:.04rem;border:1px solid #ff2054;
+text-align: center;line-height: .4rem;color:#ff2054;font-size: .24rem;}
+.countDown .span02{width:.2rem;height:.4rem;color:#fff;font-size: .24rem;text-align: center;line-height: .4rem;}
+/*活动规则*/
+#rules{width:5.2rem;height:6.86rem;border-radius:.14rem;background: #7715d0;z-index:1000;
+position: absolute;top:2.65rem;left:1.15rem;display:none;}
+#rules .rulesTitle{width:100%;padding:.4rem 0 .3rem;font-size:.28rem;color:#fff;text-align: center;}
+#rules .rulesCont{width:4.36rem;line-height: .36rem;height:4.7rem;color:#fff;font-size: .24rem;
+margin:0 auto;text-align: justify;overflow-y: scroll;}
+#rules .closeRules{width:.5rem;height:.5rem;background: url("@{url}ni_15.png") no-repeat;
+    background-size:cover;position: absolute;top:-.2rem;right:-.2rem;}
 
 

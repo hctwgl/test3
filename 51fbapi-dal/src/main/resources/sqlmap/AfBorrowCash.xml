@@ -11,8 +11,10 @@
 	<insert id="addBorrowCash" parameterType="AfBorrowCashDo"
 		useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO
-		af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type, amount , status , card_number , card_name , poundage , rate_amount ,
-		latitude , longitude , province ,arrival_amount, city , county, address, poundage_rate, base_bank_rate)
+		af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type,
+		amount , status , card_number , card_name , poundage , rate_amount ,
+		latitude , longitude , province ,arrival_amount, city , county,
+		address, poundage_rate, base_bank_rate)
 		VALUES (
 		NOW(),
 		NOW(),
@@ -210,5 +212,19 @@
 		and  <![CDATA[ gmt_create  >=  #{startTime}  ]]>
 		and  <![CDATA[ gmt_create  <=  #{endTime}  ]]>
 		ORDER BY gmt_create DESC LIMIT 1;
+	</select>
+	
+	<select id="getSpecBorrowCashNums" resultType="java.lang.Integer">
+		SELECT
+		count(*) 
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and
+		review_status = #{reviewStatus}
+		and  <![CDATA[ gmt_create  >=  #{startTime}  ]]>;
 	</select>
 </mapper>

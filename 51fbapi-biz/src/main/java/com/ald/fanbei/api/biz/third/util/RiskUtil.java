@@ -41,6 +41,7 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -48,7 +49,9 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -122,6 +125,8 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AfAuthContactsService afAuthContactsService;
 	@Resource
+	SmsUtil smsUtil;
+	@Resource
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
 	@Resource
 	AfOrderDao orderDao;
@@ -129,6 +134,8 @@ public class RiskUtil extends AbstractThird {
 	TransactionTemplate transactionTemplate;
 	@Resource
 	AfAgentOrderService afAgentOrderService;
+	@Resource
+	BoluomeUtil boluomeUtil;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -425,11 +432,13 @@ public class RiskUtil extends AbstractThird {
 							// TODO:额度增加，而非减少
 							BigDecimal usedAmount = orderInfo.getActualAmount().multiply(BigDecimal.valueOf(-1));
 							afBorrowService.dealAgentPayClose(userAccountInfo, usedAmount, orderInfo.getRid());
-							AfAgentOrderDo afAgentOrderDo = afAgentOrderService
-									.getAgentOrderByOrderId(orderInfo.getRid());
-							afAgentOrderDo.setClosedReason("风控审批失败");
-							afAgentOrderDo.setGmtClosed(new Date());
-
+							if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
+								AfAgentOrderDo afAgentOrderDo = afAgentOrderService
+										.getAgentOrderByOrderId(orderInfo.getRid());
+								afAgentOrderDo.setClosedReason("风控审批失败");
+								afAgentOrderDo.setGmtClosed(new Date());
+								afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+							}
 							jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 							return new Long(String.valueOf(re));
 						}
@@ -446,7 +455,10 @@ public class RiskUtil extends AbstractThird {
 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
-
+						
+						if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
+							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+						}
 						// TODO:返回值
 						return 1L;
 					}
@@ -515,6 +527,10 @@ public class RiskUtil extends AbstractThird {
 			if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
 
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+				String bankNumber = card.getCardNumber();
+				String lastBank = bankNumber.substring(bankNumber.length()-4);
+				
+				smsUtil.sendBorrowCashCode(afUserDo.getUserName(),lastBank);
 				// 审核通过
 				cashDo.setGmtArrival(currDate);
 				cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
@@ -528,7 +544,7 @@ public class RiskUtil extends AbstractThird {
 				Integer day = NumberUtil
 						.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 				Date arrivalStart = DateUtil.getStartOfDate(currDate);
-				Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
+				Date repaymentDay = DateUtil.addDays(arrivalStart, day);
 				cashDo.setGmtPlanRepayment(repaymentDay);
 
 				if (!upsResult.isSuccess()) {

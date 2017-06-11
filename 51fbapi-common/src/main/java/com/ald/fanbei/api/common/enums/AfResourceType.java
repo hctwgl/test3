@@ -15,6 +15,9 @@ public enum AfResourceType {
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
 	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
+	HomeTabbar("HOME_TABBAR", "首页tabbar"),
+	
+	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
 	CodeMaxFail("CODE_MAX_FAIL", "验证码失败次数"),
 
@@ -28,6 +31,8 @@ public enum AfResourceType {
 
 	AppDownloadUrl("APP_DOWNLOAD_URL", "app下载地址"),
 	RebateDetailedCourse("REBATE_DETAILED_COURSE", "返利教程"),
+	AgencyRebateInfo("AGENCY_REBATE_INFO", "返利教程"),
+
 	
 	//借钱模块
 	BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
@@ -37,17 +42,20 @@ public enum AfResourceType {
 	BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
 	BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
 	borrowRate("BORROW_RATE", "疯分期设置"),
+	RiskManagementBorrowcashLimit("RISK_MANAGEMENT_BORROWCASH_LIMIT", "风控对用户现金借款限制相关配置"),
 	
 	
 	registTongdunSwitch("REGIST_TONGDUN_SWITCH", "注册同盾风控"),
 	loginTongdunSwitch("LOGIN_TONGDUN_SWITCH", "登录同盾风控"),
+	promotionTongdunSwitch("PROMOTION_TONGDUN_SWITCH", "渠道推广同盾风控"),
 	TRADE_TONGDUN_SWITCH("TRADE_TONGDUN_SWITCH", "借钱申请同盾风控"),
 	tradeTongdunSwitch("TRADE_TONGDUN_SWITCH", "交易申请同盾风控"),
 
-	tongdunAccecptLevel("TONGDUN_ACCECPT_LEVEL", "借款申请同盾风控"),
+	tongdunAccecptLevel("TONGDUN_ACCECPT_LEVEL", "同盾风控拒绝等级"),
 
 
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
+	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
 
 	
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置");

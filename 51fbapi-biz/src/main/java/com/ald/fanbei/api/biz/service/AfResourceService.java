@@ -6,6 +6,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
 
@@ -76,5 +77,16 @@ public interface AfResourceService {
      * @return
      */
     List<AfResourceDo> selectBorrowHomeConfigByAllTypes();
+    /*
+     * 获取借款手续费等信息
+     */
+   JSONObject borrowRateWithResource(Integer realTotalNper);
+   
+   
+   /**
+    * 获取首页导航栏配置
+    * @return
+    */
+   List<AfResourceDo> getHomeIndexListByOrderby(String type);
 	
 }

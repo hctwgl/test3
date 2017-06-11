@@ -115,4 +115,8 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	String getCurrentLastPayNo(@Param("startDate")Date startDate,@Param("endDate")Date endDate);
+	
+	
+	List<AfOrderDo> getNoBorrowOrder();
+	
 }

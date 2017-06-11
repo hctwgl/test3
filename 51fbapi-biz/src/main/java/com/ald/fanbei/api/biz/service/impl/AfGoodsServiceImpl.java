@@ -1,9 +1,11 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.TaobaoItemInfoBo;
@@ -59,8 +61,13 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		goodsInfo.setNumId(bo.getItem_id());
 		TaobaoItemInfoBo itemInfo = bo.getItem_info();
 		if (itemInfo != null) {
-			goodsInfo.setPriceAmount(itemInfo.getPrice());
-			goodsInfo.setSaleAmount(itemInfo.getPromotion_price());
+			String priceArr = itemInfo.getPrice().split("-")[0];
+			String saleAmount = priceArr;
+			if(!StringUtils.isBlank(itemInfo.getPromotion_price())){
+				saleAmount = itemInfo.getPromotion_price().split("-")[0];
+			}
+			goodsInfo.setPriceAmount(new BigDecimal(priceArr));
+			goodsInfo.setSaleAmount(new BigDecimal(saleAmount));
 			if(null != itemInfo.getImg_urls()){
 				goodsInfo.setGoodsIcon(itemInfo.getImg_urls().getString(0));
 			}
