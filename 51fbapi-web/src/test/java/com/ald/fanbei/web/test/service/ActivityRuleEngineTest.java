@@ -19,7 +19,7 @@ public class ActivityRuleEngineTest extends BaseControllerTest {
 	
 	@Test
 	public void registActivityEngine() {
-		activeRuleEngineUtil.regist(8L);
+		activeRuleEngineUtil.regist(8L,null);
 	}
 	
 }

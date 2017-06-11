@@ -78,7 +78,8 @@ public class FanbeiController extends BaseController {
     }
     
     @RequestMapping(value ={
-    	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage"
+    	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage",
+    	"/system/getTabbarInfor",
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -90,7 +91,11 @@ public class FanbeiController extends BaseController {
     @RequestMapping(value = {
     		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/login","/user/resetPwd","/user/getUserInfo",
     		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo",
-    		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getUserCounponListType","/user/getMobileRechargeMoneyList","/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail","/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode","/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile"
+    		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getUserCounponListType","/user/getMobileRechargeMoneyList",
+    		"/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail",
+    		"/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode",
+    		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
+    		"/user/submitShareAction"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -159,7 +164,8 @@ public class FanbeiController extends BaseController {
      */
     @RequestMapping(value = {"/borrowCash/getBorrowCashHomeInfo","/borrowCash/getBowCashLogInInfo","/borrowCash/getConfirmBorrowInfo","/borrowCash/applyBorrowCash",
     		"/borrowCash/getBorrowCashDetail","/borrowCash/getBorrowCashList","/borrowCash/getBorrowOverdueList","/repayCash/getConfirmRepayInfo",
-    		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo","/borrowCash/applyRenewal","/borrowCash/confirmRenewalPay","/borrowCash/getRenewalList","/borrowCash/getRenewalDetail"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo","/borrowCash/applyRenewal","/borrowCash/confirmRenewalPay","/borrowCash/getRenewalList",
+    		"/borrowCash/getRenewalDetail","/borrowCash/getLoanSupermarketList","/loanMarket/accessLoanSupermarket"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String borrowCashRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

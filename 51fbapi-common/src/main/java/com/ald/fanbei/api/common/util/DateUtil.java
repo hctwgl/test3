@@ -674,6 +674,26 @@ public class DateUtil {
         return pid;
     }
     
+    /**
+     * 格式化日期
+     * @param date
+     * @return
+     */
+    public static Date formatDateToYYYYMMdd(Date date) {
+    	if(date==null){
+    		return null;
+    	}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			date = sdf.parse(sdf.format(date));
+			return date;
+		} catch (ParseException e) {
+			return null;
+		}
+    		
+    }
+    
+    
 
 
     /**
@@ -999,6 +1019,33 @@ public class DateUtil {
         return date;
     }
 
+    /**
+     * 返回yyyyMMdd HH:mm:ss格式日期
+     * @return
+     */
+    public static Date parseDateyyyyMMddHHmmss(String dateStr) {
+        if(dateStr == null || dateStr.length()==0){
+            return null;
+        }
+        SimpleDateFormat parser = new SimpleDateFormat(FULL_STANDARD_PATTERN);
+        try {
+            return parser.parse(dateStr);
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+    
+    /**
+     * @Title: compareDate
+     * @Description: (日期比较，如果s>=e 返回true 否则返回false)
+     * @param s
+     * @param e
+     * @return boolean
+     */
+    public static boolean compareDate(Date s, Date e) {
+        return s.getTime() >= e.getTime();
+    }
+    
     public static void main(String[] args) {
         /*
          * System.out.println(DateUtils.getFirstOfMonth(DateUtils.addMonths( DateUtils.currentDate(), -3)));
@@ -1024,20 +1071,19 @@ public class DateUtil {
 //        System.out.println(isBetweenDateRange(new Date(), new Date(System.currentTimeMillis()-1), new Date()));
 //        System.out.println(new Date());
 //        System.out.println(addHoures(new Date(), 1));
-    	long currentTime = System.currentTimeMillis();
-    	Date nowDate = new Date(currentTime);
-    	String ff = "2017-05-18";SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	
+    	
+    	Date date = new Date();
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	
 		try {
-			long betweenGmtArrival = DateUtil.getNumberOfDatesBetween(sdf.parse(ff), nowDate);
+			date = sdf.parse(sdf.format(date));
+			date = DateUtil.addDays(date,1);
+			long betweenGmtArrival = DateUtil.getNumberOfDatesBetween(date, DateUtil.getToday());
 			System.out.println(betweenGmtArrival);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
-    	System.out.println(getNowYearMonthDay());
-    	
-    	Date endDate = DateUtil.addDays(nowDate, 7);
-    	System.out.println(sdf.format(endDate)+"================="+endDate.after(nowDate));
     	
     }
 

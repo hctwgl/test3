@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGameDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,creator,modifier,name,title,icon,gmt_start,gmt_end,game_rule
+	</sql>
+	
+	<insert id="addGame" parameterType="AfGameDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_game(gmt_create , gmt_modified , creator , modifier , name ,code, title , icon , gmt_start , gmt_end , game_rule)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{creator},
+    		#{modifier},
+    		#{name},
+    		#{code},
+    		#{title},
+    		#{icon},
+    		#{gmtStart},
+    		#{gmtEnd},
+    		#{gameRule}
+		)
+	</insert>
+	
+	<select id="getById" resultType="AfGameDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game WHERE is_delete = 0 AND id=#{id}
+	</select>
+	
+	<select id="getByCode" resultType="AfGameDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game WHERE is_delete = 0 AND code=#{code} LIMIT 1;
+	</select>
+	
+</mapper>

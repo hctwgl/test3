@@ -15,9 +15,10 @@ public enum H5ItemModelType {
 	CATEGORY("CATEGORY", "类别"),
 	IMAGE("IMAGE", "图片"),
 	GOODSLIST("GOODSLIST", "商品");
-	 private String    code;
-
+	
+	private String    code;
     private String name;
+    
     H5ItemModelType(String code, String name) {
         this.code = code;
         this.name = name;
