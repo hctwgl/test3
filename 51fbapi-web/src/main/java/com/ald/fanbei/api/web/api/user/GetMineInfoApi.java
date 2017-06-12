@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.GetBrandCouponCountRequestBo;
@@ -76,7 +77,8 @@ public class GetMineInfoApi implements ApiHandle {
 		data.put("avata", userAccountInfo.getAvatar());
 		data.put("nick", userAccountInfo.getNick());
 		data.put("userName", userAccountInfo.getUserName());
-//		data.put("realName", userAccountInfo.getRealName());
+		data.put("realName", userAccountInfo.getRealName());
+		data.put("idNumber", Base64.encodeString(userAccountInfo.getIdNumber()));
 		data.put("jfbAmount", userAccountInfo.getJfbAmount());
 		data.put("mobile", afUserDo.getMobile());
 		String isPay = YesNoStatus.NO.getCode();

@@ -7,7 +7,6 @@ import org.dbunit.util.Base64;
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.Base64Util;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;

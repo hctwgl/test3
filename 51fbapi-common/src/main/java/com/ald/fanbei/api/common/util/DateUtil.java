@@ -999,7 +999,7 @@ public class DateUtil {
         return date;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         /*
          * System.out.println(DateUtils.getFirstOfMonth(DateUtils.addMonths( DateUtils.currentDate(), -3)));
          * System.out.println(DateUtils.getEndOfMonth(DateUtils.currentDate())); System.out.println("now:" +
@@ -1026,7 +1026,7 @@ public class DateUtil {
 //        System.out.println(addHoures(new Date(), 1));
     	long currentTime = System.currentTimeMillis();
     	Date nowDate = new Date(currentTime);
-    	String ff = "2017-05-18";SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	String ff = "2017-06-12 00:00:00";SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
 			long betweenGmtArrival = DateUtil.getNumberOfDatesBetween(sdf.parse(ff), nowDate);
 			System.out.println(betweenGmtArrival);
@@ -1036,9 +1036,16 @@ public class DateUtil {
 		
     	System.out.println(getNowYearMonthDay());
     	
-    	Date endDate = DateUtil.addDays(nowDate, 7);
+    	Date endDate = DateUtil.addDays(sdf.parse(ff), -1);
     	System.out.println(sdf.format(endDate)+"================="+endDate.after(nowDate));
     	
+    	Date now = DateUtil.getEndOfDate(nowDate);
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.setTime(now);
+		Calendar calendarRepay = Calendar.getInstance();
+		calendarRepay.setTime(endDate);
+		Long chaTime = DateUtil.getNumberOfDaysBetween(calendar, calendarRepay);
+		System.out.println(chaTime);
     }
 
 }

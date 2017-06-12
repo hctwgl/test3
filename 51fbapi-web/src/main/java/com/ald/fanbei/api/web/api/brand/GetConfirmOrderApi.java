@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -96,6 +97,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 		vo.setRealNameScore(authDo.getRealnameScore());
 		vo.setAllowConsume(afUserAuthService.getConsumeStatus(orderInfo.getUserId(),context.getAppVersion()));
 		vo.setFaceStatus(authDo.getFacesStatus());
+		vo.setIdNumber(Base64.encodeString(userDto.getIdNumber()));
 		
 		return vo;
 	}

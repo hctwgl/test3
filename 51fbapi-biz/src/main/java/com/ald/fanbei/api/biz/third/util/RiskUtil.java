@@ -353,8 +353,8 @@ public class RiskUtil extends AbstractThird {
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
 		
-//		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
-		String reqResult = HttpUtil.post("http://192.168.96.198:80/modules/api/user/registerAndRisk.htm", reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
+//		String reqResult = HttpUtil.post("http://192.168.110.23:80/modules/api/user/registerAndRisk.htm", reqBo);
 		System.out.println(reqResult);
 		logThird(reqResult, "registerAndRisk", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
