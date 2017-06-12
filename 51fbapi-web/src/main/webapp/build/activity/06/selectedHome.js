@@ -1,24 +1,40 @@
 new Vue({
     el:'#vueCon',
     data:{
-        tableUrl:"/app/activity/partActivityInfo.htm",
+        tableUrl:"/fanbei-web/partActivityInfo?modelId=68",
         content:[],
+        ht:'#',
         option:{
-            pageNum:1,
-            pageSize:15
+            modelId:getUrl('modelId')
         }
     },
     created:function () {
-        this.logData()
+        this.logData();
+
+    },
+    ready:function () {
+        window.addEventListener('scroll', this.handleScroll);
     },
     methods:{
+        handleScroll:function () {
+            // jQuery(window).scroll(function () {
+                let win=jQuery(window).scrollTop();
+                let new_top=jQuery('.listAlert').offset().top;
+                if(win>=new_top){
+                    jQuery('.listAlert').addClass('fixTop');
+                }else{
+                    jQuery('.listAlert').removeClass('fixTop');
+                }
+            // });
+        },
         logData: function(){
             Vue.http.options.emulateJSON = true;
             let self=this;
             let op={data:JSON.stringify(self.option)};
-            self.$http.post(self.tableUrl,op).then(function (res) {
-                self.content = res.data;
-                console.log(res);
+            self.$http.get(self.tableUrl,op).then(function (res) {
+                self.content = eval('(' + res.data + ')');
+                console.log(self.content);
+                console.log(self.content.data.bannerImage);
             },function (response) {
                 console.log(response)
             })
