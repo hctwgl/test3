@@ -8,21 +8,21 @@ a{
      display:inline-block;
 }
 body {
-    border: 1px solid black;
+    margin:0 0.05rem;
 
 }
-// 头部
+/*头部*/
  .theme .theme-main{
      margin-top:0.2rem;
      margin-bottom:0.2rem;
   }
 .theme .theme-top {
-	  width:100%;
-	  height:0.5rem;
+	  width:7.5rem;
+	  height:0.84rem;
     text-align: center;
-    line-height: 0.5rem;
+    line-height: 0.84rem;
     padding: 0 0.2rem;
-    // margin-bottom:2rem;
+    /*margin-bottom:2rem;*/
     border-bottom:0.01rem solid black;
     overflow:hidden;
 }
@@ -35,57 +35,138 @@ body {
 .theme-top span{
 	vertical-align:middle;
     font-size:0.35rem;
-    font-weignt:700;
+    font-weight:700;
 }
 .theme-main .pic-head{
      margin-bottom:0.2rem;
 }
+/*banner*/
+.banner{
+  background-color: red;
+  height:5.8rem;
+  position:relative;
+}
+.banner .carefree{
+  width: 4.51rem;
+  height:1.11rem;
+  border:1px solid gray;
+  position:absolute;
+  top:0.4rem;
+  left:50%;
+  transform:translateX(-50%);
+  background-color: pink;
+  text-align:center;
+  line-height:1.11rem;
+  font-size:1.1rem;
+  color:white;
 
-// 精品推荐
-.theme-main .bootique{
+}
+.banner .save{
+  width:5.5rem;
+  height:2.38rem;
+  border:1px solid gray;
+  position:absolute;
+  top:1.62rem;
+  left:50%;
+  transform:translateX(-50%);
+  background-color: blue;
+}
+/*banner优惠券*/
+.banner .coupon{
+  width:7.48rem;
+  height:1.4rem;
+  border:1px solid gray;
+  position:absolute;
+  bottom:0;
+  left:0;
+  background-color: green;
+  margin:0 auto;
+  padding-top:0.1rem;
+}
+.coupon .cou-img{
+  margin-left: 0.1rem;
+}
+.coupon img{
+    width: 2.11rem;
+    height: 1.15rem;
+    background-color:orange;
+    display:inline-block;
+    /*margin-left: 0 0.09rem;*/
+}
+.coupon .check{
+  width: 0.32rem;
+  height:1.13rem;
+  background-color:orange;
+  margin-left:0.1rem;
+}
+
+ /*精品推荐*/
+ .bootique{
      padding:0 0.1rem;
 }
+.bootique .three{
+     margin-left: 0.05rem;
+}
 .bootique .boot-1{
-    height:1.4rem;
+     height:3rem;
+     margin-bottom:0.3rem;
 }
  .boot-1 a{
-    width:1.2rem;
-    height:1.2rem;
-    border:2px solid black;
+    width:3rem;
+    height:3rem;
+    border:1px solid black;
     float: left;
-
+    margin-right:0.2rem;
+    background-color: pink;
 }
+
  .boot-1 .b-1-r{
     position:relative;
-    padding-left:1.4rem;
-
-
+    width:4rem;
+    height:3rem;
+    border:1px solid gray;
+    float:left;
 }
  .b-1-r .discount{
-     font-size:0.2rem;
+     font-size:0.28rem;
      color:black;
      font-weight:900;
      padding-bottom:0.15rem;
+     margin-left:0.44rem;
+     margin-top:0.3rem;
 }
 .boot-1 .b-1-r .price{
-    font-size:0.15rem;
+    font-size:0.26rem;
     color:gray;
     padding-bottom:0.1rem;
+    margin-left:0.44rem;
+    margin-top:0.4rem;
 }
 .boot-1 .b-1-r .back{
-    font-size:0.15rem;
+    font-size:0.26rem;
     color:gray;
+    margin-left:0.44rem;
+
+}
+.boot-1 .b-1-r .return{
+  padding:0.05rem 0.1rem;
+  border-radius:50%;
+  color:white;
 }
 .boot-1 .b-1-r .rob{
-    font-size:0.15rem;
-    color:blue;
-    position:absolute;
-    right:0.1rem;
-    bottom:0;
-    background-color:yellow;
-    padding:2px;
+    font-size:0.26rem;
+    color:white;
+    text-align:center;
+    background-color:orange;
+    margin-left:0.44rem;
+    display:inline-block;
+    width: 3rem;
+    height:0.54rem;
+    line-height:0.54rem;
+    margin-top:0.3rem;
 }
 .boot-1 .b-1-r .buy{
+    display:block;
     font-size:0.15rem;
     color:red;
     text-align:center;
@@ -96,12 +177,13 @@ body {
     padding:0 0.2rem;
     border-radius:0.2rem 0.2rem;
     background-color: pink;
+    margin-left:0.44rem;
 }
  u{
     text-decoration:none;
     color:red;
 }
-// 菜单栏
+ /*菜单栏*/
 .menu{
     width:100%;
     background-color: #EEEEEE;
@@ -111,27 +193,35 @@ body {
      display:inline-block;
      float: left;
      list-style:none;
-     width:20%;
-     height:0.6rem;
+     width:1.48rem;
+     height:0.8rem;
      text-align:center;
-     line-height: 0.6rem;
-     // margin-bottom:0.1rem;
-     border:1px solid black;
+     line-height: 0.8rem;
      opacity:1;
+     font-size:0.26rem;
+     border-right: 1px solid white;
 }
+.menu li:last-child{
+   
+    border-right:none;
+}
+
 .menu a{
-  color:black;
-
-
+  width:100%;
+  height:0.8rem;
+  color:white;
+  background-color: orange;
+  /*border-right: 1px solid black;*/
 }
-.menu li:hover{
-     background-color: red;
+.menu a:last-child{
+    
+    /*border-right:none;*/
 }
-.menu .highlight{
-    background-color: red;
+.menu a:hover{
+   /*background-color: red;*/
 }
-.cur{
-  background-color:red;
+.menu a.cur{
+  background-color:blue;
 }
 .fixed{
   position:fixed;
@@ -140,11 +230,11 @@ body {
   width:100%;
 
 }
-.cur{
+/* .cur{
   background-color: red;
-}
+} */
 
-// 类目图片1
+ /*类目图片1*/
   .picture-one{
     margin-top:0.25rem;
   }
@@ -152,26 +242,25 @@ body {
     width:100%;
     margin-top:0.3rem;
     margin-bottom:0.3rem;
-    // text-align:center;//在这边设置不能显示
-
+     /*text-align:center;//在这边设置不能显示*/
  }
  .pic-head .line-out{
     display:inline-block;
-    width:30%;
-    padding: 0 0.2rem;
+    /*padding: 0 0.2rem;*/
+    border:1px solid gray;
+    width: 0.9rem;
+    height:0.45rem;
+    background-color: lightblue;
  }
- .pic-head .line{
-    display:inline-block;
-    width:100%;
-    border-top:0.01rem solid black;
-}
+
 .pic-head .txt{
-    width:30%;
-    font-size:0.3rem;
+    width:1.65rem;
+    height:0.38rem;
+    font-size:0.31rem;
     font-weight:700;
     color:black;
     vertical-align:middle;
-    // margin:0 0.3rem;
+     /*margin:0 0.3rem;*/
 
 }
 .detail-left{
