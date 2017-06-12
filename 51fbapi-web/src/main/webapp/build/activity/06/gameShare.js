@@ -4,7 +4,9 @@
 
 let chance=[],isLogin,isShow,clientRate,chanceCount;
 let recommendCode = getUrl('recommendCode');
-$('.button a').attr('href','/app/user/register?recommendCode='+recommendCode)
+let sharePage = getUrl('sharePage');
+$('.button a').attr('href','/app/user/register?recommendCode='+recommendCode+'&sharePage='+sharePage);
+
 // app调用web的方法
 function alaShareData(){
     // 分享内容
