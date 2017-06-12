@@ -35,16 +35,6 @@ function dataInit() {
                 chanceCount=data.data.chanceCount;
                 clientRate=data.data.clientRate||100;
                 //抽奖次数显示,抽奖码获取
-                $('#chance').html('您还有'+data.data.chanceCount+'次机会');
-                if(data.data.chanceCodes){
-                    chance=data.data.chanceCodes.split(',');
-                    for(var i = 0;i<chance.length;i++){
-                        if(chance[i]==''||chance[i]==null||typeof(chance[i])==undefined){
-                            chance.splice(i,1);
-                            i=i-1;
-                        }
-                    }
-                }else{chance=[]}
 
                 //娃娃中奖信息循环
                 {
@@ -56,103 +46,8 @@ function dataInit() {
                     }$('.awardList').html(con);
                 }
 
-                //实物中奖信息循环
-                {
-                    let con='';
-                    for(let i=0;i<data.data.entityAwardList.length;i++){
-                        con+=`<li>
-                <div class="personImg" style="background-image:url('${data.data.entityAwardList[i].avatar}')"></div>
-                <h2><span>${data.data.entityAwardList[i].userName}</span><span>${data.data.entityAwardList[i].msg}</span></h2></li>`}
-                    $('.entityAwardList').html(con);
-                }
-
-                //如果有人中实物大奖，就显示中奖滚轮
-                if(data.data.entityAwardList.length>0){
-                    $('#getPrize h6').hide();
-                    $('#getPrize h4').html('618活动抽奖获奖名单');
-                    $('#dollRoll').show();
-                }
-                //是否集齐五娃
-                if(data.data.isFinish=='Y'){
-                    $('#allToy').find('h3').html('五娃已集齐，请静等开奖！');
-                        //五娃是否中奖
-                        if (data.data.isAward == 'N') {
-                            //开奖时间
-                            if(data.data.gmtOpen>0) {
-                                let time = 0,hours01, hours02, minutes01, minutes02, seconds01, seconds02;
-                                let starTime=setInterval(function () {
-                                    time += 1000;
-                                    let leftTime = data.data.gmtOpen - data.data.gmtCurrent - time;
-                                    let leftsecond = parseInt(leftTime / 1000);
-                                    let hours = parseInt(leftsecond / 3600);
-                                    let minutes = parseInt((leftsecond % 3600) / 60);
-                                    let seconds = (leftsecond % 3600) % 60;
-
-                                    if (hours < 10) {
-                                        hours01 = '0';
-                                        hours02 = hours;
-                                    } else {
-                                        hours = hours.toString();
-                                        hours01 = hours.slice(0, 1);
-                                        hours02 = hours.slice(1, 2);
-
-                                    }
-                                    if (minutes < 10) {
-                                        minutes01 = '0';
-                                        minutes02 = minutes;
-                                    } else {
-                                        minutes = minutes.toString();
-                                        minutes01 = minutes.slice(0, 1);
-                                        minutes02 = minutes.slice(1, 2);
-
-                                    }
-                                    if (seconds < 10) {
-                                        seconds01 = '0';
-                                        seconds02 = seconds;
-                                    } else {
-                                        seconds = seconds.toString();
-                                        seconds01 = seconds.slice(0, 1);
-                                        seconds02 = seconds.slice(1, 2);
-
-                                    }
-                                    //console.log(hours01+hours02+minutes01+minutes02+seconds01+seconds02)
-                                    $('.countDown').find('span').eq(0).html(hours01);
-                                    $('.countDown').find('span').eq(1).html(hours02);
-                                    $('.countDown').find('span').eq(3).html(minutes01);
-                                    $('.countDown').find('span').eq(4).html(minutes02);
-                                    $('.countDown').find('span').eq(6).html(seconds01);
-                                    $('.countDown').find('span').eq(7).html(seconds02);
-                                }, 1000);
-                                //如果倒计时到0
-                            if(hours01<=0&&hours02<=0&&minutes01<=0&&minutes02<=0&&seconds01<=0&&seconds02<=0){
-                                clearInterval(starTime);
-                                $('#getPrize h5').html('正在抽取大奖中...');
-                            }else{
-                                if(data.data.gmtOpen>1497751200000){
-                                    $('#getPrize h4').html('很遗憾，您暂未中奖，请静等下一波！');
-                                }
-                                $('#getPrize h5').html('开奖倒计时');
-                                $('.countDown').show()
-                            }
-
-                        }
-                        } else {
-                            if (data.data.awardInfo.type == 'G') {
-                                $('#getPrize h4').html('恭喜您获得幸运大奖！');
-                                $('#getPrize h5').html('奖项已发送至:我的-抵用券');
-                            } else if (data.data.awardInfo.type == 'E') {
-                                $('#getPrize h4').html('恭喜您获得实物大奖！');
-                                if (data.data.awardInfo.isSubmitContacts == 'Y') {
-                                    $('#getPrize h5').html('奖项已发送至您的收货地址');
-                                } else {
-                                    $('#getPrize h5').html('<a href="personInfo?url='+data.data.awardInfo.awardIcon+'">请提交资料</a>');
-                                }
-                            }
-                        }
-
-                }
             }else{
-                requestMsg('初始化失败');
+                requestMsg('中奖名单获取失败');
             }
         }
     });
