@@ -16,7 +16,8 @@ public class AfUserCouponDto extends AfUserCouponDo{
 	
 	private String		useRule;//使用须知
 	private Integer validDays;//
-	
+	private String		willExpireStatus;//即将过去状态：Y：即将过期，N：没有即将过期
+
 
 	public String getName() {
 		return name;
@@ -62,6 +63,20 @@ public class AfUserCouponDto extends AfUserCouponDo{
 	 */
 	public void setValidDays(Integer validDays) {
 		this.validDays = validDays;
+	}
+
+	/**
+	 * @return the willExpireStatus
+	 */
+	public String getWillExpireStatus() {
+		return willExpireStatus;
+	}
+
+	/**
+	 * @param willExpireStatus the willExpireStatus to set
+	 */
+	public void setWillExpireStatus(String willExpireStatus) {
+		this.willExpireStatus = willExpireStatus;
 	}
 	
 }

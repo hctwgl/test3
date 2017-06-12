@@ -59,7 +59,7 @@ public class FanbeiController extends BaseController {
     }
     //代买相关
     @RequestMapping(value ={
-    		"/agencyBuy/addUserAddress","/agencyBuy/getAgencyNperInfo","/agencyBuy/payAgencyOrder","/agencyBuy/changeUserAddress","/agencyBuy/getDefaultUserAddress","/agencyBuy/deleteUserAddress","/agencyBuy/getUserAddressList","/agencyBuy/submitAgencyBuyOrder"
+    		"/agencyBuy/addUserAddress","/agencyBuy/getAgencyCouponList","/agencyBuy/getAgencyNperInfo","/agencyBuy/payAgencyOrder","/agencyBuy/changeUserAddress","/agencyBuy/getDefaultUserAddress","/agencyBuy/deleteUserAddress","/agencyBuy/getUserAddressList","/agencyBuy/submitAgencyBuyOrder"
         ,"/agencyBuy/getAgencyBuyOrderDetail","/agencyBuy/cancelAgencyBuyOrder","/agencyBuy/confirmationCompletedAgencyBuyOrder"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
         @ResponseBody
         public String agencyBuyRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

@@ -63,15 +63,7 @@ public class AppH5SubjectController  extends BaseController{
 		//context = doWebCheck(request, false);
 		JSONObject jsonObj = new JSONObject();
 		
-		// 获取会场商品题目文案
-		List<AfResourceDo> goodsTitleList =  afResourceService.getConfigByTypes("ACTIVITY_GOODS_TITLE");
-		if(goodsTitleList != null && goodsTitleList.size() > 0){
-			AfResourceDo goodsTitleInfo = goodsTitleList.get(0);
-			jsonObj.put("goodTitle", goodsTitleInfo.getValue());
-		} else {
-			jsonObj.put("goodTitle", "精品推荐"); //默认文案
-		}
-		
+		jsonObj.put("goodTitle", "精品推荐");
 		// 获取会场URL信息，需要在af_resource表中维护
 		List<Map> mainActivityList = new ArrayList<Map>();
 		List<AfResourceDo> activityUrls =  afResourceService.getConfigByTypes("MAIN_ACTIVITY_URL");
@@ -137,7 +129,6 @@ public class AppH5SubjectController  extends BaseController{
 			// 查询会场信息
 			AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
 			activityInfoMap.put("name", subjectInfo.getName());
-			activityInfoMap.put("subjectId", subjectInfo.getId());
 			// 获取一级会场名称
 			AfSubjectDo parentSubjectInfo = afSubjectService.getParentSubjectInfoById(subjectId);
 			String activityName = "";
