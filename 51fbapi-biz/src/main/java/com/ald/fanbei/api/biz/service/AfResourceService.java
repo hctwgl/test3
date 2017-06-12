@@ -80,17 +80,13 @@ public interface AfResourceService {
     /*
      * 获取借款手续费等信息
      */
-<<<<<<< HEAD
+
     BorrowRateBo borrowRateWithResource(Integer realTotalNper);
-=======
-   JSONObject borrowRateWithResource(Integer realTotalNper);
-   
-   
+
    /**
     * 获取首页导航栏配置
     * @return
     */
    List<AfResourceDo> getHomeIndexListByOrderby(String type);
->>>>>>> version_3.6.3
 	
 }
