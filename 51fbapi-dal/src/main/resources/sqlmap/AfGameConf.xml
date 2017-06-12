@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGameConfDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,creator,modifier,game_id,type,gmt_send,rule
+	</sql>
+	
+	<select id="getByGameId" resultType="AfGameConfDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_conf WHERE is_delete = 0 AND game_id=#{gameId}
+	</select>
+	
+	<select id="getByGameCode" resultType="AfGameConfDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_conf WHERE is_delete = 0 AND game_code=#{gameCode}
+	</select>
+	
+</mapper>

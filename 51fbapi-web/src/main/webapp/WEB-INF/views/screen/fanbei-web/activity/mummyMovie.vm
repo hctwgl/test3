@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  #set($version="2017060801")
+  #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+  <title>木乃伊</title>
+  <style type="text/css">
+    body{
+      position: relative;
+    }
+    .hide{
+      display: none;
+    }
+    .clickRule{
+      position: fixed;
+      top: 50%;
+      right: 0;
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%);
+      width: 0.57rem;
+      height: 1.78rem;
+    }
+    .mask{
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      width: 100%;
+      height: 17.17rem;
+      z-index: 8;
+    }
+    .rule{
+      width: 5.04rem;
+      height: 5.94rem;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    .mummyMovieBtn{
+      width: 4.49rem;
+      height: 1.04rem;
+      position: fixed;
+      bottom: 0.5rem;
+      left: 50%;
+      -webkit-transform: translateX(-50%);
+      transform: translateX(-50%);
+    }
+    span{
+      width: 100%;
+      height: 1.0rem;
+      background-color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="mummyMovie">
+    <img class="movieBg" src="$commonUrl/mummyMovie.jpg">
+    <img class="clickRule" src="$commonUrl/mummyMovieRuleBtn.png">
+    <div class="rulePopup">
+      <div class="mask hide"></div>
+      <div class="rule hide">
+        <img src="$commonUrl/mummyMovieRule.png">
+      </div>
+    </div>
+    <div class="mummyMovieBtn">
+      <img src="$commonUrl/mummyMovieBtn.png">
+    </div>
+    <span></span>
+  </div>
+  <script type="text/javascript" src="/dist/activity/06/mummyMovie.js?version=$version"></script>
+  </body>
+</html>

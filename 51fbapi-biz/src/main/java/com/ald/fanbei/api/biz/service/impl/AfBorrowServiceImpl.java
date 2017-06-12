@@ -922,7 +922,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 	@Override
 	public Long dealAgentPayBorrowAndBill(final Long userId, final String userName, final BigDecimal amount,final String name,
-			final int nper, final Long orderId,final String orderNo, final String borrowRate,final String interestFreeJson) {
+			final Integer nper, final Long orderId,final String orderNo, final String borrowRate,final String interestFreeJson) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -947,7 +947,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				} catch (Exception e) {
 					logger.info("dealAgentPayBorrowAndBill error:" + e);
 					status.setRollbackOnly();
-					return 0l;
+					throw e;
 				}
 			}
 		});

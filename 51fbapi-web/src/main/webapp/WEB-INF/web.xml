@@ -78,8 +78,8 @@
 	<filter-mapping>
 		<filter-name>appH5Filter</filter-name>
 		<url-pattern>/h5/app/*</url-pattern>
-	</filter-mapping>		
-	
+	</filter-mapping>
+
 	<servlet>
 		<servlet-name>fanbei</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

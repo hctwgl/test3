@@ -32,9 +32,10 @@ public class CouponSceneRuleEnginerUtil {
 	 *@param invitor 邀请人userId
 	 */
 	@Async
-	public void regist(Long userId){
+	public void regist(Long userId,Long invitor){
 		Map<String,Object> inputData = new HashMap<String,Object>();
 		inputData.put("userId", userId);
+		inputData.put("invitor", invitor);
 		registRuleEngine.executeRule(inputData);
 	}
 	

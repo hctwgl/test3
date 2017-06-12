@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.bo;
 
-import java.math.BigDecimal;
-
 import com.ald.fanbei.api.common.AbstractSerial;
 import com.alibaba.fastjson.JSONArray;
 
@@ -18,10 +16,10 @@ public class TaobaoItemInfoBo extends AbstractSerial{
 	
 	private String location;     //地址
 	private JSONArray sku_infos;   //
-	private BigDecimal promotion_price;    //销售价格
+	private String promotion_price;    //销售价格
 	private boolean post_for_free;   //是否免邮 //'true' 'false'
 	private String title;   //商品名称
-	private BigDecimal price;   //原价
+	private String price;   //原价
 	private boolean cart_support;   //是否支持货到付款
 	private String promotion_tips; //促销信息
 	private Integer quantity;   //库存
@@ -43,13 +41,13 @@ public class TaobaoItemInfoBo extends AbstractSerial{
 	/**
 	 * @return the promotion_price
 	 */
-	public BigDecimal getPromotion_price() {
+	public String getPromotion_price() {
 		return promotion_price;
 	}
 	/**
 	 * @param promotion_price the promotion_price to set
 	 */
-	public void setPromotion_price(BigDecimal promotion_price) {
+	public void setPromotion_price(String promotion_price) {
 		this.promotion_price = promotion_price;
 	}
 	/**
@@ -79,13 +77,13 @@ public class TaobaoItemInfoBo extends AbstractSerial{
 	/**
 	 * @return the price
 	 */
-	public BigDecimal getPrice() {
+	public String getPrice() {
 		return price;
 	}
 	/**
 	 * @param price the price to set
 	 */
-	public void setPrice(BigDecimal price) {
+	public void setPrice(String price) {
 		this.price = price;
 	}
 	/**

@@ -4,7 +4,7 @@
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,user_id,borrow_id,borrow_no,name,gmt_borrow,bill_year,bill_month,nper,bill_nper,bill_amount,type,
 		status,overdue_status,overdue_days,repayment_id,principle_amount,interest_amount,overdue_interest_amount,poundage_amount,overdue_poundage_amount,
-		rebate_amount,is_free_interest,free_nper
+		rebate_amount,is_free_interest
 		
 	</sql>
 	

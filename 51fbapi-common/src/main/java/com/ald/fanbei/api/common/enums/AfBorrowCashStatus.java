@@ -16,7 +16,9 @@ public enum AfBorrowCashStatus {
 	transed("TRANSED","TRANSED", "已经打款/待还款"), 
 	finsh("FINSH", "FINSH","已结清"),
 	transeding("TRANSEDING", "TRANSEDING","打款中"),
+	repaying("REPAYING", "REPAYING","还款中"),
 
+	
 	transedfail("TRANSEDFAIL","TRANSEDFAIL", "打款失败"), 
 	closed("CLOSED","CLOSED", "拒绝 ");
 	

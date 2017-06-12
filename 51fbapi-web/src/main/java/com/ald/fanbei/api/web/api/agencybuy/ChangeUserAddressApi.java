@@ -42,7 +42,7 @@ public class ChangeUserAddressApi implements ApiHandle {
 		String isDefault = ObjectUtils.toString(requestDataVo.getParams().get("isDefault"));
 		String consignee = ObjectUtils.toString(requestDataVo.getParams().get("consignee"));
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
-		if (StringUtils.isBlank(province) && StringUtils.isBlank(city) && StringUtils.isBlank(county)
+		if (StringUtils.isBlank(province) && StringUtils.isBlank(city) 
 				&& StringUtils.isBlank(address) && StringUtils.isBlank(isDefault) && StringUtils.isBlank(consignee)
 				&& StringUtils.isBlank(mobile)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
@@ -93,10 +93,8 @@ public class ChangeUserAddressApi implements ApiHandle {
 			addressDo.setProvince(province);
 
 		}
-		if(StringUtils.isNotBlank(county)){
-			addressDo.setCounty(county);
-
-		}
+		//如果改为空字符串是可以的
+		addressDo.setCounty(county);
 		if(StringUtils.isNotBlank(consignee)){
 			addressDo.setConsignee(consignee);
 

@@ -3,7 +3,7 @@ package com.ald.fanbei.api.common;
 
 /**
  * 
- *@类AppContext.java 的实现描述：app服务上下文
+ *@类AppContext.java 的实现描述：app api上下文
  *@author 陈金虎 2017年1月16日 下午11:15:38
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
