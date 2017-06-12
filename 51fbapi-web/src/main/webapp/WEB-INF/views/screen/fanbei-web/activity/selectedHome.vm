@@ -46,8 +46,12 @@
 		</ul>
 	</div>
     <div class="activityList">
-		<div class="listAlert">
-			<a :href="ht+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+		<div style="height: .83rem">
+            <div id="navWrap">
+                <div id="listAlert">
+                    <a :href="ht+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+                </div>
+            </div>
 		</div>
 		<template v-for="(data,index) in content.data.activityList">
             <h2 :id="index">{{data.name}}</h2>
@@ -82,11 +86,12 @@
 			##					</div>
 			##				</a>
 			##			</li>
-                <a class="more" href="getMore">更多 ...</a>
+                <a class="more" :href="moreHref+data.subjectId">更多 ...</a>
 			</ul>
 		</template>
     </div>
 </div>
+<script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
 <script type="text/javascript" src="/dist/activity/06/selectedHome.js"></script>
 </body>
