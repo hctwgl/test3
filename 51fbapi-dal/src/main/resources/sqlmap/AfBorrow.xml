@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowDao">
 	<sql id="queryFields">
 		id rid,gmt_create, gmt_modified,borrow_no,user_id,type,name,amount,status,remark,nper,nper_repayment,overdue_num,order_id,
-		nper_amount,repay_prin_amount,order_no,card_number,card_name,is_free_interest,borrow_rate,calculate_method
+		nper_amount,repay_prin_amount,order_no,card_number,card_name,borrow_rate,calculate_method
 	</sql>
 	
 	<select id="getBorrowById" resultType="AfBorrowDo">
