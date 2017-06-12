@@ -54,6 +54,7 @@ $('#btn').click(function(){
 $('.mask').click(function(){
     $('.mask').css('display','none');
     $('.orderSuccess').css('display','none');
+    window.location.reload();
 });
 $('.close').click(function(){
     $('.mask').css('display','none');
