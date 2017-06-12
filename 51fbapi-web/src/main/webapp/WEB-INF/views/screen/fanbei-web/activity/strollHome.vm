@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017060501")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	<meta charset="UTF-8">
+	<title>618 逛逛分会场</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/strollHome.css?version=$version">
+</head>
+<body>
+	<div class="strollHomeWrap" id="strollHomeWrap">
+		<img src="/images/activity/06/strollHomeBanner.png">
+		<div class="strollHomeContent">
+			<ul class="strollHomeContentUl">
+				<li>
+					<img @click="boluomiHome(1)" src="/images/activity/06/strollHomeList1.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList2.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList3.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList4.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList5.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList6.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList7.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList8.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList9.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+				<li>
+					<img src="/images/activity/06/strollHomeList10.png">
+					<ol class="otoCoupon">
+						<li>满25减5元</li>
+						<li>满60减元</li>
+					</ol>
+				</li>
+
+
+
+			</ul>
+		</div>
+	</div>
+	<script type="text/javascript" src="/dist/activity/06/strollHome.js?version=$version"></script>
+</body>
+</html>

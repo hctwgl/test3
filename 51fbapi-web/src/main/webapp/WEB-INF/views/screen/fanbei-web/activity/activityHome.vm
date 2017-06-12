@@ -4,7 +4,7 @@
 	#set($version="2017060501")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
-	<title>活动主题会场</title>
+	<title>618主会场</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/activityHome.css?version=$version">
 </head>
 <body>
@@ -21,44 +21,18 @@
 				<span class="time_item" id="minute_show"></span>
 				<span class="time_item" id="second_show"></span>
 			</div>
-			<a class="goCoupons" href="/fanbei-web/receiveCoupons"></a>
+			<a class="goCoupons" href="/fanbei-web/receiveCoupons?addUiName=COUPONS"></a>
 		</div>
 		<div class="activityHomeContent">
-			<div class="selectedHome clearfix">
-				<ul>
-					<li><a href=""><img src="$commonUrl/selectedHome1.png"></a></li>
-					<li><a href=""><img src="$commonUrl/selectedHome2.png"></a></li>
-					<li><a href=""><img src="$commonUrl/selectedHome3.png"></a></li>
-					<li><a href=""><img src="$commonUrl/selectedHome4.png"></a></li>
-				</ul>
-			</div>
+			<ul class="selectedHome clearfix" id="selectedHome">
+				<li data-type='1'><a href=""><img src="$commonUrl/selectedHome1.png"></a></li>
+				<li data-type='2'><a href=""><img src="$commonUrl/selectedHome2.png"></a></li>
+				<li data-type='3'><a href=""><img src="$commonUrl/selectedHome3.png"></a></li>
+				<li data-type='4'><a href="strollHome"><img src="$commonUrl/selectedHome4.png"></a></li>
+			</ul>
 			<div class="boutiqueHome">
-				<h2>精品推荐</h2>
-				<ul>
-					<li class="clearfix">
-						<a href="">
-							<img src="">
-							<div class="boutiqueHomeContent clearfix">
-								<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利更有超级返利618折上</p>
-								<p class="price"><span>￥5.2</span><span><i>返</i>￥1.2</span></p>
-								<button>马上抢</button>
-							</div>
-						</a>
-					</li>
-					<li class="clearfix">
-						<a href="">
-							<img src="">
-							<div class="boutiqueHomeContent">
-								<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
-								<div class="price">
-									<p><i class="monthCorner"></i>￥5.2</p>
-									<p>抢购价：￥1.2</p>
-								</div>
-								<button>马上抢</button>
-							</div>
-						</a>
-					</li>
-				</ul>
+				<h2 id="goodTitle"></h2>
+				<ul id="qualityGoodsList"></ul>
 			</div>
 		</div>
 	</div>

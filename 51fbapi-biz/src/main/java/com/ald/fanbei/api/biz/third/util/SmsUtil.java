@@ -48,6 +48,9 @@ public class SmsUtil extends AbstractThird {
 
 	private final static String URL = "http://www.dh3t.com/json/sms/Submit";
 	private final static String ACCOUNT = "dh15433";
+	private final static String MARKETING_ACCOUNT = "dh15434";
+	private final static String MARKETING_ACCOUNT_PASSWORD = "aSZqA6Ub";
+	
 	private final static String SIGN = "【51返呗】";
 	private static String password = null;
 	private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册51返呗，请在30分钟内完成注册";
@@ -56,6 +59,10 @@ public class SmsUtil extends AbstractThird {
 	private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
 	private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
 	private static String BORROWCASH_TEMPLATE = "您的借款审核通过，请留意您尾号&param1的银行卡资金变动，还款请使用51返呗app【任何索要银行卡号、要求存入现金的行为都是诈骗】";
+	private static String GOODS_RESERVATION_SUCCESS = "恭喜您！预约成功！OPPO R11将于6月22日10点准时开售，0元预约购机享12期免息再送价值300元原装配件，不要错过哦！回复td退订";
+
+	private static String REPAY_BORROWCASH_SUCCESS_REMAINNOTREPAY = "成功还款&param1元，剩余待还金额&param2元。";
+	private static String REPAY_BORROWCASH_SUCCESS_FINISH = "成功还款&param1元，该笔借钱已还完。";
 
 	private static String TEST_VERIFY_CODE = "888888";
 
@@ -80,7 +87,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public boolean sendRegistVerifyCode(String mobile) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
@@ -103,6 +110,53 @@ public class SmsUtil extends AbstractThird {
 	}
 
 	/**
+     * 预约商品成功消息通知
+     * @param mobile
+     * @param goodsName
+     * @param rsvNo
+     * @return
+     */
+    public  boolean sendGoodsReservationSuccessMsg(String mobile) {
+        SmsResult smsResult = sendMarketingSmsToDhst(mobile, GOODS_RESERVATION_SUCCESS);
+        return smsResult.isSucc();
+    }
+    
+    
+    /**
+	 * 对单个手机号发送短消息，这里不验证手机号码有效性
+	 * 
+	 * @param mobile
+	 * @param msg
+	 */
+	private static SmsResult sendMarketingSmsToDhst(String mobiles, String content) {
+		SmsResult result = new SmsResult();
+		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+				Constants.INVELOMENT_TYPE_TEST)) {
+			result.setSucc(true);
+			result.setResultStr("test");
+			return result;
+		}
+		Map<String, String> paramsMap = new HashMap<String, String>();
+		paramsMap.put("account", MARKETING_ACCOUNT);
+		paramsMap.put("password", DigestUtil.MD5(MARKETING_ACCOUNT_PASSWORD).toLowerCase());
+		paramsMap.put("phones", mobiles);
+		paramsMap.put("content", content);
+		paramsMap.put("sign", SIGN);
+		String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
+
+		logger.info(StringUtil.appendStrs("sendSms params=|", mobiles, "|", content, "|", reqResult));
+		
+		JSONObject json = JSON.parseObject(reqResult);
+		if(json.getInteger("result")==0){
+			result.setSucc(true);
+			result.setResultStr(json.getString("desc"));
+		}else{
+			result.setSucc(false);
+			result.setResultStr(json.getString("desc"));
+		}
+		return result;
+	}
+	/**
 	 * 忘记密码发送短信验证码
 	 * 
 	 * @param mobile
@@ -113,7 +167,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public boolean sendForgetPwdVerifyCode(String mobile, Long userId) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = FORGET_TEMPLATE.replace("&param1", verifyCode);
@@ -133,7 +187,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public boolean sendMobileBindVerifyCode(String mobile, Long userId) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = BIND_TEMPLATE.replace("&param1", verifyCode);
@@ -153,7 +207,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public boolean sendSetPayPwdVerifyCode(String mobile, Long userId) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = SETPAY_TEMPLATE.replace("&param1", verifyCode);
@@ -195,6 +249,21 @@ public class SmsUtil extends AbstractThird {
 	}
 
 	/**
+	 * 用户还款成功后发送短信提醒用户
+	 * @param mobile
+	 * @param repayMoney 还款金额
+	 * @param notRepayMoney 剩余未还款金额
+	 */
+	public  boolean sendRepaymentBorrowCashWarnMsg(String mobile,String repayMoney,String notRepayMoney) {
+		String content = REPAY_BORROWCASH_SUCCESS_FINISH.replace("&param1", repayMoney);
+		if(StringUtil.isNotBlank(notRepayMoney)){
+			content = REPAY_BORROWCASH_SUCCESS_REMAINNOTREPAY.replace("&param1", repayMoney).replace("&param2", notRepayMoney);
+		}
+		SmsResult smsResult = sendSmsToDhst(mobile, content);
+		return smsResult.isSucc();
+	}
+	
+	/**
 	 * 对单个手机号发送普通短信
 	 * 
 	 * @param mobile
@@ -204,7 +273,7 @@ public class SmsUtil extends AbstractThird {
 	 */
 	public void sendSms(String mobile, String content) {
 		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("invalid mobile", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		sendSmsToDhst(mobile, content);
 	}

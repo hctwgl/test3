@@ -59,17 +59,19 @@ public class InterestFreeUitl {
                 rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
             }
             BigDecimal poundageRate = new BigDecimal(value1);//手续费率
-            //总手续费
-            BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(totalGoodsAmount, nPer.intValue(),
-                    poundageRate, rangeBegin, rangeEnd);
+
             BigDecimal mouthRate = nPerRate.divide(new BigDecimal(Constants.MONTH_OF_YEAR), 8,
                     BigDecimal.ROUND_HALF_UP);//月利率
 
             if (interestFreeArray != null) {
+                //总手续费
+                BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(totalGoodsAmount, nPer.intValue(),
+                        poundageRate, rangeBegin, rangeEnd,InterestfreeCode.IS_FREE.getCode());
+
                 String freeNper = interestFreeArray.getString(Constants.DEFAULT__FREENPER);//免期数
                 BigDecimal freeNperB = new BigDecimal(freeNper);//免期数BigDecimal
                 //本金/总期数
-                BigDecimal b1 = BigDecimalUtil.divHalfUp(totalGoodsAmount, nPer, Constants.HALFUP_DIGIT);
+                BigDecimal b1 = BigDecimalUtil.divHalfDown(totalGoodsAmount, nPer, Constants.HALFUP_DIGIT);
                 if (freeNper.equals(key)) {
                     amount = b1;
                     attrs.put("nper", key);
@@ -85,9 +87,19 @@ public class InterestFreeUitl {
                     BigDecimal noNper = nPer.subtract(freeNperB);
                     //本金*每期利率
                     BigDecimal b2 = BigDecimalUtil.multiply(totalGoodsAmount, nPerRate);
-                    //每期手续费
-                    BigDecimal b3 = BigDecimalUtil.divHalfUp(totalPoundage, nPer, Constants.HALFUP_DIGIT);
-                    amount = b1.add(b2).add(b3);
+                    //免期前每期手续费
+                    BigDecimal b3 = BigDecimalUtil.divHalfDown(totalPoundage, nPer, Constants.HALFUP_DIGIT);
+
+                    //手续费最小值<总手续费-免息期数*手续费<手续费最大值)/期数
+                    BigDecimal d1 = totalPoundage.subtract(b3.multiply(freeNperB));
+                    if (rangeBegin.compareTo(d1) > 0) {
+                        d1 = rangeBegin;
+                    } else if (d1.compareTo(rangeEnd) > 0) {
+                        d1 = rangeEnd;
+                    }
+                    BigDecimal d2 = BigDecimalUtil.divHalfDown(d1,nPer,null); //免息后每期手续费
+
+                    amount = b1.add(b2).add(d2);
                     //计算免息
                     BigDecimal freeAmount = b1;
                     BigDecimal freePoundageAmount = BigDecimalUtil.add(b2.multiply(freeNperB), b3.multiply(freeNperB));
@@ -102,6 +114,9 @@ public class InterestFreeUitl {
                     attrs.put("isFree", InterestfreeCode.HALF_FREE);
                 }
             } else {
+                //总手续费
+                BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(totalGoodsAmount, nPer.intValue(),
+                        poundageRate, rangeBegin, rangeEnd,InterestfreeCode.NO_FREE.getCode());
                 amount = BigDecimalUtil.getConsumeAmount(totalGoodsAmount, nPer.intValue(), mouthRate, totalPoundage);
                 //借款总金额
                 BigDecimal totalAmount = amount.multiply(nPer);

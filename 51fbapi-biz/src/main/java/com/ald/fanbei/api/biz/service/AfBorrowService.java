@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
@@ -67,30 +66,6 @@ public interface AfBorrowService {
 			String numId, String name, int nper);
 
 	/**
-	 * 代付分期
-	 * 
-	 * @param userDto
-	 *            --
-	 * @param amount
-	 *            --金额
-	 * @param cardId
-	 *            --银行卡id
-	 * @param name
-	 *            --借款名称
-	 * @param nper
-	 *            --分期数
-	 * @param orderId
-	 *            订单id
-	 * @param orderNo
-	 *            订单编号
-	 * @param totalNper
-	 *            原来订单总分期数 为重新生成账单使用，当第一次生成账单 该值为null
-	 * @return
-	 */
-	public long dealAgentPayConsumeApply(AfUserAccountDo userDto, BigDecimal amount, String name, Integer nper,
-			Long orderId, String orderNo, Integer totalNper);
-
-	/**
 	 * 
 	 * @param userDto
 	 *            需要操作的用户
@@ -101,9 +76,6 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	public long dealAgentPayClose(AfUserAccountDo userDto, BigDecimal amount, Long orderId);
-
-
-	public long dealAgentPayAgencyPayConsumeApply(AfOrderDo orderInfo,String userName);
 
 	
 	/**
@@ -236,6 +208,6 @@ public interface AfBorrowService {
 	 * 			  免息规则
 	 * @return
 	 */
-	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, int nper, Long orderId,
+	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, Integer nper, Long orderId,
 			String orderNo, String borrowRate, String interestFreeJson);
 }

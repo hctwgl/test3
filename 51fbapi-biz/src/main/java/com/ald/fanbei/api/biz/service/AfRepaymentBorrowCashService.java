@@ -76,6 +76,12 @@ public interface AfRepaymentBorrowCashService {
 	 * @return
 	 */
 	BigDecimal getRepaymentAllAmountByBorrowId(Long borrowId);
+	/**
+	 * 还款处理中金额
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal getRepayingTotalAmountByBorrowId(Long borrowId);
 	
 	/**
 	 * 查询某一天最后一个订单号

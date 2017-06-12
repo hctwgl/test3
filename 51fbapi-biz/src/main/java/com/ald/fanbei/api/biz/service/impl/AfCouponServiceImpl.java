@@ -10,6 +10,8 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
@@ -25,6 +27,8 @@ public class AfCouponServiceImpl implements AfCouponService {
 
 	@Resource
 	AfCouponDao afCouponDao;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Override
 	public List<AfCouponDto> selectCouponByCouponIds(String ids,Long userId) {
@@ -33,7 +37,16 @@ public class AfCouponServiceImpl implements AfCouponService {
 
 	@Override
 	public AfCouponDo getCouponById(Long couponId) {
-		return afCouponDao.getCouponById(couponId);
+		String key = Constants.CACHEKEY_COUPON_INFO + couponId;
+		AfCouponDo couponDo = (AfCouponDo)bizCacheUtil.getObject(key);
+		if(couponDo != null){
+			return couponDo;
+		}
+		couponDo = afCouponDao.getCouponById(couponId);
+		if(couponDo != null){
+			bizCacheUtil.saveObject(key, couponDo);
+		}
+		return couponDo;
 	}
 
 	

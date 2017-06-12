@@ -31,6 +31,9 @@
 			OR
 			c.expiry_type='D')
 		GROUP BY c.id
+		ORDER BY
+			(c.quota - c.quota_already) DESC,
+			c.gmt_modified DESC 
 	</select>
 	
 	

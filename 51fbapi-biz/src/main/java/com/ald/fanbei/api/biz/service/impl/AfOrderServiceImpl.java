@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -680,7 +682,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderInfo.setNper(nper);
-						orderInfo.setBorrowRate(JSONObject.toJSONString(afResourceService.borrowRateWithResource(nper)));
+						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
+						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
+						orderInfo.setBorrowRate(boStr);
 						orderDao.updateOrder(orderInfo);
 						BigDecimal useableAmount = userAccountInfo.getAuAmount()
 								.subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
@@ -847,13 +851,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						//增加Account记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, borrowInfo.getRid()));
-						
+						//修改借款状态
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
-						
+						//修改账单状态
 						afBorrowBillDao.updateNotRepayedBillStatus(borrowInfo.getRid(), BorrowBillStatus.CLOSE.getCode());
-						
-						orderInfo = new AfOrderDo();
-						orderInfo.setRid(orderId);
+						//修改订单状态
 						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 						orderDao.updateOrder(orderInfo);
 						
@@ -881,11 +883,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							account.setUsedAmount(borrowAmount);
 							account.setUserId(accountInfo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
-//							afBorrowService.dealAgentPayConsumeApply(accountInfo, borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, borrowInfo.getNper());
+							
 							afBorrowService.dealAgentPayBorrowAndBill(accountInfo.getUserId(), accountInfo.getUserName(), borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅代付退款",refundSource,StringUtils.EMPTY));
 						}
+						//如果成功推送退款成功状态给菠萝觅
 						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount, refundNo);
 						break;
 					case BANK:
@@ -927,6 +930,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+		//退款失败推送状态给菠萝觅
 		if (result == 0) {
 			boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_FAIL, userId, refundAmount, refundNo);
 		}
@@ -979,63 +983,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		afAgentOrderService.updateAgentOrder(afAgentOrderDo);
 		
 		return afUserOrderDao.addUserOrder(order);
-	}
-
-	
-	@Override
-	public Map<String, Object> payAgencyOrder(final AfOrderDo orderInfo, final String appName, final String ipAddress) {
-		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
-			@Override
-			public Map<String, Object> doInTransaction(TransactionStatus status) {
-				try {
-					Map<String,Object> resultMap = new HashMap<String,Object>();
-					Date currentDate = new Date();
-					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
-					orderInfo.setPayTradeNo(tradeNo);
-					orderInfo.setGmtPay(currentDate);
-					
-					Long userId = orderInfo.getUserId();
-					//代付
-					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
-
-					orderInfo.setPayType(PayType.AGENT_PAY.getCode());
-					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
-					orderInfo.setStatus(OrderStatus.PAID.getCode());
-					AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-					BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-					if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
-						throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-					}
-					logger.info("payAgencyOrder orderInfo = {}", orderInfo);
-					String cardNo = card.getCardNumber();
-					String riskOrderNo = riskUtil.getOrderNo("vefy",
-							cardNo.substring(cardNo.length() - 4, cardNo.length()));
-					orderInfo.setRiskOrderNo(riskOrderNo);
-					
-					orderDao.updateOrder(orderInfo);
-					try {
-						riskUtil.verify(ObjectUtils.toString(userId, ""), "40",
-								card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, StringUtil.EMPTY,
-								"/third/risk/payOrder",riskOrderNo);
-					} catch (Exception e) {
-						//throw new FanbeiException();
-						e.printStackTrace();
-					}
-					
-					
-					afBorrowService.dealAgentPayAgencyPayConsumeApply(orderInfo,userAccountInfo.getUserName());
-					
-			 		return resultMap;
-				} catch (FanbeiException exception) {
-					logger.error("payAgencyOrder faied e = {}", exception );
-					throw new FanbeiException("bank card pay error", exception.getErrorCode());
-				} catch (Exception e) {
-					status.setRollbackOnly();
-					logger.error("payAgencyOrder faied e = {}", e );
-					throw e;
-				}
-			}
-		});
 	}
 
 

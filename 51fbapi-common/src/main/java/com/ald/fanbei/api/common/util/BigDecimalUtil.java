@@ -3,6 +3,8 @@
  */
 package com.ald.fanbei.api.common.util;
 
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -192,7 +194,37 @@ public class BigDecimalUtil {
     }
 
     /**
-     * 获取总手续费
+     * 获取每期手续费
+     * 每期手续费=   (手续费最小值<总手续费-免息期数*手续费<手续费最大值)/期数
+     *
+     * @param amount       --借款本金
+     * @param nper          --分期期数
+     * @param poundageRate --手续费率
+     * @param min          --手续费下限
+     * @param max          --手续费上限
+     * @param freeNper     --免息期数
+     * @return
+     */
+    public static BigDecimal getPerPoundage(BigDecimal amount, Integer nper, BigDecimal poundageRate, BigDecimal min, BigDecimal max, Integer freeNper) {
+    	//总手续费
+    	BigDecimal totalPoundage = amount.multiply(poundageRate).setScale(2, RoundingMode.CEILING);
+    	//每一期手续费
+    	BigDecimal perAmount = totalPoundage.divide(new BigDecimal(nper)).setScale(2, RoundingMode.CEILING);
+        //总手续费-免息的费用
+    	BigDecimal freeAmount = BigDecimalUtil.multiply(perAmount, new BigDecimal(freeNper));
+       
+    	BigDecimal finalAmount = BigDecimalUtil.subtract(totalPoundage, freeAmount);
+     
+    	 if (min.compareTo(finalAmount) > 0) {
+    		 finalAmount = min;
+         } else if (finalAmount.compareTo(max) > 0) {
+        	 finalAmount = max;
+         }
+         return finalAmount.divide(new BigDecimal(nper));
+    }
+    
+    /**
+     * 减去免息手续费,计算每一期手续费
      *
      * @param amount       --借款本金
      * @param num          --分期期数
@@ -201,14 +233,16 @@ public class BigDecimalUtil {
      * @param max          --手续费上限
      * @return
      */
-    public static BigDecimal getTotalPoundage(BigDecimal amount, int num, BigDecimal poundageRate, BigDecimal min, BigDecimal max) {
+    public static BigDecimal getTotalPoundage(BigDecimal amount, int num, BigDecimal poundageRate, BigDecimal min, BigDecimal max,String isFree) {
         amount = amount == null ? new BigDecimal(0) : amount;
         poundageRate = poundageRate == null ? new BigDecimal(0) : poundageRate;
         BigDecimal v1 = amount.multiply(poundageRate);
-        if (min.compareTo(v1) > 0) {
-            v1 = min;
-        } else if (v1.compareTo(max) > 0) {
-            v1 = max;
+        if(InterestfreeCode.NO_FREE.getCode().equals(isFree)){
+            if (min.compareTo(v1) > 0) {
+                v1 = min;
+            } else if (v1.compareTo(max) > 0) {
+                v1 = max;
+            }
         }
         return v1;
     }
@@ -234,5 +268,26 @@ public class BigDecimalUtil {
         }
         BigDecimal result = d1.divide(d2,digit,BigDecimal.ROUND_UP);
         return result;
+    }
+
+    /**
+     * 除法，针对除不尽的情况做进一位处理
+     * 例如：10/3 = 3.33 进位处理 3.34
+     * @param d1    除数
+     * @param d2    被除数
+     * @param digit 保留小数点(默认两位小数)
+     * @return
+     * @author hantao
+     */
+    public static BigDecimal divHalfDown(BigDecimal d1, BigDecimal d2, Integer digit) {
+        if( null == digit){
+            digit = 2;
+        }
+        BigDecimal result = d1.divide(d2,digit,BigDecimal.ROUND_DOWN);
+        return result;
+    }
+
+    public static void main(String[] args){
+        System.out.print(BigDecimalUtil.divHalfDown(new BigDecimal("10"),new BigDecimal("3"),null));
     }
 }

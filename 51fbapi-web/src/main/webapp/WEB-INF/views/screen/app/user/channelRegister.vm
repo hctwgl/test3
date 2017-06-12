@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017051703")
-	#set($commonUrl="http://f.51fanbei.com/h5")
+	#set($version="2017060704")
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
 	<title>51返呗注册</title>
-	<link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
+	<link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
 	<script type="text/javascript">;
         (function(root) {
             root._tt_config = true;
@@ -20,7 +20,7 @@
             }
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ta, s);
         })(window);
-        
+
     </script>
 </head>
 <body>
@@ -28,101 +28,87 @@
 	<input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
 	<input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
 	<input type="hidden" id="tdHost" value="$!{tdHost}">
-	<div class="channelRegister_wrap">
-		<div class="channelRegister
-			#if( $!{style} == 1 )
-				channelRegister1
-			#elseif( $!{style} == 2 )
-				channelRegister2
-			#elseif( $!{style} == 3 )
-				channelRegister3
-			#elseif( $!{style} == 4 )
-				channelRegister4
-			#elseif( $!{style} == 5 )
-				channelRegister6
-			#elseif( $!{style} == 6 )
-				channelRegister7
-			#elseif( $!{style} == 7 )
-				channelRegister8
-			#elseif( $!{style} == 8 )
-				channelRegister9
-			#end
-		">
+	<input type="hidden" id="style" value="$!{style}">
 
+	<div class="channelRegister_wrap">
+
+		#if( $!{style} == 8 || $!{style} == 9 )
+			<img src="$commonUrl/channel$!{style}_01.png">
+		#else
+			<img src="$commonUrl/channel$!{style}_01.jpg">
+		#end
+
+		<div class="channelRegisterWrap">
+			#if( $!{style} == 7 || $!{style} == 9 )
+				<img src="$commonUrl/channel$!{style}_02.png">
+			#elseif( $!{style} == 8 )
+				<img src="$commonUrl/channel7_02.png">
+			#else
+				<img src="$commonUrl/channel$!{style}_02.jpg">
+			#end
 			<ul class="
-				#if( $!{style} == 6 )
-					channelRegisterUl6
-				#elseif( $!{style} == 7 || $!{style} == 8 )
-					channelRegisterUl78
+				#if( $!{style} == 7 || $!{style} == 8)
+					channelRegister78
+				#elseif( $!{style} == 9 )
+					channelRegister9
+				#elseif( $!{style} == 10 )
+						channelRegister10
+				#else
+					channelRegister
 				#end
 			">
-				#if( $!{style} == 7 || $!{style} == 8 )
-					<li class="channelRegisterLi">
-						<span class="phoneIcon"></span>
-				    	<input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号">
-			        </li>
-		    	    <li class="channelRegisterLi2 clearfix">
-		    	    	<span class="licIcon"></span>
-		    	    	<div class=" register_verification_left">
-				        	<input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
-		    	    	</div>
-			        	<button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
-			        </li>
-			        <li class="channelRegisterLi">
-			        	<span class="clockIcon"></span>
-			        	<input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18">
-			        </li>
-				#else
-			        <li>
-				    	<input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号">
-				    	<span class="register_required">*</span>
-			        </li>
-		    	    <li class="clearfix">
-		    	    	<div class="register_verification_main">
-				        	<input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
-		    	    	</div>
-			        	<button class="register_codeBtn" id="register_codeBtn">获取验证码</button>
-			        	<span class="register_required">*</span>
-			        </li>
-			        <li>
-			        	<input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18">
-			        	<span class="register_required">*</span>
-			        </li>
-		        #end
-	        </ul>
-	      	<div class="
-	      		#if( $!{style} == 6 )
-					channelRegisterBtn6
-				#elseif( $!{style} == 7 || $!{style} == 8 )
-					channelRegisterBtn78
-				#else
-					register_submitBtn_wrap
-				#end
-	      	">
-	      		<button class="register_submitBtn btnC_gray">立即注册</button>
-	      	</div>
-	      	<div class="clearfix
-				#if( $!{style} == 7 || $!{style} == 8 )
-					register_checkbox78
-				#else
-					register_checkbox
-				#end
-	      	">
-	      		<input type="checkbox" class="input_check" id="input_check" checked="checked">
-	        	<label for="input_check"></label>
-	      		<p class="clearfix
-	      			#if( $!{style} == 6 )
-						register_checkbox6
-					#elseif( $!{style} == 7 )
-						register_checkboxP
+				<li>
+					<input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号">
+					#if( $!{style} == 10 )
+						<button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
 					#end
-	      		"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
-	      	</div>
+				</li>
+				<li class="clearfix">
+	    	    	<input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+							#if( $!{style} != 10 )
+							<button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
+							#end
+		        </li>
+		        <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
+		        <li><button class="register_submitBtn" id="register_submitBtn">立即注册</button></li>
+		        <div class="clearfix register_checkbox">
+		      		<input type="checkbox" class="input_check" id="input_check" checked="checked">
+		        	<label for="input_check"></label>
+		      		<p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+		      	</div>
+			</ul>
 		</div>
-		#if( $!{style} == 4 )
-			<div class="bgs_c channelRegister5"></div>
+
+	    #if( $!{style} == 4 )
+			<img src="$commonUrl/channel4_03.jpg">
+		#elseif( $!{style} == 7 || $!{style} == 8 )
+			<img src="$commonUrl/channel7_03.png">
+		#elseif( $!{style} == 9 )
+			<div class="channel9_rule">
+				<p><i></i><span>活动规则</span></p>
+				<p>1.活动时间：2017年6月9日--2017年6月25日；</p>
+				<p>2.此活动名额仅限前10000名，数量有限，抢完为止；</p>
+				<p>3.同一个账号、手机号、移动设备、支付卡号及账户视为同一账户，经系统检测同一IP重复注册视为无效用户；</p>
+				<p>4.如发现恶意作弊行为，将取消活动资格，活动奖励并做好封号处理。</p><br>
+
+				<p>如有任何疑问，请拨打51返呗客服热线：0571-88193918</p>
+			</div>
+		#elseif( $!{style} == 10 )
+			<div class="channelRegisterPopup10">
+				<div class="registerMask hide"></div>
+				<div class="registerSuss hide">
+					<!-- <i class="channelRegisterPopupIcon"></i> -->
+					<p>注册成功，248元红包已到账，赶紧下载预定吧！</p>
+					<span id="downloadApp">下载51APP</span>
+				</div>
+				<div class="registerFail hide">
+					<!-- <i class="channelRegisterPopupIcon"></i> -->
+					<p>注册注册失败，请重新注册</p>
+					<span id="repeatRegister">重新注册</span>
+				</div>
+			</div>
 		#end
-		<div class="channelRegister_copyright 
+		<div class="channelRegister_copyright
 			#if( $!{style} == 1 )
 				copyright1
 			#elseif( $!{style} == 2 || $!{style} == 4)
@@ -135,9 +121,16 @@
 				copyright6
 			#elseif( $!{style} == 7 || $!{style} == 8 )
 				copyright78
+			#elseif( $!{style} == 9 )
+				copyright9
+			#elseif( $!{style} == 10 )
+				copyright10
 			#end
 		">
-	  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918
+	  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918<br>
+				#if( $!{style} == 10 )
+					浙ICP备15027741号-3
+				#end
 	  	</div>
   	</div>
 	<script type="text/javascript" src="/common/js/core.js"></script>

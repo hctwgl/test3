@@ -159,4 +159,8 @@ public class StringUtil extends StringUtils {
         }
         return source;
     }
+    
+    public static String null2Str(Object str) {
+        return (str != null) ? str.toString() : "";
+    }
 }

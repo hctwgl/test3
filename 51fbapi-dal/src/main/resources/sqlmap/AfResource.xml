@@ -115,6 +115,18 @@
 		LIMIT 1
 	</select>
 	
+		<select id="getHomeIndexListByOrderby" resultType="AfResourceDo">
+		SELECT 
+			<include refid="queryAllFields" />
+		FROM
+			af_resource
+		WHERE 
+			type = #{type}
+		AND
+			is_delete = 0
+		order by 
+			sort 
+	</select>
 	
 	<select id="getOneToManyResourceOrderByBytype" resultType="AfResourceDo">
 		SELECT 
@@ -139,7 +151,7 @@
 		AND
 		 r1.value_4 = 'O'
 		ORDER BY 
-		r1.sort desc,r1.id desc, r2.sort desc
+		r1.sort ,r1.id , r2.sort 
 	</select>
 	
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">

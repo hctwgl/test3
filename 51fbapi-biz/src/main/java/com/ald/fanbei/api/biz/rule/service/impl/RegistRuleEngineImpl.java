@@ -6,9 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
+import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
@@ -24,6 +27,8 @@ import com.alibaba.fastjson.JSONObject;
 public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 
 	private static final String REGISTKEY = "regist";
+	@Resource
+	AfGameChanceService afGameChanceService;
 
 	@Override
 	protected AfCouponSceneDo getCouponScene(Date now) {
@@ -63,6 +68,11 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 			//邀请人获取优惠券
 			if(null != userId){
 				this.addUserCoupon(item, userId,CouponSenceRuleType.REGIST,null);
+			}
+			//邀请人获取一次抓娃娃抽奖机会
+			Long invitor = (Long)inputData.get("invitor");
+			if(invitor != null && invitor > 0l){
+				afGameChanceService.updateInviteChance(invitor);
 			}
 		}
 	}

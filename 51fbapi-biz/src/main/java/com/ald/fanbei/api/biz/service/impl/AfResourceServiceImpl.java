@@ -20,6 +20,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 /**
  * 
@@ -28,6 +29,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author Xiaotianjian 2017年1月20日上午10:27:48
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@SuppressWarnings("unchecked")
 @Service("afResourceService")
 public class AfResourceServiceImpl implements AfResourceService {
 
@@ -196,6 +198,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		borrowRate.setRangeBegin(borrowRateJson.getBigDecimal("rangeBegin"));
 		borrowRate.setRangeEnd(borrowRateJson.getBigDecimal("rangeEnd"));
 		
+		borrowRate.setOverdueRate(borrowRateOverdueJson.getBigDecimal("overdueRate"));
 		borrowRate.setOverduePoundageRate(borrowRateOverdueJson.getBigDecimal("overduePoundageRate"));
 		borrowRate.setOverdueRangeBegin(borrowRateOverdueJson.getBigDecimal("overdueRangeBegin"));
 		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
@@ -253,7 +256,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject obj = array.getJSONObject(i);
 			if(obj.getInteger(Constants.DEFAULT_NPER)==realTotalNper){
-				borrowRate.put("overdueRate", Constants.DEFAULT_RATE);
+				borrowRate.put("overdueRate", obj.get(Constants.DEFAULT_RATE));
 				borrowRate.put("overdueRangeBegin", rangeBegin);
 				borrowRate.put("overdueRangeEnd", rangeEnd);
 				borrowRate.put("overduePoundageRate", new BigDecimal(resourceOverdue.getValue1()));
@@ -261,5 +264,11 @@ public class AfResourceServiceImpl implements AfResourceService {
 			}
 		}
 		return borrowRate;
+	}
+
+	@Override
+	public List<AfResourceDo> getHomeIndexListByOrderby(String type) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getHomeIndexListByOrderby(type);
 	}
 }

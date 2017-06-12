@@ -47,6 +47,7 @@ public class Constants {
 	public static final String YES = "yes";
 	public static final String NO = "no";
 	public static final String COMMA = ",";
+	public static final String SEMICOLON = ";";
 	public static final String DEFAULT_YEAR = "year";
 	public static final String DEFAULT_MONTH = "month";
 	public static final String DEFAULT_NPER = "nper";
@@ -88,9 +89,15 @@ public class Constants {
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// cache keys
 	public static final String CACHEKEY_USER_TOKEN = "user_token$";
+	public static final String CACHEKEY_USER_NAME = "user_name$";
 	public static final String CACHEKEY_APK_NEWEST_VERSION = "apk_newest_version$";
 	public static final String CACHEKEY_BORROW_CASH = "borrow_cash$";
 	public static final String CACHEKEY_BORROW_CONSUME = "borrow_consume$";
+	public static final String CACHEKEY_GAME_INFO      = "game_info$";
+	public static final String CACHEKEY_GAMECONF_INFO  = "gameconf_info$";
+	public static final String CACHEKEY_LATESTAWARD_LIST  = "latest_award_list$";
+	public static final String CACHEKEY_LATEST_GAMEERSULT_LIST = "latest_gameresult_list$";
+	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 
 	// res type
@@ -115,6 +122,9 @@ public class Constants {
 	public static final String APPLY_BRROW_CASH_WHITE_LIST = "APPLY_BRROW_CASH_WHITE_LIST";
 	public static final String RES_REFUND_RATE = "REFUND_RATE";
 	public static final String RES_BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
+	public static final String RES_APP_POP_IMAGE        =  "APP_POP_IMAGE"; //首页弹窗配置
+	public static final String RES_GAME_AWARD_OF_CATCH_DOLL = "GAME_AWARD_OF_CATCH_DOLL"; //抓娃娃游戏发奖 
+	public static final String RES_GAME_CATCH_DOLL_CLIENT_RATE = "GAME_CATCH_DOLL_CLIENT_RATE";//抓娃娃游戏客户端抓中概率
 	//续期天数限制
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
 	//允许续期的天数
@@ -219,6 +229,9 @@ public class Constants {
 	public static final String CONFKEY_YITU_KEY = "fbapi.yitu.key";
 	public static final String CONFKEY_YITU_DEFINED_CONTENT = "fbapi.yitu.definedContent";
 	public static final String CONFKEY_YITU_PEM_PATH = "fbapi.yitu.pemPath";
+    public static final String CACHEKEY_YITU_FACE_SIMILARITY                   = "yitu_face_similarity$";
+
+	
 	// 三方接口调用限制
 	public static final String API_CALL_LIMIT = "API_CALL_LIMIT";
 	
