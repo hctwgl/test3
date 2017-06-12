@@ -331,7 +331,7 @@ $('#startBtn').click(function () {
             $('.tryAgain').html('分享增加1次机会').click(function () {
                 // var shareAppUrl = "http://testapp.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'%26sharePage=gameShare";
                 // alert(shareAppUrl);
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":encodeURI("http://testapp.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'&sharePage=gameShare"),"isSubmit":"Y","sharePage":"gameShare"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":encodeURIComponent("http://testapp.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'&sharePage=gameShare"),"isSubmit":"Y","sharePage":"gameShare"}';
             });
             $('#alert').show();
             $('#shadow').show();
