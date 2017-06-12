@@ -95,6 +95,8 @@ public class GetConfirmOrderApi implements ApiHandle {
 		vo.setUseableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
 		vo.setRealNameScore(authDo.getRealnameScore());
 		vo.setAllowConsume(afUserAuthService.getConsumeStatus(orderInfo.getUserId(),context.getAppVersion()));
+		vo.setFaceStatus(authDo.getFacesStatus());
+		
 		return vo;
 	}
 

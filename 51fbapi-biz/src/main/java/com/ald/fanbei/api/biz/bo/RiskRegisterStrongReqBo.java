@@ -30,6 +30,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
+		this.put("orderNo", orderNo);
 	}
 
 	public String getConsumerNo() {
@@ -38,6 +39,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setConsumerNo(String consumerNo) {
 		this.consumerNo = consumerNo;
+		this.put("consumerNo", consumerNo);
 	}
 
 	public String getEvent() {
@@ -46,6 +48,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setEvent(String event) {
 		this.event = event;
+		this.put("event", event);
 	}
 
 	public String getUserInfo() {
@@ -54,6 +57,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setUserInfo(String userInfo) {
 		this.userInfo = userInfo;
+		this.put("userInfo", userInfo);
 	}
 
 	public String getDirectory() {
@@ -62,6 +66,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setDirectory(String directory) {
 		this.directory = directory;
+		this.put("directory", directory);
 	}
 
 	public String getLinkManInfo() {
@@ -70,6 +75,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setLinkManInfo(String linkManInfo) {
 		this.linkManInfo = linkManInfo;
+		this.put("linkManInfo", linkManInfo);
 	}
 
 	public String getRiskInfo() {
@@ -78,6 +84,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setRiskInfo(String riskInfo) {
 		this.riskInfo = riskInfo;
+		this.put("riskInfo", riskInfo);
 	}
 
 	public String getEventInfo() {
@@ -86,6 +93,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setEventInfo(String eventInfo) {
 		this.eventInfo = eventInfo;
+		this.put("eventInfo", eventInfo);
 	}
 
 	public String getSignInfo() {
@@ -94,6 +102,7 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 
 	public void setSignInfo(String signInfo) {
 		this.signInfo = signInfo;
+		this.put("signInfo", signInfo);
 	}
 
 	protected abstract void create(String consumerNo,  String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String NotifyHost);

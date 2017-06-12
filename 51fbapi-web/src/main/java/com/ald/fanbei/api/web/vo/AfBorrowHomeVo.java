@@ -44,6 +44,7 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	private String locationAddress;
 	private String allowConsume;
 	private String faceStatus;
+	private String riskStatus;
 	
 	public BigDecimal getTotalAmount() {
 		return totalAmount;
@@ -225,5 +226,10 @@ public class AfBorrowHomeVo extends AbstractSerial{
 	public void setFaceStatus(String faceStatus) {
 		this.faceStatus = faceStatus;
 	}
-	
+	public String getRiskStatus() {
+		return riskStatus;
+	}
+	public void setRiskStatus(String riskStatus) {
+		this.riskStatus = riskStatus;
+	}
 }

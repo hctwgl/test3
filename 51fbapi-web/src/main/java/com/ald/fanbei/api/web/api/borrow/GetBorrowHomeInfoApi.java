@@ -119,6 +119,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setLocationStatus(authDo.getLocationStatus());
 		vo.setAllowConsume(afUserAuthService.getConsumeStatus(authDo.getUserId(),context.getAppVersion()));
 		vo.setFaceStatus(authDo.getFacesStatus());
+		vo.setRiskStatus(authDo.getRiskStatus());
 		return vo;
 	}
 }

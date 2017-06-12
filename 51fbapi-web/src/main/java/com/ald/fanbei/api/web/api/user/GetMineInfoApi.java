@@ -91,7 +91,7 @@ public class GetMineInfoApi implements ApiHandle {
 		} else {
 			dealWithVersionGT340(data, requestDataVo, context, coupleCount);
 		}
-		
+		data.put("faceStatus", afUserAuthDo.getFacesStatus());
 		data.put("bankcardStatus", afUserAuthDo.getBankcardStatus());
 
 		data.put("recommendCode", userAccountInfo.getRecommendCode());

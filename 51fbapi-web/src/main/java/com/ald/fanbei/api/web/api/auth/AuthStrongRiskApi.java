@@ -85,7 +85,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 			AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 
 			String cardNo = card.getCardNumber();
-			String riskOrderNo = riskUtil.getOrderNo("register", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+			String riskOrderNo = riskUtil.getOrderNo("regi", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 			try {
 				RiskRespBo riskResp = riskUtil.registerStrongRisk(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, card.getCardNumber(), riskOrderNo);
 				if (!riskResp.isSuccess()) {

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.web.api.borrow;
 
 import java.util.Date;
@@ -10,11 +7,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -24,6 +23,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -43,12 +43,12 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 
 	@Resource
 	private AfUserAuthService afUserAuthService;
-
+	@Resource
+	private AfUserBankcardService afUserBankcardService; 
 	@Resource
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	private AfResourceService afResourceService;
-
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -58,13 +58,13 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		// 账户关联信息
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		Map<String, Object> data = getCreditPromoteInfo(now, userDto, authDo,context.getAppVersion());
+		Map<String, Object> data = getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion());
 		resp.setResponseData(data);
 		
 		return resp;
 	}
 
-	private Map<String, Object> getCreditPromoteInfo(Date now, AfUserAccountDto userDto, AfUserAuthDo authDo,Integer appVersion) {
+	private Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo,Integer appVersion) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> creditModel = new HashMap<String, Object>();
 		Map<String, Object> zmModel = new HashMap<String, Object>();
@@ -78,7 +78,6 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		int min = Integer.parseInt(afResourceDo.getValue1());//最小分数
 		if(sorce<min){
 			creditModel.put("creditLevel", "信用较差");
-
 		}else{
 			for (int i = 0; i < arry.size(); i++) {
 				JSONObject obj = arry.getJSONObject(i);
@@ -89,9 +88,7 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 					creditModel.put("creditLevel", desc);
 				}
 			}
-			
 		}
-		
 		
 		creditModel.put("creditAssessTime", authDo.getGmtModified());
 		creditModel.put("allowConsume", afUserAuthService.getConsumeStatus(authDo.getUserId(),appVersion));
@@ -101,7 +98,6 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 				&& StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())) {
 			String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
 			zmModel.put("zmxyAuthUrl", authParamUrl);
-
 		}
 
 		locationModel.put("locationStatus", authDo.getLocationStatus());
@@ -118,7 +114,19 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		data.put("zmModel", zmModel);
 		data.put("locationModel", locationModel);
 		data.put("contactorModel", contactorModel);
-
+		data.put("realNameStatus", authDo.getRealnameStatus());
+		data.put("bankCardStatus", authDo.getBankcardStatus());
+		data.put("riskStatus", authDo.getRiskStatus());
+		data.put("faseStatus", authDo.getFacesStatus());
+		data.put("idNumber", Base64.encodeString(userDto.getIdNumber()));
+		data.put("realName", userDto.getRealName());
+		
+		if (StringUtil.equals(authDo.getBankcardStatus(), YesNoStatus.YES.getCode())) {
+			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
+			data.put("bankCard", afUserBankcardDo.getCardNumber());
+			data.put("phoneNum", afUserBankcardDo.getMobile());
+		}
+		
 		return data;
 	}
 

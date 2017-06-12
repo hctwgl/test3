@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.bo.risk;
 
-import org.dbunit.util.Base64;
-
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -34,7 +32,8 @@ public class RiskLinkMan extends RiskRegisterStrongReqBo {
 		linkManInfo.put("idNo", "");
 		linkManInfo.put("phone", afUserAuthDo.getContactorMobile());
 		linkManInfo.put("reqExt", "");
-		setLinkManInfo(Base64.encodeString(JSON.toJSONString(linkManInfo)));
+//		setLinkManInfo(Base64.encodeString(JSON.toJSONString(linkManInfo)));
+		setLinkManInfo(JSON.toJSONString(linkManInfo));
 	}
 
 }

@@ -346,14 +346,16 @@ public class RiskUtil extends AbstractThird {
 			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
 		
 		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, 
-				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, getNotifyHost());
+				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, /*getNotifyHost()*/"http://192.168.96.49");
 		
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
 		
-		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
+//		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
+		String reqResult = HttpUtil.post("http://192.168.96.198:80/modules/api/user/registerAndRisk.htm", reqBo);
+		System.out.println(reqResult);
 		logThird(reqResult, "registerAndRisk", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
@@ -365,6 +367,41 @@ public class RiskUtil extends AbstractThird {
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 		}
+	}
+	
+	public static void main(String[] args) {
+		RiskUtil riskUtil = new RiskUtil();
+		/*String cardNo = "6228480322828314011";
+		String riskOrderNo = riskUtil.getOrderNo("rais", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+		BigDecimal amount = new BigDecimal(1000);
+		BigDecimal income = new BigDecimal(66);
+		Long overdueDay = 1l;
+		int borrowCount = 3;
+		riskUtil.raiseQuota("90283", "60", riskOrderNo, amount, income, overdueDay, borrowCount);*/
+		AfUserDo afUserDo = new AfUserDo();
+		afUserDo.setRealName("美爱测试1");
+		afUserDo.setMobile("18758158620");
+		afUserDo.setEmail("434327154@qq.com");
+		afUserDo.setAddress("杭州市滨江区");
+		
+		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
+		afUserAuthDo.setContactorName("傅测试1");
+		afUserAuthDo.setContactorType("父亲");
+		afUserAuthDo.setContactorMobile("185215624582");
+		
+		String appName = "alading_and";
+		String ipAddress = "192.168.96.90";
+		
+		AfUserAccountDto accountDo = new AfUserAccountDto();
+		accountDo.setIdNumber("330722199105140828");
+		accountDo.setAlipayAccount("18758158620");
+		accountDo.setOpenId("268800379047650650058456578");
+		
+		String blackBox = "eyJvcyI6ImFuZHJvaWQiLCJ2ZXJzaW9uIjoiMy4wLjUiLCJwYWNrYWdlcyI6ImNvbS5hbGZsLnd3d18zLjYuMSIsInByb2ZpbGVfdGltZSI6MzEwLCJpbnRlcnZhbF90aW1lIjo4MDU2OCwidG9rZW5faWQiOiJucUYxRW9lSkFyUm5sd3ZXRDk5RVZpWWJTWVVZMWNPdmZsbFwvSFwvUXJoRWd4SDRyeloxTk5YUWdHV2pxeTRlNStlc0hIODZQXC9lQWdPMGdhTzhFM1BQUT09In0=";
+		String cardNum = "6228480322828314011";
+		String riskOrderNo = riskUtil.getOrderNo("regi", cardNum.substring(cardNum.length() - 4, cardNum.length()));
+		System.out.println(riskOrderNo);
+		riskUtil.registerStrongRisk("20170610001", "DIRECTORY", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, riskOrderNo);
 	}
 	
 	/**
@@ -421,7 +458,7 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
-
+	
 	/**
 	 * 风控提额
 	 * @param consumerNo
@@ -452,13 +489,13 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/user/action/raiseQuota.htm";
-
-		String content = JSONObject.toJSONString(reqBo);
+//		String url = "http://192.168.96.13:80//modules/api/user/action/raiseQuota.htm";
 		
-		commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
+		String content = JSONObject.toJSONString(reqBo);
 		
 		String reqResult = HttpUtil.post(url, reqBo);
 		
+		commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
 		logThird(reqResult, "raiseQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -468,7 +505,13 @@ public class RiskUtil extends AbstractThird {
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
-			riskResp.setResult(dataObj.getString("result"));
+//			riskResp.setResult(dataObj.getString("result"));
+			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
+  			AfUserAccountDo userAccountDo = new AfUserAccountDo();
+  			userAccountDo.setUserId(Long.parseLong(consumerNo));
+  			userAccountDo.setAuAmount(au_amount);
+  			afUserAccountService.updateUserAccount(userAccountDo);
+			
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -587,7 +630,8 @@ public class RiskUtil extends AbstractThird {
 			String result = obj.getString("result");//
 			AfBorrowCashDo cashDo = new AfBorrowCashDo();
 			// cashDo.setRishOrderNo(orderNo);
-			Date currDate = new Date();
+			
+			Date currDate = new Date(System.currentTimeMillis());
 
 			AfUserDo afUserDo = afUserService.getUserById(consumerNo);
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
@@ -630,9 +674,8 @@ public class RiskUtil extends AbstractThird {
 						card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
 						UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-				Integer day = NumberUtil
-						.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-				Date arrivalStart = DateUtil.getStartOfDate(currDate);
+				Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+				Date arrivalStart = DateUtil.getEndOfDate(cashDo.getGmtArrival());
 				Date repaymentDay = DateUtil.addDays(arrivalStart, day);
 				cashDo.setGmtPlanRepayment(repaymentDay);
 
@@ -673,7 +716,7 @@ public class RiskUtil extends AbstractThird {
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
 			logger.info("asyRegisterStrongRisk reqBo.getSignInfo()" + reqBo.getSignInfo());
 			JSONObject obj = JSON.parseObject(data);
-			String limitAmount = obj.getString("Amount");
+			String limitAmount = obj.getString("amount");
 			if (StringUtil.equals(limitAmount, ""))
 				limitAmount = "0";
 			BigDecimal au_amount = new BigDecimal(limitAmount);
