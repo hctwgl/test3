@@ -9,43 +9,85 @@
 </head>
 <body>
 <div id="vueCon">
-	<div class="activityHomeWrap">
-		<div class="activityHomeBanner">
-			<img src="$commonUrl/bannerBg.jpg" class="banner">
-		</div>
-		<div class="activityHomeContent">
-			<div class="boutiqueHome">
-				<h2>精品推荐</h2>
-				<ul>
-					<li v-for="data in content.categoryList" class="clearfix">
-						<a href="">
-							<img src="">
-							<div class="boutiqueHomeContent clearfix">
-								<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利更有超级返利618折上</p>
-								<p class="price"><span>￥5.2</span><span><i>返</i>￥1.2</span></p>
-								<button>马上抢</button>
-							</div>
-						</a>
-					</li>
-					<li class="clearfix">
-						<a href="">
-							<img src="">
-							<div class="boutiqueHomeContent">
-								<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
-								<div class="price">
-									<p><i class="monthCorner"></i>￥5.2</p>
-									<p>抢购价：￥1.2</p>
-								</div>
-								<button>马上抢</button>
-							</div>
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>
+	<img class="banner" :src="content.data.bannerImage">
+	<div class="recommend">
+		<h2>精品推荐</h2>
+		<ul>
+			<li v-for="data in content.data.qualityGoodsList" class="clearfix">
+				<a :href="data.goodsUrl">
+					<img :src="data.goodsIcon">
+					<div class="boutiqueHomeContent clearfix">
+						<p class="title">{{data.goodName}}</p>
+						<p class="price">
+##						{{
+##							<p><i class="monthCorner"></i>￥5.2</p>
+##							<p>抢购价：￥1.2</p>
+##						}}
+							<span>￥{{data.saleAmount}}</span>
+							<span><i>返</i>￥{{data.rebateAmount}}</span>
+						</p>
+						<button>马上抢</button>
+					</div>
+				</a>
+			</li>
+##			<li class="clearfix">
+##				<a href="">
+##					<img src="">
+##					<div class="boutiqueHomeContent">
+##						<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
+##						<div class="price">
+##                            <p><i class="monthCorner"></i>￥5.2</p>
+##							<p>抢购价：￥1.2</p>
+##						</div>
+##						<button>马上抢</button>
+##					</div>
+##				</a>
+##			</li>
+		</ul>
 	</div>
+    <div class="activityList">
+		<div class="listAlert">
+			<a :href="ht+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+		</div>
+		<template v-for="(data,index) in content.data.activityList">
+            <h2 :id="index">{{data.name}}</h2>
+            <ul>
+                <li v-for="data in data.activityGoodsList" class="clearfix">
+                    <a :href="data.goodsUrl">
+                        <img :src="data.goodsIcon">
+                        <div class="boutiqueHomeContent clearfix">
+                            <p class="title">{{data.goodName}}</p>
+                            <p class="price">
+							##						{{
+							##							<p><i class="monthCorner"></i>￥5.2</p>
+							##							<p>抢购价：￥1.2</p>
+							##						}}
+                                <span>￥{{data.saleAmount}}</span>
+                                <span><i>返</i>￥{{data.rebateAmount}}</span>
+                            </p>
+                            <button>马上抢</button>
+                        </div>
+                    </a>
+                </li>
+			##			<li class="clearfix">
+			##				<a href="">
+			##					<img src="">
+			##					<div class="boutiqueHomeContent">
+			##						<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
+			##						<div class="price">
+			##                            <p><i class="monthCorner"></i>￥5.2</p>
+			##							<p>抢购价：￥1.2</p>
+			##						</div>
+			##						<button>马上抢</button>
+			##					</div>
+			##				</a>
+			##			</li>
+                <a class="more" href="getMore">更多 ...</a>
+			</ul>
+		</template>
+    </div>
 </div>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
-<script type="text/javascript" src="/dist/activity/06/selectedHomeList.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/06/selectedHome.js"></script>
 </body>
 </html>
