@@ -41,7 +41,11 @@ function dataInit() {
                 clientRate=data.data.clientRate||100;
                 recommendCode=data.data.recommendCode;
                 //抽奖次数显示,抽奖码获取
-                $('#chance').html('您还有'+data.data.chanceCount+'次机会');
+                if(isLogin=='N'){
+                    $('#chance').html('您还有3次机会');
+                }else{
+                    $('#chance').html('您还有'+data.data.chanceCount+'次机会');
+                }
                 if(data.data.chanceCodes){
                     chance=data.data.chanceCodes.split(',');
                     for(var i = 0;i<chance.length;i++){

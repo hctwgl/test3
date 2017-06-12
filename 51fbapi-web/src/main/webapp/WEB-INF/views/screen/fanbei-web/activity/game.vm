@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017060717")
+    #set($version="2017060718")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>game</title>
@@ -28,7 +28,7 @@
     <button id="playBtn" class="button"><p>立即抓取</p></button>
     <button id="startBtn" class="button"><p>开始游戏</p></button>
 </div>
-<div id="chance">您还有0次机会</div>
+<div id="chance"></div>
 
 <!--活动规则-->
 <img id="rule" src="$commonUrl/ni_rule.png">
