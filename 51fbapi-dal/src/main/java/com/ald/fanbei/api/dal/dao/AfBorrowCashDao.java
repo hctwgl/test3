@@ -83,4 +83,12 @@ public interface AfBorrowCashDao {
 	 * @return
 	 */
 	AfBorrowCashDo getUserDayLastBorrowCash(@Param("userId") Long userId,@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+	/**
+	 * 获取某个用户某个时间后，风控拒绝的借款申请数量
+	 * @param userId
+	 * @param reviewStatus
+	 * @param startTime
+	 * @return
+	 */
+	Integer getSpecBorrowCashNums(@Param("userId") Long userId,@Param("reviewStatus") String reviewStatus,@Param("startTime") Date startTime);
 }

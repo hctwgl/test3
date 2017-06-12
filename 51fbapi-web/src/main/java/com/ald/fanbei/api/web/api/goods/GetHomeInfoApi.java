@@ -41,20 +41,30 @@ public class GetHomeInfoApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		List<Object> bannerList = getObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
-		List<Object> bannerSecList = getObjectWithResourceDolist(
+		List<Object> bannerSecList = new ArrayList<Object>();
+		if(context.getAppVersion() >= 363){
+			bannerSecList = getObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
+		}
 		List<Object> one2OneList = getObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
 		List<Object> one2ManyList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
 		List<Object> one2TwoList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
+		List<Object> homeActivityList = getOne2ManyObjectWithResourceDolist(
+				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
+		List<Object> navigationList = getObjectWithResourceDolist(
+				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 
 		data.put("bannerList", bannerList);
 		data.put("bannerSecList", bannerSecList);
+		data.put("homeActivityList",homeActivityList);
 		data.put("one2ManyList", one2ManyList);
 		data.put("one2TwoList", one2TwoList);
 		data.put("one2OneList", one2OneList);
+		data.put("navigationList", navigationList);
+		
 
 		resp.setResponseData(data);
 		return resp;
@@ -66,7 +76,11 @@ public class GetHomeInfoApi implements ApiHandle {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
 			data.put("titleName", afResourceDo.getName());
-			data.put("type", afResourceDo.getValue1());
+			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
+				data.put("type", afResourceDo.getSecType());
+			}else{
+				data.put("type", afResourceDo.getValue1());
+			}
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
 

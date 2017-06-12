@@ -59,6 +59,9 @@ public class AfBorrowDo extends AbstractSerial{
 	
 	private String calculateMethod;//计息方式【DEBX:等额本息 DBDX:等本等息】
 	
+	private Integer freeNper;//免息期数;
+	
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -251,6 +254,20 @@ public class AfBorrowDo extends AbstractSerial{
 	 */
 	public void setCalculateMethod(String calculateMethod) {
 		this.calculateMethod = calculateMethod;
+	}
+
+	/**
+	 * @return the freeNper
+	 */
+	public Integer getFreeNper() {
+		return freeNper;
+	}
+
+	/**
+	 * @param freeNper the freeNper to set
+	 */
+	public void setFreeNper(Integer freeNper) {
+		this.freeNper = freeNper;
 	}
 
 	

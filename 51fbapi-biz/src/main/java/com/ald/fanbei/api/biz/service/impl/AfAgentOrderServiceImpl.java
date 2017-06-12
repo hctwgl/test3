@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -37,7 +38,6 @@ import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
-import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
 
 /**
@@ -236,11 +236,11 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 		}
 		BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
-		orderInfo.setBorrowRate(JSONObject.toJSONString(borrowRate));
+		orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		afOrderDao.updateOrder(orderInfo);
 		AfAgentOrderDo agentOrderDo = new AfAgentOrderDo();
 		agentOrderDo.setOrderId(orderInfo.getRid());
-		agentOrderDo.setBorrowRate(JSONObject.toJSONString(borrowRate));
+		agentOrderDo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		afAgentOrderDao.updateAgentOrder(agentOrderDo);
 
 	}

@@ -213,4 +213,18 @@
 		and  <![CDATA[ gmt_create  <=  #{endTime}  ]]>
 		ORDER BY gmt_create DESC LIMIT 1;
 	</select>
+	
+	<select id="getSpecBorrowCashNums" resultType="java.lang.Integer">
+		SELECT
+		count(*) 
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and
+		review_status = #{reviewStatus}
+		and  <![CDATA[ gmt_create  >=  #{startTime}  ]]>;
+	</select>
 </mapper>

@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
@@ -235,17 +236,36 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 	/**
 	 * 
-	 * @param userId
-	 * @param money
-	 *            -- 借款金额
+	 * @param name 分期名称
+	 * @param type 分期类型
+	 * @param userId 用户id
+	 * @param amount 分期金额
+	 * @param nper 分期期数
+	 * @param perAmount 每期金额
+	 * @param status 状态
+	 * @param orderId 订单id
+	 * @param orderNo 订单编号
+	 * @param borrowRate 借款利率等参数
+	 * @param interestFreeJson 分期规则
 	 * @return
 	 */
-	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal money, int nper,
-			BigDecimal perAmount, String status, Long orderId, String orderNo, String borrowRate) {
+	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper,
+			BigDecimal perAmount, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson) {
+		
+		Integer freeNper = 0;
+		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
+		if (CollectionUtils.isNotEmpty(interestFreeList)) {
+			for (InterestFreeJsonBo bo : interestFreeList) {
+				if (bo.getNper().equals(nper)) {
+					freeNper = bo.getFreeNper();
+					break;
+				}
+			}
+		}
 		Date currDate = new Date();
 		AfBorrowDo borrow = new AfBorrowDo();
 		borrow.setGmtCreate(currDate);
-		borrow.setAmount(money);
+		borrow.setAmount(amount);
 		borrow.setType(type.getCode());
 		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
 		borrow.setStatus(status);// 默认转账成功
@@ -260,6 +280,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		borrow.setOrderNo(orderNo);
 		borrow.setBorrowRate(borrowRate);
 		borrow.setCalculateMethod(BorrowCalculateMethod.DENG_BEN_DENG_XI.getCode());
+		borrow.setFreeNper(freeNper);
 		return borrow;
 	}
 
@@ -571,48 +592,32 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	}
 	
 	/**
-	 * 新的计息方式
-	 * @param borrow
-	 * 		  借款信息
-	 * @param poundageAmount
-	 * 		  每期手续费
-	 * @param principleAmount
-	 * 		  每期本金
-	 * @param interestAmount
-	 * 	           每期利息		
-	 * @param interestFreeJsonBo
-	 * 		免息规则 可能为空
+	 * 
+	 * @param borrow 借款信息
 	 * @return
 	 */
-	private List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow, String borrowRate, String interestFreeJson) {
+	private List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow) {
 		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
 		Date now = new Date();// 当前时间
 		Integer nper = borrow.getNper();
+		Integer freeNper = borrow.getFreeNper();
+		String borrowRate = borrow.getBorrowRate();
 		BigDecimal money = borrow.getAmount();// 借款金额
 		
 		//拿到日利率快照Bo
-		BorrowRateBo borrowRateBo =  JSONObject.parseObject(borrowRate, BorrowRateBo.class);
-		Integer freeNper = 0;
-		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
-		if (CollectionUtils.isNotEmpty(interestFreeList)) {
-			for (InterestFreeJsonBo bo : interestFreeList) {
-				if (bo.getNper().equals(nper)) {
-					freeNper = bo.getFreeNper();
-					break;
-				}
-			}
-		}
+		BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(borrowRate);
+		
 		//每期本金
 		BigDecimal principleAmount = money.divide(new BigDecimal(borrow.getNper()), 2, RoundingMode.DOWN);
 		//第一期本金
-		BigDecimal firstPrincipleAmount =  getFirstPrincipleAmount(money, principleAmount, freeNper);
+		BigDecimal firstPrincipleAmount =  getFirstPrincipleAmount(money, principleAmount, nper);
 		//每期利息
 		BigDecimal interestAmount = money.multiply(borrowRateBo.getRate()).divide(
 				Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
 		//每期手续费
 		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(money, borrow.getNper(), borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
 		
-		for (int i = 1; i <= borrow.getNper(); i++) {
+		for (int i = 1; i <= nper; i++) {
 			AfBorrowBillDo bill = new AfBorrowBillDo();
 			bill.setUserId(borrow.getUserId());
 			bill.setBorrowId(borrow.getRid());
@@ -917,14 +922,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 	@Override
 	public Long dealAgentPayBorrowAndBill(final Long userId, final String userName, final BigDecimal amount,final String name,
-			final int nper, final Long orderId,final String orderNo, final String borrowRate,final String interestFreeJson) {
+			final Integer nper, final Long orderId,final String orderNo, final String borrowRate,final String interestFreeJson) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					
 					AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
-							amount, nper, BigDecimal.ZERO, BorrowStatus.TRANSED.getCode(), orderId, orderNo,borrowRate);
+							amount, nper, BigDecimal.ZERO, BorrowStatus.TRANSED.getCode(), orderId, orderNo,borrowRate, interestFreeJson);
 					// 新增借款信息
 					afBorrowDao.addBorrow(borrow);
 					// 直接打款
@@ -933,7 +938,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					// 新增借款日志
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userId, borrow.getRid()));
 					
-					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, borrowRate, interestFreeJson);
+					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow);
 					
 					afBorrowDao.addBorrowBill(billList);
 
@@ -942,7 +947,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				} catch (Exception e) {
 					logger.info("dealAgentPayBorrowAndBill error:" + e);
 					status.setRollbackOnly();
-					return 0l;
+					throw e;
 				}
 			}
 		});
