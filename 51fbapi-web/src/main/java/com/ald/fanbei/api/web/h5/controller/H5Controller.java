@@ -47,7 +47,7 @@ public class H5Controller extends BaseController {
 		response.addCookie(host);
 		String returnUrl = request.getRequestURI();
 		if(returnUrl.indexOf("fanbei-web/activity/game") >=0){
-			doMaidianLog(request);
+			doMaidianLog(request,"");
 		}
 		
 		return returnUrl;
