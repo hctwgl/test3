@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
@@ -62,7 +63,8 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	AfBorrowService afBorrowService;
-	
+	@Resource
+	AfUserCouponService afUserCouponService;
 	@Resource
 	AfResourceService afResourceService;
 
@@ -212,7 +214,9 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 					if(nper > 0){
 						orderBorrowInfo(afOrder);
 					}
-				
+				if(afAgentOrderDo.getCouponId()>0){
+					afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
+				}
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();

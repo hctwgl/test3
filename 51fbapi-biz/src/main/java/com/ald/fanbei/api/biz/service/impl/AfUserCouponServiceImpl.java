@@ -139,4 +139,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	public List<AfUserCouponDto> getUserAcgencyCouponByAmount(Long userId, BigDecimal amount, Long goodsId,Integer pageNo) {
 		return afUserCouponDao.getUserAcgencyCouponByAmount(userId, amount, goodsId, pageNo);
 	}
+
+
+	@Override
+	public int updateUserCouponSatusNouseById(Long rid) {
+		return afUserCouponDao.updateUserCouponSatusNouseById(rid);
+	}
 }

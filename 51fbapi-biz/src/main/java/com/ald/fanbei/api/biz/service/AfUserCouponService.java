@@ -58,6 +58,9 @@ public interface AfUserCouponService {
 	 */
 	int updateUserCouponSatusUsedById(Long rid);
 	
+	int updateUserCouponSatusNouseById(Long rid);
+	
+	
 	/**
 	 * 获取类型可用优惠券
 	 * @param userId
