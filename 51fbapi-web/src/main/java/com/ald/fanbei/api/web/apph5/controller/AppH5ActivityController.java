@@ -202,6 +202,7 @@ public class AppH5ActivityController extends BaseController {
             
             Long activityId = 0L;
             Long goodsId = 0L;
+            String isHaveReservationRecord = YesNoStatus.NO.getCode();
             String isCanReservation = YesNoStatus.NO.getCode();
             String activityStatus = AfCounponStatus.O.getCode();
             
@@ -227,6 +228,8 @@ public class AppH5ActivityController extends BaseController {
                 Integer revCountNums = afGoodsReservationService.getRevCountNumsByQueryCondition(afGoodsReservationDo);
                 if(revCountNums==0){
                     isCanReservation = YesNoStatus.YES.getCode();
+                }else{
+                	isHaveReservationRecord = YesNoStatus.YES.getCode();
                 }
             }
             
@@ -255,6 +258,7 @@ public class AppH5ActivityController extends BaseController {
             returnData.put("endTime", endTime);
             returnData.put("goodsId", goodsId);
             returnData.put("isCanReservation", isCanReservation);
+            returnData.put("isHaveReservationRecord", isHaveReservationRecord);
             
             return H5CommonResponse
                     .getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "",returnData )
