@@ -46,8 +46,10 @@
 		</ul>
 	</div>
     <div class="activityList">
-		<div class="listAlert">
-			<a :href="ht+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+		<div style="height: .8rem">
+            <div id="listAlert">
+                <a :href="ht+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+            </div>
 		</div>
 		<template v-for="(data,index) in content.data.activityList">
             <h2 :id="index">{{data.name}}</h2>
@@ -82,7 +84,7 @@
 			##					</div>
 			##				</a>
 			##			</li>
-                <a class="more" href="getMore">更多 ...</a>
+                <a class="more" :href="moreHref+data.subjectId">更多 ...</a>
 			</ul>
 		</template>
     </div>
