@@ -9,7 +9,7 @@ class Swipe{
         this.length = this.element.children.length;
         this.speed = 200;
         //执行对象中的handleEvent函数
-        document.getElementById('navWrap').style.width=this.length*1.5+'rem';
+        document.getElementById('listAlert').style.width=this.length*1.5+'rem';
         this.element.addEventListener("touchstart", this);
         this.element.addEventListener("touchmove", this);
     }
@@ -66,7 +66,6 @@ new Vue({
     },
     created:function () {
         this.logData();
-        window.addEventListener('scroll', this.handleScroll);
     },
     methods:{
         handleScroll (){
@@ -86,6 +85,7 @@ new Vue({
                 console.log(self.content);
                 self.$nextTick(function () {                              //dom渲染完成后执行
                     self.divTop=document.getElementById('navWrap').offsetTop;
+                    window.addEventListener('scroll', this.handleScroll);
                     new Swipe(document.getElementById('navWrap'));
                 })
             },function (response) {
