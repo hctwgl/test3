@@ -20,8 +20,11 @@ import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
@@ -41,6 +44,8 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 @RequestMapping("/fanbei-web/")
 public class AppH5SubjectController  extends BaseController{
+	
+	String  opennative = "/fanbei-web/opennative?name=";
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -63,7 +68,8 @@ public class AppH5SubjectController  extends BaseController{
 		// FanbeiWebContext context = new FanbeiWebContext();
 		//context = doWebCheck(request, false);
 		JSONObject jsonObj = new JSONObject();
-		
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+		jsonObj.put("notifyUrl", notifyUrl);
 		// 获取会场商品题目文案
 		List<AfResourceDo> goodsTitleList =  afResourceService.getConfigByTypes("ACTIVITY_GOODS_TITLE");
 		if(goodsTitleList != null && goodsTitleList.size() > 0){
@@ -94,6 +100,8 @@ public class AppH5SubjectController  extends BaseController{
 			qualityGoodsInfo.put("saleAmount", qualityGoods.getSaleAmount());
 			qualityGoodsInfo.put("goodsIcon", qualityGoods.getGoodsIcon());
 			qualityGoodsInfo.put("goodsId", qualityGoods.getRid());
+			
+			
 			qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
 			qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
 			qualityGoodsList.add(qualityGoodsInfo);
@@ -118,6 +126,8 @@ public class AppH5SubjectController  extends BaseController{
 		}
 		
 		JSONObject jsonObj = new JSONObject();
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+		jsonObj.put("notifyUrl", notifyUrl);
 		// 根据modelId查询banner信息
 		List<AfModelH5ItemDo> bannerList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(Long.parseLong(modelId), "BANNER");
 		if(bannerList != null && bannerList.size() > 0){
@@ -208,7 +218,8 @@ public class AppH5SubjectController  extends BaseController{
 		List<AfGoodsDo> goodsList = afSubjectGoodsService.listAllSubjectGoods(query);
 		
 		JSONObject jsonObj = new JSONObject();
-		
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+		jsonObj.put("notifyUrl", notifyUrl);
 		List<Map> subjectGoodsList = new ArrayList<Map>();
 		for(AfGoodsDo goodsDo : goodsList) {
 			Map subjectGoodsInfo = new HashMap();
