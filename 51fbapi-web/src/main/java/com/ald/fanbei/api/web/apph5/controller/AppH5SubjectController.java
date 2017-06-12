@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -136,6 +137,9 @@ public class AppH5SubjectController  extends BaseController{
 			String subjectId = subjectDo.getItemValue();
 			// 查询会场信息
 			AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
+			if(subjectInfo == null) {
+				return H5CommonResponse.getNewInstance(false, "会场不存在id=" + subjectId).toString();
+			}
 			activityInfoMap.put("name", subjectInfo.getName());
 			activityInfoMap.put("subjectId", subjectInfo.getId());
 			// 获取一级会场名称
@@ -184,6 +188,54 @@ public class AppH5SubjectController  extends BaseController{
 		jsonObj.put("qualityGoodsList",qualityGoodsList);
 		H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
 		return resp.toString();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "subjectGoodsInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String categoryGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// 分会场接口
+		FanbeiWebContext context = new FanbeiWebContext();
+		//context = doWebCheck(request, false);
+		
+		String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
+		
+		AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
+		
+		if(subjectId == null || "".equals(subjectId)) {
+			return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
+		}
+		List<AfGoodsDo> goodsList = afSubjectGoodsService.listAllSubjectGoods(query);
+		
+		JSONObject jsonObj = new JSONObject();
+		
+		List<Map> subjectGoodsList = new ArrayList<Map>();
+		for(AfGoodsDo goodsDo : goodsList) {
+			Map subjectGoodsInfo = new HashMap();
+			subjectGoodsInfo.put("goodName", goodsDo.getName());
+			subjectGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+			subjectGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+			subjectGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+			subjectGoodsInfo.put("goodsId", goodsDo.getRid());
+			subjectGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+			subjectGoodsInfo.put("thumbnailIcon",goodsDo.getThumbnailIcon());
+			subjectGoodsList.add(subjectGoodsInfo);
+		}
+		jsonObj.put("subjectGoodsList", subjectGoodsList);
+		H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
+		return resp.toString();
+	}
+	
+	
+	private AfSubjectGoodsQuery buildAfSubjectGoodsQuery(HttpServletRequest request) {
+		AfSubjectGoodsQuery query = new AfSubjectGoodsQuery();
+		String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
+		Integer currentPage = NumberUtil.objToIntDefault(request.getParameter("currentPage"), 1);
+		query.setSubjectId(Long.parseLong(subjectId));
+		query.setPageNo(currentPage);
+		query.setPageSize(20);
+		query.setFull(false);
+		return query;
 	}
 	
 
