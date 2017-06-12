@@ -80,6 +80,20 @@
 			m.id = #{subjectId}
 	</select>
 	
+	
+	<select id="getParentSubjectInfoById" parameterType="java.lang.String" resultType="AfSubjectDo" >
+		SELECT 
+			m.* 
+		FROM 
+			af_subject m 
+		LEFT JOIN 
+			af_subject n 
+		ON 
+			m.id = n.parent_id 
+		WHERE 
+			n.id = #{subjectId}
+	</select>
+	
 	<update id="deleteSubject" parameterType="java.lang.Long" >
 		UPDATE af_subject SET is_delete = 1 WHERE id=#{activityId}
 	</update>

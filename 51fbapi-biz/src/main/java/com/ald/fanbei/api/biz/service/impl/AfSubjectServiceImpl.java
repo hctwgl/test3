@@ -50,4 +50,9 @@ public class AfSubjectServiceImpl implements AfSubjectService{
 		return afSubjectDao.getSubjectInfoById(id);
 	}
 
+	@Override
+	public AfSubjectDo getParentSubjectInfoById(String subjectId) {
+		return afSubjectDao.getParentSubjectInfoById(subjectId);
+	}
+
 }

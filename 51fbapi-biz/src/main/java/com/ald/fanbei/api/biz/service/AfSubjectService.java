@@ -23,4 +23,6 @@ public interface AfSubjectService {
 	
 	AfSubjectDo getSubjectInfoById(String id);
 
+	AfSubjectDo getParentSubjectInfoById(String subjectId);
+
 }

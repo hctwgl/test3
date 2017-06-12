@@ -129,6 +129,13 @@ public class AppH5SubjectController  extends BaseController{
 			// 查询会场信息
 			AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
 			activityInfoMap.put("name", subjectInfo.getName());
+			// 获取一级会场名称
+			AfSubjectDo parentSubjectInfo = afSubjectService.getParentSubjectInfoById(subjectId);
+			String activityName = "";
+			if(parentSubjectInfo != null){
+				activityName = parentSubjectInfo.getName();
+			}
+			
 			// 查询会场下所有商品信息
 			AfSubjectGoodsQuery query = new AfSubjectGoodsQuery();
 			query.setSubjectId(Long.parseLong(subjectId));
@@ -143,7 +150,7 @@ public class AppH5SubjectController  extends BaseController{
 				activityGoodsInfo.put("goodsId", goodsDo.getRid());
 				activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
 				activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
-				activityGoodsInfo.put("activityName", "值得买");
+				activityGoodsInfo.put("activityName", activityName);
 				activityGoodsList.add(activityGoodsInfo);
 			}
 			activityInfoMap.put("activityGoodsList", activityGoodsList);

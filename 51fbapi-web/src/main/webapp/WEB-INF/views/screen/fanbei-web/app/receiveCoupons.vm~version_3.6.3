@@ -17,6 +17,9 @@
 	<ul class="List">
 	    #foreach($item in $!{couponList})
 		   <li class="couponLi">
+		       #if($!{item.status}=='Y')
+		       <p class="couponState"><img src="$commonUrl/coupon01.png"></p>
+		       #end
 		       <p class="positionYuan positionYuan01"></p>
                <p class="positionYuan positionYuan02"></p>
 		   	   <div class="couponKind"><img src="$commonUrl/getCoupon02.png"></div>
