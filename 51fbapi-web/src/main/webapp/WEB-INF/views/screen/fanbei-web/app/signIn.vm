@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  #set($version="2017061201")
+  #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/05")
+  <title>签到有礼</title>
+  <!-- <link rel="stylesheet" type="text/css" href="/dist/css/user/signIn.css?version=$version"> -->
+</head>
+<body>
+
+<div class="footer" @click="bombBox">
+   <div class="words"><img src="$commonUrl/mumday28_01.jpg"></div>
+   <div class="saleOff"><img src="$commonUrl/mumday30.jpg"></div>
+</div>
+<!-- <script type="text/javascript" src="/dist/activity/05/demo.js?version=$version"></script> -->
+</body>
+</html>
