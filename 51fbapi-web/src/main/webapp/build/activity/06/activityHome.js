@@ -16,7 +16,7 @@ function addModel(goodsList) {
     var goodsUrl = goodsList[i].goodsUrl;  // 淘宝商品链接
 
     var urlHost = window.location.host;
-    var goodsUrl = urlHost + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
+    var goodsUrl = urlHost + '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+goodsList[i].goodsId+'"}';
 
     html +='<li class="clearfix">'
                 +'<a href='+goodsUrl+'>'
