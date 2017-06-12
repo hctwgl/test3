@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
@@ -57,6 +58,9 @@ public interface AfUserCouponService {
 	 */
 	int updateUserCouponSatusUsedById(Long rid);
 	
+	int updateUserCouponSatusNouseById(Long rid);
+	
+	
 	/**
 	 * 获取类型可用优惠券
 	 * @param userId
@@ -80,4 +84,15 @@ public interface AfUserCouponService {
 	 * @param source_ref  来源关联id
 	 */
 	void grantCoupon(Long userId,Long couponId,String sourceType,String sourceRef);
+
+	/**
+	 * 获取用户专场可使用满减券
+	 * @param userId
+	 * @param amount
+	 * @param goodsId
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserAcgencyCouponByAmount(Long userId,BigDecimal amount,Long goodsId,Integer pageNo);
+
+
 }

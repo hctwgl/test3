@@ -3,16 +3,16 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfAgentOrderDao">
 	<sql id="queryAllFields">
 		order_id,user_id,province,city,county,address,consignee,mobile,capture,remark,agent_account,agent_message,agent_id,gmt_agent_buy,gmt_closed,cancel_reason,cancel_detail,closed_reason,
-		closed_detail,match_order_id,gmt_match_order,status,borrow_rate
+		closed_detail,match_order_id,gmt_match_order,status,borrow_rate,coupon_id
 	</sql>
 	<sql id="queryFields">
 		a.order_id,a.user_id,a.province,a.city,a.county,a.address,a.consignee,a.mobile,a.capture,a.remark,a.agent_id,a.status,
-		o.sec_type,a.match_order_id,a.gmt_match_order,o.num_id,o.goods_name,o.goods_icon,o.price_amount,o.sale_amount,o.actual_amount,o.gmt_create
+		o.sec_type,a.match_order_id,a.gmt_match_order,o.num_id,o.goods_name,o.goods_icon,o.price_amount,o.sale_amount,o.actual_amount,o.gmt_create,a.coupon_id
 	</sql>
 	<insert id="addAgentOrder" parameterType="AfAgentOrderDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_agent_order(order_id , user_id , province , city ,
 		 county , address , consignee , mobile , <if test="remark !=null ">remark ,</if><if test="goodsUrl !=null ">goods_url ,</if>
-		capture )
+		coupon_id,capture )
 		VALUES (
     		#{orderId},
     		#{userId},
@@ -24,7 +24,10 @@
     		#{mobile},
     		<if test="remark !=null ">#{remark},</if>
     		 <if test="goodsUrl !=null ">#{goodsUrl},</if>
+    		#{couponId},
+    		 
     		#{capture}
+    		
 		)
 	</insert>
 	
