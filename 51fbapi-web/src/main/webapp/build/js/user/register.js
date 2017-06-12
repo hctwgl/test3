@@ -178,7 +178,6 @@ $(function(){
 
 		// 从分享链接中获取code
 		var recommendCode = getUrl("recommendCode");
-		var sharePage = getUrl('sharePage');
 
 		var mobileNum = $("#register_mobile").val();
 		var register_verification = $("#register_verification").val();
@@ -198,8 +197,7 @@ $(function(){
 									registerMobile: mobileNum,
 									smsCode: register_verification,
 									password: password_md5,
-									recommendCode: recommendCode,
-									sharePage: sharePage
+									recommendCode: recommendCode
 								},
 								success: function(returnData){
 									if ( returnData.success ) {
@@ -229,12 +227,6 @@ $(function(){
 			requestMsg("请填写正确的手机号");
 		};
 	});
-
-
-
-
-
-
 });
 
 // 点击眼睛显示密码

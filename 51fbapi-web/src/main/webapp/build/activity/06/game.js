@@ -7,9 +7,6 @@ if(getInfo().userName){
 }
 let chance=[],isLogin,isShow,clientRate,chanceCount,recommendCode;
 
-// 获取url中的host
-let urlhost = window.location.host;
-
 // app调用web的方法
 function alaShareData(){
     // 分享内容
@@ -19,7 +16,7 @@ function alaShareData(){
         'shareAppTitle': '年中抓娃娃,让你一次玩个爽！',  // 分享的title
         'shareAppContent': '51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~',  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'&sharePage=gameShare',  // 分享后的链接
+        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'gameShare' // 分享的页面
     };
@@ -329,9 +326,7 @@ $('#startBtn').click(function () {
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                // var shareAppUrl = "http://testapp.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'%26sharePage=gameShare";
-                // alert(shareAppUrl);
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":encodeURIComponent("http://testapp.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'&sharePage=gameShare"),"isSubmit":"Y","sharePage":"gameShare"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"51返呗年中狂欢，全球好货折上折，iPhone 7+精美电器+上万礼券等你拿~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode="+recommendCode+","isSubmit":"Y","sharePage":"gameShare"}';
             });
             $('#alert').show();
             $('#shadow').show();
