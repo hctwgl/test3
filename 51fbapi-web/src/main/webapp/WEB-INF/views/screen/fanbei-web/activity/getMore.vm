@@ -10,13 +10,16 @@
 <ul id="productList">
 	<li>
 		<div class="productImg"><img src="$src/more01.jpg"></div>
-		<p class="productDes">折上折更有超级返利上 折更有超级返利</p>
-		<p class="productPrice">￥6888.0</p>
-		<p class="fan">返</p>
-		<p class="fanPrice">￥20.25</p>
-		<p class="buyNow">马上抢</p>
+		<div class="productRight">
+			<p class="productDes">折上折更有超级返利上 折更有超级返利</p>
+		    <p class="productPrice">￥6888.0</p>
+		    <p class="fan">返</p>
+		    <p class="fanPrice">￥20.25</p>
+		    <p class="buyNow">马上抢</p>
+		</div>
+		
 	</li>
 </ul>
-<!-- <script type="text/javascript" src="/dist/activity/06/getMore.js?version=$version"></script> -->
+<script type="text/javascript" src="/dist/activity/06/getMore.js?version=$version"></script>
 </body>
 </html>
