@@ -42,7 +42,7 @@ public class AfAgentOrderDo extends AbstractSerial {
 	private String goodsUrl;
 	private String status; // 代买订单的状态
 	private String borrowRate; // 提交代买信息时的费率情况
-
+	private Long couponId;//使用优惠券id
 	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -334,6 +334,18 @@ public class AfAgentOrderDo extends AbstractSerial {
 	 */
 	public void setBorrowRate(String borrowRate) {
 		this.borrowRate = borrowRate;
+	}
+	/**
+	 * @return the couponId
+	 */
+	public Long getCouponId() {
+		return couponId;
+	}
+	/**
+	 * @param couponId the couponId to set
+	 */
+	public void setCouponId(Long couponId) {
+		this.couponId = couponId;
 	}
 	
 	

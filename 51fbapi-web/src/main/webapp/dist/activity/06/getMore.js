@@ -1,0 +1,2 @@
+"use strict";var subjectId=getUrl("subjectId"),currentPage=1,vm=new Vue({el:"#productList",data:{List:""},created:function(){var t=this;$.ajax({url:"/fanbei-web/subjectGoodsInfo",data:{subjectId:subjectId,currentPage:currentPage},dataType:"JSON",type:"get",success:function(e){t.List=e.data.subjectGoodsList,console.log(t.List)},error:function(){requestMsg("请求失败")}})}});
+//# sourceMappingURL=../../_srcmap/activity/06/getMore.js.map

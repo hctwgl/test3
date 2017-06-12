@@ -71,7 +71,8 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		if (  StringUtils.isBlank(numId) ) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
-		
+		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);
+
 		
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		AfOrderDo afOrder = new AfOrderDo();
@@ -84,6 +85,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setGoodsName(goodsName);
 		afOrder.setNumId(numId);
 		afOrder.setOpenId(openId);
+		
 		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if(addressDo==null){
@@ -98,7 +100,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setUserId(userId);
 		afAgentOrderDo.setCapture(capture);
 		afAgentOrderDo.setRemark(remark);
-		
+		afAgentOrderDo.setCouponId(couponId);
 		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder,nper)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());

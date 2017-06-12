@@ -10,51 +10,40 @@
 @url: "https://fs.51fanbei.com/h5/app/activity/06";
 
 
-.activityHomeContent{
+#vueCon{
 	background-color: #eb371a;
-}
-/* 精选会场 */
-.selectedHome{
 	text-align: center;
-	padding: 0.2rem;
-}
-.selectedHome li{
-	float: left;
-	width: 3.48rem;
-	height: 1.9rem;
-}
-.selectedHome li:nth-child(2n+1){
-	margin: 0 0.12rem 0.12rem 0;
 }
 /* 精品推荐 */
-.boutiqueHome h2{
+.activityList h2,.recommend h2{
 	width: 7.5rem;
 	height: 0.58rem;
-	line-height: 0.58rem;
+	line-height: 0.6rem;
 	text-align: center;
+	margin-top: .2rem;
 	background-image: url("@{url}/boutiqueHomeTitle.png");
 	-webkit-background-size: cover;
 	background-size: cover;
-	font-size: 0.42rem;
+	font-size: 0.4rem;
 	color: #fff;
 }
-.boutiqueHome ul{
-	padding: 0.2rem;
+.activityList ul,.recommend ul{
+	padding: .2rem;
 }
-.boutiqueHome li{
+.activityList li,.recommend li{
 	position: relative;
 	width: 7.1rem;
 	height: 3.0rem;
 	background-color: #fff;
 	margin-bottom: 0.3rem;
 }
-.boutiqueHome li:last-child{
+.activityList li:last-child,.recommend li:last-child{
 	margin-bottom: 0;   
 }
-.boutiqueHome li a{
+.activityList li a,.recommend li a{
 	color: #111;
 }
-.boutiqueHome img{
+.activityList img,.recommend img{
 	width: 3.0rem;
 	height: 3.0rem;
 	background-color: pink;
@@ -80,25 +69,27 @@
 }
 
 
-.boutiqueHome .price{
+.price{
 	font-size: 0.26rem;
 	position: absolute;
 	bottom: 1.0rem;
 	width: 3.58rem;
+	text-align: left;
 }
-.boutiqueHome .price span:nth-child(2){
+.price span:nth-child(2){
 	margin-left: 0.15rem;
 	color: #f98011;
 }
-.boutiqueHome .price span:nth-child(2) i{
+.price span:nth-child(2) i{
 	width: 0.3rem;
 	height: 0.3rem;
+	padding:.02rem;
 	line-height: 0.3rem;
 	text-align: center;
 	border-radius: 50%;
 	background-color: #f98011;
 	color: #fff;
-	font-size: 0.2rem;
+	font-size: 0.18rem;
 }
 .monthCorner{
 	width: 0.6rem;
@@ -107,7 +98,7 @@
 	-webkit-background-size: cover;
 	background-size: cover;
 }
-.boutiqueHome button{
+.activityList button,.recommend button{
 	position: absolute;
 	bottom: 0.3rem;
 	right: 0.3rem;
@@ -117,4 +108,38 @@
 	background-color: #f98011;
 	color: #fff;
 	font-size: 0.26rem;
+}
+
+.more{
+	color:white;
+	font-size: .26rem;
+	text-align: right;
+	text-decoration: underline;
+}
+#navWrap{
+  overflow: hidden;
+  width:7.5rem;
+  height: 0.83rem;
+}
+#listAlert{
+	text-align: center;
+	background: #eb371a;
+  height: .83rem;
+  position: relative;
+}
+.fixTop{
+	position: fixed;
+	top:0;
+	z-index: 300;
+}
+#listAlert a{
+	display: inline-block;
+	width:1.48rem;
+	margin:.01rem;
+	height:.8rem;
+	line-height:.8rem;
+	color:white;
+	font-size: .26rem;
+	background-image: url("@{url}/selectedHome_btny.png");
+	background-size: cover;
 }

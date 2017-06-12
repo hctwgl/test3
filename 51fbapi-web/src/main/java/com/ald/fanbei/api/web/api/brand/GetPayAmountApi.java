@@ -26,6 +26,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -78,10 +79,10 @@ public class GetPayAmountApi implements ApiHandle {
         removeSecondNper(array);
 
         //免息
-        String interestFreeJson = JsonUtil.toJSONString(orderInfo.getInterestFreeJson());//免息规则JSON
-        JSONObject interestFreeArray = null;
+        String interestFreeJson = orderInfo.getInterestFreeJson();//免息规则JSON
+        JSONArray interestFreeArray = null;
         if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-            interestFreeArray = JSON.parseObject(interestFreeJson);
+            interestFreeArray = JSON.parseArray(interestFreeJson);
         }
 
         List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
@@ -106,4 +107,10 @@ public class GetPayAmountApi implements ApiHandle {
         }
 
     }
+    
+    public static void main(String[] args) {
+		String str = "{'nper':'3','freeNper':'1'}";
+		JSONObject interestFreeArray = JSON.parseObject(str);
+		System.out.println(interestFreeArray.toJSONString());
+	}
 }

@@ -180,4 +180,21 @@
 		    u.status = 'NOUSE'
 		order by c.amount desc
 	</select>
+	<select id="getUserAcgencyCouponByAmount" resultType="AfUserCouponDto">
+		SELECT 
+			CASE WHEN TIMESTAMPDIFF( HOUR, NOW(), uc.gmt_end) <![CDATA[ < ]]>48 THEN 'Y' ELSE 'N' END AS will_expire_status,
+			uc.id rid ,c.limit_amount,c.amount,c.name , c.use_rule ,c.type ,uc.status
+			,uc.gmt_start,uc.gmt_end
+		from af_user_coupon uc ,af_coupon c
+		WHERE c.id in (
+			SELECT s.coupon_id FROM af_subject_goods sg,af_subject s
+			WHERE sg.subject_id = s.id and sg.goods_id =#{goodsId}
+		) and uc.coupon_id =c.id and uc.user_id = #{userId}
+		AND uc.status ='NOUSE'
+		AND c.limit_amount<![CDATA[ <=#{amount}  ]]>
+		ORDER BY c.amount DESC
+		LIMIT #{pageNo},10
+	</select>
+	
+	
 </mapper>
