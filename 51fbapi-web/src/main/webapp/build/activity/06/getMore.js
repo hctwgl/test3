@@ -1,24 +1,21 @@
-var paramUrl=window.location.href;
-alert(paramUrl)
-var modelId='';
-var subjectId='';
+
+var subjectId=getUrl('subjectId');
 var currentPage=1;
-$(function(){
-	
     var vm = new Vue({
       el: '#productList',
       data: {
       	List:''
       },
       created:function(){
+      	var self=this;
          $.ajax({
-         	url:'/fanbei-web/partActivityInfo',
-		    data:{'modelId':modelId,'subjectId':subjectId,'currentPage':currentPage},
+         	url:'/fanbei-web/subjectGoodsInfo',
+		    data:{'subjectId':subjectId,'currentPage':currentPage},
 		    dataType:'JSON',
-		    type:'POST',
+		    type:'get',
 		    success:function(data){
-                console.log(data)
-                this.List=data;
+                self.List=data.data.subjectGoodsList;
+                console.log(self.List)
 		    },
 		    error:function(){
                 requestMsg("请求失败");
@@ -26,5 +23,4 @@ $(function(){
          })
       }
     })
-    
-})
+
