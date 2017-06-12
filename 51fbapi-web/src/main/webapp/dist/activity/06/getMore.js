@@ -1,0 +1,2 @@
+"use strict";var paramUrl=window.location.href;alert(paramUrl);var modelId="",subjectId="",currentPage=1;$(function(){new Vue({el:"#productList",data:{List:""},created:function(){$.ajax({url:"/fanbei-web/partActivityInfo",data:{modelId:modelId,subjectId:subjectId,currentPage:currentPage},dataType:"JSON",type:"POST",success:function(e){console.log(e),this.List=e},error:function(){requestMsg("请求失败")}})}})});
+//# sourceMappingURL=../../_srcmap/activity/06/getMore.js.map

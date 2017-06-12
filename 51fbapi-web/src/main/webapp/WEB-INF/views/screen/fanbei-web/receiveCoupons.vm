@@ -12,17 +12,20 @@
     <input type="hidden" id="couponList" name="couponList" value=$jsonUtil.toJSONString($!{couponList})>
 	<input type="hidden" id="userName" name="userName" value="$!{userName}">
 	#if($!{couponList.size()}==0)
-	   <div class="noCoupon">暂无优惠券</div> 
+	   <!-- <div class="noCoupon">暂无优惠券</div>  -->
+     <div class="nullPrompt">
+       <img src="$commonUrl/common/images/040101wuyouhui.png">
+       <span>暂无优惠劵</span>
+     </div>
 	#end
 	<ul class="List">
 	    #foreach($item in $!{couponList})
 		   <li class="couponLi">
-		       #if($!{item.status}=='Y')
-		       <p class="couponState"><img src="$commonUrl/coupon01.png"></p>
-		       #end
 		       <p class="positionYuan positionYuan01"></p>
                <p class="positionYuan positionYuan02"></p>
-		   	   <div class="couponKind"><img src="$commonUrl/getCoupon02.png"></div>
+               #if($!{item.status}=='Y')
+		   	   <div class="couponKind"><img src="$commonUrl/coupon01.png"></div>
+		   	   #end
 		   	   <div class="couponTop">
 		   	   	   <p class="cashCoupon">$!{item.type}</p>
 		   	   	   <p class="couponSize">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></p>
@@ -31,13 +34,15 @@
 		   	   </div>
 		   	   #if($!{item.quota}==$!{item.quotaAlready})
                <p class="clickCoupon clickCoupon02">已抢完</p>
+               #elseif($!{item.userAlready}>0)
+                <p class="clickCoupon clickCoupon01">去用券</p>
                #else
-               <p class="clickCoupon clickCoupon01">点击领券</p>
+               <p class="clickCoupon clickCoupon01" dataQuota=$!{item.quota} dataAleady=$!{item.quotaAlready}>点击领券</p>
                #end
 		   </li>
 		#end
 	</ul>
-	<p class="myCoupon">查看我的优惠券</p>
+	<!-- <p class="myCoupon">查看我的优惠券</p> -->
 </div>
 
 <script type="text/javascript" src="/dist/activity/06/receiveCoupons.js?version=$version"></script>

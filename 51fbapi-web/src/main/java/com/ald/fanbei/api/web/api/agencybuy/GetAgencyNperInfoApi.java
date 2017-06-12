@@ -52,8 +52,8 @@ public class GetAgencyNperInfoApi implements ApiHandle {
     @Resource
     AfInterestFreeRulesService afInterestFreeRulesService;
 
-    private JSONObject getInterestFreeArray(String numId){
-    	JSONObject interestFreeArray = null;
+    private JSONArray getInterestFreeArray(String numId){
+    	JSONArray interestFreeArray = null;
     	if (StringUtils.isBlank(numId)) {
             return null;
         }
@@ -70,7 +70,7 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
         AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
         if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
-            interestFreeArray = JSON.parseObject(afInterestFreeRulesDo.getRuleJson());
+            interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
         }
     	return interestFreeArray;
     }
@@ -81,7 +81,7 @@ public class GetAgencyNperInfoApi implements ApiHandle {
 
         Map<String, Object> params = requestDataVo.getParams();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(params.get("amount"), BigDecimal.ZERO);
-        JSONObject interestFreeArray = null;
+        JSONArray interestFreeArray = null;
         
         String numId = params.get("numId") + "";
         interestFreeArray = getInterestFreeArray(numId);

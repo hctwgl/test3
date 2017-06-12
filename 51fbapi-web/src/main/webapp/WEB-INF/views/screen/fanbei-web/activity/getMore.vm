@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170612")
+    #set($src="https://fs.51fanbei.com/h5/app/activity/06")
+<title>查看更多</title>
+<link rel="stylesheet" type="text/css" href="/dist/activity/06/getMore.css?version=$version">
+</head>
+<body>
+<ul id="productList">
+	<li v-for="item in List">
+		<div class="productImg"><img src="$src/more01.jpg"></div>
+		<div class="productRight">
+			<p class="productDes">{{item.describe}}</p>
+		    <p class="productPrice">{{item.price}}</p>
+		    <p class="fan">返</p>
+		    <p class="fanPrice">{{item.fan}}</p>
+		    <p class="buyNow">马上抢</p>
+		</div>
+		
+	</li>
+</ul>
+<script type="text/javascript" src="/dist/activity/06/getMore.js?version=$version"></script>
+</body>
+</html>

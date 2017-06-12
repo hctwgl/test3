@@ -159,6 +159,15 @@ public class AppH5FanBeiWebController extends BaseController {
 		returnData.put("quota", afCouponDo.getQuota());
 		returnData.put("quotaAlready", afCouponDo.getQuotaAlready());
 		returnData.put("userAlready", afCouponDo.getUserAlready());
+		
+		
+		if(DateUtil.afterDay(DateUtil.addDays(new Date(), 2), afCouponDo.getGmtEnd())){
+			returnData.put("status", "Y");
+		}else{
+			returnData.put("status", "N");
+		}
+		
+	
 
 		return returnData;
 
