@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,29 +13,39 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectDo;
 import com.ald.fanbei.api.dal.domain.query.AfSubjectGoodsQuery;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
  /* 
  *@类现描述：会场相关接口
@@ -58,6 +70,12 @@ public class AppH5SubjectController  extends BaseController{
 	
 	@Resource
 	AfSubjectService afSubjectService;
+	
+	@Resource
+	AfSchemeGoodsService afSchemeGoodsService;
+	
+	@Resource
+	AfInterestFreeRulesService afInterestFreeRulesService;
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
@@ -91,6 +109,15 @@ public class AppH5SubjectController  extends BaseController{
 		
 		jsonObj.put("mainActivityList",mainActivityList);
 	
+		
+		//获取借款分期配置信息
+        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+        JSONArray array = JSON.parseArray(resource.getValue());
+        //删除2分期
+        if (array == null) {
+            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+        }
+        removeSecondNper(array);
 		List<AfGoodsDo>  qualityGoodsDoList = afSubjectGoodsService.listQualitySubjectGoods();
 		List<Map> qualityGoodsList = new ArrayList<Map>();
 		for(AfGoodsDo qualityGoods : qualityGoodsDoList) {
@@ -100,10 +127,31 @@ public class AppH5SubjectController  extends BaseController{
 			qualityGoodsInfo.put("saleAmount", qualityGoods.getSaleAmount());
 			qualityGoodsInfo.put("goodsIcon", qualityGoods.getGoodsIcon());
 			qualityGoodsInfo.put("goodsId", qualityGoods.getRid());
-			
-			
 			qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
 			qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
+			qualityGoodsInfo.put("goodsType", "0");
+			String tags = qualityGoods.getTags();
+			// 如果是分期免息商品，则计算分期
+			if(tags != null && "INTEREST_FREE".equals(tags)){
+				Long goodsId = qualityGoods.getRid();
+				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				if(schemeGoodsDo != null){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					JSONArray interestFreeArray = null;
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						qualityGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						qualityGoodsInfo.put("nperMap", nperMap);
+					}
+				}
+			}
 			qualityGoodsList.add(qualityGoodsInfo);
 		}
 		jsonObj.put("qualityGoodsList",qualityGoodsList);
@@ -112,6 +160,20 @@ public class AppH5SubjectController  extends BaseController{
 	}
 	
 	
+	private void removeSecondNper(JSONArray array) {
+        if (array == null) {
+            return;
+        }
+        Iterator<Object> it = array.iterator();
+        while (it.hasNext()) {
+            JSONObject json = (JSONObject) it.next();
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+                it.remove();
+                break;
+            }
+        }
+
+    }
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "partActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
@@ -124,6 +186,15 @@ public class AppH5SubjectController  extends BaseController{
 		if(modelId == null || "".equals(modelId)) {
 			return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
 		}
+		
+		//获取借款分期配置信息
+        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+        JSONArray array = JSON.parseArray(resource.getValue());
+        //删除2分期
+        if (array == null) {
+            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+        }
+        removeSecondNper(array);
 		
 		JSONObject jsonObj = new JSONObject();
 		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
@@ -174,6 +245,28 @@ public class AppH5SubjectController  extends BaseController{
 				activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
 				activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
 				activityGoodsInfo.put("activityName", activityName);
+				String tags = goodsDo.getTags();
+				// 如果是分期免息商品，则计算分期
+				if(tags != null && "INTEREST_FREE".equals(tags)){
+					Long goodsId = goodsDo.getRid();
+					AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+					if(schemeGoodsDo != null){
+						AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+						String interestFreeJson = interestFreeRulesDo.getRuleJson();
+						JSONArray interestFreeArray = null;
+						if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+							interestFreeArray = JSON.parseArray(interestFreeJson);
+						}
+						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						
+						if(nperList!= null){
+							activityGoodsInfo.put("goodsType", "1");
+							Map nperMap = nperList.get(nperList.size() - 1);
+							activityGoodsInfo.put("nperMap", nperMap);
+						}
+					}
+				}
 				activityGoodsList.add(activityGoodsInfo);
 			}
 			activityInfoMap.put("activityGoodsList", activityGoodsList);
@@ -193,6 +286,29 @@ public class AppH5SubjectController  extends BaseController{
 			qualityGoodsInfo.put("goodsId", qualityGoods.getRid());
 			qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
 			qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
+			qualityGoodsInfo.put("goodsType", "0");
+			String tags = qualityGoods.getTags();
+			// 如果是分期免息商品，则计算分期
+			if(tags != null && "INTEREST_FREE".equals(tags)){
+				Long goodsId = qualityGoods.getRid();
+				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				if(schemeGoodsDo != null){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					JSONArray interestFreeArray = null;
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						qualityGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						qualityGoodsInfo.put("nperMap", nperMap);
+					}
+				}
+			}
 			qualityGoodsList.add(qualityGoodsInfo);
 		}
 		jsonObj.put("qualityGoodsList",qualityGoodsList);
@@ -203,7 +319,7 @@ public class AppH5SubjectController  extends BaseController{
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "subjectGoodsInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String categoryGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String subjectGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
 		//context = doWebCheck(request, false);
@@ -215,6 +331,16 @@ public class AppH5SubjectController  extends BaseController{
 		if(subjectId == null || "".equals(subjectId)) {
 			return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
 		}
+		
+		//获取借款分期配置信息
+        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+        JSONArray array = JSON.parseArray(resource.getValue());
+        //删除2分期
+        if (array == null) {
+            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+        }
+        removeSecondNper(array);
+		
 		List<AfGoodsDo> goodsList = afSubjectGoodsService.listAllSubjectGoods(query);
 		
 		JSONObject jsonObj = new JSONObject();
@@ -230,7 +356,30 @@ public class AppH5SubjectController  extends BaseController{
 			subjectGoodsInfo.put("goodsId", goodsDo.getRid());
 			subjectGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
 			subjectGoodsInfo.put("thumbnailIcon",goodsDo.getThumbnailIcon());
+			subjectGoodsInfo.put("goodsType", "0");
 			subjectGoodsList.add(subjectGoodsInfo);
+			String tags = goodsDo.getTags();
+			// 如果是分期免息商品，则计算分期
+			if(tags != null && "INTEREST_FREE".equals(tags)){
+				Long goodsId = goodsDo.getRid();
+				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				if(schemeGoodsDo != null){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					JSONArray interestFreeArray = null;
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						subjectGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						subjectGoodsInfo.put("nperMap", nperMap);
+					}
+				}
+			}
 		}
 		jsonObj.put("subjectGoodsList", subjectGoodsList);
 		H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
