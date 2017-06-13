@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -25,8 +26,10 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -49,6 +52,9 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 	 */
 	@Resource
 	AfCouponService afCouponService;
+	
+	@Resource
+	AfUserCouponService  afUserCouponService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -137,6 +143,36 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 * 
 		 * 支付状态【N:(notpay)未支付,D:(dealing)支付中,P:(payed)已经支付,R:(refund)退款】
 		 */
+		
+//		优惠券类型【MOBILE：话费充值， REPAYMENT：还款, FULLVOUCHER:满减卷,CASH:现金奖励】
+		AfUserCouponDo userCouponDo = afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+		if (userCouponDo != null){
+			 AfCouponDo couponDo = afCouponService.getCouponById(userCouponDo.getCouponId());
+			 if (couponDo != null){
+				 if(StringUtils.equals("MOBILE", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("充值劵");
+				 }
+				 
+				 if(StringUtils.equals("REPAYMENT", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("还款劵");
+				 }
+				 
+				 if(StringUtils.equals("FULLVOUCHER", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("满减劵");
+				 }
+				 
+				 if(StringUtils.equals("CASH", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("现金劵");
+				 }
+				 
+				 agentOrderDetailVo.setCouponAmount(couponDo.getAmount());
+				 
+				 // 计算实际支付金额
+				 BigDecimal actualPayAmount =  actualAmount.subtract(couponDo.getAmount()) ;
+				 agentOrderDetailVo.setActualPayAmount(actualPayAmount);
+			 }
+		}
+		
 		agentOrderDetailVo.setStatus(StringUtils.isBlank(status)?"":status);
 		agentOrderDetailVo.setPayStatus(StringUtils.isBlank(payStatus)?payStatus:"");
 		agentOrderDetailVo.setConsignee(StringUtils.isBlank(consignee)?"":consignee);

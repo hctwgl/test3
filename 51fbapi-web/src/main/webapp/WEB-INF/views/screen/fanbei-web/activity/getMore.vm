@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-#set($version="20170612")
+#set($version="20170613")
 #set($src="https://fs.51fanbei.com/h5/app/activity/06")
 <title>查看更多</title>
 <link rel="stylesheet" type="text/css" href="/dist/activity/06/getMore.css?version=$version">
