@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170612")
+#set($version="20170612")
 <title>查看更多</title>
 <link rel="stylesheet" type="text/css" href="/dist/activity/06/getMore.css?version=$version">
 </head>
 <body>
 <ul id="productList">
 	<li v-for="item in List">
-		<div class="productImg"><img :src={{item.goodsIcon}}></div>
+		<div class="productImg"><img :src="item.goodsIcon"></div>
 		<div class="productRight">
 			<p class="productDes">{{item.goodName}}</p>
 		    <p class="productPrice">￥{{item.saleAmount}}</p>
 		    <p class="fan">返</p>
 		    <p class="fanPrice">￥{{item.rebateAmount}}</p>
 		    <p class="buyNow">马上抢</p>
-		</div>
-		
+		</div>		
 	</li>
 </ul>
 <script type="text/javascript" src="/dist/activity/06/getMore.js"></script>
