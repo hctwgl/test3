@@ -14,7 +14,6 @@ window.onload=function(){
         userName: userName
     },
     success: function(returnData){
-      //console.log(returnData);
       if (returnData.data.isHaveReservationRecord == "Y") {
         $("#btn").attr('src', 'https://fs.51fanbei.com/h5/app/activity/06/oppo2_2.png');
       }
@@ -84,7 +83,6 @@ function stamp(){
       if(hour<10){hour='0'+hour}
       if(minute<10){minute='0'+minute}  
       if(second<10){second='0'+second}
-      //console.log(day+":"+hour+":"+minute+":"+second);
       $('.timeCount').html('距离活动开始还有：'+day+'天'+hour+'时'+minute+'分'+second+'秒');
   }
    

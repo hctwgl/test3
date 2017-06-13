@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
@@ -43,6 +44,11 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	AfBorrowService afBorrowService;
+	/**
+	 * 3.6.4新增优惠劵使用
+	 */
+	@Resource
+	AfCouponService afCouponService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {

@@ -6,22 +6,23 @@ let shareData=[
     {title:'高佣好货聚集618，最高返利50%',content:'全球好货你来淘，佣金我来返。大牌好货爆款，超高额返利尽在嗨购高佣超级券专场。你来淘，我来返！'},
     {title:'联手大牌  满百就减',content:'一份品味逆天的秘籍送给你！不止大牌集群，小众精美好物待你来挖掘~美好生活，触手可及'}
     ];
+let title,con;
+switch (modelId){
+    case 71:
+        title=shareData[0].title;
+        con=shareData[0].content;
+        break;
+    case 72:
+        title=shareData[1].title;
+        con=shareData[1].content;
+        $('#vueCon').css('background-color','#4515aa');
+        break;
+    case 74:
+        title=shareData[2].title;
+        con=shareData[2].content;
+        break;
+}
 function alaShareData(){
-    let title,con;
-    switch (modelId){
-        case 71:
-            title=shareData[0].title;
-            con=shareData[0].content;
-            break;
-        case 72:
-            title=shareData[1].title;
-            con=shareData[1].content;
-            break;
-        case 74:
-            title=shareData[2].title;
-            con=shareData[2].content;
-            break;
-    }
     // 分享内容
     let dataObj = {
         'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
@@ -121,6 +122,7 @@ new Vue({
                 self.$nextTick(function () {                              //dom渲染完成后执行
                     self.divTop=document.getElementById('navWrap').offsetTop;
                     if(getBlatFrom()==2){
+                        window.addEventListener('touchstart', this.handleScroll);
                         window.addEventListener('touchmove', this.handleScroll);
                         window.addEventListener('touchend', this.handleScroll);
                     }else{

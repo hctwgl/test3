@@ -1,29 +1,4 @@
 
-      /*var vm = new Vue({
-      el: '#productList',
-      data: {
-      	List:''
-      },
-      created:function(){
-        var self=this;
-        getData(self.List)
-        console.log(self.List)
-      	var self=this;
-        $.ajax({
-         	  url:'/fanbei-web/subjectGoodsInfo',
-		        data:{'subjectId':subjectId,'currentPage':currentPage},
-		        dataType:'JSON',
-		        type:'get',
-		        success:function(data){
-                  self.List=data.data.subjectGoodsList;
-                  console.log(self.List)
-		        },
-		        error:function(){
-                  requestMsg("请求失败");
-		        }
-        })
-      }
-    })*/
 var subjectId=getUrl('subjectId');
 var currentPage=1;
 var List;
@@ -34,7 +9,7 @@ $(function(){
 
      if($(document).scrollTop() >= $(document).height() - $(window).height()) {
        //alert("滚动条已经到达底部为");   
-       $('.load').animate({'opacity':'1'},2000,function(){
+       $('.load').animate({'opacity':'1'},1000,function(){
           getData();
        }) 
      } else if(List.length==0){
@@ -55,10 +30,16 @@ function getData(){
             type:'get',
             success:function(data){
                   List=data.data.subjectGoodsList;
-                  //console.log(List)
+                  console.log(List)
                   for(var i=0;i<List.length;i++){
-                    var str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes">'+List[i].goodName+'</p><p class="productPrice">￥'+List[i].saleAmount+'</p><p class="fan">返</p><p class="fanPrice">￥'+List[i].rebateAmount+'</p><a class="buyNow" href="'+data.data.notifyUrl+'&params={%22goodsId%22:%22'+List[i].goodsId+'%22}'
+                    var str;
+                    var type=List[i].goodsType;
+                    if(type==0){
+                      str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes">'+List[i].goodName+'</p><p class="productPrice">￥'+List[i].saleAmount+'</p><p class="fan">返</p><p class="fanPrice">￥'+List[i].rebateAmount+'</p><a class="buyNow" href="'+data.data.notifyUrl+'&params={%22goodsId%22:%22'+List[i].goodsId+'%22}'
 +'"}'+'"}'+'">马上抢</a></div></li>'
+                    } else{
+                      str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes">'+List[i].goodName+'</p><p class="monthPrice"><i class="monthCorner"></i>￥'+List[i].nperMap.amount+' x '+List[i].nperMap.nper+'</p><p class="buyPrice">￥'+List[i].saleAmount+'</p><p class="buyNow">马上抢</p></div></li>'
+                    }                    
                     $('#productList').append(str);
                   }
             },
