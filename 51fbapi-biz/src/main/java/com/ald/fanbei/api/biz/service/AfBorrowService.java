@@ -211,10 +211,6 @@ public interface AfBorrowService {
 	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, Integer nper, Long orderId,
 			String orderNo, String borrowRate, String interestFreeJson);
 	
-	
-	Long dealAgentPayConsumeRisk(AfUserAccountDo userDto, BigDecimal amount, String goodsName, int nper, Long rid,
-			String orderNo, Integer totalNper);
-	
 	/**
 	 * 获取总借款次数
 	 * @param userId
