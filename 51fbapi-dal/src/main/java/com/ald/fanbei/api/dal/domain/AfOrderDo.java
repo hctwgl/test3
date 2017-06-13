@@ -53,7 +53,7 @@ public class AfOrderDo extends AbstractSerial{
 	private Long bankId;
 	private Date gmtPayEnd;//截止支付时间
 	private String serviceProvider;
-	private int  nper;//分期数
+	private Integer  nper;//分期数
 	private String riskOrderNo;//风控订单号
 	private String borrowRate;//提交订单时的费率信息
 	private BigDecimal couponAmount;//优惠金额
@@ -62,17 +62,11 @@ public class AfOrderDo extends AbstractSerial{
 	public Long getRid() {
 		return rid;
 	}
-	public int getNper() {
-		return nper;
-	}
 	public String getRiskOrderNo() {
 		return riskOrderNo;
 	}
 	public void setRiskOrderNo(String riskOrderNo) {
 		this.riskOrderNo = riskOrderNo;
-	}
-	public void setNper(int nper) {
-		this.nper = nper;
 	}
 
 	public void setRid(Long rid) {
@@ -353,6 +347,18 @@ public class AfOrderDo extends AbstractSerial{
 	 */
 	public void setInterestFreeJson(String interestFreeJson) {
 		this.interestFreeJson = interestFreeJson;
+	}
+	/**
+	 * @return the nper
+	 */
+	public Integer getNper() {
+		return nper;
+	}
+	/**
+	 * @param nper the nper to set
+	 */
+	public void setNper(Integer nper) {
+		this.nper = nper;
 	}
 	
 }
