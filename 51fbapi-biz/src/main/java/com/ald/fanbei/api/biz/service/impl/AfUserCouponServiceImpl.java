@@ -145,4 +145,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	public int updateUserCouponSatusNouseById(Long rid) {
 		return afUserCouponDao.updateUserCouponSatusNouseById(rid);
 	}
+
+
+	@Override
+	public int updateUserCouponSatusExpireById(Long rid) {
+		return afUserCouponDao.updateUserCouponSatusExpireById(rid);
+	}
 }

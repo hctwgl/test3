@@ -19,18 +19,19 @@
             <span>年终盛宴抢红包</span>
         </div>
         <div class="banner">
-            <div class="carefree">
+            <!-- <div class="carefree">
                 <span>分期无忧</span>
             </div>
             <div class="save">
-
+            
             </div>
             <div class="coupon">
                     <img src="" class="cou-img">
                     <img src="" class="cou-img">
                     <img src="" class="cou-img">
                     <img src="" class="check">
-            </div>
+            </div> -->
+            <img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/ec5733893aed7606.jpg" alt="" >
         </div>
         <!-- 精品推荐 -->
         <div class="theme-main clearfix" id="">
@@ -45,7 +46,9 @@
             </div>
             <ul class="bootique">
                 <li class="boot-1">
-                    <a href="#"></a>
+                    <a href="#">
+                        <img src="" alt="">
+                    </a>
                     <div class="b-1-r">
                         <p class="discount">618折上更有超级返利</p>
                         <p class="price"><u>￥</u>5.20</p>
@@ -54,7 +57,9 @@
                     </div>
                 </li>
                 <li class="boot-1">
-                    <a href="#"></a>
+                    <a href="#">
+                        <img src="" alt="">
+                    </a>
                     <div class="b-1-r">
                         <p class="discount">618折上更有超级返利</p>
                         <p class="price"><u>￥</u>5.20</p>
@@ -63,7 +68,9 @@
                     </div>
                 </li>
                 <li class="boot-1">
-                    <a href="#"></a>
+                    <a href="#">
+                        <img src="" alt="">
+                    </a>
                     <div class="b-1-r">
                         <p class="discount">618折上更有超级返利</p>
                         <p class="price"><u>￥</u>5.20</p>
@@ -91,14 +98,16 @@
                      <div class="line-out">
                          <span class="line"></span>
                      </div>
-                     <span class="txt">精品推荐</span>
+                     <span class="txt">类目图片1</span>
                      <div class="line-out">
                           <span class="line"></span>
                      </div>
                 </div>
                 <ul class="bootique">
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -107,7 +116,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -116,7 +127,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -125,7 +138,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -134,7 +149,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -143,7 +160,9 @@
                          </div>
                      </li>
                      <li class="boot-1" id="more">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -160,7 +179,7 @@
                      <div class="line-out">
                         <span class="line"></span>
                     </div>
-                    <span class="txt">精品推荐</span>
+                    <span class="txt">类目图片2</span>
                     <div class="line-out">
                         <span class="line"></span>
                     </div>
@@ -168,7 +187,9 @@
                 </div>
                 <ul class="bootique">
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -177,7 +198,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -186,7 +209,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -195,7 +220,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -204,7 +231,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -213,7 +242,9 @@
                          </div>
                      </li>
                      <li class="boot-1" id="more">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -230,14 +261,16 @@
                      <div class="line-out">
                         <span class="line"></span>
                      </div>
-                    <span class="txt">精品推荐</span>
+                    <span class="txt">类目图片3</span>
                     <div class="line-out">
                         <span class="line"></span>
                     </div>
                 </div>
                 <ul class="bootique three">
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -246,7 +279,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -255,7 +290,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -264,7 +301,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -273,7 +312,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -282,7 +323,9 @@
                          </div>
                      </li>
                      <li class="boot-1" id="more">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -299,14 +342,16 @@
                      <div class="line-out">
                         <span class="line"></span>
                     </div>
-                    <span class="txt">精品推荐</span>
+                    <span class="txt">类目图片4</span>
                     <div class="line-out">
                         <span class="line"></span>
                     </div>
                 </div>
                 <ul class="bootique three">
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -315,7 +360,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -324,7 +371,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -333,7 +382,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -342,7 +393,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -351,7 +404,9 @@
                          </div>
                      </li>
                      <li class="boot-1" id="more">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -368,14 +423,16 @@
                      <div class="line-out">
                         <span class="line"></span>
                     </div>
-                    <span class="txt">精品推荐</span>
+                    <span class="txt">类目图片5</span>
                     <div class="line-out">
                         <span class="line"></span>
                     </div>
                 </div>
                 <ul class="bootique three">
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -384,7 +441,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -393,7 +452,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -402,7 +463,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -411,7 +474,9 @@
                          </div>
                      </li>
                      <li class="boot-1">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>
@@ -420,7 +485,9 @@
                          </div>
                      </li>
                      <li class="boot-1" id="more">
-                         <a href="#"></a>
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
                          <div class="b-1-r">
                              <p class="discount">618折上更有超级返利</p>
                              <p class="price"><u>￥</u>5.20</p>

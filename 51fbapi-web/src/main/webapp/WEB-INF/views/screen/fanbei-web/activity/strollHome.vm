@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017060501")
+	#set($version="2017061204")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<title>618 逛逛分会场</title>
@@ -12,32 +12,74 @@
 		<img src="/images/activity/06/strollHomeBanner.png">
 		<div class="strollHomeContent">
 			<ul class="strollHomeContentUl">
-				<li class="strollHomeContentLi">
+				<li class="strollHomeContentLi" id="ygsx">
 					<img @click="boluomiHome(1)" src="/images/activity/06/strollHomeList1.png">
 					<ol class="otoCoupon">
-						<li>满25减5元</li>
-						<li>满60减元</li>
+						<li>
+							<p class="money">5元</p>
+							<p class="date">满25减5<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li>
+							<p class="money">10元</p>
+							<p class="date">满68减10<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
 					</ol>
 				</li>
-				<li class="strollHomeContentLi">
+				<li class="strollHomeContentLi" id="xbk">
 					<img src="/images/activity/06/strollHomeList2.png">
 					<ol class="otoCoupon">
-						<li>满25减5元</li>
-						<li>满60减元</li>
+						<li>
+							<p class="money">5元</p>
+							<p class="date">无门槛<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li>
+							<p class="money">10元</p>
+							<p class="date">满50减10<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
 					</ol>
 				</li>
-				<li class="strollHomeContentLi">
+				<li class="strollHomeContentLi" id="kdy">
 					<img src="/images/activity/06/strollHomeList3.png">
 					<ol class="otoCoupon">
-						<li>满25减5元</li>
-						<li>满60减元</li>
+						<li>
+							<p class="money">5元</p>
+							<p class="date">无门槛<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li>
+							<p class="money">10元</p>
+							<p class="date">满50减10<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
 					</ol>
 				</li>
-				<li class="strollHomeContentLi">
+				<li class="strollHomeContentLi" id="lmm">
 					<img src="/images/activity/06/strollHomeList4.png">
 					<ol class="otoCoupon">
-						<li>满25减5元</li>
-						<li>满60减元</li>
+						<li>
+							<p class="money">5元</p>
+							<p class="date">满50减5<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li>
+							<p class="money">10元</p>
+							<p class="date">满100减10<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li>
+							<p class="money">20元</p>
+							<p class="date">满200减20<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li>
+							<p class="money">50元</p>
+							<p class="date">满500减50<span>2017年06月18日-6月30日</span></p>
+							<p class="receive">点击领取</p>
+						</li>
 					</ol>
 				</li>
 				<li class="strollHomeContentLi">

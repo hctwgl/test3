@@ -18,6 +18,13 @@ public interface AfResourceDao {
      * @return
      */
     List<AfResourceDo> selectHomeConfigByAllTypes();
+
+    /**
+     * 获取type类型的配置信息
+     * @param type
+     * @return
+     */
+    List<AfResourceDo> getConfigByTypeList(@Param("typeList")List<String> typeList);
     
     /**
      * 获取type类型的配置信息

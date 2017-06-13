@@ -3,172 +3,162 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfResourceDao">
 	<sql id="queryAllFields">
 
-		id rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
+		id
+		rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
 		sec_type,value_1,value_2,value_3,value_4,sort
 	</sql>
 	<sql id="queryManyAllFields">
 
-		r2.id rid,r2.gmt_create,r2.gmt_modified,r2.creator,r2.modifier,r2.data_type,r2.type,r2.type_desc,r2.name,r2.value,r2.description,
+		r2.id
+		rid,r2.gmt_create,r2.gmt_modified,r2.creator,r2.modifier,r2.data_type,r2.type,r2.type_desc,r2.name,r2.value,r2.description,
 		r2.sec_type,r2.value_1,r2.value_2,r2.value_3,r2.value_4,r2.sort
 	</sql>
-<select id="selectHomeConfigByAllTypes" resultType="AfResourceDo">
-    SELECT
-    <include refid="queryAllFields" />
-    FROM
-    af_resource
-    WHERE
-    is_delete = 0
-    AND
-	 type in ('HOME_BANNER','HOME_TOOLS','HOME_COUPON','HOME_ONE_TO_MANY','HOME_ONE_TO_TWO','HOME_ONE_TO_ONE')
-</select>
+	<select id="selectHomeConfigByAllTypes" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0
+		AND
+		type in
+		('HOME_BANNER','HOME_TOOLS','HOME_COUPON','HOME_ONE_TO_MANY','HOME_ONE_TO_TWO','HOME_ONE_TO_ONE')
+	</select>
 
 
-<select id="getConfigByTypes" resultType="AfResourceDo">
-    SELECT
-    <include refid="queryAllFields" />
-    FROM
-    af_resource
-    WHERE
-    is_delete = 0
-    AND
-    type = #{type}
-</select>
-<select id="getConfigByTypesAndSecType" resultType="AfResourceDo">
-    SELECT
-    <include refid="queryAllFields" />
-    FROM
-   		 af_resource
-    WHERE
-    	is_delete = 0
-    AND
-    	type = #{type}
-    AND
-    	sec_type = #{secType}
-    LIMIT 1
-    
-</select>
+	<select id="getConfigByTypeList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM af_resource
+		WHERE
+		is_delete = 0 AND type IN
+		<foreach collection="typeList" item="item" open="(" close=")"
+			separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<select id="getConfigByTypes" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0
+		AND
+		type = #{type}
+	</select>
+	<select id="getConfigByTypesAndSecType" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
+		LIMIT 1
+
+	</select>
 	<select id="getResourceByResourceId" resultType="AfResourceDo">
 		SELECT
-			<include refid="queryAllFields" />
+		<include refid="queryAllFields" />
 		FROM
-			af_resource
+		af_resource
 		WHERE
-			is_delete = 0
-		AND
-			id = #{rid}
-	
+		is_delete = 0 AND id = #{rid}
 		LIMIT 1
-	
+
 	</select>
 
 
 	<select id="getResourceListByType" resultType="AfResourceDo">
-		SELECT 
-			<include refid="queryAllFields" />
+		SELECT
+		<include refid="queryAllFields" />
 		FROM
-			af_resource
-		WHERE 
-			type = #{type}
-		AND
-			is_delete = 0
+		af_resource
+		WHERE
+		type = #{type} AND is_delete = 0
 	</select>
-	
-		<select id="getResourceListByTypeOrderBy" resultType="AfResourceDo">
-		SELECT 
-			<include refid="queryAllFields" />
+
+	<select id="getResourceListByTypeOrderBy" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
 		FROM
-			af_resource
-		WHERE 
-			type = #{type}
-		AND
-		    value_4 = 'O'
-		AND
-			is_delete = 0
-		order by 
-			sort desc 
+		af_resource
+		WHERE
+		type = #{type} AND value_4 = 'O' AND is_delete = 0
+		order by sort desc
 	</select>
-	
+
 	<select id="getResourceHomeListByTypeOrderBy" resultType="AfResourceDo">
-		SELECT 
-			<include refid="queryAllFields" />
+		SELECT
+		<include refid="queryAllFields" />
 		FROM
-			af_resource
-		WHERE 
-			type = #{type}
-		AND
-			value_4 = 'O'
-		AND
-			is_delete = 0
-		order by 
-			sort desc 
+		af_resource
+		WHERE
+		type = #{type}
+		AND value_4 = 'O'
+		AND is_delete = 0
+		order by
+		sort desc
 	</select>
-	
+
 	<select id="getSingleResourceBytype" resultType="AfResourceDo">
-		SELECT 
-			<include refid="queryAllFields" />
+		SELECT
+		<include refid="queryAllFields" />
 		FROM
-			af_resource
-		WHERE 
-			type = #{type}
-		AND
-			is_delete = 0
+		af_resource
+		WHERE
+		type = #{type}
+		AND is_delete = 0
 		LIMIT 1
 	</select>
-	
-		<select id="getHomeIndexListByOrderby" resultType="AfResourceDo">
-		SELECT 
-			<include refid="queryAllFields" />
+
+	<select id="getHomeIndexListByOrderby" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
 		FROM
-			af_resource
-		WHERE 
-			type = #{type}
-		AND
-			is_delete = 0
-		order by 
-			sort 
+		af_resource
+		WHERE
+		type = #{type}
+		AND is_delete = 0
+		order by
+		sort
 	</select>
-	
+
 	<select id="getOneToManyResourceOrderByBytype" resultType="AfResourceDo">
-		SELECT 
-			<include refid="queryManyAllFields" />
+		SELECT
+		<include refid="queryManyAllFields" />
 		FROM
-			 af_resource r1
-		LEFT JOIN 
-			af_resource r2 
-		ON
-			 r1.id = r2.value_4 
-		WHERE 
-			r1.type = #{type}
-		AND 
-			r1.sec_type = ''  
-		AND 
-			r2.value_4 !=''
-		AND
-		    r1.is_delete =0
-		AND
-		   r2.is_delete =0
-		   
-		AND
-		 r1.value_4 = 'O'
-		ORDER BY 
-		r1.sort ,r1.id , r2.sort 
+		af_resource r1 LEFT JOIN af_resource r2
+		ON r1.id = r2.value_4
+		WHERE
+		r1.type = #{type}
+		AND r1.sec_type = ''
+		AND r2.value_4 !=''
+		AND r1.is_delete =0
+		AND r2.is_delete =0
+		AND r1.value_4 = 'O'
+		ORDER BY
+		r1.sort ,r1.id , r2.sort
 	</select>
-	
+
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
-    SELECT
-    <include refid="queryAllFields" />
-    FROM
-    af_resource
-    WHERE
-    is_delete = 0
-    AND
-   ( (
-    type ='BORROW_RATE'
-    AND
-	 sec_type in ('BASE_BANK_RATE','BORROW_CASH_RANGE','BORROW_CASH_BASE_BANK_DOUBLE','BORROW_CASH_POUNDAGE','BORROW_CASH_OVERDUE_POUNDAGE','BORROW_CASH_LENDER','BORROW_CASH_SUPUER_SWITCH','BORROW_CASH_TOTAL_SWITCH','BORROW_CASH_SHOW_NUM','BORROW_CASH_LENDER_FOR_CASH')
-	)Or type ='BORROW_CASH_DAY')
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0
+		AND
+		( (
+		type ='BORROW_RATE'
+		AND
+		sec_type in
+		('BASE_BANK_RATE','BORROW_CASH_RANGE','BORROW_CASH_BASE_BANK_DOUBLE','BORROW_CASH_POUNDAGE','BORROW_CASH_OVERDUE_POUNDAGE','BORROW_CASH_LENDER','BORROW_CASH_SUPUER_SWITCH','BORROW_CASH_TOTAL_SWITCH','BORROW_CASH_SHOW_NUM','BORROW_CASH_LENDER_FOR_CASH')
+		)Or type ='BORROW_CASH_DAY')
 
-</select>
+	</select>
 
-	
+
 </mapper>

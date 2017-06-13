@@ -87,7 +87,10 @@ public class GetUserInfoApi implements ApiHandle {
 		String realName = userDo.getRealName();
 		userVo.setRealnameStatus(userAuthDo.getRealnameStatus());
 		userVo.setIdNumber(StringUtils.isBlank(idNumber) ? "" : idNumber);
-		userVo.setRealName(StringUtils.isBlank(realName) ? "" : realName );
+		userVo.setRealName(StringUtils.isBlank(realName) ? "" : realName);
+		userVo.setBankCardStatus(userAuthDo.getBankcardStatus());
+		userVo.setFaceStatus(userAuthDo.getFacesStatus());
+		userVo.setRiskStatus(userAuthDo.getRiskStatus());
 		
 		return userVo;
 	}

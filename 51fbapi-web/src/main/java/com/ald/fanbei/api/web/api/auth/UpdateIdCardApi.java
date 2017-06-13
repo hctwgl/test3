@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-
 import com.ald.fanbei.api.biz.bo.YituFaceCardRespBo;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -98,9 +97,10 @@ public class UpdateIdCardApi implements ApiHandle {
 					return resp;
 				}
 			}
-
+			
+			/*  fmai_20170608去掉风控单独调用
 			riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
-					accountDo.getAddress(), accountDo.getOpenId());
+					accountDo.getAddress(), accountDo.getOpenId());*/
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR);
 		}

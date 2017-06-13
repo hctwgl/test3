@@ -739,6 +739,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	public int updateBorrowStatus(Long id, String status) {
 		return afBorrowDao.updateBorrowStatus(id, status);
 	}
+	
 
 
 	@Override
@@ -971,6 +972,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		return borrowRate;
 
 	}
+
 	
+
+	@Override
+	public int getBorrowNumByUserId(Long userId) {
+		return afBorrowDao.getBorrowNumByUserId(userId);
+	}
+
 
 }

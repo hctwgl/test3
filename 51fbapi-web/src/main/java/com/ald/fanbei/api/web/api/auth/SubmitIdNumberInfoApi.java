@@ -166,7 +166,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				account.setUserId(userId);
 				account.setIdNumber(numberDo.getCitizenId());
 				afUserAccountService.updateUserAccount(account);
-
+				/* fmai_20170608去掉风控单独调用
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 				try {
 					RiskRespBo riskResp = riskUtil.register(userId + "", numberDo.getName(), accountDo.getMobile(),
@@ -183,7 +183,7 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 					}
 					logger.error("更新风控用户失败：" + accountDo.getUserId());
-				}
+				}*/
 
 				return resp;
 

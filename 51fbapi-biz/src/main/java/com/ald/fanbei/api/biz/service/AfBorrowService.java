@@ -210,4 +210,11 @@ public interface AfBorrowService {
 	 */
 	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, Integer nper, Long orderId,
 			String orderNo, String borrowRate, String interestFreeJson);
+	
+	/**
+	 * 获取总借款次数
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(Long userId);
 }

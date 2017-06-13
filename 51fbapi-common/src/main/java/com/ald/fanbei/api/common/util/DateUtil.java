@@ -1073,9 +1073,13 @@ public class DateUtil {
 //        System.out.println(addHoures(new Date(), 1));
     	
     	
-    	Date date = new Date();
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    	
+    	Date date = new Date(System.currentTimeMillis());
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	Date arrivalStart = DateUtil.getStartOfDate(date);
+    	Integer day = 7;
+    	Date arrivalEnd = DateUtil.getEndOfDate(date);
+		Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+		System.out.println(sdf.format(repaymentDay));
 		try {
 			date = sdf.parse(sdf.format(date));
 			date = DateUtil.addDays(date,1);

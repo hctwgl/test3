@@ -20,8 +20,12 @@ import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -40,6 +44,8 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 @RequestMapping("/fanbei-web/")
 public class AppH5SubjectController  extends BaseController{
+	
+	String  opennative = "/fanbei-web/opennative?name=";
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -62,8 +68,17 @@ public class AppH5SubjectController  extends BaseController{
 		// FanbeiWebContext context = new FanbeiWebContext();
 		//context = doWebCheck(request, false);
 		JSONObject jsonObj = new JSONObject();
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+		jsonObj.put("notifyUrl", notifyUrl);
+		// 获取会场商品题目文案
+		List<AfResourceDo> goodsTitleList =  afResourceService.getConfigByTypes("ACTIVITY_GOODS_TITLE");
+		if(goodsTitleList != null && goodsTitleList.size() > 0){
+			AfResourceDo goodsTitleInfo = goodsTitleList.get(0);
+			jsonObj.put("goodTitle", goodsTitleInfo.getValue());
+		} else {
+			jsonObj.put("goodTitle", "精品推荐"); //默认文案
+		}
 		
-		jsonObj.put("goodTitle", "精品推荐");
 		// 获取会场URL信息，需要在af_resource表中维护
 		List<Map> mainActivityList = new ArrayList<Map>();
 		List<AfResourceDo> activityUrls =  afResourceService.getConfigByTypes("MAIN_ACTIVITY_URL");
@@ -85,6 +100,8 @@ public class AppH5SubjectController  extends BaseController{
 			qualityGoodsInfo.put("saleAmount", qualityGoods.getSaleAmount());
 			qualityGoodsInfo.put("goodsIcon", qualityGoods.getGoodsIcon());
 			qualityGoodsInfo.put("goodsId", qualityGoods.getRid());
+			
+			
 			qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
 			qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
 			qualityGoodsList.add(qualityGoodsInfo);
@@ -109,6 +126,8 @@ public class AppH5SubjectController  extends BaseController{
 		}
 		
 		JSONObject jsonObj = new JSONObject();
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+		jsonObj.put("notifyUrl", notifyUrl);
 		// 根据modelId查询banner信息
 		List<AfModelH5ItemDo> bannerList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(Long.parseLong(modelId), "BANNER");
 		if(bannerList != null && bannerList.size() > 0){
@@ -128,7 +147,11 @@ public class AppH5SubjectController  extends BaseController{
 			String subjectId = subjectDo.getItemValue();
 			// 查询会场信息
 			AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
+			if(subjectInfo == null) {
+				return H5CommonResponse.getNewInstance(false, "会场不存在id=" + subjectId).toString();
+			}
 			activityInfoMap.put("name", subjectInfo.getName());
+			activityInfoMap.put("subjectId", subjectInfo.getId());
 			// 获取一级会场名称
 			AfSubjectDo parentSubjectInfo = afSubjectService.getParentSubjectInfoById(subjectId);
 			String activityName = "";
@@ -175,6 +198,55 @@ public class AppH5SubjectController  extends BaseController{
 		jsonObj.put("qualityGoodsList",qualityGoodsList);
 		H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
 		return resp.toString();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "subjectGoodsInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String categoryGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// 分会场接口
+		FanbeiWebContext context = new FanbeiWebContext();
+		//context = doWebCheck(request, false);
+		
+		String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
+		
+		AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
+		
+		if(subjectId == null || "".equals(subjectId)) {
+			return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
+		}
+		List<AfGoodsDo> goodsList = afSubjectGoodsService.listAllSubjectGoods(query);
+		
+		JSONObject jsonObj = new JSONObject();
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+		jsonObj.put("notifyUrl", notifyUrl);
+		List<Map> subjectGoodsList = new ArrayList<Map>();
+		for(AfGoodsDo goodsDo : goodsList) {
+			Map subjectGoodsInfo = new HashMap();
+			subjectGoodsInfo.put("goodName", goodsDo.getName());
+			subjectGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+			subjectGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+			subjectGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+			subjectGoodsInfo.put("goodsId", goodsDo.getRid());
+			subjectGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+			subjectGoodsInfo.put("thumbnailIcon",goodsDo.getThumbnailIcon());
+			subjectGoodsList.add(subjectGoodsInfo);
+		}
+		jsonObj.put("subjectGoodsList", subjectGoodsList);
+		H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
+		return resp.toString();
+	}
+	
+	
+	private AfSubjectGoodsQuery buildAfSubjectGoodsQuery(HttpServletRequest request) {
+		AfSubjectGoodsQuery query = new AfSubjectGoodsQuery();
+		String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
+		Integer currentPage = NumberUtil.objToIntDefault(request.getParameter("currentPage"), 1);
+		query.setSubjectId(Long.parseLong(subjectId));
+		query.setPageNo(currentPage);
+		query.setPageSize(20);
+		query.setFull(false);
+		return query;
 	}
 	
 

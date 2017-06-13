@@ -148,7 +148,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		boolean doRish = true;
 		AfBorrowCashDo afnewstBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 		
-		if(afnewstBorrowCashDo!=null && AfBorrowCashReviewStatus.refuse.getCode().equals(afnewstBorrowCashDo.getReviewStatus())){
+		if(afnewstBorrowCashDo!=null && AfBorrowCashStatus.closed.getCode().equals(afnewstBorrowCashDo.getStatus())){
 			//借款被拒绝
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
 			if(afResourceDo!=null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())){
