@@ -3,9 +3,12 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
@@ -13,6 +16,8 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
@@ -33,10 +38,37 @@ import com.sun.org.apache.bcel.internal.generic.RETURN;
 @Service("afResourceService")
 public class AfResourceServiceImpl implements AfResourceService {
 
+    protected static Logger   logger           = LoggerFactory.getLogger(AfResourceServiceImpl.class);
+	String types = Constants.RES_GAME_AWARD_OF_CATCH_DOLL + "," + Constants.RES_GAME_CATCH_DOLL_CLIENT_RATE + "," + Constants.RES_GAME_AWARD_COUNT_LIMIT;
+	
 	@Resource
 	AfResourceDao afResourceDao;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	private static Map<String,List<AfResourceDo>> localResource= null;
+	
+	public List<AfResourceDo> getLocalByType(String type){
+		if(localResource == null){
+			logger.info("local conf reload again:types=" + types);
+			List<AfResourceDo> list = afResourceDao.getConfigByTypeList(StringUtil.splitToList(types, ","));
+			localResource = CollectionConverterUtil.convertToMapListFromList(list, new Converter<AfResourceDo, String>() {
+				@Override
+				public String convert(AfResourceDo source) {
+					return source.getType();
+				}
+			});
+		}
+		List<AfResourceDo> result = localResource.get(type);
+		if(result == null || result.size() == 0){
+			result = this.getConfigByTypes(type);
+		}
+		return result;
+	}
+	
+	@Override
+	public void cleanLocalCache() {
+		localResource = null;
+	}
 
 	@Override
 	public List<AfResourceDo> getHomeConfigByAllTypes() {

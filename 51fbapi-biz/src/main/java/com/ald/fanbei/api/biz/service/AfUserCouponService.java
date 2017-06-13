@@ -59,6 +59,12 @@ public interface AfUserCouponService {
 	int updateUserCouponSatusUsedById(Long rid);
 	
 	int updateUserCouponSatusNouseById(Long rid);
+	/**修改优惠券过期状态
+	 * 
+	 * @param rid
+	 * @return
+	 */
+	int updateUserCouponSatusExpireById(Long rid);
 	
 	
 	/**

@@ -13,10 +13,12 @@ import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -58,9 +60,20 @@ public class CancelAgentBuyOrder implements ApiHandle {
 		
 		if(afOrderService.updateOrder(afOrderDo) > 0){
 			AfAgentOrderDo agOrder= afAgentOrderService.getAgentOrderByOrderId(orderId);
-            if(agOrder.getCouponId()>0){
-            	
-            }
+          //恢复使用优惠券
+			if(agOrder.getCouponId()>0){
+	            AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(agOrder.getCouponId());
+	
+	            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+	            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
+	            		afUserCouponService.updateUserCouponSatusNouseById(agOrder.getCouponId());
+	            }
+	            else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+	        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+	        		afUserCouponService.updateUserCouponSatusExpireById(agOrder.getCouponId());
+	        	}
+			}
+		
 			if(afAgentOrderService.updateAgentOrder(afAgentOrderDo) > 0){
 
 				return resp;

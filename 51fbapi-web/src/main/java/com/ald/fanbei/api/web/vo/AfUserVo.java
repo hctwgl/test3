@@ -29,9 +29,9 @@ public class AfUserVo extends AbstractSerial {
 	private String realnameStatus; // 是否实名状态
 	private String idNumber; //省份证号
 	private String isUploadImage; // 是否上传图片了
-	
-	
-	
+	private String bankCardStatus;
+	private String faceStatus;
+	private String riskStatus;
 	
 	public String getRealnameStatus() {
 		return realnameStatus;
@@ -185,6 +185,28 @@ public class AfUserVo extends AbstractSerial {
 		this.realName = realName;
 	}
 
-	
+	public String getBankCardStatus() {
+		return bankCardStatus;
+	}
+
+	public void setBankCardStatus(String bankCardStatus) {
+		this.bankCardStatus = bankCardStatus;
+	}
+
+	public String getFaceStatus() {
+		return faceStatus;
+	}
+
+	public void setFaceStatus(String faceStatus) {
+		this.faceStatus = faceStatus;
+	}
+
+	public String getRiskStatus() {
+		return riskStatus;
+	}
+
+	public void setRiskStatus(String riskStatus) {
+		this.riskStatus = riskStatus;
+	}
 
 }

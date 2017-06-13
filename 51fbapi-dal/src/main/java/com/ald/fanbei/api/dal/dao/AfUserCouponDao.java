@@ -64,6 +64,8 @@ public interface AfUserCouponDao {
 	 */
 	int updateUserCouponSatusNouseById(@Param("rid")Long rid);
 	
+	
+	int updateUserCouponSatusExpireById(@Param("rid")Long rid);
 	/**
 	 * 获取类型可用优惠券
 	 * @param userId

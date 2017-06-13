@@ -200,7 +200,8 @@ public class AppH5GameController  extends BaseController{
 			String mobilePhone = request.getParameter("mobilePhone");
 			String address = request.getParameter("address");
 			if(StringUtil.isEmpty(context.getAppInfo()) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
-				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
+				resultStr = H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
+				return resultStr;
 			}
 			
 			JSONObject contractsObj = new JSONObject();
@@ -228,7 +229,7 @@ public class AppH5GameController  extends BaseController{
 	private AfGameInitVo buildGameInitVo(AfGameDo gameDo,List<AfGameConfDo> gameConfDo,List<AfGameResultDo> latestResultList,List<AfGameAwardDo> latestAwardList,List<AfGameChanceDo> gameChanceList,AfGameFivebabyDo fivebabyDo,AfGameAwardDo awardDo,AfUserDo afUser){
 		AfGameInitVo gameInitVo = new AfGameInitVo();
 		
-		AfResourceDo clientRate = afResourceService.getSingleResourceBytype(Constants.RES_GAME_CATCH_DOLL_CLIENT_RATE);
+		AfResourceDo clientRate = afResourceService.getLocalByType(Constants.RES_GAME_CATCH_DOLL_CLIENT_RATE).get(0);
 		gameInitVo.setClientRate(Integer.parseInt(clientRate.getValue()));
 		//游戏信息
 		if(gameDo != null){
@@ -304,7 +305,7 @@ public class AppH5GameController  extends BaseController{
 		//最近20个中实物奖列表
 		List<AfGameInitVo.AwardUserVo> entityAwardList = new LinkedList<AfGameInitVo.AwardUserVo>();
 		if(latestAwardList != null){
-			List<AfResourceDo> entityAwards = afResourceService.getResourceListByType(Constants.RES_GAME_AWARD_OF_CATCH_DOLL);
+			List<AfResourceDo> entityAwards = afResourceService.getLocalByType(Constants.RES_GAME_AWARD_OF_CATCH_DOLL);
 			Map<String,AfResourceDo> entityAwardMap = CollectionConverterUtil.convertToMapFromList(entityAwards, new Converter<AfResourceDo, String>() {
 				@Override
 				public String convert(AfResourceDo source) {

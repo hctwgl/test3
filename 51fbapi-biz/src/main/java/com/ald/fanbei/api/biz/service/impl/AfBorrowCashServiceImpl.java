@@ -98,4 +98,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public Integer getSpecBorrowCashNums(Long userId,String reviewStatus,Date startTime){
 		return afBorrowCashDao.getSpecBorrowCashNums(userId, reviewStatus,startTime);
 	}
+
+	@Override
+	public int getBorrowNumByUserId(Long userId) {
+		return afBorrowCashDao.getBorrowNumByUserId(userId);
+	}
+
 }

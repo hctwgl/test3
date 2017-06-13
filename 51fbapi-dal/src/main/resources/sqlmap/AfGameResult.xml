@@ -8,7 +8,7 @@
 		result,item,lottery_result
 	</sql>
 	<insert id="addGameResult" parameterType="AfGameResultDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_game_result(gmt_create , gmt_modified,game_id , user_id , user_name , user_avata , result , item , code , lottery_result)
+		INSERT INTO af_game_result(gmt_create , gmt_modified,game_id , user_id , user_name , user_avata , result , item , lottery_item, code , lottery_result)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -18,6 +18,7 @@
     		#{userAvata},
     		#{result},
     		#{item},
+    		#{lotteryItem},
     		#{code},
     		#{lotteryResult}
 		)

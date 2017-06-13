@@ -3,8 +3,6 @@ package com.ald.fanbei.api.biz.service;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 
 /**
@@ -86,4 +84,11 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	Integer getSpecBorrowCashNums(Long userId,String reviewStatus,Date startTime);
+	
+	/**
+	 * 获取总借款次数
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(Long userId);
 }
