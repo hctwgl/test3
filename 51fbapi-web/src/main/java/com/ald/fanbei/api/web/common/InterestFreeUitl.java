@@ -139,44 +139,49 @@ public class InterestFreeUitl {
                         continue;
                     }
                 }else{
-                	//总手续费
-                    BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(totalGoodsAmount, nPer.intValue(),
-                            poundageRate, rangeBegin, rangeEnd,InterestfreeCode.NO_FREE.getCode());
-                    amount = BigDecimalUtil.getConsumeAmount(totalGoodsAmount, nPer.intValue(), mouthRate, totalPoundage);
-                    //借款总金额
-                    BigDecimal totalAmount = amount.multiply(nPer);
-                    //总利息+手续费
-                    BigDecimal poundageAmount = totalAmount.subtract(goodsAmount);
-                    attrs.put("nper", key);
-                    attrs.put("amount", amount);
-                    attrs.put("poundageAmount", poundageAmount);
-                    attrs.put("totalAmount", totalAmount);
-                    attrs.put("freeNper", BigDecimal.ZERO.toString());
-                    attrs.put("freeAmount", BigDecimal.ZERO);
-                    attrs.put("isFree", InterestfreeCode.NO_FREE.getCode());
+                    attrs = getAttrs(totalGoodsAmount,nPer,poundageRate,rangeBegin,rangeEnd,mouthRate,goodsAmount);
                     list.add(attrs);
                     continue;
                 }
             } else {
-                //总手续费
-                BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(totalGoodsAmount, nPer.intValue(),
-                        poundageRate, rangeBegin, rangeEnd,InterestfreeCode.NO_FREE.getCode());
-                amount = BigDecimalUtil.getConsumeAmount(totalGoodsAmount, nPer.intValue(), mouthRate, totalPoundage);
-                //借款总金额
-                BigDecimal totalAmount = amount.multiply(nPer);
-                //总利息+手续费
-                BigDecimal poundageAmount = totalAmount.subtract(goodsAmount);
-                attrs.put("nper", key);
-                attrs.put("amount", amount);
-                attrs.put("poundageAmount", poundageAmount);
-                attrs.put("totalAmount", totalAmount);
-                attrs.put("freeNper", BigDecimal.ZERO.toString());
-                attrs.put("freeAmount", BigDecimal.ZERO);
-                attrs.put("isFree", InterestfreeCode.NO_FREE.getCode());
+                attrs = getAttrs(totalGoodsAmount,nPer,poundageRate,rangeBegin,rangeEnd,mouthRate,goodsAmount);
                 list.add(attrs);
                 continue;
             }
         }
         return list;
+    }
+
+    /**
+     *
+     * @param totalGoodsAmount
+     * @param nPer
+     * @param poundageRate
+     * @param rangeBegin
+     * @param rangeEnd
+     * @param mouthRate
+     * @param goodsAmount
+     * @return
+     */
+    private static Map<String, Object> getAttrs(BigDecimal totalGoodsAmount, BigDecimal nPer, BigDecimal poundageRate,
+                                                BigDecimal rangeBegin, BigDecimal rangeEnd, BigDecimal mouthRate, BigDecimal goodsAmount){
+        Map<String, Object> attrs = new HashMap<>();
+
+        BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(totalGoodsAmount, nPer.intValue(),
+                poundageRate, rangeBegin, rangeEnd,InterestfreeCode.NO_FREE.getCode());
+        BigDecimal amount = BigDecimalUtil.getConsumeAmount(totalGoodsAmount, nPer.intValue(), mouthRate, totalPoundage);
+        //借款总金额
+        BigDecimal totalAmount = amount.multiply(nPer);
+        //总利息+手续费
+        BigDecimal poundageAmount = totalAmount.subtract(goodsAmount);
+        attrs.put("nper", nPer.toString());
+        attrs.put("amount", amount);
+        attrs.put("poundageAmount", poundageAmount);
+        attrs.put("totalAmount", totalAmount);
+        attrs.put("freeNper", BigDecimal.ZERO.toString());
+        attrs.put("freeAmount", BigDecimal.ZERO);
+        attrs.put("isFree", InterestfreeCode.NO_FREE.getCode());
+
+        return attrs;
     }
 }

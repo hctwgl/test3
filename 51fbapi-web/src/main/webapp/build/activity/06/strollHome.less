@@ -3,12 +3,12 @@
  */
 
 
-/*@url: "https://fs.51fanbei.com/h5/app/activity/06";*/
+@url: "https://fs.51fanbei.com/h5/app/activity/06";
 
 .strollHomeContent{
   width: 7.5rem;
   // height: 9.95rem;
-  background-image: url("/images/activity/06/strollHomeBg.png");
+  background-image: url("@{url}/strollHomeBg.png");
   -webkit-background-size: cover;
 	background-size: cover;
 }
@@ -22,38 +22,43 @@
   margin-bottom: 0;
 }
 .otoCoupon{
-  width: 6.8rem;
-  height: 1.26rem;
+  // width: 6.8rem;
+  // height: 1.26rem;
+  padding: 0.2rem 0.2rem 0;
   background-color: rgba(255, 255, 255, 0.1);
 }
 .otoCoupon li{
   float: left;
   width: 3.06rem;
   height: 1.07rem;
-  background-image: url("/images/activity/06/otoCouponBg.png");
+  background-image: url("@{url}/otoCouponBg.png");
   -webkit-background-size: cover;
 	background-size: cover;
-  margin-left: 0.23rem;
-  font-family: PingFangSC;
   color: #fff;
+  margin-bottom: 0.2rem;
 }
 .otoCoupon li:nth-child(2n+1){
-  margin: 0 0.16rem 0.1rem 0;
+  margin-right: 0.22rem;
 }
 .otoCoupon .money{
-  width: 1.0rem;
+  width: 0.9rem;
   line-height: 1.07rem;
   text-align: center;
   height: 100%;
   float: left;
-  font-family: Haettenschweiler;
+  font-size: 0.5rem;
+}
+.otoCoupon .money i{
+  font-size: 0.3rem;
 }
 .otoCoupon .date{
-  width: 1.5rem;
+  width: 1.6rem;
   height: 100%;
   float: left;
   font-size: 0.26rem;
-  margin-top: 0.2rem;
+  padding-top: 0.2rem;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 .otoCoupon .date span{
   font-size: 0.12rem;
@@ -66,5 +71,5 @@
   margin-top: 0.02rem;
   text-align: center;
   font-size: 0.16rem;
-
+  letter-spacing: 0.01rem;
 }
