@@ -498,7 +498,7 @@ public class RiskUtil extends AbstractThird {
 			String result = obj.getString("result");//
 			AfBorrowCashDo cashDo = new AfBorrowCashDo();
 			// cashDo.setRishOrderNo(orderNo);
-			Date currDate = new Date();
+			Date currDate = new Date(System.currentTimeMillis());
 
 			AfUserDo afUserDo = afUserService.getUserById(consumerNo);
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
@@ -543,8 +543,8 @@ public class RiskUtil extends AbstractThird {
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
 				Integer day = NumberUtil
 						.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-				Date arrivalStart = DateUtil.getStartOfDate(currDate);
-				Date repaymentDay = DateUtil.addDays(arrivalStart, day);
+				Date arrivalEnd = DateUtil.getEndOfDate(cashDo.getGmtArrival());
+				Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
 				cashDo.setGmtPlanRepayment(repaymentDay);
 
 				if (!upsResult.isSuccess()) {
