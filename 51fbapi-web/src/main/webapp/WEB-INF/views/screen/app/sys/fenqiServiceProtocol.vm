@@ -42,10 +42,10 @@
 			<ul>
 				<li><i>借款本金</i><i>￥$!{amountLower}</i></li>
 				<li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
-				<li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li>
+				<li><i>月利率</i><i>{{changeMonthRate($!{yearRate})}}</i></li>
 				<li><i>借款期限</i><i>$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd")至$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
-				<li><i>还款方式</i><i>等额本息还款</i></li>
-				<li><i>还款日</i><i>每月20日</i></li>
+				<li><i>还款方式</i><i>等本等息</i></li>
+				<li><i>还款日</i><i>每月$!{repaymentDate}日</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
 				<li><i>手续费率</i><i>{{changeRate($!{poundage})}}</i></li>
 			</ul><br>
@@ -56,7 +56,7 @@
 			3、乙方通过丙方将出借款项实际支付之日视为放款日，并从该日开始计息，且甲方不得以任何理由拒绝履行本协议项下的还款义务。<br><br>
 
 			<span>第三条 还款</span><br>
-			1、甲方采用银行或乙方指定的第三方代扣方式还款。<br>
+			1、1、甲方采用银行或乙方指定的第三方代扣方式还款。每期还款:本金/期数+本金*月利率+每期手续费（每期手续费：本金*手续费率/期数）<br>
 			2、甲方还款账户以甲方在丙方注册时绑定银行卡为准，若甲方逾期还款，出借方有权通过其他方式扣划甲方任何款项。<br>
 			3、甲方保证以上账户信息中的身份及所提供的信息真实、有效、准确及合法，因甲方身份或所提供信息错误而引起的法律后果及损失，由甲方自行承担。<br>
 			4、甲方在此不可撤销地授权乙方或乙方指定第三方支付机构，从甲方在丙方注册时绑定的银行账户将到期的款项及所有本合同项下到期的其他应付款项划扣至乙方账户，而无需进一步通知甲方或者得到其同意。银行或乙方指定的第三方代扣时间将不早于还款到期日。<br>
@@ -78,7 +78,7 @@
 			2、逾期费用按照逾期天数分期计算，逾期天数是指每一期未全额支付的款项已逾期的天数。<br>
 			3、每期逾期费用计算方式：<br>
 			【逾期费用=[逾期天数]×[当期借款剩余应还本息] ×逾期利率（<span>{{changeRate($!{overdueRate})}}</span>）+滞纳金（若有）】。<br>
-			4、滞纳金：甲方逾期还款超过7日，乙方每日按当期借款剩余应还本息的 <span>{{changeRate($!{lateFeeRate})}}</span> 收取滞纳金，最低 <span>$!{lateFeeMin}</span> 元，最高 <span>$!{lateFeeMax}</span> 元。<br>
+			4、滞纳金：甲方逾期还款超过7日，乙方每日按当期借款剩余应还本息的 <span>{{changeRate($!{lateFeeRate})}}</span> 收取滞纳金。<br>
 			5、还款顺序：甲方同意按下列顺序清偿债务：（1）乙方实现债权的费用；（2）违约金；（3）利息；（4）本金。乙方有权根据甲方实际还款情况变更上述顺序。<br><br>
 
 			<span>第六条 甲方权利和义务</span><br>
@@ -106,7 +106,7 @@
 			5、乙方将其在本合同项下所有权利授权委托丙方或丙方认可的第三方行使，甲方同意并认可上述授权行为。<br><br>
 
 			<span>第八条 丙方的权利和义务</span><br>
-			1、丙方为甲乙双方提供居间服务，有权收取相应居间服务费。<br>
+			1、丙方为甲乙双方提供居间服务，有权收取相应居间服务费，丙方收取的手续费以提供的居间服务产生，服务内容：包括但不限于借款咨询、居间撮合、个人信用审核、通道服务、还款提醒服务等。<br>
 			2、甲乙双方均认可丙方后台出具的相关结算数据，同时授权丙方委托第三方支付公司或银行存管进行资金结算。<br>
 			3、甲方双方均认可丙方与第三方的合作，并同意支付相关费用。<br><br>
 
@@ -141,6 +141,14 @@
                         principalNum = parseFloat(principalNum);
                         principalNum = principalNum.toFixed(2);     //截取小数点后2位
                         return principalNum;
+                    },
+                    changeMonthRate: function(dailyRate){
+
+                        dailyRate = dailyRate/12;
+                        dailyRate = (dailyRate*100).toFixed(4);   //截取小数点后4位
+                        dailyRate = parseFloat(dailyRate);
+                        dailyRate = dailyRate+'%';
+                        return dailyRate;
                     },
                     changeDailyRate: function(dailyRate){ // 日利率/365
 
