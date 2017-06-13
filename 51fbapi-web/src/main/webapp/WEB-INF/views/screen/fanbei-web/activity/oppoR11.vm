@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-#set($version="2017060901")
+#set($version="2017061303")
 #set($src="https://fs.51fanbei.com/h5/app/activity/06")
 	<title>OPPO R11</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/oppoR11.css?version=$version">
@@ -12,15 +12,17 @@
 	   <img src="$src/oppo2.png" id="btn">
 	   <div class="order"></div>
 	</div>
+	<div class="goRegister hide">
+		<a href="/app/user/register"><img src="$src/oppo5.png"></a>
+		<p>登录51返呗APP进行预约</p>
+	</div>
 	<img src="$src/oppo3.png">
 	<img src="$src/oppo4.png">
 	<img src="$src/r10.jpg">
 	<img src="$src/r11.jpg">
 	<img src="$src/r12.jpg">
 	<img src="$src/r13.jpg">
-	<img class="ruleTop" src="$src/r28.jpg">
-	<img src="$src/r29.jpg">
-	<div class="blank"></div>
+	<img src="$src/oppo6.png">
 	<!--弹框-->
 	<div class="mask"></div>
 	<div class="orderSuccess">
