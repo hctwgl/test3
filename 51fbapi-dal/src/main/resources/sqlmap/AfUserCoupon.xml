@@ -189,6 +189,8 @@
 		    (c.type = #{type} or c.type='COMMON')
 		AND
 		    u.status = 'NOUSE'
+		AND
+            now() > c.`gmt_start` 
 		order by c.amount desc
 	</select>
 	<select id="getUserAcgencyCouponByAmount" resultType="AfUserCouponDto">
