@@ -29,7 +29,7 @@ public class AfCouponDo extends AbstractSerial {
 	private Integer validDays;//有效天数，与有效开始/结束时间互斥，要么设置有效开始时间有效结束时间，要么设置有效期  【  -1:表示永久有效;  0：表示设置了有效期;  >0:表示有效期（天数）】
 	private Integer limitCount;
 	private String status;	
-	private String type;
+	private String type; //优惠券类型【MOBILE：话费充值， REPAYMENT：还款, FULLVOUCHER:满减卷,CASH:现金奖励】
 	private String expiryType;
 	private Integer quotaAlready;
 	private Long quota;
