@@ -267,41 +267,41 @@ public class TestController {
 		return "succ";
 	}
 	
-	@RequestMapping(value = { "/wxRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
-	public String wxRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-		JSONObject json = JSONObject.parseObject(body);
-		String orderNo = json.getString("orderNo");
-		String payTradeNo = json.getString("payTradeNo");
-		BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
-		BigDecimal totalAmount = NumberUtil.objToBigDecimalDefault(json.getString("totalAmount"), null);
-		logger.info("wxRefund begin wxRefund is orderNo = {}, payTradeNo = {}, refundAmount = {}, refundAmount = {}", new Object[] { orderNo, payTradeNo, refundAmount, totalAmount });
-		if (StringUtils.isEmpty(orderNo) || StringUtils.isEmpty(payTradeNo) || refundAmount == null || totalAmount == null) {
-			return "";
-		}
-		String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
-		logger.info("wxRefund refundResult = {}", refundResult);
-		System.out.println(refundResult);
-		return "succ";
-	}
-	//处理菠萝觅或者代买没有生成账单的订单，重新生成账单。
-	@RequestMapping(value = { "/dealWithBoluomeBorrow" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
-	@ResponseBody
-	public String dealWithBoluomeBorrow(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-		response.setContentType("application/json;charset=utf-8");
-		List<AfOrderDo> orderList = afOrderDao.getNoBorrowOrder();
-		if (CollectionUtils.isNotEmpty(orderList)) {
-			for (AfOrderDo orderInfo : orderList) {
-				AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
-				afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
-						orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
-						orderInfo.getOrderNo(), null);
-			}
-		}
-		return "succ";
-	}
+//	@RequestMapping(value = { "/wxRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+//	public String wxRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//		JSONObject json = JSONObject.parseObject(body);
+//		String orderNo = json.getString("orderNo");
+//		String payTradeNo = json.getString("payTradeNo");
+//		BigDecimal refundAmount = NumberUtil.objToBigDecimalDefault(json.getString("refundAmount"), null);
+//		BigDecimal totalAmount = NumberUtil.objToBigDecimalDefault(json.getString("totalAmount"), null);
+//		logger.info("wxRefund begin wxRefund is orderNo = {}, payTradeNo = {}, refundAmount = {}, refundAmount = {}", new Object[] { orderNo, payTradeNo, refundAmount, totalAmount });
+//		if (StringUtils.isEmpty(orderNo) || StringUtils.isEmpty(payTradeNo) || refundAmount == null || totalAmount == null) {
+//			return "";
+//		}
+//		String refundResult = UpsUtil.wxRefund(orderNo, payTradeNo, refundAmount, totalAmount);
+//		logger.info("wxRefund refundResult = {}", refundResult);
+//		System.out.println(refundResult);
+//		return "succ";
+//	}
+//	//处理菠萝觅或者代买没有生成账单的订单，重新生成账单。
+//	@RequestMapping(value = { "/dealWithBoluomeBorrow" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+//	@ResponseBody
+//	public String dealWithBoluomeBorrow(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+//		response.setContentType("application/json;charset=utf-8");
+//		List<AfOrderDo> orderList = afOrderDao.getNoBorrowOrder();
+//		if (CollectionUtils.isNotEmpty(orderList)) {
+//			for (AfOrderDo orderInfo : orderList) {
+//				AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+//				afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
+//						orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
+//						orderInfo.getOrderNo(), null);
+//			}
+//		}
+//		return "succ";
+//	}
 //	
 //
 //	/**
