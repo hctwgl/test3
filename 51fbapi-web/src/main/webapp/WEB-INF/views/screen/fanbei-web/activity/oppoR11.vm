@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-#set($version="2017061305")
+#set($version="2017061306")
 #set($src="https://fs.51fanbei.com/h5/app/activity/06")
 	<title>OPPO R11</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/oppoR11.css?version=$version">
