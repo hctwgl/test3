@@ -82,8 +82,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
-			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-			if (afBorrowCashDo != null && (!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode()) && !StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
+			boolean isCanBorrowCash = afBorrowCashService.isCanBorrowCash(userId);
+			if (!isCanBorrowCash) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 			}
 
