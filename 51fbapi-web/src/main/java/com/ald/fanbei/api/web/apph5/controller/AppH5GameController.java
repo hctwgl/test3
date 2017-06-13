@@ -200,7 +200,8 @@ public class AppH5GameController  extends BaseController{
 			String mobilePhone = request.getParameter("mobilePhone");
 			String address = request.getParameter("address");
 			if(StringUtil.isEmpty(context.getAppInfo()) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
-				return H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
+				resultStr = H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
+				return resultStr;
 			}
 			
 			JSONObject contractsObj = new JSONObject();

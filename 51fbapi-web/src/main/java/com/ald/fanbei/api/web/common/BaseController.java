@@ -474,14 +474,14 @@ public abstract class BaseController {
 	 * @param respData
 	 * @param exeT
 	 */
-	protected void doMaidianLog(HttpServletRequest request){
+	protected void doMaidianLog(HttpServletRequest request,String respData){
 		JSONObject param = new JSONObject();
 		Enumeration<String> enu=request.getParameterNames();  
 		while(enu.hasMoreElements()){  
 			String paraName=(String)enu.nextElement();  
 			param.put(paraName, request.getParameter(paraName));
 		}
-		maidianLog.info(StringUtil.appendStrs("inte=",request.getRequestURI(),";ip=",CommonUtil.getIpAddr(request),";param=",param.toString()));
+		maidianLog.info(StringUtil.appendStrs("inte=",request.getRequestURI(),";ip=",CommonUtil.getIpAddr(request),";param=",param.toString(),";resp=",respData));
 	}
 	
 	/**

@@ -51,6 +51,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Controller
 @RequestMapping("/app/activity/")
+@SuppressWarnings("unchecked")
 public class AppH5ActivityController extends BaseController {
     String  opennative = "/fanbei-web/opennative?name=";
      
@@ -129,7 +130,7 @@ public class AppH5ActivityController extends BaseController {
                         .toString();
             }
             //解析对应配置并校验
-            Map<String,Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(currActivityResource.getValue3());
+			Map<String,Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(currActivityResource.getValue3());
             Date startTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("startTime")));
             Date endTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("endTime")));
             sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
@@ -202,6 +203,7 @@ public class AppH5ActivityController extends BaseController {
             
             Long activityId = 0L;
             Long goodsId = 0L;
+            String isHaveReservationRecord = YesNoStatus.NO.getCode();
             String isCanReservation = YesNoStatus.NO.getCode();
             String activityStatus = AfCounponStatus.O.getCode();
             
@@ -227,6 +229,8 @@ public class AppH5ActivityController extends BaseController {
                 Integer revCountNums = afGoodsReservationService.getRevCountNumsByQueryCondition(afGoodsReservationDo);
                 if(revCountNums==0){
                     isCanReservation = YesNoStatus.YES.getCode();
+                }else{
+                	isHaveReservationRecord = YesNoStatus.YES.getCode();
                 }
             }
             
@@ -255,6 +259,7 @@ public class AppH5ActivityController extends BaseController {
             returnData.put("endTime", endTime);
             returnData.put("goodsId", goodsId);
             returnData.put("isCanReservation", isCanReservation);
+            returnData.put("isHaveReservationRecord", isHaveReservationRecord);
             
             return H5CommonResponse
                     .getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "",returnData )
@@ -269,7 +274,6 @@ public class AppH5ActivityController extends BaseController {
     
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
-        // TODO Auto-generated method stub
         return null;
     }
  
@@ -280,7 +284,6 @@ public class AppH5ActivityController extends BaseController {
      */
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        // TODO Auto-generated method stub
         return null;
     }
  
@@ -291,7 +294,6 @@ public class AppH5ActivityController extends BaseController {
      */
     @Override
     public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
-        // TODO Auto-generated method stub
         return null;
     }
  

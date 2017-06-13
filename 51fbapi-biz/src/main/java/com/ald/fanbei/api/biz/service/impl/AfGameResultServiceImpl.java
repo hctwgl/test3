@@ -68,7 +68,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	public List<AfGameResultDo> getLatestRecord() {//先从缓存中拿，缓存中拿不到再到表中拿，缓存在抓娃娃接口中维护
 		String cacheKey = Constants.CACHEKEY_LATEST_GAMEERSULT_LIST;
 		List<AfGameResultDo> afGameResultList = bizCacheUtil.getObjectList(cacheKey);
-		if(afGameResultList == null || afGameResultList.size() < 20){
+		if(afGameResultList == null || afGameResultList.size() < 15){
 			afGameResultList =  afGameResultDao.getLatestRecord();
 		}
 		return afGameResultList;
@@ -260,14 +260,13 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		Date date=new Date();
 		String key = Constants.CACHEKEY_GAME_LIMIT + DateUtil.formatDate(date, DateUtil.DEFAULT_PATTERN);
 		JSONObject prizeObj = rulesMap.get(prizeId);
-		if(prizeObj == null){
-			logger.info("dealWithCoupon error:" + prizeObj + "," + prizeId);
-			return;
-		}
 		String type = prizeObj.getString("prize_type");
 		List<AfResourceDo> limitRes = afResourceService.getLocalByType(Constants.RES_GAME_AWARD_COUNT_LIMIT);
 		Long cashCount = (Long)bizCacheUtil.getObject(key + type);
 		cashCount = cashCount == null?0l:cashCount;
+		if(cashCount%100 == 1){
+			logger.info(StringUtil.appendStrs(limitRes,",cashCount=",cashCount,",type=",type));
+		}
 		if(CouponType.CASH.getCode().equals(type)){
 			if(cashCount + 1 > Long.parseLong(limitRes.get(0).getValue())){
 				throw new FanbeiException("未中奖",FanbeiExceptionCode.ADD_WHITE_USER_PRIMARIES_ERROR);

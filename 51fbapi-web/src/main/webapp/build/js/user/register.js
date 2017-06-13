@@ -70,7 +70,7 @@ $(function(){
          	timerS = 60;
 			$("#register_codeBtn").attr("isState",0);
         } else {
-         	$("#register_codeBtn span").text(timerS+" s");
+         	$("#register_codeBtn").text(timerS+" s");
         }
 	};
 
@@ -90,7 +90,7 @@ $(function(){
     			success: function(returnData){
     				if (returnData.success) {
     					$("#register_codeBtn").attr("isState",1);
-						$("#register_codeBtn span").text(timerS+" s");
+						$("#register_codeBtn").text(timerS+" s");
              			timerInterval = setInterval(timeFunction,1000);
     				} else {
     					requestMsg(returnData.msg);
@@ -190,7 +190,7 @@ $(function(){
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
 						if ( $("#register_codeBtn").attr("isState") == 1 ) {
 							$.ajax({ // 设置登录密码
-								url: "/app/user/commitChannelRegister",
+								url: "/app/user/commitRegister",
 								type: 'POST',
 								dataType: 'JSON',
 								data: {
@@ -200,7 +200,6 @@ $(function(){
 									recommendCode: recommendCode
 								},
 								success: function(returnData){
-									alert(returnData)
 									if ( returnData.success ) {
 										$("#register_submitBtn").attr("disabled",true);
 										window.location.href = returnData.url;
@@ -228,12 +227,6 @@ $(function(){
 			requestMsg("请填写正确的手机号");
 		};
 	});
-
-
-
-
-
-
 });
 
 // 点击眼睛显示密码

@@ -1046,5 +1046,49 @@ public class DateUtil {
         return s.getTime() >= e.getTime();
     }
     
+    public static void main(String[] args) {
+        /*
+         * System.out.println(DateUtils.getFirstOfMonth(DateUtils.addMonths( DateUtils.currentDate(), -3)));
+         * System.out.println(DateUtils.getEndOfMonth(DateUtils.currentDate())); System.out.println("now:" +
+         * DateUtils.now());
+         */
+        /*
+         * Calendar cal1 = GregorianCalendar.getInstance(); cal1.add(Calendar.MINUTE, 2);
+         * System.out.println(getNumberOfMinuteBetween(new Date(), cal1.getTime()));
+         */
+        // System.out.println("previous monday:" +
+        // DateUtils.getPreviousMonday());
+        // System.out.println("current monday:" + DateUtils.getCurrentMonday());
+        // System.out.println("monday before 4 weeks:"
+        // + DateUtils.getMondayBefore4Week());
+//        long time = System.currentTimeMillis();
+//        System.out.println(convert(time,null));
+//        System.out.println(getNoEndDate().getTime());
+//        System.out.println(formatDate(addDays(new Date(), 1), "yyyyMMdd"));
+//        System.out.println("formatDate(new Date(), \"yyyyMMdd\"):" + DateUtil.formatDate(new Date(), "yyyyMMdd"));
+//        System.out.println(parseDate("2011年11月03", "yyyy年MM月dd"));
+        
+//        System.out.println(isBetweenDateRange(new Date(), new Date(System.currentTimeMillis()-1), new Date()));
+//        System.out.println(new Date());
+//        System.out.println(addHoures(new Date(), 1));
+    	
+    	
+    	Date date = new Date(System.currentTimeMillis());
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	Date arrivalStart = DateUtil.getStartOfDate(date);
+    	Integer day = 7;
+    	Date arrivalEnd = DateUtil.getEndOfDate(date);
+		Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+		System.out.println(sdf.format(repaymentDay));
+		try {
+			date = sdf.parse(sdf.format(date));
+			date = DateUtil.addDays(date,1);
+			long betweenGmtArrival = DateUtil.getNumberOfDatesBetween(date, DateUtil.getToday());
+			System.out.println(betweenGmtArrival);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+    	
+    }
 
 }
