@@ -32,19 +32,6 @@
 					</div>
 				</a>
 			</li>
-##			<li class="clearfix">
-##				<a href="">
-##					<img src="">
-##					<div class="boutiqueHomeContent">
-##						<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
-##						<div class="price">
-##                            <p><i class="monthCorner"></i>￥5.2</p>
-##							<p>抢购价：￥1.2</p>
-##						</div>
-##						<button>马上抢</button>
-##					</div>
-##				</a>
-##			</li>
 		</ul>
 	</div>
     <div class="activityList">
@@ -77,19 +64,6 @@
                         </div>
                     </a>
                 </li>
-			##			<li class="clearfix">
-			##				<a href="">
-			##					<img src="">
-			##					<div class="boutiqueHomeContent">
-			##						<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
-			##						<div class="price">
-			##                            <p><i class="monthCorner"></i>￥5.2</p>
-			##							<p>抢购价：￥1.2</p>
-			##						</div>
-			##						<button>马上抢</button>
-			##					</div>
-			##				</a>
-			##			</li>
                 <a class="more" :href="moreHref+data.subjectId">更多 ...</a>
 			</ul>
 		</template>
