@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 #set($version="20170612")
+#set($src="https://fs.51fanbei.com/h5/app/activity/06")
 <title>查看更多</title>
 <link rel="stylesheet" type="text/css" href="/dist/activity/06/getMore.css?version=$version">
 </head>
 <body>
 <ul id="productList">
-	<li v-for="item in List">
+	<!-- <li v-for="item in List">
 		<div class="productImg"><img :src="item.goodsIcon"></div>
 		<div class="productRight">
 			<p class="productDes">{{item.goodName}}</p>
@@ -16,8 +17,10 @@
 		    <p class="fanPrice">￥{{item.rebateAmount}}</p>
 		    <p class="buyNow">马上抢</p>
 		</div>		
-	</li>
+	</li> -->
 </ul>
+<div class="load"><img src="$src/loading_wt.gif"></div>
+<div class="finish">加载完毕</div>  
 <script type="text/javascript" src="/dist/activity/06/getMore.js"></script>
 </body>
 </html>

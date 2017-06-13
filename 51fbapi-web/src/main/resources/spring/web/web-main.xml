@@ -111,8 +111,8 @@
 				<value>/system/checkVersion</value>
 				<value>/system/AppLaunchImage</value>
 				<value>/system/appPopImage</value>
-				<value>/system/getTabbarInfor</value>
-				<value>/user/submitShareAction</value>
+                <value>/system/getTabbarInfor</value>
+                <value>/user/submitShareAction</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -156,7 +156,6 @@
 				<entry key="/user/getUserCounponListType" value-ref="getUserCounponListTypeApi" />
 				<entry key="/user/submitShareAction" value-ref="submitShareActionApi" />
 
-
 				<entry key="/user/signin" value-ref="signinApi" />
 
 				<!-- goods -->
@@ -186,6 +185,7 @@
 				<entry key="/system/AppLaunchImage" value-ref="AppLaunchImageApi" />
 				<entry key="/system/appPopImage" value-ref="appPopImageApi" />
 				<entry key="/system/getTabbarInfor" value-ref="getTabbarInforApi" />
+				
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
@@ -209,7 +209,7 @@
 				<entry key="/auth/checkFaceApi" value-ref="checkFaceApi" />
 				<entry key="/auth/getYiTuInfo" value-ref="getYiTuInfoApi" />
 				<entry key="/auth/submitIdNumberInfo" value-ref="submitIdNumberInfoApi" />
-				
+				<entry key="/auth/authStrongRisk" value-ref="authStrongRiskApi" />
 				
 
 				<!-- borrow -->
@@ -254,8 +254,8 @@
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
 				<entry key="/borrowCash/getLoanSupermarketList" value-ref="getLoanSupermarketListApi" />
-				<entry key="/loanMarket/accessLoanSupermarket" value-ref="accessLoanSupermarketApi" />
-				
+		        <entry key="/loanMarket/accessLoanSupermarket" value-ref="accessLoanSupermarketApi" />
+		        
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />

@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.Date;
@@ -82,13 +80,25 @@ public interface AfBorrowCashDao {
 	 * @param endTime
 	 * @return
 	 */
-	AfBorrowCashDo getUserDayLastBorrowCash(@Param("userId") Long userId,@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+	AfBorrowCashDo getUserDayLastBorrowCash(@Param("userId") Long userId, @Param("startTime") Date startTime,
+			@Param("endTime") Date endTime);
+
 	/**
-	 * 获取某个用户某个时间后，风控拒绝的借款申请数量
+	 * 获取某个用户某个时间后，风控拒绝的借款申请数量 获取总借款次数
+	 * 
 	 * @param userId
 	 * @param reviewStatus
 	 * @param startTime
 	 * @return
 	 */
-	Integer getSpecBorrowCashNums(@Param("userId") Long userId,@Param("reviewStatus") String reviewStatus,@Param("startTime") Date startTime);
+	Integer getSpecBorrowCashNums(@Param("userId") Long userId, @Param("reviewStatus") String reviewStatus,
+			@Param("startTime") Date startTime);
+
+	/**
+	 * 获取总借款次数
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(@Param("userId") Long userId);
 }

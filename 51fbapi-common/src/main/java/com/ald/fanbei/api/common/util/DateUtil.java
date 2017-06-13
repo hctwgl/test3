@@ -569,7 +569,22 @@ public class DateUtil {
 
         return new Date(cal.getTime().getTime());
     }
+    /**
+     * 一天的结束时间，【注：只精确到秒】
+     * 
+     * @param date
+     * @return
+     */
+    public static Date getEndOfDatePrecisionSecond(final Date date) {
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
 
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+
+        return new Date(cal.getTime().getTime());
+    }
     /**
      * Return the end of the month based on the date passed as input parameter.
      * 
@@ -1073,9 +1088,13 @@ public class DateUtil {
 //        System.out.println(addHoures(new Date(), 1));
     	
     	
-    	Date date = new Date();
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    	
+    	Date date = new Date(System.currentTimeMillis());
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	Date arrivalStart = DateUtil.getStartOfDate(date);
+    	Integer day = 7;
+    	Date arrivalEnd = DateUtil.getEndOfDate(date);
+		Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+		System.out.println(sdf.format(repaymentDay));
 		try {
 			date = sdf.parse(sdf.format(date));
 			date = DateUtil.addDays(date,1);

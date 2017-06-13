@@ -64,11 +64,11 @@ public interface AfRepaymentBorrowCashDao {
 	 * @return
 	 */
 	List<AfRepaymentBorrowCashDo> getRepaymentBorrowCashListByUserId(@Param("userId") Long userId);
-	
+
 	AfRepaymentBorrowCashDo getRepaymentByPayTradeNo(@Param("payTradeNo") String payTradeNo);
-	
+
 	AfRepaymentBorrowCashDo getRepaymentByPayTradeNoWithStatusY(@Param("payTradeNo") String payTradeNo);
-	
+
 	/**
 	 * 根据rid获取还款信息
 	 * 
@@ -76,23 +76,26 @@ public interface AfRepaymentBorrowCashDao {
 	 * @return
 	 */
 	AfRepaymentBorrowCashDo getLastRepaymentBorrowCashByBorrowId(@Param("borrowCashId") Long borrowCashId);
-	
+
 	/**
 	 * 已还款金额
+	 * 
 	 * @param borrowId
 	 * @return
 	 */
 	BigDecimal getRepaymentAllAmountByBorrowId(@Param("borrowId") Long borrowId);
-	
+
 	/**
 	 * 还款处理中金额
+	 * 
 	 * @param borrowId
 	 * @return
 	 */
 	BigDecimal getRepayingTotalAmountByBorrowId(@Param("borrowId") Long borrowId);
-	
+
 	/**
 	 * 查询某一天最后一个订单号
+	 * 
 	 * @param orderNoPre
 	 * @return
 	 */

@@ -65,16 +65,16 @@ $(function(){
 	function timeFunction(){ // 60s倒计时
         timerS--;
         if (timerS<=0) {
-         	$(".register_codeBtn").text("获取验证码");
+         	$("#register_codeBtn").text("获取验证码");
          	clearInterval(timerInterval);
          	timerS = 60;
-			$(".register_codeBtn").attr("isState",0);
+			$("#register_codeBtn").attr("isState",0);
         } else {
-         	$(".register_codeBtn span").text(timerS+" s");
+         	$("#register_codeBtn").text(timerS+" s");
         }
 	};
 
-	$(".register_codeBtn").click(function(){ // 获取验证码
+	$("#register_codeBtn").click(function(){ // 获取验证码
 
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
@@ -89,8 +89,8 @@ $(function(){
     			},
     			success: function(returnData){
     				if (returnData.success) {
-    					$(".register_codeBtn").attr("isState",1);
-						$(".register_codeBtn span").text(timerS+" s");
+    					$("#register_codeBtn").attr("isState",1);
+						$("#register_codeBtn").text(timerS+" s");
              			timerInterval = setInterval(timeFunction,1000);
     				} else {
     					requestMsg(returnData.msg);
@@ -190,7 +190,7 @@ $(function(){
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
 						if ( $("#register_codeBtn").attr("isState") == 1 ) {
 							$.ajax({ // 设置登录密码
-								url: "/app/user/commitChannelRegister",
+								url: "/app/user/commitRegister",
 								type: 'POST',
 								dataType: 'JSON',
 								data: {
@@ -212,7 +212,7 @@ $(function(){
 								}
 							})
 						} else {
-							requestMsg("请输入正确的验证码");
+							requestMsg("请输入验证码");
 						}
 					} else {
 						requestMsg("请阅读并同意《51返呗用户注册协议》");
@@ -227,12 +227,6 @@ $(function(){
 			requestMsg("请填写正确的手机号");
 		};
 	});
-
-
-
-
-
-
 });
 
 // 点击眼睛显示密码

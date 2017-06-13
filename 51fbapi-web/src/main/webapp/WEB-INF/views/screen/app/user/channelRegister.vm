@@ -31,13 +31,11 @@
 	<input type="hidden" id="style" value="$!{style}">
 
 	<div class="channelRegister_wrap">
-
-		#if( $!{style} == 8 || $!{style} == 9 )
+		#if( $!{style} == 8 || $!{style} == 9 || $!{style} == 10)
 			<img src="$commonUrl/channel$!{style}_01.png">
 		#else
 			<img src="$commonUrl/channel$!{style}_01.jpg">
 		#end
-
 		<div class="channelRegisterWrap">
 			#if( $!{style} == 7 || $!{style} == 9 )
 				<img src="$commonUrl/channel$!{style}_02.png">
@@ -98,7 +96,7 @@
 				<div class="registerMask hide"></div>
 				<div class="registerSuss hide">
 					<!-- <i class="channelRegisterPopupIcon"></i> -->
-					<p>注册成功，248元红包已到账，赶紧下载预定吧！</p>
+					<p>注册成功，248元红包已到账，再享150元返利，赶紧下载预定吧！</p>
 					<span id="downloadApp">下载51APP</span>
 				</div>
 				<div class="registerFail hide">
