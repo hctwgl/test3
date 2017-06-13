@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -22,9 +25,11 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -32,11 +37,14 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
@@ -46,6 +54,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -58,7 +68,9 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("applyBorrowCashApi")
 public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
-
+	
+	@Resource
+	SmsUtil smsUtil;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 
@@ -181,8 +193,6 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
 		
-		
-		
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 
 		Long borrowId = afBorrowCashDo.getRid();
@@ -198,24 +208,97 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			}
 
 			String cardNo = card.getCardNumber();
-			String riskOrderNo = riskUtil.getOrderNo("vefy",
-					cardNo.substring(cardNo.length() - 4, cardNo.length()));
+			String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 			cashDo.setRishOrderNo(riskOrderNo);
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
 			
-			riskUtil.verify(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
-					afBorrowCashDo.getBorrowNo(), null,riskOrderNo);
+			RiskVerifyRespBo verybo = riskUtil.verify(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
+					afBorrowCashDo.getBorrowNo(), riskOrderNo);
 
+			if (verybo.isSuccess()) {
+				delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult());
+			}
 			return resp;
 		} catch (Exception e) {
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
-
 	}
 
+	private void delegatePay(String consumerNo, String orderNo, String result) {
+		AfBorrowCashDo cashDo = new AfBorrowCashDo();
+		// cashDo.setRishOrderNo(orderNo);
+		Date currDate = new Date(System.currentTimeMillis());
+
+		AfUserDo afUserDo = afUserService.getUserById(Long.parseLong(consumerNo));
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
+		cashDo.setRid(afBorrowCashDo.getRid());
+
+		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
+
+		List<String> whiteIdsList = new ArrayList<String>();
+		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+		// 判断是否在白名单里面
+		AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+		if (whiteListInfo != null) {
+			whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
+				@Override
+				public String convert(String source) {
+					return source.trim();
+				}
+			});
+		}
+
+		if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
+			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+			String bankNumber = card.getCardNumber();
+			String lastBank = bankNumber.substring(bankNumber.length() - 4);
+
+			smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+			// 审核通过
+			cashDo.setGmtArrival(currDate);
+			cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
+			AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(Long.parseLong(consumerNo));
+			// 打款
+			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02", UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
+			cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
+			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo.getGmtArrival());
+			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+			cashDo.setGmtPlanRepayment(repaymentDay);
+
+			if (!upsResult.isSuccess()) {
+				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
+			}
+			afBorrowCashService.updateBorrowCash(cashDo);
+			addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
+		} else if (StringUtils.equals("30", result)) {
+			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+			cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
+			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+		} else {
+			cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
+		}
+		afBorrowCashService.updateBorrowCash(cashDo);
+	}
+	
+	/**
+	 * 增加当天审核的金额
+	 * 
+	 * @param day
+	 * @param amount
+	 */
+	private void addTodayTotalAmount(int day, BigDecimal amount) {
+		AfBorrowCacheAmountPerdayDo amountCurrentDay = new AfBorrowCacheAmountPerdayDo();
+		amountCurrentDay.setDay(day);
+		amountCurrentDay.setAmount(amount);
+		afBorrowCacheAmountPerdayService.updateBorrowCacheAmount(amountCurrentDay);
+	}
+	
 	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount, String type, String latitude, String longitude, AfUserBankcardDo afUserBankcardDo, String city, String province,
 			String county, String address, Long userId, int currentDay) {
 
