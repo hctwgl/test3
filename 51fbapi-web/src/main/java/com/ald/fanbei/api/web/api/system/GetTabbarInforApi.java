@@ -79,6 +79,7 @@ public class GetTabbarInforApi implements ApiHandle {
 				index.put("borrowNomal", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_SELECTED")){
+				handleIosBorow(context,requestDataVo,data);
 				index.put("borrowSelected", data);
 			}
 			

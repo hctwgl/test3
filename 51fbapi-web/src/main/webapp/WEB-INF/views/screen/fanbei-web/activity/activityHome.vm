@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017061302")
+	#set($version="2017061312")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<title>618主会场</title>
@@ -10,12 +10,10 @@
 <body>
 	<div class="activityHomeWrap">
 		<div class="activityHomeBanner">
-			<img src="$commonUrl/bannerBg.jpg" class="banner">
-            <span class="bannerTitle">
-            	<span class="bannerTitleCorner"></span>
-            </span>
-            <div class="countDown" id="countDown">
-            	<h2>活动倒计时</h2>
+			<img src="$commonUrl/bannerBg.png" class="banner">
+      <span class="bannerTitle"><span class="bannerTitleCorner"></span></span>
+      <div class="countDown" id="countDown">
+        <h2>距离活动结束</h2>
 				<span class="time_item" id="day_show"></span>
 				<span class="time_item" id="hour_show"></span>
 				<span class="time_item" id="minute_show"></span>
