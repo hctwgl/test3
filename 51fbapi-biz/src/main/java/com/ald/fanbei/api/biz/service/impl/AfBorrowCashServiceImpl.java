@@ -49,7 +49,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
-	
+
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -93,9 +93,25 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		Date endTime = DateUtil.getTodayLast();
 		return afBorrowCashDao.getUserDayLastBorrowCash(userId, startTime, endTime);
 	}
-	
+
 	@Override
-	public Integer getSpecBorrowCashNums(Long userId,String reviewStatus,Date startTime){
-		return afBorrowCashDao.getSpecBorrowCashNums(userId, reviewStatus,startTime);
+	public Integer getSpecBorrowCashNums(Long userId, String reviewStatus, Date startTime) {
+		return afBorrowCashDao.getSpecBorrowCashNums(userId, reviewStatus, startTime);
+	}
+
+	@Override
+	public boolean isCanBorrowCash(Long userId) {
+		List<AfBorrowCashDo> list = afBorrowCashDao.getBorrowCashByStatusNotInFinshAndClosed(userId);
+		if (list.size() > 0) {
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
+	@Override
+	public AfBorrowCashDo getNowTransedBorrowCashByUserId(Long userId) {
+		return afBorrowCashDao.getNowTransedBorrowCashByUserId(userId);
 	}
 }
