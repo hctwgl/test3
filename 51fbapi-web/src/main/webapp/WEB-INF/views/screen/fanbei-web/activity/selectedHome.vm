@@ -19,12 +19,14 @@
 					<div class="boutiqueHomeContent clearfix">
 						<p class="title">{{data.goodName}}</p>
 						<p class="price">
-##						{{
-##							<p><i class="monthCorner"></i>￥5.2</p>
-##							<p>抢购价：￥1.2</p>
-##						}}
-							<span>￥{{data.saleAmount}}</span>
-							<span><i>返</i>￥{{data.rebateAmount}}</span>
+							<template v-if="data.goodsType==1">
+								<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+								<p>抢购价：￥{{data.saleAmount}}</p>
+							</template>
+							<template v-else>
+                                <span>￥{{data.saleAmount}}</span>
+                                <span><i>返</i>￥{{data.rebateAmount}}</span>
+							</template>
 						</p>
 						<button>马上抢</button>
 					</div>
@@ -62,12 +64,14 @@
                         <div class="boutiqueHomeContent clearfix">
                             <p class="title">{{data.goodName}}</p>
                             <p class="price">
-							##						{{
-							##							<p><i class="monthCorner"></i>￥5.2</p>
-							##							<p>抢购价：￥1.2</p>
-							##						}}
-                                <span>￥{{data.saleAmount}}</span>
-                                <span><i>返</i>￥{{data.rebateAmount}}</span>
+                                <template v-if="data.goodsType==1">
+									<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+									<p>抢购价：￥{{data.saleAmount}}</p>
+        						</template>
+								<template v-else>
+									<span>￥{{data.saleAmount}}</span>
+									<span><i>返</i>￥{{data.rebateAmount}}</span>
+								</template>
                             </p>
                             <button>马上抢</button>
                         </div>

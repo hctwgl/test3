@@ -18,8 +18,8 @@ let vm=new Vue({
                 {time:20170611}
             ]
         },
-        beginTime:'',
-        current:3,
+        beginTime:20170609,
+        current:4,
         option:{
         }
     },
@@ -29,6 +29,15 @@ let vm=new Vue({
     methods:{
         signIn (time){
             console.log(time);
+        },
+        selected(data){
+            let list=this.content.list;
+            console.log(data);
+            console.log(list.indexOf(data));
+            for(let i in list){
+                if (list[i] == data){return true}
+            }
+            return false;
         },
         logData (){
             Vue.http.options.emulateJSON = true;

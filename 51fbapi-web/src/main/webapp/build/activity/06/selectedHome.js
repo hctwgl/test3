@@ -121,6 +121,7 @@ new Vue({
                 self.$nextTick(function () {                              //dom渲染完成后执行
                     self.divTop=document.getElementById('navWrap').offsetTop;
                     if(getBlatFrom()==2){
+                        window.addEventListener('touchstart', this.handleScroll);
                         window.addEventListener('touchmove', this.handleScroll);
                         window.addEventListener('touchend', this.handleScroll);
                     }else{
