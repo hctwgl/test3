@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.util.StringUtil;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
@@ -20,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserOperationLogService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -30,6 +32,7 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogRefType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogType;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -41,6 +44,7 @@ import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserOperationLogDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -57,6 +61,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfUserAuthService afUserAuthService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
@@ -219,7 +225,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 					afUserOperationLogService.addUserOperationLog(afUserOperationLogDo);
 				}
 			}
-			
+		}
+		//未通过强风控审核的，也把其设置为 风控拒绝日期内
+		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		if(!RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
+			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 		
 		//如果需要跳转至不通过页面，则获取对应banner图地址

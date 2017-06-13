@@ -220,7 +220,10 @@ public class BigDecimalUtil {
          } else if (finalAmount.compareTo(max) > 0) {
         	 finalAmount = max;
          }
-         return finalAmount.divide(new BigDecimal(nper));
+    	 //最后计算的期数
+    	 Integer finalNper =  nper - freeNper;
+    	 return finalNper.equals(0) ? BigDecimal.ZERO : 
+    		 finalAmount.divide(new BigDecimal(finalNper)).setScale(2, RoundingMode.CEILING);
     }
     
     /**

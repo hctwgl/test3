@@ -14,42 +14,31 @@
 		<h2>精品推荐</h2>
 		<ul>
 			<li v-for="data in content.data.qualityGoodsList" class="clearfix">
-				<a :href="data.goodsUrl">
+				<a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
 					<img :src="data.goodsIcon">
 					<div class="boutiqueHomeContent clearfix">
 						<p class="title">{{data.goodName}}</p>
 						<p class="price">
-##						{{
-##							<p><i class="monthCorner"></i>￥5.2</p>
-##							<p>抢购价：￥1.2</p>
-##						}}
-							<span>￥{{data.saleAmount}}</span>
-							<span><i>返</i>￥{{data.rebateAmount}}</span>
+							<template v-if="data.goodsType==1">
+								<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+								<p>抢购价：￥{{data.saleAmount}}</p>
+							</template>
+							<template v-else>
+                                <span>￥{{data.saleAmount}}</span>
+                                <span><i>返</i>￥{{data.rebateAmount}}</span>
+							</template>
 						</p>
 						<button>马上抢</button>
 					</div>
 				</a>
 			</li>
-##			<li class="clearfix">
-##				<a href="">
-##					<img src="">
-##					<div class="boutiqueHomeContent">
-##						<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
-##						<div class="price">
-##                            <p><i class="monthCorner"></i>￥5.2</p>
-##							<p>抢购价：￥1.2</p>
-##						</div>
-##						<button>马上抢</button>
-##					</div>
-##				</a>
-##			</li>
 		</ul>
 	</div>
     <div class="activityList">
 		<div style="height: .83rem">
             <div id="navWrap">
                 <div id="listAlert">
-                    <a :href="ht+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+                    <a :href="'#'+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
                 </div>
             </div>
 		</div>
@@ -57,41 +46,29 @@
             <h2 :id="index">{{data.name}}</h2>
             <ul>
                 <li v-for="data in data.activityGoodsList" class="clearfix">
-                    <a :href="data.goodsUrl">
+                    <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
                         <img :src="data.goodsIcon">
                         <div class="boutiqueHomeContent clearfix">
                             <p class="title">{{data.goodName}}</p>
                             <p class="price">
-							##						{{
-							##							<p><i class="monthCorner"></i>￥5.2</p>
-							##							<p>抢购价：￥1.2</p>
-							##						}}
-                                <span>￥{{data.saleAmount}}</span>
-                                <span><i>返</i>￥{{data.rebateAmount}}</span>
+                                <template v-if="data.goodsType==1">
+									<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+									<p>抢购价：￥{{data.saleAmount}}</p>
+        						</template>
+								<template v-else>
+									<span>￥{{data.saleAmount}}</span>
+									<span><i>返</i>￥{{data.rebateAmount}}</span>
+								</template>
                             </p>
                             <button>马上抢</button>
                         </div>
                     </a>
                 </li>
-			##			<li class="clearfix">
-			##				<a href="">
-			##					<img src="">
-			##					<div class="boutiqueHomeContent">
-			##						<p class="title">618折上折更有超级返利618折上折更有超级返利618折上折更有超级返利</p>
-			##						<div class="price">
-			##                            <p><i class="monthCorner"></i>￥5.2</p>
-			##							<p>抢购价：￥1.2</p>
-			##						</div>
-			##						<button>马上抢</button>
-			##					</div>
-			##				</a>
-			##			</li>
                 <a class="more" :href="moreHref+data.subjectId">更多 ...</a>
 			</ul>
 		</template>
     </div>
 </div>
-<script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
 <script type="text/javascript" src="/dist/activity/06/selectedHome.js"></script>
 </body>
