@@ -178,6 +178,8 @@
 		    (c.type = #{type} or c.type='COMMON')
 		AND
 		    u.status = 'NOUSE'
+		AND
+			now() between u.gmt_start and u.gmt_end
 		order by c.amount desc
 	</select>
 </mapper>
