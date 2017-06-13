@@ -126,7 +126,18 @@
 		AND
 			id = #{rid}
 	</update>
-	
+	<update id="updateUserCouponSatusExpireById" parameterType="java.lang.Long">
+		UPDATE
+			af_user_coupon
+		SET
+			is_delete = 0,
+			status = 'EXPIRE',
+			gmt_use = NOW()
+		WHERE
+			is_delete = 0
+		AND
+			id = #{rid}
+	</update>
 	<update id="updateUserCouponSatusNouseById" parameterType="java.lang.Long">
 		UPDATE
 			af_user_coupon
