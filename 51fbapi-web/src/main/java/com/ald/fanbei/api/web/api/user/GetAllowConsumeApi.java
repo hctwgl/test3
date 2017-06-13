@@ -6,12 +6,15 @@ package com.ald.fanbei.api.web.api.user;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -28,7 +31,9 @@ public class GetAllowConsumeApi implements ApiHandle {
 
 	@Resource
 	AfUserAuthService afUserAuthService;
-
+	@Resource
+	AfUserAccountService afUserAccountService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -39,7 +44,13 @@ public class GetAllowConsumeApi implements ApiHandle {
 		}
 		resp.addResponseData("allowConsume",afUserAuthService.getConsumeStatus(context.getUserId(), context.getAppVersion()));
 		resp.addResponseData("bindCardStatus",autDo.getBankcardStatus());
-
+		resp.addResponseData("realNameStatus",autDo.getRealnameStatus());
+		resp.addResponseData("riskStatus",autDo.getRiskStatus());
+		resp.addResponseData("faceStatus",autDo.getFacesStatus());
+		
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(context.getUserId());
+		resp.addResponseData("idNumber", Base64.encodeString(accountDo.getIdNumber()));
+		resp.addResponseData("realName", accountDo.getRealName());
 		
 		return resp;
 	}

@@ -19,21 +19,25 @@ import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -86,6 +90,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	
 	@Resource
 	UpsUtil upsUtil;
+	@Resource
+	RiskUtil riskUtil;
 	
 	@Override
 	public Map<String,Object> createRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,
@@ -209,6 +215,28 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					if (count == 0) {
 						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.YES.getCode());
 						pushService.repayBillSuccess(userDo.getUserName(), billDo.getBillYear() + "", String.format("%02d", billDo.getBillMonth()));
+						
+						
+						AfBorrowDo afBorrow = afBorrowService.getBorrowById(billDo.getBorrowId());
+						int paidBillNum = afBorrowBillService.getPaidBillNumByBorrowId(billDo.getBorrowId());
+						//还完该借款的所有期数
+						if (paidBillNum == afBorrow.getNper()) {
+							
+							BigDecimal income = afBorrowBillService.getSumIncomeByBorrowId(billDo.getBorrowId());
+							Long sumOverdueDay = afBorrowBillService.getSumOverdueDayByBorrowId(billDo.getBorrowId());
+							
+							int borrowCount = afBorrowService.getBorrowNumByUserId(userDo.getRid());
+							
+							String cardNo = afBorrow.getCardNumber();
+							String riskOrderNo = riskUtil.getOrderNo("raiseQuota", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+							try {
+								riskUtil.raiseQuota(afBorrow.getUserId().toString(), "40", riskOrderNo, afBorrow.getAmount(), income, sumOverdueDay, borrowCount);
+							} catch (Exception e) {
+								logger.error("风控提额失败", e);
+							}
+							afBorrowService.updateBorrowStatus(afBorrow.getRid(), BorrowStatus.FINISH.getCode());
+						}
+						
 					} else {
 						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.PART.getCode());
 					}

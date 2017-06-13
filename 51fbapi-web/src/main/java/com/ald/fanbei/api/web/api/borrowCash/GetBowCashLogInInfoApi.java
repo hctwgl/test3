@@ -107,12 +107,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
-			Date now = DateUtil.getStartOfDate(new Date());
+			long currentTime = System.currentTimeMillis();
+			Date now = DateUtil.getEndOfDate(new Date(currentTime));
 
 			data.put("overdueStatus", "N");
 			// 如果预计还款日在今天之前，且为待还款状态，则已逾期，逾期天数=现在减去预计还款日
-			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")
-					&& afBorrowCashDo.getGmtPlanRepayment().before(now)) {
+			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED") && afBorrowCashDo.getGmtPlanRepayment().before(now)) {
 				long day = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), now);
 				data.put("overdueDay", day);
 				data.put("overdueStatus", "Y");
@@ -144,14 +144,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 						.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
 				BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制
 
-				long currentTime = System.currentTimeMillis();
-				Date nowDate = new Date(currentTime);
-				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate,
-						afBorrowCashDo.getGmtPlanRepayment());
+				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(now, afBorrowCashDo.getGmtPlanRepayment());
 				BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
 				// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
-				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0
-						&& waitPaidAmount.compareTo(amount_limit) >= 0) {
+				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) >= 0) {
 					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService
 							.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
 					if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo

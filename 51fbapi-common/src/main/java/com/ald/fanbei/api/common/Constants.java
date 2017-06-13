@@ -99,6 +99,7 @@ public class Constants {
 	public static final String CACHEKEY_LATEST_GAMEERSULT_LIST = "latest_gameresult_list$";
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
+	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";
@@ -125,6 +126,11 @@ public class Constants {
 	public static final String RES_APP_POP_IMAGE        =  "APP_POP_IMAGE"; //首页弹窗配置
 	public static final String RES_GAME_AWARD_OF_CATCH_DOLL = "GAME_AWARD_OF_CATCH_DOLL"; //抓娃娃游戏发奖 
 	public static final String RES_GAME_CATCH_DOLL_CLIENT_RATE = "GAME_CATCH_DOLL_CLIENT_RATE";//抓娃娃游戏客户端抓中概率
+	
+	//risk eventType
+	public static final String EVENT_FINANCE_LIMIT = "event_finance_limit";
+	public static final String EVENT_FINANCE_COUNT = "event_finance_count";
+	
 	//续期天数限制
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
 	//允许续期的天数

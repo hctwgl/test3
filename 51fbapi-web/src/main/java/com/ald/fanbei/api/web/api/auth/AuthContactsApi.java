@@ -5,10 +5,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -35,29 +39,39 @@ public class AuthContactsApi implements ApiHandle {
 	AfAuthContactsService afAuthContactsService;
 	@Resource
 	RiskUtil riskUtil;
-
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		Long userId = context.getUserId();
 		String contacts = (String) requestDataVo.getParams().get("contacts");
 		if (StringUtil.isBlank(contacts)) {
 			throw new FanbeiException("authContactsApi param error", FanbeiExceptionCode.PARAM_ERROR);
 		}
-		// List<AfAuthContactsDo> afAuthContactsDos = new ArrayList<AfAuthContactsDo>();
-		// String[] contractsArr = contacts.split(",");
-		// for (int i = 0; i < contractsArr.length; i++) {
-		// if (StringUtil.isBlank(contractsArr[i])) {
-		// continue;
-		// }
-		// afAuthContactsDos.add(this.buildContractsDo(contractsArr[i], context.getUserId()));
-		// logger.info("同步通讯录，userId:[" + context.getUserId() + "],通讯录:" + contractsArr[i]);
-		// }
-		// riskUtil.addressListPrimaries(context.getUserId() + "", afAuthContactsDos);
-		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
-		AfUserAuthDo authDo = new AfUserAuthDo();
-		authDo.setUserId(context.getUserId());
-		authDo.setTeldirStatus(YesNoStatus.YES.getCode());
-		afUserAuthService.updateUserAuth(authDo);
+		
+		bizCacheUtil.saveObjectForever(Constants.CACHEKEY_USER_CONTACTS + context.getUserId(), contacts);
+		
+//		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
+		
+		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		
+		try {
+			if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode()) || StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+				RiskRespBo riskResp = riskUtil.registerStrongRisk(userId + "", "DIRECTORY", null, null, "", "", null, "", "", "");
+				if (!riskResp.isSuccess()) {
+					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("更新风控通讯录信息失败：" + userId);
+		}
+		
+		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
+		afUserAuthDo.setUserId(context.getUserId());
+		afUserAuthDo.setTeldirStatus(YesNoStatus.YES.getCode());
+		afUserAuthService.updateUserAuth(afUserAuthDo);
 		resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId(), context.getAppVersion()));
 		return resp;
 	}

@@ -65,5 +65,10 @@ public interface AfBorrowDao {
      * @return
      */
     AfBorrowDo getBorrowByOrderIdAndStatus(@Param("orderId")Long orderId, @Param("status")String status);
-    
+	/**
+	 * 获取总借款次数
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(@Param("userId") Long userId);
 }
