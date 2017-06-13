@@ -21,7 +21,7 @@ function addModel(goodsList,notifyUrl) {
             +'<a href='+goodsUrl+'>'
               +'<img src='+goodsList[i].goodsIcon+'>'
               +'<div class="boutiqueHomeContent clearfix">'
-                  +'<p class="title">'+goodsList[i].goodName+'</p>'
+                  +'<p class="title" style="-webkit-box-orient: vertical;">'+goodsList[i].goodName+'</p>'
                   +'<div class="price rebate">'
                     +'<span>￥'+saleAmount+'</span>'
                     +'<span><i>返</i>￥'+rebateAmount+'</span>'
@@ -46,7 +46,7 @@ window.onload=function(){
     dataType: "JSON",
     success: function(returnData){
       if (returnData.success) {
-
+        console.log(returnData);
         let notifyUrl = returnData.data.notifyUrl;  // goodsId
 
         // 会场链接
