@@ -23,7 +23,6 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserOperationLogService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
@@ -197,7 +196,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		String jumpToRejectPage = YesNoStatus.NO.getCode();
 		String jumpPageBannerUrl = "";
 		
-		if(afBorrowCashDo!=null && AfBorrowCashReviewStatus.refuse.getCode().equals(afBorrowCashDo.getReviewStatus())){
+		if(afBorrowCashDo!=null && AfBorrowCashStatus.closed.getCode().equals(afBorrowCashDo.getStatus())){
 			//借款被拒绝
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
 			if(afResourceDo!=null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())){

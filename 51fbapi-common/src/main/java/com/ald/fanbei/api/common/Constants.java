@@ -88,6 +88,7 @@ public class Constants {
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// cache keys
+	public static final String CACHEKEY_GAME_LIMIT = "game_limit$";
 	public static final String CACHEKEY_USER_TOKEN = "user_token$";
 	public static final String CACHEKEY_USER_NAME = "user_name$";
 	public static final String CACHEKEY_APK_NEWEST_VERSION = "apk_newest_version$";
@@ -131,6 +132,7 @@ public class Constants {
 	public static final String EVENT_FINANCE_LIMIT = "event_finance_limit";
 	public static final String EVENT_FINANCE_COUNT = "event_finance_count";
 	
+	public static final String RES_GAME_AWARD_COUNT_LIMIT           = "GAME_AWARD_COUNT_LIMIT";//游戏中奖数量总限制
 	//续期天数限制
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
 	//允许续期的天数

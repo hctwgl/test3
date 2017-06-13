@@ -65,16 +65,16 @@ $(function(){
 	function timeFunction(){ // 60s倒计时
         timerS--;
         if (timerS<=0) {
-         	$(".register_codeBtn").text("获取验证码");
+         	$("#register_codeBtn").text("获取验证码");
          	clearInterval(timerInterval);
          	timerS = 60;
-			$(".register_codeBtn").attr("isState",0);
+			$("#register_codeBtn").attr("isState",0);
         } else {
-         	$(".register_codeBtn span").text(timerS+" s");
+         	$("#register_codeBtn span").text(timerS+" s");
         }
 	};
 
-	$(".register_codeBtn").click(function(){ // 获取验证码
+	$("#register_codeBtn").click(function(){ // 获取验证码
 
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
@@ -89,8 +89,8 @@ $(function(){
     			},
     			success: function(returnData){
     				if (returnData.success) {
-    					$(".register_codeBtn").attr("isState",1);
-						$(".register_codeBtn span").text(timerS+" s");
+    					$("#register_codeBtn").attr("isState",1);
+						$("#register_codeBtn span").text(timerS+" s");
              			timerInterval = setInterval(timeFunction,1000);
     				} else {
     					requestMsg(returnData.msg);
@@ -200,6 +200,7 @@ $(function(){
 									recommendCode: recommendCode
 								},
 								success: function(returnData){
+									alert(returnData)
 									if ( returnData.success ) {
 										$("#register_submitBtn").attr("disabled",true);
 										window.location.href = returnData.url;
@@ -212,7 +213,7 @@ $(function(){
 								}
 							})
 						} else {
-							requestMsg("请输入正确的验证码");
+							requestMsg("请输入验证码");
 						}
 					} else {
 						requestMsg("请阅读并同意《51返呗用户注册协议》");

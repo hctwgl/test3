@@ -18,6 +18,7 @@ public class AfGameResultDo extends AbstractSerial{
 	private String userAvata;
 	private String result;
 	private String item;
+	private String lotteryItem;
 	private String code;
 	private Long lotteryResult;
 	public Long getRid() {
@@ -87,6 +88,11 @@ public class AfGameResultDo extends AbstractSerial{
 	public void setLotteryResult(Long lotteryResult) {
 		this.lotteryResult = lotteryResult;
 	}
-	
+	public String getLotteryItem() {
+		return lotteryItem;
+	}
+	public void setLotteryItem(String lotteryItem) {
+		this.lotteryItem = lotteryItem;
+	}
 	
 }
