@@ -153,6 +153,8 @@ public class Constants {
 	public static final String RES_DIRECT_TRANS_CREDIT_SCORE = "DIRECT_TRANS_CREDIT_SCORE";
 	// 风控
 	public static final String REGIST_TONGDUN_SWITCH = "regist.tongdun.switch";
+	//每月还款日期
+	public static final String RES_REPAYMENT_DAYS = "REPAYMENT_DAYS";
 
 	// config key
 	public static final String CONFKEY_CHECK_SIGN_SWITCH = "fbapi.check.sign.switch";
