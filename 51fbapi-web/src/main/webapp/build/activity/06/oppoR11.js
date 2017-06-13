@@ -17,7 +17,7 @@ function alaShareData(){
         'shareAppTitle': 'OPPO R11预约返利300元',  // 分享的title
         'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300元！有，且只在51返呗 GO>>>',  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': 'https://yapp.51fanbei.com/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
+        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
         'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'oppoR11' // 分享的页面
     };
