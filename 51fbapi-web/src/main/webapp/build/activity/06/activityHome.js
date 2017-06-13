@@ -18,17 +18,21 @@ function addModel(goodsList,notifyUrl) {
     let goodsUrl = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
 
     html +='<li class="clearfix">'
-                +'<a href='+goodsUrl+'>'
-                    +'<img src='+goodsList[i].goodsIcon+'>'
-                    +'<div class="boutiqueHomeContent clearfix">'
-                        +'<p class="title">'+goodsList[i].goodName+'</p>'
-                        +'<p class="price">'
-                            +'<span>￥'+saleAmount+'</span>'
-                            +'<span><i>返</i>￥'+rebateAmount+'</span>'
-                        +'</p>'
-                        +'<button>马上抢</button>'
-                    +'</div>'
-                +'</a>'
+            +'<a href='+goodsUrl+'>'
+              +'<img src='+goodsList[i].goodsIcon+'>'
+              +'<div class="boutiqueHomeContent clearfix">'
+                  +'<p class="title">'+goodsList[i].goodName+'</p>'
+                  +'<div class="price rebate">'
+                    +'<span>￥'+saleAmount+'</span>'
+                    +'<span><i>返</i>￥'+rebateAmount+'</span>'
+                  +'</div>'
+                  +'<div class="price stages hide">'
+                    +'<p><i class="monthCorner"></i>￥5.2</p>'
+                    +'<p>抢购价：￥1.2</p>'
+                  +'</div>'
+                  +'<button>马上抢</button>'
+              +'</div>'
+            +'</a>'
           +'</li>';
     }
     return html;
