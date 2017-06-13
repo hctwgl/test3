@@ -254,13 +254,13 @@ public class AppH5SysController extends BaseController {
 				Date gmtPlanRepayment = afRenewalDetailDo.getGmtPlanRepayment();
 				// 如果预计还款时间在申请日期之后，则在原预计还款时间的基础上加上续期天数，否则在申请日期的基础上加上续期天数，作为新的续期截止时间
 				if (gmtPlanRepayment.after(gmtCreate)) {
-					Date repaymentDay = DateUtil.getEndOfDate(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay()));
+					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay()));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					model.put("gmtRenewalBegin", gmtPlanRepayment);
 					model.put("gmtRenewalEnd", repaymentDay);
 					model.put("repaymentDay", repaymentDay);
 				} else {
-					Date repaymentDay = DateUtil.getEndOfDate(DateUtil.addDays(gmtCreate, afRenewalDetailDo.getRenewalDay()));
+					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtCreate, afRenewalDetailDo.getRenewalDay()));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					model.put("gmtRenewalBegin", gmtCreate);
 					model.put("gmtRenewalEnd", repaymentDay);
@@ -275,13 +275,13 @@ public class AppH5SysController extends BaseController {
 				Date now = new Date(System.currentTimeMillis());
 				// 如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的续期截止时间
 				if (gmtPlanRepayment.after(now)) {
-					Date repaymentDay = DateUtil.getEndOfDate(DateUtil.addDays(gmtPlanRepayment, renewalDay));
+					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtPlanRepayment, renewalDay));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					model.put("gmtRenewalBegin", gmtPlanRepayment);
 					model.put("gmtRenewalEnd", repaymentDay);
 					model.put("repaymentDay", repaymentDay);
 				} else {
-					Date repaymentDay = DateUtil.getEndOfDate(DateUtil.addDays(now, renewalDay));
+					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(now, renewalDay));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					model.put("gmtRenewalBegin", now);
 					model.put("gmtRenewalEnd", repaymentDay);

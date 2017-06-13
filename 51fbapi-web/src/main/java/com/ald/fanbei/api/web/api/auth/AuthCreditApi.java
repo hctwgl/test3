@@ -149,7 +149,7 @@ public class AuthCreditApi implements ApiHandle {
 			}
 		}
 		AfUserAccountDo account = new AfUserAccountDo();
-		account.setAuAmount(creditAmount);
+//		account.setAuAmount(creditAmount);
 		account.setCreditScore(sorce);
 		account.setUserId(context.getUserId());
 		account.setOpenId(openId);

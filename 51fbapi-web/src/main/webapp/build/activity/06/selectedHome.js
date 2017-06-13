@@ -1,5 +1,42 @@
 let modelId=getUrl('modelId');
 let windowW = $(window).outerWidth();
+// app调用web的方法
+let shareData=[
+    {title:'分期购物无忧 3/6/9/12免息',content:'分期无忧 拯救剁手党,90后消费哲学潮这里 我的 我的 都是我的！'},
+    {title:'高佣好货聚集618，最高返利50%',content:'全球好货你来淘，佣金我来返。大牌好货爆款，超高额返利尽在嗨购高佣超级券专场。你来淘，我来返！'},
+    {title:'联手大牌  满百就减',content:'一份品味逆天的秘籍送给你！不止大牌集群，小众精美好物待你来挖掘~美好生活，触手可及'}
+    ];
+let title,con;
+switch (modelId){
+    case 71:
+        title=shareData[0].title;
+        con=shareData[0].content;
+        break;
+    case 72:
+        title=shareData[1].title;
+        con=shareData[1].content;
+        $('#vueCon').css('background-color','#4515aa');
+        break;
+    case 74:
+        title=shareData[2].title;
+        con=shareData[2].content;
+        break;
+}
+function alaShareData(){
+    // 分享内容
+    let dataObj = {
+        'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
+        'type': 'share', // 此页面的类型
+        'shareAppTitle': title,  // 分享的title
+        'shareAppContent': con,  // 分享的内容
+        'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+        'shareAppUrl': window.location.host+'/fanbei-web/activity/selectedHome?addUiName=SHOWSHARE&modelId='+modelId,  // 分享后的链接
+        'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
+        'sharePage': 'selectedHome' // 分享的页面
+    };
+    let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
+    return dataStr;
+}
 //导航滑动
 class Swipe{
     constructor(ele){
@@ -58,7 +95,6 @@ new Vue({
     data:{
         tableUrl:"/fanbei-web/partActivityInfo?modelId="+modelId,
         content:[],
-        ht:'#',
         moreHref:'getMore?modelId='+modelId+'&subjectId=',
         divTop:'',
         option:{
@@ -85,7 +121,13 @@ new Vue({
                 console.log(self.content);
                 self.$nextTick(function () {                              //dom渲染完成后执行
                     self.divTop=document.getElementById('navWrap').offsetTop;
-                    window.addEventListener('scroll', this.handleScroll);
+                    if(getBlatFrom()==2){
+                        window.addEventListener('touchstart', this.handleScroll);
+                        window.addEventListener('touchmove', this.handleScroll);
+                        window.addEventListener('touchend', this.handleScroll);
+                    }else{
+                        window.addEventListener('scroll', this.handleScroll);
+                    }
                     new Swipe(document.getElementById('navWrap'));
                 })
             },function (response) {

@@ -4,8 +4,7 @@
 
 var userName = "";
 if(getInfo().userName){
-    userName=getInfo().userName;
-    console.log(userName);
+    userName=getInfo().userName
 };
 
 new Vue({
@@ -24,7 +23,7 @@ new Vue({
           if(returnData.success){
             location.href=returnData.url;
           }else{
-            SrequestMsg(returnData.msg);
+            location.href=returnData.url;
           }
         },
         error: function(){
@@ -32,7 +31,8 @@ new Vue({
         }
       });
     },
-    boluomiCoupons: function(sceneId){
+    boluomiCoupons: function(sceneId){ // 点击领取优惠券
+      console.log(33333);
       $.ajax({
         url: '/fanbei-web/pickBoluomeCoupon',
         type: 'POST',
@@ -41,15 +41,17 @@ new Vue({
           'sceneId': sceneId,
           'userName': userName
         },
-        success:function (data) {
-          data=eval('(' + data + ')');
-          if(data.success){
-            requestMsg("领劵成功")
+        success: function(returnData){
+          // returnData = eval('(' + returnData + ')');
+          if(returnData.success){
+            requestMsg("领劵成功");
+            $(".receive").text("已领取");
+            window.location.reload();
           }else{
-            if(data.url){
-              location.href=data.url;
+            if(returnData.url){
+              location.href=returnData.url;
             }else{
-              requestMsg(data.msg);
+              requestMsg(returnData.msg);
             }
           }
         }
