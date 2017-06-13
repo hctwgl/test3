@@ -162,10 +162,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 					// 如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的预计还款时间
 					if (gmtPlanRepayment.after(now)) {
-						Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay()));
+						Date repaymentDay = DateUtil.getEndOfDate(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay()));
 						afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					} else {
-						Date repaymentDay = DateUtil.getStartOfDate(DateUtil.addDays(now, afRenewalDetailDo.getRenewalDay()));
+						Date repaymentDay = DateUtil.getEndOfDate(DateUtil.addDays(now, afRenewalDetailDo.getRenewalDay()));
 						afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					}
 
