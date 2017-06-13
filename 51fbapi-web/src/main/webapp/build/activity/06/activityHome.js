@@ -6,17 +6,16 @@ let finished = 0;
 let page = 1; // 默认页数从1开始
 
 // 精品推荐Model
-function addModel(goodsList) {
+function addModel(goodsList,notifyUrl) {
 
-  var html = '';
+  // let notifyUrl = returnData.data.notifyUrl;
+
+  let html = '';
   for (var i = 0; i < goodsList.length; i++) {
 
-    var saleAmount = toDecimal2(goodsList[i].saleAmount);  // 售价
-    var rebateAmount = toDecimal2(goodsList[i].rebateAmount);  // 返利
-    var goodsUrl = goodsList[i].goodsUrl;  // 淘宝商品链接
-
-    var urlHost = window.location.host;
-    var goodsUrl = urlHost + '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+goodsList[i].goodsId+'"}';
+    let saleAmount = toDecimal2(goodsList[i].saleAmount);  // 售价
+    let rebateAmount = toDecimal2(goodsList[i].rebateAmount);  // 返利
+    let goodsUrl = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
 
     html +='<li class="clearfix">'
                 +'<a href='+goodsUrl+'>'
@@ -44,6 +43,8 @@ window.onload=function(){
     success: function(returnData){
       if (returnData.success) {
 
+        let notifyUrl = returnData.data.notifyUrl;  // goodsId
+
         // 会场链接
         let mainActivityList = returnData.data["mainActivityList"];
         for (var i = 0; i < mainActivityList.length; i++) {
@@ -64,7 +65,7 @@ window.onload=function(){
 
         // 精品列表
         let qualityGoodsList = returnData.data["qualityGoodsList"];
-        $("#qualityGoodsList").append(addModel(qualityGoodsList));
+        $("#qualityGoodsList").append(addModel(qualityGoodsList,notifyUrl));
 
         finished=0
 
@@ -81,14 +82,14 @@ window.onload=function(){
 // 倒计时
 $(function(){
   // 结束时间的时间戳
-  var endDate = new Date("June 30,2017 00:00:00")
-  var endStamp = endDate.valueOf();
+  let endDate = new Date("June 30,2017 00:00:00")
+  let endStamp = endDate.valueOf();
   // 获取当前时间的时间戳
-  var now = new Date();
-  var nowTimeStamp = now.valueOf();
+  let now = new Date();
+  let nowTimeStamp = now.valueOf();
   // 相差的时间戳
-  var differStamp = endStamp - nowTimeStamp;
-  var intDiff = parseInt(differStamp/1000);//倒计时总秒数量
+  let differStamp = endStamp - nowTimeStamp;
+  let intDiff = parseInt(differStamp/1000);//倒计时总秒数量
 
   function showTimerS( diff ){
     var day=0,
