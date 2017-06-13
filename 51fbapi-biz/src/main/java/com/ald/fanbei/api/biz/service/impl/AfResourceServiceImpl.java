@@ -246,4 +246,9 @@ public class AfResourceServiceImpl implements AfResourceService {
 		// TODO Auto-generated method stub
 		return afResourceDao.getHomeIndexListByOrderby(type);
 	}
+
+	@Override
+	public List<AfResourceDo> getResourceHomeListByTypeOrderByOnPreEnv(String type) {
+		return afResourceDao.getResourceHomeListByTypeOrderByOnPreEnv(type);
+	}
 }

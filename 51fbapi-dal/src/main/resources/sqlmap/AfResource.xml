@@ -102,6 +102,18 @@
 		order by
 		sort desc
 	</select>
+	
+	<select id="getResourceHomeListByTypeOrderByOnPreEnv" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND is_delete = 0
+		order by
+		sort desc
+	</select>
 
 	<select id="getSingleResourceBytype" resultType="AfResourceDo">
 		SELECT
