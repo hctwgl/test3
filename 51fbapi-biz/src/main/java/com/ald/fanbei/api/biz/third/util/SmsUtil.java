@@ -117,13 +117,9 @@ public class SmsUtil extends AbstractThird {
      * @return
      */
     public  boolean sendGoodsReservationSuccessMsg(String mobile,String content) {
-    	System.out.println("1哈哈哈发送短信内容为："+content);
-    	
     	if(StringUtil.isBlank(content)){
     		content = GOODS_RESERVATION_SUCCESS;
     	}
-    	
-    	System.out.println("2哈哈哈发送短信内容为："+content);
         SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
         return smsResult.isSucc();
     }
