@@ -30,10 +30,16 @@ function getData(){
             type:'get',
             success:function(data){
                   List=data.data.subjectGoodsList;
-                  //console.log(List)
+                  console.log(List)
                   for(var i=0;i<List.length;i++){
-                    var str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes">'+List[i].goodName+'</p><p class="productPrice">￥'+List[i].saleAmount+'</p><p class="fan">返</p><p class="fanPrice">￥'+List[i].rebateAmount+'</p><a class="buyNow" href="'+data.data.notifyUrl+'&params={%22goodsId%22:%22'+List[i].goodsId+'%22}'
+                    var str;
+                    var type=List[i].goodsType;
+                    if(type==0){
+                      str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes">'+List[i].goodName+'</p><p class="productPrice">￥'+List[i].saleAmount+'</p><p class="fan">返</p><p class="fanPrice">￥'+List[i].rebateAmount+'</p><a class="buyNow" href="'+data.data.notifyUrl+'&params={%22goodsId%22:%22'+List[i].goodsId+'%22}'
 +'"}'+'"}'+'">马上抢</a></div></li>'
+                    } else{
+                      str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes">'+List[i].goodName+'</p><p class="monthPrice"><i class="monthCorner"></i>￥'+List[i].nperMap.amount+' x '+List[i].nperMap.nper+'</p><p class="buyPrice">￥'+List[i].saleAmount+'</p><p class="buyNow">马上抢</p></div></li>'
+                    }                    
                     $('#productList').append(str);
                   }
             },
