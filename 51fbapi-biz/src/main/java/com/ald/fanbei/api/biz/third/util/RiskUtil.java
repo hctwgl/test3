@@ -346,7 +346,7 @@ public class RiskUtil extends AbstractThird {
 			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
 		
 		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, 
-				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, /*getNotifyHost()*/"http://192.168.96.49");
+				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, getNotifyHost());
 		
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		
@@ -354,8 +354,7 @@ public class RiskUtil extends AbstractThird {
 		commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
 		
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
-//		String reqResult = HttpUtil.post("http://192.168.110.23:80/modules/api/user/registerAndRisk.htm", reqBo);
-		System.out.println(reqResult);
+//		String reqResult = HttpUtil.post("http://192.168.96.198:80/modules/api/user/registerAndRisk.htm", reqBo);
 		logThird(reqResult, "registerAndRisk", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
@@ -401,7 +400,7 @@ public class RiskUtil extends AbstractThird {
 		String cardNum = "6228480322828314011";
 		String riskOrderNo = riskUtil.getOrderNo("regi", cardNum.substring(cardNum.length() - 4, cardNum.length()));
 		System.out.println(riskOrderNo);
-		riskUtil.registerStrongRisk("20170610001", "DIRECTORY", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, riskOrderNo);
+		riskUtil.registerStrongRisk("20170610001", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, riskOrderNo);
 	}
 	
 	/**
@@ -676,7 +675,7 @@ public class RiskUtil extends AbstractThird {
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
 				Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 				Date arrivalStart = DateUtil.getEndOfDate(cashDo.getGmtArrival());
-				Date repaymentDay = DateUtil.addDays(arrivalStart, day);
+				Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 				cashDo.setGmtPlanRepayment(repaymentDay);
 
 				if (!upsResult.isSuccess()) {
