@@ -32,7 +32,7 @@ function alaShareData(){
         'shareAppTitle': title,  // 分享的title
         'shareAppContent': con,  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': window.location.host+'/fanbei-web/activity/selectedHome?addUiName=SHOWSHARE&modelId='+modelId,  // 分享后的链接
+        'shareAppUrl': window.location.host+'/fanbei-web/activity/feastRaidersShare',  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'selectedHome' // 分享的页面
     };

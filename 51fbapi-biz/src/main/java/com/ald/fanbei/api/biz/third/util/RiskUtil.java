@@ -383,7 +383,7 @@ public class RiskUtil extends AbstractThird {
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "modules/api/risk/weakRiskVerify.htm";
+		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
 		
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("weakverify", borrowId, content, url);
@@ -557,7 +557,7 @@ public class RiskUtil extends AbstractThird {
 			logger.info("asyRegisterStrongRisk reqBo.getSignInfo()" + reqBo.getSignInfo());
 			JSONObject obj = JSON.parseObject(data);
 			String limitAmount = obj.getString("amount");
-			if (StringUtil.equals(limitAmount, ""))
+			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
 				limitAmount = "0";
 			BigDecimal au_amount = new BigDecimal(limitAmount);
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
