@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.biz.bo.risk;
 
+import javax.annotation.Resource;
+
 import org.dbunit.util.Base64;
 
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -21,13 +24,15 @@ import com.alibaba.fastjson.JSONObject;
 
 public class RiskStrong extends RiskRegisterStrongReqBo {
 	private static final long serialVersionUID = 1L;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
-	public RiskStrong(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
-		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost);
+	public RiskStrong(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String notifyHost) {
+		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, notifyHost);
 	}
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String notifyHost) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		setOrderNo(riskOrderNo);
@@ -48,6 +53,7 @@ public class RiskStrong extends RiskRegisterStrongReqBo {
 		userInfo.put("email", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getEmail()));
 		setUserInfo(JSON.toJSONString(userInfo));
 
+		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo).toString();
 		setDirectory(JSON.toJSONString(StringUtil.filterEmoji(directory)));
 
 		JSONObject linkManInfo = new JSONObject();
