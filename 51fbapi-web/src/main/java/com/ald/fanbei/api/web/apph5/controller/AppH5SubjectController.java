@@ -325,12 +325,10 @@ public class AppH5SubjectController  extends BaseController{
 		//context = doWebCheck(request, false);
 		
 		String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
-		
-		AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
-		
 		if(subjectId == null || "".equals(subjectId)) {
 			return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
 		}
+		AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
 		
 		//获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -340,10 +338,9 @@ public class AppH5SubjectController  extends BaseController{
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
         removeSecondNper(array);
-		
 		List<AfGoodsDo> goodsList = afSubjectGoodsService.listAllSubjectGoods(query);
-		
 		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("totalCount", query.getTotalCount());
 		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
 		jsonObj.put("notifyUrl", notifyUrl);
 		List<Map> subjectGoodsList = new ArrayList<Map>();
@@ -394,7 +391,7 @@ public class AppH5SubjectController  extends BaseController{
 		query.setSubjectId(Long.parseLong(subjectId));
 		query.setPageNo(currentPage);
 		query.setPageSize(20);
-		query.setFull(false);
+		query.setFull(true);
 		return query;
 	}
 	
