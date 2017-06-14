@@ -31,13 +31,13 @@
 	<input type="hidden" id="style" value="$!{style}">
 
 	<div class="channelRegister_wrap">
-		#if( $!{style} == 8 || $!{style} == 9 || $!{style} == 10 || $!{style} == 11)
+		#if( $!{style} == 8 || $!{style} == 9 || $!{style} == 10 || $!{style} == 11 || $!{style} == 12)
 			<img src="$commonUrl/channel$!{style}_01.png">
 		#else
 			<img src="$commonUrl/channel$!{style}_01.jpg">
 		#end
 		<div class="channelRegisterWrap">
-			#if( $!{style} == 7 || $!{style} == 9 )
+			#if( $!{style} == 7 || $!{style} == 9 || $!{style} == 12)
 				<img src="$commonUrl/channel$!{style}_02.png">
 			#elseif( $!{style} == 8 || $!{style} == 11)
 				<img src="$commonUrl/channel7_02.png">
@@ -62,23 +62,25 @@
 					#end
 				</li>
 				<li class="clearfix">
-	    	    	<input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
-							#if( $!{style} != 10 )
-							<button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
-							#end
-		        </li>
-		        <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
-		        <li><button class="register_submitBtn" id="register_submitBtn">立即注册</button></li>
-		        <div class="clearfix register_checkbox">
-		      		<input type="checkbox" class="input_check" id="input_check" checked="checked">
-		        	<label for="input_check"></label>
-		      		<p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
-		      	</div>
+	    	  <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+					#if( $!{style} != 10 )
+					<button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
+					#end
+        </li>
+        <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
+        <li><button class="register_submitBtn" id="register_submitBtn">立即注册</button></li>
+        <div class="clearfix register_checkbox">
+      		<input type="checkbox" class="input_check" id="input_check" checked="checked">
+        	<label for="input_check"></label>
+      		<p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+      	</div>
 			</ul>
 		</div>
 
-	    #if( $!{style} == 4 )
-			<img src="$commonUrl/channel4_03.jpg">
+	 	#if( $!{style} == 4 )
+			<img src="$commonUrl/channel$!{style}_03.jpg">
+		#elseif( $!{style} == 12 )
+			<img src="$commonUrl/channel$!{style}_03.png">
 		#elseif( $!{style} == 7 || $!{style} == 8 )
 			<img src="$commonUrl/channel7_03.png">
 		#elseif( $!{style} == 9 )
@@ -117,7 +119,7 @@
 				copyright5
 			#elseif( $!{style} == 6 )
 				copyright6
-			#elseif( $!{style} == 7 || $!{style} == 8 )
+			#elseif( $!{style} == 7 || $!{style} == 8 || $!{style} == 11)
 				copyright78
 			#elseif( $!{style} == 9 )
 				copyright9
@@ -125,12 +127,12 @@
 				copyright10
 			#end
 		">
-	  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918<br>
-				#if( $!{style} == 10 )
-					浙ICP备15027741号-3
-				#end
-	  	</div>
+  		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918<br>
+			#if( $!{style} == 10 )
+				浙ICP备15027741号-3
+			#end
   	</div>
+  </div>
 	<script type="text/javascript" src="/common/js/core.js"></script>
 	<script type="text/javascript" src="/common/js/md5.js"></script>
 	<script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
