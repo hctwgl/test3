@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
@@ -686,8 +687,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setBorrowRate(boStr);
 						orderDao.updateOrder(orderInfo);
-						BigDecimal useableAmount = userAccountInfo.getAuAmount()
-								.subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 
 						if (useableAmount.compareTo(saleAmount) < 0) {
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
@@ -702,17 +702,19 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("verify userId" + userId);
 
 						String cardNo = card.getCardNumber();
-						String riskOrderNo = riskUtil.getOrderNo("vefy",
-								cardNo.substring(cardNo.length() - 4, cardNo.length()));
+						String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 						orderInfo.setRiskOrderNo(riskOrderNo);
 						orderDao.updateOrder(orderInfo);
 
 						try {
-							riskUtil.verify(ObjectUtils.toString(userId, ""), "40",
-									card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, StringUtil.EMPTY,
-									"/third/risk/payOrder",riskOrderNo);
+							RiskVerifyRespBo verybo = riskUtil.verify(ObjectUtils.toString(userId, ""), "40", card.getCardNumber(), appName, ipAddress, 
+									StringUtil.EMPTY, StringUtil.EMPTY, riskOrderNo);
+
+							if (verybo.isSuccess()) {
+								riskUtil.payOrder(verybo.getOrderNo(), verybo.getResult());
+							}
+							
 						} catch (Exception e) {
-							//throw new FanbeiException();
 							e.printStackTrace();
 						}
 

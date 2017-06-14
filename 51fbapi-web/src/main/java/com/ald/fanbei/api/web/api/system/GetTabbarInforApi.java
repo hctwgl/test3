@@ -16,7 +16,6 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -94,21 +93,35 @@ public class GetTabbarInforApi implements ApiHandle {
 	 * @param data
 	 */
 	private void handleIosBorow(FanbeiContext context,RequestDataVo requestDataVo,Map<String, Object> data) {
-		if(requestDataVo.getId().startsWith("i")){
-			AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
-			if(resourceInfo != null){
-				String iosCheckVersion = resourceInfo.getValue();
-	        	if (StringUtils.isNotBlank(iosCheckVersion)) {
-	        		 Map<String, Object> params = requestDataVo.getParams();
-	        	     String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
-	        		 List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
-	        		 CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-	        		 if(array.contains(desVersion)){
-	        			data.put("title", "搜呗");
-	        		 }
-	        	}
-			}
-		}
+		
+		 Map<String, Object> params = requestDataVo.getParams();
+	        AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
+	        String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
+	        if (resourceInfo == null) {
+	        	data.put("title", "借钱");
+	        } 
+		 //需要打开为了审核的相关版本
+        //VALUE是为了IOS审核
+        if(requestDataVo.getId().startsWith("i")) {
+        	String iosCheckVersion = resourceInfo.getValue();
+        	if (StringUtils.isBlank(iosCheckVersion)) {
+        		data.put("title", "借钱");
+        	} else {
+        		List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
+        		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
+        		data.put("title", array.contains(desVersion) ? "搜呗" : "借钱");
+        	}
+        } else {
+        //VALUE2是为了Android审核
+        	String androidCheckVersion = resourceInfo.getValue2();
+        	if (StringUtils.isBlank(androidCheckVersion)) {
+        		data.put("title", "借钱");
+        	} else {
+        		List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
+        		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
+        		data.put("title", array.contains(desVersion) ? "搜呗" : "借钱");
+        	}
+        }
 	}
 
 }

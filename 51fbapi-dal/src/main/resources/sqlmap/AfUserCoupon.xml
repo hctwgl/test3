@@ -190,7 +190,7 @@
 		AND
 		    u.status = 'NOUSE'
 		AND
-            now() > c.`gmt_start` 
+            now() between u.gmt_start and u.gmt_end
 		order by c.amount desc
 	</select>
 	<select id="getUserAcgencyCouponByAmount" resultType="AfUserCouponDto">
@@ -203,7 +203,7 @@
 			SELECT s.coupon_id FROM af_subject_goods sg,af_subject s
 			WHERE sg.parent_subject_id = s.id  and s.is_delete = 0 and sg.is_delete = 0 and sg.goods_id =#{goodsId}
 		) and uc.coupon_id =c.id and uc.user_id = #{userId}
-		AND uc.status ='NOUSE' AND uc.is_delete = 0 AND c.is_delete =0 
+		AND uc.status ='NOUSE' AND uc.is_delete = 0 AND c.is_delete =0 and uc.gmt_start>=NOW()
 		AND c.limit_amount<![CDATA[ <=#{amount}  ]]>
 		ORDER BY c.amount DESC
 		LIMIT #{pageNo},10

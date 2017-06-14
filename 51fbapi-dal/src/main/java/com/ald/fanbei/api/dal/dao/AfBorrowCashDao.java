@@ -101,4 +101,21 @@ public interface AfBorrowCashDao {
 	 * @return
 	 */
 	int getBorrowNumByUserId(@Param("userId") Long userId);
+
+	/**
+	 * 获取不在finish和closed状态的借款
+	 * 
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	List<AfBorrowCashDo> getBorrowCashByStatusNotInFinshAndClosed(@Param("userId") Long userId);
+
+	/***
+	 * 获取最久一次在已打款借钱信息
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	AfBorrowCashDo getNowTransedBorrowCashByUserId(Long userId);
 }

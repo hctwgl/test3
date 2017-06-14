@@ -32,10 +32,8 @@ let vm=new Vue({
         },
         selected(data){
             let list=this.content.list;
-            console.log(data);
-            console.log(list.indexOf(data));
             for(let i in list){
-                if (list[i] == data){return true}
+                if (list[i].time == data){return true}
             }
             return false;
         },
@@ -46,9 +44,7 @@ let vm=new Vue({
             self.$http.get(self.tableUrl,op).then(function (res) {
                 self.content = eval('(' + res.data + ')');
                 console.log(self.content);
-                self.$nextTick(function () {                              //dom渲染完成后执行
 
-                })
             },function (response) {
                 console.log(response)
             })

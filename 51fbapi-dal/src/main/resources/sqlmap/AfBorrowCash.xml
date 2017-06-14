@@ -232,4 +232,30 @@
 		select count(*) from `af_borrow_cash` WHERE `status` in ('FINSH', 'TRANSED') and `user_id` =#{userId}; 
 	</select>
 	
+	<select id ="getBorrowCashByStatusNotInFinshAndClosed" resultType="AfBorrowCashDo">
+	SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and status not in ('CLOSED','FINSH');
+	</select>
+	<select id ="getNowTransedBorrowCashByUserId" resultType="AfBorrowCashDo">
+	SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and status = 'TRANSED'
+		ORDER BY
+		gmt_create ASC
+		LIMIT
+		1
+	</select>
 </mapper>

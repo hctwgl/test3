@@ -60,6 +60,21 @@
 		LIMIT 10
 	</select>
 	
+	<select id="listQualitySubjectGoodsByParentId"  parameterType="java.lang.Long" resultType="AfGoodsDo" >
+		SELECT 
+			g.id rid,g.*
+		FROM 
+			( 
+			SELECT goods_id FROM af_subject_goods WHERE subject_id IN(
+			SELECT id FROM af_subject WHERE parent_id = #{parentId}
+			) AND is_delete = 0 LIMIT 10
+		) tmp 
+		INNER JOIN 
+			af_goods g	
+		ON
+		tmp.goods_id = g.id
+	</select>
+	
 	<update id="deleteSubjectGoods" parameterType="java.lang.Long" >
 		UPDATE af_subject_goods SET is_delete = 1 WHERE id=#{rid}
 	</update>

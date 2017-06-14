@@ -39,6 +39,7 @@ import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.taobao.api.domain.XItem;
 
 /**
@@ -178,6 +179,17 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 					if (afOrder.getBankId() == null) {
 						afOrder.setBankId(0L);
 					}
+					if(afAgentOrderDo.getCouponId()>0){
+						AfUserCouponDto couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+						if(couponDo.getGmtEnd().before(new Date())){
+							logger.error("coupon end less now");
+							return 0;
+						}
+						
+						afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
+					}
+					
+					
 					final String orderNo = generatorClusterNo.getOrderNo(OrderType.AGENTBUY);
 					afOrder.setOrderNo(orderNo);
 					afOrder.setOrderType(OrderType.AGENTBUY.getCode());
@@ -214,9 +226,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 					if(nper > 0){
 						orderBorrowInfo(afOrder);
 					}
-				if(afAgentOrderDo.getCouponId()>0){
-					afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
-				}
+
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();

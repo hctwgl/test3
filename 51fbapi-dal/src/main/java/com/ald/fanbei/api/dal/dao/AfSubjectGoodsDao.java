@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfSubjectGoodsQuery;
@@ -24,5 +26,5 @@ public interface AfSubjectGoodsDao {
 
 	List<AfGoodsDo> listQualitySubjectGoods();
 
-	
+	List<AfGoodsDo> listQualitySubjectGoodsByParentId(@Param("parentId")Long parentId);
 }

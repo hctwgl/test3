@@ -76,8 +76,10 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	AfBorrowCashDo getUserDayLastBorrowCash(Long userId);
+
 	/**
 	 * 获取某个用户某个时间后，风控拒绝的借款申请数量
+	 * 
 	 * @param userId
 	 * @param reviewStatus
 	 * @param startTime
@@ -91,4 +93,21 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	int getBorrowNumByUserId(Long userId);
+
+	/**
+	 * 是否可借款
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	boolean isCanBorrowCash(Long userId);
+	
+	/**
+	 * 获取最久一次在已打款借钱信息
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	AfBorrowCashDo getNowTransedBorrowCashByUserId(Long userId);
+
 }

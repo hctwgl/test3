@@ -222,8 +222,7 @@ public class BigDecimalUtil {
          }
     	 //最后计算的期数
     	 Integer finalNper =  nper - freeNper;
-    	 return finalNper.equals(0) ? BigDecimal.ZERO : 
-    		 finalAmount.divide(new BigDecimal(finalNper), 2, RoundingMode.CEILING);
+    	 return finalNper.equals(0) ? BigDecimal.ZERO : finalAmount.divide(new BigDecimal(finalNper), 2, RoundingMode.CEILING);
     }
     
     /**
