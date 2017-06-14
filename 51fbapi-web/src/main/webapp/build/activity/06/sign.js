@@ -11,15 +11,15 @@ let vm=new Vue({
         tableUrl:"/fanbei-web/partActivityInfo?modelId=",
         className:['Monday','Tuesday','Wednesday','Thursday','Friday'],
         content:{
-            currentTime:20170612,
-            beginTime:20170609,
+            currentTime:20170615,
+            beginTime:20170612,
             list:[
-                {time:20170610},
-                {time:20170611}
+                {time:20170613},
+                {time:20170614}
             ]
         },
         beginTime:20170609,
-        current:4,
+        current:3,
         option:{
         }
     },
@@ -29,6 +29,7 @@ let vm=new Vue({
     methods:{
         signIn (time){
             console.log(time);
+            this.logData();
         },
         selected(data){
             let list=this.content.list;
@@ -40,10 +41,8 @@ let vm=new Vue({
             return false;
         },
         logData (){
-            Vue.http.options.emulateJSON = true;
             let self=this;
-            let op={data:JSON.stringify(self.option)};
-            self.$http.get(self.tableUrl,op).then(function (res) {
+            self.$http.get(self.tableUrl,self.option).then(function (res) {
                 self.content = eval('(' + res.data + ')');
                 console.log(self.content);
                 self.$nextTick(function () {                              //dom渲染完成后执行

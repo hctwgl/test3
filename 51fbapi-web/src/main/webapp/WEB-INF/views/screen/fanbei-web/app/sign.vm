@@ -19,33 +19,6 @@
             <img :src="'$commonUrl/before'+i+'.png'">
         </div>
     </div>
-##	<div class="wrap">
-##		<div class="Monday">
-##			<img @click="signIn(1)" src="$commonUrl/now1.png">
-##			<img  src="$commonUrl/ok1.png">
-##		</div>
-##		<div class="Tuesday">
-##			<img src="$commonUrl/before2.png">
-##            <img v-if="current>=2" @click="signIn(2)" src="$commonUrl/now2.png">
-##            <img src="$commonUrl/ok2.png">
-##		</div>
-##		<div class="Wednesday">
-##            <img src="$commonUrl/before3.png">
-##            <img v-if="current>=3" @click="signIn(3)" src="$commonUrl/now3.png">
-##            <img src="$commonUrl/ok3.png">
-##		</div>
-##		<div class="Thursday">
-##            <img src="$commonUrl/before4.png">
-##            <img v-if="current>=4" @click="signIn(4)" src="$commonUrl/now4.png">
-##            <img src="$commonUrl/ok4.png">
-##		</div>
-##		<div class="Friday">
-##            <img src="$commonUrl/before5.png">
-##            <img v-if="current>=5" @click="signIn(5)" src="$commonUrl/now5.png">
-##            <img src="$commonUrl/ok5.png">
-##		</div>
-##	</div>
-
 </div>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
 <script type="text/javascript" src="/dist/activity/06/sign.js"></script>
