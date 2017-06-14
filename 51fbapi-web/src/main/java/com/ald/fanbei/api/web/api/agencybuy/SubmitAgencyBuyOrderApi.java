@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -108,7 +109,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setCouponId(couponId);
 		if(couponId>0){
 			AfUserCouponDto couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
-			if(couponDo.getGmtEnd().before(new Date())){
+			if(couponDo.getGmtEnd().before(new Date())||StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode()) ){
 				logger.error("coupon end less now");
 				throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 			}
