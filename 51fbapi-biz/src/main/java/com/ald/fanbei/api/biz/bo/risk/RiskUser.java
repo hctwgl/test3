@@ -29,12 +29,12 @@ public class RiskUser extends RiskRegisterStrongReqBo {
 	 */
 	public RiskUser(String consumerNo, String event,  AfUserDo afUserDo, 
 			 AfUserAccountDto accountDo,  String CHANNEL, String PRIVATE_KEY) {
-		super(consumerNo, event, null, afUserDo, null, null, null, accountDo, null, null, CHANNEL, PRIVATE_KEY, null, null);
+		super(consumerNo, event, null, afUserDo, null, null, null, accountDo, null, null, CHANNEL, PRIVATE_KEY, null);
 	}
 
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String notifyHost) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		
