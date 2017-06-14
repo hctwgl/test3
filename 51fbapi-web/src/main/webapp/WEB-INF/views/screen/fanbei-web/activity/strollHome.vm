@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017061315")
+	#set($version="20170614")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<title>618 逛逛分会场</title>
