@@ -21,7 +21,7 @@
 						<p class="price">
 							<template v-if="data.goodsType==1">
 								<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
-								<p>抢购价：￥{{data.saleAmount}}</p>
+								<p>抢购价：￥{{data.nperMap.totalAmount}}</p>
 							</template>
 							<template v-else>
                                 <span>￥{{data.saleAmount}}</span>
@@ -53,7 +53,7 @@
                             <p class="price">
                                 <template v-if="data.goodsType==1">
 									<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
-									<p>抢购价：￥{{data.saleAmount}}</p>
+									<p>抢购价：￥{{data.nperMap.totalAmount}}</p>
         						</template>
 								<template v-else>
 									<span>￥{{data.saleAmount}}</span>

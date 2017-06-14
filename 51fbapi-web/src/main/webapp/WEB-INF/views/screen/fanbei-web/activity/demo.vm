@@ -55,28 +55,35 @@ new Vue({
   el:'.footer',
   methods:{
     bombBox: function(){ // 规则弹窗
-      if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
+        console.log('ok')
+        var loadDateTime = new Date();
+        if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
           window.location.href = "com.91ala.www://home://";
-              var loadDateTime = new Date();
               window.setTimeout(function () {
                   var timeOutDateTime = new Date();
                   if (timeOutDateTime - loadDateTime < 5000 && location.href.indexOf('com.91ala.www://home//') == -1){
-                      window.location = "${downloadUrl}";
+                      window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                   } else {
                       window.close();
                   };
-              },
-              2500);
+              },2000);
       } else if (navigator.userAgent.match(/android/i)) {
-          var state = null;
-          try {
-            state = window.open("myapp://jp.app/openwith??isBrowser=1", '_blank');
-          } catch(e) {}
-          if (state) {
-            window.close();
-          } else {
-            window.location = "${downloadUrl}";
-          }
+          window.location.href = "myapp://jp.app/openwith??isBrowser=1";
+          setTimeout(function(){
+              var timeOutDateTime = new Date();
+              if (timeOutDateTime - loadDateTime < 5000){
+                  window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+              }
+          },2000);
+//          var state = null;
+//          try {
+//            state = window.open("myapp://jp.app/openwith??isBrowser=1",'_blank');
+//          } catch(e) {}
+//          if (state) {
+//            window.close();
+//          } else {
+//            window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+//          }
       };
     }
   }
@@ -86,34 +93,34 @@ new Vue({
 
 
 
-// 去洗哟
-$(function(){
-    $(".enter").click(function(){
-        if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
-            window.location.href = "com.91ala.www://home://";
-                var loadDateTime = new Date();
-                window.setTimeout(function () {
-                    var timeOutDateTime = new Date();
-                    if (timeOutDateTime - loadDateTime < 5000 && location.href.indexOf('com.91ala.www://home//') == -1){
-                        window.location = "${downloadUrl}";
-                    } else {
-                        window.close();
-                    };
-                },
-                2500);
-        } else if (navigator.userAgent.match(/android/i)) {
-            var state = null;
-            try {
-              state = window.open("myapp://jp.app/openwith??isBrowser=1", '_blank');
-            } catch(e) {}
-            if (state) {
-              window.close();
-            } else {
-              window.location = "${downloadUrl}";
-            }
-        };
-    });
-});
+##// 去洗哟
+##$(function(){
+##    $(".enter").click(function(){
+##        if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
+##            window.location.href = "com.91ala.www://home://";
+##                var loadDateTime = new Date();
+##                window.setTimeout(function () {
+##                    var timeOutDateTime = new Date();
+##                    if (timeOutDateTime - loadDateTime < 5000 && location.href.indexOf('com.91ala.www://home//') == -1){
+##                        window.location = "${downloadUrl}";
+##                    } else {
+##                        window.close();
+##                    };
+##                },
+##                2500);
+##        } else if (navigator.userAgent.match(/android/i)) {
+##            var state = null;
+##            try {
+##              state = window.open("myapp://jp.app/openwith??isBrowser=1", '_blank');
+##            } catch(e) {}
+##            if (state) {
+##              window.close();
+##            } else {
+##              window.location = "${downloadUrl}";
+##            }
+##        };
+##    });
+##});
 
 
 
