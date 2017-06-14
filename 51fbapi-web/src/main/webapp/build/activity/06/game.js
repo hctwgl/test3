@@ -7,13 +7,12 @@ if(getInfo().userName){
 }
 let chance=[],isLogin,isShow,clientRate,chanceCount,recommendCode;
 
-let protocol = window.location.protocol;
-let host = window.location.host;
-let urlHost = protocol+'//'+host;
-console.log(urlHost);
-alert(urlHost);
-let shareAppUrl = urlHost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode;
-console.log(shareAppUrl);
+// let protocol = window.location.protocol;
+// let host = window.location.host;
+// let urlHost = protocol+'//'+host;
+// alert(urlHost);
+// let shareAppUrl = urlHost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode;
+// console.log(shareAppUrl);
 
 
 // app调用web的方法
@@ -25,7 +24,7 @@ function alaShareData(){
         'shareAppTitle': '年中抓娃娃,让你一次玩个爽！',  // 分享的title
         'shareAppContent': '抓娃娃次数无上限100%中奖，集齐5娃，平分1亿大奖，最高888现金红包在等你，有且只在51返呗！',  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': '"+urlHost+"/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
+        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'gameShare' // 分享的页面
     };
