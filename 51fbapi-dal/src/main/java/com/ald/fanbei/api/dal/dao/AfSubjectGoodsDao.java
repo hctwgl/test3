@@ -23,6 +23,4 @@ public interface AfSubjectGoodsDao {
 	List<AfGoodsDo> listAllSubjectGoods(AfSubjectGoodsQuery query);
 
 	List<AfGoodsDo> listQualitySubjectGoods();
-
-	
 }

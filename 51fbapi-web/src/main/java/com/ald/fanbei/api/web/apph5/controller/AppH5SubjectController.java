@@ -83,8 +83,8 @@ public class AppH5SubjectController  extends BaseController{
 	public String mainActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 主会场接口
 		
-		// FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		FanbeiWebContext context = new FanbeiWebContext();
+		context = doWebCheck(request, false);
 		JSONObject jsonObj = new JSONObject();
 		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
 		jsonObj.put("notifyUrl", notifyUrl);
@@ -132,7 +132,7 @@ public class AppH5SubjectController  extends BaseController{
 			qualityGoodsInfo.put("goodsType", "0");
 			String tags = qualityGoods.getTags();
 			// 如果是分期免息商品，则计算分期
-			if(tags != null && "INTEREST_FREE".equals(tags)){
+			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = qualityGoods.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 				if(schemeGoodsDo != null){
@@ -247,9 +247,14 @@ public class AppH5SubjectController  extends BaseController{
 				activityGoodsInfo.put("activityName", activityName);
 				String tags = goodsDo.getTags();
 				// 如果是分期免息商品，则计算分期
-				if(tags != null && "INTEREST_FREE".equals(tags)){
+				if(tags != null && tags.contains("INTEREST_FREE")){
 					Long goodsId = goodsDo.getRid();
-					AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+					AfSchemeGoodsDo  schemeGoodsDo = null;
+					try {
+						schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+					} catch(Exception e){
+						logger.error(e.toString());
+					}
 					if(schemeGoodsDo != null){
 						AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 						String interestFreeJson = interestFreeRulesDo.getRuleJson();
@@ -289,7 +294,7 @@ public class AppH5SubjectController  extends BaseController{
 			qualityGoodsInfo.put("goodsType", "0");
 			String tags = qualityGoods.getTags();
 			// 如果是分期免息商品，则计算分期
-			if(tags != null && "INTEREST_FREE".equals(tags)){
+			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = qualityGoods.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 				if(schemeGoodsDo != null){
@@ -322,15 +327,13 @@ public class AppH5SubjectController  extends BaseController{
 	public String subjectGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		context = doWebCheck(request, false);
 		
 		String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
-		
-		AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
-		
 		if(subjectId == null || "".equals(subjectId)) {
 			return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
 		}
+		AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
 		
 		//获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -340,10 +343,9 @@ public class AppH5SubjectController  extends BaseController{
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
         removeSecondNper(array);
-		
 		List<AfGoodsDo> goodsList = afSubjectGoodsService.listAllSubjectGoods(query);
-		
 		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("totalCount", query.getTotalCount());
 		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
 		jsonObj.put("notifyUrl", notifyUrl);
 		List<Map> subjectGoodsList = new ArrayList<Map>();
@@ -360,7 +362,7 @@ public class AppH5SubjectController  extends BaseController{
 			subjectGoodsList.add(subjectGoodsInfo);
 			String tags = goodsDo.getTags();
 			// 如果是分期免息商品，则计算分期
-			if(tags != null && "INTEREST_FREE".equals(tags)){
+			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = goodsDo.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 				if(schemeGoodsDo != null){
@@ -394,7 +396,7 @@ public class AppH5SubjectController  extends BaseController{
 		query.setSubjectId(Long.parseLong(subjectId));
 		query.setPageNo(currentPage);
 		query.setPageSize(20);
-		query.setFull(false);
+		query.setFull(true);
 		return query;
 	}
 	
