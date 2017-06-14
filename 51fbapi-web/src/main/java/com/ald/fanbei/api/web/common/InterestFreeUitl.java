@@ -157,7 +157,7 @@ public class InterestFreeUitl {
         BigDecimal b1 = BigDecimalUtil.divHalfDown(totalGoodsAmount, nPer, Constants.HALFUP_DIGIT);
 
         //本金*每期利率
-        BigDecimal b2 = totalGoodsAmount.multiply(mouthRate);
+        BigDecimal b2 = BigDecimalUtil.multiply(totalGoodsAmount,mouthRate);
 
         //总手续费
         BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(totalGoodsAmount, nPer.intValue(),
@@ -167,7 +167,7 @@ public class InterestFreeUitl {
         BigDecimal b3 = BigDecimalUtil.divHalfUp(totalPoundage, nPer, Constants.HALFUP_DIGIT);
 
 
-        BigDecimal amount = b1.add(b2).add(b3);;
+        BigDecimal amount = b1.add(b2).add(b3);
         //借款总金额
         BigDecimal totalAmount = amount.multiply(nPer);
         //总利息+手续费
