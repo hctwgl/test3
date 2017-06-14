@@ -18,4 +18,6 @@ public interface AfSubjectGoodsService {
 	List<AfGoodsDo> listAllSubjectGoods(AfSubjectGoodsQuery query);
 	
 	public List<AfGoodsDo> listQualitySubjectGoods();
+
+	List<AfGoodsDo> listQualitySubjectGoodsByParentId(Long parentId);
 }
