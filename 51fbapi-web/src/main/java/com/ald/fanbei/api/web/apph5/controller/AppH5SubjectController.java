@@ -134,7 +134,12 @@ public class AppH5SubjectController  extends BaseController{
 			// 如果是分期免息商品，则计算分期
 			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = qualityGoods.getRid();
-				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				AfSchemeGoodsDo schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch(Exception e){
+					logger.error(e.toString());
+				}
 				if(schemeGoodsDo != null){
 					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
@@ -296,7 +301,12 @@ public class AppH5SubjectController  extends BaseController{
 			// 如果是分期免息商品，则计算分期
 			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = qualityGoods.getRid();
-				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				AfSchemeGoodsDo schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch(Exception e){
+					logger.error(e.toString());
+				}
 				if(schemeGoodsDo != null){
 					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
@@ -367,7 +377,12 @@ public class AppH5SubjectController  extends BaseController{
 			// 如果是分期免息商品，则计算分期
 			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = goodsDo.getRid();
-				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				AfSchemeGoodsDo schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch(Exception e){
+					logger.error(e.toString());
+				}
 				if(schemeGoodsDo != null){
 					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
