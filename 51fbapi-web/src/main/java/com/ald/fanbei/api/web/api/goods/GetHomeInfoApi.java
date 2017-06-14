@@ -14,10 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -37,10 +39,18 @@ public class GetHomeInfoApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-
+		
 		Map<String, Object> data = new HashMap<String, Object>();
-		List<Object> bannerList = getObjectWithResourceDolist(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
+		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		List<Object> bannerList = new ArrayList<Object>();
+		//正式环境和预发布环境区分
+		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+			bannerList = getObjectWithResourceDolist(
+					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
+		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+			bannerList = getObjectWithResourceDolist(
+					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()));
+		}
 		List<Object> bannerSecList = new ArrayList<Object>();
 		if(context.getAppVersion() >= 363){
 			bannerSecList = getObjectWithResourceDolist(
