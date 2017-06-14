@@ -5,7 +5,7 @@ let userName = "";
 if(getInfo().userName){
     userName=getInfo().userName
 }
-let chance=[],isLogin,isShow,recommendCode;
+let chance=[],isLogin,isShow,recommendCode='';
 
 //数据初始化
 function dataInit() {
@@ -17,6 +17,7 @@ function dataInit() {
             console.log(data);
             if(data.success){
                 //娃娃中奖信息循环
+                recommendCode=data.data.recommendCode;
                 let con='';
                 for(let i=0;i<data.data.awardList.length;i++){
                     con+=`<li>
@@ -102,6 +103,11 @@ class game{
             $('#shadow').hide();
             $('.alert').hide();
         });
+        $('.goSign').click(function () {
+            location.href='http://app.51fanbei.com/app/user/register?recommendCode='+recommendCode;
+            $('#shadow').hide();
+            $('.alert').hide();
+        });
         $('#startBtn').show();
         $('.modelPic').show();
     }
@@ -136,8 +142,8 @@ sixGame.doll();
 $('#startBtn').click(function () {
     isShow='yes';
     let self=$(this);
-    $('.play').animate({top:'7.1rem'},200,function () {
-        $('.play').animate({top:'7.08rem'},150);
+    $('.play').animate({top:'10.25rem'},200,function () {
+        $('.play').animate({top:'10.23rem'},150);
         sixGame.start();
         self.hide();
         console.log(chance)

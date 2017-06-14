@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017061102")
+    #set($version="2017061316")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
-    <title>抓娃娃 赢大奖！</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css">
+    <title>game</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/gameShare.css">
 </head>
 <body>
-<img src="$commonUrl/ni_1.jpg">
-<img src="$commonUrl/ni_2.jpg">
-<img class="modelPic" src="$commonUrl/ni_2bg.jpg">
-<img src="$commonUrl/ni_3.jpg">
-<p class="title">抓娃娃抽优惠券，当集齐五个娃娃还可以额外抽取实物大奖！</p>
+##<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.06rem;height:1.53rem" src="$commonUrl/R11logo1.png"></a>
+<img src="$commonUrl/gameShare1.jpg" style="width: 7.5rem;height:5.04rem">
+<img src="$commonUrl/gs2.jpg" style="width: 7.5rem;height:4.49rem">
+<img class="modelPic" src="$commonUrl/gs22222.jpg">
+<img src="$commonUrl/gameShare_02.jpg" style="width: 7.5rem;height:2.93rem">
 <div class="container">
     <div id="claw"></div>
+    <img style="display: none" src="$commonUrl/ni_claw2.png">
     <div id="terrace">
         <div id="scroll">
             <span class="doll"><div class="doll-main"></div></span>
@@ -23,10 +24,31 @@
 </div>
 <div id="time">20秒</div>
 <div class="play">
-    <button class="button"><a style="display: block;color:white;width:100%;height:100%;line-height: .6rem" href="">开始游戏</a></button>
+    <button id="playBtn" class="button"><p>立即抓取</p></button>
+    <button id="startBtn" class="button"><p>免费试玩</p></button>
 </div>
-<div id="chance">您还有3次机会</div>
+<div id="chance">年中畅嗨  只在51返呗</div>
 
+<!--活动规则-->
+<img id="rule" src="$commonUrl/ni_rule.png">
+<div id="rules" class="alert">
+    <p class="rulesTitle">活动规则</p>
+    <p class="rulesCont">1. 每个用户每天有3次抓娃娃机会；<br/> 2. 用户将活动页面分享朋友圈或好友直接增加1次机会，每增加1位好友注册，可额外增加1次抓娃娃机会，相应的中奖机率也会提高哦，次数上不封顶；<br/> 3. 每个用户可多次集齐5个娃娃，但是抽取实物大奖的机会只有一次；<br/>4. 所获得的优惠券及现金将实时发放到51返呗APP所对应的账户；<br/>5. 同一笔订单只可以用一张券，且不可以重复叠加使用；<br/>6. 拥有相同手机号、设备、银行卡的用户，视为同一用户；<br/>7. 实物奖励中奖用户，请正确填写“奖品邮寄的地址+收件人+联系方式”，由于填写的信息有误导致奖品无法寄送给您，本公司概不负责；<br/>8. 所有实物奖品在活动结束后7个工作日内寄出，请中奖用户保持手机畅通并注意接通，逾期未接受奖品，本公司概不负责；<br/>9. 所有实物奖励如非质量问题，不予退换；<br/>10. 禁止一切作弊手段的操作行为，包括但不限于利用平台漏洞、技术手段完成游戏的行为，一经发现将收回所发奖品，必要时候将采取司法手段进行维权；<br/>11. 在法律范围内，本活动浙江阿拉丁电子商务有限公司拥有最终解释权；<br/>12. 如有任何问题，可致电客服电话：0571-88193918<br /><br />本活动最终解释权归51返呗平台所有，与Apple官方无关</p>
+    <div class="closeRules"></div>
+</div>
+<!--弹框-->
+<div id="alert" class="alert">
+    <div class="alertTitle">中奖通知</div>
+    <p class="getState">抓取成功</p>
+    <div class="getCashCoupon ad">
+        <p class="getCouponPrize ad"><span class="getMoney">20</span>元</p>
+        <p class="getCouponPrize ad">满<span class="limitMoney">100</span>元可用</p>
+        <p class="getCouponPrize ad">奖券请在51返呗中查看</p>
+    </div>
+    <p class="jushuo ad">据说换个姿势就能中奖</p>
+    <div class="goSign tBtn">去注册</div>
+    <div class="tryAgain tBtn" style="margin-left:.24rem;">继续试玩</div>
+</div>
 
 <div id="shadow"></div>
 
@@ -36,7 +58,6 @@
 
 
 <div id="scrollData">
-    <div class="personName">中奖名单</div>
     <!--滚轮-->
     <div class="roll roll01">
         <ul class="awardList">
@@ -47,7 +68,8 @@
         </ul>
     </div>
 </div>
-
+<div class="mask"></div>
+<img src="$commonUrl/gameshare02.jpg" style="width: 7.5rem;height:8.38rem">
 <script type="text/javascript" src="/dist/activity/06/gameShare.js"></script>
 </body>
 </html>
