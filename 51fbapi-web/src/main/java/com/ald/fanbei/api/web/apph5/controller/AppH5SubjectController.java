@@ -181,7 +181,7 @@ public class AppH5SubjectController  extends BaseController{
 	public String partActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		context = doWebCheck(request, false);
 		String modelId = ObjectUtils.toString(request.getParameter("modelId"), null);
 		if(modelId == null || "".equals(modelId)) {
 			return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
