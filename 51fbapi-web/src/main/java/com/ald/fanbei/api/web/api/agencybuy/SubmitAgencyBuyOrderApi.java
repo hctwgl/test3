@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,9 @@ import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
@@ -28,6 +31,7 @@ import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -50,7 +54,8 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 	AfInterestFreeRulesService afInterestFreeRulesService;
 	@Resource
 	AfSchemeGoodsService afSchemeGoodsService;
-	
+	@Resource
+	AfUserCouponService afUserCouponService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		
@@ -101,6 +106,14 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setCapture(capture);
 		afAgentOrderDo.setRemark(remark);
 		afAgentOrderDo.setCouponId(couponId);
+		if(couponId>0){
+			AfUserCouponDto couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+			if(couponDo.getGmtEnd().before(new Date())){
+				logger.error("coupon end less now");
+				throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
+			}
+			afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
+		}
 		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder,nper)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());

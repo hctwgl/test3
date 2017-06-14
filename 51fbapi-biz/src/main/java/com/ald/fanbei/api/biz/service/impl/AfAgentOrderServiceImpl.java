@@ -64,8 +64,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	AfBorrowService afBorrowService;
-	@Resource
-	AfUserCouponService afUserCouponService;
+
 	@Resource
 	AfResourceService afResourceService;
 
@@ -179,17 +178,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 					if (afOrder.getBankId() == null) {
 						afOrder.setBankId(0L);
 					}
-					if(afAgentOrderDo.getCouponId()>0){
-						AfUserCouponDto couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
-						if(couponDo.getGmtEnd().before(new Date())){
-							logger.error("coupon end less now");
-//							return 0;
-							throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 
-						}
-						
-						afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
-					}
 					final String orderNo = generatorClusterNo.getOrderNo(OrderType.AGENTBUY);
 					afOrder.setOrderNo(orderNo);
 					afOrder.setOrderType(OrderType.AGENTBUY.getCode());
