@@ -83,8 +83,8 @@ public class AppH5SubjectController  extends BaseController{
 	public String mainActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 主会场接口
 		
-		// FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		FanbeiWebContext context = new FanbeiWebContext();
+		context = doWebCheck(request, false);
 		JSONObject jsonObj = new JSONObject();
 		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
 		jsonObj.put("notifyUrl", notifyUrl);
@@ -181,7 +181,7 @@ public class AppH5SubjectController  extends BaseController{
 	public String partActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		context = doWebCheck(request, false);
 		String modelId = ObjectUtils.toString(request.getParameter("modelId"), null);
 		if(modelId == null || "".equals(modelId)) {
 			return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
@@ -322,7 +322,7 @@ public class AppH5SubjectController  extends BaseController{
 	public String subjectGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		context = doWebCheck(request, false);
 		
 		String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
 		if(subjectId == null || "".equals(subjectId)) {
