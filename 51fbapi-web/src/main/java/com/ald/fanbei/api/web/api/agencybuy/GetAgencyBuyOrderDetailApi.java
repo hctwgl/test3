@@ -169,7 +169,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 				 
 				 // 计算实际支付金额
 				 BigDecimal actualPayAmount =  actualAmount.subtract(couponDo.getAmount()) ;
-				 agentOrderDetailVo.setActualPayAmount(actualPayAmount);
+				 agentOrderDetailVo.setActualPayAmount(actualPayAmount.compareTo(BigDecimal.ZERO) == 1 ? actualPayAmount:BigDecimal.ZERO);
 			 }
 		}
 		

@@ -61,8 +61,6 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
-	AfUserAuthService afUserAuthService;
-	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfUserAccountService afUserAccountService;
@@ -74,7 +72,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	@Resource
 	AfUserOperationLogService afUserOperationLogService;
-	
+	@Resource
+	AfUserAuthService afUserAuthService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -84,9 +84,15 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		//hy 2017年06月13日16:48:35 增加判断，如果前面还有没有还的借款，优先还掉 start
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
+		if (afBorrowCashDo == null) {
+			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+		}
+		//hy 2017年06月13日16:48:35 增加判断，如果前面还有没有还的借款，优先还掉 end
+
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
-				
+		
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");
 		} else {

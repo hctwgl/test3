@@ -41,6 +41,7 @@ window.onload=function(){
         userName: userName
     },
     success: function(returnData){
+      console.log(returnData);
       if (returnData.data.isHaveReservationRecord == "Y") {
         $("#btn").attr('src', 'https://fs.51fanbei.com/h5/app/activity/06/oppo2_2.png');
       }
@@ -87,29 +88,3 @@ $('.close').click(function(){
     $('.orderSuccess').css('display','none');
     window.location.reload();
 });
-
-var endStamp=Date.parse(new Date("June 18,2017 00:00:00"));
-var currentStamp=Date.parse(new Date());
-var diffStamp=(endStamp-currentStamp)/1000;
-
-$(function(){  
-  stamp();
-  var timer=setInterval("stamp()",1000);
-  if(diffStamp<=0){
-    clearInterval(timer);
-    $('.timeCount').html('距离活动已开始......');
-  }  
-})
-
-function stamp(){
-      diffStamp--;
-      var day=Math.floor(diffStamp/(24*3600));
-      var hour=Math.floor(diffStamp/3600)-day*24;
-      var minute=Math.floor(diffStamp/60)-(day*24*60)-(hour*60);
-      var second=diffStamp%60;
-      if(hour<10){hour='0'+hour}
-      if(minute<10){minute='0'+minute}  
-      if(second<10){second='0'+second}
-      $('.timeCount').html('距离活动开始还有：'+day+'天'+hour+'时'+minute+'分'+second+'秒');
-  }
-   

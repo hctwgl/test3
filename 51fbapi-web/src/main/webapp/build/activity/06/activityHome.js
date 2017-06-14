@@ -1,33 +1,10 @@
 /**
  * Created by yoe on 2017/5/27.
 **/
-function alaShareData(){
-    // 分享内容
-    let dataObj = {
-        'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
-        'type': 'share', // 此页面的类型
-        'shareAppTitle': '年中盛宴，错过这次等一年',  // 分享的title
-        'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
-        'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': window.location.host+'/fanbei-web/activity/feastRaidersShare',  // 分享后的链接
-        'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
-        'sharePage': 'selectedHome' // 分享的页面
-    };
-    let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
-    return dataStr;
-}
+
 let finished = 0;
 let page = 1; // 默认页数从1开始
-function statistics(goodsId){
-    $.ajax({
-        url:'/fanbei-web/qualityGoodsStatistics',
-        type:'post',
-        data:{goodsId:goodsId},
-        success:function (data) {
-            console.log(data)
-        }
-    });
-}
+
 // 精品推荐Model
 function addModel(goodsList,notifyUrl) {
 
@@ -50,7 +27,7 @@ function addModel(goodsList,notifyUrl) {
                  </div>`
       }
     html +='<li class="clearfix">'
-            +'<a onclick="statistics('+goodsList[i].goodsId+')" href='+goodsUrl+'>'
+            +'<a href='+goodsUrl+'>'
               +'<img src='+goodsList[i].goodsIcon+'>'
               +'<div class="boutiqueHomeContent clearfix">'
                   +'<p class="title" style="-webkit-box-orient: vertical;">'+goodsList[i].goodName+'</p>'

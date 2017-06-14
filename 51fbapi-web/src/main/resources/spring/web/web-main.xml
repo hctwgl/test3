@@ -111,8 +111,8 @@
 				<value>/system/checkVersion</value>
 				<value>/system/AppLaunchImage</value>
 				<value>/system/appPopImage</value>
-                <value>/system/getTabbarInfor</value>
-                <value>/user/submitShareAction</value>
+				<value>/system/getTabbarInfor</value>
+				<value>/user/submitShareAction</value>
 			</list>
 		</constructor-arg>
 	</bean>

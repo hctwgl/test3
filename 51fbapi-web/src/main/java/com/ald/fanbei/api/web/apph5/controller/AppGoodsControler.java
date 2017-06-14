@@ -64,11 +64,7 @@ public class AppGoodsControler extends BaseController {
 		List<Object> categoryList = getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(categoryDbList,
 				sortCountList);
 		AfModelH5Do h5Do =  afModelH5Service.selectMordelH5ById(modelId);
-		String modelName = "";
-		if(h5Do!= null){
-			modelName = h5Do.getName();
-		}
-		model.put("modelName", modelName);
+		model.put("modelName", h5Do.getName()==null?"":h5Do.getName());
 		model.put("bannerList", bannerList);
 		model.put("categoryList", categoryList);
 		
@@ -77,6 +73,7 @@ public class AppGoodsControler extends BaseController {
 
 		Integer pageCount = 20;// 每一页显示20条数据
 		String type = "0";
+
 		if (categoryDbList.size() > 0) {
 			AfModelH5ItemDo afModelH5ItemDo = categoryDbList.get(0);
 			type = ObjectUtils.toString(afModelH5ItemDo.getRid(), "").toString();

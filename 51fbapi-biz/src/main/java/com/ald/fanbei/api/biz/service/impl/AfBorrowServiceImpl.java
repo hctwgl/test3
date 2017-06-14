@@ -946,9 +946,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					return borrow.getRid();
 
 				} catch (Exception e) {
-					logger.info("dealAgentPayBorrowAndBill error:" + e);
+					logger.info("dealAgentPayConsumeRisk error:" + e);
 					status.setRollbackOnly();
-					throw e;
+					return 0l;
 				}
 			}
 		});
@@ -975,6 +975,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 	
 
+	
 	@Override
 	public int getBorrowNumByUserId(Long userId) {
 		return afBorrowDao.getBorrowNumByUserId(userId);
