@@ -334,7 +334,6 @@ public class RiskUtil extends AbstractThird {
 	public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, 
 			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
 		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo).toString();
-		
 		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, 
 				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
 		
@@ -384,14 +383,14 @@ public class RiskUtil extends AbstractThird {
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "/modules/api/risk/weakverify.htm";
-//		String url = "http://192.168.96.198/modules/api/risk/weakRiskVerify.htm";
+		String url = getUrl() + "modules/api/risk/weakRiskVerify.htm";
+		
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("weakverify", borrowId, content, url);
 
 		String reqResult = HttpUtil.post(url, reqBo);
 
-		logThird(reqResult, "weakverify", reqBo);
+		logThird(reqResult, "weakRiskVerify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
