@@ -17,18 +17,25 @@ function addModel(goodsList,notifyUrl) {
     let rebateAmount = toDecimal2(goodsList[i].rebateAmount);  // 返利
     let goodsUrl = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
 
+    let amount = toDecimal2(goodsList[i].amount);  // 每期金额
+    let nper = toDecimal2(goodsList[i].nper);  // 期数
+
     html +='<li class="clearfix">'
-                +'<a href='+goodsUrl+'>'
-                    +'<img src='+goodsList[i].goodsIcon+'>'
-                    +'<div class="boutiqueHomeContent clearfix">'
-                        +'<p class="title">'+goodsList[i].goodName+'</p>'
-                        +'<p class="price">'
-                            +'<span>￥'+saleAmount+'</span>'
-                            +'<span><i>返</i>￥'+rebateAmount+'</span>'
-                        +'</p>'
-                        +'<button>马上抢</button>'
-                    +'</div>'
-                +'</a>'
+            +'<a href='+goodsUrl+'>'
+              +'<img src='+goodsList[i].goodsIcon+'>'
+              +'<div class="boutiqueHomeContent clearfix">'
+                  +'<p class="title" style="-webkit-box-orient: vertical;">'+goodsList[i].goodName+'</p>'
+                  +'<div class="price rebate">'
+                    +'<span>￥'+saleAmount+'</span>'
+                    +'<span><i>返</i>￥'+rebateAmount+'</span>'
+                  +'</div>'
+                  +'<div class="price stages hide">'
+                    +'<p><i class="monthCorner"></i>￥'+amount+'</p>'
+                    +'<p>抢购价：￥'+nper+'</p>'
+                  +'</div>'
+                  +'<button>马上抢</button>'
+              +'</div>'
+            +'</a>'
           +'</li>';
     }
     return html;
@@ -42,7 +49,7 @@ window.onload=function(){
     dataType: "JSON",
     success: function(returnData){
       if (returnData.success) {
-
+        console.log(returnData);
         let notifyUrl = returnData.data.notifyUrl;  // goodsId
 
         // 会场链接
@@ -50,6 +57,7 @@ window.onload=function(){
         for (var i = 0; i < mainActivityList.length; i++) {
           let activityUrl = mainActivityList[i].activityUrl;
           let sort = mainActivityList[i].sort;
+          let goodType = mainActivityList[i].goodType;
 
           let dataType = $("#selectedHome li").attr("data-type");
           if (dataType = sort) {

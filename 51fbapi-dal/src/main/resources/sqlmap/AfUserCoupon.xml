@@ -190,7 +190,7 @@
 		AND
 		    u.status = 'NOUSE'
 		AND
-            now() > c.`gmt_start` 
+            now() between u.gmt_start and u.gmt_end
 		order by c.amount desc
 	</select>
 	<select id="getUserAcgencyCouponByAmount" resultType="AfUserCouponDto">
