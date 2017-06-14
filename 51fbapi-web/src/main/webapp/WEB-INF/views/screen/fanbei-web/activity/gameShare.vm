@@ -4,7 +4,7 @@
     #set($version="2017061316")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
-    <title>游戏分享</title>
+    <title>引爆年中  抓娃娃瓜分1亿奖券</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/gameShare.css">
 </head>
 <body>
