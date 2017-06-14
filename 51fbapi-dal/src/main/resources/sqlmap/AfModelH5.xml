@@ -17,7 +17,7 @@ id rid,gmt_create,gmt_modified,creator,modifier,name,type,url,icon,max_commissio
     		#{url},
     		#{icon},
     		#{maxCommission},
-    		#{description},
+    		#{description}
 		)
 	</insert>
 	<update id="updateModelH5" parameterType="AfModelH5Do" >

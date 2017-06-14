@@ -73,7 +73,6 @@ public class AppGoodsControler extends BaseController {
 
 		Integer pageCount = 20;// 每一页显示20条数据
 		String type = "0";
-
 		if (categoryDbList.size() > 0) {
 			AfModelH5ItemDo afModelH5ItemDo = categoryDbList.get(0);
 			type = ObjectUtils.toString(afModelH5ItemDo.getRid(), "").toString();

@@ -5,6 +5,8 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.biz.service.AfModelH5Service;
 import com.ald.fanbei.api.dal.dao.AfModelH5Dao;
 import com.ald.fanbei.api.dal.domain.AfModelH5Do;
@@ -14,6 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfModelH5Do;
  * @author suweili 2017年6月14日下午3:09:23
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@Service("afModelH5Service")
 public class AfModelH5ServiceImpl implements AfModelH5Service {
 
 	@Resource
