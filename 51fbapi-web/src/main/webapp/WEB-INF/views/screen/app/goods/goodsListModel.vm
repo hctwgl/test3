@@ -3,7 +3,7 @@
 <head>
     #set($version="2017051101")
     #set($commonUrl="http://f.51fanbei.com/h5")
-    <title>商品列表模版</title>
+    <title>$!{modelName}</title>
     <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
     <link rel="stylesheet" type="text/css" href="/dist/css/goods/goodsListModel.css?version=$version">
 </head>
