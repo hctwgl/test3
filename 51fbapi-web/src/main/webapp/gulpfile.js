@@ -9,7 +9,7 @@ var gulp = require('gulp'),
    // revCollector  = require('gulp-rev-collector'),//版本控制
     cached = require('gulp-cached'), // 缓存未修改的文件，不多次编译
     uglify = require('gulp-uglify'),   //js压缩文件
-    minifycss = require('gulp-minify-css'),// css压缩
+    cleancss = require('gulp-clean-css'),// css压缩
     rename = require('gulp-rename'), // 重命名
     autoprefixer = require('gulp-autoprefixer'),// 添加 CSS 浏览器前缀
     plumber = require("gulp-plumber"),//出错打印日志不终止进程
@@ -43,7 +43,7 @@ gulp.task('less', function() {
         .pipe(less())
         .pipe(cached('less'))
         .pipe(autoprefixer('last 6 version'))
-        .pipe(minifycss())
+        .pipe(cleancss())
        // .pipe(rev())
         .pipe(gulp.dest('dist'))
        // .pipe(rev.manifest())
