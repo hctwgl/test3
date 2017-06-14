@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017061404")
+    	#set($version="2017061302")
     	#set($commonUrl="http://f.51fanbei.com/h5")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/dist/css/user/register.css?version=$version">
@@ -33,9 +33,8 @@
       	<div class="register_checkbox clearfix">
       		<input type="checkbox" class="input_check" id="input_check" checked="checked"　onkeyup="changeBtn()">
           	<label for="input_check"></label>
-      		<p><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+      		<p class="doww"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a><a id="dow" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:right;">已有账号</a></p>
       	</div>
-        <p class="account"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号</a></p>
 		</div>
 		<script type="text/javascript" src="/common/js/core.js"></script>
 		<script type="text/javascript" src="/common/js/md5.js"></script>
