@@ -382,7 +382,7 @@ public class RiskUtil extends AbstractThird {
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "/modules/api/risk/weakverify.htm";
+		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
 //		String url = "http://192.168.96.198/modules/api/risk/weakRiskVerify.htm";
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("weakverify", borrowId, content, url);
