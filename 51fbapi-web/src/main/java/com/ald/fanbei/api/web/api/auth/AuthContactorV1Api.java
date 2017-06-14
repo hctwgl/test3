@@ -29,7 +29,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("authContactorApi")
-public class AuthContactorApi implements ApiHandle {
+public class AuthContactorV1Api implements ApiHandle {
 
 	@Resource
 	AfUserAuthService afUserAuthService;
@@ -57,7 +57,7 @@ public class AuthContactorApi implements ApiHandle {
 		}
 		Long userId = context.getUserId();
 		
-		riskUtil.addressContactsPrimaries(context.getUserId() + "", item);
+//		riskUtil.addressContactsPrimaries(context.getUserId() + "", item);
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		

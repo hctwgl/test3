@@ -334,6 +334,7 @@ public class RiskUtil extends AbstractThird {
 	public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, 
 			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
 		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo).toString();
+//		String directory = "蒋业辉：15869157637,虫杭州:18768158110,朱云云:15839790051,黄鑫军:13575490653,表姐:13868114350,肖天剑:13989455620,胡杨:18668428602";
 		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, 
 				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
 		

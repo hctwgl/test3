@@ -30,7 +30,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("authContactsApi")
-public class AuthContactsApi implements ApiHandle {
+public class AuthContactsV1Api implements ApiHandle {
 
 	// private static final int ADD_CONTRACT_PER_PAGE = 2;
 	@Resource
@@ -53,7 +53,7 @@ public class AuthContactsApi implements ApiHandle {
 		
 		bizCacheUtil.saveObjectForever(Constants.CACHEKEY_USER_CONTACTS + context.getUserId(), contacts);
 		
-		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
+//		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
 		
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		
