@@ -211,7 +211,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     
 
     //系统升级该code不能随便修改
-    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1.借钱版块新增续期功能\n 2.借钱版块新增还款自动提额功能\n 3.其他细节优化\n"),
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1、“首页”全新改版，色彩色调全新感官\n 2、年中盛宴，钜惠抢先享\n 3、OPPO R11报名预定更有好礼相送"),
 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
