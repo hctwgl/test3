@@ -81,6 +81,7 @@ public class AppH5ActivityController extends BaseController {
             Long rsvNums =  1L;
             //预约成功后发送短信开关 Y发送 N不发送
             String sendMsgStatus = "";
+            String sendMsgInfo = "";
             if (afUserDo == null) {
                 String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
                 returnData.put("status", GoodsReservationWebFailStatus.UserNotexist.getCode());
@@ -134,6 +135,7 @@ public class AppH5ActivityController extends BaseController {
             Date startTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("startTime")));
             Date endTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("endTime")));
             sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
+            sendMsgInfo = StringUtil.null2Str(jsonObjRes.get("sendMsgInfo"));
             
             //活动开始结束校验
             Date currDate = new Date();
@@ -174,7 +176,7 @@ public class AppH5ActivityController extends BaseController {
             //预约成功，短信通知
             if(StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())){
             	try {
-                    boolean result = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile());
+                    boolean result = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(),sendMsgInfo);
                     if(result==false){
                     	logger.error("活动产品预约成功消息通知发送失败userId："+afUserDo.getRid());
                     }

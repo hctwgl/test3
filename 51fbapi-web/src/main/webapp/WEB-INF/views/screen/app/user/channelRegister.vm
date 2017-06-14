@@ -31,7 +31,7 @@
 	<input type="hidden" id="style" value="$!{style}">
 
 	<div class="channelRegister_wrap">
-		#if( $!{style} == 8 || $!{style} == 9 || $!{style} == 10)
+		#if( $!{style} == 8 || $!{style} == 9 || $!{style} == 10 || $!{style} == 11)
 			<img src="$commonUrl/channel$!{style}_01.png">
 		#else
 			<img src="$commonUrl/channel$!{style}_01.jpg">
@@ -39,13 +39,13 @@
 		<div class="channelRegisterWrap">
 			#if( $!{style} == 7 || $!{style} == 9 )
 				<img src="$commonUrl/channel$!{style}_02.png">
-			#elseif( $!{style} == 8 )
+			#elseif( $!{style} == 8 || $!{style} == 11)
 				<img src="$commonUrl/channel7_02.png">
 			#else
 				<img src="$commonUrl/channel$!{style}_02.jpg">
 			#end
 			<ul class="
-				#if( $!{style} == 7 || $!{style} == 8)
+				#if( $!{style} == 7 || $!{style} == 8 || $!{style} == 11)
 					channelRegister78
 				#elseif( $!{style} == 9 )
 					channelRegister9
@@ -96,7 +96,7 @@
 				<div class="registerMask hide"></div>
 				<div class="registerSuss hide">
 					<!-- <i class="channelRegisterPopupIcon"></i> -->
-					<p>注册成功，248元红包已到账，再享150元返利，赶紧下载预定吧！</p>
+					<p>注册成功，248元红包已到账，再享300元返利，赶紧下载预定吧！</p>
 					<span id="downloadApp">下载51APP</span>
 				</div>
 				<div class="registerFail hide">

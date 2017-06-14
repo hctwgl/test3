@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($version="2017061201")
+    	#set($version="2017061302")
     	#set($commonUrl="http://f.51fanbei.com/h5")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/dist/css/user/register.css?version=$version">
@@ -10,31 +10,31 @@
     <body style="background-color: #fff;">
     	<div class="register_main">
 			<ul>
-		        <li>
-		        	<div class="register_mobile_icon_wrap"><i class="register_mobile_icon"></i></div>
-			    	<input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号" onkeyup="changeBtn()">
-			    	<i class="register_mobileIcon registerIcon_hide"></i>
-		        </li>
-	    	    <li class="clearfix">
-	    	    	<div class="register_verification_main">
-	    	    		<div class="register_verification_icon_wrap"><i class="register_verification_icon"></i></div>
-			        	<input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码" onkeyup="changeBtn()">
-			        	<i class="register_verificationIcon registerIcon_hide"></i>
-	    	    	</div>
-		        	<span class="register_codeBtn" id="register_codeBtn">获取验证码</span>
-		        </li>
-		        <li>
-		        	<div class="register_password_icon_wrap"><i class="register_password_icon"></i></div>
-		        	<input type="password" class="register_password" id="register_password" placeholder="请输入登陆密码" name="words" maxlength="18" onkeyup="changeBtn()">
-		        	<i class="register_passwordEyeClosed"></i>
-		        </li>
-	        </ul>
-	      	<div class="register_submitBtn_wrap"><button class="register_submitBtn btnc_cf" onkeyup="changeBtn()">完成注册并下载App</button></div>
-	      	<div class="register_checkbox clearfix">
-	      		<input type="checkbox" class="input_check" id="input_check" checked="checked"　onkeyup="changeBtn()">
-            	<label for="input_check"></label>
-	      		<p><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
-	      	</div>
+          <li>
+          	<div class="register_mobile_icon_wrap"><i class="register_mobile_icon"></i></div>
+    	    	<input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入注册手机号" onkeyup="changeBtn()">
+    	    	<i class="register_mobileIcon registerIcon_hide"></i>
+          </li>
+    	    <li class="clearfix">
+    	    	<div class="register_verification_main">
+    	    		<div class="register_verification_icon_wrap"><i class="register_verification_icon"></i></div>
+  	        	<input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码" onkeyup="changeBtn()">
+  	        	<i class="register_verificationIcon registerIcon_hide"></i>
+    	    	</div>
+          	<span class="register_codeBtn" id="register_codeBtn">获取验证码</span>
+          </li>
+          <li>
+          	<div class="register_password_icon_wrap"><i class="register_password_icon"></i></div>
+          	<input type="password" class="register_password" id="register_password" placeholder="请输入登陆密码" name="words" maxlength="18" onkeyup="changeBtn()">
+          	<i class="register_passwordEyeClosed"></i>
+          </li>
+        </ul>
+      	<div class="register_submitBtn_wrap"><button class="register_submitBtn btnc_cf" onkeyup="changeBtn()">完成注册并下载App</button></div>
+      	<div class="register_checkbox clearfix">
+      		<input type="checkbox" class="input_check" id="input_check" checked="checked"　onkeyup="changeBtn()">
+          	<label for="input_check"></label>
+      		<p class="doww"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a><a id="dow" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:right;">已有账号</a></p>
+      	</div>
 		</div>
 		<script type="text/javascript" src="/common/js/core.js"></script>
 		<script type="text/javascript" src="/common/js/md5.js"></script>
