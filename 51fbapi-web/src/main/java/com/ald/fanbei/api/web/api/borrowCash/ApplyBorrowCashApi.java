@@ -223,7 +223,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR,e);
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
 

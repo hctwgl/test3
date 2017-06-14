@@ -183,13 +183,13 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 						AfUserCouponDto couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
 						if(couponDo.getGmtEnd().before(new Date())){
 							logger.error("coupon end less now");
-							return 0;
+//							return 0;
+							throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
+
 						}
 						
 						afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
 					}
-					
-					
 					final String orderNo = generatorClusterNo.getOrderNo(OrderType.AGENTBUY);
 					afOrder.setOrderNo(orderNo);
 					afOrder.setOrderType(OrderType.AGENTBUY.getCode());

@@ -41,10 +41,12 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		Integer pageNo =  NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
 		
 		Long userId = context.getUserId();
+		int total = afUserCouponService.getUserAcgencyCountByAmount(userId,actualAmount,goodsId);
 		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount,goodsId,(pageNo-1)*10);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("couponList", JSON.toJSON(list));
 		data.put("pageNo", pageNo);
+		data.put("totalCount", total);
 		
 		resp.setResponseData(data);
 		

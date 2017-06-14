@@ -100,5 +100,13 @@ public interface AfUserCouponService {
 	 */
 	List<AfUserCouponDto> getUserAcgencyCouponByAmount(Long userId,BigDecimal amount,Long goodsId,Integer pageNo);
 
+	/**
+	 * 获取用户专场可使用满减券个数
+	 * @param userId
+	 * @param amount
+	 * @param goodsId
+	 * @return
+	 */
+	int getUserAcgencyCountByAmount(Long userId,BigDecimal amount,Long goodsId);
 
 }

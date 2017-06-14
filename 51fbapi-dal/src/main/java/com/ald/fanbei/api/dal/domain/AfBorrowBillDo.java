@@ -192,16 +192,11 @@ public class AfBorrowBillDo extends AbstractSerial{
 	public void setCount(Integer count) {
 		this.count = count;
 	}
-	/**
-	 * @return the isFreeInterest
-	 */
 	public String getIsFreeInterest() {
 		return isFreeInterest;
 	}
-	/**
-	 * @param isFreeInterest the isFreeInterest to set
-	 */
 	public void setIsFreeInterest(String isFreeInterest) {
 		this.isFreeInterest = isFreeInterest;
 	}
+	
 }

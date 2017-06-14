@@ -29,7 +29,6 @@
 	    <img src="$src/r30.png">
 	    <div class="close"></div>
 	</div>
-	<!-- <div class="timeCount"></div> -->
 	<script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
 </body>
 </html>

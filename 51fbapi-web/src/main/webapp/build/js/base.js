@@ -61,16 +61,18 @@ function toDecimal2(x) {
 
 // 判断ios系统还是android系统
 function getBlatFrom(){
-  var u = navigator.userAgent;
-  var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
-  var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
-  if (isAndroid){  // 返回1是android系统
-    return 1;
-  }
-  if (isiOS)  {  // 返回2是ios系统
-    return 2;
-  }
-  return 0;
+    var u = navigator.userAgent;
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+    // 返回1是android系统
+    if (isAndroid){
+        return 1;
+    }
+    // 返回2是ios系统
+    if (isiOS)  {
+        return 2;
+    }
+    return 0;
 }
 
 // 时间戳转换
@@ -90,31 +92,18 @@ function formatDate(now) {
 function getCookie(cookie_name){
     var allcookies = document.cookie;
     var cookie_pos = allcookies.indexOf(cookie_name);   //索引的长度
-
+  
     // 如果找到了索引，就代表cookie存在，
     // 反之，就说明不存在。
     if (cookie_pos != -1){  // 把cookie_pos放在值的开始，只要给值加1即可。
         cookie_pos += cookie_name.length + 1;  // 这里容易出问题，所以请大家参考的时候自己好好研究一下
         var cookie_end = allcookies.indexOf(";", cookie_pos);
-
+  
         if (cookie_end == -1){
             cookie_end = allcookies.length;
         }
-
+  
         var value = unescape(allcookies.substring(cookie_pos, cookie_end));  //这里就可以得到你想要的cookie的值了。。。
     }
     return value;
 };
-
-// 倒计时
-function stamp(){
-    diffStamp--;
-    var day=Math.floor(diffStamp/(24*3600));
-    var hour=Math.floor(diffStamp/3600)-day*24;
-    var minute=Math.floor(diffStamp/60)-(day*24*60)-(hour*60);
-    var second=diffStamp%60;
-    if(hour<10){hour='0'+hour}
-    if(minute<10){minute='0'+minute}
-    if(second<10){second='0'+second}
-    $('.timeCount').html('距离活动开始还有：'+day+'天'+hour+'时'+minute+'分'+second+'秒');
-}
