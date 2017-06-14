@@ -11,28 +11,27 @@ function addModel(goodsList,notifyUrl) {
   // let notifyUrl = returnData.data.notifyUrl;
 
   let html = '';
-  for (var i = 0; i < goodsList.length; i++) {
-
+  for (let i = 0; i < goodsList.length; i++) {
     let saleAmount = toDecimal2(goodsList[i].saleAmount);  // 售价
     let rebateAmount = toDecimal2(goodsList[i].rebateAmount);  // 返利
     let goodsUrl = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
-
-    let amount = toDecimal2(goodsList[i].amount);  // 每期金额
-    let nper = toDecimal2(goodsList[i].nper);  // 期数
-
+      let con=`<div class="price rebate">
+                    <span>￥${saleAmount}</span>
+                    <span><i>返</i>￥${rebateAmount}</span></div>`;
+      if(goodsList[i].goodsType==1){
+          let amount = toDecimal2(goodsList[i].nperMap.amount);  // 每期金额
+          let totalAmount = toDecimal2(goodsList[i].nperMap.totalAmount);  // 抢购价
+          con=`<div class="price stages">
+                   <p style="color:#f98011"><i class="monthCorner"></i>￥${amount}×${goodsList[i].nperMap.nper}</p>
+                   <p>抢购价：￥${totalAmount}</p>
+                 </div>`
+      }
     html +='<li class="clearfix">'
             +'<a href='+goodsUrl+'>'
               +'<img src='+goodsList[i].goodsIcon+'>'
               +'<div class="boutiqueHomeContent clearfix">'
                   +'<p class="title" style="-webkit-box-orient: vertical;">'+goodsList[i].goodName+'</p>'
-                  +'<div class="price rebate">'
-                    +'<span>￥'+saleAmount+'</span>'
-                    +'<span><i>返</i>￥'+rebateAmount+'</span>'
-                  +'</div>'
-                  +'<div class="price stages hide">'
-                    +'<p><i class="monthCorner"></i>￥'+amount+'</p>'
-                    +'<p>抢购价：￥'+nper+'</p>'
-                  +'</div>'
+                  +con
                   +'<button>马上抢</button>'
               +'</div>'
             +'</a>'
@@ -45,7 +44,7 @@ function addModel(goodsList,notifyUrl) {
 window.onload=function(){
   $.ajax({
     url: "/fanbei-web/mainActivityInfo",
-    type: "GET",
+    type: "post",
     dataType: "JSON",
     success: function(returnData){
       if (returnData.success) {
@@ -90,7 +89,7 @@ window.onload=function(){
 // 倒计时
 $(function(){
   // 结束时间的时间戳
-  let endDate = new Date("June 30,2017 00:00:00")
+  let endDate = new Date("June 30,2017 00:00:00");
   let endStamp = endDate.valueOf();
   // 获取当前时间的时间戳
   let now = new Date();

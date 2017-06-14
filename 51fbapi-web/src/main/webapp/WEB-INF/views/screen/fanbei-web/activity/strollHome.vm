@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017061315")
+	#set($version="20170614")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<title>618 逛逛分会场</title>
@@ -17,12 +17,14 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8303)">
 							<p class="money"><i>¥</i>5</p>
-							<p class="date">满25减5<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满25减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8304)">
 							<p class="money"><i>¥</i>10</p>
-							<p class="date">满68减10<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满68减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -32,12 +34,14 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8305)">
 							<p class="money"><i>¥</i>5</p>
-							<p class="date">无门槛<span>2017年06月18日-6月30日</span></p>
+							<p class="date">无门槛</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8306)">
 							<p class="money"><i>¥</i>10</p>
-							<p class="date">满50减10<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满50减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -47,12 +51,14 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8307)">
 							<p class="money"><i>¥</i>5</p>
-							<p class="date">无门槛<span>2017年06月18日-6月30日</span></p>
+							<p class="date">无门槛</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8308)">
 							<p class="money"><i>¥</i>10</p>
-							<p class="date">满50减10<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满50减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -62,22 +68,26 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8309)">
 							<p class="money"><i>¥</i>5</p>
-							<p class="date">满50减5<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满50减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8310)">
 							<p class="money"><i>¥</i>10</p>
-							<p class="date">满100减10<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满100减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8311)">
 							<p class="money"><i>¥</i>20</p>
-							<p class="date">满200减20<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满200减20</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8312)">
 							<p class="money"><i>¥</i>50</p>
-							<p class="date">满500减50<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满500减50</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -87,12 +97,14 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8313)">
 							<p class="money"><i>¥</i>5</p>
-							<p class="date">满25减5<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满25减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8314)">
 							<p class="money"><i>¥</i>10</p>
-							<p class="date">满68减10<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满68减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -102,12 +114,14 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8315)">
 							<p class="money"><i>¥</i>1</p>
-							<p class="date">满30减1<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满30减1</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8316)">
 							<p class="money"><i>¥</i>2</p>
-							<p class="date">满50减2<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满50减2</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -117,12 +131,14 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8317)">
 							<p class="money"><i>¥</i>10</p>
-							<p class="date">满58减10<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满58减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8318)">
 							<p class="money"><i>¥</i>20</p>
-							<p class="date">满168减20<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满168减20</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -132,12 +148,14 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8319)">
 							<p class="money"><i>¥</i>5</p>
-							<p class="date">满25减5<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满25减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8320)">
 							<p class="money"><i>¥</i>10</p>
-							<p class="date">满88减10<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满88减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -147,12 +165,14 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8321)">
 							<p class="money"><i>¥</i>5</p>
-							<p class="date">满200减5<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满200减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8322)">
 							<p class="money"><i>¥</i>10</p>
-							<p class="date">满500减10<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满500减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>
@@ -162,22 +182,26 @@
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8323)">
 							<p class="money"><i>¥</i>5</p>
-							<p class="date">满50减5<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满50减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8324)">
 							<p class="money"><i>¥</i>15</p>
-							<p class="date">满200减15<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满200减15</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8325)">
 							<p class="money"><i>¥</i>20</p>
-							<p class="date">满500减20<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满500减20</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 						<li @click="boluomiCoupons(8326)">
 							<p class="money"><i>¥</i>50</p>
-							<p class="date">满1000减50<span>2017年06月18日-6月30日</span></p>
+							<p class="date">满1000减50</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
 							<p class="receive">点击领取</p>
 						</li>
 					</ol>

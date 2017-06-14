@@ -103,6 +103,7 @@ new Vue({
         moreHref:'getMore?modelId='+modelId+'&subjectId=',
         divTop:'',
         option:{
+            sort:sort
         }
     },
     created:function () {
@@ -121,7 +122,7 @@ new Vue({
             Vue.http.options.emulateJSON = true;
             let self=this;
             let op={data:JSON.stringify(self.option)};
-            self.$http.get(self.tableUrl,op).then(function (res) {
+            self.$http.post(self.tableUrl,op).then(function (res) {
                 self.content = eval('(' + res.data + ')');
                 console.log(self.content);
                 self.$nextTick(function () {                              //dom渲染完成后执行

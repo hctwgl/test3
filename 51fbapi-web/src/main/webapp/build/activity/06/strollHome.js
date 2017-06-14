@@ -45,8 +45,8 @@ new Vue({
           // returnData = eval('(' + returnData + ')');
           if(returnData.success){
             requestMsg("领劵成功");
-            $(".receive").text("已领取");
-            window.location.reload();
+            //$(".receive").text("已领取");
+            //window.location.reload();
           }else{
             if(returnData.url){
               location.href=returnData.url;
