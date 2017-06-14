@@ -5,7 +5,7 @@ let userName = "";
 if(getInfo().userName){
     userName=getInfo().userName
 }
-let chance=[],isLogin,isShow,clientRate,chanceCount,recommendCode;
+let chance=[],isLogin,isShow,recommendCode;
 
 //数据初始化
 function dataInit() {
@@ -94,10 +94,11 @@ class game{
         if(state=='claw'){
             $('.getState').html('抓取成功');
             $('.getCashCoupon').show();
+            $('.getCouponPrize').show();
         }
         $('#alert').show();
         $('#shadow').show();
-        $('.tryAgain').html('再抓一次').click(function () {
+        $('.tryAgain').click(function () {
             $('#shadow').hide();
             $('.alert').hide();
         });
@@ -134,10 +135,11 @@ let sixGame= new game(16.5,20);
 sixGame.doll();
 $('#startBtn').click(function () {
     isShow='yes';
+    let self=$(this);
     $('.play').animate({top:'7.1rem'},200,function () {
         $('.play').animate({top:'7.08rem'},150);
         sixGame.start();
-        $(this).hide();
+        self.hide();
         console.log(chance)
     });
 });
@@ -177,7 +179,6 @@ function AutoScroll(obj,x) {
 }
 $(document).ready(function() {
     setInterval('AutoScroll(".roll01","-1rem")', 1000);
-    setInterval('AutoScroll(".roll02","-.55rem")', 1000);
 });
 
 
