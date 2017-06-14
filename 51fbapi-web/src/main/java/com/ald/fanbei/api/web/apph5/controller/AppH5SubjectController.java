@@ -132,7 +132,7 @@ public class AppH5SubjectController  extends BaseController{
 			qualityGoodsInfo.put("goodsType", "0");
 			String tags = qualityGoods.getTags();
 			// 如果是分期免息商品，则计算分期
-			if(tags != null && "INTEREST_FREE".equals(tags)){
+			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = qualityGoods.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 				if(schemeGoodsDo != null){
@@ -247,7 +247,7 @@ public class AppH5SubjectController  extends BaseController{
 				activityGoodsInfo.put("activityName", activityName);
 				String tags = goodsDo.getTags();
 				// 如果是分期免息商品，则计算分期
-				if(tags != null && "INTEREST_FREE".equals(tags)){
+				if(tags != null && tags.contains("INTEREST_FREE")){
 					Long goodsId = goodsDo.getRid();
 					AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 					if(schemeGoodsDo != null){
@@ -289,7 +289,7 @@ public class AppH5SubjectController  extends BaseController{
 			qualityGoodsInfo.put("goodsType", "0");
 			String tags = qualityGoods.getTags();
 			// 如果是分期免息商品，则计算分期
-			if(tags != null && "INTEREST_FREE".equals(tags)){
+			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = qualityGoods.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 				if(schemeGoodsDo != null){
@@ -357,7 +357,7 @@ public class AppH5SubjectController  extends BaseController{
 			subjectGoodsList.add(subjectGoodsInfo);
 			String tags = goodsDo.getTags();
 			// 如果是分期免息商品，则计算分期
-			if(tags != null && "INTEREST_FREE".equals(tags)){
+			if(tags != null && tags.contains("INTEREST_FREE")){
 				Long goodsId = goodsDo.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 				if(schemeGoodsDo != null){
