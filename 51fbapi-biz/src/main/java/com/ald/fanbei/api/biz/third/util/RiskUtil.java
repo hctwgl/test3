@@ -131,6 +131,7 @@ public class RiskUtil extends AbstractThird {
 	AfAgentOrderService afAgentOrderService;
 	@Resource
 	BoluomeUtil boluomeUtil;
+	
 
 	private static String getUrl() {
 		if (url == null) {
@@ -332,9 +333,10 @@ public class RiskUtil extends AbstractThird {
 	 */
 	public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, 
 			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
+		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo).toString();
 		
 		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, 
-				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, getNotifyHost());
+				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
 		
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		
@@ -342,7 +344,7 @@ public class RiskUtil extends AbstractThird {
 		commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
 		
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
-//		String reqResult = HttpUtil.post("http://192.168.96.198:80/modules/api/user/registerAndRisk.htm", reqBo);
+		
 		logThird(reqResult, "registerAndRisk", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
