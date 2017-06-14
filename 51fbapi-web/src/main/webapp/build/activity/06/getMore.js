@@ -9,13 +9,13 @@ $(function(){
 
      if($(document).scrollTop() >= $(document).height() - $(window).height()) {
        //alert("滚动条已经到达底部为");   
-       $('.load').animate({'opacity':'1'},1000,function(){
+       $('.load').animate({'opacity':'1'},600,function(){
           getData();
        }) 
-     } else if(List.length==0){
+     } /*else if(List.length==0){
                     $('.load').remove();
                     $('.finish').css('opacity',1);
-                  }
+                  }*/
 
   });
 
@@ -30,7 +30,7 @@ function getData(){
             type:'get',
             success:function(data){
                   List=data.data.subjectGoodsList;
-                  console.log(List)
+                  console.log(data)
                   for(var i=0;i<List.length;i++){
                     var str;
                     var type=List[i].goodsType;
@@ -41,6 +41,10 @@ function getData(){
                       str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes" style="-webkit-box-orient: vertical;">'+List[i].goodName+'</p><p class="monthPrice"><i class="monthCorner"></i>￥'+List[i].nperMap.amount+' x '+List[i].nperMap.nper+'</p><p class="buyPrice">￥'+List[i].saleAmount+'</p><p class="buyNow">马上抢</p></div></li>'
                     }                    
                     $('#productList').append(str);
+                  }
+                  if(List.length==0){
+                    $('.load').remove();
+                    $('.finish').css('opacity',1);
                   }
             },
             error:function(){
