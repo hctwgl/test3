@@ -52,7 +52,7 @@ id rid,gmt_create,gmt_modified,creator,modifier,name,type,url,icon,max_commissio
 		WHERE id = #{rid}
 	</update>
 	
-	<select id="selectMordelH5ById" resultMap="AfModelH5Do">
+	<select id="selectMordelH5ById" resultType="AfModelH5Do">
 	SELECT
 		<include refid="queryAllFields"/>
 	FROM af_model_h5 WHERE is_delete =0 AND id = #{rid}
