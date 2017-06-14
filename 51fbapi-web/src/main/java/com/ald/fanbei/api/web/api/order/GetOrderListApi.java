@@ -61,7 +61,7 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setOrderId(order.getRid());
 		vo.setOrderNo(order.getOrderNo());
 		String status =  order.getStatus();
-		if (context.getAppVersion() <= 364){
+		if (context.getAppVersion() < 364){
 			if (status.equals(OrderStatus.DEALING.getCode())) {
 				status =OrderStatus.PAID.getCode();
 			}
