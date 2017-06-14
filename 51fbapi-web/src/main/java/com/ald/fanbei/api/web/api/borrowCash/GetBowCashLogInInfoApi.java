@@ -230,12 +230,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				}
 			}
 		}
-		//未通过强风控审核的，也把其设置为 风控拒绝日期内
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if(!RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
-			inRejectLoan = YesNoStatus.YES.getCode();
-		}
-		
+		data.put("riskStatus", afUserAuthDo.getRiskStatus());
 		//如果需要跳转至不通过页面，则获取对应banner图地址
 		if(YesNoStatus.YES.getCode().equals(jumpToRejectPage)){
 			//获取不通过页面内banner图对应地址
