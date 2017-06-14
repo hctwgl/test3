@@ -13,7 +13,7 @@
 	background-size: cover;
 }
 .strollHomeContentUl{
-  padding: 0 0.35rem 0.35rem;
+  padding: 0 .2rem 0 .2rem;
 }
 .strollHomeContentLi{
   margin-bottom: 0.6rem;
@@ -29,47 +29,50 @@
 }
 .otoCoupon li{
   float: left;
-  width: 3.06rem;
-  height: 1.07rem;
+  width: 49%;
+  height: 1.15rem;
   background-image: url("@{url}/otoCouponBg.png");
   -webkit-background-size: cover;
-	background-size: cover;
+	background-size: contain;
   color: #fff;
   margin-bottom: 0.2rem;
+  position:relative;
 }
 .otoCoupon li:nth-child(2n+1){
-  margin-right: 0.22rem;
+  margin-right:2%;
 }
 .otoCoupon .money{
-  width: 0.9rem;
-  line-height: 1.07rem;
-  text-align: center;
-  height: 100%;
   float: left;
   font-size: 0.5rem;
+  padding: .1rem 3.25% 0 6.5%;
+  font-weight: bold;
 }
 .otoCoupon .money i{
   font-size: 0.3rem;
+  font-weight: normal;
 }
 .otoCoupon .date{
-  width: 1.6rem;
-  height: 100%;
   float: left;
   font-size: 0.26rem;
-  padding-top: 0.2rem;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  padding-top: .3rem;
 }
-.otoCoupon .date span{
-  font-size: 0.12rem;
+.otoCoupon .expiryDate{
+  font-size: 0.24rem;
+  position:absolute;
+  top: .7rem;
+  left: .2rem;
 }
 .otoCoupon .receive{
   display: inline-block;
   width: 0.25rem;
   height: 100%;
-  margin-left: 0.16rem;
-  margin-top: 0.02rem;
   text-align: center;
-  font-size: 0.16rem;
+  font-size: 0.24rem;
   letter-spacing: 0.01rem;
+  position: absolute;
+  top:.02rem;
+  right: .15rem;
+  line-height: .28rem;
 }
