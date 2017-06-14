@@ -71,7 +71,7 @@ public class InterestFreeUitl {
                 if(fNper.equals(key)){
                 	if(freeNper.equals("0")){
                     	//总手续费
-                		attrs = getAttrs(totalGoodsAmount,nPer,poundageRate,rangeBegin,rangeEnd,mouthRate,goodsAmount);
+                		attrs = getAttrs(totalGoodsAmount,nPer,poundageRate,rangeBegin,rangeEnd,mouthRate);
                         list.add(attrs);
                         continue;
                 	}
@@ -96,9 +96,9 @@ public class InterestFreeUitl {
                         //计息期
                         BigDecimal noNper = nPer.subtract(freeNperB);
                         //本金*每期利率
-                        BigDecimal b2 = totalGoodsAmount.multiply(mouthRate);
+                        BigDecimal b2 = BigDecimalUtil.multiply(totalGoodsAmount,mouthRate);
                         //免期前每期手续费
-                        BigDecimal b3 = BigDecimalUtil.divHalfUp(totalPoundage, nPer, Constants.HALFUP_DIGIT);
+                        BigDecimal b3 = totalPoundage.divide(nPer,4,BigDecimal.ROUND_HALF_EVEN);
 
                         //手续费最小值<总手续费-免息期数*手续费<手续费最大值)/期数
                         BigDecimal d1 = totalPoundage.subtract(b3.multiply(freeNperB));
@@ -113,7 +113,8 @@ public class InterestFreeUitl {
                         //计算免息
                         BigDecimal freeAmount = b1;
                         BigDecimal totalAmount = amount.multiply(noNper).add(freeAmount.multiply(freeNperB));
-                        BigDecimal poundageAmount = (amount.subtract(freeAmount)).multiply(noNper);
+                        //BigDecimal poundageAmount = (amount.subtract(freeAmount)).multiply(noNper);
+                        BigDecimal poundageAmount = noNper.multiply(b2.add(d2));
                         attrs.put("nper", nPer);
                         attrs.put("amount", amount);
                         attrs.put("poundageAmount", poundageAmount);
@@ -125,12 +126,12 @@ public class InterestFreeUitl {
                         continue;
                     }
                 }else{
-                    attrs = getAttrs(totalGoodsAmount,nPer,poundageRate,rangeBegin,rangeEnd,mouthRate,goodsAmount);
+                    attrs = getAttrs(totalGoodsAmount,nPer,poundageRate,rangeBegin,rangeEnd,mouthRate);
                     list.add(attrs);
                     continue;
                 }
             } else {
-                attrs = getAttrs(totalGoodsAmount,nPer,poundageRate,rangeBegin,rangeEnd,mouthRate,goodsAmount);
+                attrs = getAttrs(totalGoodsAmount,nPer,poundageRate,rangeBegin,rangeEnd,mouthRate);
                 list.add(attrs);
                 continue;
             }
@@ -146,11 +147,10 @@ public class InterestFreeUitl {
      * @param rangeBegin
      * @param rangeEnd
      * @param mouthRate
-     * @param goodsAmount
      * @return
      */
     private static Map<String, Object> getAttrs(BigDecimal totalGoodsAmount, BigDecimal nPer, BigDecimal poundageRate,
-                                                BigDecimal rangeBegin, BigDecimal rangeEnd, BigDecimal mouthRate, BigDecimal goodsAmount){
+                                                BigDecimal rangeBegin, BigDecimal rangeEnd, BigDecimal mouthRate){
         Map<String, Object> attrs = new HashMap<>();
 
         //本金/总期数
@@ -171,7 +171,7 @@ public class InterestFreeUitl {
         //借款总金额
         BigDecimal totalAmount = amount.multiply(nPer);
         //总利息+手续费
-        BigDecimal poundageAmount = totalAmount.subtract(goodsAmount);
+        BigDecimal poundageAmount = nPer.multiply(b2.add(b3));
         attrs.put("nper", nPer.toString());
         attrs.put("amount", amount);
         attrs.put("poundageAmount", poundageAmount);
