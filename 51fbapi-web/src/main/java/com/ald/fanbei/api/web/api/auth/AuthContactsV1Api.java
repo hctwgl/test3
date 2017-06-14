@@ -29,7 +29,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @version 1.1 huyang 2017年4月6日 09:58:04 通讯录不再保存在本地，直接同步通讯录
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("authContactsApi")
+@Component("authContactsV1Api")
 public class AuthContactsV1Api implements ApiHandle {
 
 	// private static final int ADD_CONTRACT_PER_PAGE = 2;

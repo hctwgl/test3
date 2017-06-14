@@ -100,7 +100,7 @@ public class AuthRealnameApi implements ApiHandle {
 			}
 		}
 		AfUserAccountDo accountDo = new AfUserAccountDo();
-//		accountDo.setAuAmount(creditAmount);
+		accountDo.setAuAmount(creditAmount);
 		accountDo.setCreditScore(sorce);
 		accountDo.setUserId(context.getUserId());
 		logger.info("auAmount="+creditAmount+",creditScore="+sorce+",userId="+account.getUserId());

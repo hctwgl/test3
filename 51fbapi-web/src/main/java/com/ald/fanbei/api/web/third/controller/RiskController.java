@@ -30,48 +30,48 @@ public class RiskController {
 	@Resource
 	RiskUtil riskUtil;
 
-//	@RequestMapping(value = { "/verify" }, method = RequestMethod.POST)
-//	@ResponseBody
-//	public String verify(HttpServletRequest request, HttpServletResponse response) {
-//		String code = ObjectUtils.toString(request.getParameter("code"));
-//		String data = ObjectUtils.toString(request.getParameter("data"));
-//		String msg = ObjectUtils.toString(request.getParameter("msg"));
-//		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
-//
-//		logger.info("asyVerify begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
-//		if (TRADE_STATUE_SUCC.equals(code)) {
-//			try {
-//				riskUtil.asyVerify(code, data, msg, signInfo);
-//				return "SUCCESS";
-//			} catch (Exception e) {
-//				return "FAIL";
-//			}
-//		} else {
-//			return "FAIL";
-//		}
-//	}
+	@RequestMapping(value = { "/verify" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String verify(HttpServletRequest request, HttpServletResponse response) {
+		String code = ObjectUtils.toString(request.getParameter("code"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String msg = ObjectUtils.toString(request.getParameter("msg"));
+		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
+
+		logger.info("asyVerify begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			try {
+				riskUtil.asyVerify(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				return "FAIL";
+			}
+		} else {
+			return "FAIL";
+		}
+	}
 	
-//	//payOrder的异步
-//	@RequestMapping(value = { "/payOrder" }, method = RequestMethod.POST)
-//	@ResponseBody
-//	public String payOrder(HttpServletRequest request, HttpServletResponse response) {
-//		String code = ObjectUtils.toString(request.getParameter("code"));
-//		String data = ObjectUtils.toString(request.getParameter("data"));
-//		String msg = ObjectUtils.toString(request.getParameter("msg"));
-//		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
-//
-//		logger.info("asyPayOrder begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
-//		if (TRADE_STATUE_SUCC.equals(code)) {
-//			try {
-//				riskUtil.asyPayOrder(code, data, msg, signInfo);
-//				return "SUCCESS";
-//			} catch (Exception e) {
-//				return "FAIL";
-//			}
-//		} else {
-//			return "FAIL";
-//		}
-//	}
+	//payOrder的异步
+	@RequestMapping(value = { "/payOrder" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String payOrder(HttpServletRequest request, HttpServletResponse response) {
+		String code = ObjectUtils.toString(request.getParameter("code"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String msg = ObjectUtils.toString(request.getParameter("msg"));
+		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
+
+		logger.info("asyPayOrder begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			try {
+				riskUtil.asyPayOrder(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				return "FAIL";
+			}
+		} else {
+			return "FAIL";
+		}
+	}
 
 	@RequestMapping(value = { "/operator" }, method = RequestMethod.POST)
 	@ResponseBody

@@ -66,7 +66,7 @@ public class FanbeiController extends BaseController {
     //代买相关
     @RequestMapping(value ={
     		"/agencyBuy/addUserAddress","/agencyBuy/getAgencyCouponList","/agencyBuy/getAgencyNperInfo","/agencyBuy/payAgencyOrder","/agencyBuy/changeUserAddress","/agencyBuy/getDefaultUserAddress","/agencyBuy/deleteUserAddress","/agencyBuy/getUserAddressList","/agencyBuy/submitAgencyBuyOrder"
-        ,"/agencyBuy/getAgencyBuyOrderDetail","/agencyBuy/cancelAgencyBuyOrder","/agencyBuy/confirmationCompletedAgencyBuyOrder"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+        ,"/agencyBuy/getAgencyBuyOrderDetail","/agencyBuy/cancelAgencyBuyOrder","/agencyBuy/confirmationCompletedAgencyBuyOrder","agencybuy/payAgencyOrderV1"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
         @ResponseBody
         public String agencyBuyRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
             request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -134,7 +134,8 @@ public class FanbeiController extends BaseController {
 	@RequestMapping(value = { "/auth/authRealname", "/auth/authContacts", "/auth/authCredit", "/auth/authZhima", "/auth/authBankcard", "/auth/checkBankcard", "/auth/getBankList",
 			"/auth/checkBankcardPay", "/auth/authFace", "/auth/authMobile", "/auth/authContactor", "/auth/authLocation", "/auth/authMobileBack", "/auth/getAllowConsume",
 			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi",
-			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk",
+			"auth/authContactorV1","auth/authContactsV1","auth/authCreditV1","auth/authFaceV1","auth/authRealnameV1","auth/submitIdNumberInfoV1","auth/updateIdCardV1"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -152,7 +153,7 @@ public class FanbeiController extends BaseController {
      * @throws IOException
      */
     @RequestMapping(value = {"/brand/getBrandUrl","/brand/getOrderDetailUrl","/brand/getConfirmOrder","/brand/getBrandList"
-    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon","brand/payOrderV1"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String brandShopRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -171,7 +172,7 @@ public class FanbeiController extends BaseController {
     @RequestMapping(value = {"/borrowCash/getBorrowCashHomeInfo","/borrowCash/getBowCashLogInInfo","/borrowCash/getConfirmBorrowInfo","/borrowCash/applyBorrowCash",
     		"/borrowCash/getBorrowCashDetail","/borrowCash/getBorrowCashList","/borrowCash/getBorrowOverdueList","/repayCash/getConfirmRepayInfo",
     		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo","/borrowCash/applyRenewal","/borrowCash/confirmRenewalPay","/borrowCash/getRenewalList",
-    		"/borrowCash/getRenewalDetail","/borrowCash/getLoanSupermarketList","/loanMarket/accessLoanSupermarket"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    		"/borrowCash/getRenewalDetail","/borrowCash/getLoanSupermarketList","/loanMarket/accessLoanSupermarket","borrowCash/applyBorrowCashV1"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String borrowCashRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

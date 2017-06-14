@@ -66,7 +66,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @author suweili 2017年3月25日下午1:06:18
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("applyBorrowCashApi")
+@Component("applyBorrowCashV1Api")
 public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle {
 	
 	@Resource
@@ -212,7 +212,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
 			
-			RiskVerifyRespBo verybo = riskUtil.verify(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
+			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
 					afBorrowCashDo.getBorrowNo(), riskOrderNo);
 
 			if (verybo.isSuccess()) {

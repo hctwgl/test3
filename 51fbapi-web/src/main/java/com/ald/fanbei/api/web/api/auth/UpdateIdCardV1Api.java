@@ -26,7 +26,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
-@Component("updateIdCardApi")
+@Component("updateIdCardV1Api")
 public class UpdateIdCardV1Api implements ApiHandle {
 
 	@Resource

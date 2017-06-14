@@ -31,7 +31,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @author suweili 2017年5月29日下午9:37:33
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("payAgencyOrderApi")
+@Component("payAgencyOrderV1Api")
 public class PayAgencyOrderV1Api implements ApiHandle {
 	@Resource
 	private AfOrderService afOrderService;

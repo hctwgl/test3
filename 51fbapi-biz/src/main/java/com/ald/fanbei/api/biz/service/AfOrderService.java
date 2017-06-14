@@ -151,8 +151,13 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String,Object> payBrandOrder(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress);
+	/**
+	 * 支付菠萝觅订单
+	 * @param afOrder
+	 * @return
+	 */
+	Map<String,Object> payBrandOrderOld(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress);
 	
-
 	/**
 	 * 处理菠萝觅回调订单 
 	 * @param payOrderNo

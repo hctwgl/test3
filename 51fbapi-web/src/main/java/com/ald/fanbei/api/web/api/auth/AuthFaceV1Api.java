@@ -39,7 +39,7 @@ import com.alibaba.fastjson.JSONObject;
  * @version 2.0 重构版本
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("authFaceApi")
+@Component("authFaceV1Api")
 public class AuthFaceV1Api implements ApiHandle {
 
 	private final static String RESULT_AUTH_TRUE = "T";

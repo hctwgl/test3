@@ -39,7 +39,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @author xiaotianjian 2017年3月27日上午10:53:43
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("payOrderApi")
+@Component("payOrderV1Api")
 public class PayOrderV1Api implements ApiHandle {
 
 	@Resource
