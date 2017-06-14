@@ -4,7 +4,16 @@
 
 let finished = 0;
 let page = 1; // 默认页数从1开始
-
+function statistics(goodsId){
+    $.ajax({
+        url:'/fanbei-web/qualityGoodsStatistics',
+        type:'post',
+        data:{goodsId:goodsId},
+        success:function (data) {
+            console.log(data)
+        }
+    });
+}
 // 精品推荐Model
 function addModel(goodsList,notifyUrl) {
 
@@ -27,7 +36,7 @@ function addModel(goodsList,notifyUrl) {
                  </div>`
       }
     html +='<li class="clearfix">'
-            +'<a href='+goodsUrl+'>'
+            +'<a onclick="statistics('+goodsList[i].goodsId+')" href='+goodsUrl+'>'
               +'<img src='+goodsList[i].goodsIcon+'>'
               +'<div class="boutiqueHomeContent clearfix">'
                   +'<p class="title" style="-webkit-box-orient: vertical;">'+goodsList[i].goodName+'</p>'

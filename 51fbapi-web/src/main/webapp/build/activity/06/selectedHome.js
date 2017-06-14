@@ -118,11 +118,17 @@ new Vue({
                 jQuery('#navWrap').removeClass('fixTop');
             }
         },
-        logData (){
-            Vue.http.options.emulateJSON = true;
+        statistics(goodsId){
             let self=this;
-            let op={data:JSON.stringify(self.option)};
-            self.$http.post(self.tableUrl,op).then(function (res) {
+            self.$http.post('/fanbei-web/qualityGoodsStatistics',{goodsId:goodsId}).then(function (res) {
+                console.log(res);
+            },function (response) {
+                console.log(response)
+            })
+        },
+        logData (){
+            let self=this;
+            self.$http.post(self.tableUrl,self.option).then(function (res) {
                 self.content = eval('(' + res.data + ')');
                 console.log(self.content);
                 self.$nextTick(function () {                              //dom渲染完成后执行
