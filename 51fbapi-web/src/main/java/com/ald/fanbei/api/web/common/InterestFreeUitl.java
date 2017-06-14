@@ -98,7 +98,7 @@ public class InterestFreeUitl {
                         //本金*每期利率
                         BigDecimal b2 = totalGoodsAmount.multiply(mouthRate);
                         //免期前每期手续费
-                        BigDecimal b3 = BigDecimalUtil.divHalfDown(totalPoundage, nPer, Constants.HALFUP_DIGIT);
+                        BigDecimal b3 = BigDecimalUtil.divHalfUp(totalPoundage, nPer, Constants.HALFUP_DIGIT);
 
                         //手续费最小值<总手续费-免息期数*手续费<手续费最大值)/期数
                         BigDecimal d1 = totalPoundage.subtract(b3.multiply(freeNperB));
@@ -107,7 +107,7 @@ public class InterestFreeUitl {
                         } else if (d1.compareTo(rangeEnd) > 0) {
                             d1 = rangeEnd;
                         }
-                        BigDecimal d2 = BigDecimalUtil.divHalfDown(d1,noNper,null); //免息后每期手续费
+                        BigDecimal d2 = BigDecimalUtil.divHalfUp(d1,noNper,Constants.HALFUP_DIGIT); //免息后每期手续费
 
                         amount = b1.add(b2).add(d2);
                         //计算免息
@@ -153,9 +153,21 @@ public class InterestFreeUitl {
                                                 BigDecimal rangeBegin, BigDecimal rangeEnd, BigDecimal mouthRate, BigDecimal goodsAmount){
         Map<String, Object> attrs = new HashMap<>();
 
+        //本金/总期数
+        BigDecimal b1 = BigDecimalUtil.divHalfDown(totalGoodsAmount, nPer, Constants.HALFUP_DIGIT);
+
+        //本金*每期利率
+        BigDecimal b2 = totalGoodsAmount.multiply(mouthRate);
+
+        //总手续费
         BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(totalGoodsAmount, nPer.intValue(),
                 poundageRate, rangeBegin, rangeEnd,InterestfreeCode.NO_FREE.getCode());
-        BigDecimal amount = BigDecimalUtil.getConsumeAmount(totalGoodsAmount, nPer.intValue(), mouthRate, totalPoundage);
+
+        //每期手续费
+        BigDecimal b3 = BigDecimalUtil.divHalfUp(totalPoundage, nPer, Constants.HALFUP_DIGIT);
+
+
+        BigDecimal amount = b1.add(b2).add(b3);;
         //借款总金额
         BigDecimal totalAmount = amount.multiply(nPer);
         //总利息+手续费

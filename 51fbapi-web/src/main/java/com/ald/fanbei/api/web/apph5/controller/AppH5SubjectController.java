@@ -78,12 +78,12 @@ public class AppH5SubjectController  extends BaseController{
 	AfInterestFreeRulesService afInterestFreeRulesService;
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String mainActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 主会场接口
 		
-		// FanbeiWebContext context = new FanbeiWebContext();
+		FanbeiWebContext context = new FanbeiWebContext();
 		//context = doWebCheck(request, false);
 		JSONObject jsonObj = new JSONObject();
 		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
@@ -176,11 +176,11 @@ public class AppH5SubjectController  extends BaseController{
     }
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "partActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "partActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String partActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
-		FanbeiWebContext context = new FanbeiWebContext();
+		//FanbeiWebContext context = new FanbeiWebContext();
 		//context = doWebCheck(request, false);
 		String modelId = ObjectUtils.toString(request.getParameter("modelId"), null);
 		if(modelId == null || "".equals(modelId)) {
@@ -249,7 +249,12 @@ public class AppH5SubjectController  extends BaseController{
 				// 如果是分期免息商品，则计算分期
 				if(tags != null && tags.contains("INTEREST_FREE")){
 					Long goodsId = goodsDo.getRid();
-					AfSchemeGoodsDo  schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+					AfSchemeGoodsDo  schemeGoodsDo = null;
+					try {
+						schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+					} catch(Exception e){
+						logger.error(e.toString());
+					}
 					if(schemeGoodsDo != null){
 						AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 						String interestFreeJson = interestFreeRulesDo.getRuleJson();
@@ -317,7 +322,7 @@ public class AppH5SubjectController  extends BaseController{
 	}
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "subjectGoodsInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "subjectGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String subjectGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
@@ -329,6 +334,9 @@ public class AppH5SubjectController  extends BaseController{
 			return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
 		}
 		AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
+		// FIXME 数据埋点
+		
+		
 		
 		//获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);

@@ -74,6 +74,13 @@ public interface AfResourceService {
 	 */
 	List<AfResourceDo> getResourceHomeListByTypeOrderBy(String type);
 	
+	/**
+	 * 根据type获取资源排序列表 在预发布环境，禁用的也可以显示
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getResourceHomeListByTypeOrderByOnPreEnv(String type);
+	
 	
 	/**
 	 * 根据type获取一个资源信息
