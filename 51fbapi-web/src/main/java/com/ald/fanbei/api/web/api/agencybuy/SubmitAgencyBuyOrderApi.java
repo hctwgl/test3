@@ -135,10 +135,6 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		if (goodsInfo == null) {
 			return StringUtils.EMPTY;
 		}
-		String tags = goodsInfo.getTags();
-		if (tags.isEmpty()) {
-			return StringUtils.EMPTY;
-		}
 		AfSchemeGoodsDo schemeGoodsInfo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsInfo.getRid());
 		if (schemeGoodsInfo == null) {
 			return StringUtils.EMPTY;
