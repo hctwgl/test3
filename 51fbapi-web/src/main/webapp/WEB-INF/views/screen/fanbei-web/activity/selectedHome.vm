@@ -14,7 +14,7 @@
 		<h2>精品推荐</h2>
 		<ul>
 			<li v-for="data in content.data.qualityGoodsList" class="clearfix">
-				<a @click="statistics(data.goodsId)" :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
+				<a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
 					<img :src="data.goodsIcon">
 					<div class="boutiqueHomeContent clearfix">
 						<p class="title" style="-webkit-box-orient: vertical;">{{data.goodName}}</p>

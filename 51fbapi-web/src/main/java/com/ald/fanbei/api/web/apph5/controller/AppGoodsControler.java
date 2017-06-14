@@ -21,14 +21,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
-import com.ald.fanbei.api.biz.service.AfModelH5Service;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.H5ItemModelType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfModelH5Do;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
@@ -49,13 +47,11 @@ public class AppGoodsControler extends BaseController {
     String  opennative = "/fanbei-web/opennative?name=";
 	@Resource
 	AfModelH5ItemService afModelH5ItemService;
-	@Resource
-	AfModelH5Service afModelH5Service;
 
 	@RequestMapping(value = { "goodsListModel" }, method = RequestMethod.GET)
 	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
 		Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
-        
+
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
 				.getModelH5ItemListByModelIdAndModelType(modelId, H5ItemModelType.BANNER.getCode()));
 		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService.getModelH5ItemCategoryListByModelIdAndModelType(modelId);
@@ -63,8 +59,6 @@ public class AppGoodsControler extends BaseController {
 				.getModelH5ItemGoodsCountListCountByModelIdAndSort(modelId);
 		List<Object> categoryList = getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(categoryDbList,
 				sortCountList);
-		AfModelH5Do h5Do =  afModelH5Service.selectMordelH5ById(modelId);
-		model.put("modelName", h5Do.getName()==null?"":h5Do.getName());
 		model.put("bannerList", bannerList);
 		model.put("categoryList", categoryList);
 		
@@ -73,6 +67,7 @@ public class AppGoodsControler extends BaseController {
 
 		Integer pageCount = 20;// 每一页显示20条数据
 		String type = "0";
+
 		if (categoryDbList.size() > 0) {
 			AfModelH5ItemDo afModelH5ItemDo = categoryDbList.get(0);
 			type = ObjectUtils.toString(afModelH5ItemDo.getRid(), "").toString();

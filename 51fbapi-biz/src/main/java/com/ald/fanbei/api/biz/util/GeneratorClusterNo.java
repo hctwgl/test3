@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -194,7 +195,7 @@ public class GeneratorClusterNo {
 				}
 			} else {// 获取锁失败，从库中取订单号
 				String payNo = afOrderService.getCurrentLastPayNo(currentDate);
-				if (payNo != null) {
+				if (StringUtils.isNotBlank(payNo)) {
 					channelNum = getOrderSeqInt(payNo.substring(16, 21)) + 1;
 				}
 				return channelNum;

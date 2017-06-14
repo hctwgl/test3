@@ -79,7 +79,7 @@ public class AppH5SubjectController  extends BaseController{
 	AfInterestFreeRulesService afInterestFreeRulesService;
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String mainActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		FanbeiWebContext context = new FanbeiWebContext();
@@ -89,8 +89,6 @@ public class AppH5SubjectController  extends BaseController{
 		String resultStr = "";
 		JSONObject jsonObj = new JSONObject();
 		try{
-			// 数据埋点
-			doMaidianLog(request,"");
 			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
 			jsonObj.put("notifyUrl", notifyUrl);
 			// 获取会场商品题目文案
@@ -193,7 +191,7 @@ public class AppH5SubjectController  extends BaseController{
     }
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "partActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "partActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String partActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
@@ -206,8 +204,7 @@ public class AppH5SubjectController  extends BaseController{
 			if(modelId == null || "".equals(modelId)) {
 				return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
 			}
-			// 数据埋点
-			doMaidianLog(request,"");
+			
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 	        JSONArray array = JSON.parseArray(resource.getValue());
@@ -363,7 +360,7 @@ public class AppH5SubjectController  extends BaseController{
 	}
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "subjectGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "subjectGoodsInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String subjectGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
@@ -377,8 +374,8 @@ public class AppH5SubjectController  extends BaseController{
 				return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
 			}
 			AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
-			//  数据埋点
-			doMaidianLog(request,"");
+			// FIXME 数据埋点
+			
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 	        JSONArray array = JSON.parseArray(resource.getValue());
@@ -446,23 +443,6 @@ public class AppH5SubjectController  extends BaseController{
 		}
 		return resultStr;
 	}
-	
-	
-	@RequestMapping(value = "qualityGoodsStatistics", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String qualityGoodsStatistics(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		// 统计精品推荐商品点击量
-		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
-		String goodsId = ObjectUtils.toString(request.getParameter("goodsId"), null);
-		if(goodsId == null || "".equals(goodsId)) {
-			return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
-		}
-		doMaidianLog(request, "");
-		return H5CommonResponse.getNewInstance(true, "成功").toString();
-	}
-	
-	
 	
 	
 	private AfSubjectGoodsQuery buildAfSubjectGoodsQuery(HttpServletRequest request) {
