@@ -4,7 +4,7 @@
 	#set($version="2017061401")
 	#set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
 	<title>51返呗注册</title>
-	<link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css">
+	<link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
 	<script type="text/javascript">;
         (function(root) {
             root._tt_config = true;
