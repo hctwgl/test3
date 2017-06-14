@@ -209,7 +209,7 @@ public class BigDecimalUtil {
     	//总手续费
     	BigDecimal totalPoundage = amount.multiply(poundageRate).setScale(2, RoundingMode.CEILING);
     	//每一期手续费
-    	BigDecimal perAmount = totalPoundage.divide(new BigDecimal(nper)).setScale(2, RoundingMode.CEILING);
+    	BigDecimal perAmount = totalPoundage.divide(new BigDecimal(nper),2, RoundingMode.CEILING);
         //总手续费-免息的费用
     	BigDecimal freeAmount = BigDecimalUtil.multiply(perAmount, new BigDecimal(freeNper));
        
@@ -223,7 +223,7 @@ public class BigDecimalUtil {
     	 //最后计算的期数
     	 Integer finalNper =  nper - freeNper;
     	 return finalNper.equals(0) ? BigDecimal.ZERO : 
-    		 finalAmount.divide(new BigDecimal(finalNper)).setScale(2, RoundingMode.CEILING);
+    		 finalAmount.divide(new BigDecimal(finalNper), 2, RoundingMode.CEILING);
     }
     
     /**
