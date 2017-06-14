@@ -1,7 +1,8 @@
 
 var subjectId=getUrl('subjectId');
 var currentPage=1;
-var List;
+var totalSize=0;
+var total;
 $(function(){
   getData();
   //滚动条事件
@@ -9,13 +10,13 @@ $(function(){
 
      if($(document).scrollTop() >= $(document).height() - $(window).height()) {
        //alert("滚动条已经到达底部为");   
-       $('.load').animate({'opacity':'1'},600,function(){
+       $('.load').animate({'opacity':'1'},200,function(){
           getData();
        }) 
-     } /*else if(List.length==0){
+     } else if(totalSize==total){
                     $('.load').remove();
                     $('.finish').css('opacity',1);
-                  }*/
+                  }
 
   });
 
@@ -29,7 +30,8 @@ function getData(){
             dataType:'JSON',
             type:'get',
             success:function(data){
-                  List=data.data.subjectGoodsList;
+                  var List=data.data.subjectGoodsList;
+                  total=data.data.totalCount;
                   console.log(data)
                   for(var i=0;i<List.length;i++){
                     var str;
@@ -42,10 +44,12 @@ function getData(){
                     }                    
                     $('#productList').append(str);
                   }
-                  if(List.length==0){
+                  totalSize+=List.length;
+                  if(totalSize<20 || totalSize==total){
                     $('.load').remove();
                     $('.finish').css('opacity',1);
                   }
+                  console.log(totalSize);
             },
             error:function(){
                   requestMsg("请求失败");
