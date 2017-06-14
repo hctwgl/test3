@@ -92,7 +92,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}
@@ -101,7 +101,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String authSignNotify(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}
@@ -110,7 +110,7 @@ public class PayRoutController {
     @ResponseBody
 	public String authSignValidNotify(HttpServletRequest request, HttpServletResponse response){
     	for(String paramKey:request.getParameterMap().keySet()){
-    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    		thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
     	}
     	return "succ";
     }
@@ -119,7 +119,7 @@ public class PayRoutController {
     @ResponseBody
 	public String authPay(HttpServletRequest request, HttpServletResponse response){
     	for(String paramKey:request.getParameterMap().keySet()){
-    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    		thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
     	}
     	return "succ";
     }
@@ -128,7 +128,7 @@ public class PayRoutController {
     @ResponseBody
 	public String authPayConfirm(HttpServletRequest request, HttpServletResponse response){
     	for(String paramKey:request.getParameterMap().keySet()){
-    		System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+    		thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
     	}
     	return "succ";
     }
@@ -202,7 +202,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String signRelease(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			System.out.println("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}

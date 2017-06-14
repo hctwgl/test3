@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.web.api.user;
 
 import java.util.List;
@@ -79,8 +76,8 @@ public class GetBankCardListApi implements ApiHandle {
         	resp.addResponseData("ydKey", publicKey);
         	resp.addResponseData("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
         	resp.addResponseData("idNumber", Base64.encodeString(userAccount.getIdNumber()));
-        	resp.addResponseData("faceStatus", afUserAuthDo.getFacesStatus());
         }
+        resp.addResponseData("faceStatus", afUserAuthDo.getFacesStatus());
 		return resp;
 	}
 
