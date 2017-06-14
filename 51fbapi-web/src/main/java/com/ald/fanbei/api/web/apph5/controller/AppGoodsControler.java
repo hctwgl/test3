@@ -64,7 +64,11 @@ public class AppGoodsControler extends BaseController {
 		List<Object> categoryList = getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(categoryDbList,
 				sortCountList);
 		AfModelH5Do h5Do =  afModelH5Service.selectMordelH5ById(modelId);
-		model.put("modelName", h5Do.getName()==null?"":h5Do.getName());
+		String modelName = "";
+		if(h5Do!= null){
+			modelName = h5Do.getName();
+		}
+		model.put("modelName", modelName);
 		model.put("bannerList", bannerList);
 		model.put("categoryList", categoryList);
 		
