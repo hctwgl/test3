@@ -460,6 +460,7 @@ public class AppH5SubjectController  extends BaseController{
 		if(goodsId == null || "".equals(goodsId)) {
 			return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
 		}
+		request.setAttribute("context", context);
 		doMaidianLog(request, "");
 		return H5CommonResponse.getNewInstance(true, "成功").toString();
 	}
