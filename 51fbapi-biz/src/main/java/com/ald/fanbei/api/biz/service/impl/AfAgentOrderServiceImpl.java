@@ -230,14 +230,9 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
 		orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 		orderInfo.setStatus(OrderStatus.NEW.getCode());
-		Long userId = orderInfo.getUserId();
+//		Long userId = orderInfo.getUserId();
 
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount())
-				.subtract(userAccountInfo.getFreezeAmount());
-		if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-		}
+		
 		BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
 		orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		afOrderDao.updateOrder(orderInfo);

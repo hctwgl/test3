@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -31,6 +32,7 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -49,6 +51,8 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 	AfAgentOrderService afAgentOrderService;
 	@Resource
 	AfUserAddressService afUserAddressService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 	@Resource
 	AfGoodsService afGoodsService;
 	@Resource
@@ -115,6 +119,18 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
 		}
+		if(nper>0){
+			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+			BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount())
+					.subtract(userAccountInfo.getFreezeAmount());
+			if (useableAmount.compareTo(actualAmount) < 0) {
+				logger.error("borrow consume money error");
+
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+			}
+		}
+
+		
 		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder,nper)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
