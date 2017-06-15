@@ -234,6 +234,11 @@ public class AppH5SubjectController  extends BaseController{
 			if(subjectList == null || subjectList.size() == 0){
 				return H5CommonResponse.getNewInstance(false, "分会场信息为空").toString(); 
 			}
+			AfModelH5ItemDo subjectH5ItemDo = subjectList.get(0);
+			String secSubjectId = subjectH5ItemDo.getItemValue();
+			AfSubjectDo  parentSubjectDo = afSubjectService.getSubjectInfoById(secSubjectId);
+			Long parentId = parentSubjectDo.getParentId();
+			
 			for(AfModelH5ItemDo subjectDo : subjectList) {
 				Map activityInfoMap = new HashMap();
 				String subjectId = subjectDo.getItemValue();
@@ -301,7 +306,7 @@ public class AppH5SubjectController  extends BaseController{
 		
 			jsonObj.put("activityList", activityList);
 			// 获取精品推荐商品
-			List<AfGoodsDo>  qualityGoodsDoList = afSubjectGoodsService.listQualitySubjectGoods();
+			List<AfGoodsDo>  qualityGoodsDoList = afSubjectGoodsService.listQualitySubjectGoodsByParentId(parentId);
 			List<Map> qualityGoodsList = new ArrayList<Map>();
 			for(AfGoodsDo qualityGoods : qualityGoodsDoList) {
 				Map qualityGoodsInfo = new HashMap();
