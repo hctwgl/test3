@@ -43,7 +43,6 @@ import com.ald.fanbei.api.dal.domain.AfSignInActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSigninDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -166,12 +165,22 @@ public class AppActivitySignInController extends BaseController {
 					AfResourceDo resourceDo = listResource.get(0);
 					Long activityId = resourceDo.getRid();
 					if (!activityId.equals(null)) {
+						List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
+						//TODO:转成String格式
 						List<String> listResult = new ArrayList<>();
-						listResult = afSignInActivityService.initActivitySign(userId, activityId);
+						SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+						if (!listDate.isEmpty()) {
+							for(Date date:listDate){
+								String strDate = sFormat.format(date);
+								listResult.add(strDate);
+							}
+						}
+						
+						
 						// 返回活动签到的日期
 						String startDate = resourceDo.getValue1();
 						HashMap<String, Object> mapResult = new HashMap<String, Object>();
-						SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+						
 						String currentDate = sFormat.format(new java.util.Date());
 						// 活动签到
 						mapResult.put("type", "Y");
@@ -297,9 +306,15 @@ public class AppActivitySignInController extends BaseController {
 					AfResourceDo resourceDo = listResource.get(0);
 					Long activityId = resourceDo.getRid();
 					if (!activityId.equals(null)) {
-
 						List<String> listResult = new ArrayList<>();
-						listResult = afSignInActivityService.initActivitySign(userId, activityId);
+						List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
+						SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+						if (!listDate.isEmpty()) {
+							for(Date date:listDate){
+								String strDate = sFormat.format(date);
+								listResult.add(strDate);
+							}
+						}
 						Integer totalCount = listResult.size() + 1;
 						AfSignInActivityDo signInActivityDo = new AfSignInActivityDo();
 						signInActivityDo.setActivityId(activityId);
@@ -315,7 +330,6 @@ public class AppActivitySignInController extends BaseController {
 						;//实际的签到
 						String startDate = resourceDo.getValue1();
 						String endDate = resourceDo.getValue2();
-						SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
 						Long start = sFormat.parse(startDate).getTime();
 						Long end = sFormat.parse(endDate).getTime();
 						

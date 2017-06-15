@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,7 +17,7 @@ public class AfSignInActivityServiceImpl implements AfSignInActivityService{
 	@Resource
 	AfSignInActivityDao afSignInActivityDao;
 	@Override
-	public List<String> initActivitySign(Long userId, Long activityId) {
+	public List<Date> initActivitySign(Long userId, Long activityId) {
 		if (!userId.equals(null) && !activityId.equals(null)) {
 			return afSignInActivityDao.initActivitySign(userId, activityId);
 		}

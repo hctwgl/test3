@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfSignInActivityDao">
 
-<select id = "initActivitySign" resultType="AfSignInActivityDo">
+<select id = "initActivitySign" resultType = "java.util.Date">
 	SELECT
 		gmt_create
 	FROM
