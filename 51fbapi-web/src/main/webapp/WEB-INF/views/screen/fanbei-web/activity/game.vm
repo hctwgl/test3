@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017061402")
+    #set($version="2017061403")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>game</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css?id=$version">
 </head>
 <body>
-<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.06rem;height:1.53rem" src="$commonUrl/R11logo1.png"></a>
+<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11?addUiName=SHOWSHARE"><img style="width:1.06rem;height:1.53rem" src="$commonUrl/R11logo1.png"></a>
 <img src="$commonUrl/ni_1.jpg" style="width: 7.5rem;height:1.89rem">
 <img src="$commonUrl/ni_2.jpg" style="width: 7.5rem;height:4.49rem">
 <img class="modelPic" src="$commonUrl/ni_2bg.jpg">

@@ -334,7 +334,7 @@ $('#startBtn').click(function () {
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"引爆年中抓娃娃，100%中大奖","shareAppContent":"抓娃娃次数无上限，赢最高888元现金红包！集齐5娃，平分1亿大奖，有且只在51返呗！","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"引爆年中抓娃娃，100％中大奖","shareAppContent":"抓娃娃次数无上限，赢最高888元现金红包！集齐5娃，平分1亿大奖，有且只在51返呗！","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
             });
             $('#alert').show();
             $('#shadow').show();
