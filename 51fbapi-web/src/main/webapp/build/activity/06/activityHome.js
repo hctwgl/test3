@@ -11,10 +11,10 @@ function alaShareData(){
   let dataObj = {
     'appLogin': 'N', // 是否需要登录，Y需要，N不需要
     'type': 'share', // 此页面的类型
-    'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
+    'shareAppTitle': '年中盛宴，错过这次等一年',  // 分享的title
     'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
     'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-    'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/feastRaidersShare'  // 分享后的链接
+    'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/feastRaidersShare',  // 分享后的链接
     'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
     'sharePage': 'feastRaidersShare' // 分享的页面
   };
@@ -25,7 +25,7 @@ function alaShareData(){
 
 // 精品推荐Model
 function addModel(goodsList,notifyUrl) {
-  
+
   let html = '';
   for (let i = 0; i < goodsList.length; i++) {
     let saleAmount = toDecimal2(goodsList[i].saleAmount);  // 售价
