@@ -42,6 +42,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
@@ -52,6 +53,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
@@ -80,6 +82,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
@@ -131,6 +134,8 @@ public class RiskUtil extends AbstractThird {
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfAuthContactsService afAuthContactsService;
+	@Resource
+	AfUserCouponService afUserCouponService;
 	@Resource
 	SmsUtil smsUtil;
 	@Resource
@@ -522,6 +527,20 @@ public class RiskUtil extends AbstractThird {
 							afAgentOrderDo.setClosedReason("风控审批失败");
 							afAgentOrderDo.setGmtClosed(new Date());
 							afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+							
+							//添加关闭订单释放优惠券
+							if(afAgentOrderDo.getCouponId()>0){
+					            AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+					
+					            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+					            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
+					            		afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
+					            }
+					            else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+					        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+					        		afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
+					        	}
+							}
 						}
 						jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 						return new Long(String.valueOf(re));
