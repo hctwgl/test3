@@ -30,7 +30,7 @@ function alaShareData(){
     };
     let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
     return dataStr;
-};
+}
 
 //数据初始化
 function dataInit() {
