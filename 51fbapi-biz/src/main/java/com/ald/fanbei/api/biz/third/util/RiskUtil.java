@@ -974,11 +974,15 @@ public class RiskUtil extends AbstractThird {
 							jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 							return new Long(String.valueOf(re));
 						}
-
+//						// 在风控审批通过后额度不变生成账单
+//						afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
+//								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
+//								orderInfo.getOrderNo(), null);
+						
 						// 在风控审批通过后额度不变生成账单
-						afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
-								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
-								orderInfo.getOrderNo(), null);
+						afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
+								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+
 
 						// 审批通过时
 						orderInfo.setPayStatus(PayStatus.PAYED.getCode());

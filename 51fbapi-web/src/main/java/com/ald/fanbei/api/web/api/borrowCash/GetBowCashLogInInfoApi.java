@@ -230,8 +230,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				}
 			}
 		}
+		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		data.put("riskStatus", afUserAuthDo.getRiskStatus());
+		if (StringUtils.equals("N", afUserAuthDo.getRiskStatus())) {
+			inRejectLoan = YesNoStatus.YES.getCode();
+		}
 		//如果需要跳转至不通过页面，则获取对应banner图地址
 		if(YesNoStatus.YES.getCode().equals(jumpToRejectPage)){
 			//获取不通过页面内banner图对应地址
