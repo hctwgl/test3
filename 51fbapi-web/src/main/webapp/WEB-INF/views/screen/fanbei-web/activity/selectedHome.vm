@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017052702")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/selectedHome.css?version=$version">
+</head>
+<script>
+	var sort=getUrl('sort');
+    switch (sort){
+        case '1':
+            document.title='分期免息分会场';
+            break;
+        case '2':
+            document.title='高佣超级券专场';
+            break;
+        case '3':
+            document.title='值得买专场';
+            break;
+    }
+</script>
+<body>
+<div id="vueCon">
+    <title></title>
+	<img class="banner" :src="content.data.bannerImage">
+	<div class="recommend">
+		<h2>精品推荐</h2>
+		<ul>
+			<li v-for="data in content.data.qualityGoodsList" class="clearfix">
+				<a @click="statistics(data.goodsId)" :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
+					<img :src="data.goodsIcon">
+					<div class="boutiqueHomeContent clearfix">
+						<p class="title" style="-webkit-box-orient: vertical;">{{data.goodName}}</p>
+						<p class="price">
+							<template v-if="data.goodsType==1">
+								<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+								<p>抢购价：￥{{data.nperMap.totalAmount}}</p>
+							</template>
+							<template v-else>
+                                <span>￥{{data.saleAmount}}</span>
+                                <span><i>返</i>￥{{data.rebateAmount}}</span>
+							</template>
+						</p>
+						<button>马上抢</button>
+					</div>
+				</a>
+			</li>
+		</ul>
+	</div>
+    <div class="activityList">
+		<div style="height: .83rem">
+            <div id="navWrap">
+                <div id="listAlert">
+                    <a :href="'#'+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+                </div>
+            </div>
+		</div>
+		<template v-for="(data,index) in content.data.activityList">
+            <h2 :id="index">{{data.name}}</h2>
+            <ul>
+                <li v-for="data in data.activityGoodsList" class="clearfix">
+                    <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
+                        <img :src="data.goodsIcon">
+                        <div class="boutiqueHomeContent clearfix">
+                            <p class="title" style="-webkit-box-orient: vertical;">{{data.goodName}}</p>
+                            <p class="price">
+                                <template v-if="data.goodsType==1">
+									<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+									<p>抢购价：￥{{data.nperMap.totalAmount}}</p>
+        						</template>
+								<template v-else>
+									<span>￥{{data.saleAmount}}</span>
+									<span><i>返</i>￥{{data.rebateAmount}}</span>
+								</template>
+                            </p>
+                            <button>马上抢</button>
+                        </div>
+                    </a>
+                </li>
+                <a class="more" :href="moreHref+data.subjectId">更多 ...</a>
+			</ul>
+		</template>
+    </div>
+</div>
+<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<script type="text/javascript" src="/dist/activity/06/selectedHome.js"></script>
+</body>
+</html>

@@ -516,6 +516,9 @@ public abstract class BaseController {
 	}
 	
 	private static String getAppInfo(String url) {
+		if(StringUtil.isBlank(url)){
+			return null;
+		}
 		String result = "";
 		try {
 			Map<String, List<String>> params = new HashMap<String, List<String>>();

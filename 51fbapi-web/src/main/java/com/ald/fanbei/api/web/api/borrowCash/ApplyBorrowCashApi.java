@@ -148,7 +148,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		boolean doRish = true;
 		AfBorrowCashDo afnewstBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 		
-		if(afnewstBorrowCashDo!=null && AfBorrowCashStatus.closed.getCode().equals(afnewstBorrowCashDo.getStatus())){
+		if(afnewstBorrowCashDo!=null && AfBorrowCashReviewStatus.refuse.getCode().equals(afnewstBorrowCashDo.getReviewStatus())){
 			//借款被拒绝
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
 			if(afResourceDo!=null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())){
@@ -169,14 +169,15 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		}
 		///// 临时处理，如果当天内有申请，以最后一条的状态为准 end hy 2017年5月11日09:54:20//////
 
-		boolean isCanBorrow = afBorrowCashService.isCanBorrowCash(userId);
+		AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
 		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province, county, address, userId, currentDay);
 
-		if (!isCanBorrow) {
+		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
+				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
 		
@@ -209,7 +210,6 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			return resp;
 		} catch (Exception e) {
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
@@ -287,5 +287,4 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		}
 	}
 
-	
 }

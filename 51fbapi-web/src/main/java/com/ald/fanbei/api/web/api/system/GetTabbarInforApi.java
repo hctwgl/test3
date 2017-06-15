@@ -7,10 +7,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.CheckVersionBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -18,6 +21,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONArray;
 
 
 @Component("getTabbarInforApi")
@@ -31,12 +35,13 @@ public class GetTabbarInforApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Map<String, Object> tabbarInfor= getObjectWithResourceDolist(afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode()));
+		List<AfResourceDo> resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode());
+		Map<String, Object> tabbarInfor= getObjectWithResourceDolist(context,resourceList,requestDataVo);
 		resp.setResponseData(tabbarInfor);
 		return resp;
 	}
 	
-	private Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> tabbarlist) {
+	private Map<String, Object> getObjectWithResourceDolist(FanbeiContext context,List<AfResourceDo> tabbarlist,RequestDataVo requestDataVo) {
 		Map<String, Object> index = new HashMap<String, Object>();
 		for (AfResourceDo afResourceDo : tabbarlist) {
 			Map<String, Object> data = new HashMap<String, Object>();
@@ -69,15 +74,54 @@ public class GetTabbarInforApi implements ApiHandle {
 				index.put("mainSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_NOMAL")){
+				handleIosBorow(context,requestDataVo,data);
 				index.put("borrowNomal", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_SELECTED")){
+				handleIosBorow(context,requestDataVo,data);
 				index.put("borrowSelected", data);
 			}
 			
 		}
 
 		return index;
+	}
+	/**
+	 * 针对IOS 在appStore审核中时，处理底部tab借钱模块为搜呗
+	 * @param context
+	 * @param requestDataVo
+	 * @param data
+	 */
+	private void handleIosBorow(FanbeiContext context,RequestDataVo requestDataVo,Map<String, Object> data) {
+		
+		 Map<String, Object> params = requestDataVo.getParams();
+	        AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
+	        String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
+	        if (resourceInfo == null) {
+	        	data.put("title", "借钱");
+	        } 
+		 //需要打开为了审核的相关版本
+        //VALUE是为了IOS审核
+        if(requestDataVo.getId().startsWith("i")) {
+        	String iosCheckVersion = resourceInfo.getValue();
+        	if (StringUtils.isBlank(iosCheckVersion)) {
+        		data.put("title", "借钱");
+        	} else {
+        		List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
+        		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
+        		data.put("title", array.contains(desVersion) ? "搜呗" : "借钱");
+        	}
+        } else {
+        //VALUE2是为了Android审核
+        	String androidCheckVersion = resourceInfo.getValue2();
+        	if (StringUtils.isBlank(androidCheckVersion)) {
+        		data.put("title", "借钱");
+        	} else {
+        		List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
+        		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
+        		data.put("title", array.contains(desVersion) ? "搜呗" : "借钱");
+        	}
+        }
 	}
 
 }

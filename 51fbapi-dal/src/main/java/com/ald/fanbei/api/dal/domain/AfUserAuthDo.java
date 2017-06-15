@@ -41,6 +41,7 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String contactorType;
 	private String locationStatus;
 	private String locationAddress;
+	private String riskStatus; //强风控审核状态【A:未审核，N:未通过审核，P: 审核中，Y:已通过审核】
 	
 	public Long getRid() {
 		return rid;
@@ -211,4 +212,11 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setContactorType(String contactorType) {
 		this.contactorType = contactorType;
 	}
+	public String getRiskStatus() {
+		return riskStatus;
+	}
+	public void setRiskStatus(String riskStatus) {
+		this.riskStatus = riskStatus;
+	}
+	
 }

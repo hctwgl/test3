@@ -85,7 +85,14 @@ public interface AfBorrowCashService {
 	 * @param startTime
 	 * @return
 	 */
-	Integer getSpecBorrowCashNums(Long userId, String reviewStatus, Date startTime);
+	Integer getSpecBorrowCashNums(Long userId,String reviewStatus,Date startTime);
+	
+	/**
+	 * 获取总借款次数
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(Long userId);
 
 	/**
 	 * 是否可借款

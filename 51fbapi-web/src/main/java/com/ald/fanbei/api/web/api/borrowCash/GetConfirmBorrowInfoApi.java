@@ -10,10 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -25,6 +27,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -48,7 +51,9 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
-
+	@Resource
+	AfUserAccountService afUserAccountService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -62,13 +67,19 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 
 		}
-
+		data.put("realNameStatus", authDo.getRealnameStatus());
+		data.put("riskStatus", authDo.getRiskStatus());
+		data.put("faceStatus", authDo.getFacesStatus());
+		
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		data.put("idNumber", Base64.encodeString(accountDo.getIdNumber()));
+		data.put("realName", accountDo.getRealName());
+		
 		// 判断是否绑定主卡
 		data.put("isBind", authDo.getBankcardStatus());
 		Boolean isPromote = true;
 		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
 			isPromote = false;
-
 		}
 		data.put("isPromote", isPromote ? YesNoStatus.YES.getCode() : YesNoStatus.NO.getCode());
 

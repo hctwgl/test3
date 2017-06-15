@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfSubjectDao">
+	
+	<sql id="subjectSqlField">
+		m.id,m.gmt_create,m.gmt_modified,m.name,m.level,m.tag,m.theme,m.parent_id
+	</sql>
+	
+	<insert id="addSubject" parameterType="AfSubjectDo" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO
+			af_subject
+			(
+				gmt_create,
+				gmt_modified,
+				name,
+				level,
+				parent_id,
+				tag,
+				theme,
+				interest_free_id,
+				coupon_id
+			)
+		VALUES
+		    (
+				NOW(),
+				NOW(),
+				#{name},
+				#{level},
+				#{parentId},
+				#{tag},
+				#{theme},
+				#{interestFreeId},
+				#{couponId}
+			)
+	</insert>
+	
+	<select id="listAllSubject" parameterType="AfSubjectQuery" resultType="AfSubjectDo" >
+		SELECT 
+			<include refid="subjectSqlField" />
+		FROM 
+			af_subject m
+		WHERE
+			m.is_delete=0
+		
+	</select>
+	
+	<select id="listLevelSubject" parameterType="AfSubjectQuery" resultType="AfSubjectDo" >
+		SELECT 
+			<include refid="subjectSqlField" />
+		FROM 
+			af_subject m
+		WHERE
+			m.is_delete=0
+		AND
+			m.level = #{level}
+	</select>
+	
+	<select id="listSecSubjectByParentId" parameterType="java.lang.String" resultType="AfSubjectDo" >
+		SELECT 
+			<include refid="subjectSqlField" />
+		FROM 
+			af_subject m
+		WHERE
+			m.is_delete=0
+		AND
+			m.parent_id = #{activityId}
+		AND
+			m.level = 2
+	</select>
+	
+	
+	<select id="getSubjectInfoById" parameterType="java.lang.String" resultType="AfSubjectDo" >
+		SELECT 
+			<include refid="subjectSqlField" />
+		FROM 
+			af_subject m
+		WHERE
+			m.is_delete=0
+		AND
+			m.id = #{subjectId}
+	</select>
+	
+	
+	<select id="getParentSubjectInfoById" parameterType="java.lang.String" resultType="AfSubjectDo" >
+		SELECT 
+			m.* 
+		FROM 
+			af_subject m 
+		LEFT JOIN 
+			af_subject n 
+		ON 
+			m.id = n.parent_id 
+		WHERE 
+			n.id = #{subjectId}
+	</select>
+	
+	<update id="deleteSubject" parameterType="java.lang.Long" >
+		UPDATE af_subject SET is_delete = 1 WHERE id=#{activityId}
+	</update>
+	
+
+</mapper>

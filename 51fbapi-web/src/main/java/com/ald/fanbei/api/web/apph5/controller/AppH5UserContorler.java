@@ -350,7 +350,6 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setPassword(password);
 			userDo.setRegisterChannelId(pcp.getChannelId());
 			userDo.setRegisterChannelPointId(pcp.getId());
-			userDo.setRecommendId(0l);
 			afUserService.addUser(userDo);
 
 			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();

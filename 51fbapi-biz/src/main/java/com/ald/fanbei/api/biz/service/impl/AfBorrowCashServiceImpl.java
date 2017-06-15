@@ -114,4 +114,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public AfBorrowCashDo getNowTransedBorrowCashByUserId(Long userId) {
 		return afBorrowCashDao.getNowTransedBorrowCashByUserId(userId);
 	}
+
+	@Override
+	public int getBorrowNumByUserId(Long userId) {
+		return afBorrowCashDao.getBorrowNumByUserId(userId);
+	}
+
 }

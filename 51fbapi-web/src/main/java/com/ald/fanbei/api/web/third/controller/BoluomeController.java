@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
@@ -27,6 +28,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.alibaba.fastjson.JSON;
@@ -48,6 +50,8 @@ public class BoluomeController extends AbstractThird{
 	AfOrderService afOrderService;
 	@Resource
 	AfShopService afShopService;
+	@Resource
+	AfInterestFreeRulesService afInterestFreeRulesService;
 	
     @RequestMapping(value = {"/synchOrder","/synchOrderStatus"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -195,7 +199,10 @@ public class BoluomeController extends AbstractThird{
     		orderInfo.setMobile(userPhone);
     		orderInfo.setBankId(0l);
     		orderInfo.setServiceProvider(channel);
-    		
+    		if (shopInfo.getInterestFreeId() != 0) {
+    			AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
+    			orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());
+    		}
     		calculateOrderRebateAmount(orderInfo, shopInfo);
     	} else {
     		

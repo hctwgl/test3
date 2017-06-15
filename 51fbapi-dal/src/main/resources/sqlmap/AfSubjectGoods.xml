@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfSubjectGoodsDao">
+	
+	<sql id="subjectSqlField">
+		s.id,s.gmt_create,s.gmt_modified,s.subject_id,s.goods_id,s.interest_free_id,s.coupon_id
+	</sql>
+	
+	<insert id="addSubjectGoods" parameterType="AfSubjectGoodsDo" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO
+			af_subject_goods
+			(
+				gmt_create,
+				gmt_modified,
+				subject_id,
+				goods_id,
+				interest_free_id,
+				coupon_id,
+				parent_subject_id
+			)
+		VALUES
+		    (
+				NOW(),
+				NOW(),
+				#{subjectId},
+				#{goodsId},
+				#{interestFreeId},
+				#{couponId},
+				#{parentSubjectId}
+			)
+	</insert>
+	
+	<select id="listAllSubjectGoods" parameterType="AfSubjectGoodsQuery" resultType="AfGoodsDo" >
+		SELECT 
+			g.id rid,g.*
+		FROM 
+			af_subject_goods s
+		INNER JOIN 
+			af_goods g	
+		ON
+			s.goods_id = g.id
+		WHERE
+			s.is_delete=0
+		AND 
+			s.subject_id = #{subjectId}
+	</select>
+	
+	
+	<select id="listQualitySubjectGoods" resultType="AfGoodsDo" >
+		SELECT 
+			g.id rid,g.*
+		FROM 
+			af_subject_goods s
+		INNER JOIN 
+			af_goods g	
+		ON
+			s.goods_id = g.id
+		WHERE
+			s.is_delete=0
+		LIMIT 10
+	</select>
+	
+	<select id="listQualitySubjectGoodsByParentId"  parameterType="java.lang.Long" resultType="AfGoodsDo" >
+		SELECT 
+			g.id rid,g.*
+		FROM 
+			( 
+			SELECT goods_id FROM af_subject_goods WHERE subject_id IN(
+			SELECT id FROM af_subject WHERE parent_id = #{parentId}
+			) AND is_delete = 0 LIMIT 10
+		) tmp 
+		INNER JOIN 
+			af_goods g	
+		ON
+		tmp.goods_id = g.id
+	</select>
+	
+	<update id="deleteSubjectGoods" parameterType="java.lang.Long" >
+		UPDATE af_subject_goods SET is_delete = 1 WHERE id=#{rid}
+	</update>
+</mapper>

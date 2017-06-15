@@ -64,6 +64,8 @@ public interface AfUserCouponDao {
 	 */
 	int updateUserCouponSatusNouseById(@Param("rid")Long rid);
 	
+	
+	int updateUserCouponSatusExpireById(@Param("rid")Long rid);
 	/**
 	 * 获取类型可用优惠券
 	 * @param userId
@@ -79,5 +81,20 @@ public interface AfUserCouponDao {
 	 */
 	List<AfUserCouponDto> getUserCouponByType(@Param("userId")Long userId,@Param("type")String type);
 
-	
+	/**
+	 * 获取用户专场可使用满减券
+	 * @param userId
+	 * @param amount
+	 * @param goodsId
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserAcgencyCouponByAmount(@Param("userId")Long userId,@Param("amount")BigDecimal amount,@Param("goodsId")Long goodsId,@Param("pageNo")Integer pageNo);
+	/**
+	 * 获取用户专场可使用满减券个数
+	 * @param userId
+	 * @param amount
+	 * @param goodsId
+	 * @return
+	 */
+	int getUserAcgencyCountByAmount(@Param("userId")Long userId,@Param("amount")BigDecimal amount,@Param("goodsId")Long goodsId);
 }

@@ -77,15 +77,15 @@ function getBlatFrom(){
 
 // 时间戳转换
 function formatDate(now) {
-    now=new Date(now/1000);
-    var year=now.getYear();
+    now=new Date(parseInt(now));
+    var year=now.getFullYear();
     var month=now.getMonth()+1;
     var date=now.getDate();
     // var hour=now.getHours();
     // var minute=now.getMinutes();
     // var second=now.getSeconds();
     // return "20"+year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
-    return "20"+year+"-"+month+"-"+date;
+    return year+"-"+month+"-"+date;
 }
 
 // 获取cookie里面的参数

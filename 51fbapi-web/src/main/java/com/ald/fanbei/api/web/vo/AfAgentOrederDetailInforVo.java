@@ -41,8 +41,30 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private BigDecimal saleAmount; // 商品的价格
 	private BigDecimal actualAmount; // 用户填写的金额
 	private Integer nper;
+	private String couponName; // 优惠劵名称
+	private BigDecimal couponAmount; // 优惠劵的金额
+	private BigDecimal actualPayAmount;// 实际支付金额
+
 	
 	
+	public String getCouponName() {
+		return couponName;
+	}
+	public void setCouponName(String couponName) {
+		this.couponName = couponName;
+	}
+	public BigDecimal getCouponAmount() {
+		return couponAmount;
+	}
+	public void setCouponAmount(BigDecimal couponAmount) {
+		this.couponAmount = couponAmount;
+	}
+	public BigDecimal getActualPayAmount() {
+		return actualPayAmount;
+	}
+	public void setActualPayAmount(BigDecimal actualPayAmount) {
+		this.actualPayAmount = actualPayAmount;
+	}
 	public String getCancelReason() {
 		return cancelReason;
 	}
