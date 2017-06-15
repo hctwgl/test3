@@ -3,7 +3,7 @@
 <head>
 #set($version="2017061309")
 #set($src="https://fs.51fanbei.com/h5/app/activity/06")
-	<title>OPPO R11</title>
+	<title>OPPO R11新品首发</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/oppoR11.css?version=$version">
 </head>
 <body>
