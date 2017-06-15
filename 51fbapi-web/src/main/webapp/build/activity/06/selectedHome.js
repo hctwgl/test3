@@ -1,6 +1,6 @@
 let modelId=getUrl('modelId');
-let sort=getUrl('sort');
 let windowW = $(window).outerWidth();
+let sort=getUrl('sort');
 // app调用web的方法
 let shareData=[
     {title:'分期购物无忧 3/6/9/12免息',content:'分期无忧 拯救剁手党,90后消费哲学潮这里 我的 我的 都是我的！'},
@@ -12,15 +12,15 @@ let shareData=[
 function alaShareData(){
     let title,con;
     switch (sort){
-        case 1:
+        case '1':
             title=shareData[0].title;
             con=shareData[0].content;
             break;
-        case 2:
+        case '2':
             title=shareData[1].title;
             con=shareData[1].content;
             break;
-        case 3:
+        case '3':
             title=shareData[2].title;
             con=shareData[2].content;
             break;
@@ -126,7 +126,6 @@ new Vue({
                 self.content = eval('(' + res.data + ')');
                 console.log(self.content);
                 self.$nextTick(function () {                              //dom渲染完成后执行
-                    document.title=self.content.data.modelName;
                     if(sort==2){
                         $('#vueCon').css('background-color','#4515aa');
                         $('#listAlert').css('background-color','#4515aa');

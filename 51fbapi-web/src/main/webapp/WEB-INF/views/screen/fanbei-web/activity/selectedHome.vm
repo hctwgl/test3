@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017052701")
+	#set($version="2017052702")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
-	<title>活动分会场</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/selectedHome.css?version=$version">
 </head>
+<script>
+	var sort=getUrl('sort');
+    switch (sort){
+        case '1':
+            document.title='分期免息分会场';
+            break;
+        case '2':
+            document.title='高佣超级券专场';
+            break;
+        case '3':
+            document.title='值得买专场';
+            break;
+    }
+</script>
 <body>
 <div id="vueCon">
+    <title></title>
 	<img class="banner" :src="content.data.bannerImage">
 	<div class="recommend">
 		<h2>精品推荐</h2>
