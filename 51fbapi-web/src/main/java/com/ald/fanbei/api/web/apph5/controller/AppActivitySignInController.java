@@ -178,8 +178,8 @@ public class AppActivitySignInController extends BaseController {
 						
 						
 						// 返回活动签到的日期
-						String startDate = resourceDo.getValue1();
-						String  strStartDate = sFormat.format(startDate) ;
+						String startDate = resourceDo.getValue1();//活动开始的日期
+						String  strStartDate = startDate.substring(0, 10);
 						HashMap<String, Object> mapResult = new HashMap<String, Object>();
 						
 						String currentDate = sFormat.format(new java.util.Date());
