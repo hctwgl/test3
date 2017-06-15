@@ -82,5 +82,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		TaobaoResultBo bo = JSONObject.parseObject(messageContent, TaobaoResultBo.class);
 		return afGoodsDao.cancelPublishGoods(bo.getItem_id());
 	}
+	@Override
+	public AfGoodsDo getGoodsByNumId(String numId) {
+		return afGoodsDao.getGoodsByNumId(numId);
+	}
 
 }

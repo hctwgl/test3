@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.Date;
@@ -86,7 +84,7 @@ public interface AfBorrowCashDao {
 			@Param("endTime") Date endTime);
 
 	/**
-	 * 获取某个用户某个时间后，风控拒绝的借款申请数量
+	 * 获取某个用户某个时间后，风控拒绝的借款申请数量 获取总借款次数
 	 * 
 	 * @param userId
 	 * @param reviewStatus
@@ -97,9 +95,18 @@ public interface AfBorrowCashDao {
 			@Param("startTime") Date startTime);
 
 	/**
+	 * 获取总借款次数
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(@Param("userId") Long userId);
+
+	/**
 	 * 获取不在finish和closed状态的借款
 	 * 
 	 * @param userId
+	 * 
 	 * @return
 	 */
 	List<AfBorrowCashDo> getBorrowCashByStatusNotInFinshAndClosed(@Param("userId") Long userId);

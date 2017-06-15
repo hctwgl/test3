@@ -24,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfRescourceLogService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
@@ -91,7 +92,8 @@ public class AppH5SysController extends BaseController {
 		AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
 		AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
 		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
-
+		AfResourceDo repaymentDaysInfo = afResourceService.getSingleResourceBytype(Constants.RES_REPAYMENT_DATE);
+		
 		model.put("lender", lenderDo.getValue());// 出借人
 		model.put("mobile", afUserDo.getMobile());// 联系电话
 		List<NperDo> list = JSONArray.parseArray(consumeDo.getValue(), NperDo.class);
@@ -119,6 +121,9 @@ public class AppH5SysController extends BaseController {
 			if (nperDo.getNper() == nper) {
 				model.put("overdueRate", nperDo.getRate());
 			}
+		}
+		if (repaymentDaysInfo != null) {
+			model.put("repaymentDate", repaymentDaysInfo.getValue());
 		}
 
 		logger.info(JSON.toJSONString(model));

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+#set($version="20170613")
+#set($src="https://fs.51fanbei.com/h5/app/activity/06")
+<title>查看更多</title>
+<link rel="stylesheet" type="text/css" href="/dist/activity/06/getMore.css?version=$version">
+</head>
+<body>
+<ul id="productList">
+	<!-- <li>
+		<div class="productImg"><img src="item.goodsIcon"></div>
+		<div class="productRight">
+			<p class="productDes">详情</p>		    
+		    <p class="monthPrice"><i class="monthCorner"></i>￥12×13</p>
+		    <p class="buyPrice">￥12.3</p>
+		    <p class="buyNow">马上抢</p>
+		</div>		
+	</li> -->
+</ul>
+<div class="load"><img src="$src/loading_wt.gif"></div>
+<div class="finish">加载完毕</div>  
+<script type="text/javascript" src="/dist/activity/06/getMore.js"></script>
+</body>
+</html>

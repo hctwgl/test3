@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,13 +16,23 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -38,7 +49,14 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 	AfAgentOrderService afAgentOrderService;
 	@Resource
 	AfUserAddressService afUserAddressService;
-	
+	@Resource
+	AfGoodsService afGoodsService;
+	@Resource
+	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	AfSchemeGoodsService afSchemeGoodsService;
+	@Resource
+	AfUserCouponService afUserCouponService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		
@@ -58,8 +76,10 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		String remark = ObjectUtils.toString(requestDataVo.getParams().get("remark"));
 		if (  StringUtils.isBlank(numId) ) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-
 		}
+		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);
+
+		
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		AfOrderDo afOrder = new AfOrderDo();
 	
@@ -71,10 +91,11 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setGoodsName(goodsName);
 		afOrder.setNumId(numId);
 		afOrder.setOpenId(openId);
+		
+		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if(addressDo==null){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-
 		}
 		afAgentOrderDo.setAddress(addressDo.getAddress());
 		afAgentOrderDo.setProvince(addressDo.getProvince());
@@ -85,7 +106,15 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setUserId(userId);
 		afAgentOrderDo.setCapture(capture);
 		afAgentOrderDo.setRemark(remark);
-
+		afAgentOrderDo.setCouponId(couponId);
+		if(couponId>0){
+			AfUserCouponDto couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+			if(couponDo.getGmtEnd().before(new Date())||StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode()) ){
+				logger.error("coupon end less now");
+				throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
+			}
+			afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
+		}
 		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder,nper)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
@@ -94,7 +123,27 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 
 		}
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
-
+	}
+	
+	/**
+	 * 获取免息规则
+	 * @param numId
+	 * @return
+	 */
+	private String getInterestFreeRule(String numId) {
+		AfGoodsDo goodsInfo = afGoodsService.getGoodsByNumId(numId);
+		if (goodsInfo == null) {
+			return StringUtils.EMPTY;
+		}
+		AfSchemeGoodsDo schemeGoodsInfo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsInfo.getRid());
+		if (schemeGoodsInfo == null) {
+			return StringUtils.EMPTY;
+		}
+		AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(schemeGoodsInfo.getInterestFreeId());
+		if (ruleInfo == null) {
+			return StringUtils.EMPTY;
+		}
+		return ruleInfo.getRuleJson();
 	}
 
 }

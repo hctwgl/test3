@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAuthDao">
 	<sql id="queryField">
 		id rid,gmt_modified,user_id,zm_status,gmt_zm,zm_score,ivs_status,gmt_ivs,ivs_score,realname_status,gmt_realname,realname_score,faces_status,similar_degree,mobile_status,gmt_mobile,
-		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type
+		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type,risk_status
 	</sql>
 
 
@@ -92,6 +92,10 @@
 			<if test="locationAddress != null">
     			,location_address=#{locationAddress}
 			</if>
+			<if test="riskStatus != null">
+    			,risk_status=#{riskStatus}
+			</if>
+			
 		WHERE user_id = #{userId}
 	</update>
 	

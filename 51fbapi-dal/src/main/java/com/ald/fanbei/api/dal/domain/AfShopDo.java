@@ -32,6 +32,8 @@ public class AfShopDo extends AbstractSerial {
 	private String status;//状态【O开启,C关闭】
 	private String platformName;//平台名称 BOLUOME
 	private String serviceProvider;//供应商编号如抠电影【kou】
+	private Long interestFreeId;//免息规则ID
+	
 	/**
 	 * @return the rid
 	 */
@@ -247,6 +249,18 @@ public class AfShopDo extends AbstractSerial {
 	 */
 	public void setServiceProvider(String serviceProvider) {
 		this.serviceProvider = serviceProvider;
+	}
+	/**
+	 * @return the interestFreeId
+	 */
+	public Long getInterestFreeId() {
+		return interestFreeId;
+	}
+	/**
+	 * @param interestFreeId the interestFreeId to set
+	 */
+	public void setInterestFreeId(Long interestFreeId) {
+		this.interestFreeId = interestFreeId;
 	}
 
 }

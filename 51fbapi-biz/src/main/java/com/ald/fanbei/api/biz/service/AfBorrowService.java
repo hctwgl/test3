@@ -67,30 +67,6 @@ public interface AfBorrowService {
 			String numId, String name, int nper);
 
 	/**
-	 * 代付分期
-	 * 
-	 * @param userDto
-	 *            --
-	 * @param amount
-	 *            --金额
-	 * @param cardId
-	 *            --银行卡id
-	 * @param name
-	 *            --借款名称
-	 * @param nper
-	 *            --分期数
-	 * @param orderId
-	 *            订单id
-	 * @param orderNo
-	 *            订单编号
-	 * @param totalNper
-	 *            原来订单总分期数 为重新生成账单使用，当第一次生成账单 该值为null
-	 * @return
-	 */
-	public long dealAgentPayConsumeApply(AfUserAccountDo userDto, BigDecimal amount, String name, Integer nper,
-			Long orderId, String orderNo, Integer totalNper);
-
-	/**
 	 * 
 	 * @param userDto
 	 *            需要操作的用户
@@ -101,9 +77,6 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	public long dealAgentPayClose(AfUserAccountDo userDto, BigDecimal amount, Long orderId);
-
-
-	public long dealAgentPayAgencyPayConsumeApply(AfOrderDo orderInfo,String userName);
 
 	
 	/**
@@ -213,6 +186,39 @@ public interface AfBorrowService {
 	 */
 	BigDecimal calculateBorrowAmount(Long borrowId, BigDecimal refundAmount, boolean refundByUser);
 
+	/**
+	 * 生成代付借款以及账单
+	 * 
+	 * @param userId
+	 *            --用户id
+	 * @param userName
+	 *            -用户名          
+	 * @param amount
+	 *            --账单金额
+	 * @param name
+	 *            --借款名称
+	 * @param nper
+	 *            --分期数
+	 * @param orderId
+	 *            订单id
+	 * @param orderNo
+	 *            订单编号
+	 * @param borrowRate
+	 *            订单利率
+	 * @param interestFreeJson
+	 * 			  免息规则
+	 * @return
+	 */
+	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, Integer nper, Long orderId,
+			String orderNo, String borrowRate, String interestFreeJson);
+	
+	/**
+	 * 获取总借款次数
+	 * @param userId
+	 * @return
+	 */
+	int getBorrowNumByUserId(Long userId);
+	
 	/**
 	 * 代付分期
 	 * 

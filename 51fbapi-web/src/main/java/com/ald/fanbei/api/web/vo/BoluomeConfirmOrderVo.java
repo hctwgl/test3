@@ -36,6 +36,8 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private BigDecimal totalAmount;//总额度
 	
 	private String allowConsume;//分期/代付的关键字段，Y：已授权；N：未授权
+	private String faceStatus;
+	private String idNumber;
 
 	/**
 	 * @return the rid
@@ -260,7 +262,21 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	public void setAllowConsume(String allowConsume) {
 		this.allowConsume = allowConsume;
 	}
-	
-	
+
+	public String getFaceStatus() {
+		return faceStatus;
+	}
+
+	public void setFaceStatus(String faceStatus) {
+		this.faceStatus = faceStatus;
+	}
+
+	public String getIdNumber() {
+		return idNumber;
+	}
+
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
+	}
 	
 }

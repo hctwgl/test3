@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    #set($version="2017051101")
+    #set($commonUrl="http://f.51fanbei.com/h5")
+    <title>商品列表模版</title>
+    <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="/dist/css/goods/goodsListModel.css?version=$version">
+</head>
+<body>
+    <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
+    <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
+    <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
+
+    #if($!{goodsList.size()}==0)
+        <div class="nullPrompt">
+            <img src="$commonUrl/common/images/040101wuyouhui.png">
+            <span class="fsc_6">暂无商品</span>
+        </div>
+    #else
+        <div id="navWrap">
+            <ul class="nav">
+                #foreach($item in $!{categoryList})
+                    <li id="goodsListModel_$!{item.type}">
+                        #if(${item.type} == ${typeCurrent})
+                            <span class="current">$!{item.name}</span>
+                        #else
+                            <span>$!{item.name}</span>
+                        #end
+                    </li>
+                #end
+            </ul>
+        </div>
+
+        <div class="swiper-container">
+            <div class="main_wrap swiper-wrapper">
+                #foreach($item in $!{bannerList})
+                    <img class="goodsListModel_banner" src="$!{item.imageIcon}">
+                #end
+                #foreach($item in $!{categoryList})
+                    #if($!{item.type}==$!{typeCurrent})
+                    <div class="swiper-slide" data-type="$!{item.type}">
+                        <ul class="goodsListModel_mainContent clearfix">
+                            #if(${item.type} == ${typeCurrent})
+                                #foreach($item in $!{goodsList})
+                                    <li class="goodsListModel_item">
+                                        <a href='$!{notifyUrl}&params={"goodsId":"$!{item.goodsId}"}'>
+                                            <img src="$!{item.goodsIcon}" class="mainContent_img">
+                                            <div class="goodsListModel_mainContent_wrap">
+                                                <p class="fs_26 fsc_1">$!{item.name}</p>
+                                                <p class="fs_26 fsc_red">
+                                                    <span>￥$priceUtil.bigdecimalToInt($!{item.saleAmount})</span><span class="fs_20">.$priceUtil.getDecimal($!{item.saleAmount})</span>
+                                                </p>
+                                            </div>
+                                            <div class="goodsListModel_mainContent_rebate_wrap">
+                                                <div class="goodsListModel_mainContent_rebate clearfix">
+                                                    <span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>
+                                                    <p class="fl fs_24 fsc_orange">
+                                                        <span>￥$priceUtil.bigdecimalToInt($!{item.rebateAmount})</span><span class="fs_22">.$priceUtil.getDecimal($!{item.rebateAmount})</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                #end
+                            #end
+                        </ul>
+                    </div>
+                    #else
+                    <div class="swiper-slide" data-type="$!{item.type}" style="display: none">
+                        <ul class="goodsListModel_mainContent clearfix"></ul>
+                    </div>
+                    #end
+                #end
+            </div>
+        </div>
+    #end
+    <script type="text/javascript" src="/common/js/jquery-2.2.4.min.js"></script>
+    <!-- <script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script> -->
+    <script type="text/javascript" src="/dist/js/goods/goodsListModel.js?version=$version"></script>
+</body>
+</html>

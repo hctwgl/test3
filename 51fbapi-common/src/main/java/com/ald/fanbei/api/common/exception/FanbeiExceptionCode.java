@@ -72,6 +72,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_PASSWORD_OLD_ERROR("USER_PASSWORD_OLD_ERROR",1137,"user password error fifth","旧密码输入有误"),
 
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
+    //优惠券不可用，不能修改code
     USER_COUPON_ERROR("USER_COUPON_ERROR",1201,"user coupon error ","优惠券不可用"),
     USER_SIGNIN_AGAIN_ERROR("USER_SIGNIN_AGAIN_ERROR",1210,"user coupon error ","今日已签到"),
     USER_COUPON_NOT_EXIST_ERROR("USER_COUPON_NOT_EXIST_ERROR",1211,"user coupon error ","优惠券不存在"),
@@ -92,7 +93,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_CARD_INFO_ATYPISM_ERROR("USER_CARD_INFO_ATYPISM_ERROR",1308,"user card info atypism error","身份证信息与实名信息不符!"),
     USER_CARD_GET_ERROR("USER_CARD_GET_ERROR",1309,"user card auth error","实名信息获取失败,请重试!"),
     USER_CARD_IS_EXIST("USER_CARD_IS_EXIST",1310,"user card is exist","该身份证已被认证。"),
-    
+    ZHIMA_CREDIT_INFO_EXIST_ERROR("ZHIMA_CREDIT_INFO_EXIST_ERROR",1311,"zhima Credit exist error","请先完成芝麻信用授权!"),
+    OPERATOR_INFO_EXIST_ERROR("OPERATOR_INFO_EXIST_ERROR",1312,"operator exist error","请先完成运营商授权!"),
+    EMERGENCY_CONTACT_INFO_EXIST_ERROR("EMERGENCY_CONTACT_INFO_EXIST_ERROR",1313,"emergency contact exist error","请先完成紧急联系人设置!"),
     
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
@@ -163,6 +166,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     RISK_ADDRESSLIST_PRIMARIES_ERROR("RISK_ADDRESSLIST_PRIMARIES_ERROR",1906,"risk address list primaries error","通讯录同步失败"),
     ADD_WHITE_USER_PRIMARIES_ERROR("ADD_WHITE_USER_PRIMARIES_ERROR",1907,"add white user primaries error","添加白名单失败"),
     QUERY_GRANT_AMOUNT_ERROR("Query_GRANT_AMOUNT_ERROR",1908,"query user grantAmount error","正在获取信用额度，请稍候！"),
+    RISK_RAISE_QUOTA_ERROR("RISK_RAISE_QUOTA_ERROR",1909,"risk raise quota error","风控提额失败"),
     
     AUTH_ALL_AUTH_ERROR("AUTH_ALL_AUTH_ERROR",1910,"all auth  error","信息未认证失败"),
     API_CALL_NUM_OVERFLOW("API_CALL_NUM_OVERFLOW",1911,"api call num overflow","您的认证次数已达上限，请明日再试！"),
@@ -199,7 +203,6 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     TONGTUN_FENGKONG_LOGIN_ERROR("TONGTUN_FENGKONG_LOGIN_ERROR",4005,"tongtun login fengkong error","您登录手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
     TONGTUN_FENGKONG_TRADE_ERROR("TONGTUN_FENGKONG_TRADE_ERROR",4006,"tongtun trade fengkong error","您投资手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
     
-
     GAME_CHANCE_CODE_ERROR("GAME_CHANCE_CODE_ERROR",4030,"game chance code error","无效抓娃娃机会"),
     GAME_COUPONS_LIMIT_ERROR("GAME_COUPONS_LIMIT_ERROR",4031,"coupon limit","未中奖"),
     
@@ -207,6 +210,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),
     
+
     //系统升级该code不能随便修改
     SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1、“首页”全新改版，色彩色调全新感官\n 2、年中盛宴，钜惠抢先享\n 3、OPPO R11报名预定更有好礼相送"),
 

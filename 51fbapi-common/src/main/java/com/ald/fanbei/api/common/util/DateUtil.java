@@ -569,7 +569,6 @@ public class DateUtil {
 
         return new Date(cal.getTime().getTime());
     }
-    
     /**
      * 一天的结束时间，【注：只精确到秒】
      * 

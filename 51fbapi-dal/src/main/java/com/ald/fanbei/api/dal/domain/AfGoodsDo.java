@@ -40,6 +40,8 @@ public class AfGoodsDo extends AbstractSerial{
 	private BigDecimal rebateRate;
 	private String shopName;
 	private BigDecimal realAmount;//到手价
+	private String tags;//免息活动标签
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -177,6 +179,18 @@ public class AfGoodsDo extends AbstractSerial{
 	}
 	public void setRealAmount(BigDecimal realAmount) {
 		this.realAmount = realAmount;
+	}
+	/**
+	 * @return the tags
+	 */
+	public String getTags() {
+		return tags;
+	}
+	/**
+	 * @param tags the tags to set
+	 */
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 	
 }
