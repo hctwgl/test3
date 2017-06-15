@@ -238,6 +238,8 @@ public class AppH5SubjectController  extends BaseController{
 			String secSubjectId = subjectH5ItemDo.getItemValue();
 			AfSubjectDo  parentSubjectDo = afSubjectService.getSubjectInfoById(secSubjectId);
 			Long parentId = parentSubjectDo.getParentId();
+			String subjectName  = parentSubjectDo.getName();
+			jsonObj.put("modelName", subjectName); // 主会场名称
 			
 			for(AfModelH5ItemDo subjectDo : subjectList) {
 				Map activityInfoMap = new HashMap();
