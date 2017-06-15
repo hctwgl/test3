@@ -959,7 +959,6 @@ public class RiskUtil extends AbstractThird {
 							logger.info("updateOrder orderInfo = {}", orderInfo);
 							int re = orderDao.updateOrder(orderInfo);
 							// 审批不通过时，让额度还原到以前
-
 							
 							// TODO:额度增加，而非减少
 							BigDecimal usedAmount = orderInfo.getActualAmount().multiply(BigDecimal.valueOf(-1));
@@ -970,6 +969,21 @@ public class RiskUtil extends AbstractThird {
 								afAgentOrderDo.setClosedReason("风控审批失败");
 								afAgentOrderDo.setGmtClosed(new Date());
 								afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+								
+								
+								//添加关闭订单释放优惠券
+								if(afAgentOrderDo.getCouponId()>0){
+						            AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+						
+						            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+						            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
+						            		afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
+						            }
+						            else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+						        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+						        		afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
+						        	}
+								}
 							}
 							jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 							return new Long(String.valueOf(re));

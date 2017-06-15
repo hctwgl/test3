@@ -179,7 +179,7 @@
 		af_resource
 		WHERE
 		is_delete = 0
-		AND type = 'activity_signin'
+		AND type = 'ACTIVITY_SIGNIN'
 		<![CDATA[
 		AND  value_1 <= NOW()
 		AND value_2 >= NOW()	
