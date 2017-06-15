@@ -216,7 +216,6 @@
 				<entry key="/auth/authFaceV1" value-ref="authFaceV1Api" />
 				<entry key="/auth/authRealnameV1" value-ref="authRealnameV1Api" />
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
-				<entry key="/auth/updateIdCardV1" value-ref="updateIdCardV1Api" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />

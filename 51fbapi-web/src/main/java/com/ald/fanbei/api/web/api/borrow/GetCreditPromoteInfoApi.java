@@ -7,9 +7,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -21,6 +23,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -49,7 +52,9 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	private AfResourceService afResourceService;
-
+	@Resource
+	private AfIdNumberService afIdNumberService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -125,6 +130,15 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 			data.put("bankCard", afUserBankcardDo.getCardNumber());
 			data.put("phoneNum", afUserBankcardDo.getMobile());
+		}
+		
+		AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
+		if(idNumberDo == null){
+			data.put("isUploadImage", "N");
+		}else if (StringUtils.isNotBlank(idNumberDo.getIdFrontUrl()) && StringUtils.isNotBlank(idNumberDo.getIdBehindUrl()) ) {
+			data.put("isUploadImage", "Y");
+		}else {
+			data.put("isUploadImage", "N");
 		}
 		
 		return data;
