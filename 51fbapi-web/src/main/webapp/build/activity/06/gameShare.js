@@ -5,7 +5,7 @@ let userName = "";
 if(getInfo().userName){
     userName=getInfo().userName
 }
-let chance=[],isLogin,isShow,recommendCode='';
+let chance=[],isLogin,isShow,recommendCode=getUrl('recommendCode');
 
 //数据初始化
 function dataInit() {
@@ -17,7 +17,6 @@ function dataInit() {
             console.log(data);
             if(data.success){
                 //娃娃中奖信息循环
-                recommendCode=data.data.recommendCode;
                 let con='';
                 for(let i=0;i<data.data.awardList.length;i++){
                     con+=`<li>

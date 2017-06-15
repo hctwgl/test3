@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/gameShare.css">
 </head>
 <body>
-##<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.06rem;height:1.53rem" src="$commonUrl/R11logo1.png"></a>
+<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.06rem;height:1.53rem" src="$commonUrl/R11logo1.png"></a>
 <img src="$commonUrl/gameShare1.jpg" style="width: 7.5rem;height:5.04rem">
 <img src="$commonUrl/gs2.jpg" style="width: 7.5rem;height:4.49rem">
 <img class="modelPic" src="$commonUrl/gs22222.jpg">
