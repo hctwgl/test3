@@ -179,6 +179,7 @@ public class AppActivitySignInController extends BaseController {
 						
 						// 返回活动签到的日期
 						String startDate = resourceDo.getValue1();
+						String  strStartDate = sFormat.format(startDate) ;
 						HashMap<String, Object> mapResult = new HashMap<String, Object>();
 						
 						String currentDate = sFormat.format(new java.util.Date());
@@ -191,7 +192,7 @@ public class AppActivitySignInController extends BaseController {
 							mapResult.put("ruleSignin", "");
 						}
 						mapResult.put("currentDate", currentDate);
-						mapResult.put("startDate", startDate);
+						mapResult.put("startDate", strStartDate);
 						mapResult.put("resultList", listResult);
 						mapResult.put("seriesCount", listResult.size());
 						JSONObject jsonResult = new JSONObject(mapResult);
