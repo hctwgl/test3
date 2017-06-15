@@ -5,27 +5,45 @@
 let finished = 0;
 let page = 1; // 默认页数从1开始
 
+// app调用web的方法
+function alaShareData(){
+  // 分享内容
+  let dataObj = {
+    'appLogin': 'N', // 是否需要登录，Y需要，N不需要
+    'type': 'share', // 此页面的类型
+    'shareAppTitle': '年中盛宴，错过这次等一年',  // 分享的title
+    'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
+    'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+    'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/feastRaidersShare',  // 分享后的链接
+    'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
+    'sharePage': 'feastRaidersShare' // 分享的页面
+  };
+
+  let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
+  return dataStr;
+};
+
 // 精品推荐Model
 function addModel(goodsList,notifyUrl) {
-
-  // let notifyUrl = returnData.data.notifyUrl;
 
   let html = '';
   for (let i = 0; i < goodsList.length; i++) {
     let saleAmount = toDecimal2(goodsList[i].saleAmount);  // 售价
     let rebateAmount = toDecimal2(goodsList[i].rebateAmount);  // 返利
     let goodsUrl = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
-      let con=`<div class="price rebate">
-                    <span>￥${saleAmount}</span>
-                    <span><i>返</i>￥${rebateAmount}</span></div>`;
-      if(goodsList[i].goodsType==1){
-          let amount = toDecimal2(goodsList[i].nperMap.amount);  // 每期金额
-          let totalAmount = toDecimal2(goodsList[i].nperMap.totalAmount);  // 抢购价
-          con=`<div class="price stages">
-                   <p style="color:#f98011"><i class="monthCorner"></i>￥${amount}×${goodsList[i].nperMap.nper}</p>
-                   <p>抢购价：￥${totalAmount}</p>
-                 </div>`
-      }
+    let con=`<div class="price rebate">
+                  <span>￥${saleAmount}</span>
+                  <span><i>返</i>￥${rebateAmount}</span>
+              </div>`;
+    if(goodsList[i].goodsType==1){
+        let amount = toDecimal2(goodsList[i].nperMap.amount);  // 每期金额
+        let totalAmount = toDecimal2(goodsList[i].nperMap.totalAmount);  // 抢购价
+        con=`<div class="price stages">
+                 <p style="color:#f98011"><i class="monthCorner"></i>￥${amount}×${goodsList[i].nperMap.nper}</p>
+                 <p>抢购价：￥${totalAmount}</p>
+               </div>`
+    }
+
     html +='<li class="clearfix">'
             +'<a href='+goodsUrl+'>'
               +'<img src='+goodsList[i].goodsIcon+'>'
@@ -89,7 +107,7 @@ window.onload=function(){
 // 倒计时
 $(function(){
   // 结束时间的时间戳
-  let endDate = new Date("June 30,2017 00:00:00");
+  let endDate = new Date("June 30,2017 23:59:59");
   let endStamp = endDate.valueOf();
   // 获取当前时间的时间戳
   let now = new Date();

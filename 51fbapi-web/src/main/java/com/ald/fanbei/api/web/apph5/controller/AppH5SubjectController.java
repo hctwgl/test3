@@ -90,6 +90,7 @@ public class AppH5SubjectController  extends BaseController{
 		JSONObject jsonObj = new JSONObject();
 		try{
 			// 数据埋点
+			request.setAttribute("context", context);
 			doMaidianLog(request,"");
 			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
 			jsonObj.put("notifyUrl", notifyUrl);
@@ -207,6 +208,7 @@ public class AppH5SubjectController  extends BaseController{
 				return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
 			}
 			// 数据埋点
+			request.setAttribute("context", context);
 			doMaidianLog(request,"");
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -234,6 +236,13 @@ public class AppH5SubjectController  extends BaseController{
 			if(subjectList == null || subjectList.size() == 0){
 				return H5CommonResponse.getNewInstance(false, "分会场信息为空").toString(); 
 			}
+			AfModelH5ItemDo subjectH5ItemDo = subjectList.get(0);
+			String secSubjectId = subjectH5ItemDo.getItemValue();
+			AfSubjectDo  parentSubjectDo = afSubjectService.getSubjectInfoById(secSubjectId);
+			Long parentId = parentSubjectDo.getParentId();
+			String subjectName  = parentSubjectDo.getName();
+			jsonObj.put("modelName", subjectName); // 主会场名称
+			
 			for(AfModelH5ItemDo subjectDo : subjectList) {
 				Map activityInfoMap = new HashMap();
 				String subjectId = subjectDo.getItemValue();
@@ -301,7 +310,7 @@ public class AppH5SubjectController  extends BaseController{
 		
 			jsonObj.put("activityList", activityList);
 			// 获取精品推荐商品
-			List<AfGoodsDo>  qualityGoodsDoList = afSubjectGoodsService.listQualitySubjectGoods();
+			List<AfGoodsDo>  qualityGoodsDoList = afSubjectGoodsService.listQualitySubjectGoodsByParentId(parentId);
 			List<Map> qualityGoodsList = new ArrayList<Map>();
 			for(AfGoodsDo qualityGoods : qualityGoodsDoList) {
 				Map qualityGoodsInfo = new HashMap();
@@ -373,6 +382,7 @@ public class AppH5SubjectController  extends BaseController{
 			}
 			AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
 			//  数据埋点
+			request.setAttribute("context", context);
 			doMaidianLog(request,"");
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -453,6 +463,7 @@ public class AppH5SubjectController  extends BaseController{
 		if(goodsId == null || "".equals(goodsId)) {
 			return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
 		}
+		request.setAttribute("context", context);
 		doMaidianLog(request, "");
 		return H5CommonResponse.getNewInstance(true, "成功").toString();
 	}
