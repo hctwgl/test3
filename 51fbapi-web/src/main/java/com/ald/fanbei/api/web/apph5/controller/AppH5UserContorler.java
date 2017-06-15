@@ -155,6 +155,7 @@ public class AppH5UserContorler extends BaseController {
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
+			
 
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
 			if (eUserDo != null) {
@@ -198,17 +199,16 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setMobile(mobile);
 			userDo.setNick("");
 			userDo.setPassword(password);
-
+	        userDo.setRecommendId(0l);
+			if (!StringUtils.isBlank(recommendCode)) {
+				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
+				userDo.setRecommendId(userRecommendDo.getRid());
+			}
 			afUserService.addUser(userDo);
 
 			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 			String inviteCode = Long.toString(invteLong, 36);
 			userDo.setRecommendCode(inviteCode);
-			if (!StringUtils.isBlank(recommendCode)) {
-				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
-				userDo.setRecommendId(userRecommendDo.getRid());
-				;
-			}
 			afUserService.updateUser(userDo);
 
 			// 获取邀请分享地址

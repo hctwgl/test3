@@ -151,4 +151,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	public int updateUserCouponSatusExpireById(Long rid) {
 		return afUserCouponDao.updateUserCouponSatusExpireById(rid);
 	}
+
+
+	@Override
+	public int getUserAcgencyCountByAmount(Long userId, BigDecimal amount, Long goodsId) {
+		return afUserCouponDao.getUserAcgencyCountByAmount(userId, amount, goodsId);
+	}
 }

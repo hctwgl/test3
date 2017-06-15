@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthTdService;
 import com.ald.fanbei.api.biz.service.AfAuthYdService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -113,7 +114,7 @@ public class AuthFaceApi implements ApiHandle {
 		}
 
 		// 第一次实名认证
-/*		if (StringUtil.isBlank(oldAccount.getIdNumber()) && StringUtil.isBlank(oldAccount.getRealName())) {
+		if (StringUtil.isBlank(oldAccount.getIdNumber()) && StringUtil.isBlank(oldAccount.getRealName())) {
 			// 同步实名信息到融都
 			try {
 				RiskRespBo riskResp = riskUtil.register(oldAccount.getUserId() + "", realName, oldAccount.getMobile(), idNumber, oldAccount.getEmail(),
@@ -130,7 +131,7 @@ public class AuthFaceApi implements ApiHandle {
 				}
 			}
 
-		}*/
+		}
 
 		// TODO 更新user_account中身份证号和真实姓名
 		AfUserAccountDo afUserAccountDo = new AfUserAccountDo();

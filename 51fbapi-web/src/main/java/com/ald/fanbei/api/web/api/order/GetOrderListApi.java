@@ -44,7 +44,7 @@ public class GetOrderListApi implements ApiHandle{
         List<AfOrderDo> orderList = afOrderService.getOrderListByStatus(pageNo, orderStatus, userId);
         List<AfOrderListVo> orderVoList = new ArrayList<AfOrderListVo>();
         for (AfOrderDo afOrderDo : orderList) {
-        	orderVoList.add(getOrderListVo(afOrderDo));
+        	orderVoList.add(getOrderListVo(afOrderDo, context));
 		}
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("orderList", orderVoList);
@@ -53,7 +53,7 @@ public class GetOrderListApi implements ApiHandle{
 		return resp;
 	}
 
-	private AfOrderListVo getOrderListVo(AfOrderDo order){
+	private AfOrderListVo getOrderListVo(AfOrderDo order ,FanbeiContext context){
 		AfOrderListVo vo = new AfOrderListVo();
 		vo.setGmtCreate(order.getGmtCreate());
 		vo.setGoodsIcon(order.getGoodsIcon());
@@ -61,8 +61,10 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setOrderId(order.getRid());
 		vo.setOrderNo(order.getOrderNo());
 		String status =  order.getStatus();
-		if (status.equals(OrderStatus.DEALING.getCode())) {
-			status =OrderStatus.PAID.getCode();
+		if (context.getAppVersion() < 364){
+			if (status.equals(OrderStatus.DEALING.getCode())) {
+				status =OrderStatus.PAID.getCode();
+			}
 		}
 		vo.setOrderStatus(status);
 		vo.setRebateAmount(order.getRebateAmount());

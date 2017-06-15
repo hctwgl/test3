@@ -229,17 +229,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						} catch (Exception e) {
 							logger.error("加入白名单失败", e);
 						}
-						/*int borrowCount = afBorrowCashService.getBorrowNumByUserId(afBorrowCashDo.getUserId());
-						
-						String cardNo = afBorrowCashDo.getCardNumber();
-						String riskOrderNo = riskUtil.getOrderNo("raiseQuota", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-						
-						BigDecimal income = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(), afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount());
-						try {
-							riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), "60", riskOrderNo, afBorrowCashDo.getAmount(),income,afBorrowCashDo.getOverdueDay(), borrowCount);
-						} catch (Exception e) {
-							logger.error("风控提额失败", e);
-						}*/
 						increaseBorrowCashAccount(afBorrowCashDo,afBorrowCashDo.getUserId());
 
 					}else{
@@ -319,6 +308,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	
 	private void increaseBorrowCashAccount(AfBorrowCashDo afBorrowCashDo,Long userId){
 		//提升借款额度
+		
 		BigDecimal borrowAmount = afBorrowCashDo.getAmount();
 		AfUserAccountDo accountBorrowDo= afUserAccountDao.getUserAccountInfoByUserId(userId);
 		BigDecimal accountBorrowAoumt = accountBorrowDo.getBorrowCashAmount();
@@ -335,7 +325,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			afUserAccountDao.updateOriginalUserAccount(accountChange);
 		}
 	}
-	
 	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type, BigDecimal amount, Long userId, Long repaymentId) {
 		// 增加account变更日志
 		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();

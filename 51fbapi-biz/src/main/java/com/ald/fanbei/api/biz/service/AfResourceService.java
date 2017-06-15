@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
 
@@ -108,4 +109,6 @@ public interface AfResourceService {
     */
    List<AfResourceDo> getHomeIndexListByOrderby(String type);
 	
+   
+   JSONObject borrowRateWithResourceOld(Integer realTotalNper);
 }

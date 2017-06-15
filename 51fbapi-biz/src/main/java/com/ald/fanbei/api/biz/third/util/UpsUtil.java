@@ -619,7 +619,6 @@ public class UpsUtil extends AbstractThird {
     	String buildStr = WxpayCore.buildXMLBody(param);
     	String result = WxpayCore.refundPost(WxpayConfig.WX_REFUND_API, buildStr,mchId,certPath);
     	logger.info("wxRefund result = {}", result);
-    	System.out.println(result);
     	Properties respPro = WxXMLParser.parseXML(result);
     	return respPro.getProperty("result_code");
 	}

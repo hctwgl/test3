@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.ZhimaAuthResultBo;
 import com.ald.fanbei.api.biz.service.AfAuthZmService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
@@ -77,13 +78,12 @@ public class AuthCreditApi implements ApiHandle {
 		AfUserAccountDto userAccount = afUserAccountService.getUserAndAccountByUserId(context.getUserId());
 		String idNumber = userAccount.getIdNumber();
 		String realName = userAccount.getRealName();
-		/* fmai_20170608去掉风控单独调用
 		//同步openId到融都
 		RiskRespBo riskResp = riskUtil.modify(userAccount.getUserId()+"", realName, userAccount.getMobile(),idNumber, userAccount.getEmail(),
 				userAccount.getAlipayAccount(), userAccount.getAddress(), openId);
 		if(!riskResp.isSuccess()){
 			throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
-		}*/
+		}
 		ZhimaCreditScoreGetResponse scoreGetResp = ZhimaUtil.scoreGet(openId);
 		ZhimaCreditIvsDetailGetResponse ivsDetailResp =  ZhimaUtil.ivsDetailGet(idNumber, realName, null, null, null);
 		ZhimaCreditWatchlistiiGetResponse watchListResp = ZhimaUtil.watchlistiiGet(openId);
@@ -149,7 +149,7 @@ public class AuthCreditApi implements ApiHandle {
 			}
 		}
 		AfUserAccountDo account = new AfUserAccountDo();
-//		account.setAuAmount(creditAmount);
+		account.setAuAmount(creditAmount);
 		account.setCreditScore(sorce);
 		account.setUserId(context.getUserId());
 		account.setOpenId(openId);

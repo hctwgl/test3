@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package com.ald.fanbei.api.web.api.auth;
 
 import javax.annotation.Resource;
@@ -8,16 +11,12 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -37,8 +36,6 @@ public class SaveIdNumberApi implements ApiHandle {
 	@Resource
 	AfUserService afUserService;
 	@Resource
-	AfUserAuthService afUserAuthService;
-	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
 	RiskUtil riskUtil;
@@ -56,16 +53,19 @@ public class SaveIdNumberApi implements ApiHandle {
 
 			AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 
-			AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 			try {
-				if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())||StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
-					RiskRespBo riskResp = riskUtil.registerStrongRisk(idNumberDo.getUserId() + "", "USER", afUserDo, null, "", "", accountDo, "", "", "");
-					if (!riskResp.isSuccess()) {
-						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
-					}
-				}
+				RiskRespBo riskResp = riskUtil.register(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
+						accountDo.getAlipayAccount(), accountDo.getAddress());
+				if(!riskResp.isSuccess()){
+          			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+          		}
 			} catch (Exception e) {
-				logger.error("更新风控用户信息失败：" + idNumberDo.getUserId());
+				RiskRespBo riskResp = riskUtil.modify(idNumberDo.getUserId() + "", idNumberDo.getName(), accountDo.getMobile(), idNumberDo.getCitizenId(), accountDo.getEmail(),
+						accountDo.getAlipayAccount(), accountDo.getAddress(), accountDo.getOpenId());
+				if (!riskResp.isSuccess()) {
+					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+				}
+				logger.error("更新风控用户失败：" + idNumberDo.getUserId());
 			}
 
 			afUserDo.setRealName(idNumberDo.getName());

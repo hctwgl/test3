@@ -201,6 +201,7 @@
 		AND `status` = 'P'
 
 	</select>
+	
 
 	<select id="getRepaymentBorrowCashByrid" parameterType="java.lang.Long"
 		resultType="AfRepaymentBorrowCashDo">

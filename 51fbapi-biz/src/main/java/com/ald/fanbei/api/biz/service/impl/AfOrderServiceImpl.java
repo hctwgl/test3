@@ -707,7 +707,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderDao.updateOrder(orderInfo);
 
 						try {
-							RiskVerifyRespBo verybo = riskUtil.verify(ObjectUtils.toString(userId, ""), "40", card.getCardNumber(), appName, ipAddress, 
+							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), "40", card.getCardNumber(), appName, ipAddress, 
 									StringUtil.EMPTY, StringUtil.EMPTY, riskOrderNo);
 
 							if (verybo.isSuccess()) {
@@ -761,6 +761,118 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 	}
 
+	@Override
+	public Map<String, Object> payBrandOrderOld(final Long payId, final Long orderId, final Long userId,
+			final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount,
+			final Integer nper, final String appName, final String ipAddress) {
+		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+			@Override
+			public Map<String, Object> doInTransaction(TransactionStatus status) {
+				try {
+					Date currentDate = new Date();
+					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
+					Map<String, Object> resultMap = new HashMap<String, Object>();
+					AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);// new
+																						// AfOrderDo();
+					// 查卡号，用于调用风控接口
+					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+
+					orderInfo.setRid(orderId);
+					orderInfo.setPayTradeNo(tradeNo);
+					orderInfo.setGmtPay(currentDate);
+					orderInfo.setActualAmount(saleAmount);
+					orderInfo.setBankId(payId);
+					if (payId < 0) {
+						orderInfo.setPayType(PayType.WECHAT.getCode());
+						logger.info("payBrandOrder orderInfo = {}", orderInfo);
+						orderDao.updateOrder(orderInfo);
+						// 微信支付
+						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,
+								PayOrderSource.BRAND_ORDER.getCode());
+					} else if (payId == 0) {
+						// 代付
+						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+						orderInfo.setStatus(OrderStatus.DEALING.getCode());
+						orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+
+						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+
+						logger.info("updateOrder orderInfo = {}", orderInfo);
+						orderInfo.setNper(nper);
+						orderDao.updateOrder(orderInfo);
+						BigDecimal useableAmount = userAccountInfo.getAuAmount()
+								.subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+
+						if (useableAmount.compareTo(saleAmount) < 0) {
+							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+						}
+						// 修改用户账户信息
+						AfUserAccountDo account = new AfUserAccountDo();
+						account.setUsedAmount(orderInfo.getActualAmount());
+						account.setUserId(userAccountInfo.getUserId());
+						afUserAccountDao.updateUserAccount(account);
+
+						// 最后调用风控控制
+						logger.info("verify userId" + userId);
+
+						String cardNo = card.getCardNumber();
+						String riskOrderNo = riskUtil.getOrderNo("vefy",
+								cardNo.substring(cardNo.length() - 4, cardNo.length()));
+						orderInfo.setRiskOrderNo(riskOrderNo);
+						orderDao.updateOrder(orderInfo);
+
+						try {
+							riskUtil.verify(ObjectUtils.toString(userId, ""), "40",
+									card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, StringUtil.EMPTY,
+									"/third/risk/payOrder",riskOrderNo);
+						} catch (Exception e) {
+							//throw new FanbeiException();
+							e.printStackTrace();
+						}
+
+					} else {
+						orderInfo.setPayType(PayType.BANK.getCode());
+						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+						orderInfo.setStatus(OrderStatus.DEALING.getCode());
+
+						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+
+						AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+
+						resultMap = new HashMap<String, Object>();
+
+						if (null == cardInfo) {
+							throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+						}
+						logger.info("payBrandOrder orderInfo = {}", orderInfo);
+						orderDao.updateOrder(orderInfo);
+						// 银行卡支付 代收
+						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
+								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
+								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
+								"品牌订单支付", "02", OrderType.BOLUOME.getCode());
+						if (!respBo.isSuccess()) {
+							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+						}
+						Map<String, Object> newMap = new HashMap<String, Object>();
+						newMap.put("outTradeNo", respBo.getOrderNo());
+						newMap.put("tradeNo", respBo.getTradeNo());
+						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
+						resultMap.put("resp", respBo);
+					}
+					return resultMap;
+				} catch (FanbeiException exception) {
+					logger.error("payBrandOrder faied e = {}", exception);
+					throw new FanbeiException("bank card pay error", exception.getErrorCode());
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("payBrandOrder faied e = {}", e);
+					throw e;
+				}
+			}
+		});
+	}
+	
 	@Override
 	public int dealBrandOrderSucc(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);

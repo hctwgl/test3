@@ -946,15 +946,104 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					return borrow.getRid();
 
 				} catch (Exception e) {
-					logger.info("dealAgentPayBorrowAndBill error:" + e);
+					logger.info("dealAgentPayConsumeRisk error:" + e);
 					status.setRollbackOnly();
-					throw e;
+					return 0l;
+				}
+			}
+		});
+		
+	}
+	@Override
+	public int getBorrowNumByUserId(Long userId) {
+		return afBorrowDao.getBorrowNumByUserId(userId);
+	}
+
+	@Override
+	public Long dealAgentPayConsumeRisk(final AfUserAccountDo userDto, final BigDecimal amount,final String name,
+			final int nper, final Long orderId,final String orderNo, final Integer totalNper) {
+		return transactionTemplate.execute(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				try {
+					Integer realTotalNper = totalNper == null ? nper : totalNper;
+
+					JSONObject borrowRate = borrowRateWithOrder(orderId,realTotalNper);
+					
+					
+					BigDecimal money = amount;//借款金额
+					
+					
+					BigDecimal totalPoundage = BigDecimalUtil.getTotalPoundage(money, nper,
+							borrowRate.getBigDecimal("poundageRate") ,borrowRate.getBigDecimal("rangeBegin") ,borrowRate.getBigDecimal("rangeEnd") );// 总手续费
+					BigDecimal perAmount = BigDecimalUtil.getConsumeAmount(money, nper,
+							new BigDecimal(borrowRate.getString(Constants.DEFAULT_RATE)).divide(
+									new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
+							totalPoundage);// 每期账单金额
+					AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userDto.getUserId(),
+							amount, nper, perAmount, BorrowStatus.TRANSED.getCode(), orderId, orderNo);
+					// 新增借款信息
+					afBorrowDao.addBorrow(borrow);
+					// 直接打款
+					afBorrowLogDao.addBorrowLog(buildBorrowLog(userDto.getUserName(), userDto.getUserId(),
+							borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
+					// 新增借款日志
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,
+							amount, userDto.getUserId(), borrow.getRid()));
+
+					// 总账单金额
+					BigDecimal totalBillAMount = BigDecimalUtil.getConsumeTotalAmount(money, borrow.getNper(),
+							new BigDecimal(borrowRate.getString(Constants.DEFAULT_RATE)).divide(
+									new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
+							totalPoundage);
+					List<AfBorrowBillDo> billList = buildBorrowBill(BorrowType.CONSUME, borrow, perAmount,
+							totalBillAMount, BigDecimal.ZERO,
+							new BigDecimal(borrowRate.getString("rate")).divide(
+									new BigDecimal(Constants.MONTH_OF_YEAR), 8, BigDecimal.ROUND_HALF_UP),
+							totalPoundage, BorrowBillStatus.NO);
+					// 新增借款账单
+					afBorrowDao.addBorrowBill(billList);
+
+					return borrow.getRid();
+
+				} catch (Exception e) {
+					logger.info("dealAgentPayConsumeRisk error:" + e);
+					status.setRollbackOnly();
+					return 0l;
 				}
 			}
 		});
 		
 	}
 
+	/**
+	 * 
+	 * @param userId
+	 * @param money
+	 *            -- 借款金额
+	 * @return
+	 */
+	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal money, int nper,
+			BigDecimal perAmount, String status, Long orderId, String orderNo) {
+		Date currDate = new Date();
+		AfBorrowDo borrow = new AfBorrowDo();
+		borrow.setGmtCreate(currDate);
+		borrow.setAmount(money);
+		borrow.setType(type.getCode());
+		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
+		borrow.setStatus(status);// 默认转账成功
+		borrow.setName(name);
+		borrow.setUserId(userId);
+		borrow.setNper(nper);
+		borrow.setNperAmount(perAmount);
+		borrow.setCardNumber(StringUtils.EMPTY);
+		borrow.setCardName("代付");
+		borrow.setRemark(name);
+		borrow.setOrderId(orderId);
+		borrow.setOrderNo(orderNo);
+		return borrow;
+	}
+	
 	public JSONObject borrowRateWithOrder(Long orderId,Integer nper){
 		AfOrderDo order = afOrderService.getOrderById(orderId);
 
@@ -967,18 +1056,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			borrowRate = JSON.parseObject(agentOrderDo.getBorrowRate()) ;
 		}
 		if(borrowRate==null){
-//			borrowRate = afResourceService.borrowRateWithResource(nper);
+			borrowRate = afResourceService.borrowRateWithResourceOld(nper);
 		}
 		return borrowRate;
 
 	}
-
-	
-
-	@Override
-	public int getBorrowNumByUserId(Long userId) {
-		return afBorrowDao.getBorrowNumByUserId(userId);
-	}
-
-
 }

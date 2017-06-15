@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -71,14 +72,14 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
 		AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
 		
-		AfAgentOrederDetailInforVo agentOrderDetailVo = getAgentOrderDetailInforVo(afOrderDo, afAgentOrderDo);
+		AfAgentOrederDetailInforVo agentOrderDetailVo = getAgentOrderDetailInforVo(afOrderDo, afAgentOrderDo, context);
 		
 		resp.setResponseData(agentOrderDetailVo);
 		return resp;
 		
 	}
 	
-	private AfAgentOrederDetailInforVo getAgentOrderDetailInforVo (AfOrderDo afOrderDo, AfAgentOrderDo afAgentOrderDo){
+	private AfAgentOrederDetailInforVo getAgentOrderDetailInforVo (AfOrderDo afOrderDo, AfAgentOrderDo afAgentOrderDo, FanbeiContext context){
 		
 		AfAgentOrederDetailInforVo agentOrderDetailVo = new AfAgentOrederDetailInforVo();
 		
@@ -123,6 +124,12 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 * WAITING_REFUND等待退款 DEAL_REFUNDING:退款中】
 		 */
 		String status = afOrderDo.getStatus();
+		if (context.getAppVersion() < 364){
+			if (status.equals(OrderStatus.DEALING.getCode())) {
+				status =OrderStatus.PAID.getCode();
+			}
+		}
+		
 		// 返利时间
 		String gmtRebated = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtRebated());
 		String gmtFinished = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtFinished());
@@ -169,7 +176,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 				 
 				 // 计算实际支付金额
 				 BigDecimal actualPayAmount =  actualAmount.subtract(couponDo.getAmount()) ;
-				 agentOrderDetailVo.setActualPayAmount(actualPayAmount);
+				 agentOrderDetailVo.setActualPayAmount(actualPayAmount.compareTo(BigDecimal.ZERO) == 1 ? actualPayAmount:BigDecimal.ZERO);
 			 }
 		}
 		

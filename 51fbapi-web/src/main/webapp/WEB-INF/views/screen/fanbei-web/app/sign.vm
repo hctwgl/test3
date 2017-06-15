@@ -19,34 +19,6 @@
             <img :src="'$commonUrl/before'+i+'.png'">
         </div>
     </div>
-    <p class="ruleWord">1. 6月12日-6月17日活动期间，每位用户每天有一次签到机会；<br/>2. 每日登陆后在“每日签到”页面进行签到，6月12日-6月17日连续签到达5天，可获得一张20元代金券，活动期间每人仅限领取一张；<br/>3. 签到领取的代金券可在“我的-抵用券”里查看；<br/>4.  代金券不可提现，用户可用于在51返呗付款时使用；<br/>5. 禁止一切作弊手段的操作行为，包括不限于利用平台漏洞、技术手段完成签到的行为，一经发现将收回奖励，必要时将采取司法手段进行维权；<br/>6. 在法律范围内阿拉丁电子商务公司拥有最终解释权；<br/>7. 如有任何问题，可致电客服电话：0571-88193918.</p>
-##	<div class="wrap">
-##		<div class="Monday">
-##			<img @click="signIn(1)" src="$commonUrl/now1.png">
-##			<img  src="$commonUrl/ok1.png">
-##		</div>
-##		<div class="Tuesday">
-##			<img src="$commonUrl/before2.png">
-##            <img v-if="current>=2" @click="signIn(2)" src="$commonUrl/now2.png">
-##            <img src="$commonUrl/ok2.png">
-##		</div>
-##		<div class="Wednesday">
-##            <img src="$commonUrl/before3.png">
-##            <img v-if="current>=3" @click="signIn(3)" src="$commonUrl/now3.png">
-##            <img src="$commonUrl/ok3.png">
-##		</div>
-##		<div class="Thursday">
-##            <img src="$commonUrl/before4.png">
-##            <img v-if="current>=4" @click="signIn(4)" src="$commonUrl/now4.png">
-##            <img src="$commonUrl/ok4.png">
-##		</div>
-##		<div class="Friday">
-##            <img src="$commonUrl/before5.png">
-##            <img v-if="current>=5" @click="signIn(5)" src="$commonUrl/now5.png">
-##            <img src="$commonUrl/ok5.png">
-##		</div>
-##	</div>
-
 </div>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
 <script type="text/javascript" src="/dist/activity/06/sign.js"></script>

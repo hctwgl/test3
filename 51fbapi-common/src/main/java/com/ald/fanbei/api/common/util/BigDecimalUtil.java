@@ -209,7 +209,7 @@ public class BigDecimalUtil {
     	//总手续费
     	BigDecimal totalPoundage = amount.multiply(poundageRate).setScale(2, RoundingMode.CEILING);
     	//每一期手续费
-    	BigDecimal perAmount = totalPoundage.divide(new BigDecimal(nper)).setScale(2, RoundingMode.CEILING);
+    	BigDecimal perAmount = totalPoundage.divide(new BigDecimal(nper),2, RoundingMode.CEILING);
         //总手续费-免息的费用
     	BigDecimal freeAmount = BigDecimalUtil.multiply(perAmount, new BigDecimal(freeNper));
        
@@ -222,8 +222,7 @@ public class BigDecimalUtil {
          }
     	 //最后计算的期数
     	 Integer finalNper =  nper - freeNper;
-    	 return finalNper.equals(0) ? BigDecimal.ZERO : 
-    		 finalAmount.divide(new BigDecimal(finalNper)).setScale(2, RoundingMode.CEILING);
+    	 return finalNper.equals(0) ? BigDecimal.ZERO : finalAmount.divide(new BigDecimal(finalNper), 2, RoundingMode.CEILING);
     }
     
     /**
@@ -249,7 +248,25 @@ public class BigDecimalUtil {
         }
         return v1;
     }
-
+    /* Old
+	 * @param num --分期期数
+	 * @param poundageRate --手续费率
+	 * @param min --手续费下限
+	 * @param max --手续费上限
+	 * @return
+	 */
+	public static BigDecimal getTotalPoundage(BigDecimal amount,int num,BigDecimal poundageRate,BigDecimal min,BigDecimal max){
+		amount = amount==null?new BigDecimal(0):amount;
+		poundageRate = poundageRate ==null?new BigDecimal(0):poundageRate;
+		BigDecimal v1 = amount.multiply(poundageRate);
+		if(min.compareTo(v1)>0){
+			v1 = min;
+		}else if(v1.compareTo(max)>0){
+			v1 = max;
+		}
+		return v1;
+	}
+	 
     public static int getCreditScore(BigDecimal zmScore, BigDecimal fqzScore, BigDecimal tdScore,
                                      BigDecimal zmRate, BigDecimal fqzRate, BigDecimal tzRate) {
         BigDecimal v1 = zmScore.divide(new BigDecimal(950), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(10)).multiply(zmRate);
