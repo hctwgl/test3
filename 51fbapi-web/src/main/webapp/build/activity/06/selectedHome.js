@@ -126,6 +126,7 @@ new Vue({
                 self.content = eval('(' + res.data + ')');
                 console.log(self.content);
                 self.$nextTick(function () {                              //dom渲染完成后执行
+                    document.title=self.content.data.modelName;
                     if(sort==2){
                         $('#vueCon').css('background-color','#4515aa');
                         $('#listAlert').css('background-color','#4515aa');

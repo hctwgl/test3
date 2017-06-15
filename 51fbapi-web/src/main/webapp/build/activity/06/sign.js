@@ -11,11 +11,9 @@ let vm=new Vue({
     msgUrl:'/fanbei-web/activitySignIn',
     data:{
         className:['Monday','Tuesday','Wednesday','Thursday','Friday'],
-        content:{
-            currentTime:'2017-06-12',
-            beginTime:'2017-06-09',
-            list:['2017-06-10','2017-06-11']
-        }
+        content:{},
+        fixContent:{},
+        current:4
     },
     created:function () {
         this.logData();
@@ -35,26 +33,56 @@ let vm=new Vue({
             this.logData();
         },
         selected(data){
-            let list=this.content.list;
+            let list=this.fixContent.timeList;
             for(let i in list){
-                if (list[i].time == data){return true}
+                if (list[i]== data){return true}
             }
             return false;
         },
         logData (){
             //获取页面初始化信息
             let self=this;
-            self.$http.get(self.dataUrl).then(function (res) {
-                self.data.content = eval('(' + res.data + ')');
-                var beginTime=self.data.content.beginTime;
-                beginTime=beginTime.replace(/\-/g, "");
-                beginTime=parseInt(beginTime);
-                console.log(beginTime);
+            self.$http.post('/fanbei-web/initActivitySign').then(function (res) {
+                self.content =  eval('(' + res.data + ')');
+                var contentData=self.content.data;
+
+                let currentTime=contentData.currentDate;
+                    currentTime=currentTime.replace(/\-/g, ""); 
+                    currentTime=parseInt(currentTime);
+                let beginTime=contentData.startDate;
+                    beginTime=beginTime.replace(/\-/g, ""); 
+                    beginTime=parseInt(beginTime);
+                let timeList=contentData.resultList;
+                for(let i=0;i<timeList.length;i++){
+                    timeList[i]=timeList[i].replace(/\-/g, ""); 
+                    timeList[i]=parseInt(timeList[i]);  
+                }  
+                  
+                self.fixContent=contentData;
+                self.current=new Date(contentData.currentDate).getDay();
+                console.log(self.current)
 
             },function (response) {
                 console.log(response)
             })
-        }
+        },
+        /*fixData(contentData){
+            let currentTime=contentData.currentDate;
+                currentTime=currentTime.replace(/\-/g, ""); 
+                currentTime=parseInt(currentTime);
+            let beginTime=contentData.startDate;
+                beginTime=beginTime.replace(/\-/g, ""); 
+                beginTime=parseInt(beginTime);
+            let timeList=contentData.resultList;
+            for(let i=0;i<timeList.length;i++){
+                  timeList[i]=timeList[i].replace(/\-/g, ""); 
+                  timeList[i]=parseInt(timeList[i]);  
+            }    
+                self.fixContent=contentData;
+                console.log(contentData)
+                
+                return self.fixContent
+        }*/
         
     }
 });
