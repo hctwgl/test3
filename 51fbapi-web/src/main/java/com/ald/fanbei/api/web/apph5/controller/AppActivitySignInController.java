@@ -14,6 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,6 +52,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.tools.hat.internal.server.FinalizerObjectsQuery;
 
 /**
  * @类描述：
@@ -71,8 +76,6 @@ public class AppActivitySignInController extends BaseController {
 	@Resource
 	AfCouponService afCouponService;
 	@Resource
-	AfUserCouponDao afUserCouponDao;
-	@Resource
 	AfSigninService afSigninService;
 	@Resource
 	JpushService jpushService;
@@ -80,6 +83,8 @@ public class AppActivitySignInController extends BaseController {
 	CouponSceneRuleEnginerUtil activeRuleEngineUtil;
 	@Resource
 	AfCouponSceneService afCouponSceneService;
+	@Resource
+	TransactionTemplate transactionTemplate;
 
 	/**
 	 * 
@@ -217,177 +222,187 @@ public class AppActivitySignInController extends BaseController {
 
 	@RequestMapping(value = "/activitySignIn", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String signIn(HttpServletRequest request, HttpServletResponse response) {
+	public String signIn(final HttpServletRequest request, final HttpServletResponse response) {
+		return transactionTemplate.execute(new TransactionCallback<String>() {
 
-		Calendar calStart = Calendar.getInstance();
-		String resultStr = " ";
-		FanbeiWebContext context = new FanbeiWebContext();
-		try {
-			Long userId = -1l;
-			AfUserDo afUser = null;
-			// 和登录有关的
-			context = doWebCheck(request, true);
-			if (context.isLogin()) {
-				afUser = afUserService.getUserByUserName(context.getUserName());
-				if (afUser != null) {
-					userId = afUser.getRid();
-					List<AfResourceDo> listResource = afResourceService.selectActivityConfig();
-					// 先判断现在系统时间是否属于新的活动
-					if (listResource.equals(null) || listResource.get(0).equals(null)) {
-						// TODO:若是不满足条件，走以前的流程
-						AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
-						AfCouponSceneDo afCouponSceneDo = afCouponSceneService
-								.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
-						if (afCouponSceneDo == null) {
-							return H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED)
-									.toString();
-						}
-
-						Integer cycle = 1;
-						List<CouponSceneRuleBo> ruleBoList = afCouponSceneService
-								.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");
-
-						if (ruleBoList.size() == 0) {
-							return H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED)
-									.toString();
-
-						}
-						CouponSceneRuleBo ruleBo = ruleBoList.get(0);
-						cycle = NumberUtil.objToIntDefault(ruleBo.getCondition(), 1);
-						Integer seriesCount = 1;
-						Integer totalCount = 0;
-						if (afSigninDo == null) {
-							afSigninDo = new AfSigninDo();
-							totalCount += 1;
-							afSigninDo.setSeriesCount(seriesCount);
-							afSigninDo.setTotalCount(totalCount);
-							afSigninDo.setUserId(userId);
-							if (afSigninService.addSignin(afSigninDo) > 0) {
-								return H5CommonResponse.getNewInstance(true, "签到成功", "", "").toString();
-							}
-
-						} else {
-							Date seriesTime = null;
-							if (afSigninDo.getGmtSeries() == null) {
-								seriesCount = 1;
-							} else {
-								seriesTime = afSigninDo.getGmtSeries();
-								if (DateUtil.isSameDay(new Date(), seriesTime)) {
-									return H5CommonResponse
-											.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED).toString();
+			@Override
+			public String doInTransaction(TransactionStatus status) {
+				Calendar calStart = Calendar.getInstance();
+				String resultStr = " ";
+				FanbeiWebContext context = new FanbeiWebContext();
+				try {
+					Long userId = -1l;
+					AfUserDo afUser = null;
+					// 和登录有关的
+					context = doWebCheck(request, true);
+					if (context.isLogin()) {
+						afUser = afUserService.getUserByUserName(context.getUserName());
+						if (afUser != null) {
+							userId = afUser.getRid();
+							List<AfResourceDo> listResource = afResourceService.selectActivityConfig();
+							// 先判断现在系统时间是否属于新的活动
+							if (listResource.equals(null) || listResource.get(0).equals(null)) {
+								// TODO:若是不满足条件，走以前的流程
+								AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
+								AfCouponSceneDo afCouponSceneDo = afCouponSceneService
+										.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
+								if (afCouponSceneDo == null) {
+									return H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED)
+											.toString();
 								}
-								// 当连续签到天数小于循环周期时
-								if (DateUtil.isSameDay(DateUtil.getCertainDay(-1), seriesTime)
-										&& cycle != afSigninDo.getSeriesCount()) {
-									seriesCount = afSigninDo.getSeriesCount() + 1;
+
+								Integer cycle = 1;
+								List<CouponSceneRuleBo> ruleBoList = afCouponSceneService
+										.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");
+
+								if (ruleBoList.size() == 0) {
+									return H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED)
+											.toString();
+
 								}
+								CouponSceneRuleBo ruleBo = ruleBoList.get(0);
+								cycle = NumberUtil.objToIntDefault(ruleBo.getCondition(), 1);
+								Integer seriesCount = 1;
+								Integer totalCount = 0;
+								if (afSigninDo == null) {
+									afSigninDo = new AfSigninDo();
+									totalCount += 1;
+									afSigninDo.setSeriesCount(seriesCount);
+									afSigninDo.setTotalCount(totalCount);
+									afSigninDo.setUserId(userId);
+									if (afSigninService.addSignin(afSigninDo) > 0) {
+										return H5CommonResponse.getNewInstance(true, "签到成功", "", "").toString();
+									}
+
+								} else {
+									Date seriesTime = null;
+									if (afSigninDo.getGmtSeries() == null) {
+										seriesCount = 1;
+									} else {
+										seriesTime = afSigninDo.getGmtSeries();
+										if (DateUtil.isSameDay(new Date(), seriesTime)) {
+											return H5CommonResponse
+													.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED).toString();
+										}
+										// 当连续签到天数小于循环周期时
+										if (DateUtil.isSameDay(DateUtil.getCertainDay(-1), seriesTime)
+												&& cycle != afSigninDo.getSeriesCount()) {
+											seriesCount = afSigninDo.getSeriesCount() + 1;
+										}
+									}
+
+									totalCount = afSigninDo.getTotalCount() + 1;
+
+									AfSigninDo signinDo = new AfSigninDo();
+									signinDo.setSeriesCount(seriesCount);
+									signinDo.setTotalCount(totalCount);
+									signinDo.setUserId(userId);
+									signinDo.setRid(afSigninDo.getRid());
+
+									if (afSigninService.changeSignin(signinDo) > 0) {
+										if (seriesCount == cycle) {
+											activeRuleEngineUtil.signin(userId);
+											jpushService.getSignCycle(context.getUserName());
+										}
+									}
+								}
+
+								return H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED)
+										.toString();
+
 							}
-
-							totalCount = afSigninDo.getTotalCount() + 1;
-
-							AfSigninDo signinDo = new AfSigninDo();
-							signinDo.setSeriesCount(seriesCount);
-							signinDo.setTotalCount(totalCount);
-							signinDo.setUserId(userId);
-							signinDo.setRid(afSigninDo.getRid());
-
-							if (afSigninService.changeSignin(signinDo) > 0) {
-								if (seriesCount == cycle) {
-									activeRuleEngineUtil.signin(userId);
-									jpushService.getSignCycle(context.getUserName());
+							// :若是满足条件，插入新表
+							AfResourceDo resourceDo = listResource.get(0);
+							Long activityId = resourceDo.getRid();
+							if (!activityId.equals(null)) {
+								List<String> listResult = new ArrayList<>();
+								List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
+								SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+								if (!listDate.isEmpty()) {
+									for(Date date:listDate){
+										String strDate = sFormat.format(date);
+										listResult.add(strDate);
+									}
 								}
+								Integer totalCount = listResult.size() + 1;
+								AfSignInActivityDo signInActivityDo = new AfSignInActivityDo();
+								signInActivityDo.setActivityId(activityId);
+								signInActivityDo.setUserId(userId);
+								signInActivityDo.setTotalCount(totalCount);
+								Integer intResult = afSignInActivityService.signIn(signInActivityDo);
+								
+								resultStr = H5CommonResponse.getNewInstance(true, "签到成功", "", "succeed to sign in !")
+										.toString();
+								
+								
+								// 若满足券的规则，则加对应券到用户表中
+								
+								int betweenDays = Integer.valueOf(resourceDo.getValue3()).intValue();
+								//说明没有达到领券要求
+								if (betweenDays>totalCount.intValue()) {
+									return resultStr;
+								}
+
+								// 从resource表中解析出来券的id
+								String jsonCoupon = resourceDo.getValue4();
+								JSONObject jsonObject = JSONObject.parseObject(jsonCoupon);
+								// TODO:resource中
+								String sign = jsonObject.getString("activitySignin");
+
+								List<JSONObject> listCounpon = JSONObject.parseArray(sign, JSONObject.class);
+								Integer amountCoupon = 0;
+								for (JSONObject jsonCounponId : listCounpon) {
+									String strCounponId = jsonCounponId.getString("couponId");
+									Long counponId = Long.valueOf(strCounponId);
+									AfCouponDo couponDo = afCouponService
+											.getCouponById(NumberUtil.objToLongDefault(counponId, 1l));
+									if (!couponDo.equals(null)) {
+
+										// 不考虑券的个数限制。
+										// id分别插入到user_coupon记录中
+										AfUserCouponDo userCoupon = new AfUserCouponDo();
+										userCoupon.setCouponId(NumberUtil.objToLongDefault(counponId, 1l));
+										userCoupon.setGmtCreate(new Date());
+										userCoupon.setGmtStart(couponDo.getGmtStart());
+										userCoupon.setGmtEnd(couponDo.getGmtEnd());
+										userCoupon.setUserId(userId);
+										userCoupon.setStatus(couponDo.getStatus());
+										userCoupon.setSourceType("SPECIAL");
+										afUserCouponService.addUserCoupon(userCoupon);
+										amountCoupon += 1;
+									}
+								}
+								
+								
+								if (!amountCoupon.equals(null) && amountCoupon > 0) {
+									resultStr = H5CommonResponse.getNewInstance(true, "恭喜得到" + amountCoupon + "张优惠券！", "",
+											"succeed to get a coupon !").toString();
+									return resultStr;
+								}
+
+								if (!intResult.equals(null)) {
+									resultStr = H5CommonResponse.getNewInstance(true, "签到成功", "", "succeed to sign in !")
+											.toString();
+								}
+
 							}
 						}
-
-						return H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED)
-								.toString();
-
 					}
-					// :若是满足条件，插入新表
-					AfResourceDo resourceDo = listResource.get(0);
-					Long activityId = resourceDo.getRid();
-					if (!activityId.equals(null)) {
-						List<String> listResult = new ArrayList<>();
-						List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
-						SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
-						if (!listDate.isEmpty()) {
-							for(Date date:listDate){
-								String strDate = sFormat.format(date);
-								listResult.add(strDate);
-							}
-						}
-						Integer totalCount = listResult.size() + 1;
-						AfSignInActivityDo signInActivityDo = new AfSignInActivityDo();
-						signInActivityDo.setActivityId(activityId);
-						signInActivityDo.setUserId(userId);
-						signInActivityDo.setTotalCount(totalCount);
-						Integer intResult = afSignInActivityService.signIn(signInActivityDo);
-						
-						resultStr = H5CommonResponse.getNewInstance(true, "签到成功", "", "succeed to sign in !")
-								.toString();
-						
-						
-						// 若满足券的规则，则加对应券到用户表中
-						
-						int betweenDays = Integer.valueOf(resourceDo.getValue3()).intValue();
-						//说明没有达到领券要求
-						if (betweenDays>totalCount.intValue()) {
-							return resultStr;
-						}
-
-						// 从resource表中解析出来券的id
-						String jsonCoupon = resourceDo.getValue4();
-						JSONObject jsonObject = JSONObject.parseObject(jsonCoupon);
-						// TODO:resource中
-						String sign = jsonObject.getString("activitySignin");
-
-						List<JSONObject> listCounpon = JSONObject.parseArray(sign, JSONObject.class);
-						Integer amountCoupon = null;
-						for (JSONObject jsonCounponId : listCounpon) {
-							String strCounponId = jsonCounponId.getString("couponId");
-							Long counponId = Long.valueOf(strCounponId);
-							AfCouponDo couponDo = afCouponService
-									.getCouponById(NumberUtil.objToLongDefault(counponId, 1l));
-							if (!couponDo.equals(null)) {
-
-								// 不考虑券的个数限制。
-								// id分别插入到user_coupon记录中
-								AfUserCouponDo userCoupon = new AfUserCouponDo();
-								userCoupon.setCouponId(NumberUtil.objToLongDefault(counponId, 1l));
-								userCoupon.setGmtCreate(new java.util.Date());
-								userCoupon.setGmtStart(couponDo.getGmtStart());
-								userCoupon.setGmtEnd(couponDo.getGmtEnd());
-								userCoupon.setUserId(userId);
-								afUserCouponDao.addUserCoupon(userCoupon);
-								amountCoupon += 1;
-							}
-						}
-						if (!amountCoupon.equals(null) && amountCoupon > 0) {
-							resultStr = H5CommonResponse.getNewInstance(true, "恭喜得到" + amountCoupon + "张优惠券！", "",
-									"succeed to get a coupon !").toString();
-							return resultStr;
-						}
-
-						if (!intResult.equals(null)) {
-							resultStr = H5CommonResponse.getNewInstance(true, "签到成功", "", "succeed to sign in !")
-									.toString();
-						}
-
-					}
+				} catch (FanbeiException e) {
+					status.setRollbackOnly();
+					resultStr = H5CommonResponse.getNewInstance(false, "签到失败", "", e.getErrorCode().getDesc()).toString();
+					logger.error("fb签到化失败" + context, e);
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					resultStr = H5CommonResponse.getNewInstance(false, "签到失败", "", "").toString();
+					logger.error("fb签到失败" + context, e);
+				} finally {
+					Calendar calEnd = Calendar.getInstance();
+					doLog(request, resultStr, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis());
 				}
+				return resultStr;
 			}
-		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "签到失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("fb签到化失败" + context, e);
-		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "签到失败", "", "").toString();
-			logger.error("fb签到失败" + context, e);
-		} finally {
-			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis());
-		}
-		return resultStr;
-
+		});
 	}
 
 	@Override
