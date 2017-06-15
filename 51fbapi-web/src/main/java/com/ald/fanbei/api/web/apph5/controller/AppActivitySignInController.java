@@ -327,15 +327,9 @@ public class AppActivitySignInController extends BaseController {
 								.toString();
 						
 						
-						// TODO:若满足券的规则，则加对应券到用户表中
-						;//实际的签到
-						String startDate = resourceDo.getValue1();
-						String endDate = resourceDo.getValue2();
-						Long start = sFormat.parse(startDate).getTime();
-						Long end = sFormat.parse(endDate).getTime();
+						// 若满足券的规则，则加对应券到用户表中
 						
-						long betweenDays = (long)((end - start) / (1000 * 60 * 60 *24) + 0.5) + 1L; 
-						
+						int betweenDays = Integer.valueOf(resourceDo.getValue3()).intValue();
 						//说明没有达到领券要求
 						if (betweenDays>totalCount.intValue()) {
 							return resultStr;
