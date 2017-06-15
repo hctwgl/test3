@@ -100,7 +100,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 				}
 			} catch (Exception e) {
 				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
-				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR,e);
 			}
 
 			return resp;
