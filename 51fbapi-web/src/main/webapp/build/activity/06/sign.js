@@ -16,7 +16,7 @@ let vm=new Vue({
             beginTime:20170609,
             list:[
                  {time:20170610},
-                 {time:20170611},
+                 {time:20170611}
             ]
         },
         beginTime:20170609,
@@ -50,7 +50,7 @@ let vm=new Vue({
             //获取页面初始化信息
             let self=this;
             self.$http.get(self.dataUrl).then(function (res) {
-                self.data.content = eval('(' + res.data + ')');
+                //self.data.content = eval('(' + res.data + ')');
                 console.log(res);
 
             },function (response) {
