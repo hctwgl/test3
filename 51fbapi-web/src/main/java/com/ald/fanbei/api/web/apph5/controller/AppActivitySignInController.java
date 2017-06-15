@@ -58,7 +58,7 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州喜马拉雅家居有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/fanbei-web/")
+@RequestMapping("/fanbei-web")
 public class AppActivitySignInController extends BaseController {
 
 	@Resource
@@ -92,7 +92,7 @@ public class AppActivitySignInController extends BaseController {
 	 * @param: @return
 	 * @return: String
 	 */
-	@RequestMapping(value = "initActivitySign", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/initActivitySign", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String initActivitySign(HttpServletRequest request, HttpServletResponse response) {
 		Calendar calStart = Calendar.getInstance();
@@ -192,7 +192,7 @@ public class AppActivitySignInController extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("fb初始化失败" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", "").toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getMessage()).toString();
 			logger.error("fb初始化失败" + context, e);
 		} finally {
 			Calendar calEnd = Calendar.getInstance();
@@ -202,7 +202,7 @@ public class AppActivitySignInController extends BaseController {
 
 	}
 
-	@RequestMapping(value = "activitySignIn", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/activitySignIn", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String signIn(HttpServletRequest request, HttpServletResponse response) {
 
