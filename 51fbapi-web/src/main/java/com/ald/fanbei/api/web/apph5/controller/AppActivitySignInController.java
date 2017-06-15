@@ -302,7 +302,9 @@ public class AppActivitySignInController extends BaseController {
 						//从resource表中解析出来券的id
 						String jsonCoupon = resourceDo.getValue4();
 						JSONObject jsonObject = JSONObject.parseObject(jsonCoupon);
-						String sign = jsonObject.getString("activity_signin");
+						//TODO:resource中
+						String sign = jsonObject.getString("activitysignin");
+						
 						List<String> listCounpon = JSONObject.parseArray(sign, String.class);
 						Integer amountCoupon = null;
 						for(String strCounponId:listCounpon){
