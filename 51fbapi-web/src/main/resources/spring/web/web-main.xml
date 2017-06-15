@@ -210,7 +210,7 @@
 				<entry key="/auth/getYiTuInfo" value-ref="getYiTuInfoApi" />
 				<entry key="/auth/submitIdNumberInfo" value-ref="submitIdNumberInfoApi" />
 				<entry key="/auth/authStrongRisk" value-ref="authStrongRiskApi" />
-				<entry key="/auth/authContactorV1 " value-ref="authContactorV1Api" />
+				<entry key="/auth/authContactorV1" value-ref="authContactorV1Api" />
 				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
 				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
 				<entry key="/auth/authFaceV1" value-ref="authFaceV1Api" />
