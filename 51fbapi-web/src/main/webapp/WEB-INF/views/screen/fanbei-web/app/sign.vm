@@ -14,7 +14,7 @@
 	<img src="$commonUrl/sign_03.png">
     <div class="wrap">
         <div v-for="i of 5" :class="className[i-1]">
-            <img v-if="selected(beginTime+i-1)" :src="'$commonUrl/ok'+i+'.png'">
+            <img v-if="selected(content.beginTime+i-1)" :src="'$commonUrl/ok'+i+'.png'">
             <img v-if="current>=i" @click="signIn(i)" :src="'$commonUrl/now'+i+'.png'">
             <img :src="'$commonUrl/before'+i+'.png'">
         </div>

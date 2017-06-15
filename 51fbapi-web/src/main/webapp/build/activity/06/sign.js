@@ -12,15 +12,10 @@ let vm=new Vue({
     data:{
         className:['Monday','Tuesday','Wednesday','Thursday','Friday'],
         content:{
-            currentTime:20170612,
-            beginTime:20170609,
-            list:[
-                 {time:20170610},
-                 {time:20170611}
-            ]
-        },
-        beginTime:20170609,
-        current:4
+            currentTime:'2017-06-12',
+            beginTime:'2017-06-09',
+            list:['2017-06-10','2017-06-11']
+        }
     },
     created:function () {
         this.logData();
@@ -50,8 +45,11 @@ let vm=new Vue({
             //获取页面初始化信息
             let self=this;
             self.$http.get(self.dataUrl).then(function (res) {
-                //self.data.content = eval('(' + res.data + ')');
-                console.log(res);
+                self.data.content = eval('(' + res.data + ')');
+                var beginTime=self.data.content.beginTime;
+                beginTime=beginTime.replace(/\-/g, "");
+                beginTime=parseInt(beginTime);
+                console.log(beginTime);
 
             },function (response) {
                 console.log(response)
