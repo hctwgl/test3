@@ -107,7 +107,7 @@ window.onload=function(){
 // 倒计时
 $(function(){
   // 结束时间的时间戳
-  let endDate = new Date("June 30,2017 00:00:00");
+  let endDate = new Date("June 30,2017 23:59:59");
   let endStamp = endDate.valueOf();
   // 获取当前时间的时间戳
   let now = new Date();

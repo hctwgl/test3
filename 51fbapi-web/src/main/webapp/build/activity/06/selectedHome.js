@@ -11,16 +11,16 @@ let shareData=[
 
 function alaShareData(){
     let title,con;
-    switch (modelId){
-        case 71:
+    switch (sort){
+        case 1:
             title=shareData[0].title;
             con=shareData[0].content;
             break;
-        case 72:
+        case 2:
             title=shareData[1].title;
             con=shareData[1].content;
             break;
-        case 74:
+        case 3:
             title=shareData[2].title;
             con=shareData[2].content;
             break;
@@ -32,9 +32,9 @@ function alaShareData(){
         'shareAppTitle': title,  // 分享的title
         'shareAppContent': con,  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': window.location.host+'/fanbei-web/activity/selectedHome?addUiName=SHOWSHARE&modelId='+modelId,  // 分享后的链接
+        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/feastRaidersShare',  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
-        'sharePage': 'selectedHome' // 分享的页面
+        'sharePage': 'feastRaidersShare' // 分享的页面
     };
     let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
     return dataStr;
@@ -146,6 +146,3 @@ new Vue({
         }
     }
 });
-
-
-
