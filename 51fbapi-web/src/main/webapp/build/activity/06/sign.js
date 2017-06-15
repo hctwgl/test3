@@ -8,20 +8,7 @@ if(getInfo().userName){
 let vm=new Vue({
     el:'#vueCon',
     data:{
-        tableUrl:"/fanbei-web/partActivityInfo?modelId=",
-        className:['Monday','Tuesday','Wednesday','Thursday','Friday'],
-        content:{
-            currentTime:20170612,
-            beginTime:20170609,
-            list:[
-                {time:20170610},
-                {time:20170611}
-            ]
-        },
-        beginTime:20170609,
-        current:4,
-        option:{
-        }
+        content:''
     },
     created:function () {
         this.logData();
@@ -29,6 +16,7 @@ let vm=new Vue({
     methods:{
         signIn (time){
             console.log(time);
+            this.logData();
         },
         selected(data){
             let list=this.content.list;
@@ -38,10 +26,8 @@ let vm=new Vue({
             return false;
         },
         logData (){
-            Vue.http.options.emulateJSON = true;
             let self=this;
-            let op={data:JSON.stringify(self.option)};
-            self.$http.get(self.tableUrl,op).then(function (res) {
+            self.$http.get(self.tableUrl).then(function (res) {
                 self.content = eval('(' + res.data + ')');
                 console.log(self.content);
 
@@ -49,5 +35,6 @@ let vm=new Vue({
                 console.log(response)
             })
         }
+        
     }
 });
