@@ -172,11 +172,19 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 					 agentOrderDetailVo.setCouponName("现金劵");
 				 }
 				 
+				 if(StringUtils.equals("ACTIVITY", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("会场劵");
+				 }
+				
+				 
 				 agentOrderDetailVo.setCouponAmount(couponDo.getAmount());
 				 
-				 // 计算实际支付金额
-				 BigDecimal actualPayAmount =  actualAmount.subtract(couponDo.getAmount()) ;
-				 agentOrderDetailVo.setActualPayAmount(actualPayAmount.compareTo(BigDecimal.ZERO) == 1 ? actualPayAmount:BigDecimal.ZERO);
+				 // 如果有优惠劵,那么实际支付金额就是填写的订单金额
+				 BigDecimal actualPayAmount = actualAmount;
+				 actualAmount = actualAmount.add(couponDo.getAmount());
+				 
+				 agentOrderDetailVo.setActualPayAmount(actualPayAmount);
+				
 			 }
 		}
 		
