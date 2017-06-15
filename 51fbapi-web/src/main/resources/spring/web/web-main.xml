@@ -213,7 +213,6 @@
 				<entry key="/auth/authContactorV1" value-ref="authContactorV1Api" />
 				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
 				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
-				<entry key="/auth/authRealnameV1" value-ref="authRealnameV1Api" />
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
 
 				<!-- borrow -->
