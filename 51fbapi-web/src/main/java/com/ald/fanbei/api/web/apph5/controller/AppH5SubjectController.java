@@ -90,6 +90,7 @@ public class AppH5SubjectController  extends BaseController{
 		JSONObject jsonObj = new JSONObject();
 		try{
 			// 数据埋点
+			request.setAttribute("context", context);
 			doMaidianLog(request,"");
 			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
 			jsonObj.put("notifyUrl", notifyUrl);
@@ -207,6 +208,7 @@ public class AppH5SubjectController  extends BaseController{
 				return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
 			}
 			// 数据埋点
+			request.setAttribute("context", context);
 			doMaidianLog(request,"");
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -380,6 +382,7 @@ public class AppH5SubjectController  extends BaseController{
 			}
 			AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
 			//  数据埋点
+			request.setAttribute("context", context);
 			doMaidianLog(request,"");
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
