@@ -172,5 +172,18 @@
 
 	</select>
 
+	<select id = "selectActivityConfig" resultType = "AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0
+		AND type = 'activity_signin'
+		<![CDATA[
+		AND  value_1 <= NOW()
+		AND value_2 >= NOW()	
+		]]>	
+	</select>
 
 </mapper>
