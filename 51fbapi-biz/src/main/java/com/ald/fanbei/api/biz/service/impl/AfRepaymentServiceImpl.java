@@ -227,7 +227,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					} else {
 						afBorrowBillService.updateTotalBillStatus(billDo.getBillYear(), billDo.getBillMonth(), userDo.getRid(), BorrowBillStatus.PART.getCode());
 					}
-					dealWithRaiseAmount(repayment.getBillIds());
+					
+//					dealWithRaiseAmount(repayment.getBillIds());
 					// 优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
 					// 获取现金借款还款本金
