@@ -181,8 +181,8 @@
 		is_delete = 0
 		AND type = 'ACTIVITY_SIGNIN'
 		<![CDATA[
-		AND  value_1 <= NOW()
-		AND value_2 >= NOW()	
+		AND  DATE_FORMAT(value_1,'%Y-%m-%d') <= DATE_FORMAT(NOW(),'%Y-%m-%d')
+		AND DATE_FORMAT(value_2,'%Y-%m-%d') >= DATE_FORMAT(NOW(),'%Y-%m-%d')	
 		]]>	
 	</select>
 

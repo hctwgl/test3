@@ -13,7 +13,15 @@ let vm=new Vue({
         className:['Monday','Tuesday','Wednesday','Thursday','Friday'],
         content:{},
         fixContent:{},
-        current:4
+        okContent:[
+            false,
+            false,
+            false,
+            false,
+            false
+            ],
+        current:'',
+        msg:{}
     },
     created:function () {
         this.logData();
@@ -21,68 +29,47 @@ let vm=new Vue({
     methods:{
         signIn(time){
             //点击签到弹出签到成功信息
-            /*let self=this;
-            self.$http.get(self.msgUrl).then(function (res) {
-                self.data.message = eval('(' + res.data + ')');
-                console.log(self.data.message);
-
+            let self=this;
+            self.$http.post('/fanbei-web/activitySignIn').then(function (res) {
+                self.msg= eval('(' + res.data + ')');     
+                requestMsg(self.msg.msg);
+                self.logData();
             },function (response) {
-                console.log(response)
-            })*/
-
-            this.logData();
-        },
-        selected(data){
-            let list=this.fixContent.timeList;
-            for(let i in list){
-                if (list[i]== data){return true}
-            }
-            return false;
+                //console.log(response)
+            })
+            
         },
         logData (){
             //获取页面初始化信息
             let self=this;
             self.$http.post('/fanbei-web/initActivitySign').then(function (res) {
-                self.content =  eval('(' + res.data + ')');
-                var contentData=self.content.data;
-
-                let currentTime=contentData.currentDate;
-                    currentTime=currentTime.replace(/\-/g, ""); 
-                    currentTime=parseInt(currentTime);
-                let beginTime=contentData.startDate;
-                    beginTime=beginTime.replace(/\-/g, ""); 
-                    beginTime=parseInt(beginTime);
-                let timeList=contentData.resultList;
-                for(let i=0;i<timeList.length;i++){
-                    timeList[i]=timeList[i].replace(/\-/g, ""); 
-                    timeList[i]=parseInt(timeList[i]);  
-                }  
-                  
-                self.fixContent=contentData;
-                self.current=new Date(contentData.currentDate).getDay();
-                console.log(self.current)
-
+                    
+                    self.content =  eval('(' + res.data + ')');
+                    let contentData=self.content.data;
+                    let currentTime=contentData.currentDate;
+                        currentTime=currentTime.replace(/\-/g, ""); 
+                        currentTime=parseInt(currentTime);
+                    let beginTime=contentData.startDate;
+                        beginTime=beginTime.replace(/\-/g, ""); 
+                        beginTime=parseInt(beginTime);
+                    let timeList=contentData.resultList;
+                    for(let i=0;i<timeList.length;i++){
+                        timeList[i]=timeList[i].replace(/\-/g, ""); 
+                        timeList[i]=parseInt(timeList[i]); 
+                        timeList.push[timeList[i]]
+                    } 
+                    self.fixContent.timeList=timeList
+                    self.fixContent.currentTime=currentTime;
+                    self.fixContent.beginTime=beginTime;
+                    self.current=currentTime-beginTime+1;
+                    //console.log(self.fixContent)
+ for(let i in self.fixContent.timeList){
+    self.okContent.splice(self.fixContent.timeList[i]-self.fixContent.beginTime,1,true)
+        }            
             },function (response) {
-                console.log(response)
+                //console.log(response)
             })
-        },
-        /*fixData(contentData){
-            let currentTime=contentData.currentDate;
-                currentTime=currentTime.replace(/\-/g, ""); 
-                currentTime=parseInt(currentTime);
-            let beginTime=contentData.startDate;
-                beginTime=beginTime.replace(/\-/g, ""); 
-                beginTime=parseInt(beginTime);
-            let timeList=contentData.resultList;
-            for(let i=0;i<timeList.length;i++){
-                  timeList[i]=timeList[i].replace(/\-/g, ""); 
-                  timeList[i]=parseInt(timeList[i]);  
-            }    
-                self.fixContent=contentData;
-                console.log(contentData)
-                
-                return self.fixContent
-        }*/
+        }
         
     }
-});
+})
