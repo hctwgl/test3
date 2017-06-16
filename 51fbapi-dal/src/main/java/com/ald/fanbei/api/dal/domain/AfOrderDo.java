@@ -60,6 +60,7 @@ public class AfOrderDo extends AbstractSerial{
 	private String address;//收货人地址
 	private String consigneeMobile;//收件人电话
 	private String invoiceHeader;//发票抬头
+	private String logisticsInfo;//物流信息
 	
 	public Long getRid() {
 		return rid;
@@ -343,6 +344,12 @@ public class AfOrderDo extends AbstractSerial{
 	}
 	public void setInvoiceHeader(String invoiceHeader) {
 		this.invoiceHeader = invoiceHeader;
+	}
+	public String getLogisticsInfo() {
+		return logisticsInfo;
+	}
+	public void setLogisticsInfo(String logisticsInfo) {
+		this.logisticsInfo = logisticsInfo;
 	}
 	
 }

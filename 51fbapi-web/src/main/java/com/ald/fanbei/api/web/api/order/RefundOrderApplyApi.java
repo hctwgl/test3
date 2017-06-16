@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -71,6 +72,10 @@ public class RefundOrderApplyApi implements ApiHandle{
 					orderInfo.getOrderNo(), OrderRefundStatus.NEW,payType,StringUtils.EMPTY, null,"自营商品用户退款申请",RefundSource.USER.getCode(),StringUtils.EMPTY);
 			afOrderRefundDo.setContactsMobile(contactsMobile);
 			afOrderRefundService.addOrderRefund(afOrderRefundDo);
+			
+			//订单状态改为退款中
+			orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
+			afOrderService.updateOrder(orderInfo);
 			return resp;
 		}else{
 			//退款记录已存在，校验状态等各种信息，如果退款未完成，更新退款单中的联系人手机号信息
