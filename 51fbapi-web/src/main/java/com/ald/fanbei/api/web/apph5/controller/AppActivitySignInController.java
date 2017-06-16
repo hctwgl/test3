@@ -109,7 +109,7 @@ public class AppActivitySignInController extends BaseController {
 				if (afUser != null) {
 					userId = afUser.getRid();
 					List<AfResourceDo> listResource = afResourceService.selectActivityConfig();
-					if (listResource==null || listResource.size()==0) {
+					if (listResource == null || listResource.size() == 0) {
 						// TODO:没有活动，走以前的流程。
 						AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
 						AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
@@ -159,7 +159,7 @@ public class AppActivitySignInController extends BaseController {
 						data.put("resultList", "");
 
 						return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-					}else{
+					} else {
 						// 有活动，走活动的流程
 						AfResourceDo resourceDo = listResource.get(0);
 						Long activityId = resourceDo.getRid();
@@ -168,7 +168,7 @@ public class AppActivitySignInController extends BaseController {
 							// TODO:转成String格式
 							List<String> listResult = new ArrayList<>();
 							SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
-							if (listDate!=null) {
+							if (listDate != null) {
 								for (Date date : listDate) {
 									String strDate = sFormat.format(date);
 									listResult.add(strDate);
@@ -198,7 +198,7 @@ public class AppActivitySignInController extends BaseController {
 							resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", jsonResult).toString();
 						}
 					}
-					
+
 				}
 			}
 		} catch (FanbeiException e) {
@@ -291,69 +291,62 @@ public class AppActivitySignInController extends BaseController {
 
 								return H5CommonResponse.getNewInstance(true, "签到成功", "", "").toString();
 
-							}else{
+							} else {
 								// :若是满足条件，插入新表
 								AfResourceDo resourceDo = listResource.get(0);
 								Long activityId = resourceDo.getRid();
-								if (activityId!=null) {
-									List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
-									Integer totalCount = listDate.size() + 1;
-									AfSignInActivityDo signInActivityDo = new AfSignInActivityDo();
-									signInActivityDo.setActivityId(activityId);
-									signInActivityDo.setUserId(userId);
-									signInActivityDo.setTotalCount(totalCount);
-									Integer intResult = afSignInActivityService.signIn(signInActivityDo);
+								List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
+								Integer totalCount = listDate.size() + 1;
+								AfSignInActivityDo signInActivityDo = new AfSignInActivityDo();
+								signInActivityDo.setActivityId(activityId);
+								signInActivityDo.setUserId(userId);
+								signInActivityDo.setTotalCount(totalCount);
+								afSignInActivityService.signIn(signInActivityDo);
 
-									resultStr = H5CommonResponse.getNewInstance(true, "签到成功", "", "succeed to sign in !").toString();
+								resultStr = H5CommonResponse.getNewInstance(true, "签到成功", "", "succeed to sign in !").toString();
 
-									// 若满足券的规则，则加对应券到用户表中
+								// 若满足券的规则，则加对应券到用户表中
 
-									int betweenDays = Integer.valueOf(resourceDo.getValue3());
-									// 说明没有达到领券要求
-									if (betweenDays > totalCount.intValue()) {
-										return resultStr;
-									}
-
-									// 从resource表中解析出来券的id
-									String jsonCoupon = resourceDo.getValue4();
-									JSONObject jsonObject = JSONObject.parseObject(jsonCoupon);
-									// TODO:resource中
-									String sign = jsonObject.getString("activitySignin");
-
-									List<JSONObject> listCounpon = JSONObject.parseArray(sign, JSONObject.class);
-									Integer amountCoupon = 0;
-									for (JSONObject jsonCounponId : listCounpon) {
-										String strCounponId = jsonCounponId.getString("couponId");
-										Long counponId = Long.valueOf(strCounponId);
-										AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(counponId, 1l));
-										if (couponDo!=null) {
-
-											// 不考虑券的个数限制。
-											// id分别插入到user_coupon记录中
-											AfUserCouponDo userCoupon = new AfUserCouponDo();
-											userCoupon.setCouponId(NumberUtil.objToLongDefault(counponId, 1l));
-											userCoupon.setGmtCreate(new Date());
-											userCoupon.setGmtStart(couponDo.getGmtStart());
-											userCoupon.setGmtEnd(couponDo.getGmtEnd());
-											userCoupon.setUserId(userId);
-											userCoupon.setStatus("NOUSE");
-											userCoupon.setSourceType("SPECIAL");
-											afUserCouponService.addUserCoupon(userCoupon);
-											amountCoupon += 1;
-										}
-									}
-
-									if ( amountCoupon > 0) {
-										resultStr = H5CommonResponse.getNewInstance(true, "恭喜得到" + amountCoupon + "张优惠券！", "", "succeed to get a coupon !").toString();
-										return resultStr;
-									}
-
-									if (intResult>0) {
-										resultStr = H5CommonResponse.getNewInstance(true, "签到成功", "", "succeed to sign in !").toString();
-									}
-								}else{
-									return H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED).toString();
+								int betweenDays = Integer.valueOf(resourceDo.getValue3());
+								// 说明没有达到领券要求
+								if (betweenDays > totalCount.intValue()) {
+									return resultStr;
 								}
+
+								// 从resource表中解析出来券的id
+								String jsonCoupon = resourceDo.getValue4();
+								JSONObject jsonObject = JSONObject.parseObject(jsonCoupon);
+								// TODO:resource中
+								String sign = jsonObject.getString("activitySignin");
+
+								List<JSONObject> listCounpon = JSONObject.parseArray(sign, JSONObject.class);
+								Integer amountCoupon = 0;
+								for (JSONObject jsonCounponId : listCounpon) {
+									String strCounponId = jsonCounponId.getString("couponId");
+									Long counponId = Long.valueOf(strCounponId);
+									AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(counponId, 1l));
+									if (couponDo != null) {
+
+										// 不考虑券的个数限制。
+										// id分别插入到user_coupon记录中
+										AfUserCouponDo userCoupon = new AfUserCouponDo();
+										userCoupon.setCouponId(NumberUtil.objToLongDefault(counponId, 1l));
+										userCoupon.setGmtCreate(new Date());
+										userCoupon.setGmtStart(couponDo.getGmtStart());
+										userCoupon.setGmtEnd(couponDo.getGmtEnd());
+										userCoupon.setUserId(userId);
+										userCoupon.setStatus("NOUSE");
+										userCoupon.setSourceType("SPECIAL");
+										afUserCouponService.addUserCoupon(userCoupon);
+										amountCoupon += 1;
+									}
+								}
+
+								if (amountCoupon > 0) {
+									resultStr = H5CommonResponse.getNewInstance(true, "恭喜得到" + amountCoupon + "张优惠券！", "", "succeed to get a coupon !").toString();
+									return resultStr;
+								}
+
 							}
 						}
 					}
