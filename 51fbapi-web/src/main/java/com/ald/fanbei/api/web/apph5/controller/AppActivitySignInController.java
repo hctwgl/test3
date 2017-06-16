@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +38,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -52,7 +50,6 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.tools.hat.internal.server.FinalizerObjectsQuery;
 
 /**
  * @类描述：
@@ -339,7 +336,7 @@ public class AppActivitySignInController extends BaseController {
 											userCoupon.setGmtStart(couponDo.getGmtStart());
 											userCoupon.setGmtEnd(couponDo.getGmtEnd());
 											userCoupon.setUserId(userId);
-											userCoupon.setStatus(couponDo.getStatus());
+											userCoupon.setStatus("NOUSE");
 											userCoupon.setSourceType("SPECIAL");
 											afUserCouponService.addUserCoupon(userCoupon);
 											amountCoupon += 1;
