@@ -13,6 +13,13 @@ let vm=new Vue({
         className:['Monday','Tuesday','Wednesday','Thursday','Friday'],
         content:{},
         fixContent:{},
+        okContent:[
+            false,
+            false,
+            false,
+            false,
+            false
+            ],
         current:'',
         msg:{}
     },
@@ -24,22 +31,13 @@ let vm=new Vue({
             //点击签到弹出签到成功信息
             let self=this;
             self.$http.post('/fanbei-web/activitySignIn').then(function (res) {
-                self.msg= eval('(' + res.data + ')');               
+                self.msg= eval('(' + res.data + ')');     
+                requestMsg(self.msg.msg);
                 self.logData();
-                requestMsg(self.msg.msg)
             },function (response) {
                 //console.log(response)
             })
-
             
-        },
-        selected(data){
-            //console.log(this.fixContent)
-            let list=this.fixContent.timeList;
-            for(let i in list){
-                if (list[i]== data){return true}
-            }
-            return false;            
         },
         logData (){
             //获取页面初始化信息
@@ -48,7 +46,6 @@ let vm=new Vue({
                     
                     self.content =  eval('(' + res.data + ')');
                     let contentData=self.content.data;
-    
                     let currentTime=contentData.currentDate;
                         currentTime=currentTime.replace(/\-/g, ""); 
                         currentTime=parseInt(currentTime);
@@ -64,11 +61,11 @@ let vm=new Vue({
                     self.fixContent.timeList=timeList
                     self.fixContent.currentTime=currentTime;
                     self.fixContent.beginTime=beginTime;
-                    
                     self.current=currentTime-beginTime+1;
-                    console.log(self.fixContent)
-
-                
+                    //console.log(self.fixContent)
+ for(let i in self.fixContent.timeList){
+    self.okContent.splice(self.fixContent.timeList[i]-self.fixContent.beginTime,1,true)
+        }            
             },function (response) {
                 //console.log(response)
             })
