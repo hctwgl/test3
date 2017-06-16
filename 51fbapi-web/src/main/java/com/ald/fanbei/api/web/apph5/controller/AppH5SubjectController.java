@@ -88,7 +88,7 @@ public class AppH5SubjectController  extends BaseController{
 		String resultStr = "";
 		JSONObject jsonObj = new JSONObject();
 		try{
-			context = doWebCheck(request, false);
+			//context = doWebCheck(request, false);
 			// 数据埋点
 			request.setAttribute("context", context);
 			doMaidianLog(request,"");
@@ -203,7 +203,7 @@ public class AppH5SubjectController  extends BaseController{
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		try {
-			context = doWebCheck(request, false);
+			//context = doWebCheck(request, false);
 			String modelId = ObjectUtils.toString(request.getParameter("modelId"), null);
 			if(modelId == null || "".equals(modelId)) {
 				return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
@@ -376,7 +376,7 @@ public class AppH5SubjectController  extends BaseController{
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		try {
-			context = doWebCheck(request, false);
+			//context = doWebCheck(request, false);
 			String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
 			if(subjectId == null || "".equals(subjectId)) {
 				return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
@@ -461,7 +461,7 @@ public class AppH5SubjectController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		String resultStr = "";
 		try{
-			context = doWebCheck(request, false);
+			//context = doWebCheck(request, false);
 			String goodsId = ObjectUtils.toString(request.getParameter("goodsId"), null);
 			if(goodsId == null || "".equals(goodsId)) {
 				return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
