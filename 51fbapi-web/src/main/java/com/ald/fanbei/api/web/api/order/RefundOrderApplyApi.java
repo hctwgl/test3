@@ -68,7 +68,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 				payType = PayType.WECHAT;	
 			}
 			afOrderRefundDo = BuildInfoUtil.buildOrderRefundDo("", orderInfo.getActualAmount(), BigDecimal.ZERO, userId, orderInfo.getRid(),
-					orderInfo.getOrderNo(), OrderRefundStatus.REFUNDING,payType,StringUtils.EMPTY, null,"自营商品用户退款申请",RefundSource.USER.getCode(),StringUtils.EMPTY);
+					orderInfo.getOrderNo(), OrderRefundStatus.NEW,payType,StringUtils.EMPTY, null,"自营商品用户退款申请",RefundSource.USER.getCode(),StringUtils.EMPTY);
 			afOrderRefundDo.setContactsMobile(contactsMobile);
 			afOrderRefundService.addOrderRefund(afOrderRefundDo);
 			return resp;
