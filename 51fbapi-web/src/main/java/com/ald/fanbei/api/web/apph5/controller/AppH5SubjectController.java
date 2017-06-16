@@ -83,7 +83,7 @@ public class AppH5SubjectController  extends BaseController{
 	@ResponseBody
 	public String mainActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		context = doWebCheck(request, false);
 		// 主会场接口
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
@@ -199,7 +199,7 @@ public class AppH5SubjectController  extends BaseController{
 	public String partActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		context = doWebCheck(request, false);
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		try {
@@ -372,7 +372,7 @@ public class AppH5SubjectController  extends BaseController{
 	public String subjectGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		context = doWebCheck(request, false);
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		try {
@@ -458,7 +458,7 @@ public class AppH5SubjectController  extends BaseController{
 	public String qualityGoodsStatistics(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 统计精品推荐商品点击量
 		FanbeiWebContext context = new FanbeiWebContext();
-		//context = doWebCheck(request, false);
+		context = doWebCheck(request, false);
 		String goodsId = ObjectUtils.toString(request.getParameter("goodsId"), null);
 		if(goodsId == null || "".equals(goodsId)) {
 			return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
