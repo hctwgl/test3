@@ -127,39 +127,40 @@ body{position: relative;background:#5c00af;color:white;}
     display: none;
 }
 .alert{
+    width:100%;
+    height:8rem;
     position: fixed;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
     z-index: 300;
     border-radius: .2rem;
-    background: white;
+    background: url("@{url}share01.png") no-repeat;
+    background-size: contain;
     display: none;
 }
-.alertTitle{
-    width:4.56rem;
-    height:1.14rem;
-    margin:-.45rem .23rem;
-    background: url("@{url}ni_title.png") no-repeat;
-    background-size:cover;
+.alert .getState{
+    width:5.02rem;
+    height:1.25rem;
+    margin: 1.6rem auto 0 auto;
+    background: url("@{url}share02.png") no-repeat;
+    background-size:contain;
     font-size:.36rem;
-    color:#fff;
+    color:#ef1650;
     text-align: center;
-    line-height: .85rem;
+    line-height: .95rem;
 }
-.alert .getState{font-size:.42rem;color:#121212;text-align: center;padding:.4rem 0 .3rem 0;}
-.alert .getCashCoupon{width:3.95rem;height:1.3rem;background: url("@{url}ni_14.png") no-repeat;
-    background-size:cover;margin:0 auto .3rem;color:#fff;position: relative;display: none;}
-.alert .getCashCoupon .getCashPrize{font-size: .42rem;line-height: 1.3rem;text-align: center;display: none;}
-.alert .getCashCoupon .getCouponPrize{display: none;}
-.alert .getCashCoupon p:nth-child(1){font-size:.24rem;padding:.3rem 0 0 .3rem;width:1.4rem;}
-.alert .getCashCoupon p:nth-child(2){font-size:.16rem;padding:.1rem 0 0 .3rem;width:2.3rem;}
-.alert .getCashCoupon p:nth-child(3){font-size:.24rem;line-height:1.3rem;position:absolute;top:0;
-    right:.2rem;}
-.alert .getCashCoupon p:nth-child(3) span{font-size:.6rem;font-weight: 500;}
-.alert .jushuo{font-size:.28rem;color:#444;width:2.8rem;margin:0 auto .3rem;display:none;}
-.alert .tryAgain{width:3.1rem;height:.7rem;background: url("@{url}ni_16.png") no-repeat;
-    background-size:cover;margin:0 auto .3rem;text-align: center;line-height: .65rem;}
+.alert .getCashCoupon{
+    display: none;
+    width: 100%;
+    text-align: center;
+}
+.getCouponPrize01{font-size:.9rem;padding-top:.4rem;}
+.getCouponPrize02{font-size:.34rem;padding: .4rem 0 .5rem;}
+.alert .jushuo{font-size:.4rem;color:#fff;width:4rem;margin:1.3rem auto 1.1rem;display:none;}
+.alert .tryAgain{width:3.61rem;height:.78rem;background: url("@{url}share04.png") no-repeat;
+    background-size:contain;margin:0 auto .3rem;text-align: center;line-height: .65rem;
+color:#c21a00;font-weight: 300;}
 //--------------------------------------yun--------------------------------------------
 
 /*滚轮*/

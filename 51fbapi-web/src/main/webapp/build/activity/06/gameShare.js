@@ -103,7 +103,7 @@ class game{
             $('.alert').hide();
         });
         $('.goSign').click(function () {
-            location.href='https://app.51fanbei.com/app/user/register?recommendCode='+recommendCode;
+            location.href='gameRegister?recommendCode='+recommendCode;
             $('#shadow').hide();
             $('.alert').hide();
         });
