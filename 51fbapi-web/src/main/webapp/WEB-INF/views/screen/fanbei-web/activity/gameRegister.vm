@@ -29,7 +29,7 @@
     <div class="imgWrap">
 		<img src="$commonUrl/gameRegister5.png">
         <input type="password" class="input" id="password" style="top:.5rem;width:5rem" maxlength="18">
-        <img class="imgTxt" style="width:2.25rem;top:.6rem" src="$commonUrl/gameRegister02.png">
+        <img class="imgTxt" style="width:2.25rem;top:.6rem" src="$commonUrl/gameRegister03.png">
 
 	</div>
 	<img id="submit" src="$commonUrl/gameRegister61.png">
