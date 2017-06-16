@@ -30,7 +30,7 @@
 					</ol>
 				</li>
 				<li class="strollHomeContentLi" data-type="2" id="xbk">
-					<img @click="boluomiHome(12)" src="$commonUrl/strollHomeList2.png">
+					<img @click="boluomiHome(14)" src="$commonUrl/strollHomeList2.png">
 					<ol class="otoCoupon clearfix">
 						<li @click="boluomiCoupons(8341)">
 							<p class="money"><i>¥</i>5</p>
