@@ -83,12 +83,12 @@ public class AppH5SubjectController  extends BaseController{
 	@ResponseBody
 	public String mainActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		FanbeiWebContext context = new FanbeiWebContext();
-		context = doWebCheck(request, false);
 		// 主会场接口
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		JSONObject jsonObj = new JSONObject();
 		try{
+			context = doWebCheck(request, false);
 			// 数据埋点
 			request.setAttribute("context", context);
 			doMaidianLog(request,"");
@@ -199,10 +199,11 @@ public class AppH5SubjectController  extends BaseController{
 	public String partActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		context = doWebCheck(request, false);
+		
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		try {
+			context = doWebCheck(request, false);
 			String modelId = ObjectUtils.toString(request.getParameter("modelId"), null);
 			if(modelId == null || "".equals(modelId)) {
 				return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
@@ -372,10 +373,10 @@ public class AppH5SubjectController  extends BaseController{
 	public String subjectGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		context = doWebCheck(request, false);
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		try {
+			context = doWebCheck(request, false);
 			String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
 			if(subjectId == null || "".equals(subjectId)) {
 				return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
@@ -458,14 +459,24 @@ public class AppH5SubjectController  extends BaseController{
 	public String qualityGoodsStatistics(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 统计精品推荐商品点击量
 		FanbeiWebContext context = new FanbeiWebContext();
-		context = doWebCheck(request, false);
-		String goodsId = ObjectUtils.toString(request.getParameter("goodsId"), null);
-		if(goodsId == null || "".equals(goodsId)) {
-			return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
+		String resultStr = "";
+		try{
+			context = doWebCheck(request, false);
+			String goodsId = ObjectUtils.toString(request.getParameter("goodsId"), null);
+			if(goodsId == null || "".equals(goodsId)) {
+				return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
+			}
+			request.setAttribute("context", context);
+			doMaidianLog(request, "");
+			resultStr = H5CommonResponse.getNewInstance(true, "成功").toString();
+		}catch(FanbeiException e){
+			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("请求失败"+context,e);
+		}catch(Exception e){
+			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", "").toString();
+			logger.error("请求失败"+context,e);
 		}
-		request.setAttribute("context", context);
-		doMaidianLog(request, "");
-		return H5CommonResponse.getNewInstance(true, "成功").toString();
+		return resultStr;
 	}
 	
 	
