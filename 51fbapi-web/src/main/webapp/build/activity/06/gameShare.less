@@ -123,57 +123,39 @@ body{position: relative;background:#3c028a;color:white;}
     display: none;
 }
 .alert{
+    width:100%;
+    height:8rem;
     position: fixed;
-    top:3rem;
-    padding:0 .35rem .45rem;
-    left:.94rem;
+    top:2rem;
     z-index: 300;
     border-radius: .2rem;
-    background: white;
+    background: url("@{url}share01.png") no-repeat;
+    background-size: contain;
     display: none;
 }
-.alertTitle{
-    width:4.56rem;
-    height:1.14rem;
-    margin:-.45rem .23rem;
-    background: url("@{url}ni_title.png") no-repeat;
-    background-size:cover;
-    font-size:.36rem;
-    color:#fff;
-    text-align: center;
-    line-height: .85rem;
-}
 .getState{
-    font-size:.42rem;
-    color:#121212;
+    width:5.02rem;
+    height:1.25rem;
+    margin: 1.6rem auto 0 auto;
+    background: url("@{url}share02.png") no-repeat;
+    background-size:contain;
+    font-size:.36rem;
+    color:#ef1650;
     text-align: center;
-    padding:.8rem 0 .3rem;
+    line-height: .95rem;
 }
-.getCashCoupon{width:4.9rem;height:1.5rem;background: url("@{url}ni_141.png") no-repeat;
-    background-size:cover;margin:0 auto .6rem;color:#fff;position: relative;display: none;}
-.getCashCoupon .getCashPrize{font-size: .42rem;line-height: 1.3rem;text-align: center;display: none;}
-.getCashCoupon .getCouponPrize{display: none;}
-.getCashCoupon p:nth-child(1){
-    font-size:.24rem;
-    line-height:1.3rem;
-    float:left;
-}
-.getCashCoupon p:nth-child(2){
-    font-size:.24rem;
-    padding:.4rem 0 0 .3rem;
-    width:1.4rem;
-    float:left;
-}
-.getCashCoupon p:nth-child(3){
-    font-size:.16rem;
-    padding:.1rem 0 0 .3rem;
-    width:2.6rem;
-    float:left;
-}
-
-.getCashCoupon p:nth-child(1)>span{font-size:1rem;font-weight: 500;    margin-left: .3rem;}
-.jushuo{font-size:.28rem;color:#444;width:2.8rem;margin:0 auto .3rem;display:none;}
-.tBtn{width:2.3rem;height:.7rem;background: #ffcd36;color:black;display:inline-block;   text-align: center;line-height: .7rem;border-radius: .04rem}
+.getCashCoupon{
+    color:#fff;
+    display: none;
+    width: 100%;
+    text-align: center;}
+.getCouponPrize01{font-size:.9rem;padding-top:.4rem;}
+.getCouponPrize02{font-size:.34rem;padding-top:.4rem;}
+.jushuo{font-size:.4rem;color:#fff;width:4rem;margin:1.3rem auto .5rem;display:none;}
+.tBtn{width:2.25rem;height:.78rem;background: url("@{url}share03.png") no-repeat;
+background-size:contain;color:#c21a00;display:inline-block;   text-align: center;
+line-height: .78rem;margin-top:.8rem;}
+.goSign{margin-left:18%;}
 //--------------------------------------yun--------------------------------------------
 
 /*滚轮*/
