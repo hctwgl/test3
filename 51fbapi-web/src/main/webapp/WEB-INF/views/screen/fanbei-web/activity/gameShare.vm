@@ -41,8 +41,8 @@
     <!-- <div class="alertTitle">中奖通知</div> -->
     <p class="getState">抓取成功</p>
     <div class="getCashCoupon ad">
-        <p class="getCashPrize ad getCouponPrize01">获得20元</p>
-        <p class="getCouponPrize ad getCouponPrize02">下载51返呗APP领取</p>  
+        <p class="getCashPrize">获得20元</p>
+        <p class="getCouponPrize">下载51返呗APP领取</p>
     </div>
     <p class="jushuo ad">据说换个姿势就能中奖</p>
     <div class="goSign tBtn">去注册</div>

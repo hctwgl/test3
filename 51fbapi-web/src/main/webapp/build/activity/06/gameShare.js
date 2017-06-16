@@ -94,7 +94,6 @@ class game{
         if(state=='claw'){
             $('.getState').html('抓取成功');
             $('.getCashCoupon').show();
-            $('.getCouponPrize').show();
         }
         $('#alert').show();
         $('#shadow').show();
@@ -103,7 +102,7 @@ class game{
             $('.alert').hide();
         });
         $('.goSign').click(function () {
-            location.href='https://app.51fanbei.com/app/user/register?recommendCode='+recommendCode;
+            location.href='gameRegister?recommendCode='+recommendCode;
             $('#shadow').hide();
             $('.alert').hide();
         });
