@@ -13,7 +13,7 @@
 	   <div class="order"></div>
 	</div>
 	<div class="goRegister hide">
-		<a href="/app/user/register"><img src="$src/oppo5.png" style="height:0.7rem;"></a>
+		<a href="gameRegister"><img src="$src/oppo5.png" style="height:0.7rem;"></a>
 		<p>登录51返呗APP进行预约</p>
 	</div>
 	<img src="$src/oppo3.png" style="height:2.23rem;">
