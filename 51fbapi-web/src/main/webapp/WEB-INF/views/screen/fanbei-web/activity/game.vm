@@ -43,8 +43,9 @@
     <p class="getState">抓取成功</p>
     <div class="getCashCoupon ad">
       <!-- <p class="getCouponPrize ad">满<span class="limitMoney">158</span>元可用</p>
-      <p class="getCouponPrize ad">有效期：<span class="limitDate">2017-08-08</span></p> --><p class="getCashPrize ad getCouponPrize01">获得2元</p>
-      <p class="getCouponPrize ad getCouponPrize02">下载51返呗APP领取</p>      
+      <p class="getCouponPrize ad">有效期：<span class="limitDate">2017-08-08</span></p> -->
+        <p class="getCashPrize ad">获得2元</p>
+##      <p class="getCouponPrize ad getCouponPrize02">下载51返呗APP领取</p>
     </div>
     <p class="jushuo ad">据说换个姿势就能中奖</p>
     <div class="tryAgain">再抓一次</div>

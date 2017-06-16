@@ -94,7 +94,6 @@ class game{
         if(state=='claw'){
             $('.getState').html('抓取成功');
             $('.getCashCoupon').show();
-            $('.getCouponPrize').show();
         }
         $('#alert').show();
         $('#shadow').show();
