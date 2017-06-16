@@ -82,8 +82,12 @@ body{position: relative;background:#5c00af;color:white;}
 }
 .button>p{
     font-size: .32rem;
+    line-height: .32rem;
     color: #fff;
-    margin-top: -.3rem;
+    position: absolute;
+    left:50%;
+    top:35%;
+    transform: translate(-50%,-50%);
 }
 
 #time{
@@ -124,8 +128,9 @@ body{position: relative;background:#5c00af;color:white;}
 }
 .alert{
     position: fixed;
-    top:2.57rem;
-    left:1.24rem;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
     z-index: 300;
     border-radius: .2rem;
     background: white;
@@ -215,7 +220,7 @@ text-align: center;line-height: .4rem;color:#ff2054;font-size: .24rem;}
 .countDown .span02{width:.2rem;height:.4rem;color:#fff;font-size: .24rem;text-align: center;line-height: .4rem;}
 /*活动规则*/
 #rules{width:5.2rem;height:6.86rem;border-radius:.14rem;background: #7715d0;z-index:1000;
-position: fixed;top:0;left:0;right:0;bottom:0;margin:auto;display:none;}
+display:none;}
 #rules .rulesTitle{width:100%;padding:.4rem 0 .3rem;font-size:.28rem;color:#fff;text-align: center;}
 #rules .rulesCont{width:4.36rem;line-height: .36rem;height:4.7rem;color:#fff;font-size: .24rem;
 margin:0 auto;text-align: justify;overflow-y: scroll;}
