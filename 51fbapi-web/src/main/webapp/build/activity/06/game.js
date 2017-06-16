@@ -269,7 +269,7 @@ class game{
 
                   if(data.data.awardType=='CASH'){
 
-                        $('.getCashPrize').html('获得'+data.data.amount+'元现金').show();
+                        $('.getCashPrize').html('获得'+data.data.amount+'元').show();
                         $('.getCashCoupon').show();
                     }else{
                         $('.limitMoney').html(data.data.limitAmount);
