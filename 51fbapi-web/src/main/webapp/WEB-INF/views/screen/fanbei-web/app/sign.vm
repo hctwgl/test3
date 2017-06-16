@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="20170615")
+	#set($version="20170616")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<title>签到</title>
-	<link rel="stylesheet" type="text/css" href="/dist/activity/06/sign.css">
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/sign.css?version=$version"">
 </head>
 <body>
 <div id="vueCon">
@@ -25,6 +25,6 @@
 
 </div>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
-<script type="text/javascript" src="/dist/activity/06/sign.js"></script>
+<script type="text/javascript" src="/dist/activity/06/sign.js?version=$version""></script>
 </body>
 </html>
