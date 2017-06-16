@@ -24,7 +24,7 @@ function alaShareData(){
         'shareAppTitle': '引爆年中抓娃娃，100%中大奖',  // 分享的title
         'shareAppContent': '抓娃娃次数无上限，赢最高888元现金红包！集齐5娃，平分1亿大奖，有且只在51返呗！',  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
+        'shareAppUrl': 'http://testapp.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'gameShare' // 分享的页面
     };
