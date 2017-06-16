@@ -9,9 +9,9 @@
 </head>
 <body>
 <div id="vueCon">
-	<img src="$commonUrl/sign_01.jpg">
-	<img src="$commonUrl/sign_02.jpg">
-	<img src="$commonUrl/sign_03.png">
+	<div class="pic01" style="width:7.5rem;height:8.4rem;"><img src="$commonUrl/sign_01.jpg"></div>
+	<div class="pic02" style="width:7.5rem;height:7.96rem;"><img src="$commonUrl/sign_02.jpg"></div>
+	<div class="pic03" style="width:7.5rem;height:8.15rem;"><img src="$commonUrl/sign_03.png"></div>
     <div class="wrap">
         <div v-for="i of 5" :class="className[i-1]">
             <img :src="'$commonUrl/before'+i+'.png'">
