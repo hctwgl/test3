@@ -115,6 +115,13 @@ public interface AfOrderDao {
 	AfOrderDo getOrderById(@Param("orderId") Long id);
 	
 	/**
+	 * 删除订单
+	 * @param id
+	 * @return
+	 */
+	int deleteOrder(@Param("rid") Long id);
+	
+	/**
 	 * 获取最近支付编号
 	 * @param current
 	 * @return

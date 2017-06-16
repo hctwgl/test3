@@ -98,7 +98,12 @@ public interface AfOrderService {
 	 * @return
 	 */
 	AfOrderDo getOrderById(Long id);
-	
+	/**
+	 * 删除订单
+	 * @param id
+	 * @return
+	 */
+	int deleteOrder(Long id);
 	/**
 	 * 获取订单列表
 	 * @param pageNo

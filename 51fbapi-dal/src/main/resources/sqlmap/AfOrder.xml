@@ -590,6 +590,8 @@
 		and a.pay_type = 'AP' and b.id is null
 	</select>
 	
-	
+	<update id="deleteOrder" parameterType="java.lang.Long" >
+		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
+	</update>
 	
 </mapper>
