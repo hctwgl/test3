@@ -10,6 +10,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -61,6 +62,12 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setType(order.getOrderType());
 		vo.setGmtClosed(order.getGmtModified());
 		vo.setMobile(order.getMobile());
+		
+		vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
+		vo.setAddress(order.getAddress());
+		vo.setConsignee(order.getConsignee());
+		vo.setConsigneeMobile(order.getConsigneeMobile());
+		vo.setInvoiceHeader(order.getInvoiceHeader());
 		return vo;
 	}
 }

@@ -55,6 +55,11 @@ public class AfOrderDo extends AbstractSerial{
 	private String serviceProvider;
 	private int  nper;//分期数
 	private String riskOrderNo;//风控订单号
+
+	private String consignee;//收件人姓名
+	private String address;//收货人地址
+	private String consigneeMobile;//收件人电话
+	private String invoiceHeader;//发票抬头
 	
 	public Long getRid() {
 		return rid;
@@ -315,5 +320,30 @@ public class AfOrderDo extends AbstractSerial{
 	public void setServiceProvider(String serviceProvider) {
 		this.serviceProvider = serviceProvider;
 	}
+	public String getConsignee() {
+		return consignee;
+	}
+	public void setConsignee(String consignee) {
+		this.consignee = consignee;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getConsigneeMobile() {
+		return consigneeMobile;
+	}
+	public void setConsigneeMobile(String consigneeMobile) {
+		this.consigneeMobile = consigneeMobile;
+	}
+	public String getInvoiceHeader() {
+		return invoiceHeader;
+	}
+	public void setInvoiceHeader(String invoiceHeader) {
+		this.invoiceHeader = invoiceHeader;
+	}
+	
 }
 

@@ -29,6 +29,13 @@ public class AfOrderVo extends AbstractSerial {
 	private BigDecimal actualAmount;
 	private BigDecimal couponAmount;
 	private String mobile;
+	
+	private String gmtPay;
+	private String consignee;
+	private String address;
+	private String consigneeMobile;
+	private String invoiceHeader;
+	
 	public String getOrderNo() {
 		return orderNo;
 	}
@@ -119,4 +126,36 @@ public class AfOrderVo extends AbstractSerial {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+	public String getConsignee() {
+		return consignee;
+	}
+	public void setConsignee(String consignee) {
+		this.consignee = consignee;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getConsigneeMobile() {
+		return consigneeMobile;
+	}
+	public void setConsigneeMobile(String consigneeMobile) {
+		this.consigneeMobile = consigneeMobile;
+	}
+	public String getInvoiceHeader() {
+		return invoiceHeader;
+	}
+	public void setInvoiceHeader(String invoiceHeader) {
+		this.invoiceHeader = invoiceHeader;
+	}
+	public String getGmtPay() {
+		return gmtPay;
+	}
+	public void setGmtPay(String gmtPay) {
+		this.gmtPay = gmtPay;
+	}
+	
+	
 }

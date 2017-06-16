@@ -1026,5 +1026,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 	}
 
-
+	public AfOrderDo getOrderInfoByOrderNoAndUserId(String orderNo, Long userId){
+		return orderDao.getOrderInfoByOrderNoAndUserId(orderNo, userId);
+	}
 }

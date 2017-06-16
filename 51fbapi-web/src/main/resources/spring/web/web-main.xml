@@ -178,6 +178,7 @@
 				<entry key="/order/getOrderDetailInfo" value-ref="getOrderDetailInfoApi" />
 				<entry key="/order/getOrderList" value-ref="getOrderListApi" />
 				<entry key="/order/getOrderNoWithUser" value-ref="getOrderNoWithUserApi" />
+				<entry key="/order/refundOrderApply" value-ref="refundOrderApplyApi" />
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />

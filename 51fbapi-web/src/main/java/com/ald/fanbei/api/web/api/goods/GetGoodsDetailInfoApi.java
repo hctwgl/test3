@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.web.api.goods;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +16,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -53,6 +57,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 	
 	private AfGoodsDetailInfoVo getGoodsVo(AfGoodsDo goods){
 		AfGoodsDetailInfoVo vo = new AfGoodsDetailInfoVo();
+		List<String> goodsPics = new ArrayList<String>();
 		vo.setGoodsId(goods.getRid());
 		vo.setGoodsIcon(goods.getGoodsIcon());
 		vo.setGoodsName(goods.getName());
@@ -62,6 +67,23 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		vo.setRealAmount(goods.getRealAmount()+"");
 		vo.setRebateAmount(goods.getRebateAmount()+"");
 		vo.setSaleAmount(goods.getSaleAmount());
+		vo.setSource(goods.getSource());
+		vo.setSaleCount(goods.getSaleCount());
+		vo.setGoodsDetail(goods.getGoodsDetail());
+		//商品图片汇总处理
+		if(StringUtil.isNotBlank(goods.getGoodsPic1())){
+			goodsPics.add(goods.getGoodsPic1());
+		}
+		if(StringUtil.isNotBlank(goods.getGoodsPic2())){
+			goodsPics.add(goods.getGoodsPic2());
+		}
+		if(StringUtil.isNotBlank(goods.getGoodsPic3())){
+			goodsPics.add(goods.getGoodsPic3());
+		}
+		if(StringUtil.isNotBlank(goods.getGoodsPic4())){
+			goodsPics.add(goods.getGoodsPic4());
+		}
+		vo.setGoodsPics(goodsPics);
 		return vo;
 	}
 	

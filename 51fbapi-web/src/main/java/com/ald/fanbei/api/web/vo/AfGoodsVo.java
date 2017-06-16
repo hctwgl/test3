@@ -22,6 +22,8 @@ public class AfGoodsVo extends AbstractSerial{
 	private String goodsIcon;
 	private String thumbnailIcon;
 	private String goodsUrl;
+	private String source;
+	
 	public Long getGoodsId() {
 		return goodsId;
 	}
@@ -82,4 +84,11 @@ public class AfGoodsVo extends AbstractSerial{
 	public void setNumId(String numId) {
 		this.numId = numId;
 	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	
 }

@@ -23,6 +23,9 @@ public class AfOrderListVo extends AbstractSerial {
 	private BigDecimal saleAmount;
 	private Date gmtCreate;
 	private String type;
+	private BigDecimal actualAmount;
+	private BigDecimal couponAmount;
+	
 	public Long getOrderId() {
 		return orderId;
 	}
@@ -77,4 +80,17 @@ public class AfOrderListVo extends AbstractSerial {
 	public void setSaleAmount(BigDecimal saleAmount) {
 		this.saleAmount = saleAmount;
 	}
+	public BigDecimal getActualAmount() {
+		return actualAmount;
+	}
+	public void setActualAmount(BigDecimal actualAmount) {
+		this.actualAmount = actualAmount;
+	}
+	public BigDecimal getCouponAmount() {
+		return couponAmount;
+	}
+	public void setCouponAmount(BigDecimal couponAmount) {
+		this.couponAmount = couponAmount;
+	}
+	
 }
