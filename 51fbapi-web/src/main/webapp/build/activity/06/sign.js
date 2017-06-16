@@ -18,23 +18,20 @@ let vm=new Vue({
     },
     created:function () {
         this.logData();
-        //this.selected();
     },
     methods:{
         signIn(time){
             //点击签到弹出签到成功信息
             let self=this;
-            //alert(time)
             self.$http.post('/fanbei-web/activitySignIn').then(function (res) {
-                self.msg= eval('(' + res.data + ')');
-                alert(self.msg.msg)
-                //console.log(this.fixContent);
-
+                self.msg= eval('(' + res.data + ')');               
+                self.logData();
+                requestMsg(self.msg.msg)
             },function (response) {
                 //console.log(response)
             })
 
-            this.logData();
+            
         },
         selected(data){
             //console.log(this.fixContent)
@@ -68,7 +65,7 @@ let vm=new Vue({
                     self.fixContent.currentTime=currentTime;
                     self.fixContent.beginTime=beginTime;
                     
-                    self.current=new Date(contentData.currentDate).getDay();
+                    self.current=currentTime-beginTime+1;
                     console.log(self.fixContent)
 
                 
