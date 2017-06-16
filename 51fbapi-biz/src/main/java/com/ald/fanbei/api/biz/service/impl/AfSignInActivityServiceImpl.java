@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,18 +19,18 @@ public class AfSignInActivityServiceImpl implements AfSignInActivityService{
 	AfSignInActivityDao afSignInActivityDao;
 	@Override
 	public List<Date> initActivitySign(Long userId, Long activityId) {
-		if (!userId.equals(null) && !activityId.equals(null)) {
+		if (userId!=null && activityId!=null) {
 			return afSignInActivityDao.initActivitySign(userId, activityId);
 		}
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override
 	public Integer signIn(AfSignInActivityDo afSignInActivityDo) {
-		if (!afSignInActivityDo.equals(null)) {
+		if (afSignInActivityDo!=null) {
 			return afSignInActivityDao.singIn(afSignInActivityDo);
 		}
-		return null;
+		return 0;
 	}
 
 }

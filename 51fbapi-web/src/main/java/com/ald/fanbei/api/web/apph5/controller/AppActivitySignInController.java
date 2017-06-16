@@ -112,7 +112,7 @@ public class AppActivitySignInController extends BaseController {
 				if (afUser != null) {
 					userId = afUser.getRid();
 					List<AfResourceDo> listResource = afResourceService.selectActivityConfig();
-					if (listResource.equals(null) || listResource.get(0).equals(null)) {
+					if (listResource==null || listResource.size()==0) {
 						// TODO:没有活动，走以前的流程。
 						AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
 						AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
@@ -162,44 +162,46 @@ public class AppActivitySignInController extends BaseController {
 						data.put("resultList", "");
 
 						return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-					}
-					// 有活动，走活动的流程
-					AfResourceDo resourceDo = listResource.get(0);
-					Long activityId = resourceDo.getRid();
-					if (!activityId.equals(null)) {
-						List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
-						// TODO:转成String格式
-						List<String> listResult = new ArrayList<>();
-						SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
-						if (!listDate.isEmpty()) {
-							for (Date date : listDate) {
-								String strDate = sFormat.format(date);
-								listResult.add(strDate);
+					}else{
+						// 有活动，走活动的流程
+						AfResourceDo resourceDo = listResource.get(0);
+						Long activityId = resourceDo.getRid();
+						if (activityId != null) {
+							List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
+							// TODO:转成String格式
+							List<String> listResult = new ArrayList<>();
+							SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+							if (listDate!=null) {
+								for (Date date : listDate) {
+									String strDate = sFormat.format(date);
+									listResult.add(strDate);
+								}
 							}
+
+							// 返回活动签到的日期
+							String startDate = resourceDo.getValue1();// 活动开始的日期
+							String strStartDate = startDate.substring(0, 10);
+							HashMap<String, Object> mapResult = new HashMap<String, Object>();
+
+							String currentDate = sFormat.format(new Date());
+							// 活动签到
+							mapResult.put("type", "Y");
+							mapResult.put("cycle", resourceDo.getValue3());
+							if (!resourceDo.getDescription().equals(null)) {
+								mapResult.put("ruleSignin", resourceDo.getDescription());
+							} else {
+								mapResult.put("ruleSignin", "");
+							}
+							mapResult.put("currentDate", currentDate);
+							mapResult.put("startDate", strStartDate);
+							mapResult.put("resultList", listResult);
+							mapResult.put("seriesCount", listResult.size());
+							JSONObject jsonResult = new JSONObject(mapResult);
+
+							resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", jsonResult).toString();
 						}
-
-						// 返回活动签到的日期
-						String startDate = resourceDo.getValue1();// 活动开始的日期
-						String strStartDate = startDate.substring(0, 10);
-						HashMap<String, Object> mapResult = new HashMap<String, Object>();
-
-						String currentDate = sFormat.format(new java.util.Date());
-						// 活动签到
-						mapResult.put("type", "Y");
-						mapResult.put("cycle", resourceDo.getValue3());
-						if (!resourceDo.getDescription().equals(null)) {
-							mapResult.put("ruleSignin", resourceDo.getDescription());
-						} else {
-							mapResult.put("ruleSignin", "");
-						}
-						mapResult.put("currentDate", currentDate);
-						mapResult.put("startDate", strStartDate);
-						mapResult.put("resultList", listResult);
-						mapResult.put("seriesCount", listResult.size());
-						JSONObject jsonResult = new JSONObject(mapResult);
-
-						resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", jsonResult).toString();
 					}
+					
 				}
 			}
 		} catch (FanbeiException e) {
@@ -237,7 +239,7 @@ public class AppActivitySignInController extends BaseController {
 							userId = afUser.getRid();
 							List<AfResourceDo> listResource = afResourceService.selectActivityConfig();
 							// 先判断现在系统时间是否属于新的活动
-							if (listResource != null && listResource.size() > 0) {
+							if (listResource == null || listResource.size() == 0) {
 								// TODO:若是不满足条件，走以前的流程
 								AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
 								AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
@@ -296,17 +298,9 @@ public class AppActivitySignInController extends BaseController {
 								// :若是满足条件，插入新表
 								AfResourceDo resourceDo = listResource.get(0);
 								Long activityId = resourceDo.getRid();
-								if (!activityId.equals(null)) {
-									List<String> listResult = new ArrayList<>();
+								if (activityId!=null) {
 									List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
-									SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
-									if (!listDate.isEmpty()) {
-										for (Date date : listDate) {
-											String strDate = sFormat.format(date);
-											listResult.add(strDate);
-										}
-									}
-									Integer totalCount = listResult.size() + 1;
+									Integer totalCount = listDate.size() + 1;
 									AfSignInActivityDo signInActivityDo = new AfSignInActivityDo();
 									signInActivityDo.setActivityId(activityId);
 									signInActivityDo.setUserId(userId);
@@ -317,7 +311,7 @@ public class AppActivitySignInController extends BaseController {
 
 									// 若满足券的规则，则加对应券到用户表中
 
-									int betweenDays = Integer.valueOf(resourceDo.getValue3()).intValue();
+									int betweenDays = Integer.valueOf(resourceDo.getValue3());
 									// 说明没有达到领券要求
 									if (betweenDays > totalCount.intValue()) {
 										return resultStr;
@@ -335,7 +329,7 @@ public class AppActivitySignInController extends BaseController {
 										String strCounponId = jsonCounponId.getString("couponId");
 										Long counponId = Long.valueOf(strCounponId);
 										AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(counponId, 1l));
-										if (!couponDo.equals(null)) {
+										if (couponDo!=null) {
 
 											// 不考虑券的个数限制。
 											// id分别插入到user_coupon记录中
@@ -352,14 +346,16 @@ public class AppActivitySignInController extends BaseController {
 										}
 									}
 
-									if (!amountCoupon.equals(null) && amountCoupon > 0) {
+									if ( amountCoupon > 0) {
 										resultStr = H5CommonResponse.getNewInstance(true, "恭喜得到" + amountCoupon + "张优惠券！", "", "succeed to get a coupon !").toString();
 										return resultStr;
 									}
 
-									if (!intResult.equals(null)) {
+									if (intResult>0) {
 										resultStr = H5CommonResponse.getNewInstance(true, "签到成功", "", "succeed to sign in !").toString();
 									}
+								}else{
+									return H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED).toString();
 								}
 							}
 						}
