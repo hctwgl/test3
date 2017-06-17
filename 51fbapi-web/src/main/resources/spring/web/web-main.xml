@@ -269,6 +269,9 @@
 				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder" value-ref="completedAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/getAgencyNperInfo" value-ref="getAgencyNperInfoApi" />
 				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
+				<entry key="/agencyBuy/buySelfGoods" value-ref="buySelfGoodsApi" />
+				
+				
 				
 				
 				<!--运营接口-->
