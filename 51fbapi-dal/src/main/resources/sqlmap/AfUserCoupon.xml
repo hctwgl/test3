@@ -201,14 +201,14 @@
 			    END AS will_expire_status,
 			    uc.id rid, c.limit_amount, c.amount, c.name, c.use_rule, c.type, uc.status, uc.gmt_start, uc.gmt_end 
 			FROM
-			    af_user_coupon uc,
-			    af_coupon c 
+			    af_user_coupon uc LEFT JOIN
+			    af_coupon c  ON uc.coupon_id = c.id
 			WHERE uc.user_id = #{userId} AND c.type = 'FULLVOUCHER' 
 			    AND uc.status = 'NOUSE' 
 			    AND uc.is_delete = 0 
 			    AND c.is_delete = 0 
-			    AND NOW() BETWEEN uc.gmt_start 
-			    AND uc.gmt_end 
+			    AND (NOW() BETWEEN uc.gmt_start 
+			    AND uc.gmt_end) 
 			    AND #{amount} >=  c.limit_amount
 			ORDER BY c.amount DESC 
 			LIMIT 50
