@@ -354,11 +354,13 @@ public class RiskUtil extends AbstractThird {
 		if (directoryCache != null) {
 			directory = directoryCache.toString();
 		}
-		long consumerId = Long.parseLong(consumerNo);
+		AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
+		int userId = Integer.parseInt(oldUserInfo.getValue());
+		int consumerId = Integer.parseInt(consumerNo);
 		if ("ALL".equals(event)&&"Y".equals(afUserAuthDo.getZmStatus())
 				&&"Y".equals(afUserAuthDo.getFacesStatus())&&"Y".equals(afUserAuthDo.getMobileStatus())
 				&&"Y".equals(afUserAuthDo.getBankcardStatus())&&"Y".equals(afUserAuthDo.getTeldirStatus())
-				&&"Y".equals(afUserAuthDo.getContactorStatus())&&consumerId<=90680) {
+				&&"Y".equals(afUserAuthDo.getContactorStatus())&&consumerId<=userId) {
 			event = "REAUTH";
 		}
 		

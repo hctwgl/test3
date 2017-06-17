@@ -127,7 +127,7 @@ public class Constants {
 	public static final String RES_APP_POP_IMAGE        =  "APP_POP_IMAGE"; //首页弹窗配置
 	public static final String RES_GAME_AWARD_OF_CATCH_DOLL = "GAME_AWARD_OF_CATCH_DOLL"; //抓娃娃游戏发奖 
 	public static final String RES_GAME_CATCH_DOLL_CLIENT_RATE = "GAME_CATCH_DOLL_CLIENT_RATE";//抓娃娃游戏客户端抓中概率
-	
+	public static final String RES_OLD_USER_ID = "OLD_USER_ID";
 	//risk eventType
 	public static final String EVENT_FINANCE_LIMIT = "event_finance_limit";
 	public static final String EVENT_FINANCE_COUNT = "event_finance_count";
