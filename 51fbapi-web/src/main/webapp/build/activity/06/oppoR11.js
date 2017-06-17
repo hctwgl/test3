@@ -4,10 +4,6 @@ if(getInfo().userName){
     userName=getInfo().userName;
 };
 
-// let protocol = window.location.protocol;
-// let host = window.location.host;
-// let utlHost = protocol+'//'+host;
-
 // app调用web的方法
 function alaShareData(){
     // 分享内容
@@ -53,29 +49,29 @@ window.onload=function(){
 }
 
 //点击预约
-$('#btn').click(function(){
-  $.ajax({
-    url: '/app/activity/reserveActivityGoods',
-    dataType:'json',
-    data:{'userName':userName},
-    type: 'post',
-    success:function (data) {
-      if(data.success){
-        $('.mask').css('display','block');
-        $('.orderSuccess').css('display','block');
-      }else{
-        if(data.url){
-          location.href=data.url;
-        }else{
-          requestMsg(data.msg);
-        }
-      }
-    },
-    error: function(){
-        requestMsg("请求失败");
-    }
-  });
-});
+// $('#btn').click(function(){
+//   $.ajax({
+//     url: '/app/activity/reserveActivityGoods',
+//     dataType:'json',
+//     data:{'userName':userName},
+//     type: 'post',
+//     success:function (data) {
+//       if(data.success){
+//         $('.mask').css('display','block');
+//         $('.orderSuccess').css('display','block');
+//       }else{
+//         if(data.url){
+//           location.href=data.url;
+//         }else{
+//           requestMsg(data.msg);
+//         }
+//       }
+//     },
+//     error: function(){
+//         requestMsg("请求失败");
+//     }
+//   });
+// });
 
 // 弹窗
 $('.mask').click(function(){
@@ -87,4 +83,90 @@ $('.close').click(function(){
     $('.mask').css('display','none');
     $('.orderSuccess').css('display','none');
     window.location.reload();
+});
+
+// 倒计时
+$(function(){
+  // 结束时间的时间戳
+  let endDate = new Date("June 22,2017 10:00:00")
+  let endStamp = endDate.valueOf();
+  // 获取当前时间的时间戳
+  let now = new Date();
+  let nowTimeStamp = now.valueOf();
+  // 相差的时间戳
+  let differStamp = endStamp - nowTimeStamp;
+  let intDiff = parseInt(differStamp/1000);//倒计时总秒数量
+
+  function showTimerS( diff ){
+    var day=0,
+    hour=0,
+    minute=0,
+    second=0;//时间默认值
+
+    if(diff > 0){
+      day = Math.floor(diff / (60 * 60 * 24));
+      hour = Math.floor(diff / (60 * 60)) - (day * 24);
+      minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
+      second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+    }
+
+    if (minute <= 9) minute = '0' + minute;
+    if (second <= 9) second = '0' + second;
+    $('#day_show').html(day+"天");
+    $('#hour_show').html('<s id="h"></s>'+hour+'时');
+    $('#minute_show').html('<s></s>'+minute+'分');
+    $('#second_show').html('<s></s>'+second+'秒');
+  };
+
+  function timer(intDiff){
+      showTimerS(intDiff);
+      intDiff--;
+      window.setInterval(function(){
+          showTimerS(intDiff);
+          intDiff--;
+      }, 1000);
+  };
+  timer(intDiff);
+});
+
+// 点击手机弹窗
+new Vue({
+  el: '#oppoR11',
+  methods:{
+    btnBox: function(){
+      $.ajax({
+        url: '/app/activity/reserveActivityGoods',
+        dataType:'json',
+        data:{'userName':userName},
+        type: 'post',
+        success:function (data) {
+          if(data.success){
+            $('.mask').css('display','block');
+            $('.orderSuccess').css('display','block');
+          }else{
+            if(data.url){
+              location.href=data.url;
+            }else{
+              requestMsg(data.msg);
+            }
+          }
+        },
+        error: function(){
+            requestMsg("请求失败");
+        }
+      });
+    },
+    mobilePopup: function(){ // 显示手机弹窗
+      $('.popupBox').removeClass('hide');
+      $('.popup').removeClass('hide');
+      // $(window).unbind('scroll');
+
+      // $('body').css('overflow', 'hidden');
+    },
+    close: function(){ // 关闭手机弹窗
+      $('.popupBox').addClass('hide');
+      $('.popup').addClass('hide');
+      // window.location.reload();
+    }
+  }
 });
