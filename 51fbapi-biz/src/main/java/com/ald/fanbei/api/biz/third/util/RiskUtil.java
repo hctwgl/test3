@@ -469,7 +469,6 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/user/action/raiseQuota.htm";
-//		String url = "http://192.168.96.13:80//modules/api/user/action/raiseQuota.htm";
 		
 		String content = JSONObject.toJSONString(reqBo);
 		
@@ -487,10 +486,14 @@ public class RiskUtil extends AbstractThird {
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
 //			riskResp.setResult(dataObj.getString("result"));
 			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-  			AfUserAccountDo userAccountDo = new AfUserAccountDo();
-  			userAccountDo.setUserId(Long.parseLong(consumerNo));
-  			userAccountDo.setAuAmount(au_amount);
-  			afUserAccountService.updateUserAccount(userAccountDo);
+			Long consumerNum = Long.parseLong(obj.getString("consumerNo"));
+			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
+  			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
+  				AfUserAccountDo accountDo = new AfUserAccountDo();
+  				accountDo.setUserId(consumerNum);
+  				accountDo.setAuAmount(au_amount);
+  				afUserAccountService.updateUserAccount(accountDo);
+  			}
 			
 			return riskResp;
 		} else {
