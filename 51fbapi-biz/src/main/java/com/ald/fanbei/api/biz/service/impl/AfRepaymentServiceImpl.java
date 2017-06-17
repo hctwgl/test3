@@ -246,6 +246,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					logger.info("account=" + account);
 					afUserAccountDao.updateUserAccount(account);
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
+					
+					dealWithRaiseAmount(repayment.getBillIds());
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
