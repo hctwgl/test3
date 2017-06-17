@@ -1094,7 +1094,7 @@ public class RiskUtil extends AbstractThird {
 				AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(consumerNo);
 				// 打款
 				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
-						userDto.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", card.getMobile(),
+						userDto.getRealName(), card.getCardNumber(), consumerNo + "", card.getMobile(),
 						card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
 						UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
@@ -1108,6 +1108,8 @@ public class RiskUtil extends AbstractThird {
 					logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 					cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
 				}
+				cashDo.setCardNumber(card.getCardNumber());
+				cashDo.setCardName(card.getBankName());
 				afBorrowCashService.updateBorrowCash(cashDo);
 				addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
 			} else if (StringUtils.equals("30", result)) {
