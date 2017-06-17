@@ -141,6 +141,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1601,"goods not exist error","商品不存在"),
     GOODS_COLLECTION_ALREADY_EXIST_ERROR("GOODS_COLLECTION_ALREADY_EXIST_ERROR",1602,"goods not exist error","商品已经收藏"),
+    ORDER_NOFINISH_CANNOT_DELETE("ORDER_NOFINISH_CANNOT_DELETE",1603,"order not finish cannot delete","订单未完成，删除失败"),
 
     //borrow model 1700-1799
     BORROW_CONSUME_NOT_EXIST_ERROR("BORROW_CONSUME_NOT_EXIST_ERROR",1701,"borrow consume not exist error","分期未配置"),

@@ -45,6 +45,7 @@ public class AfGoodsDo extends AbstractSerial{
 	private String goodsPic3;
 	private String goodsPic4;
 	private String goodsDetail;
+	private String remark;
 	
 	public Long getRid() {
 		return rid;
@@ -213,6 +214,12 @@ public class AfGoodsDo extends AbstractSerial{
 	}
 	public void setGoodsDetail(String goodsDetail) {
 		this.goodsDetail = goodsDetail;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	
 }

@@ -638,6 +638,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public AfOrderDo getOrderById(Long id) {
 		return orderDao.getOrderById(id);
 	}
+	
+	@Override
+	public int deleteOrder(Long id) {
+		return orderDao.deleteOrder(id);
+	}
 
 	@Override
 	public Map<String, Object> payBrandOrder(final Long payId, final Long orderId, final Long userId,

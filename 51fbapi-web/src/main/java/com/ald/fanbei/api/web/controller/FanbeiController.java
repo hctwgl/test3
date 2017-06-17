@@ -44,7 +44,7 @@ public class FanbeiController extends BaseController {
 	
     @RequestMapping(value ={
     	"/goods/getFootMarkList","/good/getGoodsTkRate","/goods/addFootMark","/goods/getHomeInfo","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
-    	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo"
+    	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -72,9 +72,10 @@ public class FanbeiController extends BaseController {
             request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
             response.setContentType("application/json;charset=utf-8");
             return this.processRequest(body, request, false);
-        }
+    }
+    
     @RequestMapping(value ={
-    	"/order/confirmReceipt","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply"
+    	"/order/confirmReceipt","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String orderRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
