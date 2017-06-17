@@ -136,8 +136,8 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 
 
 	@Override
-	public List<AfUserCouponDto> getUserAcgencyCouponByAmount(Long userId, BigDecimal amount, Long goodsId,Integer pageNo) {
-		return afUserCouponDao.getUserAcgencyCouponByAmount(userId, amount, goodsId, pageNo);
+	public List<AfUserCouponDto> getUserAcgencyCouponByAmount(Long userId, BigDecimal amount) {
+		return afUserCouponDao.getUserAcgencyCouponByAmount(userId, amount);
 	}
 
 

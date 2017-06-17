@@ -195,19 +195,23 @@
 	</select>
 	
 		<select id="getUserAcgencyCouponByAmount" resultType="AfUserCouponDto">
-		SELECT 
-			CASE WHEN TIMESTAMPDIFF( HOUR, NOW(), uc.gmt_end) <![CDATA[ < ]]>48 THEN 'Y' ELSE 'N' END AS will_expire_status,
-			uc.id rid ,c.limit_amount,c.amount,c.name , c.use_rule ,c.type ,uc.status
-			,uc.gmt_start,uc.gmt_end
-		from af_user_coupon uc ,af_coupon c
-		WHERE c.id in (
-			SELECT s.coupon_id FROM af_subject_goods sg,af_subject s
-			WHERE sg.parent_subject_id = s.id  and s.is_delete = 0 and sg.is_delete = 0 and sg.goods_id =#{goodsId}
-		) and uc.coupon_id =c.id and uc.user_id = #{userId}
-		AND uc.status ='NOUSE' AND uc.is_delete = 0 AND c.is_delete =0 and   NOW() BETWEEN uc.gmt_start AND uc.gmt_end
-		AND c.limit_amount<![CDATA[ <=#{amount}  ]]>
-		ORDER BY c.amount DESC
-		LIMIT #{pageNo},10
+			SELECT 
+			    CASE
+			        WHEN 48 > TIMESTAMPDIFF(HOUR, NOW(), uc.gmt_end)  THEN 'Y'  ELSE 'N' 
+			    END AS will_expire_status,
+			    uc.id rid, c.limit_amount, c.amount, c.name, c.use_rule, c.type, uc.status, uc.gmt_start, uc.gmt_end 
+			FROM
+			    af_user_coupon uc,
+			    af_coupon c 
+			WHERE uc.user_id = #{userId} AND c.type = 'FULLVOUCHER' 
+			    AND uc.status = 'NOUSE' 
+			    AND uc.is_delete = 0 
+			    AND c.is_delete = 0 
+			    AND NOW() BETWEEN uc.gmt_start 
+			    AND uc.gmt_end 
+			    AND #{amount} >=  c.limit_amount
+			ORDER BY c.amount DESC 
+			LIMIT 50
 	</select>
 	<select id="getUserAcgencyCountByAmount" resultType="java.lang.Integer">
 		SELECT 

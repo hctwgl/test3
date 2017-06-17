@@ -13,10 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -32,21 +35,27 @@ import com.alibaba.fastjson.JSON;
 public class GetAgencyCouponListApi implements ApiHandle {
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	AfSubjectGoodsService afSubjectGoodsService;
+	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"), 0);
-		Integer pageNo =  NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
+		
+		List<AfSubjectGoodsDo> subjectGoods = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
+		if(CollectionUtil.isEmpty(subjectGoods)){
+			return resp;
+		}
 		
 		Long userId = context.getUserId();
-		int total = afUserCouponService.getUserAcgencyCountByAmount(userId,actualAmount,goodsId);
-		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount,goodsId,(pageNo-1)*10);
+		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("couponList", JSON.toJSON(list));
-		data.put("pageNo", pageNo);
-		data.put("totalCount", total);
+		data.put("pageNo", 1);
+		data.put("totalCount", list.size());
 		
 		resp.setResponseData(data);
 		

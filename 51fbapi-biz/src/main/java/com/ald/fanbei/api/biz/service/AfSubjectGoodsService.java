@@ -20,4 +20,11 @@ public interface AfSubjectGoodsService {
 	public List<AfGoodsDo> listQualitySubjectGoods();
 
 	List<AfGoodsDo> listQualitySubjectGoodsByParentId(Long parentId);
+	
+	/**
+	 * 通过商品查询专题商品
+	 * @param goodsId
+	 * @return
+	 */
+	List<AfSubjectGoodsDo> getSubjectGoodsByGoodsId(Long goodsId);
 }

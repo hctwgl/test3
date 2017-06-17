@@ -45,5 +45,10 @@ public class AfSubjectGoodsServiceImpl implements AfSubjectGoodsService{
 	public List<AfGoodsDo> listQualitySubjectGoodsByParentId(Long parentId) {
 		return afSubjectGoodsDao.listQualitySubjectGoodsByParentId(parentId);
 	}
+	
+	@Override
+	public List<AfSubjectGoodsDo> getSubjectGoodsByGoodsId(Long goodsId) {
+		return afSubjectGoodsDao.getSubjectGoodsByGoodsId(goodsId);
+	}
 
 }

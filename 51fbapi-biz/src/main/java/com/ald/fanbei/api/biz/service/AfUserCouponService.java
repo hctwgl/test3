@@ -98,7 +98,7 @@ public interface AfUserCouponService {
 	 * @param goodsId
 	 * @return
 	 */
-	List<AfUserCouponDto> getUserAcgencyCouponByAmount(Long userId,BigDecimal amount,Long goodsId,Integer pageNo);
+	List<AfUserCouponDto> getUserAcgencyCouponByAmount(Long userId,BigDecimal amount);
 
 	/**
 	 * 获取用户专场可使用满减券个数

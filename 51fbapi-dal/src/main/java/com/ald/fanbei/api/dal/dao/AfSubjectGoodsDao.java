@@ -21,6 +21,8 @@ public interface AfSubjectGoodsDao {
 	 * @return
 	 */
 	int addSubjectGoods(AfSubjectGoodsDo afSubjectGoodsDo);
+	
+	List<AfSubjectGoodsDo> getSubjectGoodsByGoodsId(@Param("goodsId")Long goodsId);
 
 	List<AfGoodsDo> listAllSubjectGoods(AfSubjectGoodsQuery query);
 

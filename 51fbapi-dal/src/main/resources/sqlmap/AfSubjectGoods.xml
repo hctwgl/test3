@@ -6,6 +6,10 @@
 		s.id,s.gmt_create,s.gmt_modified,s.subject_id,s.goods_id,s.interest_free_id,s.coupon_id
 	</sql>
 	
+	<sql id="subjectGoodsSqlField">
+		id,gmt_create,gmt_modified,subject_id,goods_id,parent_subject_id
+	</sql>
+	
 	<insert id="addSubjectGoods" parameterType="AfSubjectGoodsDo" keyProperty="id" useGeneratedKeys="true" >
 		INSERT INTO
 			af_subject_goods
@@ -78,4 +82,14 @@
 	<update id="deleteSubjectGoods" parameterType="java.lang.Long" >
 		UPDATE af_subject_goods SET is_delete = 1 WHERE id=#{rid}
 	</update>
+	
+	<select id="getSubjectGoodsByGoodsId"  parameterType="java.lang.Long" resultType="AfSubjectGoodsDo" >
+		SELECT 
+			<include refid="subjectGoodsSqlField"></include>
+		FROM 
+			af_subject_goods 
+		WHERE
+			is_delete=0 AND goods_id = #{goodsId}
+	</select>
+		
 </mapper>
