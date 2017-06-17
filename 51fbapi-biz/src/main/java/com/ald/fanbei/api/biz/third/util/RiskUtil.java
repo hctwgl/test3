@@ -354,7 +354,6 @@ public class RiskUtil extends AbstractThird {
 		if (directoryCache != null) {
 			directory = directoryCache.toString();
 		}
-		// 判断是否在白名单里面
 		AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
 		int userId = Integer.parseInt(oldUserInfo.getValue());
 		int consumerId = Integer.parseInt(consumerNo);
