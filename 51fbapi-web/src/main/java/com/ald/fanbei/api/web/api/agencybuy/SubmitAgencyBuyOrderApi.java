@@ -82,7 +82,10 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);
-
+       
+		if(actualAmount.compareTo( BigDecimal.ZERO)<0){
+        	actualAmount = BigDecimal.ZERO;
+        }
 		
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		AfOrderDo afOrder = new AfOrderDo();
