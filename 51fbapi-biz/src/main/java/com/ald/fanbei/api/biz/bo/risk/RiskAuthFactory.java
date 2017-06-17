@@ -13,15 +13,17 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 public class RiskAuthFactory {
 
 	public static RiskRegisterStrongReqBo createRiskDo(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, 
-			String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost) {
+			String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
 		if ("ALL".equals(event)) {
-			return new RiskStrong(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, NotifyHost);
+			return new RiskStrong(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost);
 		} else if ("USER".equals(event)) {
 			return new RiskUser(consumerNo, event, afUserDo, accountDo, CHANNEL, PRIVATE_KEY);
 		} else if ("LINKMAN".equals(event)) {
 			return new RiskLinkMan(consumerNo, event, afUserAuthDo);
 		} else if ("DIRECTORY".equals(event)) {
 			return new RiskContacts(consumerNo, event, directory);
+		} else if ("REAUTH".equals(event)) {//有数据重新重新认证
+			return new RiskReauth(consumerNo, event, riskOrderNo, appName, ipAddress, blackBox, cardNum, CHANNEL, notifyHost);
 		}
 		return null;
 	}

@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.bo.risk;
 
-import org.dbunit.util.Base64;
-
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -48,10 +46,10 @@ public class RiskUser extends RiskRegisterStrongReqBo {
 		userInfo.put("address", afUserDo.getAddress());
 		userInfo.put("channel", CHANNEL);
 		userInfo.put("reqExt", "");
-//		userInfo.put("realName", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getRealName()));
-//		userInfo.put("phone", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getMobile()));
-//		userInfo.put("idNo", RSAUtil.encrypt(PRIVATE_KEY, accountDo.getIdNumber()));
-//		userInfo.put("email", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getEmail()));
+		userInfo.put("realName", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getRealName()));
+		userInfo.put("phone", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getMobile()));
+		userInfo.put("idNo", RSAUtil.encrypt(PRIVATE_KEY, accountDo.getIdNumber()));
+		userInfo.put("email", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getEmail()));
 //		setUserInfo(Base64.encodeString(JSON.toJSONString(userInfo)));
 		setUserInfo(JSON.toJSONString(userInfo));
 	}

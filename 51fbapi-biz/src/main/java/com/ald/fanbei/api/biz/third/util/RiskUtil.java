@@ -348,18 +348,28 @@ public class RiskUtil extends AbstractThird {
 	 * 
 	 * @return
 	 */
-	public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, 
-			String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
-		String directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo).toString();
+	public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
+		Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo);
+		String directory = "";
+		if (directoryCache != null) {
+			directory = directoryCache.toString();
+		}
+		
+		if ("ALL".equals(event)&&"Y".equals(afUserAuthDo.getZmStatus())
+				&&"Y".equals(afUserAuthDo.getFacesStatus())&&"Y".equals(afUserAuthDo.getMobileStatus())
+				&&"Y".equals(afUserAuthDo.getBankcardStatus())&&"Y".equals(afUserAuthDo.getTeldirStatus())
+				&&"Y".equals(afUserAuthDo.getContactorStatus())) {
+			event = "REAUTH";
+		}
+		
 		logger.info("registerStrongRisk directory= {}", directory);
-		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, 
-				ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
+		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
 		logger.info("registerStrongRisk reqBo= {}", reqBo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		
+
 		String content = JSONObject.toJSONString(reqBo);
 		commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
-		
+
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 		
 		logThird(reqResult, "registerAndRisk", reqBo);
@@ -601,8 +611,10 @@ public class RiskUtil extends AbstractThird {
       			authDo.setRiskStatus(RiskStatus.YES.getCode());
       			afUserAuthService.updateUserAuth(authDo);
       			
+      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
+                                                否则把用户的额度设置成分控返回的额度*/
       			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-      			if (au_amount.compareTo(userAccountDo.getAuAmount()) > 0) {
+      			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
       				AfUserAccountDo accountDo = new AfUserAccountDo();
       				accountDo.setUserId(consumerNo);
       				accountDo.setAuAmount(au_amount);
@@ -614,14 +626,15 @@ public class RiskUtil extends AbstractThird {
       			authDo.setRiskStatus(RiskStatus.NO.getCode());
       			afUserAuthService.updateUserAuth(authDo);
       			
+      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
+                                                否则把用户的额度设置成分控返回的额度*/
       			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-      			if (userAccountDo.getAuAmount().compareTo(BigDecimal.ZERO) == 0) {
+      			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
       				AfUserAccountDo accountDo = new AfUserAccountDo();
       				accountDo.setUserId(consumerNo);
       				accountDo.setAuAmount(BigDecimal.ZERO);
       				afUserAccountService.updateUserAccount(accountDo);
       			}
-      			
 			}
 		}
 		return 0;
