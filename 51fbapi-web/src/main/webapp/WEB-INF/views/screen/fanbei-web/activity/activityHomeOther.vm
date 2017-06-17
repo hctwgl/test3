@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017061502")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	<meta charset="UTF-8">
+	<title>618主会场</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/activityHome.css?version=$version">
+</head>
+<body>
+	<div class="activityHomeWrap">
+		<div class="activityHomeBanner">
+			<img src="$commonUrl/bannerBg.png" class="banner">
+      <span class="bannerTitle"><span class="bannerTitleCorner"></span></span>
+      <div class="countDown" id="countDown">
+        <h2>距离活动结束</h2>
+				<span class="time_item" id="day_show"></span>
+				<span class="time_item" id="hour_show"></span>
+				<span class="time_item" id="minute_show"></span>
+				<span class="time_item" id="second_show"></span>
+			</div>
+			<a class="goCoupons" href="/fanbei-web/receiveCoupons?addUiName=COUPONS"></a>
+		</div>
+		<div class="activityHomeContent">
+			<ul class="selectedHome clearfix" id="selectedHome">
+				<li data-type='1'><a href=""><img src="$commonUrl/selectedHome1.png"></a></li>
+				<li data-type='2'><a href=""><img src="$commonUrl/selectedHome2.png"></a></li>
+				<li data-type='3'><a href=""><img src="$commonUrl/selectedHome3.png"></a></li>
+				<li data-type='4'><a href="strollHome"><img src="$commonUrl/selectedHome4.png"></a></li>
+			</ul>
+			<div class="boutiqueHome">
+				<h2 id="goodTitle"></h2>
+				<ul id="qualityGoodsList"></ul>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="/dist/activity/06/activityHome.js?version=$version"></script>
+</body>
+</html>
