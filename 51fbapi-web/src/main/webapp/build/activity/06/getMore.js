@@ -40,7 +40,12 @@ function getData(){
                       str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes" style="-webkit-box-orient: vertical;">'+List[i].goodName+'</p><p class="productPrice">￥'+List[i].saleAmount+'</p><p class="fan">返</p><p class="fanPrice">￥'+List[i].rebateAmount+'</p><a class="buyNow" href="'+data.data.notifyUrl+'&params={%22goodsId%22:%22'+List[i].goodsId+'%22}'
 +'"}'+'"}'+'">马上抢</a></div></li>'
                     } else{
-                      str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes" style="-webkit-box-orient: vertical;">'+List[i].goodName+'</p><p class="monthPrice"><i class="monthCorner"></i>￥'+List[i].nperMap.amount+' x '+List[i].nperMap.nper+'</p><p class="buyPrice">￥'+List[i].nperMap.totalAmount+'</p><p class="buyNow">马上抢</p></div></li>'
+                        if(List[i].nperMap.isFree ==1){
+                            var mount=List[i].nperMap.freeAmount
+                        }else if(List[i].nperMap.isFree ==2){
+                            var mount=List[i].nperMap.amount
+                        }
+                      str='<li><div class="productImg"><img src="'+List[i].goodsIcon+'"></div><div class="productRight"><p class="productDes" style="-webkit-box-orient: vertical;">'+List[i].goodName+'</p><p class="monthPrice"><i class="monthCorner"></i>￥'+mount+' x '+List[i].nperMap.nper+'</p><p class="buyPrice">￥'+List[i].nperMap.totalAmount+'</p><p class="buyNow">马上抢</p></div></li>'
                     }                    
                     $('#productList').append(str);
                   }

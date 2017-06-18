@@ -34,7 +34,8 @@
 						<p class="title" style="-webkit-box-orient: vertical;">{{data.goodName}}</p>
 						<p class="price">
 							<template v-if="data.goodsType==1">
-								<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+								<p v-if="data.nperMap.isFree==2"><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+								<p  v-if="data.nperMap.isFree==1"><i class="monthCorner"></i>￥{{data.nperMap.freeAmount}}×{{data.nperMap.nper}}</p>
 								<p>抢购价：￥{{data.nperMap.totalAmount}}</p>
 							</template>
 							<template v-else>
@@ -66,8 +67,9 @@
                             <p class="title" style="-webkit-box-orient: vertical;">{{data.goodName}}</p>
                             <p class="price">
                                 <template v-if="data.goodsType==1">
-									<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
-									<p>抢购价：￥{{data.nperMap.totalAmount}}</p>
+                            <p v-if="data.nperMap.isFree==2"><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+                            <p  v-if="data.nperMap.isFree==1"><i class="monthCorner"></i>￥{{data.nperMap.freeAmount}}×{{data.nperMap.nper}}</p>
+                            <p>抢购价：￥{{data.nperMap.totalAmount}}</p>
         						</template>
 								<template v-else>
 									<span>￥{{data.saleAmount}}</span>
