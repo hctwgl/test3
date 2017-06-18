@@ -60,6 +60,18 @@
 			<if test="thirdDetailUrl != null" >
 				,third_detail_url
 			</if>
+			<if test="consignee != null" >
+				,consignee
+			</if>
+			<if test="address != null" >
+				,address
+			</if>
+			<if test="consigneeMobile != null" >
+				,consignee_mobile
+			</if>
+			<if test="borrowRate != null" >
+				,borrow_rate
+			</if>
 			<if test="serviceProvider != null">
 				,service_provider
 			</if>
@@ -114,6 +126,18 @@
 			</if>
 			<if test="thirdDetailUrl != null" >
 				,#{thirdDetailUrl}
+			</if>
+			<if test="consignee != null" >
+				,#{consignee}
+			</if>
+			<if test="address != null" >
+				,#{address}
+			</if>
+			<if test="consigneeMobile != null" >
+				,#{consigneeMobile}
+			</if>
+			<if test="borrowRate != null" >
+				,#{borrowRate}
 			</if>
 			<if test="serviceProvider != null">
 				,#{serviceProvider}

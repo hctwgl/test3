@@ -15,6 +15,7 @@ public enum OrderType {
 	TAOBAO("TAOBAO", "淘宝订单","TB"),
 	TMALL("TMALL", "天猫订单","TM"),
 	AGENTBUY("AGENTBUY", "代买订单","DM"),
+	SELFSUPPORT("SELFSUPPORT", "自营商品订单","SG"),
 
 	BOLUOME("BOLUOME", "菠萝觅","BL");
     

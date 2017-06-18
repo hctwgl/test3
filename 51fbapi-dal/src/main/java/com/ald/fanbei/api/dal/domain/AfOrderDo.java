@@ -61,6 +61,8 @@ public class AfOrderDo extends AbstractSerial{
 	private String consigneeMobile;//收件人电话
 	private String invoiceHeader;//发票抬头
 	private String logisticsInfo;//物流信息
+	private String borrowRate;//提交订单时的费率信息
+
 	
 	public Long getRid() {
 		return rid;
@@ -367,6 +369,20 @@ public class AfOrderDo extends AbstractSerial{
 	 */
 	public void setLogisticsInfo(String logisticsInfo) {
 		this.logisticsInfo = logisticsInfo;
+	}
+
+	/**
+	 * @return the borrowRate
+	 */
+	public String getBorrowRate() {
+		return borrowRate;
+	}
+
+	/**
+	 * @param borrowRate the borrowRate to set
+	 */
+	public void setBorrowRate(String borrowRate) {
+		this.borrowRate = borrowRate;
 	}
 
 	
