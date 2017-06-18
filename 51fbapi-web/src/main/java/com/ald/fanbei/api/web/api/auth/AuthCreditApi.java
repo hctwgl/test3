@@ -144,7 +144,7 @@ public class AuthCreditApi implements ApiHandle {
 			userAuth.setWatchlistScore(watchListResp.getIsMatched()?YesNoStatus.YES.getCode():YesNoStatus.NO.getCode());
 			userAuth.setGmtWatchlist(new Date());
 		}
-		userAuth.setRealnameScore(authResult.getFinalScore());
+		userAuth.setRealnameScore(80);
 		afUserAuthService.updateUserAuth(userAuth);
 		
 		// TODO 计算信用分 更新userAccount
