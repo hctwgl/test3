@@ -3,7 +3,7 @@
 <head>
     #set($version="2017052302")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
-<title>公告</title>
+<title>年终盛宴正式开启</title>
 </head>
 <body>
 <img src="$commonUrl/gg_01.jpg">
