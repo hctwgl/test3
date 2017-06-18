@@ -6,8 +6,7 @@
 */
 
 
-var sessionId = $("#sessionId").val();
-var tdHost = $("#tdHost").val();
+var token = Math.random().toString(36).substr(2);
 
 var style = $("#style").val();
 
@@ -18,13 +17,13 @@ var style = $("#style").val();
     var _fmOpt = {
          partner: 'alading',
          appName: 'register_professional_web',
-         token: sessionId
+         token: token
      };
      var cimg = new Image(1,1);
      cimg.onload = function() {
          _fmOpt.imgLoaded = true;
      };
-     cimg.src = tdHost+"/fp/clear.png?partnerCode=alading&appName=register_professional_web&tokenId=" + _fmOpt.token;
+     cimg.src = "https://fp.fraudmetrix.cn//clear.png?partnerCode=alading&appName=register_professional_web&tokenId=" + _fmOpt.token;
      var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
      fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
@@ -114,7 +113,8 @@ $(function(){
   									smsCode: register_verification,
   									password: password_md5,
   									channelCode: channelCode,
-  									pointCode: pointCode
+  									pointCode: pointCode,
+  									token:token
   								},
   								success: function(returnData){
   									if ( returnData.success ) {

@@ -8,8 +8,6 @@
     </head>
 
     <body style="background-color: #fff;">
-    <input type="hidden" id="sessionId" name="sessionId" value="$!{sessionId}">
-	<input type="hidden" id="tdHost" value="$!{tdHost}">
 	<img src="$commonUrl/gameRegister1.png">
     <div class="imgWrap">
 		<img src="$commonUrl/gameRegister2.png">
