@@ -155,7 +155,6 @@ public class AppH5UserContorler extends BaseController {
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
-			
 
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
 			if (eUserDo != null) {
@@ -185,6 +184,12 @@ public class AppH5UserContorler extends BaseController {
 				resultStr =  H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
 				return resultStr;
 
+			}
+			try {
+				tongdunUtil.getPromotionResult(request.getSession().getId(),null,null,CommonUtil.getIpAddr(request),mobile, mobile, "");
+			} catch (Exception e) {
+				resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
+				return resultStr;
 			}
 
 			// 更新为已经验证
