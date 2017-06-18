@@ -278,11 +278,9 @@ public class TongdunUtil extends AbstractThird {
 			return;
 		}
 		String promotionSwitch = resourceValueWhithType(AfResourceType.promotionTongdunSwitch.getCode());
-		logger.info("同盾反欺诈开关："+promotionSwitch);
 		if (StringUtil.isBlank(promotionSwitch) || "0".equals(promotionSwitch)) {// 验证开关关闭
 			return;
 		}
-		logger.info("同盾反欺诈返回："+apiResp);
 		if (apiResp != null && apiResp.get("final_decision") != null
 				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
 						.indexOf(apiResp.get("final_decision") + "") > -1) {
