@@ -1,4 +1,25 @@
 
+var sessionId = $("#sessionId").val();
+var tdHost = $("#tdHost").val();
+
+// 同盾校验编号的sessionId
+ (function() {
+    var _fmOpt = {
+         partner: 'alading',
+         appName: 'register_professional_web',
+         token: sessionId
+     };
+     var cimg = new Image(1,1);
+     cimg.onload = function() {
+         _fmOpt.imgLoaded = true;
+     };
+     cimg.src = tdHost+"/fp/clear.png?partnerCode=alading&appName=register_professional_web&tokenId=" + _fmOpt.token;
+     var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+     fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+ 	// alert(json.msg);
+ })();
+
 // 根据点击显示input文字
 $('.input').on('keydown',function () {
 	$(this).next().hide()
