@@ -17,7 +17,7 @@ var style = $("#style").val();
     var _fmOpt = {
          partner: 'alading',
          appName: 'register_professional_web',
-         token: sessionId
+         token: token
      };
      var cimg = new Image(1,1);
      cimg.onload = function() {
