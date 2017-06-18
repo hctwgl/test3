@@ -60,7 +60,9 @@ public enum AfResourceType {
 	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
 
 	
-	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置");
+	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置"),
+
+	SelfSupportGoods("SELFSUPPORT_GOODS", "自营商品相关配置");
 
 	
 
