@@ -60,7 +60,8 @@ import com.alibaba.fastjson.JSONObject;
 @SuppressWarnings("unchecked")
 public class AppH5ActivityController extends BaseController {
     String  opennative = "/fanbei-web/opennative?name=";
-     
+    private static Integer PAGE_SIZE = 20;
+    
     @Resource
     AfGoodsReservationService afGoodsReservationService;
     @Resource
@@ -285,8 +286,11 @@ public class AppH5ActivityController extends BaseController {
     @RequestMapping(value = "/getSelfSupportGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getSelfSupportGoodsInfo(HttpServletRequest request, ModelMap model) throws IOException {
         Map<String, Object> returnData = new HashMap<String, Object>();
+        Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
         try {
         	AfGoodsQuery query = new AfGoodsQuery();
+        	query.setPageSize(PAGE_SIZE);
+        	query.setPageNo(pageNo);
         	query.setSource(AfGoodsSource.SELFSUPPORT.getCode());
         	//获取自营商品信息列表
         	List<AfGoodsDo> goodsDoList = afGoodsService.getCateGoodsList(query);
