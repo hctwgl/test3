@@ -293,12 +293,7 @@ public class AppH5SubjectController  extends BaseController{
 							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 								interestFreeArray = JSON.parseArray(interestFreeJson);
 							}
-							logger.error("1=> "+ array);
-							logger.error("2=> "+ interestFreeArray);
-							logger.error("3=> "+ BigDecimal.ONE.intValue());
-							logger.error("4=> "+ goodsDo.getSaleAmount());
-							logger.error("5=> "+ resource.getValue1());
-							logger.error("6=> "+ resource.getValue2());
+							
 							List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
 									goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
 							
