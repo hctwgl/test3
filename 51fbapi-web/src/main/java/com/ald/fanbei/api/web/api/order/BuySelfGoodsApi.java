@@ -80,7 +80,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setInvoiceHeader(invoiceHeader);
 		if(nper.intValue()>0){
 			//保存手续费信息
-			JSONObject borrowRate = afResourceService.borrowRateWithResource(nper);
+			JSONObject borrowRate = afResourceService.borrowRateWithResourceOld(nper);
 			afOrder.setBorrowRate(JSON.toJSONString(borrowRate));
 		}
 		afOrderService.createOrder(afOrder);

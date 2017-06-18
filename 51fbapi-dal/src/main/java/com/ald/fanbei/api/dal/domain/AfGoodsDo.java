@@ -46,6 +46,7 @@ public class AfGoodsDo extends AbstractSerial{
 	private String goodsPic4;
 	private String goodsDetail;
 	private String remark;
+	private String tags;//免息活动标签
 	
 	public Long getRid() {
 		return rid;
@@ -220,6 +221,18 @@ public class AfGoodsDo extends AbstractSerial{
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	/**
+	 * @return the tags
+	 */
+	public String getTags() {
+		return tags;
+	}
+	/**
+	 * @param tags the tags to set
+	 */
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 	
 }

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    	#set($version="2017061404")
+		#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+		<title>注册</title>
+		<link rel="stylesheet" type="text/css" href="/dist/activity/06/gameRegister.css">
+    </head>
+
+    <body style="background-color: #fff;">
+	<img src="$commonUrl/gameRegister1.png">
+    <div class="imgWrap">
+		<img src="$commonUrl/gameRegister2.png">
+        <input type="text" class="input" id="phone" style="top:.3rem;width:5rem" pattern="[0-9]*"  maxlength="11">
+		<img class="imgTxt" style="width:2.97rem;top:.4rem" src="$commonUrl/gameRegister01.png">
+    </div>
+	<div style="height:1.4rem">
+        <div class="imgWrap" style="float:left">
+			<img src="$commonUrl/gameRegister3.png" style="width:4.4rem;height:1.4rem;">
+            <input type="text" class="input" id="code" style="top:.55rem;width:2.3rem" pattern="[0-9]*"  maxlength="6">
+            <img class="imgTxt" style="width:2.25rem;top:.65rem" src="$commonUrl/gameRegister02.png">
+		</div>
+		<div class="imgWrap" style="float:left">
+			<img id="codeBtn" src="$commonUrl/gameRegister41.png" style="width:3.1rem;height:1.4rem;">
+			<img class="time" src="$commonUrl/gameRegister42.png" style="top:0;">
+			<div class="time time1" style="top:.5rem;font-size: .36rem;">60s</div>
+		</div>
+	</div>
+    <div class="imgWrap">
+		<img src="$commonUrl/gameRegister5.png">
+        <input type="password" class="input" id="password" style="top:.5rem;width:5rem" maxlength="18">
+        <img class="imgTxt" style="width:2.25rem;top:.6rem" src="$commonUrl/gameRegister03.png">
+
+	</div>
+	<img id="submit" src="$commonUrl/gameRegister61.png">
+    <div class="imgWrap">
+		<img src="$commonUrl/gameRegister7.png">
+		<img class="gou" src="$commonUrl/gou.png">
+        <input type="checkbox" id="input_check" checked="checked" onclick="gou()">
+	    <a class="protocol" href="/app/sys/registerProtocol"></a>
+	</div>
+    <div class="imgWrap">
+		<img src="$commonUrl/gameRegister8.png">
+		<a class="login" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"></a>
+	</div>
+		<script type="text/javascript" src="/common/js/core.js"></script>
+		<script type="text/javascript" src="/common/js/md5.js"></script>
+		<script type="text/javascript" src="/dist/activity/06/gameRegister.js"></script>
+    </body>
+</html>

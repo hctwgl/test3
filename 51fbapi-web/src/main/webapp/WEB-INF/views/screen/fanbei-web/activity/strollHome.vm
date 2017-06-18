@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="20170614")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	<meta charset="UTF-8">
+	<title>618 逛逛分会场</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/strollHome.css?version=$version">
+</head>
+<body>
+	<div class="strollHomeWrap" id="strollHomeWrap">
+		<img src="$commonUrl/strollHomeBanner.jpg">
+		<div class="strollHomeContent">
+			<ul class="strollHomeContentUl">
+				<li class="strollHomeContentLi" data-type="1" id="ygsx">
+					<img @click="boluomiHome(2)" src="$commonUrl/strollHomeList1.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8339)">
+							<p class="money"><i>¥</i>5</p>
+							<p class="date">满25减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8340)">
+							<p class="money"><i>¥</i>10</p>
+							<p class="date">满68减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="2" id="xbk">
+					<img @click="boluomiHome(14)" src="$commonUrl/strollHomeList2.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8341)">
+							<p class="money"><i>¥</i>5</p>
+							<p class="date">无门槛</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8342)">
+							<p class="money"><i>¥</i>10</p>
+							<p class="date">满50减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="3" id="kdy">
+					<img @click="boluomiHome(1)" src="$commonUrl/strollHomeList3.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8343)">
+							<p class="money"><i>¥</i>5</p>
+							<p class="date">无门槛</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8344)">
+							<p class="money"><i>¥</i>10</p>
+							<p class="date">满50减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="4" id="lmm">
+					<img @click="boluomiHome(4)" src="$commonUrl/strollHomeList4.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8345)">
+							<p class="money"><i>¥</i>5</p>
+							<p class="date">满50减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8346)">
+							<p class="money"><i>¥</i>10</p>
+							<p class="date">满100减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8347)">
+							<p class="money"><i>¥</i>20</p>
+							<p class="date">满200减20</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8348)">
+							<p class="money"><i>¥</i>50</p>
+							<p class="date">满500减50</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="5" id="elm">
+					<img @click="boluomiHome(10)" src="$commonUrl/strollHomeList5.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8349)">
+							<p class="money"><i>¥</i>5</p>
+							<p class="date">满25减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8350)">
+							<p class="money"><i>¥</i>10</p>
+							<p class="date">满68减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="6" id="sjcz">
+					<img @click="boluomiHome(8)" src="$commonUrl/strollHomeList6.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8351)">
+							<p class="money"><i>¥</i>1</p>
+							<p class="date">满30减1</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8352)">
+							<p class="money"><i>¥</i>2</p>
+							<p class="date">满50减2</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="7" id="xh">
+					<img @click="boluomiHome(13)" src="$commonUrl/strollHomeList7.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8353)">
+							<p class="money"><i>¥</i>10</p>
+							<p class="date">满58减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8354)">
+							<p class="money"><i>¥</i>20</p>
+							<p class="date">满168减20</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="8" id="lq">
+					<img @click="boluomiHome(11)" src="$commonUrl/strollHomeList8.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8355)">
+							<p class="money"><i>¥</i>5</p>
+							<p class="date">满25减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8356)">
+							<p class="money"><i>¥</i>10</p>
+							<p class="date">满88减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="9" id="jyz">
+					<img @click="boluomiHome(6)" src="$commonUrl/strollHomeList9.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8357)">
+							<p class="money"><i>¥</i>5</p>
+							<p class="date">满200减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8358)">
+							<p class="money"><i>¥</i>10</p>
+							<p class="date">满500减10</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+				<li class="strollHomeContentLi" data-type="10" id="xsq">
+					<img @click="boluomiHome(5)" src="$commonUrl/strollHomeList10.png">
+					<ol class="otoCoupon clearfix">
+						<li @click="boluomiCoupons(8359)">
+							<p class="money"><i>¥</i>5</p>
+							<p class="date">满50减5</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8360)">
+							<p class="money"><i>¥</i>15</p>
+							<p class="date">满200减15</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8361)">
+							<p class="money"><i>¥</i>20</p>
+							<p class="date">满500减20</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+						<li @click="boluomiCoupons(8362)">
+							<p class="money"><i>¥</i>50</p>
+							<p class="date">满1000减50</p>
+							<p class="expiryDate">2017.06.18-06.30</p>
+							<p class="receive">点击领取</p>
+						</li>
+					</ol>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<script type="text/javascript" src="/dist/activity/06/strollHome.js?version=$version"></script>
+</body>
+</html>

@@ -5,13 +5,15 @@
 		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,consignee,address,consignee_mobile,invoice_header,logistics_info
+		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
+		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info
 	</sql>
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,consignee,address,consignee_mobile,invoice_header,logistics_info
+		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
+		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
@@ -44,7 +46,9 @@
 			<if test="commissionAmount != null" >
 			commission_amount,
 			</if>
-			nper,
+			<if test="nper != null" >
+				nper,
+			</if>
 			
 			mobile,
 			bank_id
@@ -74,6 +78,9 @@
 			</if>
 			<if test="serviceProvider != null">
 				,service_provider
+			</if>
+			<if test="interestFreeJson != null">
+				,interest_free_json
 			</if>
 		)
 		VALUES (
@@ -112,7 +119,9 @@
 		    <if test="commissionAmount != null" >
 		    	#{commissionAmount},
 		    </if>
-		    #{nper},
+		    <if test="nper != null" >
+				#{nper},
+			</if>
 		    #{mobile},
 		    #{bankId}
 		    <if test="gmtPayEnd != null">
@@ -141,6 +150,9 @@
 			</if>
 			<if test="serviceProvider != null">
 				,#{serviceProvider}
+			</if>
+			<if test="interestFreeJson != null">
+				,#{interestFreeJson}
 			</if>
 		)
 	</insert>
@@ -437,7 +449,10 @@
 	
 	<select id="getOrderListByStatus" resultType="AfOrderDo" parameterType="AfOrderQuery">
 		SELECT
-			<include refid="queryFields"/>
+			id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
+			status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
+			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no
 		FROM
 		
 		(SELECT
@@ -584,6 +599,15 @@
 			<if test="riskOrderNo != null">
     			,risk_order_no=#{riskOrderNo}
 			</if>
+			<if test="borrowRate != null">
+    			,borrow_rate=#{borrowRate}
+			</if>
+			<if test="couponAmount != null">
+    			,coupon_amount=#{couponAmount}
+			</if>
+			<if test="interestFreeJson != null">
+    			,interest_free_json=#{interestFreeJson}
+			</if>
 		WHERE id = #{rid}
 	</update>
 	
@@ -599,7 +623,11 @@
 	</select>
 	
 	<select id="getCurrentLastPayNo" resultType="java.lang.String">
-		select pay_trade_no from af_order WHERE #{endDate} >= gmt_pay AND gmt_pay >=#{startDate} and gmt_pay is not null and order_type = 'BOLUOME' ORDER BY gmt_pay DESC LIMIT 1;
+		select pay_trade_no from af_order WHERE #{endDate} >= gmt_pay 
+		AND gmt_pay >=#{startDate} 
+		and gmt_pay is not null 
+		and order_type IN('BOLUOME','AGENTBUY') 
+		ORDER BY gmt_pay DESC LIMIT 1;
 	</select>
 	
 	<select id="getNoBorrowOrder" resultType="AfOrderDo">

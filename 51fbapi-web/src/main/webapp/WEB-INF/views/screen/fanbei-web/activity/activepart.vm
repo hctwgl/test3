@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>activepart</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/activepart.css">
+</head>
+
+<body>
+        <!-- 主题 -->
+    <div class="theme" id="theme">
+        <!-- 头部 -->
+        <div class="theme-top">
+            <div class="arrow">
+               <a href="#"><</a>
+            </div>
+            <span>年终盛宴抢红包</span>
+        </div>
+        <div class="banner">
+            <!-- <div class="carefree">
+                <span>分期无忧</span>
+            </div>
+            <div class="save">
+            
+            </div>
+            <div class="coupon">
+                    <img src="" class="cou-img">
+                    <img src="" class="cou-img">
+                    <img src="" class="cou-img">
+                    <img src="" class="check">
+            </div> -->
+            <img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/ec5733893aed7606.jpg" alt="" >
+        </div>
+        <!-- 精品推荐 -->
+        <div class="theme-main clearfix" id="">
+            <div class="pic-head" style="text-align:center">
+                <div class="line-out">
+                    <span class="line"></span>
+                </div>
+                <span class="txt">精品推荐</span>
+                <div class="line-out">
+                     <span class="line"></span>
+                </div>
+            </div>
+            <ul class="bootique">
+                <li class="boot-1">
+                    <a href="#">
+                        <img src="" alt="">
+                    </a>
+                    <div class="b-1-r">
+                        <p class="discount">618折上更有超级返利</p>
+                        <p class="price"><u>￥</u>5.20</p>
+                        <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                        <p class="rob">马上抢</p>
+                    </div>
+                </li>
+                <li class="boot-1">
+                    <a href="#">
+                        <img src="" alt="">
+                    </a>
+                    <div class="b-1-r">
+                        <p class="discount">618折上更有超级返利</p>
+                        <p class="price"><u>￥</u>5.20</p>
+                        <span class="buy">值得买</span>
+                        <p class="rob">马上抢</p>
+                    </div>
+                </li>
+                <li class="boot-1">
+                    <a href="#">
+                        <img src="" alt="">
+                    </a>
+                    <div class="b-1-r">
+                        <p class="discount">618折上更有超级返利</p>
+                        <p class="price"><u>￥</u>5.20</p>
+                        <span class="buy">值得买</span>
+                        <p class="rob">马上抢</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="theme-main clearfix" id="theme_main">
+        <!-- 菜单栏 -->
+           <div class="picture-menu">
+               <ul class="menu clearfix" id="menu">
+                   <li class="new" id='m_new'><a href="#new" >新机专场</a></li>
+                   <li class="com" id='m_com'><a href="#com;" >电脑办公</a></li>
+                   <li class="play" id='m_play'><a href="#play;">娱乐影音</a></li>
+                   <li class="ele" id='m_ele'><a href="#ele;" >小家电</a></li>
+                   <li class="big" id='m_big'><a href="#big;" >大家电</a></li>
+               </ul>
+           </div>
+           <!-- 第一个滑动显示的类目 -->
+           <div id="new">
+                <div class="pic-head" style="text-align:center">
+                     <div class="line-out">
+                         <span class="line"></span>
+                     </div>
+                     <span class="txt">类目图片1</span>
+                     <div class="line-out">
+                          <span class="line"></span>
+                     </div>
+                </div>
+                <ul class="bootique">
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1" id="more">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                          <p class="more">更多</p>
+                     </li>
+                </ul>
+           </div>
+    <!--  第二个滑动的类目图片2 -->
+            <div id="com">
+                <div class="pic-head" style="text-align:center">
+                     <div class="line-out">
+                        <span class="line"></span>
+                    </div>
+                    <span class="txt">类目图片2</span>
+                    <div class="line-out">
+                        <span class="line"></span>
+                    </div>
+                </div>
+                </div>
+                <ul class="bootique">
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1" id="more">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                          <p class="more">更多</p>
+                     </li>
+                </ul>
+            </div>
+    <!-- 第三个类目 -->
+            <div id="play">
+                <div class="pic-head" style="text-align:center">
+                     <div class="line-out">
+                        <span class="line"></span>
+                     </div>
+                    <span class="txt">类目图片3</span>
+                    <div class="line-out">
+                        <span class="line"></span>
+                    </div>
+                </div>
+                <ul class="bootique three">
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1" id="more">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                          <p class="more">更多</p>
+                     </li>
+                </ul>
+            </div>
+    <!-- 第四个类目 -->
+            <div id="ele">
+                <div class="pic-head" style="text-align:center">
+                     <div class="line-out">
+                        <span class="line"></span>
+                    </div>
+                    <span class="txt">类目图片4</span>
+                    <div class="line-out">
+                        <span class="line"></span>
+                    </div>
+                </div>
+                <ul class="bootique three">
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1" id="more">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                          <p class="more">更多</p>
+                     </li>
+                </ul>
+            </div>
+    <!-- 第五个 -->
+            <div id="big">
+                <div class="pic-head" style="text-align:center">
+                     <div class="line-out">
+                        <span class="line"></span>
+                    </div>
+                    <span class="txt">类目图片5</span>
+                    <div class="line-out">
+                        <span class="line"></span>
+                    </div>
+                </div>
+                <ul class="bootique three">
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <p class="back"><u class="return">返</u><u>￥</u>1.20*2</p>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                     </li>
+                     <li class="boot-1" id="more">
+                         <a href="#">
+                             <img src="" alt="">
+                         </a>
+                         <div class="b-1-r">
+                             <p class="discount">618折上更有超级返利</p>
+                             <p class="price"><u>￥</u>5.20</p>
+                             <span class="buy">值得买</span>
+                             <p class="rob">马上抢</p>
+                         </div>
+                          <p class="more">更多</p>
+                     </li>
+                </ul>
+           </div>
+    </div>
+
+</body>
+<script src="/dist/activity/06/activepart.js?id=44"></script>
+<!-- <script type="text/javascript" src="/dist/activity/06/template-web.js"></script> -->
+</html>

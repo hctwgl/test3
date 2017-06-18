@@ -56,5 +56,12 @@ public interface AfGoodsDao {
 	 */
 	int cancelPublishGoods(@Param("numId")String numId);
 	
+	/**
+	 * 通过商品numid获取商品信息
+	 * @param rid
+	 * @return
+	 */
+	AfGoodsDo getGoodsByNumId(@Param("numId")String numId);
+	
 	
 }

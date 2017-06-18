@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017061401")
+    #set($version="2017061604")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
-    <title>game</title>
+    <title>抓娃娃 赢大奖！</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/game.css?id=$version">
 </head>
 <body>
-<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11"><img style="width:1.06rem;height:1.53rem" src="$commonUrl/R11logo1.png"></a>
+<a style="position: fixed;top:2.1rem;right:.21rem;z-index: 150" href="oppoR11?addUiName=SHOWSHARE"><img style="width:1.06rem;height:1.53rem" src="$commonUrl/R11logo1.png"></a>
 <img src="$commonUrl/ni_1.jpg" style="width: 7.5rem;height:1.89rem">
 <img src="$commonUrl/ni_2.jpg" style="width: 7.5rem;height:4.49rem">
 <img class="modelPic" src="$commonUrl/ni_2bg.jpg">
@@ -39,13 +39,13 @@
 </div>
 <!--弹框-->
 <div id="alert" class="alert">
-    <div class="alertTitle">中奖通知</div>
+    <!-- <div class="alertTitle">中奖通知</div> -->
     <p class="getState">抓取成功</p>
     <div class="getCashCoupon ad">
-      <p class="getCouponPrize ad">满<span class="limitMoney">158</span>元可用</p>
-      <p class="getCouponPrize ad">有效期：<span class="limitDate">2017-08-08</span></p>
-      <p class="getCouponPrize ad"><span class="getMoney">20</span>元</p>
-      <p class="getCashPrize ad">获得2元现金</p>
+      <!-- <p class="getCouponPrize ad">满<span class="limitMoney">158</span>元可用</p>
+      <p class="getCouponPrize ad">有效期：<span class="limitDate">2017-08-08</span></p> -->
+        <p class="getCashPrize ad">获得2元</p>
+##      <p class="getCouponPrize ad getCouponPrize02">下载51返呗APP领取</p>
     </div>
     <p class="jushuo ad">据说换个姿势就能中奖</p>
     <div class="tryAgain">再抓一次</div>

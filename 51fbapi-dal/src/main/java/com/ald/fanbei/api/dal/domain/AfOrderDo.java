@@ -55,19 +55,20 @@ public class AfOrderDo extends AbstractSerial{
 	private String serviceProvider;
 	private Integer  nper;//分期数
 	private String riskOrderNo;//风控订单号
-
+	private String borrowRate;//提交订单时的费率信息
+	private BigDecimal couponAmount;//优惠金额
+	private String interestFreeJson;//免息规则Json字符串
+	
 	private String consignee;//收件人姓名
 	private String address;//收货人地址
 	private String consigneeMobile;//收件人电话
 	private String invoiceHeader;//发票抬头
 	private String logisticsInfo;//物流信息
-	private String borrowRate;//提交订单时的费率信息
-
+	
 	
 	public Long getRid() {
 		return rid;
 	}
-	
 	public String getRiskOrderNo() {
 		return riskOrderNo;
 	}
@@ -344,20 +345,6 @@ public class AfOrderDo extends AbstractSerial{
 	}
 
 	/**
-	 * @return the nper
-	 */
-	public Integer getNper() {
-		return nper;
-	}
-
-	/**
-	 * @param nper the nper to set
-	 */
-	public void setNper(Integer nper) {
-		this.nper = nper;
-	}
-
-	/**
 	 * @return the logisticsInfo
 	 */
 	public String getLogisticsInfo() {
@@ -384,7 +371,42 @@ public class AfOrderDo extends AbstractSerial{
 	public void setBorrowRate(String borrowRate) {
 		this.borrowRate = borrowRate;
 	}
-
+	/**
+	 * @return the couponAmount
+	 */
+	public BigDecimal getCouponAmount() {
+		return couponAmount;
+	}
+	/**
+	 * @param couponAmount the couponAmount to set
+	 */
+	public void setCouponAmount(BigDecimal couponAmount) {
+		this.couponAmount = couponAmount;
+	}
+	/**
+	 * @return the interestFreeJson
+	 */
+	public String getInterestFreeJson() {
+		return interestFreeJson;
+	}
+	/**
+	 * @param interestFreeJson the interestFreeJson to set
+	 */
+	public void setInterestFreeJson(String interestFreeJson) {
+		this.interestFreeJson = interestFreeJson;
+	}
+	/**
+	 * @return the nper
+	 */
+	public Integer getNper() {
+		return nper;
+	}
+	/**
+	 * @param nper the nper to set
+	 */
+	public void setNper(Integer nper) {
+		this.nper = nper;
+	}
 	
 }
 

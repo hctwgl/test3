@@ -15,17 +15,22 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -43,6 +48,14 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	AfBorrowService afBorrowService;
+	/**
+	 * 3.6.4新增优惠劵使用
+	 */
+	@Resource
+	AfCouponService afCouponService;
+	
+	@Resource
+	AfUserCouponService  afUserCouponService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -59,14 +72,14 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
 		AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
 		
-		AfAgentOrederDetailInforVo agentOrderDetailVo = getAgentOrderDetailInforVo(afOrderDo, afAgentOrderDo);
+		AfAgentOrederDetailInforVo agentOrderDetailVo = getAgentOrderDetailInforVo(afOrderDo, afAgentOrderDo, context);
 		
 		resp.setResponseData(agentOrderDetailVo);
 		return resp;
 		
 	}
 	
-	private AfAgentOrederDetailInforVo getAgentOrderDetailInforVo (AfOrderDo afOrderDo, AfAgentOrderDo afAgentOrderDo){
+	private AfAgentOrederDetailInforVo getAgentOrderDetailInforVo (AfOrderDo afOrderDo, AfAgentOrderDo afAgentOrderDo, FanbeiContext context){
 		
 		AfAgentOrederDetailInforVo agentOrderDetailVo = new AfAgentOrederDetailInforVo();
 		
@@ -111,6 +124,12 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 * WAITING_REFUND等待退款 DEAL_REFUNDING:退款中】
 		 */
 		String status = afOrderDo.getStatus();
+		if (context.getAppVersion() < 364){
+			if (status.equals(OrderStatus.DEALING.getCode())) {
+				status =OrderStatus.PAID.getCode();
+			}
+		}
+		
 		// 返利时间
 		String gmtRebated = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtRebated());
 		String gmtFinished = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtFinished());
@@ -131,6 +150,44 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 * 
 		 * 支付状态【N:(notpay)未支付,D:(dealing)支付中,P:(payed)已经支付,R:(refund)退款】
 		 */
+		
+//		优惠券类型【MOBILE：话费充值， REPAYMENT：还款, FULLVOUCHER:满减卷,CASH:现金奖励】
+		AfUserCouponDo userCouponDo = afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+		if (userCouponDo != null){
+			 AfCouponDo couponDo = afCouponService.getCouponById(userCouponDo.getCouponId());
+			 if (couponDo != null){
+				 if(StringUtils.equals("MOBILE", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("充值劵");
+				 }
+				 
+				 if(StringUtils.equals("REPAYMENT", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("还款劵");
+				 }
+				 
+				 if(StringUtils.equals("FULLVOUCHER", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("满减劵");
+				 }
+				 
+				 if(StringUtils.equals("CASH", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("现金劵");
+				 }
+				 
+				 if(StringUtils.equals("ACTIVITY", couponDo.getType())){
+					 agentOrderDetailVo.setCouponName("会场劵");
+				 }
+				
+				 
+				 agentOrderDetailVo.setCouponAmount(couponDo.getAmount());
+				 
+				 // 如果有优惠劵,那么实际支付金额就是填写的订单金额
+				 BigDecimal actualPayAmount = actualAmount;
+				 actualAmount = actualAmount.add(couponDo.getAmount());
+				 
+				 agentOrderDetailVo.setActualPayAmount(actualPayAmount);
+				
+			 }
+		}
+		
 		agentOrderDetailVo.setStatus(StringUtils.isBlank(status)?"":status);
 		agentOrderDetailVo.setPayStatus(StringUtils.isBlank(payStatus)?payStatus:"");
 		agentOrderDetailVo.setConsignee(StringUtils.isBlank(consignee)?"":consignee);

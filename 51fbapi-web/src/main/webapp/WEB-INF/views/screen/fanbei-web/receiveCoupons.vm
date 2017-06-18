@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="20170605")
+    #set($version="2017061801")
 	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <title>我要领券</title>
@@ -23,11 +23,13 @@
 		   <li class="couponLi">
 		       <p class="positionYuan positionYuan01"></p>
                <p class="positionYuan positionYuan02"></p>
-		   	   <!-- <div class="couponKind"><img src="$commonUrl/getCoupon02.png"></div> -->
+               #if($!{item.status}=='Y')
+		   	   <div class="couponKind"><img src="$commonUrl/coupon01.png"></div>
+		   	   #end
 		   	   <div class="couponTop">
 		   	   	   <p class="cashCoupon">$!{item.type}</p>
 		   	   	   <p class="couponSize">￥<span>$priceUtil.bigdecimalToInt($!{item.amount})</span></p>
-		   	   	   <p class="expiryDate">有效期$dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
+		   	   	   <p class="expiryDate">有效期$dateUtil.formatDate($!{item.gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{item.gmtEnd},"yyyy-MM-dd")</p>
 		   	   	   <p class="fullCut">满$!{item.limitAmount}元可用</p>
 		   	   </div>
 		   	   #if($!{item.quota}==$!{item.quotaAlready})

@@ -40,6 +40,8 @@ public class AfBorrowBillDo extends AbstractSerial{
 	private String	billIds;
 	private String  type;
 	private Integer count;//数量
+	private String isFreeInterest;//是否免息是否还款状态【Y:免息 N:不免息，】
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -190,4 +192,11 @@ public class AfBorrowBillDo extends AbstractSerial{
 	public void setCount(Integer count) {
 		this.count = count;
 	}
+	public String getIsFreeInterest() {
+		return isFreeInterest;
+	}
+	public void setIsFreeInterest(String isFreeInterest) {
+		this.isFreeInterest = isFreeInterest;
+	}
+	
 }

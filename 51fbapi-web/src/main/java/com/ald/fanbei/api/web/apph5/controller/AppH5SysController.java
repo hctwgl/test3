@@ -291,7 +291,7 @@ public class AppH5SysController extends BaseController {
 	}
 
 	public static String ToBig(int num) {
-		String str[] = { "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "十" };
+		String str[] = { "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "拾" };
 		return str[num - 1];
 	}
 
@@ -343,7 +343,7 @@ public class AppH5SysController extends BaseController {
 					if (num == 1 && flag != 1)
 						temp += "拾";
 					else
-						temp += ToBig(num) + "十";
+						temp += ToBig(num) + "拾";
 				} else if (s[0].length() - j - 1 == 8) {
 					temp += ToBig(num) + "亿";
 				} else if (s[0].length() - j - 1 == 7) {
@@ -365,7 +365,7 @@ public class AppH5SysController extends BaseController {
 					if (num == 1 && flag != 1)
 						temp += "拾";
 					else
-						temp += ToBig(num) + "十";
+						temp += ToBig(num) + "拾";
 				} else {
 					temp += ToBig(num);
 				}

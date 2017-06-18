@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.web.api.user;
 
 import java.util.List;
@@ -12,6 +9,7 @@ import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -23,6 +21,7 @@ import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -37,11 +36,13 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("getBankCardListApi")
 public class GetBankCardListApi implements ApiHandle {
 
-
+	@Resource
+	AfUserAuthService afUserAuthService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -64,6 +65,9 @@ public class GetBankCardListApi implements ApiHandle {
         		}
         	}
         }
+        
+        AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        
     	AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
     	resp.addResponseData("realName", userAccount.getRealName());
         resp.addResponseData("bankcardStatus", bankcardStatus);
@@ -73,6 +77,7 @@ public class GetBankCardListApi implements ApiHandle {
         	resp.addResponseData("ydUrl", ConfigProperties.get(Constants.CONFKEY_YOUDUN_NOTIFY));
         	resp.addResponseData("idNumber", Base64.encodeString(userAccount.getIdNumber()));
         }
+        resp.addResponseData("faceStatus", afUserAuthDo.getFacesStatus());
 		return resp;
 	}
 

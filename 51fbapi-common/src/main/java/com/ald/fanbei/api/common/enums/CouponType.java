@@ -16,7 +16,8 @@ public enum CouponType {
 	REPAYMENT("REPAYMENT", "还款"),
 	FULLVOUCHER("FULLVOUCHER", "满减券"),
 	CASH("CASH", "现金"),
-	REBATE("REBATE", "返现(签到、注册)");
+	REBATE("REBATE", "返现(签到、注册)"),
+	ACTIVITY("ACTIVITY", "会场券");
 
     private String code;
     private String name;
@@ -52,7 +53,6 @@ public enum CouponType {
     public static CouponType getByCode(String code){
     	return getCodeRoleTypeMap().get(code);
     }
-
 
 	public String getName() {
 		return name;

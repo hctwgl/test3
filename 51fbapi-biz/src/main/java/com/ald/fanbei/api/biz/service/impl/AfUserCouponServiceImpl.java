@@ -133,4 +133,28 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 			afUserCouponDao.addUserCoupon(userCoupon);
 		}
 	}
+
+
+	@Override
+	public List<AfUserCouponDto> getUserAcgencyCouponByAmount(Long userId, BigDecimal amount) {
+		return afUserCouponDao.getUserAcgencyCouponByAmount(userId, amount);
+	}
+
+
+	@Override
+	public int updateUserCouponSatusNouseById(Long rid) {
+		return afUserCouponDao.updateUserCouponSatusNouseById(rid);
+	}
+
+
+	@Override
+	public int updateUserCouponSatusExpireById(Long rid) {
+		return afUserCouponDao.updateUserCouponSatusExpireById(rid);
+	}
+
+
+	@Override
+	public int getUserAcgencyCountByAmount(Long userId, BigDecimal amount, Long goodsId) {
+		return afUserCouponDao.getUserAcgencyCountByAmount(userId, amount, goodsId);
+	}
 }

@@ -1,33 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-#set($version="2017061309")
-#set($src="https://fs.51fanbei.com/h5/app/activity/06")
-	<title>OPPO R11</title>
+	#set($version="2017061701")
+	#set($src="https://fs.51fanbei.com/h5/app/activity/06")
+	<title>OPPO R11新品首发</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/oppoR11.css?version=$version">
 </head>
 <body>
-	<img src="$src/oppo1.png">
-	<div class="banner">
-	   <img src="$src/oppo2.png" id="btn">
-	   <div class="order"></div>
-	</div>
-	<div class="goRegister hide">
-		<a href="/app/user/register"><img src="$src/oppo5.png"></a>
-		<p>登录51返呗APP进行预约</p>
-	</div>
-	<img src="$src/oppo3.png">
-	<img src="$src/oppo4.png">
-	<img src="$src/r10.jpg">
-	<img src="$src/r11.jpg">
-	<img src="$src/r12.jpg">
-	<img src="$src/r13.jpg">
-	<img src="$src/oppo6.png">
-	<!--弹框-->
-	<div class="mask"></div>
-	<div class="orderSuccess">
-	    <img src="$src/r30.png">
+	<div id="oppoR11">
+		<img src="$src/oppo1.png" style="height: 9.34rem;">
+		<div class="banner">
+		   <img @click="btnBox()" src="$src/oppo2.png" id="btn" style="height: 0.69rem;">
+		   <div class="order"></div>
+		</div>
+		<img src="$src/oppo3_18.png" style="height: 2.23rem;">
+		<img src="$src/oppo4.png" style="height: 3.77rem;">
+		<div class="countWrap">
+			<img src="$src/oppo9.png" style="height: 1.77rem;">
+			<div class="countDown" id="countDown">
+	      <span class="time_item" id="day_show"></span>
+	      <span class="time_item" id="hour_show"></span>
+	      <span class="time_item" id="minute_show"></span>
+	      <span class="time_item" id="second_show"></span>
+	    </div>
+		</div>
+		<img src="$src/oppo8.png">
+		<img @click="mobilePopup()" src="$src/oppo8_2.png">
+		<img @click="mobilePopup()" src="$src/oppo8_3.png">
+		<!--弹框-->
+		<div class="mask"></div>
+		<div class="orderSuccess">
+	    <img src="$src/r30.png" style="height: 3.64rem;">
 	    <div class="close"></div>
+		</div>
+		<div class="popupWrap">
+			<div class="popupBox hide"></div>
+			<div class="popup hide">
+		    <img src="$src/oppo9_time.png" style="height: 0.95rem;">
+				<p>6月22日10点准时开售<br />敬请期待</p>
+		    <div @click="close()" class="close">X</div>
+			</div>
+		</div>
+
+		<!--分享-->
+		<div class="goRegister hide">
+			<a href="/app/user/register"><img src="$src/oppo5.png" style="height: 0.7rem;"></a>
+			<p>登录51返呗APP进行预约</p>
+		</div>
 	</div>
 	<script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
 </body>

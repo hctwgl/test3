@@ -68,7 +68,7 @@ public class PayAgencyOrderApi implements ApiHandle {
 			}
 			
 //			Map<String,Object> result = afOrderService.payAgencyOrder( orderInfo);
-			Map<String,Object> result = afOrderService.payBrandOrder(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress);
+			Map<String,Object> result = afOrderService.payBrandOrderOld(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress);
 
 			resp.setResponseData(result);
 

@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -110,7 +111,7 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 				BigDecimal perAmount =  BigDecimalUtil.getConsumeAmount(goodsAmount.multiply(new BigDecimal(goodsNum)), Integer.parseInt(key), 
 						new BigDecimal(value).divide(new BigDecimal(Constants.MONTH_OF_YEAR),8,BigDecimal.ROUND_HALF_UP), 
 						BigDecimalUtil.getTotalPoundage(goodsAmount.multiply(new BigDecimal(goodsNum)), 
-								Integer.parseInt(key),new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd));
+								Integer.parseInt(key),new BigDecimal(resource.getValue1()), rangeBegin, rangeEnd,InterestfreeCode.NO_FREE.getCode()));
 				attrs.put("nper", key);
 				attrs.put("perAmount", perAmount);
 				list.add(attrs);

@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowDao">
 	<sql id="queryFields">
 		id rid,gmt_create, gmt_modified,borrow_no,user_id,type,name,amount,status,remark,nper,nper_repayment,overdue_num,order_id,
-		nper_amount,repay_prin_amount,order_no,card_number,card_name
+		nper_amount,repay_prin_amount,order_no,card_number,card_name,borrow_rate,calculate_method,free_nper
 	</sql>
 	
 	<select id="getBorrowById" resultType="AfBorrowDo">
@@ -43,7 +43,10 @@
 			card_name,
 			order_id,
 			order_no,
-			gmt_transed
+			gmt_transed,
+			borrow_rate,
+			calculate_method,
+			free_nper
 			)
 			VALUES
 			(
@@ -62,7 +65,10 @@
 			#{cardName},
 			#{orderId},
 			#{orderNo},
-			#{gmtTransed}
+			#{gmtTransed},
+			#{borrowRate},
+			#{calculateMethod},
+			#{freeNper}
 			)
 	</insert>
 	
@@ -126,7 +132,8 @@
 		  bill_amount,
 		  principle_amount,
 		  interest_amount,
-		  poundage_amount
+		  poundage_amount,
+		  is_free_interest
 		) 
 		VALUES
 	    <foreach collection = "list" separator = "," item = "item" index = "index" > 
@@ -147,7 +154,8 @@
 	  		#{item.billAmount}, 
 	  		#{item.principleAmount},
 	  		#{item.interestAmount},
-	  		#{item.poundageAmount}
+	  		#{item.poundageAmount},
+	  		#{item.isFreeInterest}
 	  	)
 	  	</foreach> 
    </insert>
@@ -176,4 +184,9 @@
 		WHERE
 			id = #{id}
 	</update>
+	
+	<select id="getBorrowNumByUserId" resultType="java.lang.Integer">
+		select count(*) from `af_borrow` WHERE `status` in ('TRANSED','FINISH') and `user_id` =#{userId}; 
+	</select>
+	
 </mapper>

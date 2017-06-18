@@ -316,7 +316,11 @@ public class AppH5GameController  extends BaseController{
 				AfGameInitVo.AwardUserVo itemVo = new AfGameInitVo().new AwardUserVo();
 				itemVo.setAvatar(item.getUserAvata());
 				itemVo.setUserName(item.getUserName().substring(0,3)+"****"+item.getUserName().substring(7));
-				itemVo.setMsg(entityAwardMap.get(item.getAwardId()+"").getValue2()); 
+				if(entityAwardMap.get(item.getAwardId()+"") == null){
+					itemVo.setMsg("获得幸运奖"); 
+				}else{
+					itemVo.setMsg(entityAwardMap.get(item.getAwardId()+"").getValue2()); 
+				}
 				entityAwardList.add(itemVo);
 			}
 		}

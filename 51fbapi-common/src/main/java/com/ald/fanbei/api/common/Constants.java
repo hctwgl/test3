@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.common;
 
+import java.math.BigDecimal;
+
 /**
  * 
  * @类Constants.java 的实现描述：常量累
@@ -19,6 +21,8 @@ public class Constants {
 	public static final int MINITS_OF_HALF_HOUR = 30;
 
 	public static final int MONTH_OF_YEAR = 12;
+	
+	public static final BigDecimal DECIMAL_MONTH_OF_YEAR = new BigDecimal(Constants.MONTH_OF_YEAR);
 	//
 	public static final String REQ_PARAM_NODE_SYSTEM = "system";
 	public static final String REQ_PARAM_NODE_METHOD = "method";
@@ -43,10 +47,23 @@ public class Constants {
 	public static final String YES = "yes";
 	public static final String NO = "no";
 	public static final String COMMA = ",";
+	public static final String SEMICOLON = ";";
 	public static final String DEFAULT_YEAR = "year";
 	public static final String DEFAULT_MONTH = "month";
 	public static final String DEFAULT_NPER = "nper";
 	public static final String DEFAULT_RATE = "rate";
+	/**免息期数json key**/
+	public static final String DEFAULT__FREENPER = "freeNper";
+	/**每期还款金额位数**/
+	public static final int HALFUP_DIGIT = 2;
+	/**是否免息是否还款状态--免息**/
+	public static final String ISFREEINTEREST_Y = "Y";
+	/**是否免息是否还款状态--不免息**/
+	public static final String ISFREEINTEREST_N = "N";
+
+
+
+
 
 	public static final Long INVITE_START_VALUE = 1679625L;
 	public static final String INVELOMENT_TYPE_TEST = "test";
@@ -82,6 +99,8 @@ public class Constants {
 	public static final String CACHEKEY_LATESTAWARD_LIST  = "latest_award_list$";
 	public static final String CACHEKEY_LATEST_GAMEERSULT_LIST = "latest_gameresult_list$";
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
+	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
+	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";
@@ -96,6 +115,7 @@ public class Constants {
 	public static final String RES_THIRD_GOODS_REBATE_RATE = "THIRD_GOODS_REBATE_RATE";
 	public static final String RES_BORROW_CASH_RATE_DESC = "BORROW_CASH_RATE_DESC";
 	public static final String RES_BORROW_CONSUME = "BORROW_CONSUME";
+	public static final String RES_BORROW_CONSUME_OVERDUE = "BORROW_CONSUME_OVERDUE";
 	public static final String RES_BORROW_CASH = "BORROW_CASH";
 	public static final String RES_BORROW_RATE = "BORROW_RATE";
 	public static final String RES_BRAND_SHOP = "BRAND_SHOP";
@@ -107,6 +127,11 @@ public class Constants {
 	public static final String RES_APP_POP_IMAGE        =  "APP_POP_IMAGE"; //首页弹窗配置
 	public static final String RES_GAME_AWARD_OF_CATCH_DOLL = "GAME_AWARD_OF_CATCH_DOLL"; //抓娃娃游戏发奖 
 	public static final String RES_GAME_CATCH_DOLL_CLIENT_RATE = "GAME_CATCH_DOLL_CLIENT_RATE";//抓娃娃游戏客户端抓中概率
+	public static final String RES_OLD_USER_ID = "OLD_USER_ID";
+	//risk eventType
+	public static final String EVENT_FINANCE_LIMIT = "event_finance_limit";
+	public static final String EVENT_FINANCE_COUNT = "event_finance_count";
+	
 	public static final String RES_GAME_AWARD_COUNT_LIMIT           = "GAME_AWARD_COUNT_LIMIT";//游戏中奖数量总限制
 	//续期天数限制
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
@@ -128,6 +153,8 @@ public class Constants {
 	public static final String RES_DIRECT_TRANS_CREDIT_SCORE = "DIRECT_TRANS_CREDIT_SCORE";
 	// 风控
 	public static final String REGIST_TONGDUN_SWITCH = "regist.tongdun.switch";
+	//每月还款日期
+	public static final String RES_REPAYMENT_DATE = "REPAYMENT_DATE";
 
 	// config key
 	public static final String CONFKEY_CHECK_SIGN_SWITCH = "fbapi.check.sign.switch";

@@ -1,4 +1,4 @@
-//点击我要领券时判断用户是否登录 此时要先判断系统 iPhone和andriod 
+//点击我要领券时判断用户是否登录 此时要先判断系统 iPhone和andriod
 // getBlatFrom() == 2代表iOS
 //（参考motherDay点击抢优惠券function）
 
@@ -7,15 +7,23 @@ var couponList = eval('(' + couponListString + ')');
 
 var userName = $("#userName").val();
 
+var returnNum = getBlatFrom();
+
 $(function(){
 
    // 点击领取优惠劵
-    $(".couponLi").click(function(){   
+    $(".couponLi").click(function(){
         var i= $(this).index();
         var couponIdNum = couponList[i].rid;
         var currentState=$(".couponLi").eq(i).find('.clickCoupon').html();
         if(currentState=="去用券"){
+          if (returnNum == 1 ) {
             window.location.href = "activity/activityHome";
+          } else {
+            requestMsg("请稍等12345");
+          }
+
+
         }else{
                $.ajax({
                     url: "/fanbei-web/pickCoupon",
@@ -30,9 +38,14 @@ $(function(){
                             requestMsg("优惠劵领取成功");
                             $(".couponLi").eq(i).find('.clickCoupon').html("去用券");
                             $(".couponLi").eq(i).find('.clickCoupon').click(function(){
-                                window.location.href = "activity/activityHome";
-                            })                   
-                        } else {                
+                                // window.location.href = "activity/activityHome";
+                                if (returnNum == 1 ) {
+                                  window.location.href = "activity/activityHome";
+                                } else {
+                                  requestMsg("请稍等12345");
+                                }
+                            })
+                        } else {
                             var status = returnData.data["status"];
                             if (status == "USER_NOT_EXIST") { // 用户不存在
                                 window.location.href = returnData.url;
@@ -40,7 +53,7 @@ $(function(){
 
                             if (status == "OVER") { // 优惠券个数超过最大领券个数
                                 requestMsg(returnData.msg);
-                                requestMsg("优惠券个数超过最大领券个数");                 
+                                requestMsg("优惠券个数超过最大领券个数");
                             }
 
                             if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
@@ -58,30 +71,26 @@ $(function(){
     });
 });
 
-var returnNum = getBlatFrom();  // 判断1为Android，2为ios
-
-/*------------跳转登陆+请求返回数据--------------*/
-if(returnNum == 1){  // android机型
-    $(".myCoupon").click(function(){
-        alaAndroid.appLogin();  // 调用Android原生登陆
-    });
-}else{  // ios机型
-    $(".myCoupon").click(function(){
-        alaIos.appLogin();  // 调用ios原生登陆
-    });
-}
-
-
-function loginSuccess() {
-    if(returnNum == 1){  // android机型
-        //(2222); 
-        var jsonString = '{"className":"com.alfl.www.user.ui.VoucherMenuActivity"}';
-        alaAndroid.openActivity(jsonString);
-    }else{  // ios机型
-        location.href="/fanbei-web/opennative?name=MINE_COUPON_LIST";
-    }
-}
-
-
-
-    
+// var returnNum = getBlatFrom();  // 判断1为Android，2为ios
+//
+// /*------------跳转登陆+请求返回数据--------------*/
+// if(returnNum == 1){  // android机型
+//     $(".myCoupon").click(function(){
+//         alaAndroid.appLogin();  // 调用Android原生登陆
+//     });
+// }else{  // ios机型
+//     $(".myCoupon").click(function(){
+//         alaIos.appLogin();  // 调用ios原生登陆
+//     });
+// }
+//
+//
+// function loginSuccess() {
+//     if(returnNum == 1){  // android机型
+//         //(2222);
+//         var jsonString = '{"className":"com.alfl.www.user.ui.VoucherMenuActivity"}';
+//         alaAndroid.openActivity(jsonString);
+//     }else{  // ios机型
+//         location.href="/fanbei-web/opennative?name=MINE_COUPON_LIST";
+//     }
+// }

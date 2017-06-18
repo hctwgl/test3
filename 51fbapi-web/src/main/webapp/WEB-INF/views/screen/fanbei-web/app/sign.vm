@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="20170616")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	<meta charset="UTF-8">
+	<title>签到</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/06/sign.css?version=$version"">
+</head>
+<body>
+<div id="vueCon">
+	<div class="pic01" style="width:7.5rem;height:8.4rem;"><img src="$commonUrl/sign_01.jpg"></div>
+	<div class="pic02" style="width:7.5rem;height:7.96rem;"><img src="$commonUrl/sign_02.jpg"></div>
+	<div class="pic03" style="width:7.5rem;height:8.15rem;"><img src="$commonUrl/sign_03.png"></div>
+    <div class="wrap">
+        <div v-for="i of 5" :class="className[i-1]">
+            <img :src="'$commonUrl/before'+i+'.png'">
+            <img v-if="current==i" @click="signIn(i)" :src="'$commonUrl/now'+i+'.png'">
+            <img v-if="current>i"  :src="'$commonUrl/now'+i+'.png'">
+            <img v-show="okContent[i-1]" :src="'$commonUrl/ok'+i+'.png'">
+
+        </div>
+    </div>
+    <p class="ruleWord">1. 6月18日-6月22日活动期间，每位用户每天有一次签到机会；<br/>2. 每日登陆后在“每日签到”页面进行签到，6月18日-6月22日连续签到达5天，可获得一张20元代金券，活动期间每人仅限领取一张；<br/>3. 签到领取的代金券可在“我的-抵用券”里查看；<br/>4.  代金券不可提现，用户可用于在51返呗付款时使用；<br/>5. 禁止一切作弊手段的操作行为，包括不限于利用平台漏洞、技术手段完成签到的行为，一经发现将收回奖励，必要时将采取司法手段进行维权；<br/>6. 在法律范围内阿拉丁电子商务公司拥有最终解释权；<br/>7. 如有任何问题，可致电客服电话：0571-88193918.</p>
+
+</div>
+<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<script type="text/javascript" src="/dist/activity/06/sign.js?version=$version""></script>
+</body>
+</html>

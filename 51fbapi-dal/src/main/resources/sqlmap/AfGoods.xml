@@ -4,13 +4,13 @@
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,creator,modifier,name,goods_icon,thumbnail_icon,goods_url,open_id,num_id,price_amount,
 		sale_amount,category_id,sale_count,gmt_start,gmt_end,status,source,rebate_amount,rebate_rate,shop_name,
-		(sale_amount-rebate_amount) real_amount,goods_pic1,goods_pic2,goods_pic3,goods_pic4,goods_detail,remark
+		(sale_amount-rebate_amount) real_amount,tags,goods_pic1,goods_pic2,goods_pic3,goods_pic4,goods_detail,remark
 	</sql>
 	
 	<sql id="queryWithFields">
 		g.id rid,g.gmt_create,g.gmt_modified,g.creator,g.modifier,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,g.open_id,g.num_id,g.price_amount,
 		g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,
-		(g.sale_amount-g.rebate_amount) real_amount,g.goods_pic1,g.goods_pic2,g.goods_pic3,g.goods_pic4,g.goods_detail,g.remark
+		(g.sale_amount-g.rebate_amount) real_amount,g.tags,g.goods_pic1,g.goods_pic2,g.goods_pic3,g.goods_pic4,g.goods_detail,g.remark
 	</sql>
 	
 	<select id="getGoodsById" resultType="AfGoodsDo">
@@ -21,6 +21,17 @@
 		WHERE
 			is_delete=0 AND id = #{rid}
 	</select>
+	
+	<select id="getGoodsByNumId" resultType="AfGoodsDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_goods
+		WHERE
+			is_delete=0 AND num_id = #{numId}
+	</select>
+	
+	
 	
 	<select id="getGoodsByOpenId" resultType="AfGoodsDo">
 		SELECT

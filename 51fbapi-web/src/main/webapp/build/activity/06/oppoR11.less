@@ -1,3 +1,7 @@
+
+@url: "https://fs.51fanbei.com/h5/app/activity/06";
+
+
 body{
   background:#fff;
   position:relative;
@@ -56,4 +60,71 @@ body{
 }
 .hide{
   display: none;
+}
+
+// 倒计时
+.countWrap{
+  position: relative;
+}
+.countDown{
+  position: absolute;
+  bottom: 0.2rem;
+  right: 0.3rem;
+}
+.countDown .time_item{
+  width: 0.7rem;
+  height: 0.6rem;
+  line-height: 0.6rem;
+  text-align: center;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 0.04rem;
+}
+
+// 预定弹窗
+.popup{
+  width:5.29rem;
+  height:3.64rem;
+  position:fixed;
+  left:0;
+  top:0;
+  right:0;
+  bottom:0;
+  margin: auto;
+  text-align: center;
+  z-index:11;
+  background-color: #fff;
+}
+.popup img{
+  width: 0.95rem;
+  height: 0.95rem;
+  margin: 0.5rem auto;
+}
+
+// 弹窗
+.popupBox{
+  width:100%;
+  height:100%;
+  background:black;
+  opacity:.6;
+  position:absolute;
+  left:0;
+  top:0;
+}
+.popup .close{
+  width:.5rem;
+  height:.5rem;
+  font-size: 0.3rem;
+  position:absolute;
+  top:.2rem;
+  right:.2rem;
+}
+
+// 22手机选框
+.phoneColor li{
+  float: left;
+  width: 1.53rem;
+  height: 0.66rem;
+  background-image: url("@{url}/oppo10_1.png");
+  // padding: 0 0.05rem;
 }

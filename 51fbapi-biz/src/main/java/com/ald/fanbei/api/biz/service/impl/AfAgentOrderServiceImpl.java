@@ -16,12 +16,15 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -36,7 +39,7 @@ import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
-import com.alibaba.fastjson.JSONObject;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.taobao.api.domain.XItem;
 
 /**
@@ -61,7 +64,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	AfBorrowService afBorrowService;
-	
+
 	@Resource
 	AfResourceService afResourceService;
 
@@ -175,6 +178,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 					if (afOrder.getBankId() == null) {
 						afOrder.setBankId(0L);
 					}
+
 					final String orderNo = generatorClusterNo.getOrderNo(OrderType.AGENTBUY);
 					afOrder.setOrderNo(orderNo);
 					afOrder.setOrderType(OrderType.AGENTBUY.getCode());
@@ -211,7 +215,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 					if(nper > 0){
 						orderBorrowInfo(afOrder);
 					}
-				
+
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -226,19 +230,15 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
 		orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 		orderInfo.setStatus(OrderStatus.NEW.getCode());
-		Long userId = orderInfo.getUserId();
+//		Long userId = orderInfo.getUserId();
 
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount())
-				.subtract(userAccountInfo.getFreezeAmount());
-		if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-		}
-		JSONObject borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
+		
+		BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
+		orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		afOrderDao.updateOrder(orderInfo);
 		AfAgentOrderDo agentOrderDo = new AfAgentOrderDo();
 		agentOrderDo.setOrderId(orderInfo.getRid());
-		agentOrderDo.setBorrowRate(borrowRate.toJSONString());
+		agentOrderDo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		afAgentOrderDao.updateAgentOrder(agentOrderDo);
 
 	}

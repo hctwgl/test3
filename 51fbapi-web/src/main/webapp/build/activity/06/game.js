@@ -7,14 +7,22 @@ if(getInfo().userName){
 }
 let chance=[],isLogin,isShow,clientRate,chanceCount,recommendCode;
 
+// let protocol = window.location.protocol;
+// let host = window.location.host;
+// let urlHost = protocol+'//'+host;
+// alert(urlHost);
+// let shareAppUrl = urlHost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode;
+// console.log(shareAppUrl);
+
+
 // app调用web的方法
 function alaShareData(){
     // 分享内容
     let dataObj = {
         'appLogin': 'Y', // 是否需要登录，Y需要，N不需要
         'type': 'share', // 此页面的类型
-        'shareAppTitle': '年中抓娃娃,让你一次玩个爽！',  // 分享的title
-        'shareAppContent': '抓娃娃次数无上限100%中奖，集齐5娃，平分1亿大奖，最高888现金红包在等你，有且只在51返呗！',  // 分享的内容
+        'shareAppTitle': '引爆年中抓娃娃，100%中大奖',  // 分享的title
+        'shareAppContent': '抓娃娃次数无上限100%中奖，集齐5娃，平分1亿大奖，最高888红包雨在等你，有且只在51返呗！',  // 分享的内容
         'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
         'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
@@ -22,7 +30,7 @@ function alaShareData(){
     };
     let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
     return dataStr;
-};
+}
 
 //数据初始化
 function dataInit() {
@@ -259,18 +267,17 @@ class game{
                 $('.ad').hide();
                 if(data.data.lotteryResult=='Y'){
 
-                  if(data.data.awardType=='CASH'){
+                  // if(data.data.awardType=='CASH'){
 
-                        $('.getCashPrize').html('获得'+data.data.amount+'元现金').show();
+                        $('.getCashPrize').html('获得'+data.data.amount+'元').show();
                         $('.getCashCoupon').show();
-                    }else{
-                        $('.limitMoney').html(data.data.limitAmount);
-                        $('.limitDate').html(formatDate(data.data.gmtEnd));
-                        $('.getMoney').html(data.data.amount);
-
-                        $('.getCashCoupon').show();
-                        $('.getCouponPrize').show();
-                    }
+                    // }else{
+                        // $('.limitMoney').html(data.data.limitAmount);
+                        // $('.limitDate').html(formatDate(data.data.gmtEnd));
+                        // $('.getCashPrize').show().html('获得'+data.data.amount+'元');
+                        //
+                        // $('.getCashCoupon').show();
+                    // }
 
                 }else{
                     $('.jushuo').show();
@@ -325,8 +332,9 @@ $('#startBtn').click(function () {
         if(chanceCount<1){              //否是 有机会
             $('.ad').hide();
             $('.getState').html('机会用完啦').show();
+            $('.jushuo').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"年中抓娃娃,让你一次玩个爽","shareAppContent":"抓娃娃次数无上限100%中奖，集齐5娃，平分1亿大奖，最高888现金红包在等你，有且只在51返呗！","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"引爆年中抓娃娃，100％中大奖","shareAppContent":"抓娃娃次数无上限100％中奖，集齐5娃，平分1亿大奖，最高888红包雨在等你，有且只在51返呗！","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"https://app.51fanbei.com/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
             });
             $('#alert').show();
             $('#shadow').show();
