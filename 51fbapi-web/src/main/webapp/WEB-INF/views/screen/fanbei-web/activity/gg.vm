@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017052302")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
+<title>公告</title>
+</head>
+<body>
+<img src="$commonUrl/gg_01.jpg">
+<img src="$commonUrl/gg_02.jpg">
+<img src="$commonUrl/gg_03.jpg">
+<img src="$commonUrl/gg_04.jpg">
+</body>
+</html>
