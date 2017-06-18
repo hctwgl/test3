@@ -13,10 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -57,7 +59,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"),""), 0l);
 		Long addressId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"),""), 0l);
 		String invoiceHeader = ObjectUtils.toString(requestDataVo.getParams().get("invoiceHeader"));
-		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 
 		
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
@@ -66,27 +67,25 @@ public class BuySelfGoodsApi implements ApiHandle {
         if(goodsDo ==null){
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
         }
-        AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
-    
+        AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);    
         if(addressDo ==null){
-    			throw new FanbeiException(FanbeiExceptionCode.USER_ADDRESS_NOT_EXIST);
+    		throw new FanbeiException(FanbeiExceptionCode.USER_ADDRESS_NOT_EXIST);
         }
         AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo,goodsDo);
 		afOrder.setUserId(userId);
 		afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
 		afOrder.setCount(count);
 		afOrder.setNper(nper);
-		afOrder.setPayType(payType);
 		afOrder.setInvoiceHeader(invoiceHeader);
 		if(nper.intValue()>0){
 			//保存手续费信息
-			JSONObject borrowRate = afResourceService.borrowRateWithResourceOld(nper);
-			afOrder.setBorrowRate(JSON.toJSONString(borrowRate));
+			BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
+			afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		}
 		afOrderService.createOrder(afOrder);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("orderId", afOrder.getRid());
-		resp.setResponseData(data);;
+		resp.setResponseData(data);
         return resp;
 	}
 	
