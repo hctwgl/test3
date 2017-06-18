@@ -24,10 +24,8 @@
     </script>
 </head>
 <body>
-	<input type="hidden" id="sessionId" name="sessionId" value="$!{sessionId}">
 	<input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
 	<input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
-	<input type="hidden" id="tdHost" value="$!{tdHost}">
 	<input type="hidden" id="style" value="$!{style}">
 
 	<div class="channelRegister_wrap">

@@ -45,9 +45,6 @@ public class H5Controller extends BaseController {
 		String returnUrl = request.getRequestURI();
 		if(returnUrl.indexOf("fanbei-web/activity/game") >=0){
 			doMaidianLog(request,"");
-		}else if(returnUrl.indexOf("fanbei-web/activity/gameRegister") >=0){
-			model.addAttribute("sessionId", request.getSession().getId());
-			model.addAttribute("tdHost", "https://fp.fraudmetrix.cn");
 		}
 		return returnUrl;
 	}
