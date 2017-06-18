@@ -8,12 +8,26 @@ import com.ald.fanbei.api.common.AbstractSerial;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class AfGoodsPayTypeVo extends AbstractSerial {
-
-	private static final long serialVersionUID = 990327740589938087L;
-
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 3801829761993026000L;
+	
 	private String code;// 支付类型码
 	private String name;// 支付类型描述
 	private String isDefault;// 是否默认卡
+
+	public AfGoodsPayTypeVo() {
+		super();
+	}
+	
+	public AfGoodsPayTypeVo(String code, String name, String isDefault) {
+		super();
+		this.code = code;
+		this.name = name;
+		this.isDefault = isDefault;
+	}
+
 
 	public String getCode() {
 		return code;
@@ -37,6 +51,12 @@ public class AfGoodsPayTypeVo extends AbstractSerial {
 
 	public void setIsDefault(String isDefault) {
 		this.isDefault = isDefault;
+	}
+
+	 @Override
+	public String toString() {
+		return "AfGoodsPayTypeVo [code=" + code + ", name=" + name
+				+ ", isDefault=" + isDefault + "]";
 	}
 
 }

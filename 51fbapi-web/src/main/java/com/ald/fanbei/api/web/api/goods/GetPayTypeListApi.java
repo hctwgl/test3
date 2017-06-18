@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.goods;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +15,12 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfuserCollectionService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.dal.domain.AfUserCollectionDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
+import com.ald.fanbei.api.web.vo.AfGoodsPayTypeVo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：获取支付方式列表
@@ -35,24 +35,16 @@ public class GetPayTypeListApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
-		if (userId == null) {
-			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
-		}
-		Map<String, Object> data = new HashMap<String, Object>();
-
-		if (context.getAppVersion() < 350) {
-			List<AfUserCollectionDo> list= afuserCollectionService.getUserGoodsIdCollectionListByUserId(userId);
-			data.put("collectionList", JSON.toJSON(list));
-
-		}else{
-			List<AfUserCollectionDo> list= afuserCollectionService.getUserCollectionListByUserId(userId);
-			
-			data.put("collectionList", JSON.toJSON(list));
-		}
+		List<AfGoodsPayTypeVo> afGoodsPayList = new ArrayList<AfGoodsPayTypeVo>();
+    	afGoodsPayList.add(new AfGoodsPayTypeVo("FBFQ", "返呗分期", "Y"));
+    	afGoodsPayList.add(new AfGoodsPayTypeVo("ALI", "支付宝", "N"));
+    	afGoodsPayList.add(new AfGoodsPayTypeVo("WX", "微信", "N"));
+    	afGoodsPayList.add(new AfGoodsPayTypeVo("BANK", "银行卡", "N"));
+		String jsonStr = JSONObject.toJSONString(afGoodsPayList);
 		
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("afGoodsPayList", jsonStr);
 		resp.setResponseData(data);
-
 		return resp;
 	}
 	
