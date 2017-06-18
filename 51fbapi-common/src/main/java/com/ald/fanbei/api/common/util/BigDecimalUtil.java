@@ -270,7 +270,7 @@ public class BigDecimalUtil {
     public static int getCreditScore(BigDecimal zmScore, BigDecimal fqzScore, BigDecimal tdScore,
                                      BigDecimal zmRate, BigDecimal fqzRate, BigDecimal tzRate) {
     	//如果同盾分少于80全部 不给信用分
-    	if (fqzScore.intValue() >= 80) {
+    	if (tdScore.intValue() >= 80) {
     		return 0;
     	}
         BigDecimal v1 = zmScore.divide(new BigDecimal(950), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(10)).multiply(zmRate);
