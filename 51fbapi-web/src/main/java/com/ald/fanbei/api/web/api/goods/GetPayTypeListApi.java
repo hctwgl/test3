@@ -43,7 +43,7 @@ public class GetPayTypeListApi implements ApiHandle {
 		String jsonStr = JSONObject.toJSONString(afGoodsPayList);
 		
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("afGoodsPayList", jsonStr);
+		data.put("payTypeList", jsonStr);
 		resp.setResponseData(data);
 		return resp;
 	}
