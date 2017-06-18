@@ -13,8 +13,14 @@
 		   <img @click="btnBox()" src="$src/oppo2.png" id="btn" style="height: 0.69rem;">
 		   <div class="order"></div>
 		</div>
+		<!--分享-->
+		<div class="goRegister hide">
+			<a href="gameRegister"><img src="$src/oppo5.png" style="height: 0.7rem;"></a>
+			<p>登录51返呗APP进行预约</p>
+		</div>
 		<img src="$src/oppo3_18.png" style="height: 2.23rem;">
 		<img src="$src/oppo4.png" style="height: 3.77rem;">
+
 		<div class="countWrap">
 			<img src="$src/oppo9.png" style="height: 1.77rem;">
 			<div class="countDown" id="countDown">
@@ -42,11 +48,7 @@
 			</div>
 		</div>
 
-		<!--分享-->
-		<div class="goRegister hide">
-			<a href="/app/user/register"><img src="$src/oppo5.png" style="height: 0.7rem;"></a>
-			<p>登录51返呗APP进行预约</p>
-		</div>
+
 	</div>
 	<script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
 </body>
