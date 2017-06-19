@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.common.util;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -258,4 +260,27 @@ public class CollectionConverterUtil {
     	}
     	return sourceList;  
     }
+    
+    /**
+     * 将对象转换为HashMap
+     * @param param 被转换的对象
+     * @return 转换后的Map对象
+     */
+    public static Map<String,Object> convertObjToMap(Object param) {
+       Map<String,Object> resMap = new HashMap<String,Object>();
+       Field[] fields = param.getClass().getDeclaredFields();  
+       for(Field field : fields) {
+    	   String fieldName = field.getName();
+    	   String upperFieldName = fieldName.substring(0,1).toUpperCase()+ fieldName.substring(1);
+			try {
+				Method getMethod = param.getClass().getMethod("get" + upperFieldName);
+				Object value =  getMethod.invoke(param);
+				resMap.put(fieldName, value);
+			} catch (Exception e) {
+				// ignore exception
+			}
+       }
+       return resMap;
+    }
+    
 }

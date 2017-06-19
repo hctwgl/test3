@@ -296,6 +296,23 @@ public class AppActivitySignInController extends BaseController {
 								AfResourceDo resourceDo = listResource.get(0);
 								Long activityId = resourceDo.getRid();
 								List<Date> listDate = afSignInActivityService.initActivitySign(userId, activityId);
+								
+								//禁止重复签到
+								SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+								Date dateCurrent = new Date();
+								String strCurrent = sFormat.format(dateCurrent);
+								if (!listDate.isEmpty()) {
+									for(Date date:listDate){
+										String strDate = sFormat.format(date);
+										if (strCurrent.equals(strDate)) {
+											resultStr = H5CommonResponse.getNewInstance(false, "今天已经签到不能重复签到", "", "can not repeat to sign in !")
+											.toString();
+											return resultStr;
+										}
+										
+									}
+								}
+								
 								Integer totalCount = listDate.size() + 1;
 								AfSignInActivityDo signInActivityDo = new AfSignInActivityDo();
 								signInActivityDo.setActivityId(activityId);

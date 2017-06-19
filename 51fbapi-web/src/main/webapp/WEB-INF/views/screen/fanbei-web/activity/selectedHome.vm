@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017052702")
+	#set($version="2017052705")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/selectedHome.css?version=$version">
@@ -34,7 +34,8 @@
 						<p class="title" style="-webkit-box-orient: vertical;">{{data.goodName}}</p>
 						<p class="price">
 							<template v-if="data.goodsType==1">
-								<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+								<p v-if="data.nperMap.isFree==2"><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+								<p  v-if="data.nperMap.isFree==1"><i class="monthCorner"></i>￥{{data.nperMap.freeAmount}}×{{data.nperMap.nper}}</p>
 								<p>抢购价：￥{{data.nperMap.totalAmount}}</p>
 							</template>
 							<template v-else>
@@ -52,7 +53,7 @@
 		<div style="height: .83rem">
             <div id="navWrap">
                 <div id="listAlert">
-                    <a :href="'#'+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+                    <a @click="statisticsTwo(data.subjectId)" :href="'#'+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
                 </div>
             </div>
 		</div>
@@ -66,8 +67,9 @@
                             <p class="title" style="-webkit-box-orient: vertical;">{{data.goodName}}</p>
                             <p class="price">
                                 <template v-if="data.goodsType==1">
-									<p><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
-									<p>抢购价：￥{{data.nperMap.totalAmount}}</p>
+                            <p v-if="data.nperMap.isFree==2"><i class="monthCorner"></i>￥{{data.nperMap.amount}}×{{data.nperMap.nper}}</p>
+                            <p  v-if="data.nperMap.isFree==1"><i class="monthCorner"></i>￥{{data.nperMap.freeAmount}}×{{data.nperMap.nper}}</p>
+                            <p>抢购价：￥{{data.nperMap.totalAmount}}</p>
         						</template>
 								<template v-else>
 									<span>￥{{data.saleAmount}}</span>

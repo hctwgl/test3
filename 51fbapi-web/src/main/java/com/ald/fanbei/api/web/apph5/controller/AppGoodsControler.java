@@ -4,8 +4,10 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,28 +16,41 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfModelH5Service;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.H5ItemModelType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5Do;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：
@@ -51,6 +66,12 @@ public class AppGoodsControler extends BaseController {
 	AfModelH5ItemService afModelH5ItemService;
 	@Resource
 	AfModelH5Service afModelH5Service;
+	@Resource
+	AfSchemeGoodsService afSchemeGoodsService;
+	@Resource
+	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@RequestMapping(value = { "goodsListModel" }, method = RequestMethod.GET)
 	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
@@ -78,14 +99,68 @@ public class AppGoodsControler extends BaseController {
 			AfModelH5ItemDo afModelH5ItemDo = categoryDbList.get(0);
 			type = ObjectUtils.toString(afModelH5ItemDo.getRid(), "").toString();
 		}
-		List<AfUserH5ItmeGoodsDto> list = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
+		List<AfUserH5ItmeGoodsDto> goodsDoList = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
 				type, 0, pageCount);
-		logger.info("list++++++====" + JSON.toJSONString(list));
+		// 判断商品是否在优惠方案中
+		List goodsList = new ArrayList();
+		for(AfUserH5ItmeGoodsDto goodsDto : goodsDoList) {
+			Map goodsInfoMap = CollectionConverterUtil.convertObjToMap(goodsDto);
+			goodsInfoMap.put("goodsType", "0");
+			String goodsId = goodsDto.getGoodsId();
+			if(goodsId != null && !"".equals(goodsId)) {
+				AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(Long.parseLong(goodsId));
+		        if(null != afSchemeGoodsDo){
+		        	Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
+			        AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
+			        JSONArray interestFreeArray = null;
+			        if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
+			            interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
+			        }
+			        //获取借款分期配置信息
+			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+			        JSONArray array = JSON.parseArray(resource.getValue());
+			        //删除2分期
+			        if (array == null) {
+			        	goodsList.add(goodsInfoMap);
+			        	continue;
+			        }
+			        removeSecondNper(array);
 
-		model.put("goodsList", list);
+			        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+			        		goodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
+			        if(nperList!= null){
+			        	goodsInfoMap.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						goodsInfoMap.put("nperMap", nperMap);
+					}
+		        }
+		       
+			}
+	        goodsList.add(goodsInfoMap);
+		}
+		
+		
+		logger.info("list++++++====" + JSON.toJSONString(goodsList));
+
+		model.put("goodsList", goodsList);
 		model.put("typeCurrent", type);
 		logger.info(JSON.toJSONString(model));
 	}
+	
+	private void removeSecondNper(JSONArray array) {
+        if (array == null) {
+            return;
+        }
+        Iterator<Object> it = array.iterator();
+        while (it.hasNext()) {
+            JSONObject json = (JSONObject) it.next();
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+                it.remove();
+                break;
+            }
+        }
+
+    }
 
 	/**
 	 * 获取主题下面的商品

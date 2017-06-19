@@ -46,7 +46,6 @@ public class H5Controller extends BaseController {
 		if(returnUrl.indexOf("fanbei-web/activity/game") >=0){
 			doMaidianLog(request,"");
 		}
-		
 		return returnUrl;
 	}
 

@@ -155,8 +155,9 @@ public class AppH5UserContorler extends BaseController {
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
+			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
 			
-
+			
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
 			if (eUserDo != null) {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null).toString();
@@ -185,6 +186,12 @@ public class AppH5UserContorler extends BaseController {
 				resultStr =  H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
 				return resultStr;
 
+			}
+			try {
+				tongdunUtil.getPromotionResult(token,null,null,CommonUtil.getIpAddr(request),mobile, mobile, "");
+			} catch (Exception e) {
+				resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
+				return resultStr;
 			}
 
 			// 更新为已经验证
@@ -292,6 +299,8 @@ public class AppH5UserContorler extends BaseController {
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
+			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+
 
 			AfPromotionChannelPointDo pcp = afPromotionChannelPointService.getPoint(channelCode, pointCode);
 			if (pcp == null) {
@@ -330,7 +339,7 @@ public class AppH5UserContorler extends BaseController {
 
 			}
 			try {
-				tongdunUtil.getPromotionResult(request.getSession().getId(),channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
+				tongdunUtil.getPromotionResult(token,channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
 			} catch (Exception e) {
 				resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
 				return resultStr;

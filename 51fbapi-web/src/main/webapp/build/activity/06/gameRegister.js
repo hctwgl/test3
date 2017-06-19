@@ -1,4 +1,37 @@
 
+var token = formatDateTime()+Math.random().toString(36).substr(2);
+
+function formatDateTime() {    
+    var date = new Date();  
+    var y = date.getFullYear();    
+    var m = date.getMonth() + 1;    
+    m = m < 10 ? ('0' + m) : m;    
+    var d = date.getDate();    
+    d = d < 10 ? ('0' + d) : d;  
+    var h = date.getHours();  
+    var minute = date.getMinutes();  
+    var second = date.getSeconds();
+    return y +  m +  d +h +minute+second;    
+};  
+
+// 同盾校验编号的sessionId
+ (function() {
+    var _fmOpt = {
+         partner: 'alading',
+         appName: 'register_professional_web',
+         token: token
+     };
+     var cimg = new Image(1,1);
+     cimg.onload = function() {
+         _fmOpt.imgLoaded = true;
+     };
+     cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=register_professional_web&tokenId=" + _fmOpt.token;
+     var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+     fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+ 	// alert(json.msg);
+ })();
+
 // 根据点击显示input文字
 $('.input').on('keydown',function () {
 	$(this).next().hide()
@@ -90,7 +123,8 @@ $(function(){
 								registerMobile: phone,
 								smsCode: code,
 								password: password_md5,
-								recommendCode: recommendCode
+								recommendCode: recommendCode,
+								token:token
 							},
 							success: function(returnData){
 								if ( returnData.success ) {
