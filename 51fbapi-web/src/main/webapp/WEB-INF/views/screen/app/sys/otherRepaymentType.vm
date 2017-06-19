@@ -13,17 +13,52 @@
             background-color: #eeeeee;
         }
         .otherRepaymentType span{
-           font-size: 0.32rem;
+           font-size: 0.36rem;
         }
-
+        .line{
+            width:100%;
+            height:15px;
+            padding: 0rem 0.4rem 0rem;
+        }
+        .public{
+            width:80px;
+            height:100%;
+            display:inline-block;
+            text-align: justify;
+            vertical-align:top;
+        }
+        .public::after{
+            content:"";
+            display: inline-block;
+            width:100%;
+            overflow:hidden;
+            height:0;
+        }
     </style>
 </head>
 <body>
+
+</body>
+</html>
+
+
+
+<body>
 <div class="otherRepaymentType">
     <p><span>请在转账时备注</span><br>您的返呗账号(即注册手机号)</p>
-    <p><span>支付宝账号</span><br>13777564272@163.com</p>
-    <p><span>银行账号</span><br>户名:浙江阿拉丁电子商务股份有限公司<br>开户行:招商银行杭州钱塘支行<br>账号:5719 0851 8510 808</p>
-    <p><span>温馨提示:</span><br>线下还款后，借钱状态的更新会有几天的延迟，请耐心等待。<br>若有疑问请联系客服电话:0571-88193918</p>
+    <p>
+        <span>支付宝账号</span><br>13777564272@163.com<br><br><span>银行账号</span><br>
+        <div class="line">
+            <div class="public">户名</div>: 浙江阿拉丁电子商务股份有限公司
+        </div>
+        <div class="line">
+            <div class="public">开户行</div>: 招商银行杭州钱塘支行
+        </div>
+        <div class="line">
+            <div class="public">账号</div>: 5719 0851 8510 808
+        </div>
+    </p>
+    <p><span>温馨提示:</span><br>线下还款后，借钱状态的更新会有几天的延迟，请耐心等待。<br>若有疑问请联系客服电话: 0571-88193918</p>
 </div>
 </body>
 </html>
