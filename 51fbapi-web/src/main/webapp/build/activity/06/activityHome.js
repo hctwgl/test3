@@ -37,6 +37,9 @@ function addModel(goodsList,notifyUrl) {
               </div>`;
     if(goodsList[i].goodsType==1){
         let amount = toDecimal2(goodsList[i].nperMap.amount);  // 每期金额
+        if(goodsList[i].nperMap.isFree==1){
+            let amount = toDecimal2(goodsList[i].nperMap.freeAmount);  // 每期金额
+        }
         let totalAmount = toDecimal2(goodsList[i].nperMap.totalAmount);  // 抢购价
         con=`<div class="price stages">
                  <p style="color:#f98011"><i class="monthCorner"></i>￥${amount}×${goodsList[i].nperMap.nper}</p>
