@@ -666,6 +666,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					// 查卡号，用于调用风控接口
 					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
+					Boolean isSelf = StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode());
 					orderInfo.setRid(orderId);
 					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setGmtPay(currentDate);
@@ -677,7 +678,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderDao.updateOrder(orderInfo);
 						// 微信支付
 						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,
-								StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())?PayOrderSource.SELFSUPPORT_ORDER.getCode():PayOrderSource.BRAND_ORDER.getCode());
+								isSelf?PayOrderSource.SELFSUPPORT_ORDER.getCode():PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
 						// 代付
 						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
@@ -743,7 +744,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
 								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
 								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
-								"品牌订单支付", "02",  StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode() )?OrderType.SELFSUPPORT.getCode():OrderType.BOLUOME.getCode());
+								isSelf?"自营商品订单支付":"品牌订单支付", "02",  isSelf?OrderType.SELFSUPPORT.getCode():OrderType.BOLUOME.getCode());
 						if (!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
