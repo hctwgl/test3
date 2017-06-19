@@ -103,7 +103,7 @@ public class PayOrderV1Api implements ApiHandle {
 		
 		try {
 			BigDecimal saleAmount =orderInfo.getSaleAmount();
-			if(StringUtils.equals(type, OrderType.AGENTBUY.getCode())){
+			if(StringUtils.equals(type, OrderType.AGENTBUY.getCode())||StringUtils.equals(type, OrderType.SELFSUPPORT.getCode())){
 				saleAmount = orderInfo.getActualAmount();
 			}
 		

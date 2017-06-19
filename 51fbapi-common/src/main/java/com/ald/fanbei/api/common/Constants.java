@@ -85,6 +85,8 @@ public class Constants {
 	public static final String DEFAULT_SERVICE_PHONE = "0571-88193918";
 	public static final String DEFAULT_REPAYMENT_NAME = "主动还款-";
 	public static final String DEFAULT_BRAND_SHOP = "品牌订单支付";
+	public static final String DEFAULT_SELFSUPPORT_SHOP = "自营商品支付";
+
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// cache keys
