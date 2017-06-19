@@ -5,12 +5,22 @@
 * @Last Modified time: 2017-06-07 14:06:30
 */
 
-
-var token = Math.random().toString(36).substr(2);
+var token = formatDateTime()+Math.random().toString(36).substr(2);
 
 var style = $("#style").val();
 
-
+function formatDateTime() {    
+    var date = new Date();  
+    var y = date.getFullYear();    
+    var m = date.getMonth() + 1;    
+    m = m < 10 ? ('0' + m) : m;    
+    var d = date.getDate();    
+    d = d < 10 ? ('0' + d) : d;  
+    var h = date.getHours();  
+    var minute = date.getMinutes();  
+    var second = date.getSeconds();
+    return y +  m +  d +h +minute+second;    
+};  
 
 // 同盾校验编号的sessionId
  (function() {
@@ -23,7 +33,7 @@ var style = $("#style").val();
      cimg.onload = function() {
          _fmOpt.imgLoaded = true;
      };
-     cimg.src = "https://fp.fraudmetrix.cn//clear.png?partnerCode=alading&appName=register_professional_web&tokenId=" + _fmOpt.token;
+     cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=register_professional_web&tokenId=" + _fmOpt.token;
      var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
      fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
@@ -197,7 +207,8 @@ $(function(){
   									smsCode: register_verification,
   									password: password_md5,
   									channelCode: channelCode,
-  									pointCode: pointCode
+  									pointCode: pointCode,
+  									token:token
   								},
   								success: function(returnData){
   									if ( returnData.success ) {
@@ -270,7 +281,8 @@ $(function(){
   									smsCode: register_verification,
   									password: password_md5,
   									channelCode: channelCode,
-  									pointCode: pointCode
+  									pointCode: pointCode,
+  									token:token
   								},
   								success: function(returnData){
   									if ( returnData.success ) {
