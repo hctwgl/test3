@@ -677,7 +677,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderDao.updateOrder(orderInfo);
 						// 微信支付
 						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,
-								PayOrderSource.BRAND_ORDER.getCode());
+								StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())?PayOrderSource.SELFSUPPORT_ORDER.getCode():PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
 						// 代付
 						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
@@ -743,7 +743,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
 								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
 								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
-								"品牌订单支付", "02", OrderType.BOLUOME.getCode());
+								"品牌订单支付", "02",  StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode() )?OrderType.SELFSUPPORT.getCode():OrderType.BOLUOME.getCode());
 						if (!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
