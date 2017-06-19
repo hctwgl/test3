@@ -4,12 +4,13 @@
     <title>还款方式</title>
     <style type="text/css">
         .otherRepaymentType {
-            margin: 1rem 0.4rem 0.4rem;
             text-align: left;
             line-height: 0.48rem;
         }
         .otherRepaymentType p{
-            margin-bottom: 0.5rem;
+            padding: 0rem 0.4rem 0rem;
+            margin: 0.3rem 0rem 0rem;
+            background-color: #eeeeee;
         }
 
     </style>
