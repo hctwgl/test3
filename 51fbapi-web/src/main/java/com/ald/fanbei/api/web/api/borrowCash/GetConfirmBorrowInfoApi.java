@@ -21,10 +21,12 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -68,7 +70,11 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 		}
 		data.put("realNameStatus", authDo.getRealnameStatus());
-		data.put("riskStatus", authDo.getRiskStatus());
+		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {
+			data.put("riskStatus", RiskStatus.A.getCode());
+		} else {
+			data.put("riskStatus", authDo.getRiskStatus());
+		}
 		data.put("faceStatus", authDo.getFacesStatus());
 		
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);

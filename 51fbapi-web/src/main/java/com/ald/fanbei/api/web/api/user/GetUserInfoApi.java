@@ -13,8 +13,10 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -90,7 +92,12 @@ public class GetUserInfoApi implements ApiHandle {
 		userVo.setRealName(StringUtils.isBlank(realName) ? "" : realName);
 		userVo.setBankCardStatus(userAuthDo.getBankcardStatus());
 		userVo.setFaceStatus(userAuthDo.getFacesStatus());
-		userVo.setRiskStatus(userAuthDo.getRiskStatus());
+		if (StringUtil.equals(userAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {
+			userVo.setRiskStatus(RiskStatus.A.getCode());
+		} else {
+			userVo.setRiskStatus(userAuthDo.getRiskStatus());
+		}
+		
 		
 		return userVo;
 	}
