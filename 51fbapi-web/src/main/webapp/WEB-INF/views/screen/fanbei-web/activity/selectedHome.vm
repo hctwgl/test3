@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017052704")
+	#set($version="2017052705")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/selectedHome.css?version=$version">
@@ -53,7 +53,7 @@
 		<div style="height: .83rem">
             <div id="navWrap">
                 <div id="listAlert">
-                    <a :href="'#'+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
+                    <a @click="statisticsTwo(data.subjectId)" :href="'#'+index" v-for="(data,index) in content.data.activityList">{{data.name}}</a>
                 </div>
             </div>
 		</div>

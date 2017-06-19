@@ -119,6 +119,15 @@ new Vue({
                 console.log(response)
             })
         },
+        statisticsTwo(id){
+            let self=this;
+            self.$http.post('/fanbei-web/categoryGoodsStatistics',{subjectId:id}).then(function (res) {
+                console.log(id);
+                console.log(res);
+            },function (response) {
+                console.log(response)
+            })
+        },
         handleScroll (){
             let win=jQuery(window).scrollTop();
             if(win>=this.divTop){
