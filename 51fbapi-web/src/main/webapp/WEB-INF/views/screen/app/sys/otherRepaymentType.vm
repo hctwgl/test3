@@ -12,15 +12,18 @@
             margin: 0.3rem 0rem 0rem;
             background-color: #eeeeee;
         }
+        .otherRepaymentType span{
+           font-size: 0.32rem;
+        }
 
     </style>
 </head>
 <body>
 <div class="otherRepaymentType">
-    <p>请在转账时备注<br>您的返呗账号(即注册手机号)</p>
-    <p>支付宝账号<br>13777564272@163.com</p>
-    <p>银行账号<br>户名:浙江阿拉丁电子商务股份有限公司<br>开户行:招商银行杭州钱塘支行<br>账号:5719 0851 8510 808</p>
-	<p>温馨提示:<br>线下还款后，借钱状态的更新会有几天的延迟，请耐心等待。<br>若有疑问请联系客服电话:0571-88193918</p>
+    <p><span>请在转账时备注</span><br>您的返呗账号(即注册手机号)</p>
+    <p><span>支付宝账号</span><br>13777564272@163.com</p>
+    <p><span>银行账号</span><br>户名:浙江阿拉丁电子商务股份有限公司<br>开户行:招商银行杭州钱塘支行<br>账号:5719 0851 8510 808</p>
+    <p><span>温馨提示:</span><br>线下还款后，借钱状态的更新会有几天的延迟，请耐心等待。<br>若有疑问请联系客服电话:0571-88193918</p>
 </div>
 </body>
 </html>
