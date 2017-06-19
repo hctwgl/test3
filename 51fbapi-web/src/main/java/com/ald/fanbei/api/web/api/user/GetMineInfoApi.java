@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,7 +12,11 @@ import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
+
+
+
 import com.ald.fanbei.api.biz.bo.GetBrandCouponCountRequestBo;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
@@ -22,7 +28,9 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.RandomUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -52,6 +60,9 @@ public class GetMineInfoApi implements ApiHandle {
 
 	@Resource
 	private AfUserAccountService afUserAccountService;
+	
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -97,12 +108,36 @@ public class GetMineInfoApi implements ApiHandle {
 		data.put("bankcardStatus", afUserAuthDo.getBankcardStatus());
 
 		data.put("recommendCode", userAccountInfo.getRecommendCode());
-		//to-do 有苏伟丽继续后台逻辑开发
-		data.put("customerPhone", "0571-86803811");
+		if (appVersion  >= 345) {
+			//随机生成客服电话
+			String phone = randomPhone();
+			data.put("customerPhone", phone);
+		} 
 		resp.setResponseData(data);
 		return resp;
 	}
 	
+	/**
+	 * 随机生成一个客服电话号码
+	 * Author:苏伟丽
+	 **/
+	private String randomPhone() {
+		 // TODO Auto-generated method stub
+		 String targetPhone = "0571-86803811";
+		 AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_COMSUMER_PHONE);
+		 if(resourceInfo != null && StringUtil.isNotBlank(resourceInfo.getValue())){
+			 String[] phoneArry = resourceInfo.getValue().split(",");
+			 if(phoneArry!= null && phoneArry.length > 0){
+				List<String> phoneList = Arrays.asList(phoneArry);
+				 targetPhone = RandomUtil.getRandomElement(phoneList);
+				 if(StringUtil.isNotBlank(targetPhone)){
+					return targetPhone;
+				 }
+			 }
+		 }
+		 return targetPhone;
+	}
+
 	private void dealWithVersionGT340(Map<String, Object> resultData, RequestDataVo requestDataVo, FanbeiContext context, int coupleCount) {
 		GetBrandCouponCountRequestBo bo = new GetBrandCouponCountRequestBo();
 		bo.setUserId(context.getUserId()+StringUtils.EMPTY);

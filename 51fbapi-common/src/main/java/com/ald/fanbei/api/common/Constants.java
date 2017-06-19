@@ -157,6 +157,9 @@ public class Constants {
 	public static final String REGIST_TONGDUN_SWITCH = "regist.tongdun.switch";
 	//每月还款日期
 	public static final String RES_REPAYMENT_DATE = "REPAYMENT_DATE";
+	
+	//客服电话
+	public static final String RES_COMSUMER_PHONE = "CONSUMER_PHONE";
 
 	// config key
 	public static final String CONFKEY_CHECK_SIGN_SWITCH = "fbapi.check.sign.switch";
