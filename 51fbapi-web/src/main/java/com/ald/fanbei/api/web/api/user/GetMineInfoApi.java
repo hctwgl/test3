@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -122,14 +123,12 @@ public class GetMineInfoApi implements ApiHandle {
 	 * Author:苏伟丽
 	 **/
 	private String randomPhone() {
-		 // TODO Auto-generated method stub
 		 String targetPhone = "0571-86803811";
-		 AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_COMSUMER_PHONE);
+		 AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(AfResourceType.APPCONSUMERPHONE.getCode());
 		 if(resourceInfo != null && StringUtil.isNotBlank(resourceInfo.getValue())){
 			 String[] phoneArry = resourceInfo.getValue().split(",");
 			 if(phoneArry!= null && phoneArry.length > 0){
-				List<String> phoneList = Arrays.asList(phoneArry);
-				 targetPhone = RandomUtil.getRandomElement(phoneList);
+				 targetPhone = RandomUtil.getRandomElement(phoneArry);
 				 if(StringUtil.isNotBlank(targetPhone)){
 					return targetPhone;
 				 }

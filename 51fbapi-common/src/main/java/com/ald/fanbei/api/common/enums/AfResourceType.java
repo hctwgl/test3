@@ -20,6 +20,7 @@ public enum AfResourceType {
 	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
 	CodeMaxFail("CODE_MAX_FAIL", "验证码失败次数"),
+	APPCONSUMERPHONE("APP_CONSUMER_PHONE", "客服电话"),
 
 	SEARCH_HOT("SEARCH_HOT", "热门搜索"),
 	INVITE("INVITE", "邀请"),
