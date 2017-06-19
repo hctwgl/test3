@@ -156,7 +156,7 @@ function addMobileListModel(goodsList,notifyUrl) {
     let priceAmount = goodsList[i].priceAmount;
     let remark = goodsList[i].remark;
 
-    html+=`<li class="">
+    html+=`<li>
             <a href='${privateGoodsId}'>
               <img src="${goodsIcon}">
               <div class="mobileListContent">
