@@ -19,6 +19,7 @@ import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
@@ -45,16 +46,17 @@ public class RefundOrderApplyApi implements ApiHandle{
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"),"");
 		String contactsMobile = ObjectUtils.toString(requestDataVo.getParams().get("contactsMobile"),"");
+		Long orderId = NumberUtil.objToLong(requestDataVo.getParams().get("orderId"));
 		
 		//参数基本检查
-		if(StringUtil.isBlank(orderNo) || StringUtil.isBlank(contactsMobile) ){
+		if(orderId == null || StringUtil.isBlank(contactsMobile) ){
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
 		//用户订单检查
-		AfOrderDo orderInfo = afOrderService.getOrderInfoByOrderNoAndUserId(orderNo,userId);
+		AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,userId);
+		
 		if(null == orderInfo){
 			throw new FanbeiException(FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
 		}

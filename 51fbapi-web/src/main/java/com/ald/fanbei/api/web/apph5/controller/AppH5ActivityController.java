@@ -286,6 +286,7 @@ public class AppH5ActivityController extends BaseController {
     @RequestMapping(value = "/getSelfSupportGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getSelfSupportGoodsInfo(HttpServletRequest request, ModelMap model) throws IOException {
         Map<String, Object> returnData = new HashMap<String, Object>();
+        String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
         Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
         try {
         	AfGoodsQuery query = new AfGoodsQuery();
@@ -296,6 +297,7 @@ public class AppH5ActivityController extends BaseController {
         	List<AfGoodsDo> goodsDoList = afGoodsService.getCateGoodsList(query);
         	List<AfGoodsVo> goodsList = getGoodsList(goodsDoList);
             returnData.put("goodsList", goodsList);
+            returnData.put("notifyUrl", notifyUrl);
             
             returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
             return H5CommonResponse

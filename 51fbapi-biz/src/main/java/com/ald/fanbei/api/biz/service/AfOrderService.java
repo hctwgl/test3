@@ -196,13 +196,5 @@ public interface AfOrderService {
 	 */
 	String getCurrentLastPayNo(Date current);
 	
-	/**
-	 * 获取订单详情
-	 * @param orderNo 订单号
-	 * @param userId 用户id
-	 * @return
-	 */
-	AfOrderDo getOrderInfoByOrderNoAndUserId(String orderNo, Long userId);
-	
 }
 

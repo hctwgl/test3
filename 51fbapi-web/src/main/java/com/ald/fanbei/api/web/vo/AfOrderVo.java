@@ -36,6 +36,7 @@ public class AfOrderVo extends AbstractSerial {
 	private String consigneeMobile;
 	private String invoiceHeader;
 	private String logisticsInfo;
+	private String payType;
 	
 	public String getOrderNo() {
 		return orderNo;
@@ -163,6 +164,11 @@ public class AfOrderVo extends AbstractSerial {
 	public void setLogisticsInfo(String logisticsInfo) {
 		this.logisticsInfo = logisticsInfo;
 	}
-	
+	public String getPayType() {
+		return payType;
+	}
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
 	
 }
