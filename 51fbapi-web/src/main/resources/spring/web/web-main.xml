@@ -180,6 +180,7 @@
 				<entry key="/order/getOrderNoWithUser" value-ref="getOrderNoWithUserApi" />
 				<entry key="/order/refundOrderApply" value-ref="refundOrderApplyApi" />
 				<entry key="/order/deleteOrderInfo" value-ref="deleteOrderInfoApi" />
+				<entry key="/order/buySelfGoods" value-ref="buySelfGoodsApi" />
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
@@ -278,7 +279,6 @@
 				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
 				<entry key="/agencyBuy/getAgencyCouponList" value-ref="getAgencyCouponListApi" />
 				<entry key="/agencyBuy/payAgencyOrderV1" value-ref="payAgencyOrderV1Api" />			
-				<entry key="/agencyBuy/buySelfGoods" value-ref="buySelfGoodsApi" />
 				
 				
 				
