@@ -97,6 +97,8 @@ public class GetMineInfoApi implements ApiHandle {
 		data.put("bankcardStatus", afUserAuthDo.getBankcardStatus());
 
 		data.put("recommendCode", userAccountInfo.getRecommendCode());
+		//to-do 有苏伟丽继续后台逻辑开发
+		data.put("customerPhone", "0571-86803811");
 		resp.setResponseData(data);
 		return resp;
 	}
