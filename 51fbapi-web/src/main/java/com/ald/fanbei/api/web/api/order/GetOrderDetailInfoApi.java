@@ -69,6 +69,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setConsigneeMobile(order.getConsigneeMobile());
 		vo.setInvoiceHeader(order.getInvoiceHeader());
 		vo.setLogisticsInfo(order.getLogisticsInfo());
+		vo.setPayType(order.getPayType());
 		return vo;
 	}
 }

@@ -398,15 +398,6 @@
 			is_delete=0 AND id = #{rid} AND user_id = #{userId}
 	</select>
 	
-	<select id="getOrderInfoByOrderNoAndUserId" resultType="AfOrderDo">
-		SELECT
-			<include refid="queryAllFields"/>
-		FROM
-			af_order
-		WHERE
-			is_delete=0 AND order_no = #{orderNo} AND user_id = #{userId}
-	</select>
-	
 	<select id="getOrderInfoByOrderNo" resultType="AfOrderDo">
 		SELECT
 			<include refid="queryFields"/>

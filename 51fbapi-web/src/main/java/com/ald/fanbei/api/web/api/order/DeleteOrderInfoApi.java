@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -14,7 +13,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -37,15 +36,15 @@ public class DeleteOrderInfoApi implements ApiHandle{
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"),"");
+		Long orderId = NumberUtil.objToLong(requestDataVo.getParams().get("orderId"));
 		
 		//参数基本检查
-		if(StringUtil.isBlank(orderNo)){
+		if(orderId == null){
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
 		//用户订单检查
-		AfOrderDo orderInfo = afOrderService.getOrderInfoByOrderNoAndUserId(orderNo,userId);
+		AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,userId);
 		if(null == orderInfo){
 			throw new FanbeiException(FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
 		}
