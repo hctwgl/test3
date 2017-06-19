@@ -4,7 +4,52 @@
 
 
 @url: "https://fs.51fanbei.com/h5/app/activity/06";
+.alert{
+	width:100%;
+	height:8rem;
+	position: fixed;
+	top:40%;
+	left:50%;
+	transform:translate(-50%,-50%);
+	z-index: 300;
+	border-radius: .2rem;
+	background: url("@{url}/share01.png") no-repeat;
+	background-size: contain;
+	display: none;
+}
+.getCon{
+	width:4.4rem;
+	height:2rem;
+	margin: .2rem auto 0;
+	color:white;
+	font-size:.36rem;
+	line-height: .4rem;
 
+}
+.getState{
+	width:5.02rem;
+	height:1.25rem;
+	margin: 1.6rem auto 0 auto;
+	background: url("@{url}/share02.png") no-repeat;
+	background-size:contain;
+	font-size:.36rem;
+	color:#ef1650;
+	text-align: center;
+	line-height: .95rem;
+}
+.alert .tryAgain{width:3.61rem;height:.78rem;background: url("@{url}/share04.png") no-repeat;
+	background-size:contain;margin:1.3rem auto .3rem;text-align: center;line-height: .65rem;
+	color:#c21a00;font-weight: 300;}
+#shadow{
+	width:100%;
+	height:100%;
+	position: fixed;
+	top:0;
+	left:0;
+	background:rgba(0,0,0,.6);
+	z-index: 200;
+	display: none;
+}
 .hide{
 	display: none;
 }
@@ -74,6 +119,7 @@
 /* 精选会场 */
 .selectedHome{
 	text-align: center;
+	width:7.1rem;
 	padding: 0.2rem;
 }
 .selectedHome li{
@@ -98,6 +144,8 @@
 }
 .boutiqueHome ul{
 	padding: 0.2rem;
+	width:7.1rem;
+
 }
 .boutiqueHome li{
 	position: relative;

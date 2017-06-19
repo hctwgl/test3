@@ -293,6 +293,7 @@ public class AppH5SubjectController  extends BaseController{
 							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 								interestFreeArray = JSON.parseArray(interestFreeJson);
 							}
+							
 							List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
 									goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
 							

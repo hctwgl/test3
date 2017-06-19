@@ -9,13 +9,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.bo.TongdunResultBo;
 import com.ald.fanbei.api.biz.bo.ZhimaAuthResultBo;
+import com.ald.fanbei.api.biz.service.AfAuthTdService;
 import com.ald.fanbei.api.biz.service.AfAuthZmService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -23,7 +26,10 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAuthTdDo;
 import com.ald.fanbei.api.dal.domain.AfAuthZmDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -48,6 +54,7 @@ import com.antgroup.zmxy.openplatform.api.response.ZhimaCreditWatchlistiiGetResp
 @Component("authCreditApi")
 public class AuthCreditApi implements ApiHandle {
 	
+	private static final String TONGDUN_CODE_WAIT_FOR_REPORT = "204";//还未出报告
 	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
@@ -60,6 +67,8 @@ public class AuthCreditApi implements ApiHandle {
 	AfBorrowBillService afBorrowBillService;
 	@Resource
 	private RiskUtil riskUtil;
+	@Resource
+	AfAuthTdService afAuthTdService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -87,6 +96,25 @@ public class AuthCreditApi implements ApiHandle {
 		ZhimaCreditScoreGetResponse scoreGetResp = ZhimaUtil.scoreGet(openId);
 		ZhimaCreditIvsDetailGetResponse ivsDetailResp =  ZhimaUtil.ivsDetailGet(idNumber, realName, null, null, null);
 		ZhimaCreditWatchlistiiGetResponse watchListResp = ZhimaUtil.watchlistiiGet(openId);
+		
+		
+		String reportId = TongdunUtil.applyPreloan(userAccount.getIdNumber(), userAccount.getRealName(), context.getMobile(), null);
+		if(StringUtil.isBlank(reportId)){
+			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_REALNAME_ERROR);
+		}
+		CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+		TongdunResultBo authResult = TongdunUtil.queryPreloan(reportId);
+		while(StringUtil.equals(TONGDUN_CODE_WAIT_FOR_REPORT, authResult.getReasonCode())){
+			CommonUtil.sleepMilliSeconds(CommonUtil.getRandomNum(3000));
+			authResult = TongdunUtil.queryPreloan(reportId);
+		}
+		
+		//存库，更新userAuth状态
+		AfAuthTdDo afAuthTdDo = new AfAuthTdDo();
+		afAuthTdDo.setReportId(reportId);
+		afAuthTdDo.setAuthResult(authResult.getResultStr());
+		afAuthTdDo.setUserId(context.getUserId());
+		afAuthTdService.addAuthTd(afAuthTdDo);		
 		
 		//增加日志
 		AfAuthZmDo authZm = new AfAuthZmDo();
@@ -116,6 +144,7 @@ public class AuthCreditApi implements ApiHandle {
 			userAuth.setWatchlistScore(watchListResp.getIsMatched()?YesNoStatus.YES.getCode():YesNoStatus.NO.getCode());
 			userAuth.setGmtWatchlist(new Date());
 		}
+		userAuth.setRealnameScore(authResult.getFinalScore());
 		afUserAuthService.updateUserAuth(userAuth);
 		
 		// TODO 计算信用分 更新userAccount

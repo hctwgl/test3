@@ -14,6 +14,7 @@ public enum RiskStatus {
 	A("A", "未审核"), 
 	NO("N", "未通过审核"), 
 	PROCESS("P", "审核中"), 
+	SECTOR("S", "部分认证标识"), 
 	YES("Y", "已通过审核");
 
 	private String code;

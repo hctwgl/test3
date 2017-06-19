@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017061407")
+	#set($version="2017061901")
 	#set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
@@ -24,10 +24,8 @@
     </script>
 </head>
 <body>
-	<input type="hidden" id="sessionId" name="sessionId" value="$!{sessionId}">
 	<input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
 	<input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
-	<input type="hidden" id="tdHost" value="$!{tdHost}">
 	<input type="hidden" id="style" value="$!{style}">
 
 	<div class="channelRegister_wrap">

@@ -56,7 +56,9 @@ let vm=new Vue({
                     for(let i=0;i<timeList.length;i++){
                         timeList[i]=timeList[i].replace(/\-/g, ""); 
                         timeList[i]=parseInt(timeList[i]); 
-                        timeList.push[timeList[i]]
+                        if(timeList[i]>=beginTime&&timeList[i]<=currentTime){
+                            timeList.push[timeList[i]];
+                        }                       
                     } 
                     self.fixContent.timeList=timeList
                     self.fixContent.currentTime=currentTime;

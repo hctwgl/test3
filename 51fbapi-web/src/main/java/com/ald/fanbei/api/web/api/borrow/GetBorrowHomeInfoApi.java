@@ -19,6 +19,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -119,7 +120,11 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setLocationStatus(authDo.getLocationStatus());
 		vo.setAllowConsume(afUserAuthService.getConsumeStatus(authDo.getUserId(),context.getAppVersion()));
 		vo.setFaceStatus(authDo.getFacesStatus());
-		vo.setRiskStatus(authDo.getRiskStatus());
+		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {
+			vo.setRiskStatus(RiskStatus.A.getCode());
+		} else {
+			vo.setRiskStatus(authDo.getRiskStatus());
+		}
 		return vo;
 	}
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017061903")
+	#set($version="2017061701")
 	#set($src="https://fs.51fanbei.com/h5/app/activity/06")
 	<title>OPPO R11新品首发</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/oppoR11.css?version=$version">
@@ -21,7 +21,7 @@
 		<img src="$src/oppo3_18.png" style="height: 2.23rem;">
 		<img src="$src/oppo4.png" style="height: 3.77rem;">
 
-		<div class="countWrap hide">
+		<div class="countWrap">
 			<img src="$src/oppo9.png" style="height: 1.77rem;">
 			<div class="countDown" id="countDown">
 	      <span class="time_item" id="day_show"></span>
@@ -31,15 +31,8 @@
 	    </div>
 		</div>
 		<img src="$src/oppo8.png">
-		<div class="mobileListImg hide">
-			<img src="$src/oppo8_2.png">
-			<img src="$src/oppo8_3.png">
-		</div>
-		<!-- 手机列表 -->
-		<div class="mobileListWrap">
-			<ul id="mobileList" class="mobileList clearfix">
-			</ul>
-		</div>
+		<img @click="mobilePopup()" src="$src/oppo8_2.png">
+		<img @click="mobilePopup()" src="$src/oppo8_3.png">
 		<!--弹框-->
 		<div class="mask"></div>
 		<div class="orderSuccess">
@@ -54,6 +47,8 @@
 		    <div @click="close()" class="close">X</div>
 			</div>
 		</div>
+
+
 	</div>
 	<script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
 </body>

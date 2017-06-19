@@ -21,8 +21,18 @@ function alaShareData(){
 
   let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
   return dataStr;
-};
-
+}
+function statistics(id){
+  $.ajax({
+      url:'/fanbei-web/qualityGoodsStatistics',
+      type:'post',
+      data:{goodsId:id},
+      success:function (data) {
+          console.log(id);
+          console.log(data);
+      }
+  })
+}
 // 精品推荐Model
 function addModel(goodsList,notifyUrl) {
 
@@ -37,6 +47,9 @@ function addModel(goodsList,notifyUrl) {
               </div>`;
     if(goodsList[i].goodsType==1){
         let amount = toDecimal2(goodsList[i].nperMap.amount);  // 每期金额
+        if(goodsList[i].nperMap.isFree==1){
+            let amount = toDecimal2(goodsList[i].nperMap.freeAmount);  // 每期金额
+        }
         let totalAmount = toDecimal2(goodsList[i].nperMap.totalAmount);  // 抢购价
         con=`<div class="price stages">
                  <p style="color:#f98011"><i class="monthCorner"></i>￥${amount}×${goodsList[i].nperMap.nper}</p>
@@ -45,7 +58,7 @@ function addModel(goodsList,notifyUrl) {
     }
 
     html +='<li class="clearfix">'
-            +'<a href='+goodsUrl+'>'
+            +'<a onclick="statistics('+goodsList[i].goodsId+')" href='+goodsUrl+'>'
               +'<img src='+goodsList[i].goodsIcon+'>'
               +'<div class="boutiqueHomeContent clearfix">'
                   +'<p class="title" style="-webkit-box-orient: vertical;">'+goodsList[i].goodName+'</p>'

@@ -17,13 +17,7 @@ $(function(){
         var couponIdNum = couponList[i].rid;
         var currentState=$(".couponLi").eq(i).find('.clickCoupon').html();
         if(currentState=="去用券"){
-          if (returnNum == 1 ) {
             window.location.href = "activity/activityHome";
-          } else {
-            requestMsg("请稍等12345");
-          }
-
-
         }else{
                $.ajax({
                     url: "/fanbei-web/pickCoupon",
@@ -39,11 +33,9 @@ $(function(){
                             $(".couponLi").eq(i).find('.clickCoupon').html("去用券");
                             $(".couponLi").eq(i).find('.clickCoupon').click(function(){
                                 // window.location.href = "activity/activityHome";
-                                if (returnNum == 1 ) {
+
                                   window.location.href = "activity/activityHome";
-                                } else {
-                                  requestMsg("请稍等12345");
-                                }
+
                             })
                         } else {
                             var status = returnData.data["status"];
