@@ -79,6 +79,9 @@
 			<if test="serviceProvider != null">
 				,service_provider
 			</if>
+			<if test="payType != null">
+    			,pay_type
+			</if>
 			<if test="interestFreeJson != null">
 				,interest_free_json
 			</if>
@@ -150,6 +153,9 @@
 			</if>
 			<if test="serviceProvider != null">
 				,#{serviceProvider}
+			</if>
+			<if test="payType != null">
+    			,#{payType}
 			</if>
 			<if test="interestFreeJson != null">
 				,#{interestFreeJson}
