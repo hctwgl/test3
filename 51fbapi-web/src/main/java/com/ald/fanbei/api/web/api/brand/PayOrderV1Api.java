@@ -95,8 +95,6 @@ public class PayOrderV1Api implements ApiHandle {
 			}
 		}
 		
-		
-		
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
 		
@@ -106,7 +104,10 @@ public class PayOrderV1Api implements ApiHandle {
 			if(StringUtils.equals(type, OrderType.AGENTBUY.getCode())||StringUtils.equals(type, OrderType.SELFSUPPORT.getCode())){
 				saleAmount = orderInfo.getActualAmount();
 			}
-		
+		   if(payId==0 && StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
+			  
+			   nper = orderInfo.getNper();
+		   }
 			Map<String,Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),saleAmount , nper,appName,ipAddress);
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {

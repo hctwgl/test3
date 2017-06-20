@@ -625,10 +625,14 @@ public class UpsUtil extends AbstractThird {
 	
 	//微信支付
 	public static Map<String,Object> buildWxpayTradeOrder(String orderNo,Long userId,String goodsName,BigDecimal totalFee,String attach) {
+		Map<String,Object> result = buildWxpayTradeOrderRepayment(orderNo,userId,goodsName,totalFee,attach,false);
+		return result;
+	}
+	public static Map<String,Object> buildWxpayTradeOrderRepayment(String orderNo,Long userId,String goodsName,BigDecimal totalFee,String attach,boolean no_credit) {
 		Map<String,Object> result = new HashMap<String,Object>();
 		try{
 			//构建调用微信需要的参数
-			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, getNotifyHost()+"/third/ups/wxpayNotify",attach);
+			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, getNotifyHost()+"/third/ups/wxpayNotify",attach,no_credit);
 			String url = WxpayConfig.WX_UNIFIEDORDER_API;
 			String buildStr = WxpayCore.buildXMLBody(orderData);
 			
@@ -654,7 +658,6 @@ public class UpsUtil extends AbstractThird {
 		}
 		return result;
 	}
-	
 	private static BigDecimal setActualAmount(BigDecimal amount){
 		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
 			amount = amount.setScale(2,BigDecimal.ROUND_HALF_UP);
