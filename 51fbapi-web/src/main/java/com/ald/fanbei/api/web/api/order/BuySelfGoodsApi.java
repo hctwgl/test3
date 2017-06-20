@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.order;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,10 +21,12 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -31,8 +34,6 @@ import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：自营商品下单（oppr11） @author suweili 2017年6月16日下午3:44:12
@@ -64,6 +65,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 
+		Date currTime = new Date();
+		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.SELFSUPPORT_PAY_TIMEOUT_HOUR);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
 		if(actualAmount.compareTo(BigDecimal.ZERO)==0){
@@ -89,6 +92,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setNper(nper);
 		afOrder.setPayType(payType);
 		afOrder.setInvoiceHeader(invoiceHeader);
+		afOrder.setGmtCreate(currTime);
+		afOrder.setGmtPayEnd(gmtPayEnd);
 		if (nper.intValue() > 0) {
 			// 保存手续费信息
 			BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
