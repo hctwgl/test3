@@ -73,6 +73,12 @@
 			<if test="consigneeMobile != null" >
 				,consignee_mobile
 			</if>
+			<if test="invoiceHeader != null" >
+				,invoice_header
+			</if>
+			<if test="logisticsInfo != null" >
+				,logistics_info
+			</if>
 			<if test="borrowRate != null" >
 				,borrow_rate
 			</if>
@@ -147,6 +153,12 @@
 			</if>
 			<if test="consigneeMobile != null" >
 				,#{consigneeMobile}
+			</if>
+			<if test="invoiceHeader != null" >
+				,#{invoiceHeader}
+			</if>
+			<if test="logisticsInfo != null" >
+				,#{logisticsInfo}
 			</if>
 			<if test="borrowRate != null" >
 				,#{borrowRate}
