@@ -713,12 +713,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderDao.updateOrder(orderInfo);
 
 						try {
-							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), "40", card.getCardNumber(), appName, ipAddress, 
-									StringUtil.EMPTY, StringUtil.EMPTY, riskOrderNo);
-
-							if (verybo.isSuccess()) {
-								riskUtil.payOrder(verybo.getOrderNo(), verybo.getResult());
-							}
+//							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), "40", card.getCardNumber(), appName, ipAddress, 
+//									StringUtil.EMPTY, StringUtil.EMPTY, riskOrderNo);
+//							if (verybo.isSuccess()) {
+//								riskUtil.payOrder(verybo.getOrderNo(), verybo.getResult());
+//							}
 							
 						} catch (Exception e) {
 							e.printStackTrace();

@@ -142,5 +142,11 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	Long getSumOverdueDayByBorrowId(Long borrowId);
+	/**
+	 * 根据借款ID获取该借款的总逾期次数
+	 * @param borrowId
+	 * @return
+	 */
+	int getSumOverdueCountByBorrowId(Long borrowId);
 	
 }

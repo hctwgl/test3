@@ -276,8 +276,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 				
 				BigDecimal income = afBorrowBillService.getSumIncomeByBorrowId(billDo.getBorrowId());
 				Long sumOverdueDay = afBorrowBillService.getSumOverdueDayByBorrowId(billDo.getBorrowId());
-				
-				int borrowCount = afBorrowService.getBorrowNumByUserId(billDo.getUserId());
+				int overdueCount = afBorrowBillService.getSumOverdueCountByBorrowId(billDo.getBorrowId());
+//				int borrowCount = afBorrowService.getBorrowNumByUserId(billDo.getUserId());
 				
 				AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(afBorrow.getUserId());
 				String cardNo = StringUtils.EMPTY;
@@ -288,7 +288,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 				}
 				String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 				try {
-					riskUtil.raiseQuota(afBorrow.getUserId().toString(), "40", riskOrderNo, afBorrow.getAmount(), income, sumOverdueDay, borrowCount);
+					riskUtil.raiseQuota(afBorrow.getUserId().toString(), afBorrow.getBorrowNo(), "40", riskOrderNo, afBorrow.getAmount(), income, sumOverdueDay, overdueCount);
 				} catch (Exception e) {
 					logger.error("风控提额失败", e);
 				}

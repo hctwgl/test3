@@ -14,6 +14,7 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 
 	private String orderNo;
 	private String consumerNo;
+	private String borrowNo;
 	private String channel;
 	private String scene;
 	private String datas;
@@ -21,6 +22,7 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 //	private String appName;	//应用名称 
 //	private String ipAddress;	
 //	private String blackBox;	
+	private String eventInfo;
 	private String reqExt;
 	private String notifyUrl;
 	private String signInfo;
@@ -60,8 +62,6 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 		this.datas = datas;
 		this.put("datas", datas);
 	}
-	
-	
 	public String getReqExt() {
 		return reqExt;
 	}
@@ -83,4 +83,17 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 		this.signInfo = signInfo;
 		this.put("signInfo", signInfo);
 	}
+	public String getBorrowNo() {
+		return borrowNo;
+	}
+	public void setBorrowNo(String borrowNo) {
+		this.borrowNo = borrowNo;
+	}
+	public String getEventInfo() {
+		return eventInfo;
+	}
+	public void setEventInfo(String eventInfo) {
+		this.eventInfo = eventInfo;
+	}
+	
 }

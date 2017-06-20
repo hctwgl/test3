@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -212,9 +213,11 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
 			
-			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
-					afBorrowCashDo.getBorrowNo(), riskOrderNo);
-
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String borrowTime = sdf.format(afBorrowCashDo.getGmtCreate());
+			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), afBorrowCashDo.getBorrowNo(), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox, riskOrderNo, 
+					accountDo.getUserName(), amount, afBorrowCashDo.getPoundage(), borrowTime);
+			
 			if (verybo.isSuccess()) {
 				delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult());
 			}

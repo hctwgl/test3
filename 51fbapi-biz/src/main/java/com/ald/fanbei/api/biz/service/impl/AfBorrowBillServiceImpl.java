@@ -136,6 +136,11 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public Long getSumOverdueDayByBorrowId(Long borrowId) {
 		return afBorrowBillDao.getSumOverdueDayByBorrowId(borrowId);
+	}
+
+	@Override
+	public int getSumOverdueCountByBorrowId(Long borrowId) {
+		return afBorrowBillDao.getSumOverdueCountByBorrowId(borrowId);
 	}	
 	
 }

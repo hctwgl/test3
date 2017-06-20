@@ -133,6 +133,7 @@ public class Constants {
 	//risk eventType
 	public static final String EVENT_FINANCE_LIMIT = "event_finance_limit";
 	public static final String EVENT_FINANCE_COUNT = "event_finance_count";
+	public static final String EVENT_FINANCE_LIMIT_WEAK = "event_finance_limit_weak";
 	
 	public static final String RES_GAME_AWARD_COUNT_LIMIT           = "GAME_AWARD_COUNT_LIMIT";//游戏中奖数量总限制
 	//续期天数限制
