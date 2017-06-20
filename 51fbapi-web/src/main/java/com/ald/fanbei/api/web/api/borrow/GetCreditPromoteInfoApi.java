@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -121,7 +122,12 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		data.put("contactorModel", contactorModel);
 		data.put("realNameStatus", authDo.getRealnameStatus());
 		data.put("bankCardStatus", authDo.getBankcardStatus());
-		data.put("riskStatus", authDo.getRiskStatus());
+		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {
+			data.put("riskStatus", RiskStatus.A.getCode());
+		} else {
+			data.put("riskStatus", authDo.getRiskStatus());
+		}
+		
 		data.put("faceStatus", authDo.getFacesStatus());
 		data.put("idNumber", Base64.encodeString(userDto.getIdNumber()));
 		data.put("realName", userDto.getRealName());

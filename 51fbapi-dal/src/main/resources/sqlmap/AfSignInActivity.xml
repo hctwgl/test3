@@ -3,13 +3,29 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfSignInActivityDao">
 
 <select id = "initActivitySign" resultType = "java.util.Date">
-	SELECT
-		gmt_create
-	FROM
-		af_signin_activity
-	WHERE
-		user_id = #{userId}
-	AND activity_id = #{activityId}
+		SELECT
+			gmt_create
+		FROM
+			af_signin_activity
+		WHERE
+			user_id = #{userId}
+		AND activity_id = #{activityId}
+		AND DATE_FORMAT(gmt_create, '%Y-%m-%d') BETWEEN (
+			SELECT
+				DATE_FORMAT(value_1, '%Y-%m-%d')
+			FROM
+				af_resource
+			WHERE
+				type = 'ACTIVITY_SIGNIN'
+		)
+		AND (
+			SELECT
+				DATE_FORMAT(value_2, '%Y-%m-%d')
+			FROM
+				af_resource
+			WHERE
+				type = 'ACTIVITY_SIGNIN'
+		)
 </select>
 
 <insert id = "singIn" parameterType="AfSignInActivityDo" keyProperty="rid" useGeneratedKeys="true">

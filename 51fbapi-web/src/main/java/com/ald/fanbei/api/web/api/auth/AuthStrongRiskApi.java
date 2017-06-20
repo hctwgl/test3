@@ -73,6 +73,11 @@ public class AuthStrongRiskApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
 		}
 
+		Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
+		if (directoryCache == null) {
+			throw new FanbeiException(FanbeiExceptionCode.CANOT_FIND_DIRECTORY_ERROR);// 没取到通讯录时，让用户重新设置紧急联系人
+		}
+
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
 		AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
@@ -100,7 +105,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 				}
 			} catch (Exception e) {
 				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
-				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR,e);
+				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 			}
 
 			return resp;
