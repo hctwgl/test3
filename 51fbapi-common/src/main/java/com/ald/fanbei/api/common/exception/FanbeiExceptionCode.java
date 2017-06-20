@@ -96,7 +96,6 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ZHIMA_CREDIT_INFO_EXIST_ERROR("ZHIMA_CREDIT_INFO_EXIST_ERROR",1311,"zhima Credit exist error","请先完成芝麻信用授权!"),
     OPERATOR_INFO_EXIST_ERROR("OPERATOR_INFO_EXIST_ERROR",1312,"operator exist error","请先完成运营商授权!"),
     EMERGENCY_CONTACT_INFO_EXIST_ERROR("EMERGENCY_CONTACT_INFO_EXIST_ERROR",1313,"emergency contact exist error","请先完成紧急联系人设置!"),
-    CANOT_FIND_DIRECTORY_ERROR("CANOT_FIND_DIRECTORY_ERROR",1314,"canot find directory error","请重新设置紧急联系人!"),
     
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
@@ -153,6 +152,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_DETAIL_NOT_EXIST_ERROR("BORROW_DETAIL_NOT_EXIST_ERROR",1705,"borrow detail not exist error","借款详情不存在"),
     REPAYMENT_DETAIL_NOT_EXIST_ERROR("REPAYMENT_DETAIL_NOT_EXIST_ERROR",1706,"repayment detail not exist error","还款详情不存在"),
     BORROW_CONSUME_GOODS_IS_EMPTY("BORROW_CONSUME_GOODS_IS_EMPTY",1707,"borrow consume goods is empty","商品不存在"),
+    CANOT_FIND_DIRECTORY_ERROR("CANOT_FIND_DIRECTORY_ERROR",1314,"canot find directory error","请重新设置紧急联系人!"),
     
     
     //h5 1800-1900
@@ -211,9 +211,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),
     
-
     //系统升级该code不能随便修改
-    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1、“首页”全新改版，色彩色调全新感官\n 2、年中盛宴，钜惠抢先享\n 3、OPPO R11报名预定更有好礼相送"),
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "年中盛宴正式开启！\n1、全新券，全新体验，全新畅享理想生活 \n2、年中盛宴，超级钜惠抢购正当时 \n 3、OPPO  R11限量预约免息，更有好礼相赠"),
 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");

@@ -21,8 +21,18 @@ function alaShareData(){
 
   let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
   return dataStr;
-};
-
+}
+function statistics(id){
+  $.ajax({
+      url:'/fanbei-web/qualityGoodsStatistics',
+      type:'post',
+      data:{goodsId:id},
+      success:function (data) {
+          console.log(id);
+          console.log(data);
+      }
+  })
+}
 // 精品推荐Model
 function addModel(goodsList,notifyUrl) {
 
@@ -48,7 +58,7 @@ function addModel(goodsList,notifyUrl) {
     }
 
     html +='<li class="clearfix">'
-            +'<a href='+goodsUrl+'>'
+            +'<a onclick="statistics('+goodsList[i].goodsId+')" href='+goodsUrl+'>'
               +'<img src='+goodsList[i].goodsIcon+'>'
               +'<div class="boutiqueHomeContent clearfix">'
                   +'<p class="title" style="-webkit-box-orient: vertical;">'+goodsList[i].goodName+'</p>'
