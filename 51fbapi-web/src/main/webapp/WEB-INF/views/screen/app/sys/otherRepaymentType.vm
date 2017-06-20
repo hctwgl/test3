@@ -10,18 +10,18 @@
         .otherRepaymentType p{
             padding: 0rem 0.4rem 0rem;
             margin: 0.3rem 0rem 0rem;
-            background-color: #eeeeee;
+            background-color: #ffffff;
         }
         .otherRepaymentType span{
            font-size: 0.36rem;
         }
         .line{
             width:100%;
-            height:15px;
+            height:0.4rem;
             padding: 0rem 0.4rem 0rem;
         }
         .public{
-            width:80px;
+            width:1rem;
             height:100%;
             display:inline-block;
             text-align: justify;
@@ -36,13 +36,6 @@
         }
     </style>
 </head>
-<body>
-
-</body>
-</html>
-
-
-
 <body>
 <div class="otherRepaymentType">
     <p><span>请在转账时备注</span><br>您的返呗账号(即注册手机号)</p>
