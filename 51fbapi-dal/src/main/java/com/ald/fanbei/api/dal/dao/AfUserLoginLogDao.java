@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 
 
@@ -17,5 +19,7 @@ public interface AfUserLoginLogDao {
 	 *@return
 	 */
 	int addUserLoginLog(AfUserLoginLogDo afUserLoginLogDo);
+	
+	int getCountByUserName(@Param("userName")String userName);
 	
 }

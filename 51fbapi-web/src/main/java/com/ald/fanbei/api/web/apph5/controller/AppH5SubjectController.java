@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -77,6 +78,9 @@ public class AppH5SubjectController  extends BaseController{
 	
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	
+	@Resource
+	AfGoodsService afGoodsService;
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -460,6 +464,7 @@ public class AppH5SubjectController  extends BaseController{
 	public String qualityGoodsStatistics(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 统计精品推荐商品点击量
 		FanbeiWebContext context = new FanbeiWebContext();
+		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
 		try{
 			//context = doWebCheck(request, false);
@@ -467,8 +472,8 @@ public class AppH5SubjectController  extends BaseController{
 			if(goodsId == null || "".equals(goodsId)) {
 				return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
 			}
-			request.setAttribute("context", context);
-			doMaidianLog(request, "");
+			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(Long.parseLong(goodsId));
+			doMaidianLog(request, goodsInfo.toString());
 			resultStr = H5CommonResponse.getNewInstance(true, "成功").toString();
 		}catch(FanbeiException e){
 			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc()).toString();
@@ -476,11 +481,37 @@ public class AppH5SubjectController  extends BaseController{
 		}catch(Exception e){
 			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", "").toString();
 			logger.error("请求失败"+context,e);
+		}finally{
+			Calendar calEnd = Calendar.getInstance();
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
 		}
 		return resultStr;
 	}
 	
-	
+	@RequestMapping(value = "categoryGoodsStatistics", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String categoryGoodsStatistics(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// 统计二级会场点击量
+		Calendar calStart = Calendar.getInstance();
+		FanbeiWebContext context = new FanbeiWebContext();
+		String resultStr = "";
+		try{
+			String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
+			if(subjectId == null || "".equals(subjectId)) {
+				return H5CommonResponse.getNewInstance(false, "会场Id不能为空！").toString();
+			}
+			AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
+			doMaidianLog(request, subjectInfo.toString());
+			resultStr = H5CommonResponse.getNewInstance(true, "成功").toString();
+		}catch(Exception e){
+			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", "").toString();
+			logger.error("请求失败",e);
+		}finally{
+			Calendar calEnd = Calendar.getInstance();
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+		}
+		return resultStr;
+	}
 	
 	
 	private AfSubjectGoodsQuery buildAfSubjectGoodsQuery(HttpServletRequest request) {

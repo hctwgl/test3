@@ -30,7 +30,7 @@
 	<select id="getLatestAwards" resultType="AfGameAwardDo">
 		SELECT 
 			<include refid="queryFields"/>
-		FROM af_game_award WHERE is_delete = 0 ORDER BY id DESC LIMIT 20;
+		FROM af_game_award WHERE is_delete = 0 ORDER BY RAND() LIMIT 20;
 	</select>
 	
 	<update id="updateContact" >
