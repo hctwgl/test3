@@ -147,7 +147,7 @@ public class WxpayCore {
 	 *@return
 	 *@throws UnsupportedEncodingException
 	 */
-	public static Map<String,Object> buildWxOrderParam(String orderNo,String goodsName,BigDecimal totalFee,String notifyUrl,String attach) throws UnsupportedEncodingException{
+	public static Map<String,Object> buildWxOrderParam(String orderNo,String goodsName,BigDecimal totalFee,String notifyUrl,String attach,boolean no_credit ) throws UnsupportedEncodingException{
 		String outTradeNo = orderNo;
 		String body = goodsName;
 		Map<String,Object> orderData = new HashMap<String,Object>();
@@ -174,7 +174,10 @@ public class WxpayCore {
 		orderData.put("spbill_create_ip", "104.128.80.228");//115.198.201.99
 		orderData.put("notify_url", notifyUrl);
 		orderData.put("trade_type", "APP");
-		
+		if(no_credit){
+			orderData.put("limit_pay", "no_credit");
+		}
+
 		StringBuilder sb = new StringBuilder().append(WxpayCore.toQueryString(orderData));
 
 		String sign = WxSignBase.byteToHex(WxSignBase.MD5Digest(sb.toString().getBytes("utf-8")));
