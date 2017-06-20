@@ -304,7 +304,7 @@ public class PayRoutController {
 					afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
 					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
-				} else if (OrderType.BOLUOME.getCode().equals(merPriv)) {
+				} else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
 				} else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
 					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
