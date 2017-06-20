@@ -262,7 +262,7 @@ public class PayRoutController {
 					afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
 					afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
-				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)) {
+				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, transactionId, PayType.WECHAT.getCode());
 				} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
 					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, transactionId);
