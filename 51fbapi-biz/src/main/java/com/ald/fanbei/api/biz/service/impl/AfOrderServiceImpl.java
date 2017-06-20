@@ -743,7 +743,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						// 银行卡支付 代收
 						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
 								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
-								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
+								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), isSelf? Constants.DEFAULT_SELFSUPPORT_SHOP:Constants.DEFAULT_BRAND_SHOP,
 								isSelf?"自营商品订单支付":"品牌订单支付", "02",  isSelf?OrderType.SELFSUPPORT.getCode():OrderType.BOLUOME.getCode());
 						if (!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
