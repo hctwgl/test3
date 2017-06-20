@@ -89,7 +89,13 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	@Override
 	public int updateSelfSupportGoods(Long rid, Integer addSaleCount) {
-		return afGoodsDao.updateSelfSupportGoods(rid, addSaleCount);
+		int rowNums = 0;
+		try {
+			rowNums = afGoodsDao.updateSelfSupportGoods(rid, addSaleCount);
+		} catch (Exception e) {
+			logger.error("updateSelfSupportGoods storage error", e);
+		}
+		return rowNums;
 	}
 
 }

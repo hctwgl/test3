@@ -9,6 +9,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
@@ -40,6 +41,8 @@ public class RefundOrderApplyApi implements ApiHandle{
 	AfOrderService afOrderService;
 	@Resource
 	AfOrderRefundService afOrderRefundService;
+	@Resource
+	AfGoodsService afGoodsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -78,6 +81,10 @@ public class RefundOrderApplyApi implements ApiHandle{
 			//订单状态改为退款中
 			orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
 			afOrderService.updateOrder(orderInfo);
+			
+			//减少商品销量
+			afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
+			
 			return resp;
 		}else{
 			//退款记录已存在，校验状态等各种信息，如果退款未完成，更新退款单中的联系人手机号信息
