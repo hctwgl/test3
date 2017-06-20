@@ -23,8 +23,9 @@ function formatDateTime() {
 };  
 
 // 同盾校验编号的sessionId
+var _fmOpt;
  (function() {
-    var _fmOpt = {
+    _fmOpt = {
          partner: 'alading',
          appName: 'alading_web',
          token: token
