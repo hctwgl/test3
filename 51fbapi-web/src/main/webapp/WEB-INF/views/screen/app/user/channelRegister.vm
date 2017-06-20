@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017062002")
+	#set($version="2017062003")
 	#set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
