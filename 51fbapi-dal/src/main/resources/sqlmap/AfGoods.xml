@@ -116,6 +116,16 @@
 		WHERE
 			num_id = #{numId}
 	</update>
-	
+	<update id="updateSelfSupportGoods">
+		UPDATE
+			af_goods
+		SET
+			gmt_modified = NOW(),
+			
+			sale_count = sale_count+#{addSaleCount}
+		WHERE
+			is_delete=0 AND
+			id = #{rid}
+	</update>
 	
 </mapper>

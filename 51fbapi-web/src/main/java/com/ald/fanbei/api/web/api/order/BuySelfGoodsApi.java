@@ -62,9 +62,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 				.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
 		String invoiceHeader = ObjectUtils.toString(requestDataVo.getParams().get("invoiceHeader"));
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
+		if(actualAmount.compareTo(BigDecimal.ZERO)==0){
+			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+		}
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
 		if (goodsDo == null) {
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
@@ -76,7 +80,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 		}
 		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo);
 		afOrder.setUserId(userId);
-		afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
+		afOrder.setActualAmount(actualAmount);
+		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
+
+//		afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
+		
 		afOrder.setCount(count);
 		afOrder.setNper(nper);
 		afOrder.setPayType(payType);
@@ -87,6 +95,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 			afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		}
 		afOrderService.createOrder(afOrder);
+		afGoodsService.updateSelfSupportGoods(goodsId, count);
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("orderId", afOrder.getRid());
 		resp.setResponseData(data);

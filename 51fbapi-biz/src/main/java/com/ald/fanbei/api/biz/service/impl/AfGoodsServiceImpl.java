@@ -87,4 +87,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getGoodsByNumId(numId);
 	}
 
+	@Override
+	public int updateSelfSupportGoods(Long rid, Integer addSaleCount) {
+		return afGoodsDao.updateSelfSupportGoods(rid, addSaleCount);
+	}
+
 }
