@@ -26,7 +26,7 @@ function formatDateTime() {
  (function() {
     var _fmOpt = {
          partner: 'alading',
-         appName: 'register_professional_web',
+         appName: 'alading_web',
          token: token
      };
      var cimg = new Image(1,1);
