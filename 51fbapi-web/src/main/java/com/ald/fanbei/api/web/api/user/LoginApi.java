@@ -11,6 +11,7 @@ import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -56,9 +57,9 @@ public class LoginApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserAuthService afUserAuthService;
-
 	@Resource
-
+	AfGameChanceService afGameChanceService;
+	@Resource
 	TongdunUtil tongdunUtil;
 
 	@Override
@@ -84,7 +85,7 @@ public class LoginApi implements ApiHandle {
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
 		}
-
+		boolean isFirstLogin = afUserDo.getFailCount() < 0?true:false;
 		// add user login record
 		AfUserLoginLogDo loginDo = new AfUserLoginLogDo();
 		loginDo.setAppVersion(Integer.parseInt(ObjectUtils.toString(requestDataVo.getSystem().get("appVersion"))));
@@ -161,6 +162,9 @@ public class LoginApi implements ApiHandle {
 		}
 
 		resp.setResponseData(jo);
+		if(afUserDo.getRecommendId() > 0l && isFirstLogin){
+			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
+		}
 
 		return resp;
 	}
