@@ -42,7 +42,7 @@
                     #if($!{item.type}==$!{typeCurrent})
                     <div class="swiper-slide" data-type="$!{item.type}">
                         <ul id="initGoods" class="goodsListModel_mainContent clearfix">
-                            
+
                         </ul>
                     </div>
                     #else
