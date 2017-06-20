@@ -274,26 +274,20 @@ public class AppH5ActivityController extends BaseController {
         }
     }
     
+    
+    
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
         return null;
     }
  
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.ald.fanbei.api.web.common.BaseController#parseRequestData(java.lang. String, javax.servlet.http.HttpServletRequest)
-     */
+    
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
         return null;
     }
  
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.ald.fanbei.api.web.common.BaseController#doProcess(com.ald.fanbei.api .web.common.RequestDataVo, com.ald.fanbei.api.common.FanbeiContext, javax.servlet.http.HttpServletRequest)
-     */
+   
     @Override
     public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         return null;
