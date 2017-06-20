@@ -143,7 +143,6 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 				|| !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
-
 		}
 
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
@@ -178,7 +177,6 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		BigDecimal accountBorrow = accountDo.getBorrowCashAmount();
 		if(accountBorrow.compareTo(amount)<0){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
-
 		}
 		///// 临时处理，如果当天内有申请，以最后一条的状态为准 end hy 2017年5月11日09:54:20//////
 

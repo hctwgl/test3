@@ -185,6 +185,21 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	BigDecimal calculateBorrowAmount(Long borrowId, BigDecimal refundAmount, boolean refundByUser);
+	
+	/**
+	 * 生成代付借款以及账单
+	 * 
+	 * @param userId
+	 *            --用户id
+	 * @param userName
+	 *            -用户名          
+	 * @param amount
+	 *            --账单金额
+	 * @param name
+	 *            --借款名称
+	 * @return
+	 */
+	Long dealAgentPayBorrowAndBill(AfBorrowDo borrow, Long userId, String userName, BigDecimal amount);
 
 	/**
 	 * 生成代付借款以及账单
@@ -242,4 +257,5 @@ public interface AfBorrowService {
 	 */
 	Long dealAgentPayConsumeRisk(AfUserAccountDo userDto, BigDecimal amount, String goodsName, int nper, Long rid,
 			String orderNo, Integer totalNper);
+
 }
