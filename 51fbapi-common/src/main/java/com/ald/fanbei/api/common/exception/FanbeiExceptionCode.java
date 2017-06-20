@@ -210,9 +210,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),
     
-
     //系统升级该code不能随便修改
-    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1、“首页”全新改版，色彩色调全新感官\n 2、年中盛宴，钜惠抢先享\n 3、OPPO R11报名预定更有好礼相送"),
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "年中盛宴正式开启！\n1、全新券，全新体验，全新畅享理想生活 \n2、年中盛宴，超级钜惠抢购正当时 \n 3、OPPO  R11限量预约免息，更有好礼相赠"),
 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
