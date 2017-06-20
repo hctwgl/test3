@@ -14,9 +14,10 @@ function formatDateTime() {
     return y +  m +  d +h +minute+second;    
 };  
 
+var _fmOpt;
 // 同盾校验编号的sessionId
  (function() {
-    var _fmOpt = {
+    _fmOpt = {
          partner: 'alading',
          appName: 'alading_web',
          token: token
