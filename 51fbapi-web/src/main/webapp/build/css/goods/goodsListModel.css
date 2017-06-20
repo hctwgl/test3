@@ -6,7 +6,18 @@
 * @title:  商品列表模版
 */
 
-
+.ba{
+    width: .26rem;
+    height: .26rem;
+    padding: .01rem;
+    margin-left: .1rem;
+    line-height: .26rem;
+    text-align: center;
+    border-radius: 50%;
+    background-color: #f98011;
+    color: #fff;
+    font-size: .12rem;
+}
 #navWrap{
 	position: relative;
 	overflow: hidden;
@@ -101,7 +112,7 @@
     transform: translateY(-50%);
 }
 .goodsListModel_rebate{
-    width: 0.36rem;
+    width: 0.55rem;
 }
 .goodsListModel_rebate,.goodsListModel_mainContent_rebate p span{
     height: 0.36rem;
