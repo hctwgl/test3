@@ -85,7 +85,6 @@ public class LoginApi implements ApiHandle {
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
 		}
-		boolean isFirstLogin = afUserDo.getFailCount() < 0?true:false;
 		// add user login record
 		AfUserLoginLogDo loginDo = new AfUserLoginLogDo();
 		loginDo.setAppVersion(Integer.parseInt(ObjectUtils.toString(requestDataVo.getSystem().get("appVersion"))));
@@ -131,6 +130,9 @@ public class LoginApi implements ApiHandle {
 			FanbeiExceptionCode errorCode = getErrorCountCode(errorCount + 1);
 			return new ApiHandleResponse(requestDataVo.getId(), errorCode);
 		}
+		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
+			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
+		}
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// reset fail count to 0 and record login ip phone msg
@@ -162,9 +164,6 @@ public class LoginApi implements ApiHandle {
 		}
 
 		resp.setResponseData(jo);
-		if(afUserDo.getRecommendId() > 0l && isFirstLogin){
-			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
-		}
 
 		return resp;
 	}
