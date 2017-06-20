@@ -13,7 +13,7 @@
             background-color: #ffffff;
         }
         .otherRepaymentType span{
-           font-size: 0.36rem;
+           font-size: 0.32rem;
         }
         .line{
             width:100%;
