@@ -62,7 +62,6 @@
     margin-top: 0.2rem;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
-	-ms-background-size: cover;
 	background-size: cover;
 }
 .goodsListModel_hide{
@@ -154,17 +153,7 @@
     margin: 0.6rem 0 0.4rem;
     text-align: center;
 }
-/*.loadover:after {*/
-    /*content: '';*/
-    /*position:absolute;*/
-    /*left: 0;*/
-    /*top: 50%;*/
-    /*width: 100%;*/
-    /*height: 1px;*/
-    /*background: #cfcfcf;*/
-    /*z-index: 1;*/
-    /*display: block;*/
-/*}*/
+
 .goodsListModel_main_hide{
     display: none;
 }
