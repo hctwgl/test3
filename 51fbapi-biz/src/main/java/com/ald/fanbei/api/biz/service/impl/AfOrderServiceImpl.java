@@ -717,11 +717,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 									StringUtil.EMPTY, StringUtil.EMPTY, riskOrderNo);
 
 							if (verybo.isSuccess()) {
-								long isSuc = riskUtil.payOrder(verybo.getOrderNo(), verybo.getResult());
-								if (isSuc == 1) {
-									riskUtil.payOrderChangeAmount(verybo.getOrderNo());
-									
-								}
+							 riskUtil.payOrder(verybo.getOrderNo(), verybo.getResult());
+								
 							}
 							
 						} catch (Exception e) {

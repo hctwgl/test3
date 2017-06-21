@@ -79,12 +79,7 @@ public class BoluomeController extends AbstractThird{
     				if (orderInfo.getRid() == null) {
     					afOrderService.createOrder(orderInfo);
     				} else {
-    					
-    			    	String orderId = params.get(BoluomeCore.ORDER_ID);
-    			    	AfOrderDo orderInfotest = afOrderService.getThirdOrderInfoBythirdOrderNo(orderId);
-    					logger.info("getThirdOrderInfoBythirdOrderNo"+JSON.toJSONString(params)+JSON.toJSONString(orderInfotest));
-
-//    					afOrderService.dealBoluomeOrder(orderInfo);
+    					afOrderService.dealBoluomeOrder(orderInfo);
     				}
     			}
     			retunStr = "Successs";
