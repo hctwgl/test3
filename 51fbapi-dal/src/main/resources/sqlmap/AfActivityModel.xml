@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfActivityModelDao">
+	
+	<sql id="activityModelSqlField">
+	</sql>
+	
+	
+	<update id="deleteActivityGoodsByActivityId" parameterType="java.lang.Long">
+		UPDATE
+			af_activity_model
+		SET
+			gmt_modified = NOW(),
+			is_delete = 1
+		WHERE
+			activity_id = #{activityId}
+	</update>
+	
+	<insert id="addActivityModel" parameterType="AfActivityModelDo" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO
+			af_activity_model
+			(
+				gmt_create,
+				gmt_modified,
+				goods_id,
+				activity_id,
+				goods_type
+			)
+		VALUES
+		    (
+				NOW(),
+				NOW(),
+				#{goodsId},
+				#{activityId},
+				#{goodsType}
+			)
+	</insert>
+</mapper>
