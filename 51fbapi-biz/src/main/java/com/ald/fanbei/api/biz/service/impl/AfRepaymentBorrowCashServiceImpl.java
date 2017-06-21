@@ -49,6 +49,8 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：
@@ -219,6 +221,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					
 					String nowRepayAmountStr = NumberUtil.format2Str(nowRepayAmount);
 					String notRepayMoneyStr = "";
+					
+					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(afBorrowCashDo.getUserId());
+					String cardNo = StringUtils.EMPTY;
+					if (card != null) {
+						cardNo = card.getCardNumber();
+					} else {
+						cardNo = System.currentTimeMillis() + StringUtils.EMPTY;
+					}
+					
 					if (allAmount.compareTo(repayAmount) == 0) {
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						// 在此处调用 风控接口存入白名单 add by fumeiai
@@ -229,22 +240,19 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						}
 //						increaseBorrowCashAccount(afBorrowCashDo,afBorrowCashDo.getUserId());
 						/**------------------------------------fmai风控提额begin------------------------------------------------*/
-						AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(afBorrowCashDo.getUserId());
-						String cardNo = StringUtils.EMPTY;
-						if (card != null) {
-							cardNo = card.getCardNumber();
-						} else {
-							cardNo = System.currentTimeMillis() + StringUtils.EMPTY;
+						try {
+							String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+							BigDecimal income = BigDecimalUtil.add(afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+							int overdueCount = 0;
+							if (StringUtil.equals("Y", afBorrowCashDo.getOverdueStatus())) {
+								overdueCount = 1;
+							}
+							riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "60", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
+						} catch (Exception e) {
+							logger.error("风控提额提额失败", e);
 						}
-						String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-						BigDecimal income = BigDecimalUtil.add(afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
-						int overdueCount = 0;
-						if (StringUtil.equals("Y", afBorrowCashDo.getOverdueStatus())) {
-							overdueCount = 1;
-						}
-						riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "60", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
 						/**------------------------------------fmai风控提额end--------------------------------------------------*/
-					}else{
+					} else {
 						notRepayMoneyStr = NumberUtil.format2Str(allAmount.subtract(repayAmount));
 					}
 					
@@ -257,31 +265,39 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					}
 					//add by chengkang 待添加还款成功短信 end
 					
+					BigDecimal interest = BigDecimal.ZERO;
+					
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 start
 					BigDecimal tempRepayAmount = BigDecimal.ZERO;
 					tempRepayAmount = repayment.getRepaymentAmount();
 					if (tempRepayAmount.compareTo(afBorrowCashDo.getRateAmount()) > 0) {
 						bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), afBorrowCashDo.getRateAmount()));
 						bcashDo.setRateAmount(BigDecimal.ZERO);
+						interest = afBorrowCashDo.getRateAmount();
 						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getRateAmount());
 					} else {
 						bcashDo.setSumRate(BigDecimalUtil.add(bcashDo.getSumRate(), tempRepayAmount));
 						bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
+						interest = tempRepayAmount;
 						tempRepayAmount = BigDecimal.ZERO;
 					}
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 end
 
 					// 累计集分宝
 					bcashDo.setSumJfb(BigDecimalUtil.add(afBorrowCashDo.getSumJfb(), repayment.getJfbAmount()));
+					
+					BigDecimal overdueAmount = BigDecimal.ZERO;
 
 					// 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 start
 					if (tempRepayAmount.compareTo(afBorrowCashDo.getOverdueAmount()) > 0) {
 						bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount()));
 						bcashDo.setOverdueAmount(BigDecimal.ZERO);
+						overdueAmount = afBorrowCashDo.getOverdueAmount();
 						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getOverdueAmount());
 					} else {
 						bcashDo.setSumOverdue(BigDecimalUtil.add(bcashDo.getSumOverdue(), tempRepayAmount));
 						bcashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(tempRepayAmount));
+						overdueAmount = tempRepayAmount;
 						tempRepayAmount = BigDecimal.ZERO;
 					}
 					// 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 end
@@ -309,6 +325,24 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					temRepayMent.setRid(repayment.getRid());
 					// 变更还款记录为已还款
 					afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
+					
+					try {
+						String riskOrderNo = riskUtil.getOrderNo("tran", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+						JSONArray details = new JSONArray();
+						JSONObject obj = new JSONObject();
+						obj.put("borrowNo", afBorrowCashDo.getRid());
+						obj.put("amount", afBorrowCashDo.getAmount());
+						obj.put("repayment", repayment.getRepaymentAmount());
+						obj.put("income", BigDecimal.ZERO);
+						obj.put("interest", interest);
+						obj.put("overdueAmount", overdueAmount);
+						obj.put("overdueDay", afBorrowCashDo.getOverdueDay());
+						details.add(obj);
+						riskUtil.transferBorrowInfo(afBorrowCashDo.getUserId().toString(), "60", riskOrderNo, details);
+					} catch (Exception e) {
+						logger.error("还款时给风控传输数据出错", e);
+					}
+					
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();

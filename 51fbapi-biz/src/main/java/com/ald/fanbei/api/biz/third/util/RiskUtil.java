@@ -78,6 +78,7 @@ import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -88,6 +89,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -393,7 +395,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param scene
 	 * @return
 	 */
-	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal bigDecimal, String time) {
+	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal poundage, String time) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
@@ -412,7 +414,7 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("event", Constants.EVENT_FINANCE_LIMIT_WEAK);
 		eventObj.put("phone", phone);
 		eventObj.put("realAmount", amount);//实际交易金额
-		eventObj.put("poundage ", bigDecimal); //手续费
+		eventObj.put("poundage ", poundage); //手续费
 		eventObj.put("time", time);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
@@ -501,42 +503,42 @@ public class RiskUtil extends AbstractThird {
   				accountDo.setAuAmount(au_amount);
   				afUserAccountService.updateUserAccount(accountDo);
   			}
-			
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
 		}
 	}
 	
-	public RiskVerifyRespBo transferBorrowInfo(String consumerNo, String scene, String orderNo, String borrowNo, BigDecimal amount, String orderTime, BigDecimal income, BigDecimal overdueAmount, Long overdueDay, int overdueCount) {
+	public RiskVerifyRespBo transferBorrowInfo(String consumerNo, String scene, String orderNo, JSONArray details) {
 		RiskSynBorrowInfoReqBo reqBo = new RiskSynBorrowInfoReqBo();
 		reqBo.setOrderNo(orderNo);
 //		reqBo.setEventType(Constants.EVENT_FINANCE_COUNT);
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setScene(scene);
 
-		JSONObject obj = new JSONObject();
-		obj.put("borrowNo", borrowNo);
-		obj.put("amount", amount);
-		obj.put("orderTime", orderTime);
-		obj.put("income", income);
-		obj.put("overdueAmount", overdueAmount);
-		obj.put("overdueDay", overdueDay);
-		obj.put("overdueCount", overdueCount);
-
-		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+//		JSONObject obj = new JSONObject();
+//		obj.put("borrowNo", borrowNo);
+//		obj.put("amount", amount);
+//		obj.put("orderTime", orderTime);
+//		obj.put("income", income);
+//		obj.put("overdueAmount", overdueAmount);
+//		obj.put("overdueDay", overdueDay);
+//		obj.put("overdueCount", overdueCount);
+//		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		
+		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(details)));
 		reqBo.setReqExt("");
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "/modules/api/risk/borrowOrder.htm";
+		String url = getUrl() + "/modules/api/risk/repayment.htm";
 		
 		String content = JSONObject.toJSONString(reqBo);
 		
 		String reqResult = HttpUtil.post(url, reqBo);
 		
 		commitRecordUtil.addRecord("transferBorrow", consumerNo, content, url);
-		logThird(reqResult, "raiseQuota", reqBo);
+		logThird(reqResult, "transferBorrow", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
 		}
@@ -545,17 +547,7 @@ public class RiskUtil extends AbstractThird {
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
-//			riskResp.setResult(dataObj.getString("result"));
-			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-			Long consumerNum = Long.parseLong(obj.getString("consumerNo"));
-			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
-  			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-  				AfUserAccountDo accountDo = new AfUserAccountDo();
-  				accountDo.setUserId(consumerNum);
-  				accountDo.setAuAmount(au_amount);
-  				afUserAccountService.updateUserAccount(accountDo);
-  			}
-			
+			riskResp.setResult(dataObj.getString("result"));
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -570,7 +562,7 @@ public class RiskUtil extends AbstractThird {
 	 *            --
 	 * @return 
 	 */
-	public long payOrder(final String orderNo, final String result) {
+	public long payOrder(final AfBorrowDo borrow, final String orderNo, final String result) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -624,8 +616,7 @@ public class RiskUtil extends AbstractThird {
 					}
 
 					// 在风控审批通过后额度不变生成账单
-					afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
-							orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+					afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount());
 					// 审批通过时
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
