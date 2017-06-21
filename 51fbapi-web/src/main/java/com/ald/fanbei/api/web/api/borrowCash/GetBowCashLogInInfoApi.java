@@ -188,7 +188,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("bannerList", bannerList);
 		data.put("lender", rate.get("lender"));
 		if (account != null) {
-			data.put("maxAmount", account.getBorrowCashAmount().stripTrailingZeros().toPlainString());
+			data.put("maxAmount", calculateMaxAmount(usableAmount));
 		}
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
