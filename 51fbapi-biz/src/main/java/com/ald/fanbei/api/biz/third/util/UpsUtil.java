@@ -37,6 +37,7 @@ import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
@@ -54,6 +55,7 @@ import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
 import com.ald.fanbei.api.dal.domain.AfUpsLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -87,6 +89,9 @@ public class UpsUtil extends AbstractThird {
 	
 	@Resource
 	AfUpsLogDao afUpsLogDao;
+	
+	@Resource
+	AfUserAccountService afUserAccountService;
 	
 	private static String getNotifyHost(){
 		if(notifyHost==null){
@@ -130,6 +135,8 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
 		reqBo.setUserNo(userNo);
+		AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(Long.parseLong(userNo));
+		reqBo.setCertNo(userAccountDo.getIdNumber());
 		reqBo.setPhone(phone);
 		reqBo.setBankName(bankName);
 		reqBo.setBankCode(bankCode);
