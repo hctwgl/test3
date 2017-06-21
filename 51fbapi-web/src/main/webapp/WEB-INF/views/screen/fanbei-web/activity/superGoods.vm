@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="20170620")
+	#set($src="https://fs.51fanbei.com/h5/app/activity/06")
+    <title>最惠一波</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/06/superGoods.css?version=$version">
+</head>
+<body>
+<div id="superGoods">
+    <div class="banner" v-bind:style="{backgroundImage:'url(content.bannerUrl)'}">
+        <p class="bigPromote">年中大促</p>
+        <p class="countTime">距活动开始：00天12时50分11秒</p>
+        <p class="slogan">返场好物加购<br/>特卖会疯狂来袭</p>
+    </div>    
+    <ul class="saleOffList">
+        <li>
+            <div class="productCountTime">距本商品结束：00天12时50分11秒</div>
+            <div class="productImg"></div>
+            <div class="productRight">
+                <p class="productDes" style="-webkit-box-orient: vertical;">详情详情详情详情详情详情详情详情详情详情详情详情详情详情详情详情详情详情</p>
+                <p class="buyPrice">￥<span>100.00</span>返￥<span>10.00</span></p>        
+                <p class="originalPrice">￥200.00</p>
+                <p class="amount">库存<span>5</span>件</p>
+                <div class="monthPrice">月供<p class="everyPrice"><span>10</span>x<span>12</span></p>
+                </div>
+            </div>      
+        </li> 
+    </ul>
+    <ul class="youLikeList">
+        <p class="line"></p>
+        <p class="likeWord">你可能喜欢</p>
+    </ul>
+</div>
+<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<script type="text/javascript" src="/dist/activity/06/superGoods.js?version=$version"></script>
+
+</body>
+</html>
