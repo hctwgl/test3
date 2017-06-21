@@ -216,7 +216,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_ADDRESS_NOT_EXIST("USER_ADDRESS_NOT_EXIST",5002,"user_address_not_exist","地址信息不存在"),
 
     //系统升级该code不能随便修改
-    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗V3.6.4新版上线 更新内容：\n1.全新体验，全新升级，畅享理想生活\n2.年中盛宴，超级钜惠抢购正当时\n3.OPPO R11 限量预约免息，更有好礼相赠\n您即将前往的下一站是【App   Store】更新"),
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "OPPO R11 正式开售，下单即享12期免息，更有500元优惠相送\n打开“App Store”-“更新”，找到51返呗，点击“更新”"),
 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
