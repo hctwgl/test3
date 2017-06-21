@@ -79,7 +79,13 @@ public class BoluomeController extends AbstractThird{
     				if (orderInfo.getRid() == null) {
     					afOrderService.createOrder(orderInfo);
     				} else {
-    					afOrderService.dealBoluomeOrder(orderInfo);
+    					logger.info(JSON.toJSONString(params));
+    					
+    			    	String orderId = params.get(BoluomeCore.ORDER_ID);
+    			    	AfOrderDo orderInfotest = afOrderService.getThirdOrderInfoBythirdOrderNo(orderId);
+    					logger.info("getThirdOrderInfoBythirdOrderNo"+JSON.toJSONString(orderInfotest));
+
+//    					afOrderService.dealBoluomeOrder(orderInfo);
     				}
     			}
     			retunStr = "Successs";
@@ -158,9 +164,7 @@ public class BoluomeController extends AbstractThird{
     	if (StringUtils.isNotBlank(channel)) {
     		channel = channel.toUpperCase();
     	}
-    	AfOrderDo orderInfo123 = afOrderService.getThirdOrderInfoBythirdOrderNo(orderId);
-    	thirdLog.info("orderInfo123 begin orderInfo = {}" + orderInfo123);
-
+    	
     	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
     	thirdLog.info("buildOrderInfo begin orderInfo = {}" + orderInfo);
     	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);
