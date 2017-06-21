@@ -107,7 +107,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())
 					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
-			} else if (usableAmount.compareTo(borrowCashLimitAmount) < 0) {
+			} else if (!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) &&
+					usableAmount.compareTo(borrowCashLimitAmount) < 0) {
 				inRejectLoan = YesNoStatus.YES.getCode();
 			}
 			data.put("jfbAmount", account.getJfbAmount());
