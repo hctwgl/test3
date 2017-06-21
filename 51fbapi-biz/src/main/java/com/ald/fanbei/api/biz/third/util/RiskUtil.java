@@ -395,11 +395,12 @@ public class RiskUtil extends AbstractThird {
 	 * @param scene
 	 * @return
 	 */
-	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal poundage, String time) {
+	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal poundage, String time) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setBorrowNo(borrowNo);
+		reqBo.setBorrowType(borrowType);
 		reqBo.setChannel(CHANNEL);
 		reqBo.setScene(scene);
 
@@ -495,7 +496,7 @@ public class RiskUtil extends AbstractThird {
 			riskResp.setSuccess(true);
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
 			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-			Long consumerNum = Long.parseLong(obj.getString("consumerNo"));
+			Long consumerNum = Long.parseLong(consumerNo);
 			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
   			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
   				AfUserAccountDo accountDo = new AfUserAccountDo();
@@ -546,8 +547,6 @@ public class RiskUtil extends AbstractThird {
 		riskResp.setOrderNo(reqBo.getOrderNo());
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
-			JSONObject dataObj = JSON.parseObject(riskResp.getData());
-			riskResp.setResult(dataObj.getString("result"));
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
