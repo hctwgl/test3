@@ -1043,11 +1043,10 @@ public class RiskUtil extends AbstractThird {
 		});
 	}
 	
-	public void payOrderChangeAmount(String orderNo) throws InterruptedException{
+	public void payOrderChangeAmount(Long rid) throws InterruptedException{
 		
-		AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
+		AfOrderDo orderInfo = orderDao.getOrderById(rid);
 		logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
-		Thread.sleep(2000l);
 		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
 		}
