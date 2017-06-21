@@ -59,15 +59,5 @@ public class BuildInfoUtil {
 		accountLog.setType(logType.getCode());
 		return accountLog;
 	}
-	
-	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type, BigDecimal amount, Long userId, Long renewalDetailId) {
-		// 增加account变更日志
-		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
-		accountLog.setAmount(amount);
-		accountLog.setUserId(userId);
-		accountLog.setRefId(renewalDetailId + "");
-		accountLog.setType(type.getCode());
-		return accountLog;
-	}
 
 }

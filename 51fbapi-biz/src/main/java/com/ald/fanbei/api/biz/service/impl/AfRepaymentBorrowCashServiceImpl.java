@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
@@ -231,6 +232,16 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					}
 					
 					if (allAmount.compareTo(repayAmount) == 0) {
+						Long userId = afBorrowCashDo.getUserId();
+						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+						//减少使用额度
+						accountInfo.setUsedAmount(BigDecimalUtil.subtract(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+						afUserAccountDao.updateOriginalUserAccount(accountInfo);
+						//增加日志
+						AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, 
+								afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
+						afUserAccountLogDao.addUserAccountLog(accountLog);
+						
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						// 在此处调用 风控接口存入白名单 add by fumeiai
 						try {
