@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -49,10 +50,12 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -97,7 +100,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
 	@Resource
 	CommitRecordUtil commitRecordUtil;
-
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -231,11 +236,13 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	}
 
 	private void delegatePay(String consumerNo, String orderNo, String result) {
+		Long userId = Long.parseLong(consumerNo);
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
 		// cashDo.setRishOrderNo(orderNo);
 		Date currDate = new Date(System.currentTimeMillis());
 
 		AfUserDo afUserDo = afUserService.getUserById(Long.parseLong(consumerNo));
+		AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
 		cashDo.setRid(afBorrowCashDo.getRid());
 
@@ -271,7 +278,15 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo.getGmtArrival());
 			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
 			cashDo.setGmtPlanRepayment(repaymentDay);
-
+			//减少额度
+			accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+			afUserAccountService.updateOriginalUserAccount(accountInfo);
+			//增加日志
+			AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash, 
+					afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
+			afUserAccountService.updateOriginalUserAccount(accountInfo);
+			afUserAccountLogDao.addUserAccountLog(accountLog);
+			
 			if (!upsResult.isSuccess()) {
 				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());

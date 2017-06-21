@@ -100,4 +100,12 @@ public interface AfUserAccountService {
 	 * @return 被其他人使用过的次数
 	 */
 	Integer getCountByIdNumer(String citizenId, Long userId);
+	
+	/**
+	 * 只按照传参进行修改值
+	 * 
+	 * @param accountDo
+	 * @return
+	 */
+	int updateOriginalUserAccount(AfUserAccountDo afUserAccountDo);
 }
