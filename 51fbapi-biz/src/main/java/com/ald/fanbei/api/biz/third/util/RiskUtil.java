@@ -429,6 +429,7 @@ public class RiskUtil extends AbstractThird {
 		commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
 
 		String reqResult = HttpUtil.post(url, reqBo);
+		logger.info(StringUtil.appendStrs("weakRiskVerify req=",JSON.toJSONString(reqBo) ,",resp=",reqResult));
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {

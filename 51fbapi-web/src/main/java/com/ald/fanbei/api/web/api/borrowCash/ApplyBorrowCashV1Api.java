@@ -226,6 +226,10 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			
 			if (verybo.isSuccess()) {
 				delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult());
+			} else {
+				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+				afBorrowCashService.updateBorrowCash(cashDo);
 			}
 			return resp;
 		} catch (Exception e) {
@@ -289,7 +293,6 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 				//增加日志
 				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash, 
 						afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
-				afUserAccountService.updateOriginalUserAccount(accountInfo);
 				afUserAccountLogDao.addUserAccountLog(accountLog);
 			}
 			afBorrowCashService.updateBorrowCash(cashDo);
