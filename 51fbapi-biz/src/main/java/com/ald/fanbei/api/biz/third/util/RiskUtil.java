@@ -485,6 +485,7 @@ public class RiskUtil extends AbstractThird {
 		String content = JSONObject.toJSONString(reqBo);
 		
 		String reqResult = HttpUtil.post(url, reqBo);
+		logger.info(StringUtil.appendStrs("raiseQuota req=",JSON.toJSONString(reqBo) ,",resp=",reqResult));
 		
 		commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
 		logThird(reqResult, "raiseQuota", reqBo);
