@@ -4,7 +4,8 @@
 let vm=new Vue({
     el:'#superGoods',
     data:{
-        content:{}
+        content:{},
+        A:{}
     },
     created:function () {
         this.logData();
@@ -16,7 +17,6 @@ let vm=new Vue({
             $.ajax({
                     type: 'get',
                     url: '/fanbei-web/encoreActivityInfo',
-                    data:{'activityId':123},
                     success:function(data) {
                       self.content = eval('(' + data + ')');
                       self.content = self.content.data;  
@@ -27,7 +27,7 @@ let vm=new Vue({
                       var diff=0; 
                       var timer; 
                       //活动时间倒计时-----------
-                        function showTime(word,time){
+                        function showTime(word,time,className){
                             diff=parseInt((time-currentTime)/1000);
                             var day=0,
                                 hour=0,
@@ -42,26 +42,39 @@ let vm=new Vue({
                         
                             if (minute <= 9) {minute = '0' + minute;}
                             if (second <= 9) {second = '0' + second;}
-                            $('.countTime').html(word+'：'+day+'天'+hour+'时'+minute+'分'+second+'秒');
-                            console.log($('.countTime').html());   
+                            $('.'+className).html(word+'：'+day+'天'+hour+'时'+minute+'分'+second+'秒');
+                            //console.log($('.countTime').html());   
                         }//------------倒计时
-                        if(currentTime<validStartTime){                          
-                            showTime('距活动开始',validStartTime);                            
-                            timer=setInterval(function(){                                
-                                validStartTime-=1000;
-                                showTime('距活动开始',validStartTime);
-                            }, 1000);                            
-                        }else{       
-                            showTime('距活动结束',validEndTime);
-                            timer=setInterval(function(){
-                                validEndTime-=1000;
-                                showTime('距活动结束',validEndTime);
-                            }, 1000);
-                            if(validEndTime==currentTime){
-                                clearInterval(timer)
-                               $('.countTime').remove()
+                        function interval(word01,word02,start,end,className){
+                           if(currentTime<start){                          
+                                showTime(word01,start,className);                            
+                                timer=setInterval(function(){                                
+                                    start-=1000;
+                                    showTime(word01,start,className);
+                                }, 1000);                            
+                            }else{       
+                                showTime(word02,end,className);
+                                timer=setInterval(function(){
+                                    end-=1000;
+                                    showTime(word02,end,className);
+                                    //console.log(diff)
+                                    if(diff==0){
+                                      clearInterval(timer)
+                                      $('.'+className).remove()
+                                    }
+                                }, 1000);                            
                             }
                         }
+                       interval('距活动开始','距活动结束',validStartTime,validEndTime,'countTime');
+                      //商品列表---activityGoodsList
+                      var activityGoodsList=self.content.activityGoodsList;
+                      console.log(activityGoodsList)
+                      for(var i=0;i<activityGoodsList.length;i++){
+                          var activityValidEndTime=activityGoodsList[i].validEndTime;
+                          var activityValidStartTime=activityGoodsList[i].validStartTime;
+                          interval('距本产品开始','距本产品结束',activityValidStartTime,activityValidEndTime,'productCountTime');    
+                      }//商品列表---activityGoodsList---end
+
                     }, 
                     error:function(){
                        requestMsg("请求失败");

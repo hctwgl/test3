@@ -3,33 +3,50 @@
 <head>
 	#set($version="20170620")
 	#set($src="https://fs.51fanbei.com/h5/app/activity/06")
-    <title>最惠一波</title>
+    <title>最惠一波 超级返利拍</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/superGoods.css?version=$version">
 </head>
 <body>
 <div id="superGoods">
-    <div class="banner" v-bind:style="{backgroundImage:'url(content.bannerUrl)'}">
-        <p class="bigPromote">年中大促</p>
-        <p class="countTime">距活动开始：00天12时50分11秒</p>
-        <p class="slogan">返场好物加购<br/>特卖会疯狂来袭</p>
+    <div class="banner">
+        <img :src='content.bannerUrl'>
+        <p class="slogan">秒的就是你 惊喜不惊喜</p>
+        <p class="countTime"></p>
     </div>    
     <ul class="saleOffList">
-        <li>
-            <div class="productCountTime">距本商品结束：00天12时50分11秒</div>
-            <div class="productImg"></div>
+        <li v-for="item in content.activityGoodsList">
+            <div class="productCountTime"></div>
+            <div class="productImg"><img :src='item.goodsIcon'></div>
             <div class="productRight">
-                <p class="productDes" style="-webkit-box-orient: vertical;">详情详情详情详情详情详情详情详情详情详情详情详情详情详情详情详情详情详情</p>
-                <p class="buyPrice">￥<span>100.00</span>返￥<span>10.00</span></p>        
-                <p class="originalPrice">￥200.00</p>
-                <p class="amount">库存<span>5</span>件</p>
-                <div class="monthPrice">月供<p class="everyPrice"><span>10</span>x<span>12</span></p>
+                <p class="productDes" style="-webkit-box-orient: vertical;">{{item.goodsName}}</p>
+                <p class="buyPrice">￥{{item.specialAmount}}</p>
+                <p class="originalPrice">￥{{item.saleAmount}}</p>
+                <p class="fan" v-if="item.goodsType==='1'">返利￥{{item.rebateAmount}}</p>
+                <div class="monthPrice" v-if="item.goodsType==='1'">月供￥<span>{{item.nperMap.amount}}</span>x<span>{{item.nperMap.nper}}</span>
+                <span class="isFree">免息</span>
                 </div>
+                <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>
+                <!-- <div class="monthPrice">月供￥66.66x12<span class="isFree">免息</span></div> -->
+                <p class="buyNow">抢购</p>
+                <p class="amount">库存:<span>{{item.repertoryCount}}</span>件</p>
             </div>      
         </li> 
     </ul>
-    <ul class="youLikeList">
-        <p class="line"></p>
+    <ul class="youLikeList saleOffList">
         <p class="likeWord">你可能喜欢</p>
+        <li>
+            <div class="productCountTime"></div>
+            <div class="productImg" style="background:#ccc;"></div>
+            <div class="productRight">
+                <p class="productDes" style="-webkit-box-orient: vertical;">蕾丝打底衫女长袖2017春装新款女装雪纺上衣服显瘦蕾丝小衫秋冬潮</p>
+                <p class="buyPrice">￥38.00</p>
+                <p class="fan01">返利￥10.30</p>
+                <div class="monthPrice01"><span class="month">月供</span>￥<span>16.33</span>x<span>12</span>
+                <span class="isFree">免息</span>
+                </div>               
+                <p class="buyNow01">马上抢</p>
+            </div>      
+        </li> 
     </ul>
 </div>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>

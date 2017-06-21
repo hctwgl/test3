@@ -22,16 +22,16 @@ import com.alibaba.fastjson.JSONObject;
 public class AfCouponSceneServiceImpl implements AfCouponSceneService {
 
 	@Resource
-	AfCouponSceneDao afActivityDao;
+	AfCouponSceneDao afCouponSceneDao;
 	
 	@Override
 	public AfCouponSceneDo getCouponSceneByType(String type) {
-		return afActivityDao.getCouponSceneByType(type);
+		return afCouponSceneDao.getCouponSceneByType(type);
 	}
 
 	@Override
 	public List<CouponSceneRuleBo> getRules(String type,String key) {
-		AfCouponSceneDo activityDo = afActivityDao.getCouponSceneByType(type);
+		AfCouponSceneDo activityDo = afCouponSceneDao.getCouponSceneByType(type);
 		JSONObject signInRule = JSONObject.parseObject(activityDo.getRuleJson());
 		String signIn = signInRule.getString(key);
 		return JSONObject.parseArray(signIn, CouponSceneRuleBo.class);
