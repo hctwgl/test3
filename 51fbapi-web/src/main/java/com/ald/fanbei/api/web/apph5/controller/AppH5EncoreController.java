@@ -160,6 +160,7 @@ public class AppH5EncoreController extends BaseController {
     			recommendGoodsInfo.put("goodsId", goodsDo.getRid());
     			recommendGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
     			recommendGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+    			recommendGoodsInfo.put("goodsType", "0");
     			String tags = goodsDo.getTags();
     			// 如果是分期免息商品，则计算分期
     			if(tags != null && tags.contains("INTEREST_FREE")){
