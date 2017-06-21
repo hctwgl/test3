@@ -64,6 +64,7 @@ import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
@@ -500,12 +501,10 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
 			Long consumerNum = Long.parseLong(consumerNo);
 			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
-  			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-  				AfUserAccountDo accountDo = new AfUserAccountDo();
-  				accountDo.setUserId(consumerNum);
-  				accountDo.setAuAmount(au_amount);
-  				afUserAccountService.updateUserAccount(accountDo);
-  			}
+			userAccountDo.setUserId(consumerNum);
+			userAccountDo.setAuAmount(au_amount);
+			afUserAccountService.updateUserAccount(userAccountDo);			
+			
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);

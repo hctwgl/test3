@@ -93,7 +93,11 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setRepayLimitTime(afBorrowService.getReyLimitDate("",now));
 		vo.setTeldirStatus(authDo.getTeldirStatus());
 		vo.setTotalAmount(userDto.getAuAmount());
-		vo.setUsableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
+		BigDecimal usableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+		if (usableAmount.compareTo(BigDecimal.ZERO)<0) {
+			usableAmount = BigDecimal.ZERO;
+		}
+		vo.setUsableAmount(usableAmount);
 		vo.setZmStatus(authDo.getZmStatus());
 		vo.setGmtZm(authDo.getGmtZm());
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
