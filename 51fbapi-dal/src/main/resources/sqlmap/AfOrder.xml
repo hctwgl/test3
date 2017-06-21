@@ -443,7 +443,7 @@
 			is_delete=0 AND pay_trade_no = #{payTradeNo}
 	</select>
 	
-	<select id="getThirdOrderInfoByOrderTypeAndOrderNo" resultType="AfOrderDo">
+	<select id="getThirdOrderInfoByOrderTypeAndOrderNo" flushCache="true" resultType="AfOrderDo">
 		SELECT
 			<include refid="queryFields"/>
 		FROM
@@ -455,6 +455,18 @@
 		AND	
 			third_order_no = #{thirdOrderNo}
 	</select>
+	<select id="getThirdOrderInfoBythirdOrderNo" flushCache="true" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_order
+		WHERE
+			is_delete=0 
+		AND 
+			third_order_no = #{thirdOrderNo}
+	</select>
+	
+	
 	
 	<select id="getOrderListByStatus" resultType="AfOrderDo" parameterType="AfOrderQuery">
 		SELECT

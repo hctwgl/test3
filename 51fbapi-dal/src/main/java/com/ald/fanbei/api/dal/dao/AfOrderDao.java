@@ -94,6 +94,9 @@ public interface AfOrderDao {
 	 */
 	AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(@Param("orderType")String orderType, @Param("thirdOrderNo")String thirdOrderNo);
 	
+	
+	AfOrderDo getThirdOrderInfoBythirdOrderNo( @Param("thirdOrderNo")String thirdOrderNo);
+
 	/**
 	 * 修改订单信息
 	 * @param afOrder
