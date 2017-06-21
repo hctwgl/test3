@@ -158,7 +158,9 @@ public class BoluomeController extends AbstractThird{
     	if (StringUtils.isNotBlank(channel)) {
     		channel = channel.toUpperCase();
     	}
-    	
+    	AfOrderDo orderInfo123 = afOrderService.getThirdOrderInfoBythirdOrderNo(orderId);
+    	thirdLog.info("orderInfo123 begin orderInfo = {}" + orderInfo123);
+
     	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
     	thirdLog.info("buildOrderInfo begin orderInfo = {}" + orderInfo);
     	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);

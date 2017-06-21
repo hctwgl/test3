@@ -1108,4 +1108,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		
 		return afUserOrderDao.addUserOrder(order);
 	}
+
+
+	@Override
+	public AfOrderDo getThirdOrderInfoBythirdOrderNo( String thirdOrderNo) {
+		return orderDao.getThirdOrderInfoBythirdOrderNo(thirdOrderNo);
+	}
 }
