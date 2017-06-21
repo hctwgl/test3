@@ -16,13 +16,11 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
-import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
@@ -187,16 +185,6 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	        			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 	        			afBorrowCashDo.setStatus("TRANSEDFAIL");
 	        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
-	        			
-	        			Long userId = afBorrowCashDo.getUserId();
-	        			AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
-	        			accountInfo.setUsedAmount(BigDecimalUtil.subtract(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
-	        			afUserAccountDao.updateOriginalUserAccount(accountInfo);
-	        			
-	        			AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash_Fail, 
-	        					afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
-	        			afUserAccountLogDao.addUserAccountLog(accountLog);
-	        			
 	        		}
 					return 1;
 				} catch (Exception e) {

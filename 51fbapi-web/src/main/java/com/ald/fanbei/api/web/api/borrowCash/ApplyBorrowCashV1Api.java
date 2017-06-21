@@ -279,18 +279,18 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo.getGmtArrival());
 			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
 			cashDo.setGmtPlanRepayment(repaymentDay);
-			//减少额度
-			accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
-			afUserAccountService.updateOriginalUserAccount(accountInfo);
-			//增加日志
-			AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash, 
-					afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
-			afUserAccountService.updateOriginalUserAccount(accountInfo);
-			afUserAccountLogDao.addUserAccountLog(accountLog);
-			
 			if (!upsResult.isSuccess()) {
 				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
+			} else {
+				//减少额度
+				accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+				afUserAccountService.updateOriginalUserAccount(accountInfo);
+				//增加日志
+				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash, 
+						afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
+				afUserAccountService.updateOriginalUserAccount(accountInfo);
+				afUserAccountLogDao.addUserAccountLog(accountLog);
 			}
 			afBorrowCashService.updateBorrowCash(cashDo);
 			addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
