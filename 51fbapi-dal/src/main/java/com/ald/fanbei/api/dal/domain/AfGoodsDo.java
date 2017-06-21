@@ -40,6 +40,12 @@ public class AfGoodsDo extends AbstractSerial{
 	private BigDecimal rebateRate;
 	private String shopName;
 	private BigDecimal realAmount;//到手价
+	private String goodsPic1;
+	private String goodsPic2;
+	private String goodsPic3;
+	private String goodsPic4;
+	private String goodsDetail;
+	private String remark;
 	private String tags;//免息活动标签
 	
 	public Long getRid() {
@@ -179,6 +185,42 @@ public class AfGoodsDo extends AbstractSerial{
 	}
 	public void setRealAmount(BigDecimal realAmount) {
 		this.realAmount = realAmount;
+	}
+	public String getGoodsPic1() {
+		return goodsPic1;
+	}
+	public void setGoodsPic1(String goodsPic1) {
+		this.goodsPic1 = goodsPic1;
+	}
+	public String getGoodsPic2() {
+		return goodsPic2;
+	}
+	public void setGoodsPic2(String goodsPic2) {
+		this.goodsPic2 = goodsPic2;
+	}
+	public String getGoodsPic3() {
+		return goodsPic3;
+	}
+	public void setGoodsPic3(String goodsPic3) {
+		this.goodsPic3 = goodsPic3;
+	}
+	public String getGoodsPic4() {
+		return goodsPic4;
+	}
+	public void setGoodsPic4(String goodsPic4) {
+		this.goodsPic4 = goodsPic4;
+	}
+	public String getGoodsDetail() {
+		return goodsDetail;
+	}
+	public void setGoodsDetail(String goodsDetail) {
+		this.goodsDetail = goodsDetail;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	/**
 	 * @return the tags

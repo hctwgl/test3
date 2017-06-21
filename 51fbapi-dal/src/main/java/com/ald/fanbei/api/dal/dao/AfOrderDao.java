@@ -59,7 +59,6 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	public AfOrderDo getOrderInfoById(@Param("rid")Long rid,@Param("userId")Long userId);
-	
 	/**
 	 * 获取订单详情
 	 * @param rid
@@ -95,6 +94,9 @@ public interface AfOrderDao {
 	 */
 	AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(@Param("orderType")String orderType, @Param("thirdOrderNo")String thirdOrderNo);
 	
+	
+	AfOrderDo getThirdOrderInfoBythirdOrderNo( @Param("thirdOrderNo")String thirdOrderNo);
+
 	/**
 	 * 修改订单信息
 	 * @param afOrder
@@ -108,6 +110,13 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	AfOrderDo getOrderById(@Param("orderId") Long id);
+	
+	/**
+	 * 删除订单
+	 * @param id
+	 * @return
+	 */
+	int deleteOrder(@Param("rid") Long id);
 	
 	/**
 	 * 获取最近支付编号

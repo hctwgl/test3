@@ -59,6 +59,13 @@ public class AfOrderDo extends AbstractSerial{
 	private BigDecimal couponAmount;//优惠金额
 	private String interestFreeJson;//免息规则Json字符串
 	
+	private String consignee;//收件人姓名
+	private String address;//收货人地址
+	private String consigneeMobile;//收件人电话
+	private String invoiceHeader;//发票抬头
+	private String logisticsInfo;//物流信息
+	
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -312,12 +319,52 @@ public class AfOrderDo extends AbstractSerial{
 	public void setServiceProvider(String serviceProvider) {
 		this.serviceProvider = serviceProvider;
 	}
+	public String getConsignee() {
+		return consignee;
+	}
+	public void setConsignee(String consignee) {
+		this.consignee = consignee;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getConsigneeMobile() {
+		return consigneeMobile;
+	}
+	public void setConsigneeMobile(String consigneeMobile) {
+		this.consigneeMobile = consigneeMobile;
+	}
+	public String getInvoiceHeader() {
+		return invoiceHeader;
+	}
+	public void setInvoiceHeader(String invoiceHeader) {
+		this.invoiceHeader = invoiceHeader;
+	}
+
+	/**
+	 * @return the logisticsInfo
+	 */
+	public String getLogisticsInfo() {
+		return logisticsInfo;
+	}
+
+	/**
+	 * @param logisticsInfo the logisticsInfo to set
+	 */
+	public void setLogisticsInfo(String logisticsInfo) {
+		this.logisticsInfo = logisticsInfo;
+	}
+
 	/**
 	 * @return the borrowRate
 	 */
 	public String getBorrowRate() {
 		return borrowRate;
 	}
+
 	/**
 	 * @param borrowRate the borrowRate to set
 	 */

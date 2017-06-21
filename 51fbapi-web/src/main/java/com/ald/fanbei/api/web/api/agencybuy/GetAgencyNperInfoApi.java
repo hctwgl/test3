@@ -9,6 +9,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -23,6 +24,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -52,18 +55,24 @@ public class GetAgencyNperInfoApi implements ApiHandle {
     @Resource
     AfInterestFreeRulesService afInterestFreeRulesService;
 
-    private JSONArray getInterestFreeArray(String numId){
+    private JSONArray getInterestFreeArray(String numId,String type){
     	JSONArray interestFreeArray = null;
     	if (StringUtils.isBlank(numId)) {
             return null;
         }
-    	//获取商品信息
-        AfGoodsDo afGoodsDo = afGoodsService.getGoodsByNumId(numId);
-        if (null == afGoodsDo) {
-        	return null;
-        }
+    	Long goodsId = 0L;
+    	if(StringUtils.equals(type,OrderType.TAOBAO.getCode())){
+    		//获取商品信息
+            AfGoodsDo afGoodsDo = afGoodsService.getGoodsByNumId(numId);
+            if (null == afGoodsDo) {
+            	return null;
+            }
+            goodsId = afGoodsDo.getRid();
+    	}else{
+    		goodsId = NumberUtil.objToLongDefault(numId, 0);
+    	}
         //通过商品查询免息规则配置
-        AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(afGoodsDo.getRid());
+        AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
         if(null == afSchemeGoodsDo){
         	return null;
         }
@@ -84,7 +93,9 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         JSONArray interestFreeArray = null;
         
         String numId = params.get("numId") + "";
-        interestFreeArray = getInterestFreeArray(numId);
+
+		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.TAOBAO.getCode());
+        interestFreeArray = getInterestFreeArray(numId,type);
         
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);

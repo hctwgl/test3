@@ -644,6 +644,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public AfOrderDo getOrderById(Long id) {
 		return orderDao.getOrderById(id);
 	}
+	
+	@Override
+	public int deleteOrder(Long id) {
+		return orderDao.deleteOrder(id);
+	}
 
 	@Override
 	public Map<String, Object> payBrandOrder(final Long payId, final Long orderId, final Long userId,
@@ -661,6 +666,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					// 查卡号，用于调用风控接口
 					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
+					Boolean isSelf = StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode());
 					orderInfo.setRid(orderId);
 					orderInfo.setPayTradeNo(tradeNo);
 					orderInfo.setGmtPay(currentDate);
@@ -672,7 +678,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderDao.updateOrder(orderInfo);
 						// 微信支付
 						return UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,
-								PayOrderSource.BRAND_ORDER.getCode());
+								isSelf?PayOrderSource.SELFSUPPORT_ORDER.getCode():PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
 						// 代付
 						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
@@ -711,7 +717,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 									StringUtil.EMPTY, StringUtil.EMPTY, riskOrderNo);
 
 							if (verybo.isSuccess()) {
-								riskUtil.payOrder(verybo.getOrderNo(), verybo.getResult());
+							 riskUtil.payOrder(verybo.getOrderNo(), verybo.getResult());
+								
 							}
 							
 						} catch (Exception e) {
@@ -737,8 +744,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						// 银行卡支付 代收
 						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
 								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
-								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
-								"品牌订单支付", "02", OrderType.BOLUOME.getCode());
+								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), isSelf? Constants.DEFAULT_SELFSUPPORT_SHOP:Constants.DEFAULT_BRAND_SHOP,
+								isSelf?"自营商品订单支付":"品牌订单支付", "02",  isSelf?OrderType.SELFSUPPORT.getCode():OrderType.BOLUOME.getCode());
 						if (!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
@@ -1100,4 +1107,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 
+	@Override
+	public AfOrderDo getThirdOrderInfoBythirdOrderNo( String thirdOrderNo) {
+		return orderDao.getThirdOrderInfoBythirdOrderNo(thirdOrderNo);
+	}
 }

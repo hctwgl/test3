@@ -70,6 +70,10 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setRebateAmount(order.getRebateAmount());
 		vo.setType(order.getOrderType());
 		vo.setSaleAmount(order.getSaleAmount());
+		
+		vo.setActualAmount(order.getActualAmount());
+		vo.setCouponAmount(order.getSaleAmount().subtract(order.getActualAmount()));
+		vo.setPayType(order.getPayType());
 		return vo;
 	}
 }

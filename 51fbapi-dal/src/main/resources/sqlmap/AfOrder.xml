@@ -6,14 +6,14 @@
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
-		borrow_rate,coupon_amount,interest_free_json
+		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info
 	</sql>
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
-		borrow_rate,coupon_amount,interest_free_json
+		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
@@ -64,8 +64,29 @@
 			<if test="thirdDetailUrl != null" >
 				,third_detail_url
 			</if>
+			<if test="consignee != null" >
+				,consignee
+			</if>
+			<if test="address != null" >
+				,address
+			</if>
+			<if test="consigneeMobile != null" >
+				,consignee_mobile
+			</if>
+			<if test="invoiceHeader != null" >
+				,invoice_header
+			</if>
+			<if test="logisticsInfo != null" >
+				,logistics_info
+			</if>
+			<if test="borrowRate != null" >
+				,borrow_rate
+			</if>
 			<if test="serviceProvider != null">
 				,service_provider
+			</if>
+			<if test="payType != null">
+    			,pay_type
 			</if>
 			<if test="interestFreeJson != null">
 				,interest_free_json
@@ -124,8 +145,29 @@
 			<if test="thirdDetailUrl != null" >
 				,#{thirdDetailUrl}
 			</if>
+			<if test="consignee != null" >
+				,#{consignee}
+			</if>
+			<if test="address != null" >
+				,#{address}
+			</if>
+			<if test="consigneeMobile != null" >
+				,#{consigneeMobile}
+			</if>
+			<if test="invoiceHeader != null" >
+				,#{invoiceHeader}
+			</if>
+			<if test="logisticsInfo != null" >
+				,#{logisticsInfo}
+			</if>
+			<if test="borrowRate != null" >
+				,#{borrowRate}
+			</if>
 			<if test="serviceProvider != null">
 				,#{serviceProvider}
+			</if>
+			<if test="payType != null">
+    			,#{payType}
 			</if>
 			<if test="interestFreeJson != null">
 				,#{interestFreeJson}
@@ -401,7 +443,7 @@
 			is_delete=0 AND pay_trade_no = #{payTradeNo}
 	</select>
 	
-	<select id="getThirdOrderInfoByOrderTypeAndOrderNo" resultType="AfOrderDo">
+	<select id="getThirdOrderInfoByOrderTypeAndOrderNo" flushCache="true" resultType="AfOrderDo">
 		SELECT
 			<include refid="queryFields"/>
 		FROM
@@ -413,6 +455,18 @@
 		AND	
 			third_order_no = #{thirdOrderNo}
 	</select>
+	<select id="getThirdOrderInfoBythirdOrderNo" flushCache="true" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_order
+		WHERE
+			is_delete=0 
+		AND 
+			third_order_no = #{thirdOrderNo}
+	</select>
+	
+	
 	
 	<select id="getOrderListByStatus" resultType="AfOrderDo" parameterType="AfOrderQuery">
 		SELECT
@@ -426,7 +480,7 @@
 			id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 			status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,num_id,
 			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,consignee,address,consignee_mobile,invoice_header,logistics_info
 		FROM
 			af_order a
 		WHERE
@@ -442,13 +496,13 @@
 		</if>
 <!-- 		and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.status='NEW' AND a.id=b.id) -->
 		AND
-			a.order_type IN ('MOBILE','TAOBAO','TMALL','AGENTBUY')
+			a.order_type IN ('MOBILE','TAOBAO','TMALL','AGENTBUY','SELFSUPPORT')
 		UNION ALL
 		SELECT
 			id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 			status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,num_id,
 			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,consignee,address,consignee_mobile,invoice_header,logistics_info
 		FROM
 			af_order a
 		WHERE
@@ -609,6 +663,8 @@
 		and a.pay_type = 'AP' and b.id is null
 	</select>
 	
-	
+	<update id="deleteOrder" parameterType="java.lang.Long" >
+		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
+	</update>
 	
 </mapper>

@@ -120,11 +120,57 @@ body{
   right:.2rem;
 }
 
-// 22手机选框
-.phoneColor li{
+// 22手机选列表
+.mobileListWrap{
+  background-color: #000;
+}
+.mobileListWrap ul{
+  padding: 0.4rem;
+}
+.mobileListWrap li{
   float: left;
-  width: 1.53rem;
-  height: 0.66rem;
-  background-image: url("@{url}/oppo10_1.png");
-  // padding: 0 0.05rem;
+  width: 3.25rem;
+  border: 1px solid green;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.mobileListWrap li:nth-child(2n+1){
+  margin: 0 0.2rem 0.2rem 0;
+}
+.mobileListWrap a{
+  color: #fff;
+}
+.mobileListWrap img{
+  height: 2.5rem;
+}
+.mobileListContent{
+  padding: 0.1rem;
+}
+.mobileListContent p{
+  padding-left: 0.05rem;
+}
+.mobileListContent i{
+  width: 0.04rem;
+  height: 0.2rem;
+  margin-right: 0.1rem;
+  background-color: green;
+}
+.mobileListContent span{
+  padding-left: 0.2rem;
+}
+
+
+.buyBtn{
+  color: #fff;
+  background-color: #000;
+}
+.buyBtn p{
+  width: 2.54rem;
+  height: 0.7rem;
+  line-height: 0.7rem;
+  text-align: center;
+  border-radius: 0.35rem;
+  background-color: #169a73;
+  margin: 0 auto;
+
 }

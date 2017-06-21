@@ -37,6 +37,7 @@ import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
@@ -54,6 +55,7 @@ import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
 import com.ald.fanbei.api.dal.domain.AfUpsLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -87,6 +89,9 @@ public class UpsUtil extends AbstractThird {
 	
 	@Resource
 	AfUpsLogDao afUpsLogDao;
+	
+	@Resource
+	AfUserAccountService afUserAccountService;
 	
 	private static String getNotifyHost(){
 		if(notifyHost==null){
@@ -130,6 +135,8 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
 		reqBo.setUserNo(userNo);
+		AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(Long.parseLong(userNo));
+		reqBo.setCertNo(userAccountDo.getIdNumber());
 		reqBo.setPhone(phone);
 		reqBo.setBankName(bankName);
 		reqBo.setBankCode(bankCode);
@@ -625,10 +632,14 @@ public class UpsUtil extends AbstractThird {
 	
 	//微信支付
 	public static Map<String,Object> buildWxpayTradeOrder(String orderNo,Long userId,String goodsName,BigDecimal totalFee,String attach) {
+		Map<String,Object> result = buildWxpayTradeOrderRepayment(orderNo,userId,goodsName,totalFee,attach,false);
+		return result;
+	}
+	public static Map<String,Object> buildWxpayTradeOrderRepayment(String orderNo,Long userId,String goodsName,BigDecimal totalFee,String attach,boolean no_credit) {
 		Map<String,Object> result = new HashMap<String,Object>();
 		try{
 			//构建调用微信需要的参数
-			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, getNotifyHost()+"/third/ups/wxpayNotify",attach);
+			Map<String,Object> orderData = WxpayCore.buildWxOrderParam(orderNo, goodsName, totalFee, getNotifyHost()+"/third/ups/wxpayNotify",attach,no_credit);
 			String url = WxpayConfig.WX_UNIFIEDORDER_API;
 			String buildStr = WxpayCore.buildXMLBody(orderData);
 			
@@ -654,7 +665,6 @@ public class UpsUtil extends AbstractThird {
 		}
 		return result;
 	}
-	
 	private static BigDecimal setActualAmount(BigDecimal amount){
 		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
 			amount = amount.setScale(2,BigDecimal.ROUND_HALF_UP);
