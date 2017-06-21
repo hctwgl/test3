@@ -1051,9 +1051,9 @@ public class RiskUtil extends AbstractThird {
 		String orderNo = obj.getString("orderNo");
 		AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
 
-		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
-		}
+//		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
+//			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+//		}
 	}
 
 	/**
