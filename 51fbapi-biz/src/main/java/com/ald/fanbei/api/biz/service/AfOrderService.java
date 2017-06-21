@@ -129,6 +129,8 @@ public interface AfOrderService {
 	 */
 	AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(String orderType, String thirdOrderNo);
 	
+	AfOrderDo getThirdOrderInfoBythirdOrderNo(String thirdOrderNo);
+	
 	/**
 	 * 新增订单
 	 * @param afOrder

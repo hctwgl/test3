@@ -155,6 +155,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_DETAIL_NOT_EXIST_ERROR("BORROW_DETAIL_NOT_EXIST_ERROR",1705,"borrow detail not exist error","借款详情不存在"),
     REPAYMENT_DETAIL_NOT_EXIST_ERROR("REPAYMENT_DETAIL_NOT_EXIST_ERROR",1706,"repayment detail not exist error","还款详情不存在"),
     BORROW_CONSUME_GOODS_IS_EMPTY("BORROW_CONSUME_GOODS_IS_EMPTY",1707,"borrow consume goods is empty","商品不存在"),
+    AVAILABLE_CREDIT_NOT_ENOUGH("AVAILABLE_CREDIT_NOT_ENOUGH",1708,"available credit not enough","可用额度不足"),
     
     
     //h5 1800-1900
@@ -215,7 +216,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_ADDRESS_NOT_EXIST("USER_ADDRESS_NOT_EXIST",5002,"user_address_not_exist","地址信息不存在"),
 
     //系统升级该code不能随便修改
-    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1、“首页”全新改版，色彩色调全新感官\n 2、年中盛宴，钜惠抢先享\n 3、OPPO R11报名预定更有好礼相送"),
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗V3.6.4新版上线 更新内容：\n1.全新体验，全新升级，畅享理想生活\n2.年中盛宴，超级钜惠抢购正当时\n3.OPPO R11 限量预约免息，更有好礼相赠\n您即将前往的下一站是【App   Store】更新"),
 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");

@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 
 
@@ -17,4 +19,12 @@ public interface AfUserLoginLogService {
 	 *@return
 	 */
 	int addUserLoginLog(AfUserLoginLogDo logDo);
+	
+
+	/**
+	 * 通过用户名获取登录次数
+	 * @param userName
+	 * @return
+	 */
+	int getCountByUserName(@Param("userName")String userName);
 }

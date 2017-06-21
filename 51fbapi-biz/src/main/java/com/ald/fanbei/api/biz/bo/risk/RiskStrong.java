@@ -4,6 +4,7 @@ import org.dbunit.util.Base64;
 
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.ContactRelationType;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -52,7 +53,12 @@ public class RiskStrong extends RiskRegisterStrongReqBo {
 
 		JSONObject linkManInfo = new JSONObject();
 		linkManInfo.put("name", afUserAuthDo.getContactorName());
-		linkManInfo.put("relation", afUserAuthDo.getContactorType());
+		ContactRelationType contactRelationType = ContactRelationType.findRoleTypeByName(afUserAuthDo.getContactorType());
+		if (contactRelationType == null) {
+			linkManInfo.put("relation", ContactRelationType.others.getCode());
+		} else {
+			linkManInfo.put("relation", contactRelationType.getCode());
+		}
 		linkManInfo.put("idNo", "");
 		linkManInfo.put("phone", afUserAuthDo.getContactorMobile());
 		linkManInfo.put("reqExt", "");

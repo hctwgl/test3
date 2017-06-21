@@ -27,9 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 
 	private static final String REGISTKEY = "regist";
-	@Resource
-	AfGameChanceService afGameChanceService;
-
+	
 	@Override
 	protected AfCouponSceneDo getCouponScene(Date now) {
 		AfCouponSceneDo activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.REGIST.getCode());
@@ -48,11 +46,11 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 	@Override
 	protected Map<String, List<CouponSceneRuleBo>> matchRule(Date now, Map<String, Object> inputData, Map<String, List<CouponSceneRuleBo>> rules, AfCouponSceneDo couponScene) {
 
-		//邀请人获取一次抓娃娃抽奖机会
-		Long invitor = (Long)inputData.get("invitor");
-		if(invitor != null && invitor > 0l){
-			afGameChanceService.updateInviteChance(invitor);
-		}
+//		//邀请人获取一次抓娃娃抽奖机会
+//		Long invitor = (Long)inputData.get("invitor");
+//		if(invitor != null && invitor > 0l){
+//			afGameChanceService.updateInviteChance(invitor);
+//		}
 		
 		List<CouponSceneRuleBo> ruleList = rules.get(REGISTKEY);
 		List<CouponSceneRuleBo> matchList = new ArrayList<CouponSceneRuleBo>();

@@ -31,4 +31,10 @@ public class AfUserLoginLogServiceImpl extends BaseService implements AfUserLogi
 		}
 		return result;
 	}
+	
+	@Override
+	public int getCountByUserName(String userName) {
+		int loginSuccCount =  afUserLoginLogDao.getCountByUserName(userName);
+		return loginSuccCount;
+	}
 }

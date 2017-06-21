@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -30,6 +31,8 @@ public class DeleteOrderInfoApi implements ApiHandle{
 
 	@Resource
 	AfOrderService afOrderService;
+	@Resource
+	AfGoodsService afGoodsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -60,6 +63,10 @@ public class DeleteOrderInfoApi implements ApiHandle{
 			int nums = afOrderService.deleteOrder(orderInfo.getRid());
 			if(nums<=0){
 				throw new FanbeiException(FanbeiExceptionCode.FAILED);
+			}
+			//如果为待支付定单，在删除时减少商品销量
+			if(OrderStatus.NEW.getCode().equals(orderInfo.getStatus())){
+				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
 			}
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.ORDER_NOFINISH_CANNOT_DELETE);

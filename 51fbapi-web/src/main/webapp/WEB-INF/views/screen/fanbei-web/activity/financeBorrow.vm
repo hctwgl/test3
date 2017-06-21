@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017061701")
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	<title>提额狂欢</title>
+	<style type="text/css">
+		.financeBorrowTitleBtn{
+			position: relative;
+		}
+		.financeBorrowTitleBtn a{
+			position: absolute;
+			bottom: 1.0rem;
+			right: 1.0rem;
+			width: 2.3rem;
+			height: 0.5rem;
+		}
+		.financeBorrowBtn img{
+			width: 5.92rem;
+			height: 1.19rem;
+			margin: 0 auto;
+			position: fixed;
+			bottom: 0.3rem;
+			left: 50%;
+			-webkit-transform: translateX(-50%);
+			transform: translateX(-50%);
+		}
+	</style>
+</head>
+<body>
+	<div class="financeBorrowTitleBtn">
+		<img src="$commonUrl/financeBorrow1.jpg" style="width: 7.5rem; height: 5.08rem;">
+		<a href="oppoR11"></a>
+	</div>
+	<img src="$commonUrl/financeBorrow2.jpg">
+	<img src="$commonUrl/financeBorrow3.jpg">
+	<div class="financeBorrowBtn">
+		<img src="$commonUrl/financeBorrow4.png" @click="goBorrowMoney">
+	</div>
+	<script type="text/javascript">
+		new Vue({
+			el:'.financeBorrowBtn',
+			methods:{
+				goBorrowMoney: function(){ // 跳转借钱
+					window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
+				}
+			}
+		});
+	</script>
+</body>
+</html>

@@ -25,7 +25,7 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private String goodsIcon;
 	private String goodsUrl;
 	private String source;
-	private String goodsDetail;
+	private List<GoodsDetailPicInfoVo> goodsDetail;
 	private Integer saleCount;
 	private List<String> goodsPics;
 	
@@ -84,12 +84,6 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	public void setRebateAmount(String rebateAmount) {
 		this.rebateAmount = rebateAmount;
 	}
-	public String getGoodsDetail() {
-		return goodsDetail;
-	}
-	public void setGoodsDetail(String goodsDetail) {
-		this.goodsDetail = goodsDetail;
-	}
 	public Integer getSaleCount() {
 		return saleCount;
 	}
@@ -107,6 +101,12 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	}
 	public void setSource(String source) {
 		this.source = source;
+	}
+	public List<GoodsDetailPicInfoVo> getGoodsDetail() {
+		return goodsDetail;
+	}
+	public void setGoodsDetail(List<GoodsDetailPicInfoVo> goodsDetail) {
+		this.goodsDetail = goodsDetail;
 	}
 	
 }
