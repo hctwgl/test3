@@ -139,12 +139,14 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ORDER_HAS_PAID("ORDER_HAS_PAID",1570,"order has been paid","订单已经支付,请勿重复提交"),
     REFUND_TOTAL_AMOUNT_ERROR("REFUND_TOTAL_AMOUNT_ERROR",1571,"refund total amount error","当前退款总金额大于订单金额"),
     REFUND_AMOUNT_ERROR("REFUND_AMOUNT_ERROR",1572,"refund amount error","退款金额有误"),
+    REFUND_HAVE_SUCCESS("REFUND_HAVE_SUCCESS",1573,"refund have success","退款已完成"),
     
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1601,"goods not exist error","商品不存在"),
     GOODS_COLLECTION_ALREADY_EXIST_ERROR("GOODS_COLLECTION_ALREADY_EXIST_ERROR",1602,"goods not exist error","商品已经收藏"),
-
+    ORDER_NOFINISH_CANNOT_DELETE("ORDER_NOFINISH_CANNOT_DELETE",1603,"order not finish cannot delete","订单未完成，删除失败"),
+    
     //borrow model 1700-1799
     BORROW_CONSUME_NOT_EXIST_ERROR("BORROW_CONSUME_NOT_EXIST_ERROR",1701,"borrow consume not exist error","分期未配置"),
     BORROW_CONSUME_MONEY_ERROR("BORROW_CONSUME_MONEY_ERROR",1702,"borrow consume money error","分期金额超过上限"),
@@ -153,6 +155,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_DETAIL_NOT_EXIST_ERROR("BORROW_DETAIL_NOT_EXIST_ERROR",1705,"borrow detail not exist error","借款详情不存在"),
     REPAYMENT_DETAIL_NOT_EXIST_ERROR("REPAYMENT_DETAIL_NOT_EXIST_ERROR",1706,"repayment detail not exist error","还款详情不存在"),
     BORROW_CONSUME_GOODS_IS_EMPTY("BORROW_CONSUME_GOODS_IS_EMPTY",1707,"borrow consume goods is empty","商品不存在"),
+    AVAILABLE_CREDIT_NOT_ENOUGH("AVAILABLE_CREDIT_NOT_ENOUGH",1708,"available credit not enough","可用额度不足"),
     
     
     //h5 1800-1900
@@ -210,10 +213,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     // 地址管理
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),
-    
+    USER_ADDRESS_NOT_EXIST("USER_ADDRESS_NOT_EXIST",5002,"user_address_not_exist","地址信息不存在"),
 
     //系统升级该code不能随便修改
-    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "1、“首页”全新改版，色彩色调全新感官\n 2、年中盛宴，钜惠抢先享\n 3、OPPO R11报名预定更有好礼相送"),
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗V3.6.4新版上线 更新内容：\n1.全新体验，全新升级，畅享理想生活\n2.年中盛宴，超级钜惠抢购正当时\n3.OPPO R11 限量预约免息，更有好礼相赠\n您即将前往的下一站是【App   Store】更新"),
 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");

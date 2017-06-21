@@ -62,6 +62,7 @@ public class GetCateGoodsListApi implements ApiHandle{
 			vo.setRebateAmount(afGoods.getRebateAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
 			vo.setSaleAmount(afGoods.getSaleAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
 			vo.setThumbnailIcon(afGoods.getThumbnailIcon());
+			vo.setSource(afGoods.getSource());
 			goodsVoList.add(vo);
 		}
 		data.put("goodsList", goodsVoList);

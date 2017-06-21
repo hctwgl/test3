@@ -62,6 +62,11 @@ public interface AfGoodsDao {
 	 * @return
 	 */
 	AfGoodsDo getGoodsByNumId(@Param("numId")String numId);
-	
-	
+	/**
+	 * 下单修改销售量
+	 * @param rid
+	 * @param addSaleCount
+	 * @return
+	 */
+	int updateSelfSupportGoods(@Param("rid")Long rid,@Param("addSaleCount")Integer addSaleCount);
 }

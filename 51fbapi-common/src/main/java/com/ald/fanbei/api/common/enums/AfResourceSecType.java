@@ -40,7 +40,8 @@ public enum AfResourceSecType {
 		borrowCashMoreAmount("BORROW_CASH_MORE_AMOUNT","借钱可提升最高额度以及每次可提升金额"),
         MODEL_URL("MODEL_URL", "本地模板H5"),
         RejectTimePeriod("REJECT_TIME_PERIOD","拒绝借款期后指定周期内不可在本平台发起借款"),
-		RejectPageBannerUrl("REJECT_PAGE_BANNER_URL","拒绝借款期后不通过页面内图对应地址"),;
+		RejectPageBannerUrl("REJECT_PAGE_BANNER_URL","拒绝借款期后不通过页面内图对应地址"),
+		SelfSupportGoodsPaytypes("SELFSUPPORT_GOODS_PAYTYPES","自营商品支付方式相关配置");
 
 	 	private String    code;
 		private String name;

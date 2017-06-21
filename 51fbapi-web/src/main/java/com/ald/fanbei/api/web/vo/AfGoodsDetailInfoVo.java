@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.vo;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
@@ -23,6 +24,12 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private String goodsName;
 	private String goodsIcon;
 	private String goodsUrl;
+	private String source;
+	private List<GoodsDetailPicInfoVo> goodsDetail;
+	private Integer saleCount;
+	private List<String> goodsPics;
+	
+	
 	public Long getGoodsId() {
 		return goodsId;
 	}
@@ -76,6 +83,30 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	}
 	public void setRebateAmount(String rebateAmount) {
 		this.rebateAmount = rebateAmount;
+	}
+	public Integer getSaleCount() {
+		return saleCount;
+	}
+	public void setSaleCount(Integer saleCount) {
+		this.saleCount = saleCount;
+	}
+	public List<String> getGoodsPics() {
+		return goodsPics;
+	}
+	public void setGoodsPics(List<String> goodsPics) {
+		this.goodsPics = goodsPics;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	public List<GoodsDetailPicInfoVo> getGoodsDetail() {
+		return goodsDetail;
+	}
+	public void setGoodsDetail(List<GoodsDetailPicInfoVo> goodsDetail) {
+		this.goodsDetail = goodsDetail;
 	}
 	
 }

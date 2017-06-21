@@ -23,6 +23,8 @@ public class AfGoodsQuery extends Page<AfGoodsDo>{
 	
 	private BigDecimal maxAmount;//到手价最大值
 
+	private String source;//商品来源
+	
 	public Long getCategoryId() {
 		return categoryId;
 	}
@@ -53,6 +55,14 @@ public class AfGoodsQuery extends Page<AfGoodsDo>{
 
 	public void setMaxAmount(BigDecimal maxAmount) {
 		this.maxAmount = maxAmount;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 	
 }

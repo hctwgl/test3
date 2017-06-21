@@ -36,11 +36,16 @@ public class GetAllowConsumeApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		
 		AfUserAuthDo autDo = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if (autDo == null) {
 			throw new FanbeiException("authDo id is invalid", FanbeiExceptionCode.PARAM_ERROR);
-
 		}
+		
+		if (StringUtil.equals("N", autDo.getRiskStatus())) {
+			throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
+		}
+		
 		resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId(), context.getAppVersion()));
 		resp.addResponseData("bindCardStatus", autDo.getBankcardStatus());
 		resp.addResponseData("realNameStatus", autDo.getRealnameStatus());

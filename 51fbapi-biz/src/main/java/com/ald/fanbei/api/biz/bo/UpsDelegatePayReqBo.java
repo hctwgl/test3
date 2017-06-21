@@ -18,7 +18,59 @@ public class UpsDelegatePayReqBo extends UpsReqBo{
 	private String bankName		; //银行名称
 	private String bankCode		; //银行代码
 	private String purpose		;   //用途
+	/************************UPS1.0.1新增**************/
+	private String certNo;	 //用户的省份证号
+	private String branchName; // 支行名称
+	private String province; // 省
+	private String city; // 市
+	private String remark; // 备注
+
+	/************************UPS1.0.1新增**************/
 	private String notifyUrl	;   //异步通知地址
+	
+	
+	
+	
+	
+	public String getCertNo() {
+		return certNo;
+	}
+	public void setCertNo(String certNo) {
+		this.certNo = certNo;
+		this.put("certNo", certNo);
+	}
+	public String getBranchName() {
+		return branchName;
+	}
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+		this.put("branchName", branchName);
+
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+		this.put("province", province);
+
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+		this.put("city", city);
+
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+		this.put("remark", remark);
+
+	}
 	
 	public String getAmount() {
 		return amount;

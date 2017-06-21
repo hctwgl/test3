@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.web.apph5.controller;
  
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -24,6 +27,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
+import com.ald.fanbei.api.common.enums.AfGoodsSource;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.GoodsReservationWebFailStatus;
@@ -35,17 +39,19 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.OrderNoUtils;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfGoodsVo;
 import com.alibaba.fastjson.JSONObject;
  
 /**
- * @类描述：
- * h5活动-预约等
+ * @类描述 h5活动-预约等
  * @author chengkang 2017年4月5日下午1:41:05
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -54,7 +60,8 @@ import com.alibaba.fastjson.JSONObject;
 @SuppressWarnings("unchecked")
 public class AppH5ActivityController extends BaseController {
     String  opennative = "/fanbei-web/opennative?name=";
-     
+    private static Integer PAGE_SIZE = 20;
+    
     @Resource
     AfGoodsReservationService afGoodsReservationService;
     @Resource
@@ -275,19 +282,77 @@ public class AppH5ActivityController extends BaseController {
     }
     
     
+    @ResponseBody
+    @RequestMapping(value = "/getSelfSupportGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String getSelfSupportGoodsInfo(HttpServletRequest request, ModelMap model) throws IOException {
+        Map<String, Object> returnData = new HashMap<String, Object>();
+        String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+        Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
+        try {
+        	AfGoodsQuery query = new AfGoodsQuery();
+        	query.setPageSize(PAGE_SIZE);
+        	query.setPageNo(pageNo);
+        	query.setSource(AfGoodsSource.SELFSUPPORT.getCode());
+        	//获取自营商品信息列表
+        	List<AfGoodsDo> goodsDoList = afGoodsService.getCateGoodsList(query);
+        	List<AfGoodsVo> goodsList = getGoodsList(goodsDoList);
+            returnData.put("goodsList", goodsList);
+            returnData.put("notifyUrl", notifyUrl);
+            
+            returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
+            return H5CommonResponse
+                    .getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "",returnData )
+                    .toString();
+        } catch (Exception e) {
+            returnData.put("status", FanbeiExceptionCode.FAILED.getCode());
+            return H5CommonResponse
+                    .getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "",returnData )
+                    .toString();
+        }
+    }
+    
+    /**
+     * 商品信息转换
+     * @param goodsList
+     * @return
+     */
+    private List<AfGoodsVo> getGoodsList(List<AfGoodsDo> goodsList){
+		List<AfGoodsVo> goodsVoList = new ArrayList<AfGoodsVo>();
+		for (AfGoodsDo afGoods : goodsList) {
+			AfGoodsVo vo = new AfGoodsVo();
+			vo.setGoodsId(afGoods.getRid());
+			vo.setGoodsIcon(afGoods.getGoodsIcon());
+			vo.setGoodsName(afGoods.getName());
+			vo.setRemark(StringUtil.null2Str(afGoods.getRemark()));
+			vo.setPriceAmount(afGoods.getPriceAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
+			vo.setRealAmount(afGoods.getRealAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
+			vo.setRebateAmount(afGoods.getRebateAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
+			vo.setSaleAmount(afGoods.getSaleAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
+			goodsVoList.add(vo);
+		}
+		return goodsVoList;
+	}
     
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
         return null;
     }
  
-    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ald.fanbei.api.web.common.BaseController#parseRequestData(java.lang. String, javax.servlet.http.HttpServletRequest)
+     */
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
         return null;
     }
  
-   
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ald.fanbei.api.web.common.BaseController#doProcess(com.ald.fanbei.api .web.common.RequestDataVo, com.ald.fanbei.api.common.FanbeiContext, javax.servlet.http.HttpServletRequest)
+     */
     @Override
     public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         return null;

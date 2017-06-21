@@ -30,8 +30,9 @@ public class AfOrderRefundDo extends AbstractSerial {
 	private String content;
 	private String resource;
 	private String payTradeNo;
+	private String contactsMobile;
 	
-	
+
 	/**
 	 * @return the gmtCreate
 	 */
@@ -223,6 +224,12 @@ public class AfOrderRefundDo extends AbstractSerial {
 	 */
 	public void setPayTradeNo(String payTradeNo) {
 		this.payTradeNo = payTradeNo;
+	}
+	public String getContactsMobile() {
+		return contactsMobile;
+	}
+	public void setContactsMobile(String contactsMobile) {
+		this.contactsMobile = contactsMobile;
 	}
 	
 	

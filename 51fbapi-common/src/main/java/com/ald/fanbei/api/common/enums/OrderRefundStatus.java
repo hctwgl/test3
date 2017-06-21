@@ -10,7 +10,7 @@ import java.util.Map;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum OrderRefundStatus {
-	
+	NEW("NEW", "新建"),
 	REFUNDING("REFUNDING", "退款中"),
 	FAIL("FAIL", "退款失败"),
 	FINISH("FINISH", "退款成功");

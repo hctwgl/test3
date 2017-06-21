@@ -1,5 +1,5 @@
 
-var userName = "";
+let userName = "";
 if(getInfo().userName){
     userName=getInfo().userName;
 };
@@ -8,23 +8,26 @@ if(getInfo().userName){
 function alaShareData(){
     // 分享内容
     let dataObj = {
-        'appLogin': 'N', // 是否需要登录，Y需要，N不需要
-        'type': 'share', // 此页面的类型
-        'shareAppTitle': 'OPPO R11预约返利300元',  // 分享的title
-        'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300元！有，且只在51返呗 GO>>>',  // 分享的内容
-        'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-        'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
-        'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
-        'sharePage': 'oppoR11' // 分享的页面
+      'appLogin': 'N', // 是否需要登录，Y需要，N不需要
+      'type': 'share', // 此页面的类型
+      'shareAppTitle': 'OPPO R11预约返利300元',  // 分享的title
+      'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300元！有，且只在51返呗 GO>>>',  // 分享的内容
+      'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+      'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
+      'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
+      'sharePage': 'oppoR11' // 分享的页面
     };
     let dataStr = JSON.stringify(dataObj);  // json数组转换成json对象
     return dataStr;
 };
 
-var oppoR11Share = getUrl("oppoR11Share");
+let oppoR11Share = getUrl("oppoR11Share");
 if (oppoR11Share == "oppoR11Share") {
   $(".goRegister").removeClass("hide");
   $(".banner").addClass("hide");
+
+  $(".mobileList").addClass("hide");
+  $(".mobileListImg").removeClass("hide");
 }
 
 // 初始化页面
@@ -37,7 +40,6 @@ window.onload=function(){
         userName: userName
     },
     success: function(returnData){
-      console.log(returnData);
       if (returnData.data.isHaveReservationRecord == "Y") {
         $("#btn").attr('src', 'https://fs.51fanbei.com/h5/app/activity/06/oppo2_2.png');
       }
@@ -47,31 +49,6 @@ window.onload=function(){
     }
   });
 }
-
-//点击预约
-// $('#btn').click(function(){
-//   $.ajax({
-//     url: '/app/activity/reserveActivityGoods',
-//     dataType:'json',
-//     data:{'userName':userName},
-//     type: 'post',
-//     success:function (data) {
-//       if(data.success){
-//         $('.mask').css('display','block');
-//         $('.orderSuccess').css('display','block');
-//       }else{
-//         if(data.url){
-//           location.href=data.url;
-//         }else{
-//           requestMsg(data.msg);
-//         }
-//       }
-//     },
-//     error: function(){
-//         requestMsg("请求失败");
-//     }
-//   });
-// });
 
 // 弹窗
 $('.mask').click(function(){
@@ -119,12 +96,12 @@ $(function(){
   };
 
   function timer(intDiff){
-      showTimerS(intDiff);
-      intDiff--;
-      window.setInterval(function(){
-          showTimerS(intDiff);
-          intDiff--;
-      }, 1000);
+    showTimerS(intDiff);
+    intDiff--;
+    window.setInterval(function(){
+        showTimerS(intDiff);
+        intDiff--;
+    }, 1000);
   };
   timer(intDiff);
 });
@@ -152,21 +129,64 @@ new Vue({
           }
         },
         error: function(){
-            requestMsg("请求失败");
+          requestMsg("请求失败");
         }
       });
     },
     mobilePopup: function(){ // 显示手机弹窗
       $('.popupBox').removeClass('hide');
       $('.popup').removeClass('hide');
-      // $(window).unbind('scroll');
-
       // $('body').css('overflow', 'hidden');
     },
     close: function(){ // 关闭手机弹窗
       $('.popupBox').addClass('hide');
       $('.popup').addClass('hide');
-      // window.location.reload();
     }
   }
 });
+
+// mobileList手机列表
+function addMobileListModel(goodsList,notifyUrl) {
+
+  let html = '';
+  for (let i = 0; i < goodsList.length; i++) {
+    let privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
+    let goodsIcon = goodsList[i].goodsIcon;
+    let goodsName = goodsList[i].goodsName;
+    let saleAmount = goodsList[i].saleAmount;
+    let remark = goodsList[i].remark;
+
+    html+=`<li>
+            <a href='${privateGoodsId}'>
+              <img src="${goodsIcon}">
+              <div class="mobileListContent">
+                <p><i></i>${goodsName}</p>
+                <span>¥${saleAmount}</span>
+                <span>${remark}</span>
+              </div>
+            </a>
+          </li>`;
+  }
+  return html;
+};
+
+// 初始化页面
+let page = 0;
+window.onload=function(){
+  page++;
+  console.log(page);
+  $.ajax({
+    url: "/app/activity/getSelfSupportGoodsInfo",
+    type: "POST",
+    dataType: "JSON",
+    data: {
+        pageNo: page
+    },
+    success: function(returnData){
+      $("#mobileList").append(addMobileListModel(returnData.data.goodsList,returnData.data.notifyUrl));
+    },
+    error: function(){
+      requestMsg("请求失败");
+    }
+  });
+}

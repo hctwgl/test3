@@ -15,6 +15,7 @@ public class AfGoodsVo extends AbstractSerial{
 	private Long goodsId;
 	private String numId;
 	private String openId;
+	private String priceAmount;
 	private String saleAmount;
 	private String realAmount;
 	private String rebateAmount;
@@ -22,6 +23,9 @@ public class AfGoodsVo extends AbstractSerial{
 	private String goodsIcon;
 	private String thumbnailIcon;
 	private String goodsUrl;
+	private String source;
+	private String remark;
+	
 	public Long getGoodsId() {
 		return goodsId;
 	}
@@ -82,4 +86,23 @@ public class AfGoodsVo extends AbstractSerial{
 	public void setNumId(String numId) {
 		this.numId = numId;
 	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	public String getPriceAmount() {
+		return priceAmount;
+	}
+	public void setPriceAmount(String priceAmount) {
+		this.priceAmount = priceAmount;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	
 }

@@ -21,7 +21,10 @@ public class Constants {
 	public static final int MINITS_OF_HALF_HOUR = 30;
 
 	public static final int MONTH_OF_YEAR = 12;
-	
+	//商品详情图片信息包含数据总计部分
+	public static final int GOODSDETAIL_PIC_PARTS = 3;
+	//自营商品超时支付时间-小时
+	public static final int SELFSUPPORT_PAY_TIMEOUT_HOUR = 1;
 	public static final BigDecimal DECIMAL_MONTH_OF_YEAR = new BigDecimal(Constants.MONTH_OF_YEAR);
 	//
 	public static final String REQ_PARAM_NODE_SYSTEM = "system";
@@ -85,6 +88,8 @@ public class Constants {
 	public static final String DEFAULT_SERVICE_PHONE = "0571-88193918";
 	public static final String DEFAULT_REPAYMENT_NAME = "主动还款-";
 	public static final String DEFAULT_BRAND_SHOP = "品牌订单支付";
+	public static final String DEFAULT_SELFSUPPORT_SHOP = "自营商品支付";
+
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// cache keys
@@ -155,6 +160,9 @@ public class Constants {
 	public static final String REGIST_TONGDUN_SWITCH = "regist.tongdun.switch";
 	//每月还款日期
 	public static final String RES_REPAYMENT_DATE = "REPAYMENT_DATE";
+	
+	//客服电话
+	public static final String RES_COMSUMER_PHONE = "CONSUMER_PHONE";
 
 	// config key
 	public static final String CONFKEY_CHECK_SIGN_SWITCH = "fbapi.check.sign.switch";

@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
@@ -27,7 +26,7 @@ public interface AfGoodsService {
 	 * @param rid
 	 * @return
 	 */
-	AfGoodsDo getGoodsById(@Param("rid")Long rid);
+	AfGoodsDo getGoodsById(Long rid);
 	
 	/**
 	 * 通过商品numid获取商品信息
@@ -65,5 +64,11 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	int cancelPublishGoods(String messageContent);
-	
+	/**
+	 * 下单修改销售量
+	 * @param rid
+	 * @param addSaleCount
+	 * @return
+	 */
+	int updateSelfSupportGoods(Long rid,Integer addSaleCount);
 }
