@@ -569,9 +569,6 @@ public class RiskUtil extends AbstractThird {
 					logger.info("updateOrder orderInfo = {}", orderInfo);
 					orderDao.updateOrder(orderInfo);
 					
-//					if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-//						boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
-//					}
 				} catch (Exception e) {
 					logger.info("asyPayOrder error:" + e);
 					status.setRollbackOnly();
@@ -1046,14 +1043,13 @@ public class RiskUtil extends AbstractThird {
 		});
 	}
 	
-	public void asyPayOrderChangeAmount(String data){
-		JSONObject obj = JSON.parseObject(data);
-		String orderNo = obj.getString("orderNo");
+	public void payOrderChangeAmount(String orderNo){
+		
 		AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
 
-//		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-//			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
-//		}
+		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+		}
 	}
 
 	/**
