@@ -4,8 +4,7 @@
 let vm=new Vue({
     el:'#superGoods',
     data:{
-        content:{},
-        A:{}
+        content:{}
     },
     created:function () {
         this.logData();
@@ -15,10 +14,12 @@ let vm=new Vue({
             //获取页面初始化信息
             let self=this;
             $.ajax({
-                    type: 'get',
+                    type: 'post',
                     url: '/fanbei-web/encoreActivityInfo',
+                    data:{'activityId':4},
                     success:function(data) {
-                      self.content = eval('(' + data + ')');
+                      
+                      self.content = eval('(' + data + ')');                      
                       self.content = self.content.data;  
                       console.log(self.content)
                       var currentTime = self.content.currentTime;
@@ -68,6 +69,7 @@ let vm=new Vue({
                        interval('距活动开始','距活动结束',validStartTime,validEndTime,'countTime');
                       //商品列表---activityGoodsList
                       var activityGoodsList=self.content.activityGoodsList;
+                      
                       console.log(activityGoodsList)
                       for(var i=0;i<activityGoodsList.length;i++){
                           var activityValidEndTime=activityGoodsList[i].validEndTime;

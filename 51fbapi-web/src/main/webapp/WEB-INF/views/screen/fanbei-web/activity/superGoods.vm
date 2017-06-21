@@ -18,15 +18,14 @@
             <div class="productCountTime"></div>
             <div class="productImg"><img :src='item.goodsIcon'></div>
             <div class="productRight">
-                <p class="productDes" style="-webkit-box-orient: vertical;">{{item.goodsName}}</p>
+                <p class="productDes" style="-webkit-box-orient: vertical;text-indent: 2em;">{{item.goodsName}}</p>
                 <p class="buyPrice">￥{{item.specialAmount}}</p>
                 <p class="originalPrice">￥{{item.saleAmount}}</p>
                 <p class="fan" v-if="item.goodsType==='1'">返利￥{{item.rebateAmount}}</p>
                 <div class="monthPrice" v-if="item.goodsType==='1'">月供￥<span>{{item.nperMap.amount}}</span>x<span>{{item.nperMap.nper}}</span>
                 <span class="isFree">免息</span>
                 </div>
-                <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>
-                <!-- <div class="monthPrice">月供￥66.66x12<span class="isFree">免息</span></div> -->
+                <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>               
                 <p class="buyNow">抢购</p>
                 <p class="amount">库存:<span>{{item.repertoryCount}}</span>件</p>
             </div>      
@@ -34,14 +33,15 @@
     </ul>
     <ul class="youLikeList saleOffList">
         <p class="likeWord">你可能喜欢</p>
-        <li>
-            <div class="productCountTime"></div>
-            <div class="productImg" style="background:#ccc;"></div>
-            <div class="productRight">
-                <p class="productDes" style="-webkit-box-orient: vertical;">蕾丝打底衫女长袖2017春装新款女装雪纺上衣服显瘦蕾丝小衫秋冬潮</p>
-                <p class="buyPrice">￥38.00</p>
-                <p class="fan01">返利￥10.30</p>
-                <div class="monthPrice01"><span class="month">月供</span>￥<span>16.33</span>x<span>12</span>
+        <li v-for="item in content.recommendGoodsList">
+            <!-- <div class="productCountTime"></div> -->
+            <div class="productImg" style="width:3.1rem;height:3.3rem;margin:0">
+            <img :src='item.goodsIcon'></div>
+            <div class="productRight" style="width:3.6rem;">
+                <p class="productDes" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
+                <p class="buyPrice">￥{{item.saleAmount}}</p>
+                <p class="fan01">返利￥{{item.rebateAmount}}</p>
+                <div class="monthPrice01" v-if="item.goodsType==='1'"><span class="month">月供</span>￥<span>16.33</span>x<span>12</span>
                 <span class="isFree">免息</span>
                 </div>               
                 <p class="buyNow01">马上抢</p>
