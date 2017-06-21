@@ -79,7 +79,7 @@ public class BoluomeController extends AbstractThird{
     				if (orderInfo.getRid() == null) {
     					afOrderService.createOrder(orderInfo);
     				} else {
-//    					afOrderService.dealBoluomeOrder(orderInfo);
+    					afOrderService.dealBoluomeOrder(orderInfo);
     				}
     			}
     			retunStr = "Successs";
