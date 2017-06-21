@@ -108,6 +108,11 @@ public class PayOrderV1Api implements ApiHandle {
 			}
 		
 			Map<String,Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),saleAmount , nper,appName,ipAddress);
+			if(StringUtils.equals(type, OrderType.BOLUOME.getCode())&&payId.intValue()==0){
+				riskUtil.payOrderChangeAmount(orderInfo.getRid());
+			}
+	
+			
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {
 			throw new FanbeiException("pay order failed", exception.getErrorCode());
