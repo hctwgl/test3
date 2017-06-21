@@ -89,18 +89,21 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 	}
 	public void setBorrowNo(String borrowNo) {
 		this.borrowNo = borrowNo;
+		this.put("borrowNo", borrowNo);
 	}
 	public String getEventInfo() {
 		return eventInfo;
 	}
 	public void setEventInfo(String eventInfo) {
 		this.eventInfo = eventInfo;
+		this.put("eventInfo", eventInfo);
 	}
 	public String getBorrowType() {
 		return borrowType;
 	}
 	public void setBorrowType(String borrowType) {
 		this.borrowType = borrowType;
+		this.put("borrowType", borrowType);
 	}
 	
 }

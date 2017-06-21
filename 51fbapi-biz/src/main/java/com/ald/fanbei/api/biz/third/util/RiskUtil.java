@@ -415,7 +415,7 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("event", Constants.EVENT_FINANCE_LIMIT_WEAK);
 		eventObj.put("phone", phone);
 		eventObj.put("realAmount", amount);//实际交易金额
-		eventObj.put("poundage ", poundage); //手续费
+		eventObj.put("poundage", poundage); //手续费
 		eventObj.put("time", time);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
