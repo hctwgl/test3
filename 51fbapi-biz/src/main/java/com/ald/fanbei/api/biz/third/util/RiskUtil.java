@@ -1045,6 +1045,16 @@ public class RiskUtil extends AbstractThird {
 
 		});
 	}
+	
+	public void asyPayOrderChangeAmount(String data){
+		JSONObject obj = JSON.parseObject(data);
+		String orderNo = obj.getString("orderNo");
+		AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
+
+		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+		}
+	}
 
 	/**
 	 * 风控异步审核
