@@ -164,6 +164,7 @@
 			u.is_delete = 0 
 		AND
 			u.user_id = #{userId}
+		AND (NOW() BETWEEN u.gmt_start AND u.gmt_end) 
 		AND
 		 	c.limit_amount<![CDATA[ <=#{amount}  ]]>
 		AND
