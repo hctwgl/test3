@@ -666,6 +666,7 @@ public class RiskUtil extends AbstractThird {
 				AfUserAuthDo authDo = new AfUserAuthDo();
       			authDo.setUserId(consumerNo);
       			authDo.setRiskStatus(RiskStatus.YES.getCode());
+      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
       			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
@@ -681,6 +682,7 @@ public class RiskUtil extends AbstractThird {
 				AfUserAuthDo authDo = new AfUserAuthDo();
       			authDo.setUserId(consumerNo);
       			authDo.setRiskStatus(RiskStatus.NO.getCode());
+      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
       			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
@@ -693,6 +695,7 @@ public class RiskUtil extends AbstractThird {
       				afUserAccountService.updateUserAccount(accountDo);
       			}
 			}
+			
 		}
 		return 0;
 	}
