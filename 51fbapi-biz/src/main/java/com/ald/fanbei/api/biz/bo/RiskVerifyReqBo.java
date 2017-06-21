@@ -16,6 +16,7 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 	private String consumerNo;
 	private String borrowNo;
 	private String channel;
+	private String borrowType;
 	private String scene;
 	private String datas;
 //	private String cardNo;//银行卡号
@@ -94,6 +95,12 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 	}
 	public void setEventInfo(String eventInfo) {
 		this.eventInfo = eventInfo;
+	}
+	public String getBorrowType() {
+		return borrowType;
+	}
+	public void setBorrowType(String borrowType) {
+		this.borrowType = borrowType;
 	}
 	
 }

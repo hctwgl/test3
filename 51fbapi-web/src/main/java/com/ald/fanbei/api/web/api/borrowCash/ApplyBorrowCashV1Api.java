@@ -129,9 +129,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 
 		
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
-		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
-		}
+//		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+//		}
 
 		if (StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
@@ -212,8 +212,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			afBorrowCashService.updateBorrowCash(cashDo);
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String borrowTime = sdf.format(afBorrowCashDo.getGmtCreate());
-			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), afBorrowCashDo.getBorrowNo(), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox, riskOrderNo, 
+			String borrowTime = sdf.format(new Date(System.currentTimeMillis()));
+			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), afBorrowCashDo.getBorrowNo(), type, "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox, riskOrderNo, 
 					accountDo.getUserName(), amount, afBorrowCashDo.getPoundage(), borrowTime);
 			
 			if (verybo.isSuccess()) {
