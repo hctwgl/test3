@@ -728,7 +728,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							String borrowTime = sdf.format(borrow.getGmtCreate());
 							
 							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
-							account.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
+							userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
 							if (verybo.isSuccess()) {
 								riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo.getResult());
 							}

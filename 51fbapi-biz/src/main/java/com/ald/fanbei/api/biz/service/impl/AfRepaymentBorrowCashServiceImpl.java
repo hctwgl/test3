@@ -272,7 +272,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
 					bcashDo.setRepayAmount(repayAmount);
 
-					afBorrowCashService.updateBorrowCash(bcashDo);
+					
 					// 优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
 
@@ -304,7 +304,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						obj.put("overdueAmount", overdueAmount);
 						obj.put("overdueDay", afBorrowCashDo.getOverdueDay());
 						details.add(obj);
-						riskUtil.transferBorrowInfo(afBorrowCashDo.getUserId().toString(), "60", riskOrderNo, details);
+						riskUtil.transferBorrowInfo(afBorrowCashDo.getUserId().toString(), "50", riskOrderNo, details);
 					} catch (Exception e) {
 						logger.error("还款时给风控传输数据出错", e);
 					}
@@ -336,7 +336,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 							if (StringUtil.equals("Y", afBorrowCashDo.getOverdueStatus())) {
 								overdueCount = 1;
 							}
-							riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "60", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
+							riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "50", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
 						} catch (Exception e) {
 							logger.error("风控提额提额失败", e);
 						}
@@ -354,6 +354,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					}
 					//add by chengkang 待添加还款成功短信 end
 					
+					afBorrowCashService.updateBorrowCash(bcashDo);
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
