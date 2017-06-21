@@ -5,18 +5,13 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
-import com.ald.fanbei.api.biz.service.AfGameChanceService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -61,6 +56,8 @@ public class LoginApi implements ApiHandle {
 	AfGameChanceService afGameChanceService;
 	@Resource
 	TongdunUtil tongdunUtil;
+	@Resource
+	JpushService jpushService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -132,6 +129,9 @@ public class LoginApi implements ApiHandle {
 		}
 		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
 			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
+			//向推荐人推送消息
+			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
+			jpushService.gameShareSuccess(user.getUserName());
 		}
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);

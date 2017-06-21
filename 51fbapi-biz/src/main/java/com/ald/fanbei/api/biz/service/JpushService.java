@@ -118,4 +118,10 @@ public interface JpushService {
 	 */
 	public void dealBorrowApplyFail(String userName,Date date);
 
+	/**
+	 * 游戏分享注册成功,获得抽奖机会
+	 * @param userName
+	 */
+	public void gameShareSuccess(String userName);
+
 }
