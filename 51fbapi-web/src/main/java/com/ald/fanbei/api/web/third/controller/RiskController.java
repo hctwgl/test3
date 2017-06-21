@@ -69,14 +69,8 @@ public class RiskController {
 		logger.info("asyPayOrder begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
 		if (TRADE_STATUE_SUCC.equals(code)) {
 			try {
-				long isSuc=  riskUtil.asyPayOrder(code, data, msg, signInfo);
-				if (isSuc == 1) {
-					riskUtil.asyPayOrderChangeAmount(data);
-					
-				}
-				
-				
-				
+				 riskUtil.asyPayOrder(code, data, msg, signInfo);
+			
 				return "SUCCESS";
 			} catch (Exception e) {
 				return "FAIL";
