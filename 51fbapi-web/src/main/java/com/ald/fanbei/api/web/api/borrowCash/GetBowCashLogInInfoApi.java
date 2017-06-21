@@ -96,9 +96,6 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		AfResourceDo borrowCashLimitAmountResource = afResourceService.getSingleResourceBytype(Constants.RES_BORROW_CASH_LIMIT_AMOUNT);
 		BigDecimal borrowCashLimitAmount =  borrowCashLimitAmountResource == null ? BigDecimal.ZERO : new BigDecimal(borrowCashLimitAmountResource.getValue());
 		BigDecimal usableAmount = account.getAuAmount().subtract(account.getUsedAmount());
-		if (afBorrowCashDo == null && usableAmount.compareTo(borrowCashLimitAmount) < 0) {
-			inRejectLoan = YesNoStatus.YES.getCode();
-		}
 		//hy 2017年06月13日16:48:35 增加判断，如果前面还有没有还的借款，优先还掉 end
 
 		
@@ -110,7 +107,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())
 					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
-
+			} else if (usableAmount.compareTo(borrowCashLimitAmount) < 0) {
+				inRejectLoan = YesNoStatus.YES.getCode();
 			}
 			data.put("jfbAmount", account.getJfbAmount());
 
