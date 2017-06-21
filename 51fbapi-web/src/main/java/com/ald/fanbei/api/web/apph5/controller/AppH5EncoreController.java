@@ -40,8 +40,8 @@ public class AppH5EncoreController extends BaseController {
     	JSONObject jsonObj = new JSONObject();
     	jsonObj.put("bannerUrl", "http://www.baidu.com");
     	jsonObj.put("currentTime", System.currentTimeMillis());
-    	jsonObj.put("validStartTime", System.currentTimeMillis() - 1000l);
-    	jsonObj.put("validEndTime", System.currentTimeMillis() + 1000l);
+    	jsonObj.put("validStartTime", System.currentTimeMillis() -3600 * 1000l);
+    	jsonObj.put("validEndTime", System.currentTimeMillis() +3600 * 1000l);
     	
     	List activityGoodsList  = new ArrayList();
     	{
@@ -52,8 +52,8 @@ public class AppH5EncoreController extends BaseController {
     		map.put("saleAmount", "50.12");
     		map.put("repertoryCount", "30");
     		map.put("startTime", System.currentTimeMillis());
-    		map.put("validStartTime", System.currentTimeMillis() - 1000l);
-    		map.put("validEndTime", System.currentTimeMillis() + 1000l);
+    		map.put("validStartTime", System.currentTimeMillis() - 3600 * 1000l);
+    		map.put("validEndTime", System.currentTimeMillis() + 3600 * 1000l);
     		map.put("goodsType", "0");
     		map.put("goodsIcon", "http://img04.taobaocdn.com/bao/uploaded/i4/TB1W0UbQFXXXXauXXXXXXXXXXXX_!!0-item_pic.jpg");
     		map.put("goodsId", "101706");
