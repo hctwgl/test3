@@ -26,4 +26,13 @@
 				#{result}
 			)
 	</insert>
+	
+	<select id="getCountByUserName" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			af_user_login_log
+		WHERE
+			user_name = #{userName} and result = 'true'
+	</select>
 </mapper>

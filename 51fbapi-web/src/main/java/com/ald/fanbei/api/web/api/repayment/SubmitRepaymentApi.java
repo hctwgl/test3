@@ -22,6 +22,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
@@ -56,6 +57,8 @@ public class SubmitRepaymentApi implements ApiHandle{
 	
 	@Resource
 	private AfUserBankcardService afUserBankcardService;
+
+	private BigDecimal showAmount;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -96,6 +99,27 @@ public class SubmitRepaymentApi implements ApiHandle{
 		if(null != coupon &&!coupon.getStatus().equals(CouponStatus.NOUSE.getCode())){
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
+		showAmount = actualAmount;
+
+		if(coupon!=null){
+			showAmount = BigDecimalUtil.add(actualAmount, coupon.getAmount());
+		}
+		if(afUserAccountDo.getRebateAmount().compareTo(rebateAmount)<0){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+		}
+		
+		BigDecimal jfb=BigDecimalUtil.divide(jfbAmount, new BigDecimal(100));
+		if(afUserAccountDo.getJfbAmount().compareTo(jfbAmount)<0){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+		}
+
+		showAmount =BigDecimalUtil.add(showAmount, jfb);
+		showAmount = BigDecimalUtil.add(showAmount, rebateAmount);
+	
+		if(repaymentAmount.compareTo(showAmount)!=0){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+		}
+		
 		Map<String,Object> map;
 		if(cardId==-2){//余额支付
 			map = afRepaymentService.createRepayment(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 

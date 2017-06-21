@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -22,6 +23,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfGoodsDetailInfoVo;
+import com.ald.fanbei.api.web.vo.GoodsDetailPicInfoVo;
 
 /**
  * 
@@ -58,6 +60,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 	private AfGoodsDetailInfoVo getGoodsVo(AfGoodsDo goods){
 		AfGoodsDetailInfoVo vo = new AfGoodsDetailInfoVo();
 		List<String> goodsPics = new ArrayList<String>();
+		List<GoodsDetailPicInfoVo> goodsDetail = new ArrayList<GoodsDetailPicInfoVo>(); 
 		vo.setGoodsId(goods.getRid());
 		vo.setGoodsIcon(goods.getGoodsIcon());
 		vo.setGoodsName(goods.getName());
@@ -69,7 +72,14 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		vo.setSaleAmount(goods.getSaleAmount());
 		vo.setSource(goods.getSource());
 		vo.setSaleCount(goods.getSaleCount());
-		vo.setGoodsDetail(goods.getGoodsDetail());
+		if(StringUtil.isNotBlank(goods.getGoodsDetail())){
+			String[] gdArray = goods.getGoodsDetail().split(";");
+			if(gdArray!=null && gdArray.length == Constants.GOODSDETAIL_PIC_PARTS){
+				GoodsDetailPicInfoVo goodsDetailPicInfoVo = new GoodsDetailPicInfoVo(gdArray[0], gdArray[1], gdArray[2]);
+				goodsDetail.add(goodsDetailPicInfoVo);
+			}
+		}
+		vo.setGoodsDetail(goodsDetail);
 		//商品图片汇总处理
 		if(StringUtil.isNotBlank(goods.getGoodsPic1())){
 			goodsPics.add(goods.getGoodsPic1());

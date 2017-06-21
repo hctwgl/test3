@@ -21,7 +21,10 @@ public class Constants {
 	public static final int MINITS_OF_HALF_HOUR = 30;
 
 	public static final int MONTH_OF_YEAR = 12;
-	
+	//商品详情图片信息包含数据总计部分
+	public static final int GOODSDETAIL_PIC_PARTS = 3;
+	//自营商品超时支付时间-小时
+	public static final int SELFSUPPORT_PAY_TIMEOUT_HOUR = 1;
 	public static final BigDecimal DECIMAL_MONTH_OF_YEAR = new BigDecimal(Constants.MONTH_OF_YEAR);
 	//
 	public static final String REQ_PARAM_NODE_SYSTEM = "system";

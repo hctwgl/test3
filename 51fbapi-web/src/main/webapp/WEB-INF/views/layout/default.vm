@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        #set($version="2017060701")
+        #set($version="2017062101")
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="renderer" content="webkit">
@@ -24,17 +24,17 @@
         <script type="text/javascript" src="/dist/js/base.js?version=$version"></script>
         <script type="text/javascript">
             // 判断rem字体大小
-            (function (doc, win) {    
-                var docEl = doc.documentElement,    
-                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',    
-                recalc = function () {    
-                    var clientWidth = docEl.clientWidth;    
-                    if (!clientWidth) return;    
+            (function (doc, win) {
+                var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
                     docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
-                };    
-                if (!doc.addEventListener) return;    
-                win.addEventListener(resizeEvt, recalc, false);    
-                doc.addEventListener('DOMContentLoaded', recalc, false);    
+                };
+                if (!doc.addEventListener) return;
+                win.addEventListener(resizeEvt, recalc, false);
+                doc.addEventListener('DOMContentLoaded', recalc, false);
             })(document, window);
         </script>
     </head>
