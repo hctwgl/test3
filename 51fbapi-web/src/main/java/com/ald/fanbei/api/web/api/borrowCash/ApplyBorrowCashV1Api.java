@@ -180,7 +180,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		}
 		//对风控拒绝通过配置化处理，按配置期限，如果期限内有拒绝，则不可申请，如果期限内无拒绝记录，则可发起申请 end alter by ck 2017年6月13日17:47:20
 		
-		BigDecimal accountBorrow = accountDo.getBorrowCashAmount();
+		BigDecimal  usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
+		BigDecimal accountBorrow = calculateMaxAmount(usableAmount);
 		if(accountBorrow.compareTo(amount)<0){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 
@@ -386,6 +387,19 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		if (currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 		}
+	}
+	
+	/**
+	 * 计算最多能计算多少额度 150取100 250.37 取200
+	 * @param usableAmount
+	 * @return
+	 */
+	private BigDecimal calculateMaxAmount(BigDecimal usableAmount) {
+		//可使用额度
+		Integer amount = usableAmount.intValue();
+		
+		return new BigDecimal(amount/100*100);
+		
 	}
 
 	
