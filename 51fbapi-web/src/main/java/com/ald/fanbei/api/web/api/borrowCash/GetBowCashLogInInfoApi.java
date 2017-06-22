@@ -101,9 +101,6 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");
-			if (usableAmount.compareTo(borrowCashLimitAmount) < 0) {
-				inRejectLoan = YesNoStatus.YES.getCode();
-			}
 		} else {
 			data.put("status", afBorrowCashDo.getStatus());
 
@@ -249,6 +246,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else if (!StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())) {
 			data.put("maxAmount", resource.getValue());
 		}
+		
+		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) && usableAmount.compareTo(borrowCashLimitAmount) < 0) {
+			inRejectLoan = YesNoStatus.YES.getCode();
+		}
+		
 		//如果需要跳转至不通过页面，则获取对应banner图地址
 		if(YesNoStatus.YES.getCode().equals(jumpToRejectPage)){
 			//获取不通过页面内banner图对应地址
