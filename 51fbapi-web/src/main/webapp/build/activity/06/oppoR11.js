@@ -181,10 +181,12 @@ function addMobileListModel(goodsList,notifyUrl) {
         // }
         // privateGoodsId = getUrl1("id");
 
-        privateGoodsId = notifyUrl + '&params={"goodsId":"91625"}';
+        privateGoodsId = notifyUrl + '&params={"goodsId":"120791"}';
 
         // privateGoodsId = 'https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd';
 
+      }else {
+        privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
       }
     }else{
       privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
