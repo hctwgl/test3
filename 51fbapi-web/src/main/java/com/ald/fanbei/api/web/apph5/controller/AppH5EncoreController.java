@@ -71,7 +71,7 @@ public class AppH5EncoreController extends BaseController {
 	
     String  opennative = "/fanbei-web/opennative?name=";
     
-    @RequestMapping(value = "encoreActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "encoreActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String encoreActivityInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
@@ -117,34 +117,30 @@ public class AppH5EncoreController extends BaseController {
     			activityGoodsInfo.put("goodsId", activityGoodsDto.getRid());
     			activityGoodsInfo.put("thumbnailIcon", activityGoodsDto.getThumbnailIcon());
     			activityGoodsInfo.put("goodsUrl", activityGoodsDto.getGoodsUrl());
-    			// 获取分期信息
-    			String tags = activityGoodsDto.getTags();
     			// 如果是分期免息商品，则计算分期
-    			if(tags != null && tags.contains("INTEREST_FREE")){
-    				Long goodsId = activityGoodsDto.getRid();
-    				AfSchemeGoodsDo schemeGoodsDo = null;
-    				try {
-    					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-    				} catch(Exception e){
-    					logger.error(e.toString());
-    				}
-    				if(schemeGoodsDo != null){
-    					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-    					String interestFreeJson = interestFreeRulesDo.getRuleJson();
-    					JSONArray interestFreeArray = null;
-    					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-    						interestFreeArray = JSON.parseArray(interestFreeJson);
-    					}
-    					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-    							activityGoodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
-    					
-    					if(nperList!= null){
-    						activityGoodsInfo.put("goodsType", "1");
-    						Map nperMap = nperList.get(nperList.size() - 1);
-    						activityGoodsInfo.put("nperMap", nperMap);
-    					}
-    				}
-    			}
+				Long goodsId = activityGoodsDto.getRid();
+				AfSchemeGoodsDo schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch(Exception e){
+					logger.error(e.toString());
+				}
+				if(schemeGoodsDo != null){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					JSONArray interestFreeArray = null;
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							activityGoodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						activityGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						activityGoodsInfo.put("nperMap", nperMap);
+					}
+				}
     			activityGoodsList.add(activityGoodsInfo);
     		}
     		jsonObj.put("activityGoodsList", activityGoodsList);
@@ -163,31 +159,29 @@ public class AppH5EncoreController extends BaseController {
     			recommendGoodsInfo.put("goodsType", "0");
     			String tags = goodsDo.getTags();
     			// 如果是分期免息商品，则计算分期
-    			if(tags != null && tags.contains("INTEREST_FREE")){
-    				Long goodsId = goodsDo.getRid();
-    				AfSchemeGoodsDo  schemeGoodsDo = null;
-    				try {
-    					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-    				} catch(Exception e){
-    					logger.error(e.toString());
-    				}
-    				if(schemeGoodsDo != null){
-    					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-    					String interestFreeJson = interestFreeRulesDo.getRuleJson();
-    					JSONArray interestFreeArray = null;
-    					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-    						interestFreeArray = JSON.parseArray(interestFreeJson);
-    					}
-    					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-    							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-    					
-    					if(nperList!= null){
-    						recommendGoodsInfo.put("goodsType", "1");
-    						Map nperMap = nperList.get(nperList.size() - 1);
-    						recommendGoodsInfo.put("nperMap", nperMap);
-    					}
-    				}
-    			}
+    			Long goodsId = goodsDo.getRid();
+				AfSchemeGoodsDo  schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch(Exception e){
+					logger.error(e.toString());
+				}
+				if(schemeGoodsDo != null){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					JSONArray interestFreeArray = null;
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						recommendGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						recommendGoodsInfo.put("nperMap", nperMap);
+					}
+				}
     			recommendGoodsList.add(recommendGoodsInfo);
     		}
         	
