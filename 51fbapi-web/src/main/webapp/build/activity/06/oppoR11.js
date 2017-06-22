@@ -13,8 +13,8 @@ function alaShareData(){
     let dataObj = {
       'appLogin': 'N', // 是否需要登录，Y需要，N不需要
       'type': 'share', // 此页面的类型
-      'shareAppTitle': 'OPPO R11预约返利300元',  // 分享的title
-      'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300元！有，且只在51返呗 GO>>>',  // 分享的内容
+      'shareAppTitle': 'OPPO R11预约返利300福利',  // 分享的title
+      'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300福利！有，且只在51返呗 GO>>>',  // 分享的内容
       'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
       'shareAppUrl': domainName+'/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
       'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
@@ -25,14 +25,14 @@ function alaShareData(){
 };
 
 // 锁定分享后的页面
-let oppoR11Share = getUrl("oppoR11Share");
-if (oppoR11Share == "oppoR11Share") {
-  $(".goRegister").removeClass("hide");
-  $(".banner").addClass("hide");
-
-  $(".mobileList").addClass("hide");
-  $(".mobileListImg").removeClass("hide");
-}
+// let oppoR11Share = getUrl("oppoR11Share");
+// if (oppoR11Share == "oppoR11Share") {
+//   $(".goRegister").removeClass("hide");
+//   $(".banner").addClass("hide");
+//
+//   $(".mobileList").addClass("hide");
+//   $(".mobileListImg").removeClass("hide");
+// }
 
 // 初始化页面
 window.onload=function(){
@@ -159,38 +159,38 @@ function addMobileListModel(goodsList,notifyUrl) {
     let goodsName = goodsList[i].goodsName;
     let saleAmount = goodsList[i].saleAmount;
     let remark = goodsList[i].remark;
+    let numId = goodsList[i].numId;
 
+    // 判断android和ios的版本 给出相应的链接
     let privateGoodsId='';
-
     if (getBlatFrom()==2){
       var ver=getInfo().appVersion;
       if( ver&&ver < 365 ){
-        //var url = "https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd";
-        //var privateGoodsId = url.getUrl(id);
-        //alert(privateGoodsId);
-
-        // function getUrl1(para){
-        //   var url = "https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd";
-        //   var paraArr = url.split("&");
-        //   for(var i = 0;i < paraArr.length;i++){
-        //       if(para == paraArr[i].split('=')[0]){
-        //           return paraArr[i].split('=')[1];
-        //       }
-        //   }
-        //   return '';
-        // }
-        // privateGoodsId = getUrl1("id");
-
-        privateGoodsId = notifyUrl + '&params={"goodsId":"120791"}';
-
-        // privateGoodsId = 'https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd';
-
-      }else {
-        privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
+        privateGoodsId = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
       }
     }else{
       privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
     }
+
+    // 锁定分享后的页面
+    let oppoR11Share = getUrl("oppoR11Share");
+    if (oppoR11Share == "oppoR11Share") {
+      privateGoodsId = "javascript:void(0);";
+      $('#mobileList').on('click','li',function() {
+        // $('.popupBox').removeClass('hide');
+        // $('.popup').removeClass('hide');
+
+        layer.open({
+          content: '享12期免息500元福利<br/>有且只在51返呗',
+          btn: ['确认', '取消'],
+          yes: function(){
+            // location.reload();
+            // layer.close(index);
+            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+          }
+        });
+      });
+    };
 
     html+=`<li>
             <a href='${privateGoodsId}'>
@@ -210,7 +210,6 @@ function addMobileListModel(goodsList,notifyUrl) {
 let page = 0;
 window.onload=function(){
   page++;
-  console.log(page);
   $.ajax({
     url: "/app/activity/getSelfSupportGoodsInfo",
     type: "POST",
@@ -219,6 +218,7 @@ window.onload=function(){
       pageNo: page
     },
     success: function(returnData){
+      console.log(returnData);
       $("#mobileList").append(addMobileListModel(returnData.data.goodsList,returnData.data.notifyUrl));
     },
     error: function(){
@@ -226,35 +226,3 @@ window.onload=function(){
     }
   });
 }
-
-
-
-
-// var url = "https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd";
-alert(getUrl1("id"));
-
-
-
-// 对ios的版本进行判断
-// if(getBlatFrom()==2){
-//     var ver=getInfo().appVersion;
-//     if( ver&&ver < 365 ){
-//       // $('.alert').fadeIn();
-//       // $('#shadow').fadeIn();
-//       alert(2222);
-//       var data = $("#mobileList a");
-//       alert(data);
-//       console.log(data);
-//       $("#mobileList a").attr('href', 'https://www.baidu.com');
-//
-//
-//
-//     }
-// }
-
-
-// alert(2222);
-// var data = $("#mobileList a");
-// alert(data);
-// console.log(data);
-// $("#mobileList li").children('a').attr('href', 'https://www.baidu.com');
