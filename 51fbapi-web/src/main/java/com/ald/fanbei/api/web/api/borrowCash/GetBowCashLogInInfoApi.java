@@ -79,25 +79,28 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		List<Object> bannerList = getBannerObjectWithResourceDolist(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		//
 		String inRejectLoan = YesNoStatus.NO.getCode();
-		//hy 2017年06月13日16:48:35 增加判断，如果前面还有没有还的借款，优先还掉 start
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
-		if (afBorrowCashDo == null) {
-			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-		}
-		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 		
+		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 		//xiaotianjian 2017/06/20 增加最低借款金额资源判断，如果额度低于这个，则显示借款超市
 		AfResourceDo borrowCashLimitAmountResource = afResourceService.getSingleResourceBytype(Constants.RES_BORROW_CASH_LIMIT_AMOUNT);
 		BigDecimal borrowCashLimitAmount =  borrowCashLimitAmountResource == null ? BigDecimal.ZERO : new BigDecimal(borrowCashLimitAmountResource.getValue());
 		BigDecimal usableAmount = account.getAuAmount().subtract(account.getUsedAmount());
+		
+		//hy 2017年06月13日16:48:35 增加判断，如果前面还有没有还的借款，优先还掉 start
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
+		if (afBorrowCashDo == null) {
+			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+			
+			if (usableAmount.compareTo(borrowCashLimitAmount) < 0) {
+				inRejectLoan = YesNoStatus.YES.getCode();
+			}
+		}
 		//hy 2017年06月13日16:48:35 增加判断，如果前面还有没有还的借款，优先还掉 end
-
 		
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");
