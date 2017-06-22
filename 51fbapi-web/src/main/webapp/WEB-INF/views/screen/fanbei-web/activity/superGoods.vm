@@ -12,6 +12,8 @@
         <img :src='content.bannerUrl'>
         <p class="slogan">秒的就是你 惊喜不惊喜</p>
         <p class="countTime"></p>
+        <span class="bg"></span>
+        <span class="bg bg01"></span>
     </div>    
     <ul class="saleOffList">
         <li v-for="(item,index) in content.activityGoodsList">
