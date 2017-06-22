@@ -1107,7 +1107,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return 0;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.error("dealBrandOrderRefund error:",e);
+					logger.error("dealBrandOrderRefund error = {}",e);
 					return 0;
 				}
 			}
