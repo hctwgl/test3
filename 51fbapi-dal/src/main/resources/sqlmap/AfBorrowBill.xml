@@ -225,4 +225,8 @@
 		select IFNULL(sum(overdue_days),0) FROM af_borrow_bill WHERE status ='Y' and overdue_status='Y' and borrow_id= #{borrowId}; 
 	</select>
 	
+	<select id="getSumOverdueCountByBorrowId" resultType="java.lang.Integer">
+		select count(1) from `af_borrow_bill` where `borrow_id` = #{borrowId} and `overdue_status` ='Y'; 
+	</select>
+	
 </mapper>

@@ -205,4 +205,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		return afUserAccountDao.getCountByIdNumer(citizenId, userId);
 	}
 
+	@Override
+	public int updateOriginalUserAccount(AfUserAccountDo afUserAccountDo) {
+		return afUserAccountDao.updateOriginalUserAccount(afUserAccountDo);
+	}
+
 }

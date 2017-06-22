@@ -112,7 +112,6 @@ public class PayOrderV1Api implements ApiHandle {
 			if(StringUtils.equals(type, OrderType.BOLUOME.getCode())&&payId.intValue()==0){
 				riskUtil.payOrderChangeAmount(orderInfo.getRid());
 			}
-			
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {
 			throw new FanbeiException("pay order failed", exception.getErrorCode());

@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import io.netty.util.internal.StringUtil;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +32,7 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -49,6 +48,8 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
 
@@ -135,8 +136,6 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //				repaymentD.setPayTradeNo(payTradeNo);
 //				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
 //			}
-			
-			
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
@@ -246,7 +245,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					afUserAccountDao.updateUserAccount(account);
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
 					
-					dealWithRaiseAmount(repayment.getBillIds());
+					dealWithRaiseAmount(repayment.getUserId(), repayment.getBillIds());
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -258,43 +257,62 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	}
 	
 	/**
-	 * 处理提额逻辑
+	 * 处理风控传输数据和提额逻辑
 	 * @param billIds
 	 */
-	private void dealWithRaiseAmount(String billIds) {
+	private void dealWithRaiseAmount(Long userId, String billIds) {
 		logger.info("dealWithRaiseAmount begin , dealWithRaiseAmount = ");
 		if (StringUtils.isBlank(billIds)) {
 			return;
 		} 
+		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+		String cardNo = StringUtils.EMPTY;
+		if (card != null) {
+			cardNo = card.getCardNumber();
+		} else {
+			cardNo = System.currentTimeMillis() + StringUtils.EMPTY;
+		}
+		
+		JSONArray details = new JSONArray();
+		String tranOrderNo = riskUtil.getOrderNo("tran", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+		
 		String[] billIdArray = billIds.split(",");
 		for (String billId : billIdArray) {
 			AfBorrowBillDo billDo = afBorrowBillService.getBorrowBillById(Long.parseLong(billId));
 			AfBorrowDo afBorrow = afBorrowService.getBorrowById(billDo.getBorrowId());
+			
+			JSONObject obj = new JSONObject();
+			obj.put("borrowNo", afBorrow.getBorrowNo());
+			obj.put("amount", afBorrow.getAmount());
+			obj.put("repayment", billDo.getBillAmount());
+			obj.put("income", billDo.getPoundageAmount());
+			obj.put("interest", billDo.getInterestAmount());
+			obj.put("overdueAmount", BigDecimalUtil.add(billDo.getOverdueInterestAmount(), billDo.getOverduePoundageAmount()));
+			obj.put("overdueDay", billDo.getOverdueDays());
+			details.add(obj);
+			
 			//还完该借款的所有期数
 			if (afBorrow.getNper().equals(afBorrow.getNperRepayment())) {
-				
 				BigDecimal income = afBorrowBillService.getSumIncomeByBorrowId(billDo.getBorrowId());
 				Long sumOverdueDay = afBorrowBillService.getSumOverdueDayByBorrowId(billDo.getBorrowId());
-				
-				int borrowCount = afBorrowService.getBorrowNumByUserId(billDo.getUserId());
-				
-				AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(afBorrow.getUserId());
-				String cardNo = StringUtils.EMPTY;
-				if (card != null) {
-					cardNo = card.getCardNumber();
-				} else {
-					cardNo = System.currentTimeMillis() + StringUtils.EMPTY;
-				}
+				int overdueCount = afBorrowBillService.getSumOverdueCountByBorrowId(billDo.getBorrowId());
+//				int borrowCount = afBorrowService.getBorrowNumByUserId(billDo.getUserId());
+
 				String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 				try {
-					riskUtil.raiseQuota(afBorrow.getUserId().toString(), "40", riskOrderNo, afBorrow.getAmount(), income, sumOverdueDay, borrowCount);
+					riskUtil.raiseQuota(afBorrow.getUserId().toString(), afBorrow.getBorrowNo(), "40", riskOrderNo, afBorrow.getAmount(), income, sumOverdueDay, overdueCount);
 				} catch (Exception e) {
 					logger.error("风控提额失败", e);
 				}
 				afBorrowService.updateBorrowStatus(afBorrow.getRid(), BorrowStatus.FINISH.getCode());
 			}
-			
 		}
 		
+		try {
+			riskUtil.transferBorrowInfo(userId.toString(), "60", tranOrderNo, details);
+		} catch (Exception e) {
+			logger.error("还款时给风控传输数据出错", e);
+		}
 	}
+	
 }

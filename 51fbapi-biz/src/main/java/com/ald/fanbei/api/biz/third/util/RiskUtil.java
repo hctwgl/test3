@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.bo.RiskRaiseQuotaReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.bo.RiskSynBorrowInfoReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
@@ -77,6 +78,7 @@ import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -87,6 +89,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -385,17 +388,19 @@ public class RiskUtil extends AbstractThird {
 	}
 	
 	/**
-	 * 风控审批
+	 * 弱风控审批
 	 * 
 	 * @param orderNo
 	 * @param consumerNo
 	 * @param scene
 	 * @return
 	 */
-	public RiskVerifyRespBo verifyNew(String consumerNo, String scene, String cardNo, String appName, String ipAddress, String blackBox, String borrowId, String orderNo) {
+	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal poundage, String time) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
+		reqBo.setBorrowNo(borrowNo);
+		reqBo.setBorrowType(borrowType);
 		reqBo.setChannel(CHANNEL);
 		reqBo.setScene(scene);
 
@@ -404,8 +409,16 @@ public class RiskUtil extends AbstractThird {
 		obj.put("appName", appName);
 		obj.put("ipAddress", ipAddress);
 		obj.put("blackBox", blackBox);
-
 		reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
+		
+		JSONObject eventObj = new JSONObject();
+		eventObj.put("event", Constants.EVENT_FINANCE_LIMIT_WEAK);
+		eventObj.put("phone", phone);
+		eventObj.put("realAmount", amount);//实际交易金额
+		eventObj.put("poundage", poundage); //手续费
+		eventObj.put("time", time);
+		reqBo.setEventInfo(JSON.toJSONString(eventObj));
+		
 		reqBo.setReqExt("");
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
@@ -413,9 +426,10 @@ public class RiskUtil extends AbstractThird {
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
 		
 		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("weakverify", borrowId, content, url);
+		commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
 
 		String reqResult = HttpUtil.post(url, reqBo);
+		logger.info(StringUtil.appendStrs("weakRiskVerify req=",JSON.toJSONString(reqBo) ,",resp=",reqResult));
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
@@ -447,7 +461,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param borrowCount
 	 * @return
 	 */
-	public RiskVerifyRespBo raiseQuota(String consumerNo, String scene, String orderNo, BigDecimal amount, BigDecimal income, Long overdueDay, int borrowCount) {
+	public RiskVerifyRespBo raiseQuota(String consumerNo,String borrowNo, String scene, String orderNo, BigDecimal amount, BigDecimal income, Long overdueDay, int overdueCount) {
 		RiskRaiseQuotaReqBo reqBo = new RiskRaiseQuotaReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setEventType(Constants.EVENT_FINANCE_COUNT);
@@ -455,10 +469,11 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setScene(scene);
 
 		JSONObject obj = new JSONObject();
+		obj.put("borrowNo", borrowNo);
 		obj.put("amount", amount);
 		obj.put("income", income);
 		obj.put("overdueDays", overdueDay);
-		obj.put("borrowCount", borrowCount);
+		obj.put("overdueCount", overdueCount);
 
 		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setReqExt("");
@@ -470,6 +485,7 @@ public class RiskUtil extends AbstractThird {
 		String content = JSONObject.toJSONString(reqBo);
 		
 		String reqResult = HttpUtil.post(url, reqBo);
+		logger.info(StringUtil.appendStrs("raiseQuota req=",JSON.toJSONString(reqBo) ,",resp=",reqResult));
 		
 		commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
 		logThird(reqResult, "raiseQuota", reqBo);
@@ -481,22 +497,62 @@ public class RiskUtil extends AbstractThird {
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
-//			riskResp.setResult(dataObj.getString("result"));
 			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-			Long consumerNum = Long.parseLong(obj.getString("consumerNo"));
-			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
-  			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-  				AfUserAccountDo accountDo = new AfUserAccountDo();
-  				accountDo.setUserId(consumerNum);
-  				accountDo.setAuAmount(au_amount);
-  				afUserAccountService.updateUserAccount(accountDo);
-  			}
+			Long consumerNum = Long.parseLong(consumerNo);
 			
+			AfUserAccountDo accountDo = new AfUserAccountDo();
+			accountDo.setUserId(consumerNum);
+			accountDo.setAuAmount(au_amount);
+			afUserAccountService.updateUserAccount(accountDo);
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
 		}
 	}
+	
+	public RiskVerifyRespBo transferBorrowInfo(String consumerNo, String scene, String orderNo, JSONArray details) {
+		RiskSynBorrowInfoReqBo reqBo = new RiskSynBorrowInfoReqBo();
+		reqBo.setOrderNo(orderNo);
+//		reqBo.setEventType(Constants.EVENT_FINANCE_COUNT);
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setScene(scene);
+
+//		JSONObject obj = new JSONObject();
+//		obj.put("borrowNo", borrowNo);
+//		obj.put("amount", amount);
+//		obj.put("orderTime", orderTime);
+//		obj.put("income", income);
+//		obj.put("overdueAmount", overdueAmount);
+//		obj.put("overdueDay", overdueDay);
+//		obj.put("overdueCount", overdueCount);
+//		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		
+		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(details)));
+		reqBo.setReqExt("");
+
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/repayment.htm";
+		
+		String content = JSONObject.toJSONString(reqBo);
+		
+		String reqResult = HttpUtil.post(url, reqBo);
+		
+		commitRecordUtil.addRecord("transferBorrow", consumerNo, content, url);
+		logThird(reqResult, "transferBorrow", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+		}
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+		riskResp.setOrderNo(reqBo.getOrderNo());
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+		}
+	}
+	
 	/**
 	 * 
 	 * @param consumerNo
@@ -505,7 +561,7 @@ public class RiskUtil extends AbstractThird {
 	 *            --
 	 * @return 
 	 */
-	public long payOrder(final String orderNo, final String result) {
+	public long payOrder(final AfBorrowDo borrow, final String orderNo, final String result) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -559,8 +615,7 @@ public class RiskUtil extends AbstractThird {
 					}
 
 					// 在风控审批通过后额度不变生成账单
-					afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
-							orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+					afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount());
 					// 审批通过时
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
@@ -608,6 +663,7 @@ public class RiskUtil extends AbstractThird {
 				AfUserAuthDo authDo = new AfUserAuthDo();
       			authDo.setUserId(consumerNo);
       			authDo.setRiskStatus(RiskStatus.YES.getCode());
+      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
       			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
@@ -623,6 +679,7 @@ public class RiskUtil extends AbstractThird {
 				AfUserAuthDo authDo = new AfUserAuthDo();
       			authDo.setUserId(consumerNo);
       			authDo.setRiskStatus(RiskStatus.NO.getCode());
+      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
       			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
@@ -635,6 +692,7 @@ public class RiskUtil extends AbstractThird {
       				afUserAccountService.updateUserAccount(accountDo);
       			}
 			}
+			
 		}
 		return 0;
 	}
@@ -1042,15 +1100,6 @@ public class RiskUtil extends AbstractThird {
 
 		});
 	}
-	
-	public void payOrderChangeAmount(Long rid) throws InterruptedException{
-		
-		AfOrderDo orderInfo = orderDao.getOrderById(rid);
-		logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
-		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
-		}
-	}
 
 	/**
 	 * 风控异步审核
@@ -1193,5 +1242,13 @@ public class RiskUtil extends AbstractThird {
 
 		return bigDecimal;
 
+	}
+	public void payOrderChangeAmount(Long rid) throws InterruptedException{
+		
+		AfOrderDo orderInfo = orderDao.getOrderById(rid);
+		logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
+		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+		}
 	}
 }

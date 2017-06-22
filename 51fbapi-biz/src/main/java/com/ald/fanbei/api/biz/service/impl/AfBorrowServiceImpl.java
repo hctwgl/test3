@@ -922,13 +922,40 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	}
 
 	@Override
+	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount) {
+		return transactionTemplate.execute(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				try {
+					afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
+					
+					// 直接打款
+					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId, borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
+					// 新增借款日志
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userId, borrow.getRid()));
+					
+					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow);
+					
+					afBorrowDao.addBorrowBill(billList);
+
+					return borrow.getRid();
+
+				} catch (Exception e) {
+					logger.info("dealAgentPayConsumeRisk error:" + e);
+					status.setRollbackOnly();
+					return 0l;
+				}
+			}
+		});
+	}
+	
+	@Override
 	public Long dealAgentPayBorrowAndBill(final Long userId, final String userName, final BigDecimal amount,final String name,
 			final Integer nper, final Long orderId,final String orderNo, final String borrowRate,final String interestFreeJson) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					
 					AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
 							amount, nper, BigDecimal.ZERO, BorrowStatus.TRANSED.getCode(), orderId, orderNo,borrowRate, interestFreeJson);
 					// 新增借款信息
@@ -952,8 +979,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				}
 			}
 		});
-		
 	}
+	
 	@Override
 	public int getBorrowNumByUserId(Long userId) {
 		return afBorrowDao.getBorrowNumByUserId(userId);

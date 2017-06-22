@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -48,10 +50,12 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -96,7 +100,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
 	@Resource
 	CommitRecordUtil commitRecordUtil;
-
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -174,7 +180,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		}
 		//对风控拒绝通过配置化处理，按配置期限，如果期限内有拒绝，则不可申请，如果期限内无拒绝记录，则可发起申请 end alter by ck 2017年6月13日17:47:20
 		
-		BigDecimal accountBorrow = accountDo.getBorrowCashAmount();
+		BigDecimal  usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
+		BigDecimal accountBorrow = calculateMaxAmount(usableAmount);
 		if(accountBorrow.compareTo(amount)<0){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 
@@ -212,11 +219,17 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
 			
-			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), "20", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox,
-					afBorrowCashDo.getBorrowNo(), riskOrderNo);
-
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String borrowTime = sdf.format(new Date(System.currentTimeMillis()));
+			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox, riskOrderNo, 
+					accountDo.getUserName(), amount, afBorrowCashDo.getPoundage(), borrowTime);
+			
 			if (verybo.isSuccess()) {
 				delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult());
+			} else {
+				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+				afBorrowCashService.updateBorrowCash(cashDo);
 			}
 			return resp;
 		} catch (Exception e) {
@@ -228,11 +241,13 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	}
 
 	private void delegatePay(String consumerNo, String orderNo, String result) {
+		Long userId = Long.parseLong(consumerNo);
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
 		// cashDo.setRishOrderNo(orderNo);
 		Date currDate = new Date(System.currentTimeMillis());
 
 		AfUserDo afUserDo = afUserService.getUserById(Long.parseLong(consumerNo));
+		AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
 		cashDo.setRid(afBorrowCashDo.getRid());
 
@@ -268,10 +283,17 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo.getGmtArrival());
 			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
 			cashDo.setGmtPlanRepayment(repaymentDay);
-
 			if (!upsResult.isSuccess()) {
 				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
+			} else {
+				//减少额度
+				accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+				afUserAccountService.updateOriginalUserAccount(accountInfo);
+				//增加日志
+				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash, 
+						afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
+				afUserAccountLogDao.addUserAccountLog(accountLog);
 			}
 			afBorrowCashService.updateBorrowCash(cashDo);
 			addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
@@ -368,6 +390,19 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		if (currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 		}
+	}
+	
+	/**
+	 * 计算最多能计算多少额度 150取100 250.37 取200
+	 * @param usableAmount
+	 * @return
+	 */
+	private BigDecimal calculateMaxAmount(BigDecimal usableAmount) {
+		//可使用额度
+		Integer amount = usableAmount.intValue();
+		
+		return new BigDecimal(amount/100*100);
+		
 	}
 
 	

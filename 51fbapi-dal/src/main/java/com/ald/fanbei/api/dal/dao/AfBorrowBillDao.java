@@ -204,4 +204,11 @@ public interface AfBorrowBillDao {
 	 */
 	Long getSumOverdueDayByBorrowId(@Param("borrowId") Long borrowId);
 	
+	/**
+	 * 根据借款ID获取该借款的总逾期次数
+	 * @param borrowId
+	 * @return
+	 */
+	int getSumOverdueCountByBorrowId(@Param("borrowId") Long borrowId);
+	
 }

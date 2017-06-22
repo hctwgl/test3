@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
@@ -21,24 +18,24 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -46,13 +43,15 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：
@@ -86,7 +85,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	private AfUserBankcardDao afUserBankcardDao;
 	@Resource
 	private AfResourceService afResourceService;
-
+	@Resource
+	private AfUserBankcardService afUserBankcardService;
+	
 	@Resource
 	AfUserService afUserService;
 
@@ -173,7 +174,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		Map<String, Object> map = new HashMap<String, Object>();
 		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 		if (cardId == -1) {// 微信支付
-			map = UpsUtil.buildWxpayTradeOrderRepayment(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode(),true);
+			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode());
 		} else if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
@@ -221,28 +222,16 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					
 					String nowRepayAmountStr = NumberUtil.format2Str(nowRepayAmount);
 					String notRepayMoneyStr = "";
-					if (allAmount.compareTo(repayAmount) == 0) {
-						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
-						// 在此处调用 风控接口存入白名单 add by fumeiai
-						try {
-							riskUtil.addwhiteUser(afBorrowCashDo.getUserId());
-						} catch (Exception e) {
-							logger.error("加入白名单失败", e);
-						}
-						increaseBorrowCashAccount(afBorrowCashDo,afBorrowCashDo.getUserId());
-
-					}else{
-						notRepayMoneyStr = NumberUtil.format2Str(allAmount.subtract(repayAmount));
+					
+					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(afBorrowCashDo.getUserId());
+					String cardNo = StringUtils.EMPTY;
+					if (card != null) {
+						cardNo = card.getCardNumber();
+					} else {
+						cardNo = System.currentTimeMillis() + StringUtils.EMPTY;
 					}
 					
-					//add by chengkang 待添加还款成功短信 start
-					try {
-						AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
-						smsUtil.sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), nowRepayAmountStr, notRepayMoneyStr);
-					} catch (Exception e) {
-						logger.error("还款成功发送短信异常,userId:"+afBorrowCashDo.getUserId()+",nowRepayAmount:"+nowRepayAmountStr+",notRepayMoney"+notRepayMoneyStr, e);
-					}
-					//add by chengkang 待添加还款成功短信 end
+					BigDecimal interest = BigDecimal.ZERO;
 					
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 start
 					BigDecimal tempRepayAmount = BigDecimal.ZERO;
@@ -250,25 +239,31 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					if (tempRepayAmount.compareTo(afBorrowCashDo.getRateAmount()) > 0) {
 						bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), afBorrowCashDo.getRateAmount()));
 						bcashDo.setRateAmount(BigDecimal.ZERO);
+						interest = afBorrowCashDo.getRateAmount();
 						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getRateAmount());
 					} else {
 						bcashDo.setSumRate(BigDecimalUtil.add(bcashDo.getSumRate(), tempRepayAmount));
 						bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
+						interest = tempRepayAmount;
 						tempRepayAmount = BigDecimal.ZERO;
 					}
 					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 end
 
 					// 累计集分宝
 					bcashDo.setSumJfb(BigDecimalUtil.add(afBorrowCashDo.getSumJfb(), repayment.getJfbAmount()));
+					
+					BigDecimal overdueAmount = BigDecimal.ZERO;
 
 					// 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 start
 					if (tempRepayAmount.compareTo(afBorrowCashDo.getOverdueAmount()) > 0) {
 						bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount()));
 						bcashDo.setOverdueAmount(BigDecimal.ZERO);
+						overdueAmount = afBorrowCashDo.getOverdueAmount();
 						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getOverdueAmount());
 					} else {
 						bcashDo.setSumOverdue(BigDecimalUtil.add(bcashDo.getSumOverdue(), tempRepayAmount));
 						bcashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(tempRepayAmount));
+						overdueAmount = tempRepayAmount;
 						tempRepayAmount = BigDecimal.ZERO;
 					}
 					// 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 end
@@ -277,7 +272,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
 					bcashDo.setRepayAmount(repayAmount);
 
-					afBorrowCashService.updateBorrowCash(bcashDo);
+					
 					// 优惠券设置已使用
 					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
 
@@ -296,6 +291,70 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					temRepayMent.setRid(repayment.getRid());
 					// 变更还款记录为已还款
 					afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
+					
+					try {
+						String riskOrderNo = riskUtil.getOrderNo("tran", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+						JSONArray details = new JSONArray();
+						JSONObject obj = new JSONObject();
+						obj.put("borrowNo", afBorrowCashDo.getBorrowNo());
+						obj.put("amount", afBorrowCashDo.getAmount());
+						obj.put("repayment", repayment.getRepaymentAmount());
+						obj.put("income", BigDecimal.ZERO);
+						obj.put("interest", interest);
+						obj.put("overdueAmount", overdueAmount);
+						obj.put("overdueDay", afBorrowCashDo.getOverdueDay());
+						details.add(obj);
+						riskUtil.transferBorrowInfo(afBorrowCashDo.getUserId().toString(), "50", riskOrderNo, details);
+					} catch (Exception e) {
+						logger.error("还款时给风控传输数据出错", e);
+					}
+					
+					if (allAmount.compareTo(repayAmount) == 0) {
+						Long userId = afBorrowCashDo.getUserId();
+						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+						//减少使用额度
+						accountInfo.setUsedAmount(BigDecimalUtil.subtract(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+						afUserAccountDao.updateOriginalUserAccount(accountInfo);
+						//增加日志
+						AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, 
+								afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
+						afUserAccountLogDao.addUserAccountLog(accountLog);
+						
+						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+						// 在此处调用 风控接口存入白名单 add by fumeiai
+						/*try {
+							riskUtil.addwhiteUser(afBorrowCashDo.getUserId());
+						} catch (Exception e) {
+							logger.error("加入白名单失败", e);
+						}*/
+//						increaseBorrowCashAccount(afBorrowCashDo,afBorrowCashDo.getUserId());
+						/**------------------------------------fmai风控提额begin------------------------------------------------*/
+						try {
+							String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+							BigDecimal income = BigDecimalUtil.add(afBorrowCashDo.getPoundage(), afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+							int overdueCount = 0;
+							if (StringUtil.equals("Y", afBorrowCashDo.getOverdueStatus())) {
+								overdueCount = 1;
+							}
+							riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "50", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
+						} catch (Exception e) {
+							logger.error("风控提额提额失败", e);
+						}
+						/**------------------------------------fmai风控提额end--------------------------------------------------*/
+					} else {
+						notRepayMoneyStr = NumberUtil.format2Str(allAmount.subtract(repayAmount));
+					}
+					
+					//add by chengkang 待添加还款成功短信 start
+					try {
+						AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
+						smsUtil.sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), nowRepayAmountStr, notRepayMoneyStr);
+					} catch (Exception e) {
+						logger.error("还款成功发送短信异常,userId:"+afBorrowCashDo.getUserId()+",nowRepayAmount:"+nowRepayAmountStr+",notRepayMoney"+notRepayMoneyStr, e);
+					}
+					//add by chengkang 待添加还款成功短信 end
+					
+					afBorrowCashService.updateBorrowCash(bcashDo);
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -306,25 +365,26 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		});
 	}
 	
-	private void increaseBorrowCashAccount(AfBorrowCashDo afBorrowCashDo,Long userId){
-		//提升借款额度
-		
-		BigDecimal borrowAmount = afBorrowCashDo.getAmount();
-		AfUserAccountDo accountBorrowDo= afUserAccountDao.getUserAccountInfoByUserId(userId);
-		BigDecimal accountBorrowAoumt = accountBorrowDo.getBorrowCashAmount();
-		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashMoreAmount.getCode());
-		BigDecimal max = NumberUtil.objToBigDecimalDefault(resourceDo.getValue(), BigDecimal.ZERO);
-		BigDecimal addRate = NumberUtil.objToBigDecimalDefault(resourceDo.getValue1(), BigDecimal.ZERO);
-		BigDecimal addAmount = borrowAmount.multiply(addRate).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_DOWN).multiply(new BigDecimal(100));
-
-		if(max.compareTo(accountBorrowAoumt)>0&& StringUtils.equals(afBorrowCashDo.getType(), AfBorrowCashType.FOURTEEN.getName())) {
-			AfUserAccountDo accountChange = new AfUserAccountDo();
-			accountChange.setRid(accountBorrowDo.getRid());
-			BigDecimal borrowAccountNew = accountBorrowAoumt.add(addAmount);
-			accountChange.setBorrowCashAmount(borrowAccountNew.compareTo(max)>0?max:borrowAccountNew);
-			afUserAccountDao.updateOriginalUserAccount(accountChange);
-		}
-	}
+//	private void increaseBorrowCashAccount(AfBorrowCashDo afBorrowCashDo,Long userId){
+//		//提升借款额度
+//		
+//		BigDecimal borrowAmount = afBorrowCashDo.getAmount();
+//		AfUserAccountDo accountBorrowDo= afUserAccountDao.getUserAccountInfoByUserId(userId);
+//		BigDecimal accountBorrowAoumt = accountBorrowDo.getBorrowCashAmount();
+//		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashMoreAmount.getCode());
+//		BigDecimal max = NumberUtil.objToBigDecimalDefault(resourceDo.getValue(), BigDecimal.ZERO);
+//		BigDecimal addRate = NumberUtil.objToBigDecimalDefault(resourceDo.getValue1(), BigDecimal.ZERO);
+//		BigDecimal addAmount = borrowAmount.multiply(addRate).divide(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_DOWN).multiply(new BigDecimal(100));
+//
+//		if(max.compareTo(accountBorrowAoumt)>0&& StringUtils.equals(afBorrowCashDo.getType(), AfBorrowCashType.FOURTEEN.getName())) {
+//			AfUserAccountDo accountChange = new AfUserAccountDo();
+//			accountChange.setRid(accountBorrowDo.getRid());
+//			BigDecimal borrowAccountNew = accountBorrowAoumt.add(addAmount);
+//			accountChange.setBorrowCashAmount(borrowAccountNew.compareTo(max)>0?max:borrowAccountNew);
+//			afUserAccountDao.updateOriginalUserAccount(accountChange);
+//		}
+//	}
+	
 	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type, BigDecimal amount, Long userId, Long repaymentId) {
 		// 增加account变更日志
 		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
