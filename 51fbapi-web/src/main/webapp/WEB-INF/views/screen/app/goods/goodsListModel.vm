@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="2017051102")
+    #set($version="2017051103")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>$!{modelName}</title>
     <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
