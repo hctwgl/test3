@@ -21,6 +21,8 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -97,6 +99,16 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
 			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
+			}
+			
+			AfResourceDo limitRangeResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashRange.getCode());
+			if (limitRangeResource != null) {
+				BigDecimal limitRangeStart =  new BigDecimal(limitRangeResource.getValue1());
+				BigDecimal limitRangeEnd =  new BigDecimal(limitRangeResource.getValue());
+				BigDecimal amount = new BigDecimal(amountStr);
+				if (amount.compareTo(limitRangeStart) < 0 || amount.compareTo(limitRangeEnd) > 0) {
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
+				}
 			}
 
 			BigDecimal  usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
