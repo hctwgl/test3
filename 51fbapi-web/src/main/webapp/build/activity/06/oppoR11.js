@@ -4,6 +4,9 @@ if(getInfo().userName){
     userName=getInfo().userName;
 };
 
+// 获取网站的域名
+let domainName = domainName();
+
 // app调用web的方法
 function alaShareData(){
     // 分享内容
@@ -13,7 +16,7 @@ function alaShareData(){
       'shareAppTitle': 'OPPO R11预约返利300元',  // 分享的title
       'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300元！有，且只在51返呗 GO>>>',  // 分享的内容
       'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-      'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
+      'shareAppUrl': domainName+'/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
       'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
       'sharePage': 'oppoR11' // 分享的页面
     };
@@ -21,6 +24,7 @@ function alaShareData(){
     return dataStr;
 };
 
+// 锁定分享后的页面
 let oppoR11Share = getUrl("oppoR11Share");
 if (oppoR11Share == "oppoR11Share") {
   $(".goRegister").removeClass("hide");
@@ -150,11 +154,22 @@ function addMobileListModel(goodsList,notifyUrl) {
 
   let html = '';
   for (let i = 0; i < goodsList.length; i++) {
-    let privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
+    // let privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
     let goodsIcon = goodsList[i].goodsIcon;
     let goodsName = goodsList[i].goodsName;
     let saleAmount = goodsList[i].saleAmount;
     let remark = goodsList[i].remark;
+
+    let privateGoodsId='';
+
+    if (getBlatFrom()==2){
+      var ver=getInfo().appVersion;
+      if( ver&&ver < 365 ){
+        privateGoodsId = 'https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd';
+      }
+    }else{
+      privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
+    }
 
     html+=`<li>
             <a href='${privateGoodsId}'>
@@ -180,7 +195,7 @@ window.onload=function(){
     type: "POST",
     dataType: "JSON",
     data: {
-        pageNo: page
+      pageNo: page
     },
     success: function(returnData){
       $("#mobileList").append(addMobileListModel(returnData.data.goodsList,returnData.data.notifyUrl));
@@ -190,3 +205,27 @@ window.onload=function(){
     }
   });
 }
+
+// 对ios的版本进行判断
+// if(getBlatFrom()==2){
+//     var ver=getInfo().appVersion;
+//     if( ver&&ver < 365 ){
+//       // $('.alert').fadeIn();
+//       // $('#shadow').fadeIn();
+//       alert(2222);
+//       var data = $("#mobileList a");
+//       alert(data);
+//       console.log(data);
+//       $("#mobileList a").attr('href', 'https://www.baidu.com');
+//
+//
+//
+//     }
+// }
+
+
+// alert(2222);
+// var data = $("#mobileList a");
+// alert(data);
+// console.log(data);
+// $("#mobileList li").children('a').attr('href', 'https://www.baidu.com');

@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017062003")
+    #set($version="2017062208000")
     #set($src="https://fs.51fanbei.com/h5/app/activity/06")
     <title>OPPO R11新品首发</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/oppoR11.css?version=$version">
 </head>
 <body>
     <div id="oppoR11">
-        <img src="$src/oppo1.png" style="height: 9.34rem;">
+        <!-- <img src="$src/oppo1.png" style="height: 9.34rem;"> -->
         <!-- <div class="banner">
            <img @click="btnBox()" src="$src/oppo2.png" id="btn" style="height: 0.69rem;">
            <div class="order"></div>
         </div> -->
         <!-- 按钮 -->
-        <a href="#mobileListWrap" class="buyBtn">
+        <!-- <a href="#mobileListWrap" class="buyBtn">
           <p style="">立即抢购</p>
-        </a>
+        </a> -->
         <!--分享-->
         <div class="goRegister hide">
             <a href="gameRegister"><img src="$src/oppo5.png" style="height: 0.7rem;"></a>
@@ -60,5 +60,8 @@
         </div>
     </div>
     <script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
+    <script type="text/javascript">
+
+    </script>
 </body>
 </html>
