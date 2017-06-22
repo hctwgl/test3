@@ -31,6 +31,7 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogRefType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogType;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -241,8 +242,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		}
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if (StringUtils.equals("N", afUserAuthDo.getRiskStatus())) {
+		
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_RANGE);
+		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
+		} else if (!StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())) {
+			data.put("maxAmount", resource.getValue());
 		}
 		//如果需要跳转至不通过页面，则获取对应banner图地址
 		if(YesNoStatus.YES.getCode().equals(jumpToRejectPage)){
