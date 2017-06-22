@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -20,11 +22,15 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.mysql.fabric.xmlrpc.base.Data;
 
 /**
  * @author suweili
@@ -35,6 +41,9 @@ public class GetHomeInfoApi implements ApiHandle {
 
 	@Resource
 	AfResourceService afResourceService;
+	
+	@Resource
+	AfActivityGoodsService afActivityGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -81,6 +90,7 @@ public class GetHomeInfoApi implements ApiHandle {
 		data.put("one2TwoList", one2TwoList);
 		data.put("one2OneList", one2OneList);
 		data.put("navigationList", navigationList);
+		data.put("one2TwoList2",one2TwoList2);
 		
 
 		resp.setResponseData(data);
@@ -129,6 +139,21 @@ public class GetHomeInfoApi implements ApiHandle {
 			data.put("type", afResourceDo.getValue1());
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
+			// 1+2 模式新增时间字段
+			if(AfResourceType.HomeOneToTwo2.getCode().equals(afResourceDo.getType())){
+				if("GOODS_ID".equals(afResourceDo.getValue1())){
+					Long goodsId = NumberUtil.objToLong(afResourceDo.getValue2());
+					AfActivityGoodsDo activityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsId(goodsId);
+					if(activityGoodsDo != null){
+						
+						data.put("startTime", activityGoodsDo.getStartTime());
+						data.put("validStart", activityGoodsDo.getValidStart());
+						data.put("validEnd", activityGoodsDo.getValidEnd());
+						data.put("currentTime", new Date());	
+					}	
+				}
+				
+			}
 			if (StringUtil.equals(afResourceDo.getSecType(), AfResourceSecType.ResourceValue1MainImage.getCode())) {
 				oneData = data;
 			} else {
@@ -156,5 +181,6 @@ public class GetHomeInfoApi implements ApiHandle {
 		manyData.clear();
 		oneData.clear();
 	}
+	
 
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.dal.dao.AfActivityGoodsDao;
+import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 
@@ -34,6 +35,12 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 	@Override
 	public List<AfGoodsDo> listRecommendGoodsByActivityId(Long activityId) {
 		return afActivityGoodsDao.listRecommendGoodsByActivityId(activityId);
+	}
+
+	@Override
+	public AfActivityGoodsDo getActivityGoodsByGoodsId(Long goodsId) {
+		
+		return afActivityGoodsDao.getActivityGoodsByGoodsId(goodsId);
 	}
 	
 	

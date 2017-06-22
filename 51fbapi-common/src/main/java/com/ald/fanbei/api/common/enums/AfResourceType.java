@@ -14,7 +14,7 @@ public enum AfResourceType {
 	HomeSecondBanner("HOME_SECOND_BANNER", "第二个轮播"),
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
 	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二(1大左2小右)模块"),
-	HomeOneToTwo2("HOME_ONE_TO_TWO", "首页一对二(1大上2小下)模块"),
+	HomeOneToTwo2("HOME_ONE_TO_TWO2", "首页一对二(1大上2小下)模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
 	HomeTabbar("HOME_TABBAR", "首页tabbar"),
 	
