@@ -165,7 +165,26 @@ function addMobileListModel(goodsList,notifyUrl) {
     if (getBlatFrom()==2){
       var ver=getInfo().appVersion;
       if( ver&&ver < 365 ){
-        privateGoodsId = 'https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd';
+        //var url = "https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd";
+        //var privateGoodsId = url.getUrl(id);
+        //alert(privateGoodsId);
+
+        // function getUrl1(para){
+        //   var url = "https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd";
+        //   var paraArr = url.split("&");
+        //   for(var i = 0;i < paraArr.length;i++){
+        //       if(para == paraArr[i].split('=')[0]){
+        //           return paraArr[i].split('=')[1];
+        //       }
+        //   }
+        //   return '';
+        // }
+        // privateGoodsId = getUrl1("id");
+
+        privateGoodsId = notifyUrl + '&params={"goodsId":"91625"}';
+
+        // privateGoodsId = 'https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd';
+
       }
     }else{
       privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
@@ -205,6 +224,14 @@ window.onload=function(){
     }
   });
 }
+
+
+
+
+// var url = "https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.YbuWvi&id=552277681637&skuId=3382955645849&areaId=330100&user_id=3165788212&cat_id=2&is_b=1&rn=020d728da7a3eb34b3c8613c1ade59cd";
+alert(getUrl1("id"));
+
+
 
 // 对ios的版本进行判断
 // if(getBlatFrom()==2){
