@@ -11,7 +11,8 @@
     <div class="banner">
         <img :src='content.bannerUrl'>
         <p class="slogan">秒的就是你 惊喜不惊喜</p>
-        <p class="countTime"></p>
+    <!--     <p class="countTime">{{(content.validStartTime>content.currentTime)?'距活动开始:'+setTime(content.validStartTime,content.validEndTime,content.currentTime):'距活动结束:'}}</p> -->
+        <p class="countTime">{{setTime(content.validStartTime,content.validEndTime,content.currentTime)}}</p>
     </div>    
     <ul class="saleOffList">
         <li v-for="item in content.activityGoodsList">
