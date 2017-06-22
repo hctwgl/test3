@@ -973,7 +973,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					return borrow.getRid();
 
 				} catch (Exception e) {
-					logger.info("dealAgentPayConsumeRisk error:" + e);
+					logger.info("dealAgentPayConsumeRisk error: {}",e);
 					status.setRollbackOnly();
 					return 0l;
 				}
