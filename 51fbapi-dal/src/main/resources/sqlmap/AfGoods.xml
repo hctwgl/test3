@@ -68,6 +68,7 @@
 			<if test="source != null and source !=''">
 				AND g.source = #{source}
 			</if>
+		order by g.gmt_modified desc
 	</select>
 	
 	<update id="updateSubscribeStatus">
