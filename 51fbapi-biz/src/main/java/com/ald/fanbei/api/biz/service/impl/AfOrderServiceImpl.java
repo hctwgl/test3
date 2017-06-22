@@ -793,7 +793,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					return resultMap;
 				} catch (FanbeiException exception) {
 					logger.error("payBrandOrder faied e = {}", exception);
-					throw new FanbeiException("bank card pay error", exception);
+					throw exception;
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.error("payBrandOrder faied e = {}", e);
