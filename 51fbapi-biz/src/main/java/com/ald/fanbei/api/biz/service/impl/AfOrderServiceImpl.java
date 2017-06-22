@@ -751,6 +751,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
 						if (verybo.isSuccess()) {
 							riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo.getResult());
+						} else {
+							throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 						}
 
 						afUserAccountDao.updateUserAccount(account);
@@ -791,7 +793,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					return resultMap;
 				} catch (FanbeiException exception) {
 					logger.error("payBrandOrder faied e = {}", exception);
-					throw new FanbeiException("bank card pay error", exception.getErrorCode());
+					throw new FanbeiException("bank card pay error", exception);
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.error("payBrandOrder faied e = {}", e);
