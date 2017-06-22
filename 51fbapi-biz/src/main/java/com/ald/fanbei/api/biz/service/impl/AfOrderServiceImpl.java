@@ -721,21 +721,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, 
 								BigDecimal.ZERO, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
 						// 新增借款信息
-						afBorrowDao.addBorrow(borrow);
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String borrowTime = sdf.format(borrow.getGmtCreate());
 						
-						try {
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-							String borrowTime = sdf.format(borrow.getGmtCreate());
+						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
+						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
+						if (verybo.isSuccess()) {
+							riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo.getResult());
+							afBorrowDao.addBorrow(borrow);
 							
-							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
-							userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
-							if (verybo.isSuccess()) {
-								riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo.getResult());
-							}
-							
-						} catch (Exception e) {
-							e.printStackTrace();
 						}
+							
 
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
