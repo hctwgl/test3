@@ -92,7 +92,7 @@
 		AND 
 			u.user_id = #{userId} 
 		ORDER BY
-			u.is_main 
+			u.is_main,b.is_valid
 		DESC
 	</select>
 	
