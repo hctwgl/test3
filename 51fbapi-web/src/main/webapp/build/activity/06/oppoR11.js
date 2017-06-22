@@ -167,6 +167,8 @@ function addMobileListModel(goodsList,notifyUrl) {
       var ver=getInfo().appVersion;
       if( ver&&ver < 365 ){
         privateGoodsId = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
+      }else {
+        privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
       }
     }else{
       privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
