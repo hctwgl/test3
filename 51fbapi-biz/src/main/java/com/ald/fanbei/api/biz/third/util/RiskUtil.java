@@ -396,6 +396,10 @@ public class RiskUtil extends AbstractThird {
 	 * @return
 	 */
 	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal poundage, String time) {
+		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
+		if(!"Y".equals(userAuth.getRiskStatus())){
+			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
+		}
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
