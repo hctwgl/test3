@@ -328,6 +328,7 @@ public class AppH5ActivityController extends BaseController {
 			vo.setRealAmount(afGoods.getRealAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
 			vo.setRebateAmount(afGoods.getRebateAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
 			vo.setSaleAmount(afGoods.getSaleAmount().setScale(2,BigDecimal.ROUND_HALF_UP)+"");
+			vo.setNumId(afGoods.getNumId());
 			goodsVoList.add(vo);
 		}
 		return goodsVoList;
