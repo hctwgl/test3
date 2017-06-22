@@ -28,7 +28,7 @@
                 <span class="isFree"></span>
                 </div>
                 <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>               
-                <p class="buyNow" @click="buyNow">抢购</p>
+                <p class="buyNow" @click="buyNow(item.goodsId)">抢购</p>
                 <p class="amount">库存:<span>{{item.repertoryCount}}</span>件</p>
             </div>      
         </li> 
@@ -46,7 +46,7 @@
                 <div class="monthPrice01" v-if="item.goodsType==='1'"><span class="month">月供</span><span>￥16.33</span>x<span>12</span>
                 <span class="isFree"></span>
                 </div>               
-                <p class="buyNow buyNow01" @click="buyNow">马上抢</p>
+                <p class="buyNow buyNow01" @click="buyNow(item.goodsId)">马上抢</p>
             </div>      
         </li> 
     </ul>
