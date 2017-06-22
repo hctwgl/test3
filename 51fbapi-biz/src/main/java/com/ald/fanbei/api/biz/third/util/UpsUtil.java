@@ -135,8 +135,8 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
 		reqBo.setUserNo(userNo);
-//		AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(Long.parseLong(userNo));
-//		reqBo.setCertNo(userAccountDo.getIdNumber());
+		AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(Long.parseLong(userNo));
+		reqBo.setCertNo(userAccountDo.getIdNumber());
 		reqBo.setPhone(phone);
 		reqBo.setBankName(bankName);
 		reqBo.setBankCode(bankCode);
