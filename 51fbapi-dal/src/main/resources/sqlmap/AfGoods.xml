@@ -28,7 +28,7 @@
 		FROM
 			af_goods
 		WHERE
-			is_delete=0 AND num_id = #{numId}
+			is_delete=0 AND num_id = #{numId}  limit 1
 	</select>
 	
 	
