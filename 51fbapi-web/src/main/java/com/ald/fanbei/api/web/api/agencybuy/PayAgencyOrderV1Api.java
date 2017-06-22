@@ -60,7 +60,7 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 		if (orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_PAID);
 		}
-		try {
+//		try {
 			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
@@ -71,12 +71,12 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 
 			resp.setResponseData(result);
 
-		} catch (Exception e) {
-			logger.error("pay Agency  order failed e = {}", e);
-
-			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
-
-		}
+//		} catch (Exception e) {
+//			logger.error("pay Agency  order failed e = {}", e);
+//
+//			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
+//
+//		}
 		return resp;
 
 	}
