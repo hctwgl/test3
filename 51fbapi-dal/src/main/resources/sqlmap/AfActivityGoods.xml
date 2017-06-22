@@ -43,6 +43,8 @@
 		) 
 		AND  ag.is_delete = 0 
 		AND g.is_delete = 0
+		AND now() > ag.valid_start
+		AND ag.valid_end > now()
 	</select>
 	
 	<select id="listRecommendGoodsByActivityId" resultType="AfGoodsDo" parameterType="java.lang.Long">
