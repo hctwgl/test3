@@ -74,7 +74,7 @@ let vm=new Vue({
                             let dom='productCountTime'+j;
                             //console.log(dom)
                               setTimeout(function timer(){
-                              interval('距本产品开始','距本产品结束',activityGoodsList[j].startTime,activityGoodsList[j].validEndTime,dom);
+                              interval('距开始仅剩','距结束仅剩',activityGoodsList[j].startTime,activityGoodsList[j].validEndTime,dom);
                             },j*0)
                           })(i)   
                       }//商品列表---activityGoodsList---end

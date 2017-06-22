@@ -25,7 +25,7 @@
                 <p class="originalPrice">￥{{item.saleAmount}}</p>
                 <p class="fan" v-if="item.goodsType==='1'">返利￥{{item.rebateAmount}}</p>
                 <div class="monthPrice" v-if="item.goodsType==='1'">月供￥<span>{{item.nperMap.amount}}</span>x<span>{{item.nperMap.nper}}</span>
-                <span class="isFree">免息</span>
+                <span class="isFree"></span>
                 </div>
                 <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>               
                 <p class="buyNow" @click="buyNow">抢购</p>
