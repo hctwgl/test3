@@ -157,7 +157,6 @@ public class AppH5EncoreController extends BaseController {
     			recommendGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
     			recommendGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
     			recommendGoodsInfo.put("goodsType", "0");
-    			String tags = goodsDo.getTags();
     			// 如果是分期免息商品，则计算分期
     			Long goodsId = goodsDo.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = null;
@@ -184,7 +183,6 @@ public class AppH5EncoreController extends BaseController {
 				}
     			recommendGoodsList.add(recommendGoodsInfo);
     		}
-        	
         	jsonObj.put("recommendGoodsList", recommendGoodsList);
         	
         	return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
@@ -206,7 +204,6 @@ public class AppH5EncoreController extends BaseController {
                 break;
             }
         }
-
     }
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
