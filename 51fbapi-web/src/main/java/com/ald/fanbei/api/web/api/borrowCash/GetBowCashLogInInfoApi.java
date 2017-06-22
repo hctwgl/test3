@@ -95,15 +95,14 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
 		if (afBorrowCashDo == null) {
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-			
-			if (usableAmount.compareTo(borrowCashLimitAmount) < 0) {
-				inRejectLoan = YesNoStatus.YES.getCode();
-			}
 		}
 		//hy 2017年06月13日16:48:35 增加判断，如果前面还有没有还的借款，优先还掉 end
 		
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");
+			if (usableAmount.compareTo(borrowCashLimitAmount) < 0) {
+				inRejectLoan = YesNoStatus.YES.getCode();
+			}
 		} else {
 			data.put("status", afBorrowCashDo.getStatus());
 
