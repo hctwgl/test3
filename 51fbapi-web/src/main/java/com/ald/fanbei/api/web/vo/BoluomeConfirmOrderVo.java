@@ -31,6 +31,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private String bankCode;//银行编号
 	private String bankName;//银行名称
 	private String bankIcon;//银行图标
+	private char isValid; //银行是否有效
 	
 	private BigDecimal useableAmount;//可使用额度
 	private BigDecimal totalAmount;//总额度
@@ -38,6 +39,14 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private String allowConsume;//分期/代付的关键字段，Y：已授权；N：未授权
 	private String faceStatus;
 	private String idNumber;
+
+	public char getIsValid() {
+		return isValid;
+	}
+
+	public void setIsValid(char isValid) {
+		this.isValid = isValid;
+	}
 
 	/**
 	 * @return the rid
