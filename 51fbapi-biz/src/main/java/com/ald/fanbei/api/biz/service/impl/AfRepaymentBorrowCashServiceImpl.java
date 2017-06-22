@@ -322,11 +322,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						// 在此处调用 风控接口存入白名单 add by fumeiai
-						try {
+						/*try {
 							riskUtil.addwhiteUser(afBorrowCashDo.getUserId());
 						} catch (Exception e) {
 							logger.error("加入白名单失败", e);
-						}
+						}*/
 //						increaseBorrowCashAccount(afBorrowCashDo,afBorrowCashDo.getUserId());
 						/**------------------------------------fmai风控提额begin------------------------------------------------*/
 						try {
