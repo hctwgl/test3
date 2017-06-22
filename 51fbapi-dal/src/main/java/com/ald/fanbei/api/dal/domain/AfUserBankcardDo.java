@@ -27,7 +27,16 @@ public class AfUserBankcardDo extends AbstractSerial{
 	private String bankName;
 	private String status;	
 	private String bankIcon;
-	
+	private char isValid;
+
+	public char getIsValid() {
+		return isValid;
+	}
+
+	public void setIsValid(char isValid) {
+		this.isValid = isValid;
+	}
+
 	public Long getRid() {
 		return rid;
 	}

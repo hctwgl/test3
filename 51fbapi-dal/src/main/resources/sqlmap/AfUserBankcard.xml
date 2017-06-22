@@ -13,7 +13,7 @@
 	</sql>
 	<sql id="queryWithBankFields">
 		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.status,
-		c.bank_icon,c.bank_name
+		c.bank_icon,c.bank_name,c.is_valid
 	</sql>
 	
 	<insert id="addUserBankcard" parameterType="AfUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
