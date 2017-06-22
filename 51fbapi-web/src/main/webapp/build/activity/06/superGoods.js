@@ -74,7 +74,7 @@ let vm=new Vue({
                             let dom='productCountTime'+j;
                             //console.log(dom)
                               setTimeout(function timer(){
-                              interval('距本产品开始','距本产品结束',activityGoodsList[j].startTime,activityGoodsList[j].validEndTime,dom);
+                              interval('距开始仅剩','距结束仅剩',activityGoodsList[j].startTime,activityGoodsList[j].validEndTime,dom);
                             },j*0)
                           })(i)   
                       }//商品列表---activityGoodsList---end
@@ -87,13 +87,14 @@ let vm=new Vue({
         },
         alaShareData(){
           // 分享内容
+          var ipUrl=domainName();
           var dataObj = {
             'appLogin': 'N', // 是否需要登录，Y需要，N不需要
             'type': 'share', // 此页面的类型
             'shareAppTitle': '特卖会',  // 分享的title
             'shareAppContent': '51返呗返场加购，精选好货抄低价！爆款精品仅在“特卖会”，拼的就是手速，赶紧来围观~',  // 分享的内容
             'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-            'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/superGoods?superGoodsShare=superGoodsShare',  // 分享后的链接
+            'shareAppUrl': ipUrl+'/fanbei-web/activity/superGoods?superGoodsShare=superGoodsShare',  // 分享后的链接
             'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
             'sharePage': 'superGoods' // 分享的页面
           };
