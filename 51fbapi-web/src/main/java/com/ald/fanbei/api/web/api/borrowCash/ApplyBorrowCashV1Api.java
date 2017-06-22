@@ -241,6 +241,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			}
 			return resp;
 		} catch (Exception e) {
+			logger.error("apply borrow cash v1 error",e);
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);

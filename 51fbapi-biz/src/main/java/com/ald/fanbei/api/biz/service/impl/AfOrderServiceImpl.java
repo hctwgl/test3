@@ -687,47 +687,55 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								isSelf?PayOrderSource.SELFSUPPORT_ORDER.getCode():PayOrderSource.BRAND_ORDER.getCode());
 					} else if (payId == 0) {
 						// 代付
-						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-						if (useableAmount.compareTo(saleAmount) < 0) {
-							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-						}
-						String borrowNo = generatorClusterNo.getBorrowNo( new Date());
-						String cardNo = card.getCardNumber();
-						
-						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, 
-								BigDecimal.ZERO, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), borrowNo);
-						
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						String borrowTime = sdf.format(borrow.getGmtCreate());
-						String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-						
-						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrowNo, nper.toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo,
-								userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
-						
-						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
-						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 						orderInfo.setStatus(OrderStatus.DEALING.getCode());
 						orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+
+						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+
+						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderInfo.setNper(nper);
+						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
+						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setBorrowRate(boStr);
-						orderInfo.setRiskOrderNo(riskOrderNo);
-						
-						logger.info("verify userId" + userId);
-						// 新增借款信息
-						if (verybo.isSuccess()) {
-							riskUtil.payOrder(borrow,orderInfo, verybo.getOrderNo(), verybo.getResult());
+						orderDao.updateOrder(orderInfo);
+						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+
+						if (useableAmount.compareTo(saleAmount) < 0) {
+							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 						}
 						// 修改用户账户信息
 						AfUserAccountDo account = new AfUserAccountDo();
 						account.setUsedAmount(orderInfo.getActualAmount());
 						account.setUserId(userAccountInfo.getUserId());
 						afUserAccountDao.updateUserAccount(account);
-						afBorrowDao.addBorrow(borrow);
-						logger.info("updateOrder orderInfo = {}", orderInfo);
+
+						// 最后调用风控控制
+						logger.info("verify userId" + userId);
+
+						String cardNo = card.getCardNumber();
+						String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+						orderInfo.setRiskOrderNo(riskOrderNo);
 						orderDao.updateOrder(orderInfo);
+						
+						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, 
+								BigDecimal.ZERO, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+						// 新增借款信息
+						afBorrowDao.addBorrow(borrow);
+						
+						try {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							String borrowTime = sdf.format(borrow.getGmtCreate());
 							
+							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
+							userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
+							if (verybo.isSuccess()) {
+								riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo.getResult());
+							}
+							
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
@@ -787,7 +795,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @return
 	 */
 	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper,
-			BigDecimal perAmount, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson,String borrowNo) {
+			BigDecimal perAmount, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson) {
 		
 		Integer freeNper = 0;
 		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
@@ -804,7 +812,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		borrow.setGmtCreate(currDate);
 		borrow.setAmount(amount);
 		borrow.setType(type.getCode());
-		borrow.setBorrowNo(borrowNo);
+		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
 		borrow.setStatus(status);// 默认转账成功
 		borrow.setName(name);
 		borrow.setUserId(userId);

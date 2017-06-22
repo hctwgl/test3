@@ -565,7 +565,7 @@ public class RiskUtil extends AbstractThird {
 	 *            --
 	 * @return 
 	 */
-	public long payOrder(final AfBorrowDo borrow,final AfOrderDo orderInfo, final String orderNo, final String result) {
+	public long payOrder(final AfBorrowDo borrow, final String orderNo, final String result) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -579,7 +579,7 @@ public class RiskUtil extends AbstractThird {
 //					reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 					// 添加一个根据风控号查找记录的方法
-//					AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
+					AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
 					// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
 
 					logger.info("risk_result =" + result);
