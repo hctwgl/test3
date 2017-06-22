@@ -37,8 +37,7 @@ let addModel = function addModel(goodsList,dom,state) {
                     </div>
                 </div>`;
                 con1=` <p class="fs_26 fsc_red">
-                       <span>￥${amountAmountPriceInteger}</span>
-                       <span class="fs_20">.${amountAmountPriceDecimal}</span>`
+                       <span>￥${amountAmountPriceInteger}</span><span class="fs_20">.${amountAmountPriceDecimal}</span>`
             }
             let goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[j].goodsId+'"}';
             html += `<li class="goodsListModel_item">
