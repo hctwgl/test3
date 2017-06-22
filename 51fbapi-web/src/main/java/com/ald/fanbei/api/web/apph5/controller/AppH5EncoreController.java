@@ -71,7 +71,7 @@ public class AppH5EncoreController extends BaseController {
 	
     String  opennative = "/fanbei-web/opennative?name=";
     
-    @RequestMapping(value = "encoreActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "encoreActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String encoreActivityInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
