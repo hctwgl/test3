@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfActivityGoodsDao">
 	
+	
+	<sql id="queryTotalFields">
+	  id rid,is_delete,gmt_create,gmt_modified,special_price,start_time,valid_start,valid_end,goods_count,limit_count,
+	  goods_id,type
+	</sql>
+	
 	<sql id="activityGoodsSqlField">
 		ag.special_price,ag.start_time,ag.valid_start,ag.valid_end,ag.goods_count,ag.limit_count
 	</sql>
@@ -54,5 +60,18 @@
 			g.is_delete = 0
 		AND
 			m.is_delete = 0
+	</select>
+	
+	<select id="getActivityGoodsByGoodsId" resultType="AfActivityGoodsDo">
+		SELECT
+			<include refid="queryTotalFields"/>
+		FROM
+		 	af_activity_goods
+		WHERE
+			is_delete = 0
+		AND
+			goods_id = #{goodsId}
+	
+	
 	</select>
 </mapper>

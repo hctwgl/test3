@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 
@@ -18,6 +19,9 @@ public interface AfActivityGoodsDao {
 	List<AfActivityGoodsDto> listActivityGoodsByActivityId(@Param("activityId")Long activityId);
 
 	List<AfGoodsDo> listRecommendGoodsByActivityId(@Param("activityId")Long activityId);
+	
+	// 根据goodsId查询商品信息
+	AfActivityGoodsDo  getActivityGoodsByGoodsId(@Param("goodsId") Long goodsId);
 
 	
 
