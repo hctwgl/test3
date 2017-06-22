@@ -16,7 +16,7 @@
         <span class="bg bg01"></span>
     </div>    
     <ul class="saleOffList">
-        <li v-for="(item,index) in content.activityGoodsList">
+        <li v-for="(item,index) in content.activityGoodsList" @click="buyNow(item.goodsId)">
             <div class="productCountTime" :class="'productCountTime'+index"></div>
             <div class="productImg"><img :src='item.goodsIcon'></div>
             <div class="productRight">
@@ -28,14 +28,14 @@
                 <span class="isFree"></span>
                 </div>
                 <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>               
-                <p class="buyNow" @click="buyNow(item.goodsId)">抢购</p>
+                <p class="buyNow">抢购</p>
                 <p class="amount">库存:<span>{{item.repertoryCount}}</span>件</p>
             </div>      
         </li> 
     </ul>
     <ul class="youLikeList saleOffList">
         <p class="likeWord">你可能喜欢</p>
-        <li v-for="item in content.recommendGoodsList">
+        <li v-for="item in content.recommendGoodsList" @click="buyNow(item.goodsId)">
             <!-- <div class="productCountTime"></div> -->
             <div class="productImg">
             <img :src='item.goodsIcon'></div>
@@ -46,7 +46,7 @@
                 <div class="monthPrice01" v-if="item.goodsType==='1'"><span class="month">月供</span><span>￥16.33</span>x<span>12</span>
                 <span class="isFree"></span>
                 </div>               
-                <p class="buyNow buyNow01" @click="buyNow(item.goodsId)">马上抢</p>
+                <p class="buyNow buyNow01">马上抢</p>
             </div>      
         </li> 
     </ul>
