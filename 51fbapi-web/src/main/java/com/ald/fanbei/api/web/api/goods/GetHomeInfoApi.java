@@ -22,7 +22,6 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
@@ -30,7 +29,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.mysql.fabric.xmlrpc.base.Data;
+
 
 /**
  * @author suweili
@@ -44,29 +43,32 @@ public class GetHomeInfoApi implements ApiHandle {
 	
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
+	
+	private FanbeiContext contextApp;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		
+		contextApp = context;
 		Map<String, Object> data = new HashMap<String, Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
 		//正式环境和预发布环境区分
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()),context);
+					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
 		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
 			bannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()), context);
+					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()));
 		}
 		List<Object> bannerSecList = new ArrayList<Object>();
 		if(context.getAppVersion() >= 363){
 			bannerSecList = getObjectWithResourceDolist(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()), context);
+				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
 		}
 		List<Object> one2OneList = getObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()), context);
+				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
 		
 		List<Object> one2ManyList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
@@ -81,7 +83,7 @@ public class GetHomeInfoApi implements ApiHandle {
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
 		
 		List<Object> navigationList = getObjectWithResourceDolist(
-				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()), context);
+				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 
 		data.put("bannerList", bannerList);
 		data.put("bannerSecList", bannerSecList);
@@ -98,7 +100,7 @@ public class GetHomeInfoApi implements ApiHandle {
 		return resp;
 	}
 
-	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist, FanbeiContext context ) {
+	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
 		List<Object> bannerList = new ArrayList<Object>();
 		
 		for (AfResourceDo afResourceDo : bannerResclist) {
@@ -108,7 +110,7 @@ public class GetHomeInfoApi implements ApiHandle {
 			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
 				data.put("type", afResourceDo.getSecType());
 				// 对首页充值的版本兼容修改
-				if (context.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME)){
+				if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
 					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
 				}
 			}else{
