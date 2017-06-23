@@ -1,14 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017062215")
+    #set($version="2017062305")
     #set($src="https://fs.51fanbei.com/h5/app/activity/06")
     <title>OPPO R11新品首发</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/oppoR11.css?version=$version">
 </head>
 <body>
-    <div id="oppoR11">
-        <img src="$src/oppo11_1.png">
+    <div id="oppoR11" style="background-color: #fff;">
+        <img src="$src/oppo12_1.png">
+
+        <img :src="bannerlist">
+        <!-- <div>
+          <img v-for='i of 4' v-show="show[i-1]" :src="'/images/activity/06/oppo12_3'+i+'.png'">
+        </div> -->
+        <ul class="oppoR11List clearfix">
+          <li v-for='i of 4' @click="oppoR11List(i)" :class="show[i-1]? 'item'+i:'item'"></li>
+        </ul>
+        <p class="oppoR11Content">{{content}}</p>
+        <a id="oppoR11Btn" :href="url"><img src="$src/oppo12_2.png"></a>
+
+
+
+
+
+
         <!-- <div class="banner">
            <img @click="btnBox()" src="$src/oppo2.png" id="btn" style="height: 0.69rem;">
            <div class="order"></div>
@@ -22,8 +38,6 @@
             <a href="gameRegister"><img src="$src/oppo5.png" style="height: 0.7rem;"></a>
             <p>登录51返呗APP进行预约</p>
         </div> -->
-        <a href="#mobileListWrap"><img src="$src/oppo11_2.png"></a>
-        <img src="$src/oppo11_3.png">
         <img src="$src/oppo11_4.png">
 
         <!-- <div class="countWrap hide">
