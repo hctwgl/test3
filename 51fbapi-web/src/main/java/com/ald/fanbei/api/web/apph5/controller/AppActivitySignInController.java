@@ -353,7 +353,7 @@ public class AppActivitySignInController extends BaseController {
 										userCoupon.setGmtEnd(couponDo.getGmtEnd());
 										userCoupon.setUserId(userId);
 										userCoupon.setStatus("NOUSE");
-										userCoupon.setSourceType("SPECIAL");
+										userCoupon.setSourceType("SIGNIN");
 										afUserCouponService.addUserCoupon(userCoupon);
 										amountCoupon += 1;
 									}
