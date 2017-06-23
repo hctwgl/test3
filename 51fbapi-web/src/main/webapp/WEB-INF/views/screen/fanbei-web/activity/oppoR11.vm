@@ -8,7 +8,7 @@
 </head>
 <body>
     <div id="oppoR11" style="background-color: #fff;">
-        <img src="/images/activity/06/oppo12_1.png">
+        <img src="$src/oppo12_1.png">
 
         <img :src="bannerlist">
         <!-- <div>
@@ -18,7 +18,7 @@
           <li v-for='i of 4' @click="oppoR11List(i)" :class="show[i-1]? 'item'+i:'item'"></li>
         </ul>
         <p class="oppoR11Content">{{content}}</p>
-        <a :href="url"><img src="/images/activity/06/oppo12_2.png"></a>
+        <a :href="url"><img src="$src/oppo12_2.png"></a>
 
 
 
