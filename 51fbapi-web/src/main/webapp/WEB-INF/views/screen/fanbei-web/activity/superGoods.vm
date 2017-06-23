@@ -43,10 +43,7 @@
                 <p class="productDes" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
                 <p class="buyPrice">￥{{item.saleAmount}}</p>
                 <p class="fan01">返利￥{{item.rebateAmount}}</p>
-                <div class="monthPrice01" v-if="item.goodsType==='1'"><span class="month">月供</span>
-                    <span v-if="item.nperMap.isFree==1">￥{{item.nperMap.freeAmount}}</span>
-                    <span v-else>￥{{item.nperMap.amount}}</span>×
-                    <span>{{item.nperMap.nper}}</span>
+                <div class="monthPrice01" v-if="item.goodsType==='1'"><span class="month">月供</span><span v-if="item.nperMap.isFree==1">￥{{item.nperMap.freeAmount}}</span><span v-else>￥{{item.nperMap.amount}}</span>×<span>{{item.nperMap.nper}}</span>
                 <span class="isFree"></span>
                 </div>               
                 <p class="buyNow buyNow01">马上抢</p>
