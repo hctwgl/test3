@@ -5,7 +5,10 @@
 * @Last Modified time: 2017-05-11 14:21:03
 */
 
-let goodsList=eval('(' + $('#goodsList').val() + ')'); //初始商品数据
+let goodsList1 = $('#goodsList').val();
+let goodsList=eval('(' + goodsList1 + ')'); //初始商品数据
+console.log(goodsList);
+
 let notifyUrl = $("#notifyUrl").val();//商品跳转原生的链接
 
 let finished = 0;//防止多次请求ajax
@@ -32,7 +35,7 @@ let addModel = function addModel(goodsList,dom,state) {
                     <div class="goodsListModel_mainContent_rebate clearfix">
                         <span class="goodsListModel_rebate fl fs_22 bgc_orange fsc_f tac">月供</span>
                         <p class="fl fs_24 fsc_orange">
-                            ${amount}                       
+                            ${amount}
                         </p>
                     </div>
                 </div>`;
@@ -45,7 +48,7 @@ let addModel = function addModel(goodsList,dom,state) {
                         <img src=" ${goodsList[j].goodsIcon}" class="mainContent_img">
                         <div class="goodsListModel_mainContent_wrap">
                             <p class="fs_26 fsc_1">${goodsList[j].name}</p>
-                            ${con1}          
+                            ${con1}
                                 <span class="fs_24"><i class="ba">返</i>￥${goodsList[j].rebateAmount}</span>
                             </p>
                         </div>
@@ -242,5 +245,3 @@ $(function(){
     });
 
 });
-
-

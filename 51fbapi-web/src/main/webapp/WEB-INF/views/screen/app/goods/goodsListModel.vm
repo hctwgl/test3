@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="2017051103")
+    #set($version="20170562301")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>$!{modelName}</title>
     <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
@@ -10,7 +10,7 @@
 <body>
     <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
-    <input type="hidden" id="goodsList" value=$jsonUtil.toJSONString(${goodsList})>
+    <input type="hidden" id="goodsList" value='$jsonUtil.toJSONString(${goodsList})'>
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
 
     #if($!{goodsList.size()}==0)
