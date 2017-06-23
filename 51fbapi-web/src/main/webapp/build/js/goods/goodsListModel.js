@@ -7,7 +7,6 @@
 
 let goodsList1 = $('#goodsList').val();
 let goodsList=eval('(' + goodsList1 + ')'); //初始商品数据
-console.log(goodsList);
 
 let notifyUrl = $("#notifyUrl").val();//商品跳转原生的链接
 
