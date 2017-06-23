@@ -19,9 +19,9 @@ public class AfActivityGoodsDto extends AfGoodsDo {
 	private static final long serialVersionUID = -3162832676757115210L;
 	private Long id;
 	private BigDecimal specialPrice;
-	private Date startTime;
-	private Date validStart;
-	private Date validEnd;
+	private String startTime;
+	private String validStart;
+	private String validEnd;
 	private Long goodsCount;
 	private Long limitCount;
 	
@@ -37,22 +37,22 @@ public class AfActivityGoodsDto extends AfGoodsDo {
 	public void setSpecialPrice(BigDecimal specialPrice) {
 		this.specialPrice = specialPrice;
 	}
-	public Date getStartTime() {
+	public String getStartTime() {
 		return startTime;
 	}
-	public void setStartTime(Date startTime) {
+	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
-	public Date getValidStart() {
+	public String getValidStart() {
 		return validStart;
 	}
-	public void setValidStart(Date validStart) {
+	public void setValidStart(String validStart) {
 		this.validStart = validStart;
 	}
-	public Date getValidEnd() {
+	public String getValidEnd() {
 		return validEnd;
 	}
-	public void setValidEnd(Date validEnd) {
+	public void setValidEnd(String validEnd) {
 		this.validEnd = validEnd;
 	}
 	public Long getGoodsCount() {
