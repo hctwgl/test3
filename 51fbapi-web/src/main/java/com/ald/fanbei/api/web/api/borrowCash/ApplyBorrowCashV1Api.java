@@ -127,7 +127,15 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		// 密码判断
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-
+		AfResourceDo limitRangeResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashRange.getCode());
+		if (limitRangeResource != null) {
+			BigDecimal limitRangeStart =  new BigDecimal(limitRangeResource.getValue1());
+			BigDecimal limitRangeEnd =  new BigDecimal(limitRangeResource.getValue());
+			BigDecimal amount = new BigDecimal(amountStr);
+			if (amount.compareTo(limitRangeStart) < 0 || amount.compareTo(limitRangeEnd) > 0) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
+			}
+		}
 		if (accountDo == null || authDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
@@ -233,6 +241,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			}
 			return resp;
 		} catch (Exception e) {
+			logger.error("apply borrow cash v1 error",e);
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);

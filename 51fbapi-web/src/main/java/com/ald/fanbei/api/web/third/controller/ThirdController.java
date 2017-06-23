@@ -75,8 +75,10 @@ public class ThirdController extends AbstractThird{
 
             result.setData(resultData);
         } catch (FanbeiException e) {
+        	logger.error("orderRefund failed : {}", e);
             result = new AppResponse(e.getErrorCode());
         } catch (Exception e) {
+        	logger.error("orderRefund failed : {}", e);
             result = new AppResponse(FanbeiExceptionCode.SYSTEM_ERROR);
         }
         thirdLog.info("result is {}", JSONObject.toJSONString(result));

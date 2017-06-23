@@ -113,6 +113,17 @@ $(function(){
 // 点击手机弹窗
 new Vue({
   el: '#oppoR11',
+  data: {
+    show: [
+      true,
+      false,
+      false,
+      false,
+    ],
+    bannerlist: 'https://fs.51fanbei.com/h5/app/activity/06/oppo12_31.png',
+    url: 'http://testapp.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"120751"}',
+    content: '¥2999 月供 ¥302起'
+  },
   methods:{
     btnBox: function(){
       $.ajax({
@@ -140,11 +151,28 @@ new Vue({
     mobilePopup: function(){ // 显示手机弹窗
       $('.popupBox').removeClass('hide');
       $('.popup').removeClass('hide');
-      // $('body').css('overflow', 'hidden');
     },
     close: function(){ // 关闭手机弹窗
       $('.popupBox').addClass('hide');
       $('.popup').addClass('hide');
+    },
+    oppoR11List(e){
+      for(let i=0;i<this.show.length;i++){
+        this.show.splice(i, 1, false);  // 其他的为false
+      }
+      this.show.splice(e-1, 1, true);  // 点击当前的为true
+
+      // 手机的bannerlist
+      this.bannerlist="https://fs.51fanbei.com/h5/app/activity/06/oppo12_3"+e+".png";
+
+      // 手机的privateGoodsId
+      let privateGoodsId=[120751,120790,120791,120792];
+      let notifyUrl = "http://testapp.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO";
+      this.url=notifyUrl+'&params={"privateGoodsId":"'+privateGoodsId[e-1]+'"}';  // a链接的url
+
+      // 手机的分期的文案
+      let content=['¥2999 月供 ¥3020起','¥2999 月供 ¥302起','¥2999 月供 ¥302起','¥3199 月供 ¥322起'];
+      this.content=content[e-1];
     }
   }
 });
@@ -177,17 +205,26 @@ function addMobileListModel(goodsList,notifyUrl) {
     // 锁定分享后的页面
     let oppoR11Share = getUrl("oppoR11Share");
     if (oppoR11Share == "oppoR11Share") {
-      privateGoodsId = "javascript:void(0);";
-      $('#mobileList').on('click','li',function() {
-        // $('.popupBox').removeClass('hide');
-        // $('.popup').removeClass('hide');
-
+      // 立即购买按钮
+      $("#oppoR11Btn").attr('href', 'javascript:void(0);');
+      $("#oppoR11Btn").click(function() {
         layer.open({
           content: '享12期免息500元福利<br/>有且只在51返呗',
           btn: ['确认', '取消'],
           yes: function(){
-            // location.reload();
-            // layer.close(index);
+            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+          }
+        });
+      });
+
+
+      // 列表的弹窗
+      privateGoodsId = "javascript:void(0);";
+      $('#mobileList').on('click','li',function() {
+        layer.open({
+          content: '享12期免息500元福利<br/>有且只在51返呗',
+          btn: ['确认', '取消'],
+          yes: function(){
             window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
           }
         });
@@ -220,7 +257,6 @@ window.onload=function(){
       pageNo: page
     },
     success: function(returnData){
-      console.log(returnData);
       $("#mobileList").append(addMobileListModel(returnData.data.goodsList,returnData.data.notifyUrl));
     },
     error: function(){

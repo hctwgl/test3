@@ -117,7 +117,19 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setPriceAmount(goodsDo.getPriceAmount());
 		afOrder.setGoodsIcon(goodsDo.getGoodsIcon());
 		afOrder.setGoodsName(goodsDo.getName());
-		afOrder.setAddress(addressDo.getProvince()!=null?addressDo.getProvince():""+addressDo.getCity()!=null?addressDo.getCounty():"" +addressDo.getAddress());
+		String address = addressDo.getProvince() !=null?addressDo.getProvince():"";
+		if(addressDo.getCity()!=null){
+			address=address.concat(addressDo.getCity());
+					
+		}
+		if(addressDo.getCounty()!=null){
+			address=address.concat(addressDo.getCounty());
+					
+		}
+		if(addressDo.getAddress()!=null){
+			address=address.concat(addressDo.getAddress());
+		}
+		afOrder.setAddress(address);
 		afOrder.setGoodsId(goodsDo.getRid());
 		afOrder.setOpenId(goodsDo.getOpenId());
 		afOrder.setNumId(goodsDo.getNumId());

@@ -396,6 +396,10 @@ public class RiskUtil extends AbstractThird {
 	 * @return
 	 */
 	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal poundage, String time) {
+		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
+		if(!"Y".equals(userAuth.getRiskStatus())){
+			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
+		}
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
@@ -562,11 +566,12 @@ public class RiskUtil extends AbstractThird {
 	 * @return 
 	 */
 	public long payOrder(final AfBorrowDo borrow, final String orderNo, final String result) {
-		return transactionTemplate.execute(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-
-				try {
+		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
+//		return transactionTemplate.execute(new TransactionCallback<Long>() {
+//			@Override
+//			public Long doInTransaction(TransactionStatus status) {
+//
+//				try {
 					// 增加事务
 //					RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
 //					reqBo.setCode(code);
@@ -624,15 +629,16 @@ public class RiskUtil extends AbstractThird {
 					logger.info("updateOrder orderInfo = {}", orderInfo);
 					orderDao.updateOrder(orderInfo);
 					
-				} catch (Exception e) {
-					logger.info("asyPayOrder error:" + e);
-					status.setRollbackOnly();
-					throw e;
-				}
-				return 1l;
-			}
+//				} catch (Exception e) {
+//					logger.info("asyPayOrder error:" + e);
+//					status.setRollbackOnly();
+//					throw e;
+//				}
+//				return 1l;
+//			}
 
-		});
+//		});
+					return 1l;
 	}
 
 	/**

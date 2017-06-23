@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -163,7 +164,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfAgentOrderService afAgentOrderService;
 	@Resource
 	AfResourceService afResourceService;
-
+	@Resource
+	AfOrderService afOrderService;
 	@Resource
 	RiskUtil riskUtil;
 	
@@ -718,24 +720,22 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderInfo.setRiskOrderNo(riskOrderNo);
 						orderDao.updateOrder(orderInfo);
 						
-						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, 
-								BigDecimal.ZERO, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
-						// 新增借款信息
-						afBorrowDao.addBorrow(borrow);
+						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), 
+								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
 						
-						try {
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-							String borrowTime = sdf.format(borrow.getGmtCreate());
-							
-							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
-							userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
-							if (verybo.isSuccess()) {
-								riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo.getResult());
-							}
-							
-						} catch (Exception e) {
-							e.printStackTrace();
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String borrowTime = sdf.format(borrow.getGmtCreate());
+						
+						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
+						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
+						logger.info("verybo=" + verybo);
+						if (verybo.isSuccess()) {
+							// 新增借款信息
+							afBorrowDao.addBorrow(borrow);
+							riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo.getResult());
+							logger.info("pay result is true");
 						}
+							
 
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
@@ -779,6 +779,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			}
 		});
 	}
+
+	public JSONObject borrowRateWithOrder(Long orderId,Integer nper){
+		AfOrderDo order = afOrderService.getOrderById(orderId);
+
+		JSONObject borrowRate =null;
+		if(StringUtils.equals(order.getOrderType(), OrderType.AGENTBUY.getCode())&&order.getNper()>0){
+			AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
+			borrowRate = JSON.parseObject(agentOrderDo.getBorrowRate()) ;
+		}
+		if(borrowRate==null){
+			borrowRate = afResourceService.borrowRateWithResourceOld(nper);
+		}
+		return borrowRate;
+	}
+	
 	/**
 	 * 
 	 * @param name 分期名称
@@ -794,8 +809,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param interestFreeJson 分期规则
 	 * @return
 	 */
-	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper,
-			BigDecimal perAmount, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson) {
+	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson) {
 		
 		Integer freeNper = 0;
 		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
@@ -807,6 +821,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		}
+		//拿到日利率快照Bo
+		BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(borrowRate);
+		//每期本金
+		BigDecimal principleAmount = amount.divide(new BigDecimal(nper), 2, RoundingMode.DOWN);
+		//每期利息
+		BigDecimal interestAmount = amount.multiply(borrowRateBo.getRate()).divide(Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
+		//每期手续费
+		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(amount, nper, borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
+
+		BigDecimal perAmount = BigDecimalUtil.add(principleAmount,interestAmount,poundageAmount);
+		
 		Date currDate = new Date();
 		AfBorrowDo borrow = new AfBorrowDo();
 		borrow.setGmtCreate(currDate);
@@ -1107,7 +1132,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return 0;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.error("dealBrandOrderRefund error:",e);
+					logger.error("dealBrandOrderRefund error = {}",e);
 					return 0;
 				}
 			}
