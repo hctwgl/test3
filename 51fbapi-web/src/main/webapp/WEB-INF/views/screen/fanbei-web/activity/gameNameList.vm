@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+    <meta charset="UTF-8">
+    <title>获奖名单公布</title>
+</head>
+<body>
+    <img src="$commonUrl/gameNameList1.jpg">
+    <img src="$commonUrl/gameNameList2.jpg">
+    <img src="$commonUrl/gameNameList3.jpg">
+    <img src="$commonUrl/gameNameList4.jpg">
+    <img src="$commonUrl/gameNameList5.jpg">
+    <img src="$commonUrl/gameNameList6.jpg">
+    <img src="$commonUrl/gameNameList7.jpg">
+    <img src="$commonUrl/gameNameList8.jpg">
+</body>
+</html>
