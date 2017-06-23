@@ -121,7 +121,7 @@ new Vue({
       false,
     ],
     bannerlist: 'https://fs.51fanbei.com/h5/app/activity/06/oppo12_31.png',
-    url: 'http://testapp.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"110403"}',
+    url: 'http://testapp.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"120751"}',
     content: '¥2999 月供 ¥302起'
   },
   methods:{
@@ -166,7 +166,7 @@ new Vue({
       this.bannerlist="https://fs.51fanbei.com/h5/app/activity/06/oppo12_3"+e+".png";
 
       // 手机的privateGoodsId
-      let privateGoodsId=[110403,110404,110405,110406];
+      let privateGoodsId=[120751,120790,120791,120792];
       let notifyUrl = "http://testapp.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO";
       this.url=notifyUrl+'&params={"privateGoodsId":"'+privateGoodsId[e-1]+'"}';  // a链接的url
 
