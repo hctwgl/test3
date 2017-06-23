@@ -75,9 +75,11 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		} else {
 			data.put("riskStatus", authDo.getRiskStatus());
 		}
+		
 		data.put("faceStatus", authDo.getFacesStatus());
 		
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		
 		data.put("idNumber", Base64.encodeString(accountDo.getIdNumber()));
 		data.put("realName", accountDo.getRealName());
 		
@@ -97,6 +99,12 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
 			}
 
+			BigDecimal  usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
+			BigDecimal accountBorrow = calculateMaxAmount(usableAmount);
+			if(accountBorrow.compareTo(new BigDecimal(amountStr))<0){
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
+			}
+			
 			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
 			boolean isCanBorrowCash = afBorrowCashService.isCanBorrowCash(userId);
@@ -129,5 +137,16 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		resp.setResponseData(data);
 		return resp;
 	}
-
+	/**
+	 * 计算最多能计算多少额度 150取100 250.37 取200
+	 * @param usableAmount
+	 * @return
+	 */
+	private BigDecimal calculateMaxAmount(BigDecimal usableAmount) {
+		//可使用额度
+		Integer amount = usableAmount.intValue();
+		
+		return new BigDecimal(amount/100*100);
+		
+	}
 }

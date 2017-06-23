@@ -95,6 +95,9 @@
 			<if test="riskStatus != null">
     			,risk_status=#{riskStatus}
 			</if>
+			<if test="gmtRisk != null">
+    			,gmt_risk=#{gmtRisk}
+			</if>
 			
 		WHERE user_id = #{userId}
 	</update>

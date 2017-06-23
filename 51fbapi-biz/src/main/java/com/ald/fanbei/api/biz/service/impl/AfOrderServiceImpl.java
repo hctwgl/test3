@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
@@ -43,7 +45,9 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
+import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -62,6 +66,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
@@ -101,7 +106,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Resource
 	private AfOrderDao orderDao;
-	
+	@Resource
+	private AfBorrowDao afBorrowDao;
 	@Resource
 	private KaixinUtil kaixinUtil;
 	
@@ -711,14 +717,20 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 						orderInfo.setRiskOrderNo(riskOrderNo);
 						orderDao.updateOrder(orderInfo);
-
+						
+						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, 
+								BigDecimal.ZERO, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+						// 新增借款信息
+						afBorrowDao.addBorrow(borrow);
+						
 						try {
-							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), "40", card.getCardNumber(), appName, ipAddress, 
-									StringUtil.EMPTY, StringUtil.EMPTY, riskOrderNo);
-
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							String borrowTime = sdf.format(borrow.getGmtCreate());
+							
+							RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
+							userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime);
 							if (verybo.isSuccess()) {
-							 riskUtil.payOrder(verybo.getOrderNo(), verybo.getResult());
-								
+								riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo.getResult());
 							}
 							
 						} catch (Exception e) {
@@ -744,7 +756,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						// 银行卡支付 代收
 						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
 								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
-								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), isSelf? Constants.DEFAULT_SELFSUPPORT_SHOP:Constants.DEFAULT_BRAND_SHOP,
+								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
 								isSelf?"自营商品订单支付":"品牌订单支付", "02",  isSelf?OrderType.SELFSUPPORT.getCode():OrderType.BOLUOME.getCode());
 						if (!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
@@ -767,7 +779,56 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			}
 		});
 	}
-
+	/**
+	 * 
+	 * @param name 分期名称
+	 * @param type 分期类型
+	 * @param userId 用户id
+	 * @param amount 分期金额
+	 * @param nper 分期期数
+	 * @param perAmount 每期金额
+	 * @param status 状态
+	 * @param orderId 订单id
+	 * @param orderNo 订单编号
+	 * @param borrowRate 借款利率等参数
+	 * @param interestFreeJson 分期规则
+	 * @return
+	 */
+	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper,
+			BigDecimal perAmount, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson) {
+		
+		Integer freeNper = 0;
+		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
+		if (CollectionUtils.isNotEmpty(interestFreeList)) {
+			for (InterestFreeJsonBo bo : interestFreeList) {
+				if (bo.getNper().equals(nper)) {
+					freeNper = bo.getFreeNper();
+					break;
+				}
+			}
+		}
+		Date currDate = new Date();
+		AfBorrowDo borrow = new AfBorrowDo();
+		borrow.setGmtCreate(currDate);
+		borrow.setAmount(amount);
+		borrow.setType(type.getCode());
+		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
+		borrow.setStatus(status);// 默认转账成功
+		borrow.setName(name);
+		borrow.setUserId(userId);
+		borrow.setNper(nper);
+		borrow.setNperAmount(perAmount);
+		borrow.setCardNumber(StringUtils.EMPTY);
+		borrow.setCardName("代付");
+		borrow.setRemark(name);
+		borrow.setOrderId(orderId);
+		borrow.setOrderNo(orderNo);
+		borrow.setBorrowRate(borrowRate);
+		borrow.setCalculateMethod(BorrowCalculateMethod.DENG_BEN_DENG_XI.getCode());
+		borrow.setFreeNper(freeNper);
+		return borrow;
+	}
+	
 	@Override
 	public Map<String, Object> payBrandOrderOld(final Long payId, final Long orderId, final Long userId,
 			final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount,
@@ -1106,9 +1167,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return afUserOrderDao.addUserOrder(order);
 	}
 
-
 	@Override
-	public AfOrderDo getThirdOrderInfoBythirdOrderNo( String thirdOrderNo) {
-		return orderDao.getThirdOrderInfoBythirdOrderNo(thirdOrderNo);
+	public AfOrderDo getThirdOrderInfoBythirdOrderNo(String thirdOrderNo) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

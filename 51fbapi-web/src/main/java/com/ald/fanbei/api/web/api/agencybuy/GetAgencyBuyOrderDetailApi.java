@@ -137,7 +137,11 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String agentMessage = afAgentOrderDo.getAgentMessage();
 		String gmtAgentBuy = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtAgentBuy());
 		// 订单关闭理由
-		String closedReason = afAgentOrderDo.getClosedReason(); 
+		String closedReason =afAgentOrderDo.getClosedDetail();
+		if(StringUtils.isBlank(closedReason)){
+			closedReason = afAgentOrderDo.getClosedReason(); 
+		}
+				
 		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtClosed()); // 用户取消订单时间
 		// 订单取消理由
 		String cancelReason = afAgentOrderDo.getCancelReason();
@@ -175,8 +179,6 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 				 if(StringUtils.equals("ACTIVITY", couponDo.getType())){
 					 agentOrderDetailVo.setCouponName("会场劵");
 				 }
-				
-				 
 				 agentOrderDetailVo.setCouponAmount(couponDo.getAmount());
 				 
 				 // 如果有优惠劵,那么实际支付金额就是填写的订单金额

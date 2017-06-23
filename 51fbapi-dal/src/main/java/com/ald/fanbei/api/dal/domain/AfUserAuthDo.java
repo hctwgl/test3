@@ -42,6 +42,7 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String locationStatus;
 	private String locationAddress;
 	private String riskStatus; //强风控审核状态【A:未审核，N:未通过审核，P: 审核中，Y:已通过审核】
+	private Date gmtRisk;
 	
 	public Long getRid() {
 		return rid;
@@ -217,6 +218,12 @@ public class AfUserAuthDo extends AbstractSerial {
 	}
 	public void setRiskStatus(String riskStatus) {
 		this.riskStatus = riskStatus;
+	}
+	public Date getGmtRisk() {
+		return gmtRisk;
+	}
+	public void setGmtRisk(Date gmtRisk) {
+		this.gmtRisk = gmtRisk;
 	}
 	
 }

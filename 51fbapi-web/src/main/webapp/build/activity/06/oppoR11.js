@@ -4,16 +4,19 @@ if(getInfo().userName){
     userName=getInfo().userName;
 };
 
+// 获取网站的域名
+let domainName = domainName();
+
 // app调用web的方法
 function alaShareData(){
     // 分享内容
     let dataObj = {
       'appLogin': 'N', // 是否需要登录，Y需要，N不需要
       'type': 'share', // 此页面的类型
-      'shareAppTitle': 'OPPO R11预约返利300元',  // 分享的title
-      'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300元！有，且只在51返呗 GO>>>',  // 分享的内容
+      'shareAppTitle': 'OPPO R11预约返利300福利',  // 分享的title
+      'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300福利！有，且只在51返呗 GO>>>',  // 分享的内容
       'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-      'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
+      'shareAppUrl': domainName+'/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
       'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
       'sharePage': 'oppoR11' // 分享的页面
     };
@@ -21,14 +24,15 @@ function alaShareData(){
     return dataStr;
 };
 
-let oppoR11Share = getUrl("oppoR11Share");
-if (oppoR11Share == "oppoR11Share") {
-  $(".goRegister").removeClass("hide");
-  $(".banner").addClass("hide");
-
-  $(".mobileList").addClass("hide");
-  $(".mobileListImg").removeClass("hide");
-}
+// 锁定分享后的页面
+// let oppoR11Share = getUrl("oppoR11Share");
+// if (oppoR11Share == "oppoR11Share") {
+//   $(".goRegister").removeClass("hide");
+//   $(".banner").addClass("hide");
+//
+//   $(".mobileList").addClass("hide");
+//   $(".mobileListImg").removeClass("hide");
+// }
 
 // 初始化页面
 window.onload=function(){
@@ -150,11 +154,45 @@ function addMobileListModel(goodsList,notifyUrl) {
 
   let html = '';
   for (let i = 0; i < goodsList.length; i++) {
-    let privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
+    // let privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
     let goodsIcon = goodsList[i].goodsIcon;
     let goodsName = goodsList[i].goodsName;
     let saleAmount = goodsList[i].saleAmount;
     let remark = goodsList[i].remark;
+    let numId = goodsList[i].numId;
+
+    // 判断android和ios的版本 给出相应的链接
+    let privateGoodsId='';
+    if (getBlatFrom()==2){
+      var ver=getInfo().appVersion;
+      if( ver&&ver < 365 ){
+        privateGoodsId = notifyUrl + '&params={"goodsId":"'+goodsList[i].goodsId+'"}';
+      }else {
+        privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
+      }
+    }else{
+      privateGoodsId = notifyUrl + '&params={"privateGoodsId":"'+goodsList[i].goodsId+'"}';
+    }
+
+    // 锁定分享后的页面
+    let oppoR11Share = getUrl("oppoR11Share");
+    if (oppoR11Share == "oppoR11Share") {
+      privateGoodsId = "javascript:void(0);";
+      $('#mobileList').on('click','li',function() {
+        // $('.popupBox').removeClass('hide');
+        // $('.popup').removeClass('hide');
+
+        layer.open({
+          content: '享12期免息500元福利<br/>有且只在51返呗',
+          btn: ['确认', '取消'],
+          yes: function(){
+            // location.reload();
+            // layer.close(index);
+            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+          }
+        });
+      });
+    };
 
     html+=`<li>
             <a href='${privateGoodsId}'>
@@ -174,15 +212,15 @@ function addMobileListModel(goodsList,notifyUrl) {
 let page = 0;
 window.onload=function(){
   page++;
-  console.log(page);
   $.ajax({
     url: "/app/activity/getSelfSupportGoodsInfo",
     type: "POST",
     dataType: "JSON",
     data: {
-        pageNo: page
+      pageNo: page
     },
     success: function(returnData){
+      console.log(returnData);
       $("#mobileList").append(addMobileListModel(returnData.data.goodsList,returnData.data.notifyUrl));
     },
     error: function(){

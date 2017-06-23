@@ -133,7 +133,7 @@ public class AppH5EncoreController extends BaseController {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 					}
 					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							activityGoodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
+							activityGoodsDto.getSpecialPrice(), resource.getValue1(), resource.getValue2());
 					
 					if(nperList!= null){
 						activityGoodsInfo.put("goodsType", "1");
