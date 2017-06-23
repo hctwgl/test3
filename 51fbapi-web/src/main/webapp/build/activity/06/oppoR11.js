@@ -205,6 +205,20 @@ function addMobileListModel(goodsList,notifyUrl) {
     // 锁定分享后的页面
     let oppoR11Share = getUrl("oppoR11Share");
     if (oppoR11Share == "oppoR11Share") {
+      // 立即购买按钮
+      $("#oppoR11Btn").attr('href', 'javascript:void(0);');
+      $("#oppoR11Btn").click(function() {
+        layer.open({
+          content: '享12期免息500元福利<br/>有且只在51返呗',
+          btn: ['确认', '取消'],
+          yes: function(){
+            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+          }
+        });
+      });
+
+
+      // 列表的弹窗
       privateGoodsId = "javascript:void(0);";
       $('#mobileList').on('click','li',function() {
         layer.open({
@@ -250,31 +264,3 @@ window.onload=function(){
     }
   });
 }
-
-
-// 首页
-// $(".oppoR11List li").click(function(event) {
-//   var i = $(this).index();
-//   console.log(i);
-//   // $(this).addClass('item1');
-//   // $(this).eq(0).addClass('item1');
-//   // $(this).eq(1).addClass('item2');
-//   // $(this).eq(2).addClass('item3');
-//   // $(this).eq(3).addClass('item4');
-//
-//   $(this).attr('isState','1').siblings('li').attr('isState', '0');
-//   let isState = $(this).attr('isState');
-//   // console.log(isState);
-//   if (isState==1 && i==0) {
-//     $(this).eq(0).addClass('item1');
-//
-//     // $(this).eq(2).addClass('item3');
-//     // $(this).eq(3).addClass('item4');
-//   }
-//   if(isState==1 && i==1){
-//     console.log(55555);
-//     // $(this).eq(0).removeClass('item1');
-//     $(this).eq(this).attr('class','item2');
-//   }
-//   // $(this).siblings('li').attr('isState', '0');
-// });
