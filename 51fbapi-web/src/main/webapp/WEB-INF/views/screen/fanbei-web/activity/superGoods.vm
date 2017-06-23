@@ -10,6 +10,7 @@
 <div id="superGoods">
     <div class="banner">
         <img :src='content.bannerUrl'>
+        <div style="height:.04rem;background: white;width:100%"></div>
         <p class="slogan">秒的就是你 惊喜不惊喜</p>
         <p class="countTime"></p>
         <span class="bg"></span>
@@ -20,12 +21,12 @@
             <div class="productCountTime" :class="'productCountTime'+index"></div>
             <div class="productImg"><img :src='item.goodsIcon'></div>
             <div class="productRight">
-                <p class="productDes" style="-webkit-box-orient: vertical;">{{item.goodsName}}</p>
-                <p class="buyPrice">￥{{item.specialAmount}}</p>
-                <p class="originalPrice">￥{{item.saleAmount}}</p>
+                <p class="productDes" style="-webkit-box-orient: vertical;">{{txtFix(item.goodsName)}}</p>
+                <p class="buyPrice">￥{{(item.specialAmount).toFixed(1)}}</p>
+                <p class="originalPrice">￥{{(item.saleAmount).toFixed(1)}}</p>
                 <p class="fan" v-if="item.goodsType==='1'">返利￥{{item.rebateAmount}}</p>
                 <div class="monthPrice" v-if="item.goodsType==='1'">月供￥<span v-if="item.nperMap.isFree==1">{{item.nperMap.freeAmount}}</span><span v-else>{{item.nperMap.amount}}</span>×<span>{{item.nperMap.nper}}</span>
-                <span class="isFree"></span>
+                    <span class="isFree"></span>
                 </div>
                 <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>               
                 <p class="buyNow">抢购</p>
@@ -45,7 +46,8 @@
                 <p class="fan01">返利￥{{item.rebateAmount}}</p>
                 <div class="monthPrice01" v-if="item.goodsType==='1'"><span class="month">月供</span><span v-if="item.nperMap.isFree==1">￥{{item.nperMap.freeAmount}}</span><span v-else>￥{{item.nperMap.amount}}</span>×<span>{{item.nperMap.nper}}</span>
                 <span class="isFree"></span>
-                </div>               
+                </div>
+                <div v-else style="width: 2.95rem;height: .48rem;"></div>
                 <p class="buyNow buyNow01">马上抢</p>
             </div>      
         </li> 

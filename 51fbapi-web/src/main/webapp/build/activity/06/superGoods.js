@@ -94,6 +94,29 @@ let vm=new Vue({
             } else {
                window.location.href=self.content.notifyUrl+'&params={"goodsId":"'+id+'"}'
             }
+        },
+        txtFix(i){
+            function get_length(s){
+                var char_length = 0;
+                for (var i = 0; i < s.length; i++){
+                    var son_char = s.charAt(i);
+                    encodeURI(son_char).length > 2 ? char_length += 1 : char_length += 0.5;
+                }
+                return char_length;
+            }
+            function cut_str(str, len){
+                var char_length = 0;
+                for (var i = 0; i < str.length; i++){
+                    var son_str = str.charAt(i);
+                    encodeURI(son_str).length > 2 ? char_length += 1 : char_length += 0.5;
+                    if (char_length >= len){
+                        var sub_len = char_length == len ? i+1 : i;
+                        return str.substr(0, sub_len);
+                        break;
+                    }
+                }
+            }
+            return cut_str(i, 20)
         }
         
     }
