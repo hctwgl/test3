@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017062003")
+	#set($version="2017062306")
 	#set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
 	<title>51返呗注册</title>
 	<link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
@@ -86,7 +86,7 @@
 			<div class="channelRegisterPopup10">
 				<div class="registerMask hide"></div>
 				<div class="registerSuss hide">
-					<img id="downloadApp12" src="$commonUrl/channel$!{style}_04.png">
+					<img id="downloadApp" src="$commonUrl/channel$!{style}_04.png">
 				</div>
 			</div>
 		#elseif( $!{style} == 7 || $!{style} == 8 )
@@ -126,7 +126,9 @@
 			#end
 		">
   		版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-88193918<br>
-			#if( $!{style} == 10 )
+			#if( $!{style}==7 )
+				浙ICP备16001312号-3
+			#elseif( $!{style}==10 )
 				浙ICP备15027741号-3
 			#end
   	</div>
