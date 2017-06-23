@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfActivityGoodsDao">
+
+  
+	<sql id="queryTotalFields">
+	  id rid,is_delete,gmt_create,gmt_modified,special_price,start_time,valid_start,valid_end,goods_count,limit_count,
+	  goods_id,type
+	</sql>
+	
+	<sql id="activityGoodsSqlField">
+		ag.special_price,ag.start_time,ag.valid_start,ag.valid_end,ag.goods_count,ag.limit_count
+	</sql>
+	
+	<sql id="goodsSqlField">
+		g.id rid,g.gmt_create,g.gmt_modified,g.creator,g.modifier,g.name,g.goods_icon,g.goods_url,g.thumbnail_icon,g.open_id,g.num_id,g.price_amount,g.sale_amount,g.primary_category_id,
+		g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,g.commission_amount,g.commission_rate,g.tags,g.interest_tags
+	</sql>
+	
+	<select id="listActivityGoodsByActivityId" resultType="AfActivityGoodsDto" parameterType="java.lang.Long">
+		SELECT 
+		<include refid="activityGoodsSqlField"></include>,
+		<include refid="goodsSqlField"></include>
+		FROM
+			af_activity_goods ag 
+		INNER JOIN 
+			af_goods g 
+		ON 
+			ag.goods_id = g.id
+		WHERE 
+		ag.goods_id 
+		IN (
+			SELECT 
+				goods_id 
+			FROM 
+				af_activity_model 
+			WHERE 
+				activity_id = #{activityId} 
+			AND 
+				goods_type = 1 
+			AND 
+				is_delete = 0
+		) 
+		AND  ag.is_delete = 0 
+		AND g.is_delete = 0
+		AND now() > ag.valid_start
+		AND ag.valid_end > now()
+	</select>
+	
+	<select id="listRecommendGoodsByActivityId" resultType="AfGoodsDo" parameterType="java.lang.Long">
+		SELECT 
+		<include refid="goodsSqlField"></include>
+		FROM
+			af_goods g ,af_activity_model m
+		WHERE
+			m.activity_id = #{activityId}
+		AND
+			m.goods_id = g.id	
+		AND
+			m.goods_type = 2
+		AND 
+			g.is_delete = 0
+		AND
+			m.is_delete = 0
+	</select>
+	
+	<select id="getActivityGoodsByGoodsId" resultType="AfActivityGoodsDo">
+		SELECT
+			<include refid="queryTotalFields"/>
+		FROM
+		 	af_activity_goods
+		WHERE
+			is_delete = 0
+		AND
+			goods_id = #{goodsId}
+	
+	
+	</select>
+</mapper>

@@ -16,6 +16,8 @@ public enum AfResourceSecType {
 		H5_URL("H5_URL", "跳转普通H5"),
 		GOODS_ID("GOODS_ID", "跳转商品详情"),
 		creditScoreAmount("CREDIT_SCORE_AMOUNT","征信等级"),
+		NAVIGATION_MOBILE_CHARGE("NAVIGATION_MOBILE_CHARGE","手机充值"),
+		NAVIGATION_BOLUOME("NAVIGATION_BOLUOME", "菠萝蜜手机充值"),
 	
 
 	//活动相关

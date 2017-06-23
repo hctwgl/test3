@@ -5,35 +5,87 @@
 * @Last Modified time: 2017-05-11 14:21:03
 */
 
+let goodsList=eval('(' + $('#goodsList').val() + ')'); //初始商品数据
+let notifyUrl = $("#notifyUrl").val();//商品跳转原生的链接
 
+let finished = 0;//防止多次请求ajax
 
-var typeCurrentNum = $("#typeCurrent").val(); // 获取当前的type类型
-var modelIdNum = getUrl("modelId"); // 获取modelId参数
+//填充商品数据
+let addModel = function addModel(goodsList,dom,state) {
+    let con='',html = '';
+    if(goodsList.length>0){
+        // 下拉的时候加载
+        for (let j = 0; j < goodsList.length; j++) {
+            // 售价
+            var saleAmount = toDecimal2(goodsList[j].saleAmount);
+            var amountAmountSplitArr = saleAmount.split(".");
+            var amountAmountPriceInteger = amountAmountSplitArr[0];
+            var amountAmountPriceDecimal = amountAmountSplitArr[1];
+            let con1=`<p class="fs_28 fsc_red" style="padding-top: .3rem;padding-bottom: .25rem">
+                    <span>￥${amountAmountPriceInteger}</span><span class="fs_22">.${amountAmountPriceDecimal}</span>`;
+            if(goodsList[j].goodsType==1){
+                let amount=` <span>￥${goodsList[j].nperMap.amount}</span><span class="fs_22">×${goodsList[j].nperMap.nper}期</span>`;
+                if(goodsList[j].nperMap.isFree==1){
+                    amount=` <span>￥${goodsList[j].nperMap.freeAmount}</span><span class="fs_22">×${goodsList[j].nperMap.nper}期</span>`;
+                }
+                con=`<div class="goodsListModel_mainContent_rebate_wrap">
+                    <div class="goodsListModel_mainContent_rebate clearfix">
+                        <span class="goodsListModel_rebate fl fs_22 bgc_orange fsc_f tac">月供</span>
+                        <p class="fl fs_24 fsc_orange">
+                            ${amount}                       
+                        </p>
+                    </div>
+                </div>`;
+                con1=` <p class="fs_26 fsc_red">
+                       <span>￥${amountAmountPriceInteger}</span><span class="fs_20">.${amountAmountPriceDecimal}</span>`
+            }
+            let goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[j].goodsId+'"}';
+            html += `<li class="goodsListModel_item">
+                    <a href='${goodInfoUrl}'>
+                        <img src=" ${goodsList[j].goodsIcon}" class="mainContent_img">
+                        <div class="goodsListModel_mainContent_wrap">
+                            <p class="fs_26 fsc_1">${goodsList[j].name}</p>
+                            ${con1}          
+                                <span class="fs_24"><i class="ba">返</i>￥${goodsList[j].rebateAmount}</span>
+                            </p>
+                        </div>
+                        ${con}
+                    </a>
+                </li>`;
+        }
+        finished=0;
+    }else{
+        html =  `<div class="nullPrompt">
+            <img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/images/040101wuyouhui.png">
+            <span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span>
+            </div>`;
+    }
+    if(state==1){
+        dom.append(html);
+    }else{
+        dom.html(html);
+    }
+};
+addModel(goodsList,$('#initGoods'));
 // 获取categoryList数组
-var category = $("#categoryList").val();
-var categoryObj = eval('(' + category + ')');
 
-// 获取ip地址
-var notifyUrl = $("#notifyUrl").val();
+// 获取页面尺寸
 var windowW = $(window).outerWidth(),
-    liWArr = [], // 保存每一个li的索引(index),自身宽度(width),距离ul左侧的距离(offsetLeft)
-    ulW = 0, // ul初始宽度  通过各个li宽度之和 计算出来
-    finished = 0,
     page = 1; // 默认页数从1开始
 
 //导航滑动
-function Swipe(ele) {
-    this.container = ele;
-    this.element = this.container.children[0];
-    this.distance=0;
-    this.length = this.element.children.length;
-    this.speed = 200;
-    //执行对象中的handleEvent函数
-    this.element.addEventListener("touchstart", this);
-    this.element.addEventListener("touchmove", this);
-}
-Swipe.prototype = {
-    handleEvent: function(a) {
+class Swipe{
+    constructor(ele){
+        this.container = ele;
+        this.element = this.container.children[0];
+        this.distance=0;
+        this.length = this.element.children.length;
+        this.speed = 200;
+        //执行对象中的handleEvent函数
+        this.element.addEventListener("touchstart", this);
+        this.element.addEventListener("touchmove", this);
+    }
+    handleEvent(a) {
         switch (a.type) {
             case "touchstart":
                 this.onTouchStart(a);
@@ -42,8 +94,8 @@ Swipe.prototype = {
                 this.onTouchMove(a);
                 break;
         }
-    },
-    onTouchStart: function(a) {
+    }
+    onTouchStart(a) {
         this.isScrolling = false;
         this.deltaX = 0;
         this.start = {
@@ -53,8 +105,8 @@ Swipe.prototype = {
         this.element.style.MozTransitionDuration = this.element.style.webkitTransitionDuration = this.speed + "ms";
         this.startDistance=this.distance;
         a.stopPropagation()
-    },
-    onTouchMove: function(a) {
+    }
+    onTouchMove(a) {
         if (a.touches.length > 1 || a.scale && a.scale !== 1) {
             return
         }
@@ -71,46 +123,8 @@ Swipe.prototype = {
             a.stopPropagation()
         }
     }
-};
-
+}
 new Swipe(document.getElementById('navWrap'));
-
-var addModel = function addModel(goodsList) {
-    var html = '';
-    for (var j = 0; j < goodsList.length; j++) {
-        // 售价
-        var saleAmount = toDecimal2(goodsList[j].saleAmount);
-        var amountAmountSplitArr = saleAmount.split(".");
-        var amountAmountPriceInteger = amountAmountSplitArr[0];
-        var amountAmountPriceDecimal = amountAmountSplitArr[1];
-        // 返利
-        var rebateAmount = toDecimal2(goodsList[j].rebateAmount);
-        var rebateAmountSplitArr = rebateAmount.split(".");
-        var rebateAmountPriceInteger = rebateAmountSplitArr[0];
-        var rebateAmountPriceDecimal = rebateAmountSplitArr[1];
-        var goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[j].goodsId+'"}';
-        html += '<li class="goodsListModel_item">'
-                    +'<a href='+goodInfoUrl+'>'
-                        +'<img src=" '+goodsList[j].goodsIcon+' " class="mainContent_img">'
-                        +'<div class="goodsListModel_mainContent_wrap">'
-                            +'<p class="fs_26 fsc_1">'+goodsList[j].name+'</p>'
-                            +'<p class="fs_26 fsc_red">'
-                                +'<span>￥'+amountAmountPriceInteger+'</span><span class="fs_24">.'+amountAmountPriceDecimal+'</span>'
-                            +'</p>'
-                        +'</div>'
-                        +'<div class="goodsListModel_mainContent_rebate_wrap">'
-                            +'<div class="goodsListModel_mainContent_rebate clearfix">'
-                                +'<span class="goodsListModel_rebate fl fs_24 bgc_orange fsc_f tac">返</span>'
-                                +'<p class="fl fs_24 fsc_orange">'
-                                    +'<span>￥'+rebateAmountPriceInteger+'</span><span class="fs_22">.'+rebateAmountPriceDecimal+'</span>'
-                                +'</p>'
-                            +'</div>'
-                        +'</div>'
-                    +'</a>'
-                +'</li>';
-    }
-    return html;
-};
 
 // 导航tab切换
 $(function(){
@@ -119,8 +133,11 @@ $(function(){
     //         $(".nav li").eq(swiper.realIndex).click()
     //     }
     // });
-    $(".nav li").each(function(index){
-        var thisLiW = $(this).outerWidth();
+    let ulW = 0, // ul初始宽度  通过各个li宽度之和 计算出来
+        liWArr = []; // 保存每一个li的索引(index),自身宽度(width),距离ul左侧的距离(offsetLeft)
+
+        $(".nav li").each(function(index){
+        let thisLiW = $(this).outerWidth();
         liWArr.push({
             index: index,
             width: thisLiW,
@@ -133,6 +150,8 @@ $(function(){
     }else{
         $(".nav").css("width", ulW+5+"px");
     }
+    let typeCurrentNum = $("#typeCurrent").val(); // 获取当前的type类型
+    let modelIdNum = getUrl("modelId"); // 获取modelId参数
 
     // 点击导航事件
     $(".nav li").on('click',function(e){
@@ -140,6 +159,7 @@ $(function(){
         var i = $(this).index();
         $(this).find("span").addClass("current");
         $(this).siblings().find("span").removeClass("current");
+        let categoryObj = eval('(' + $("#categoryList").val() + ')');
         typeCurrentNum =  categoryObj[i].type;
         var ulOffsetLeft = $(".nav").offset().left;
         var thisLiOffsetUl = liWArr[i].offsetLeft;
@@ -167,25 +187,11 @@ $(function(){
                     pageNo: 1,
                     type: typeCurrentNum
                 },
-                success: function(returnData){
-                    if (returnData.success) {
-                        var html = '';
-                        var goodsList = returnData.data["goodsList"];
-                        if(goodsList.length>0){
-                            html=addModel(goodsList);
-                            // 下拉的时候加载
-                            finished=0;
-
-                        }else{
-                            html =  '<div class="nullPrompt">'
-                                        +'<img src="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/h5/common/images/040101wuyouhui.png">'
-                                        +'<span style="margin-bottom: 2rem" class="fsc_6">暂无商品</span>'
-                                    +'</div>';
-                        }
-                        isUl.html(html);
-                        // $('.main_wrap').css('height',isUl.height()+'px');
+                success: function(data){
+                    if (data.success) {
+                        addModel(data.data["goodsList"],isUl);
                     } else {
-                        requestMsg(returnData.msg);
+                        requestMsg(data.msg);
                     }
                 },
                 error: function(){
@@ -194,6 +200,7 @@ $(function(){
             });
         }
     });
+    //滚动加载更多商品
     $(window).on('scroll',function () {
         if(finished==0){
             var scrollTop = $(this).scrollTop();
@@ -218,7 +225,7 @@ $(function(){
                                 $("div[data-type="+typeCurrentNum+"]").append(txt);
                             }else{
                                 var goodsList = returnData.data["goodsList"];
-                                $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent").append(addModel(goodsList));
+                                addModel(goodsList,$("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent"),1);
                                 finished=0
                             }
                         } else {
@@ -232,7 +239,6 @@ $(function(){
                 });
             }
         }
-
     });
 
 });

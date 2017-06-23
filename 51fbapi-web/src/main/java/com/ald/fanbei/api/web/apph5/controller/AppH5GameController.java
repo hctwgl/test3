@@ -288,12 +288,14 @@ public class AppH5GameController  extends BaseController{
 				awardUser.setUserName(item.getUserName().substring(0,3)+"****"+item.getUserName().substring(7));
 				AfCouponDo couponDo = afCouponService.getCouponById(item.getLotteryResult());
 				String msg = "";
-				if(CouponType.CASH.getCode().equals(couponDo.getType())){
-					msg = StringUtil.appendStrs("获得",couponDo.getAmount(),"元现金");
-				}else if(CouponType.FULLVOUCHER.getCode().equals(couponDo.getType())){
-					msg = StringUtil.appendStrs("获得满",couponDo.getLimitAmount(),"减",couponDo.getAmount(),"元的满减券");
-				}else if(CouponType.REPAYMENT.getCode().equals(couponDo.getType())){
-					msg = StringUtil.appendStrs("获得满",couponDo.getLimitAmount(),"减",couponDo.getAmount(),"元的还款券");
+				if(couponDo != null) {
+					if(CouponType.CASH.getCode().equals(couponDo.getType())){
+						msg = StringUtil.appendStrs("获得",couponDo.getAmount(),"元现金");
+					}else if(CouponType.FULLVOUCHER.getCode().equals(couponDo.getType())){
+						msg = StringUtil.appendStrs("获得满",couponDo.getLimitAmount(),"减",couponDo.getAmount(),"元的满减券");
+					}else if(CouponType.REPAYMENT.getCode().equals(couponDo.getType())){
+						msg = StringUtil.appendStrs("获得满",couponDo.getLimitAmount(),"减",couponDo.getAmount(),"元的还款券");
+					}
 				}
 				awardUser.setMsg(msg);
 				awardList.add(awardUser);

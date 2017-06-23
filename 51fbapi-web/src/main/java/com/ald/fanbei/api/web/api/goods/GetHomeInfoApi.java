@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -20,11 +22,14 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+
 
 /**
  * @author suweili
@@ -35,11 +40,17 @@ public class GetHomeInfoApi implements ApiHandle {
 
 	@Resource
 	AfResourceService afResourceService;
+	
+	@Resource
+	AfActivityGoodsService afActivityGoodsService;
+	
+	private FanbeiContext contextApp;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		
+		contextApp = context;
 		Map<String, Object> data = new HashMap<String, Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
@@ -58,12 +69,19 @@ public class GetHomeInfoApi implements ApiHandle {
 		}
 		List<Object> one2OneList = getObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
+		
 		List<Object> one2ManyList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
+		
 		List<Object> one2TwoList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
+		
+		List<Object> one2TwoList2 = getOne2ManyObjectWithResourceDolist(
+				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo2.getCode()));
+		
 		List<Object> homeActivityList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
+		
 		List<Object> navigationList = getObjectWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 
@@ -74,6 +92,8 @@ public class GetHomeInfoApi implements ApiHandle {
 		data.put("one2TwoList", one2TwoList);
 		data.put("one2OneList", one2OneList);
 		data.put("navigationList", navigationList);
+		data.put("one2TwoList2",one2TwoList2);
+		
 		
 
 		resp.setResponseData(data);
@@ -82,12 +102,17 @@ public class GetHomeInfoApi implements ApiHandle {
 
 	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
 		List<Object> bannerList = new ArrayList<Object>();
+		
 		for (AfResourceDo afResourceDo : bannerResclist) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
 			data.put("titleName", afResourceDo.getName());
 			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
 				data.put("type", afResourceDo.getSecType());
+				// 对首页充值的版本兼容修改
+				if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
+					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
+				}
 			}else{
 				data.put("type", afResourceDo.getValue1());
 			}
@@ -122,6 +147,22 @@ public class GetHomeInfoApi implements ApiHandle {
 			data.put("type", afResourceDo.getValue1());
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
+			// 1+2 模式新增时间字段的判断处理
+			if(AfResourceType.HomeOneToTwo2.getCode().equals(afResourceDo.getType())){
+				if("GOODS_ID".equals(afResourceDo.getValue1())){
+					Long goodsId = NumberUtil.objToLong(afResourceDo.getValue2());
+					AfActivityGoodsDo activityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsId(goodsId);
+					if(activityGoodsDo != null){
+						
+						data.put("startTime", activityGoodsDo.getStartTime());
+						data.put("validStart", activityGoodsDo.getValidStart());
+						data.put("validEnd", activityGoodsDo.getValidEnd());
+						data.put("currentTime", new Date());	
+					}	
+				}
+				
+			}
+			
 			if (StringUtil.equals(afResourceDo.getSecType(), AfResourceSecType.ResourceValue1MainImage.getCode())) {
 				oneData = data;
 			} else {
@@ -149,5 +190,6 @@ public class GetHomeInfoApi implements ApiHandle {
 		manyData.clear();
 		oneData.clear();
 	}
+	
 
 }

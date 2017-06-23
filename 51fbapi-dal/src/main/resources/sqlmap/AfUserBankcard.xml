@@ -5,7 +5,7 @@
 		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status
 	</sql>
 	<sql id="queryBankFields">
-		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.mobile,u.bank_code,u.card_number,u.is_main,b.bank_name,u.status,b.bank_icon
+		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.mobile,u.bank_code,u.card_number,u.is_main,b.bank_name,u.status,b.bank_icon,b.is_valid
 	</sql>
 	<sql id="queryWithFields">
 		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.bank_name,b.status,
@@ -13,7 +13,7 @@
 	</sql>
 	<sql id="queryWithBankFields">
 		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.status,
-		c.bank_icon,c.bank_name
+		c.bank_icon,c.bank_name,c.is_valid
 	</sql>
 	
 	<insert id="addUserBankcard" parameterType="AfUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
@@ -92,7 +92,7 @@
 		AND 
 			u.user_id = #{userId} 
 		ORDER BY
-			u.is_main 
+			u.is_main,b.is_valid
 		DESC
 	</select>
 	

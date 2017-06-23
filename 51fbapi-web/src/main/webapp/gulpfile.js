@@ -15,7 +15,9 @@ var gulp = require('gulp'),
     plumber = require("gulp-plumber"),//出错打印日志不终止进程
     sourcemaps = require('gulp-sourcemaps'),//source-map
     sequence = require('gulp-sequence'),//顺序执行任务
-    gulpsync = require('gulp-sync')(gulp);
+    gulpsync = require('gulp-sync')(gulp),
+    browserSync = require('browser-sync'),//浏览器自动刷新
+    reload = browserSync.reload;
 
 // clean 清空 dist 目录
 gulp.task('clean', function(cb) {
@@ -46,6 +48,7 @@ gulp.task('less', function() {
         .pipe(cleancss())
        // .pipe(rev())
         .pipe(gulp.dest('dist'))
+        .pipe(reload({ stream:true }))
        // .pipe(rev.manifest())
      //   .pipe(gulp.dest('dist/_srcmap/_rev/css'));
 });
@@ -61,8 +64,14 @@ gulp.task('less', function() {
 gulp.task('build',function (cb) {
     sequence('clean',['less','es6'])(cb)
 });
-
+// 浏览器重载
+gulp.task('js-watch', ['es6'], browserSync.reload);
 // 监控 build 目录的改动自动编译
 gulp.task('default',['build'],function () {
-    return gulp.watch('build/**/*',gulpsync.sync(['es6','less']));
+    browserSync({
+        open:false,
+        proxy:'localhost:80'
+    });
+     gulp.watch('build/**/*.js',gulpsync.sync(['js-watch']));
+     gulp.watch(['build/**/*.less','build/**/*.css'],gulpsync.sync(['less']));
 });

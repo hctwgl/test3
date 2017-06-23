@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1121,6 +1122,14 @@ public class DateUtil {
 			e.printStackTrace();
 		}
     	
+    }
+    
+    public static Date stringToDate(String date) throws ParseException{
+    	if(StringUtils.isBlank(date)){
+    		return null;
+    	}
+    	SimpleDateFormat fromat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	return fromat.parse(date);
     }
 
 }

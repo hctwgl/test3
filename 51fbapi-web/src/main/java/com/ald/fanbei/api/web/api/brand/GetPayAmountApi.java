@@ -47,7 +47,7 @@ public class GetPayAmountApi implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo,
                                      FanbeiContext context, HttpServletRequest request) {
-        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+    	ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
 
         Map<String, Object> params = requestDataVo.getParams();
@@ -84,7 +84,7 @@ public class GetPayAmountApi implements ApiHandle {
         if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
             interestFreeArray = JSON.parseArray(interestFreeJson);
         }
-
+        
         List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
                 amount, resource.getValue1(), resource.getValue2());
 
