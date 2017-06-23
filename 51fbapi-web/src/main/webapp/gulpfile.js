@@ -64,13 +64,14 @@ gulp.task('less', function() {
 gulp.task('build',function (cb) {
     sequence('clean',['less','es6'])(cb)
 });
-
+// 浏览器重载
+gulp.task('js-watch', ['es6'], browserSync.reload);
 // 监控 build 目录的改动自动编译
 gulp.task('default',['build'],function () {
     browserSync({
         open:false,
         proxy:'localhost:80'
     });
-     gulp.watch('build/**/*.js',gulpsync.sync(['es6']));
+     gulp.watch('build/**/*.js',gulpsync.sync(['js-watch']));
      gulp.watch(['build/**/*.less','build/**/*.css'],gulpsync.sync(['less']));
 });
