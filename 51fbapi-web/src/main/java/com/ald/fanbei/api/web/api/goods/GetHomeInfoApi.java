@@ -55,18 +55,18 @@ public class GetHomeInfoApi implements ApiHandle {
 		//正式环境和预发布环境区分
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
+					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()),context);
 		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
 			bannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()));
+					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()), context);
 		}
 		List<Object> bannerSecList = new ArrayList<Object>();
 		if(context.getAppVersion() >= 363){
 			bannerSecList = getObjectWithResourceDolist(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
+				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()), context);
 		}
 		List<Object> one2OneList = getObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
+				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()), context);
 		
 		List<Object> one2ManyList = getOne2ManyObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
@@ -81,7 +81,7 @@ public class GetHomeInfoApi implements ApiHandle {
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
 		
 		List<Object> navigationList = getObjectWithResourceDolist(
-				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
+				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()), context);
 
 		data.put("bannerList", bannerList);
 		data.put("bannerSecList", bannerSecList);
@@ -92,19 +92,25 @@ public class GetHomeInfoApi implements ApiHandle {
 		data.put("navigationList", navigationList);
 		data.put("one2TwoList2",one2TwoList2);
 		
+		
 
 		resp.setResponseData(data);
 		return resp;
 	}
 
-	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
+	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist, FanbeiContext context ) {
 		List<Object> bannerList = new ArrayList<Object>();
+		
 		for (AfResourceDo afResourceDo : bannerResclist) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
 			data.put("titleName", afResourceDo.getName());
 			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
 				data.put("type", afResourceDo.getSecType());
+				// 对首页充值的版本兼容修改
+				if (context.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME)){
+					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
+				}
 			}else{
 				data.put("type", afResourceDo.getValue1());
 			}
@@ -139,7 +145,7 @@ public class GetHomeInfoApi implements ApiHandle {
 			data.put("type", afResourceDo.getValue1());
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
-			// 1+2 模式新增时间字段
+			// 1+2 模式新增时间字段的判断处理
 			if(AfResourceType.HomeOneToTwo2.getCode().equals(afResourceDo.getType())){
 				if("GOODS_ID".equals(afResourceDo.getValue1())){
 					Long goodsId = NumberUtil.objToLong(afResourceDo.getValue2());
@@ -154,6 +160,7 @@ public class GetHomeInfoApi implements ApiHandle {
 				}
 				
 			}
+			
 			if (StringUtil.equals(afResourceDo.getSecType(), AfResourceSecType.ResourceValue1MainImage.getCode())) {
 				oneData = data;
 			} else {
