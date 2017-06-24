@@ -52,7 +52,7 @@ public class AuthMobileApi implements ApiHandle {
 //		+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES";
 		
 		String reqUrl = respBo.getUrl().trim()+"&showTitleBar=NO&quitOnLoginDone=YES&carrier_phone="+StringUtil.null2Str(currUserAccount.getUserName())
-				+"&carrier_idcard="+StringUtil.null2Str(currUserAccount.getIdNumber())+"&carrier_name="+StringUtil.null2Str(currUserAccount.getRealName())+"&backUrl="+apiHost+"/fanbei-web/app/mobileOperator";
+				+"&carrier_idcard="+StringUtil.null2Str(currUserAccount.getIdNumber())+"&carrier_name="+StringUtil.UrlEncoder(currUserAccount.getRealName())+"&backUrl="+StringUtil.UrlEncoder(apiHost+"/fanbei-web/app/mobileOperator");
 		
 		resp.addResponseData("url",reqUrl.trim());
 		return resp;
