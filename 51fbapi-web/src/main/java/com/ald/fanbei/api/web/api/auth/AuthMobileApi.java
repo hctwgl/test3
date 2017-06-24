@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
-import com.ald.fanbei.api.biz.bo.risk.MoXieReqBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -18,7 +17,6 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
 
 /**
  *@类现描述：手机运营商认证
@@ -48,13 +46,14 @@ public class AuthMobileApi implements ApiHandle {
 		
 		//获取基本地址成功时，本服务拼接用户信息串（可选，主要为了减少用户信息填写步骤操作），请求三方H5
 		AfUserAccountDo currUserAccount = afUserAccountService.getUserAccountByUserId(userId);
-		MoXieReqBo moXieReqBo = new MoXieReqBo(StringUtil.null2Str(currUserAccount.getUserName()), StringUtil.null2Str(currUserAccount.getIdNumber()), StringUtil.null2Str(currUserAccount.getRealName()));
-		String reqExtraInfoJsonStr = JSON.toJSONString(moXieReqBo);
+//		MoXieReqBo moXieReqBo = new MoXieReqBo(StringUtil.null2Str(currUserAccount.getUserName()), StringUtil.null2Str(currUserAccount.getIdNumber()), StringUtil.null2Str(currUserAccount.getRealName()));
+//		String reqExtraInfoJsonStr = JSON.toJSONString(moXieReqBo);
 //		String reqUrl = respBo.getUrl()+"&loginParams="+reqExtraInfoJsonStr+"&backUrl="
 //		+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES";
 		
 		String reqUrl = respBo.getUrl()+"&backUrl="
-				+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES";
+				+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES&carrier_phone="+StringUtil.null2Str(currUserAccount.getUserName())
+				+"&carrier_idcard="+StringUtil.null2Str(currUserAccount.getIdNumber())+"&carrier_name="+StringUtil.null2Str(currUserAccount.getRealName());
 		
 		resp.addResponseData("url",reqUrl);
 		return resp;
