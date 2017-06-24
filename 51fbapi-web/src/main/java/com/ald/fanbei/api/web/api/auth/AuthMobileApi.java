@@ -9,8 +9,10 @@ import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
 import com.ald.fanbei.api.biz.bo.risk.MoXieReqBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -36,6 +38,7 @@ public class AuthMobileApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
+		String apiHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
 		
 		//调风控
 		RiskOperatorRespBo respBo = riskUtil.operator(context.getUserId()+"", context.getUserName());
@@ -47,7 +50,8 @@ public class AuthMobileApi implements ApiHandle {
 		AfUserAccountDo currUserAccount = afUserAccountService.getUserAccountByUserId(userId);
 		MoXieReqBo moXieReqBo = new MoXieReqBo(StringUtil.null2Str(currUserAccount.getUserName()), StringUtil.null2Str(currUserAccount.getIdNumber()), StringUtil.null2Str(currUserAccount.getRealName()));
 		String reqExtraInfoJsonStr = JSON.toJSONString(moXieReqBo);
-		String reqUrl = respBo.getUrl()+"&loginParams="+reqExtraInfoJsonStr;
+		String reqUrl = respBo.getUrl()+"&loginParams="+reqExtraInfoJsonStr+"&backUrl="
+		+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES";
 		
 		resp.addResponseData("url",reqUrl);
 		return resp;
