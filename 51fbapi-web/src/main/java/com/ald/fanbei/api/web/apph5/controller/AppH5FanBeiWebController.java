@@ -389,9 +389,9 @@ public class AppH5FanBeiWebController extends BaseController {
 	 * @return
 	 * @throws IOException
 	 */
-	@ResponseBody
 	@RequestMapping(value = "/app/mobileOperator", method = RequestMethod.GET)
 	public void mobileOperator(HttpServletRequest request, ModelMap model) throws IOException {
+		Boolean processResult = true;
 		try {
 			String appInfo = request.getParameter("_appInfo");
 			String mxcode = request.getParameter("mxcode");
@@ -405,9 +405,16 @@ public class AppH5FanBeiWebController extends BaseController {
 				authDo.setGmtMobile(new Date());
 				authDo.setMobileStatus(MobileStatus.WAIT.getCode());
 				afUserAuthService.updateUserAuth(authDo);
+			}else{
+				processResult = false;
 			}
+			model.put("processResult", processResult);
 		} catch (Exception e) {
 			logger.error("mobileOperator , e = {}", e.getMessage());
+			processResult = false;
+			model.put("processResult", processResult);
+		}finally{
+			doMaidianLog(request, processResult+"");
 		}
 
 	}
