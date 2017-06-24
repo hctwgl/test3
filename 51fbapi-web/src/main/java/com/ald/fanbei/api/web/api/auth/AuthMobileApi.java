@@ -50,8 +50,11 @@ public class AuthMobileApi implements ApiHandle {
 		AfUserAccountDo currUserAccount = afUserAccountService.getUserAccountByUserId(userId);
 		MoXieReqBo moXieReqBo = new MoXieReqBo(StringUtil.null2Str(currUserAccount.getUserName()), StringUtil.null2Str(currUserAccount.getIdNumber()), StringUtil.null2Str(currUserAccount.getRealName()));
 		String reqExtraInfoJsonStr = JSON.toJSONString(moXieReqBo);
-		String reqUrl = respBo.getUrl()+"&loginParams="+reqExtraInfoJsonStr+"&backUrl="
-		+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES";
+//		String reqUrl = respBo.getUrl()+"&loginParams="+reqExtraInfoJsonStr+"&backUrl="
+//		+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES";
+		
+		String reqUrl = respBo.getUrl()+"&backUrl="
+				+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES";
 		
 		resp.addResponseData("url",reqUrl);
 		return resp;
