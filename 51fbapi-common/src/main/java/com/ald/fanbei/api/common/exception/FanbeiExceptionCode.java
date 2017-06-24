@@ -175,6 +175,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AUTH_ALL_AUTH_ERROR("AUTH_ALL_AUTH_ERROR",1910,"all auth  error","信用认证未完成"),
     API_CALL_NUM_OVERFLOW("API_CALL_NUM_OVERFLOW",1911,"api call num overflow","您的认证次数已达上限，请明日再试！"),
 
+    API_RISK_MOBILE_VERIFYING("API_RISK_MOBILE_VERIFYING",1912,"api risk mobile verifying","认证中，请勿重复发起！"),
+    API_RISK_MOBILE_VERIFY_PASSED("API_RISK_MOBILE_VERIFY_PASSED",1913,"api risk mobile verify passed","认证已通过，请勿重复发起！"),
+    
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","借钱金额或者时间有误"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),

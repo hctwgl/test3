@@ -7,13 +7,16 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -31,12 +34,25 @@ public class AuthMobileApi implements ApiHandle {
 	RiskUtil riskUtil;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAuthService afUserAuthService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String apiHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+		
+		AfUserAuthDo currAfUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		if(MobileStatus.WAIT.getCode().equals(currAfUserAuthDo.getMobileStatus())){
+			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.API_RISK_MOBILE_VERIFYING);
+			return resp;
+		}
+		
+		if(MobileStatus.YES.getCode().equals(currAfUserAuthDo.getMobileStatus())){
+			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.API_RISK_MOBILE_VERIFY_PASSED);
+			return resp;
+		}
 		
 		//调风控
 		RiskOperatorRespBo respBo = riskUtil.operator(context.getUserId()+"", context.getUserName());
