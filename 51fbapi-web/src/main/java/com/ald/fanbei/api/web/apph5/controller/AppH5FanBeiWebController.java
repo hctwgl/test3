@@ -393,9 +393,9 @@ public class AppH5FanBeiWebController extends BaseController {
 	public void mobileOperator(HttpServletRequest request, ModelMap model) throws IOException {
 		Boolean processResult = true;
 		try {
-			String appInfo = request.getParameter("_appInfo");
+			//String appInfo = request.getParameter("_appInfo");
 			String mxcode = request.getParameter("mxcode");
-			String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+			String userName =  StringUtil.null2Str(request.getParameter("account"));
 			AfUserDo  afUserDo = afUserDao.getUserByUserName(userName);
 			
 			if(MoXieResCodeType.ONE.getCode().equals(mxcode) || MoXieResCodeType.TWO.getCode().equals(mxcode) ){
