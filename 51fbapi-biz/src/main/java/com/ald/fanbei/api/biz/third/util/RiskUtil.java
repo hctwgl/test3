@@ -807,10 +807,13 @@ public class RiskUtil extends AbstractThird {
 			AfUserAuthDo auth = new AfUserAuthDo();
 			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 			auth.setGmtMobile(new Date());
+			AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
 			if (StringUtil.equals("10", result)) {
 				auth.setMobileStatus(YesNoStatus.YES.getCode());
+				jpushService.mobileRiskSuccess(accountInfo.getUserName());
 			} else {
 				auth.setMobileStatus(YesNoStatus.NO.getCode());
+				jpushService.mobileRiskFail(accountInfo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}

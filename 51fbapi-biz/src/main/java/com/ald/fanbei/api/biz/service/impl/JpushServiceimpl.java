@@ -336,11 +336,45 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "214");
+			extras.put(PUSH_JUMP_TYPE, "215");
 			extras.put(DATA, "");
 			jpushUtil.pushMessageByAlias("强风控认证失败",msgContext,extras,new String[]{userName});
 		} catch (Exception e) {
 			logger.info("strongRiskFail error", e);
+		}
+	}
+
+	@Override
+	public void mobileRiskSuccess(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("mobileRiskSuccess,pid=", pid));
+			String msgContext = "恭喜，您已通过运营商认证！马上去下一步认证吧。您离获得信用额度越来越近了哦。";
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "216");
+			extras.put(DATA, "");
+			jpushUtil.pushMessageByAlias("运营商认证成功",msgContext,extras,new String[]{userName});
+		} catch (Exception e) {
+			logger.info("mobileRiskSuccess error", e);
+		}
+	}
+
+	@Override
+	public void mobileRiskFail(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("mobileRiskFail,pid=", pid));
+			String msgContext = "您好，您本次认证未通过！您可要核对身份信息后,重新尝试认证。";
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "217");
+			extras.put(DATA, "");
+			jpushUtil.pushMessageByAlias("运营商认证失败",msgContext,extras,new String[]{userName});
+		} catch (Exception e) {
+			logger.info("mobileRiskFail error", e);
 		}
 	}
 }

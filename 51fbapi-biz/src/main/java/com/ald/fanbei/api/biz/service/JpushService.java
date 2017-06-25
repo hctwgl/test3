@@ -134,4 +134,14 @@ public interface JpushService {
 	 */
 	public void strongRiskFail(String userName);
 	
+	
+	/**
+	 *  运营商认证推送  
+	 */
+	public void mobileRiskSuccess(String userName);
+
+	/**
+	 *  运营商认证失败推送
+	 */
+	public void mobileRiskFail(String userName);
 }
