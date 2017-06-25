@@ -125,14 +125,23 @@ public interface JpushService {
 	public void gameShareSuccess(String userName);
 	
 	/**
-	 * 强风控认证成功后的消息推送
-	 * @param userName
+	 *  强风控通过推送
 	 */
-	public void dealAuthenticationSuccss(String userName);
+	public void strongRiskSuccess(String userName);
+
+	/**
+	 *  强风控失败推送
+	 */
+	public void strongRiskFail(String userName);
+	
 	
 	/**
-	 * 强风控认证失败后的消息推送
-	 * @param userName
+	 *  运营商认证推送  
 	 */
-	public void dealAuthenticationFail(String userName);
+	public void mobileRiskSuccess(String userName);
+
+	/**
+	 *  运营商认证失败推送
+	 */
+	public void mobileRiskFail(String userName);
 }

@@ -33,7 +33,6 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 
 	@Resource
 	private AfResourceDao afResourceDao;
-
 	private static final String PID = "pid";
 	private static final String PUSH_JUMP_TYPE = "pushJumpType";
 	private static final String DATA = "data";
@@ -45,6 +44,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("userInviteSuccess,pid=", pid, ",mobile=", mobile));
 			String msgContext = "您已成功邀请好友【{mobile}】完成注册，提醒好友完成实名认证，您即可获得现金奖励及优惠红包";
+			
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
@@ -308,39 +308,73 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 
 	}
-
+	
 	@Override
-	public void dealAuthenticationSuccss(String userName) {
+	public void strongRiskSuccess(String userName) {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
-			logger.info(StringUtil.appendStrs("repayRenewalSuccess,pid=", pid));
+			logger.info(StringUtil.appendStrs("strongRiskSuccess,pid=", pid));
 			String msgContext = "恭喜，您的信用认证已经通过审核。可以立即去分期和借钱啦~";
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "214");
+			extras.put(DATA, "");
+			jpushUtil.pushMessageByAlias("强风控通过认证",msgContext,extras,new String[]{userName});
+		} catch (Exception e) {
+			logger.info("strongRiskSuccess error", e);
+		}
+
+	}
+
+	@Override
+	public void strongRiskFail(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("strongRiskFail,pid=", pid));
+			String msgContext = "您好，您的信用认证未通过审核。";
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "215");
+			extras.put(DATA, "");
+			jpushUtil.pushMessageByAlias("强风控认证失败",msgContext,extras,new String[]{userName});
+		} catch (Exception e) {
+			logger.info("strongRiskFail error", e);
+		}
+	}
+
+	@Override
+	public void mobileRiskSuccess(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("mobileRiskSuccess,pid=", pid));
+			String msgContext = "恭喜，您已通过运营商认证！马上去下一步认证吧。您离获得信用额度越来越近了哦。";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "216");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("信用认证成功", msgContext, extras, new String[] { userName });
+			jpushUtil.pushMessageByAlias("运营商认证成功",msgContext,extras,new String[]{userName});
 		} catch (Exception e) {
-			logger.info("repayRenewalSuccess error:", e);
+			logger.info("mobileRiskSuccess error", e);
 		}
 	}
 
 	@Override
-	public void dealAuthenticationFail(String userName) {
+	public void mobileRiskFail(String userName) {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
-			logger.info(StringUtil.appendStrs("repayRenewalFail,pid=", pid));
-			String msgContext = "您好，您的信用认证未通过审核。";
+			logger.info(StringUtil.appendStrs("mobileRiskFail,pid=", pid));
+			String msgContext = "您好，您本次认证未通过！您可要核对身份信息后,重新尝试认证。";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "218");
+			extras.put(PUSH_JUMP_TYPE, "217");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("信用认证失败", msgContext, extras, new String[] { userName });
+			jpushUtil.pushMessageByAlias("运营商认证失败",msgContext,extras,new String[]{userName});
 		} catch (Exception e) {
-			logger.info("repayRenewalFail error", e);
+			logger.info("mobileRiskFail error", e);
 		}
 	}
-	
 }
