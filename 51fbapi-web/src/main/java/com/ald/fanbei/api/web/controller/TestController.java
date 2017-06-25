@@ -118,10 +118,17 @@ public class TestController {
 	 */
 	@RequestMapping(value = { "testPush" }, method = RequestMethod.GET)
 	public String testPush(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		jpushService.strongRiskSuccess("13989455620");
-		jpushService.strongRiskFail("13989455620");
-		jpushService.mobileRiskFail("13989455620");
-		jpushService.mobileRiskSuccess("13989455620");
+		String userName = request.getParameter("userName");
+//		jpushService.refundMobileError(userName, new Date());
+//		jpushService.repayRenewalSuccess(userName);
+//		jpushService.repayRenewalFail(userName);
+//		jpushService.chargeMobileError(userName, userName, new Date());
+//		jpushService.gameShareSuccess(userName);
+//		jpushService.chargeMobileSucc(userName, userName, new Date());
+		jpushService.strongRiskSuccess(userName);
+		jpushService.strongRiskFail(userName);
+		jpushService.mobileRiskFail(userName);
+		jpushService.mobileRiskSuccess(userName);
 		return "";
 	}
 	

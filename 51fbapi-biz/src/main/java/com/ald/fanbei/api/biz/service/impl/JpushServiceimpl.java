@@ -312,15 +312,15 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void strongRiskSuccess(String userName) {
 		try {
+			String msgContext = "恭喜，您的信用认证已经通过审核。可以立即去分期和借钱啦~";
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("strongRiskSuccess,pid=", pid));
-			String msgContext = "恭喜，您的信用认证已经通过审核。可以立即去分期和借钱啦~";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "214");
+			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushMessageByAlias("强风控通过认证",msgContext,extras,new String[]{userName});
+			jpushUtil.pushNotifyByAlias("强风控通过认证", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("strongRiskSuccess error", e);
 		}
@@ -330,15 +330,15 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void strongRiskFail(String userName) {
 		try {
+			String msgContext = "您好，您的信用认证未通过审核。";
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("strongRiskFail,pid=", pid));
-			String msgContext = "您好，您的信用认证未通过审核。";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "215");
+			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushMessageByAlias("强风控认证失败",msgContext,extras,new String[]{userName});
+			jpushUtil.pushNotifyByAlias("强风控认证失败", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("strongRiskFail error", e);
 		}
@@ -347,15 +347,15 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void mobileRiskSuccess(String userName) {
 		try {
+			String msgContext = "恭喜，您已通过运营商认证！马上去下一步认证吧。您离获得信用额度越来越近了哦。";
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("mobileRiskSuccess,pid=", pid));
-			String msgContext = "恭喜，您已通过运营商认证！马上去下一步认证吧。您离获得信用额度越来越近了哦。";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "216");
+			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushMessageByAlias("运营商认证成功",msgContext,extras,new String[]{userName});
+			jpushUtil.pushNotifyByAlias("运营商认证成功", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("mobileRiskSuccess error", e);
 		}
@@ -364,15 +364,16 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void mobileRiskFail(String userName) {
 		try {
+			String msgContext = "您好，您本次认证未通过！您可要核对身份信息后,重新尝试认证。";
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("mobileRiskFail,pid=", pid));
-			String msgContext = "您好，您本次认证未通过！您可要核对身份信息后,重新尝试认证。";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "217");
+			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushMessageByAlias("运营商认证失败",msgContext,extras,new String[]{userName});
+			jpushUtil.pushNotifyByAlias("运营商认证失败", msgContext, extras, new String[] { userName });
+
 		} catch (Exception e) {
 			logger.info("mobileRiskFail error", e);
 		}
