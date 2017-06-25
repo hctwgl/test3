@@ -107,6 +107,24 @@ public class TestController {
 		return returnUrl;
 	}
 
+	/**
+	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
+	 * 
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "testPush" }, method = RequestMethod.GET)
+	public String testPush(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		jpushService.strongRiskSuccess("13989455620");
+		jpushService.strongRiskFail("13989455620");
+		jpushService.mobileRiskFail("13989455620");
+		jpushService.mobileRiskSuccess("13989455620");
+		return "";
+	}
+	
 //	@RequestMapping(value = { "/test1" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 //	public String goodsRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 //		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
