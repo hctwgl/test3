@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -307,4 +308,39 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 
 	}
+
+	@Override
+	public void dealAuthenticationSuccss(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("repayRenewalSuccess,pid=", pid));
+			String msgContext = "恭喜，您的信用认证已经通过审核。可以立即去分期和借钱啦~";
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "216");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("信用认证成功", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("repayRenewalSuccess error:", e);
+		}
+	}
+
+	@Override
+	public void dealAuthenticationFail(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("repayRenewalFail,pid=", pid));
+			String msgContext = "您好，您的信用认证未通过审核。";
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "218");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("信用认证失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("repayRenewalFail error", e);
+		}
+	}
+	
 }

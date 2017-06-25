@@ -664,7 +664,8 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal au_amount = new BigDecimal(limitAmount);
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
 			String result = obj.getString("result");
-			 
+			
+			AfUserDo afUserDo = afUserService.getUserById(consumerNo);
 			if (StringUtils.equals("10", result)) {
 				AfUserAuthDo authDo = new AfUserAuthDo();
       			authDo.setUserId(consumerNo);
@@ -681,6 +682,8 @@ public class RiskUtil extends AbstractThird {
       				accountDo.setAuAmount(au_amount);
       				afUserAccountService.updateUserAccount(accountDo);
       			}
+      			
+      			jpushService.dealAuthenticationSuccss(afUserDo.getUserName());
 			} else if (StringUtils.equals("30", result)) {
 				AfUserAuthDo authDo = new AfUserAuthDo();
       			authDo.setUserId(consumerNo);
@@ -697,6 +700,8 @@ public class RiskUtil extends AbstractThird {
       				accountDo.setAuAmount(BigDecimal.ZERO);
       				afUserAccountService.updateUserAccount(accountDo);
       			}
+      			
+      			jpushService.dealAuthenticationFail(afUserDo.getUserName());
 			}
 			
 		}
