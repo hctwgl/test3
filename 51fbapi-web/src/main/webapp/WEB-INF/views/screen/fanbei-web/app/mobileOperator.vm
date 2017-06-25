@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        #set($commonUrl="https://fs.51fanbei.com/h5/app/images/sys")
+		<title>提交成功</title>
+	    <style type="text/css">
+	    	.mobileOperator{
+                margin-top: 2.4rem;
+	    	}
+            .mobileOperator span{
+                width: 1.56rem;
+                height: 1.56rem;
+                background-image: url($commonUrl/chengg.png);
+            }
+            .mobileOperator p{
+                margin-top: 0.4rem;
+            }
+            .mobileOperator_btn{
+                width: 7.0rem;
+                height: 0.8rem;
+                line-height: 0.8rem;
+                margin: 2.0rem auto 0;
+            }
+	    </style>
+    </head>
+    <body>
+    <input type="hidden"  id="processResult" value="$!{processResult}" name="processResult"/>
+    	<div class="tac mobileOperator">
+            <span class="bgs_c"></span>
+            <p id="warnMsgInfo">运营商认证申请已提交<br>请耐心等待审核结果</p>
+            <div class="tac bdr_8 bgc_orange mobileOperator_btn"><a class="fsc_f" href="/app/sys/authBack">返回信用认证</a></div>
+        </div>
+    </body>
+    
+    <script>
+		window.onload = function(){
+			var processResult = $("#processResult").val();
+			if(processResult == null || processResult == "false"){
+				document.getElementById('warnMsgInfo').innerHTML = "运营商认证失败<br>请返回重试";
+			}
+		}
+	</script>
+</html>

@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
@@ -36,6 +37,8 @@ import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.enums.MoXieResCodeType;
+import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -49,6 +52,7 @@ import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
@@ -90,7 +94,9 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfResourceService afResourceService;
 	@Resource
 	AfShopService afShopService;
-
+	@Resource
+	private AfUserAuthService afUserAuthService;
+	
 	/**
 	 * 首页弹窗页面
 	 * @param request
@@ -373,6 +379,46 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
+	
+
+	
+	/**
+	 * 获取菠萝觅跳转地址
+	 * @param request
+	 * @param model
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/app/mobileOperator", method = RequestMethod.GET)
+	public void mobileOperator(HttpServletRequest request, ModelMap model) throws IOException {
+		Boolean processResult = true;
+		try {
+			//String appInfo = request.getParameter("_appInfo");
+			String mxcode = request.getParameter("mxcode");
+			String userName =  StringUtil.null2Str(request.getParameter("account"));
+			AfUserDo  afUserDo = afUserDao.getUserByUserName(userName);
+			
+			if(MoXieResCodeType.ONE.getCode().equals(mxcode) || MoXieResCodeType.TWO.getCode().equals(mxcode) ){
+				//用户认证处理中
+				AfUserAuthDo authDo = new AfUserAuthDo();
+				authDo.setUserId(afUserDo.getRid());
+				authDo.setGmtMobile(new Date());
+				authDo.setMobileStatus(MobileStatus.WAIT.getCode());
+				afUserAuthService.updateUserAuth(authDo);
+			}else{
+				processResult = false;
+			}
+			model.put("processResult", processResult);
+		} catch (Exception e) {
+			logger.error("mobileOperator , e = {}", e.getMessage());
+			processResult = false;
+			model.put("processResult", processResult);
+		}finally{
+			doMaidianLog(request, processResult+"");
+		}
+
+	}
+	
 
 	/*
 	 * (non-Javadoc)

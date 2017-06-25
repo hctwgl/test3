@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.common.util;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -163,4 +165,38 @@ public class StringUtil extends StringUtils {
     public static String null2Str(Object str) {
         return (str != null) ? str.toString() : "";
     }
+    /** 
+	* @Title: UrlEncoder 
+	* @Description: 字符串编码
+	* @param sStr
+	* @return  
+	*/
+	public final static String UrlEncoder(String sStr){
+		String sReturnCode = "";
+		try{
+			sReturnCode = URLEncoder.encode(null2Str(sStr), "utf-8");
+		}catch (Exception ex){
+		}
+		return sReturnCode;
+	}
+	
+	/** 
+	* @Title: UrlDecoder 
+	* @Description: 字符串解码 
+	* @param sStr
+	* @return  
+	*/
+	public static String UrlDecoder(String sStr){
+        if(isEmpty(sStr)){
+        	return "";
+        }else{
+        	String sReturnCode = sStr;
+        	try {
+                sReturnCode = URLDecoder.decode(sStr, "utf-8");
+            } catch (Exception e) {
+            }
+            return sReturnCode;
+        }
+    }
+    
 }
