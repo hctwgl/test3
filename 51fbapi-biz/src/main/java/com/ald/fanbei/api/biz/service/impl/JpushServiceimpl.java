@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -32,7 +33,6 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 
 	@Resource
 	private AfResourceDao afResourceDao;
-
 	private static final String PID = "pid";
 	private static final String PUSH_JUMP_TYPE = "pushJumpType";
 	private static final String DATA = "data";
@@ -44,6 +44,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("userInviteSuccess,pid=", pid, ",mobile=", mobile));
 			String msgContext = "您已成功邀请好友【{mobile}】完成注册，提醒好友完成实名认证，您即可获得现金奖励及优惠红包";
+			
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
@@ -306,5 +307,40 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			logger.info("gameShareSuccess error", e);
 		}
 
+	}
+	
+	@Override
+	public void strongRiskSuccess(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("strongRiskSuccess,pid=", pid));
+			String msgContext = "恭喜，您的信用认证已经通过审核。可以立即去分期和借钱啦~";
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "214");
+			extras.put(DATA, "");
+			jpushUtil.pushMessageByAlias("强风控通过认证",msgContext,extras,new String[]{userName});
+		} catch (Exception e) {
+			logger.info("strongRiskSuccess error", e);
+		}
+
+	}
+
+	@Override
+	public void strongRiskFail(String userName) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("strongRiskFail,pid=", pid));
+			String msgContext = "您好，您的信用认证未通过审核。";
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "214");
+			extras.put(DATA, "");
+			jpushUtil.pushMessageByAlias("强风控认证失败",msgContext,extras,new String[]{userName});
+		} catch (Exception e) {
+			logger.info("strongRiskFail error", e);
+		}
 	}
 }

@@ -123,5 +123,15 @@ public interface JpushService {
 	 * @param userName
 	 */
 	public void gameShareSuccess(String userName);
+	
+	/**
+	 *  强风控通过推送
+	 */
+	public void strongRiskSuccess(String userName);
 
+	/**
+	 *  强风控失败推送
+	 */
+	public void strongRiskFail(String userName);
+	
 }
