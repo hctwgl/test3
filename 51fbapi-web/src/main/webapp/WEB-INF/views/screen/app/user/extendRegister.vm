@@ -20,7 +20,7 @@
 	        	<input type="password" class="fs_28 register_password" id="register_password" placeholder="请设置密码(6-18位字母或数字)" name="words" maxlength="18">
 	        </li>
         </ul>
-        <button class="fs_32 fsc_1 register_submitBtn btnC_gray">完成注册</button>
+        <button class="fsc_1 register_submitBtn btnC_gray">完成注册</button>
       	<div class="register_checkbox clearfix">
       		<input type="checkbox" class="input_check" id="input_check">
         	<label for="input_check" class="bgs_c register_checkbox_bg"></label>
