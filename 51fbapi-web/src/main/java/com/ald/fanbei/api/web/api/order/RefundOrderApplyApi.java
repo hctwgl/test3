@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -63,7 +64,10 @@ public class RefundOrderApplyApi implements ApiHandle{
 		if(null == orderInfo){
 			throw new FanbeiException(FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
 		}
-		
+		if(!StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
+			throw new FanbeiException(FanbeiExceptionCode.ORDER_REFUND_TYPE_ERROR);
+
+		}
 		//退单处理，如果不存在退单项，则新增退单项，如果存在，且手机号有改动，则更新退单中的联系人手机号
 		AfOrderRefundDo afOrderRefundDo = afOrderRefundService.getOrderRefundByOrderId(orderInfo.getRid());
 		if(afOrderRefundDo==null){
