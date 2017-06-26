@@ -86,7 +86,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		// 判断是否绑定主卡
 		data.put("isBind", authDo.getBankcardStatus());
 		Boolean isPromote = true;
-		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
+//		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
+		if (!StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
 			isPromote = false;
 		}
 		data.put("isPromote", isPromote ? YesNoStatus.YES.getCode() : YesNoStatus.NO.getCode());

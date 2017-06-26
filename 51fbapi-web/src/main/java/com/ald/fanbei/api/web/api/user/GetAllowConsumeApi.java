@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +14,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -46,6 +49,12 @@ public class GetAllowConsumeApi implements ApiHandle {
 			throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
 		}
 		
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(context.getUserId());
+		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
+		if (StringUtil.equals(autDo.getRiskStatus(), RiskStatus.YES.getCode()) && usableAmount.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
+		}
+		
 		resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId(), context.getAppVersion()));
 		resp.addResponseData("bindCardStatus", autDo.getBankcardStatus());
 		resp.addResponseData("realNameStatus", autDo.getRealnameStatus());
@@ -56,7 +65,6 @@ public class GetAllowConsumeApi implements ApiHandle {
 		}
 		resp.addResponseData("faceStatus", autDo.getFacesStatus());
 
-		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(context.getUserId());
 		resp.addResponseData("idNumber", Base64.encodeString(accountDo.getIdNumber()));
 		resp.addResponseData("realName", accountDo.getRealName());
 
