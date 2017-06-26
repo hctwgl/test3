@@ -61,6 +61,8 @@
 			s.goods_id = g.id
 		WHERE
 			s.is_delete=0
+		AND
+			g.is_delete=0
 		LIMIT 10
 	</select>
 	
@@ -76,7 +78,9 @@
 		INNER JOIN 
 			af_goods g	
 		ON
-		tmp.goods_id = g.id
+			tmp.goods_id = g.id
+		WHERE
+			g.is_delete=0
 	</select>
 	
 	<update id="deleteSubjectGoods" parameterType="java.lang.Long" >
