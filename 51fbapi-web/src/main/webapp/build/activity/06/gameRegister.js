@@ -76,7 +76,8 @@ $(function(){
     			type: "POST",
     			dataType: "JSON",
     			data: {
-    				mobile: phone
+    				mobile: phone,
+    				token: token
     			},
     			success: function(returnData){
     				if (returnData.success) {
