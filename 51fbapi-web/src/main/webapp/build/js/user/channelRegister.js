@@ -26,9 +26,9 @@ function formatDateTime() {
 var _fmOpt;
  (function() {
     _fmOpt = {
-         partner: 'alading',
-         appName: 'alading_web',
-         token: token
+     partner: 'alading',
+     appName: 'alading_web',
+     token: token
      };
      var cimg = new Image(1,1);
      cimg.onload = function() {
@@ -40,6 +40,35 @@ var _fmOpt;
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
  	// alert(json.msg);
  })();
+
+// 检测流量
+(function (root) {
+  root._tt_config = true;
+  var ta = document.createElement('script');
+  ta.type = 'text/javascript';
+  ta.async = true;
+  ta.src = document.location.protocol+'//'+'s3.pstatp.com/bytecom/resource/track_log/src/toutiao-track-log.js';
+  ta.onerror = function () {
+    var request = new XMLHttpRequest();
+    var web_url = window.encodeURIComponent(window.location.href);
+    var js_url = ta.src;
+
+    if ( style==7 ) {
+      var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url+'&convert_id=62421367574';
+    } else {
+      var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url;
+    }
+    request.open('GET', url, true);
+    request.send(null);
+  }
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(ta, s);
+})(window);
+
+
+
+
+
 
 // 判断手机号、接收验证码
 $(function(){
@@ -121,7 +150,7 @@ $(function(){
               } else if ( style==10 ) {
                 _taq.push({convert_id:"61747053456", event_type:"form"})  // oppo导流id
               } else {
-                _taq.push({convert_id:"59212981134", event_type:"form"})
+                _taq.push({convert_id:"59212981134", event_type:"form"})  // 其他统计
               }
 
 							$.ajax({ // 设置登录密码
