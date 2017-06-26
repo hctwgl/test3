@@ -672,15 +672,15 @@ public class RiskUtil extends AbstractThird {
       			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
-      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
-                                                否则把用户的额度设置成分控返回的额度*/
-      			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-      			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-      				AfUserAccountDo accountDo = new AfUserAccountDo();
-      				accountDo.setUserId(consumerNo);
-      				accountDo.setAuAmount(au_amount);
-      				afUserAccountService.updateUserAccount(accountDo);
-      			}
+      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(consumerNo);
+					accountDo.setAuAmount(au_amount);
+					afUserAccountService.updateUserAccount(accountDo);
+				}
       			jpushService.strongRiskSuccess(userAccountDo.getUserName());
 			} else if (StringUtils.equals("30", result)) {
 				AfUserAuthDo authDo = new AfUserAuthDo();
@@ -689,7 +689,7 @@ public class RiskUtil extends AbstractThird {
       			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
-      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
+      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
                                                 否则把用户的额度设置成分控返回的额度*/
       			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
       			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
@@ -697,6 +697,11 @@ public class RiskUtil extends AbstractThird {
       				accountDo.setUserId(consumerNo);
       				accountDo.setAuAmount(BigDecimal.ZERO);
       				afUserAccountService.updateUserAccount(accountDo);
+      			} else {
+      				AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(consumerNo);
+					accountDo.setAuAmount(userAccountDo.getUsedAmount());
+					afUserAccountService.updateUserAccount(accountDo);
       			}
       			jpushService.strongRiskFail(userAccountDo.getUserName());
 			}
