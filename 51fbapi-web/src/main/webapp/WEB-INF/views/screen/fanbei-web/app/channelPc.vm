@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    #set($version="2017062701")
+    #set($version="2017062702")
     <meta charset="utf-8">
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelPc.css?version=$version">
@@ -9,9 +9,7 @@
   <body>
     <div class="main">
       <div class="mask hide"></div>
-      <!-- <div class="mainPhone "> -->
       <img class="downloadQRcode hide" src="https://fs.51fanbei.com/h5/common/images/downloadQRcode.png">
-      <!-- </div> -->
       <div class="inner">
           <ul class="mainContent">
             <li>

@@ -141,12 +141,12 @@ $(function(){
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
 						if ( $("#register_codeBtn").attr("isState") == 1 ) {
               // 检测访问量
-              if ( style==7 ) {
-                _taq.push({convert_id:"62421367574", event_type:"form"})
+              if ( style==14 ) {
+                _taq.push({convert_id:"62421367574", event_type:"form"});
               } else if ( style==10 ) {
-                _taq.push({convert_id:"61747053456", event_type:"form"})  // oppo导流id
+                _taq.push({convert_id:"61747053456", event_type:"form"});  // oppo导流id
               } else {
-                _taq.push({convert_id:"59212981134", event_type:"form"})  // 其他统计
+                _taq.push({convert_id:"59212981134", event_type:"form"});  // 其他统计
               }
 
 							$.ajax({ // 设置登录密码

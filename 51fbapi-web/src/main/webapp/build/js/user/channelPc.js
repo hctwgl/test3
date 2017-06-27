@@ -151,9 +151,10 @@ $(function(){
                     // window.location.href = returnData.url;
                     requestMsg("恭喜您，注册成功，赶紧下载51返呗App来体验吧");
                     setTimeout(function(){
+                      document.body.scrollTop=0;
                       $(".mask").removeClass('hide');
                       $(".downloadQRcode").removeClass('hide');
-                    }, 1000);
+                    }, 2000);
                   } else {
                     requestMsg(returnData.msg);
                   }
