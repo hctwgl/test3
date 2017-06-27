@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.bo.risk;
 
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.common.enums.ContactRelationType;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -28,7 +29,7 @@ public class RiskLinkMan extends RiskRegisterStrongReqBo {
 		setEvent(event);
 		
 		JSONObject linkManInfo = new JSONObject();
-		linkManInfo.put("name", afUserAuthDo.getContactorName());
+		linkManInfo.put("name", StringUtil.filterEmoji(afUserAuthDo.getContactorName()));
 		ContactRelationType contactRelationType = ContactRelationType.findRoleTypeByName(afUserAuthDo.getContactorType());
 		if (contactRelationType == null) {
 			linkManInfo.put("relation", ContactRelationType.others.getCode());
