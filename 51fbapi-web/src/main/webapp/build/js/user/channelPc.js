@@ -147,7 +147,7 @@ $(function(){
                   if ( returnData.success ) {
                     $("#register_submitBtn").attr("disabled",true);
                     // window.location.href = returnData.url;
-                    requestMsg("恭喜您，注册成功，赶紧下载51返呗App来体验吧");
+                    requestMsg("注册成功，立刻下载！");
                     setTimeout(function(){
                       document.body.scrollTop=0;
                       $(".mask").removeClass('hide');
@@ -162,7 +162,7 @@ $(function(){
                 }
               })
             } else {
-              requestMsg("请获取验证码11111");
+              requestMsg("请获取验证码");
             }
           } else {
             requestMsg("请阅读并同意《51返呗用户注册协议》");

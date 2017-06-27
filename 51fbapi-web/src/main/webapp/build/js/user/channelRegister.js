@@ -78,7 +78,7 @@ $(function(){
      	$("#register_codeBtn").text("获取验证码");
      	clearInterval(timerInterval);
      	timerS = 60;
-			$("#register_codeBtn").attr("isState",0);
+			// $("#register_codeBtn").attr("isState",0);
     } else {
      	$("#register_codeBtn").text(timerS+" s");
     }
