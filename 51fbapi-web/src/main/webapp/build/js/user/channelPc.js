@@ -67,7 +67,7 @@ $(function(){
       $("#register_codeBtn").text("获取验证码");
       clearInterval(timerInterval);
       timerS = 60;
-      $("#register_codeBtn").attr("isState",0);
+      // $("#register_codeBtn").attr("isState",0);
     } else {
       $("#register_codeBtn").text(timerS+" s");
     }
@@ -106,6 +106,7 @@ $(function(){
     }
   });
 
+
   // 提交注册
   $("#register_submitBtn").click(function(){ // 完成注册提交
     // md5加密
@@ -120,16 +121,13 @@ $(function(){
     var mobileNum = $("#register_mobile").val();
     var register_verification = $("#register_verification").val();
 
-    // var channelCode = $("#channelCode").val();
-    // var pointCode = $("#pointCode").val();
-
     var isState = $("#register_codeBtn").attr("isState");
 
     if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
       if ( register_verification != "" ) { // 验证码不能为空
         if ( password && 6 <= passwordLength <= 18 ) { // 密码6-18位
           if ($("#input_check").is(":checked")) { // 判断当前是否选中
-            // if ( $("#register_codeBtn").attr("isState") == 1 ) {
+            if ( $("#register_codeBtn").attr("isState") == 1 ) {
               // 检测访问量
               _taq.push({convert_id:"59212981134", event_type:"form"})  // 其他统计
 
@@ -163,9 +161,9 @@ $(function(){
                   requestMsg("注册失败");
                 }
               })
-            // } else {
-            //   requestMsg("请输入正确的验证码");
-            // }
+            } else {
+              requestMsg("请获取验证码11111");
+            }
           } else {
             requestMsg("请阅读并同意《51返呗用户注册协议》");
           }
