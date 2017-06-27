@@ -88,7 +88,7 @@ $(function(){
 	$("#register_codeBtn").click(function(){
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
-		if ( (isState==0 || !isState) && !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+		if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
 			$("#register_codeBtn").attr("disabled",true);
 			$.ajax({
   			url: "/app/user/getRegisterSmsCode",

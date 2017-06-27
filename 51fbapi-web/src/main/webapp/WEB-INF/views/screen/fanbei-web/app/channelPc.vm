@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    #set($version="2017062707")
+    #set($version="2017062719")
     <meta charset="utf-8">
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelPc.css?version=$version">

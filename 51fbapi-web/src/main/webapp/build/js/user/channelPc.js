@@ -77,7 +77,7 @@ $(function(){
   $("#register_codeBtn").click(function(){
     var isState = $(this).attr("isState");
     var mobileNum = $("#register_mobile").val();
-    if ( (isState==0 || !isState) && !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+    if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
       $("#register_codeBtn").attr("disabled",true);
       $.ajax({
         url: "/app/user/getRegisterSmsCode",
@@ -115,7 +115,7 @@ $(function(){
     var passwordLength = register_password.length;
 
     // 正则判断密码为6-18位字母+字符的组合
-    var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
+    var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
     var password = pwdReg.test(register_password);
 
     var mobileNum = $("#register_mobile").val();
