@@ -1,29 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017062601")
+    #set($version="2017062702")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
-    <!-- <script type="text/javascript">;
-      (function (root) {
-        root._tt_config = true;
-        var ta = document.createElement('script');
-        ta.type = 'text/javascript';
-        ta.async = true;
-        ta.src = document.location.protocol+'//'+'s3.pstatp.com/bytecom/resource/track_log/src/toutiao-track-log.js';
-        ta.onerror = function () {
-          var request = new XMLHttpRequest();
-          var web_url = window.encodeURIComponent(window.location.href);
-          var js_url = ta.src;
-          var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url;
-          request.open('GET', url, true);
-          request.send(null);
-        }
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ta, s);
-      })(window);
-    </script> -->
 </head>
 <body>
 <input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
@@ -31,23 +12,25 @@
 <input type="hidden" id="style" value="$!{style}">
 
 <div class="channelRegister_wrap">
-    #if( $!{style} == 8 || $!{style} == 9 || $!{style} == 10 || $!{style} == 11 || $!{style} == 12)
+    #if( $!{style}==8 || $!{style}==9 || $!{style}==10 || $!{style}==11 || $!{style}==12)
       <img src="$commonUrl/channel$!{style}_01.png">
+    #elseif( $!{style}==14 )
+      <img src="$commonUrl/channel7_01.jpg">
     #else
       <img src="$commonUrl/channel$!{style}_01.jpg">
     #end
     <div class="channelRegisterWrap">
-      #if( $!{style} == 7 || $!{style} == 9 || $!{style} == 12)
+      #if( $!{style}==7 || $!{style}==9 || $!{style}==12 )
           <img src="$commonUrl/channel$!{style}_02.png">
-      #elseif( $!{style} == 8 || $!{style} == 11)
+      #elseif( $!{style}==8 || $!{style}==11 || $!{style}==14 )
           <img src="$commonUrl/channel7_02.png">
       #else
           <img src="$commonUrl/channel$!{style}_02.jpg">
       #end
       <ul class="
-				#if( $!{style} == 7 || $!{style} == 8 || $!{style} == 11)
+				#if( $!{style}==7 || $!{style}==8 || $!{style}==11 || $!{style}==14 )
 					channelRegister78
-				#elseif( $!{style} == 9 || $!{style} == 10 || $!{style} == 12 || $!{style} == 13 )
+				#elseif( $!{style}==9 || $!{style}==10 || $!{style}==12 || $!{style}==13 )
 					channelRegister$!{style}
 				#else
 					channelRegister
@@ -89,8 +72,8 @@
           <label for="input_check"></label>
           <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
         </div>
-        #if( $!{style} == 7 || $!{style} == 8 )
-        <p class="clearfix" style="width: 4.5rem; margin: 0.2rem auto 0; color: #fff; font-size: 0.3rem;">
+        #if( $!{style}==7 || $!{style}==8 || $!{style}==14 )
+        <p class="clearfix" style="width: 3.0rem; margin: 0.2rem auto 0; color: #fff; font-size: 0.3rem;">
           <span style="float:left;margin-right:0.1rem;">已注册用户</span>
           <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
         </p>
@@ -98,17 +81,17 @@
       </ul>
     </div>
 
-    #if( $!{style} == 4 )
+    #if( $!{style}==4 )
       <img src="$commonUrl/channel$!{style}_03.jpg">
-    #elseif( $!{style} == 12 )
+    #elseif( $!{style}==12 )
       <img src="$commonUrl/channel$!{style}_03.png">
       <div class="channelRegisterPopup10">
         <div class="registerMask hide"></div>
         <div class="registerSuss hide"><img id="downloadApp" src="$commonUrl/channel$!{style}_04.png"></div>
       </div>
-    #elseif( $!{style} == 7 || $!{style} == 8 )
+    #elseif( $!{style}==7 || $!{style}==8 )
       <img src="$commonUrl/channel7_03.png">
-    #elseif( $!{style} == 9 )
+    #elseif( $!{style}==9 )
       <div class="channel9_rule">
         <p><i></i><span>活动规则</span></p>
         <p>1.活动时间：2017年6月9日--2017年6月25日；</p>
@@ -118,7 +101,7 @@
 
         <p>如有任何疑问，请拨打51返呗客服热线：0571-88193918</p>
       </div>
-    #elseif( $!{style} == 10 )
+    #elseif( $!{style}==10 )
       <div class="channelRegisterPopup10">
         <div class="registerMask hide"></div>
         <div class="registerSuss hide">
@@ -132,13 +115,13 @@
           <span id="repeatRegister">重新注册</span>
         </div>
       </div>
-    #elseif($!{style} == 13)
+    #elseif( $!{style}==13 )
       <img src="$commonUrl/channel13_03.jpg">
     #end
     <div class="channelRegister_copyright
-			#if( $!{style} == 2 || $!{style} == 4)
+			#if( $!{style}==2 || $!{style}==4 )
 				copyright2
-			#elseif( $!{style} == 7 || $!{style} == 8 || $!{style} == 11)
+			#elseif( $!{style}==7 || $!{style}==8 || $!{style}==11 || $!{style}==14 )
 				copyright78
 			#else
 				copyright$!{style}

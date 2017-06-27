@@ -53,7 +53,7 @@ var _fmOpt;
     var web_url = window.encodeURIComponent(window.location.href);
     var js_url = ta.src;
 
-    if ( style==7 ) {
+    if ( style==14 ) {
       var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url+'&convert_id=62421367574';
     } else {
       var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url;
@@ -64,10 +64,6 @@ var _fmOpt;
   var s = document.getElementsByTagName('script')[0];
   s.parentNode.insertBefore(ta, s);
 })(window);
-
-
-
-
 
 
 // 判断手机号、接收验证码
