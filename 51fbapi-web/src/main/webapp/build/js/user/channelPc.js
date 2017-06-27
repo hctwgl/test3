@@ -139,8 +139,8 @@ $(function(){
                   registerMobile: mobileNum,
                   smsCode: register_verification,
                   password: password_md5,
-                  channelCode: 'Xpyq1',
-                  pointCode: 'Xpyq5',
+                  channelCode: 'SEOPC',
+                  pointCode: 'SEOPC',
                   token: token
                 },
                 success: function(returnData){
