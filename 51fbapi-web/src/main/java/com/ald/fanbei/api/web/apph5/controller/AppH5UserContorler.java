@@ -120,6 +120,14 @@ public class AppH5UserContorler extends BaseController {
 		String resultStr = "";
 		try {
 			String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+			try {
+				tongdunUtil.getPromotionResult(token,null,null,CommonUtil.getIpAddr(request),mobile, mobile, "");
+			} catch (Exception e) {
+				resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
+				return resultStr;
+			}
+			
 			AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
 
 			if (afUserDo != null) {

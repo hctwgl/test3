@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="20170620")
+	#set($version="2017062601")
 	#set($src="https://fs.51fanbei.com/h5/app/activity/06")
     <title>最惠一波 超级返利拍</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/superGoods.css?version=$version">
@@ -15,7 +15,7 @@
         <p class="countTime"></p>
         <span class="bg"></span>
         <span class="bg bg01"></span>
-    </div>    
+    </div>
     <ul class="saleOffList">
         <li v-for="(item,index) in content.activityGoodsList" @click="buyNow(item.goodsId)">
             <div class="productCountTime" :class="'productCountTime'+index"></div>
@@ -28,11 +28,11 @@
                 <div class="monthPrice" v-if="item.goodsType==='1'">月供￥<span v-if="item.nperMap.isFree==1">{{item.nperMap.freeAmount}}</span><span v-else>{{item.nperMap.amount}}</span>×<span>{{item.nperMap.nper}}</span>
                     <span class="isFree"></span>
                 </div>
-                <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>               
+                <div class="monthPrice" v-if="item.goodsType==='0'">返利￥{{item.rebateAmount}}</div>
                 <p class="buyNow">抢购</p>
                 <p class="amount">库存:<span>{{item.repertoryCount}}</span>件</p>
-            </div>      
-        </li> 
+            </div>
+        </li>
     </ul>
     <ul class="youLikeList saleOffList">
         <p class="likeWord">你可能喜欢</p>
@@ -49,8 +49,8 @@
                 </div>
                 <div v-else style="width: 2.95rem;height: .48rem;"></div>
                 <p class="buyNow buyNow01">马上抢</p>
-            </div>      
-        </li> 
+            </div>
+        </li>
     </ul>
 </div>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>

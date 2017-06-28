@@ -6,6 +6,8 @@
 * @Last Modified time: 2017-04-25 15:44:56
 * @title:  返呗注册
 */
+var token = formatDateTime()+Math.random().toString(36).substr(2);
+
 
 $(function(){
 	var timerInterval ;
@@ -33,7 +35,8 @@ $(function(){
                     type: "POST",
                     dataType: "JSON",
                     data: {
-                        mobile: mobileNum
+                        mobile: mobileNum,
+                        token: token
                     },
                     success: function(returnData){
                         if (returnData.success) {
@@ -76,7 +79,8 @@ $(function(){
 							smsCode: register_verification,
 							password: password_md5,
 							channelCode: 'Xdt',
-							pointCode: 'Xdt1'
+							pointCode: 'Xdt1',
+							token: token
 						},
 						success: function(returnData){
 							if ( returnData.success ) {

@@ -121,7 +121,7 @@ new Vue({
       false,
     ],
     bannerlist: 'https://fs.51fanbei.com/h5/app/activity/06/oppo12_31.png',
-    url: 'http://testapp.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"120751"}',
+    url: 'https://app.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"120751"}',
     content: '¥2999 月供 ¥302起'
   },
   methods:{
@@ -167,11 +167,11 @@ new Vue({
 
       // 手机的privateGoodsId
       let privateGoodsId=[120751,120790,120791,120792];
-      let notifyUrl = "http://testapp.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO";
+      let notifyUrl = "https://app.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO";
       this.url=notifyUrl+'&params={"privateGoodsId":"'+privateGoodsId[e-1]+'"}';  // a链接的url
 
       // 手机的分期的文案
-      let content=['¥2999 月供 ¥3020起','¥2999 月供 ¥302起','¥2999 月供 ¥302起','¥3199 月供 ¥322起'];
+      let content=['¥2999 月供 ¥302起','¥2999 月供 ¥302起','¥2999 月供 ¥302起','¥3199 月供 ¥322起'];
       this.content=content[e-1];
     }
   }

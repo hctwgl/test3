@@ -26,9 +26,9 @@ function formatDateTime() {
 var _fmOpt;
  (function() {
     _fmOpt = {
-         partner: 'alading',
-         appName: 'alading_web',
-         token: token
+     partner: 'alading',
+     appName: 'alading_web',
+     token: token
      };
      var cimg = new Image(1,1);
      cimg.onload = function() {
@@ -40,6 +40,31 @@ var _fmOpt;
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
  	// alert(json.msg);
  })();
+
+// 检测流量
+(function (root) {
+  root._tt_config = true;
+  var ta = document.createElement('script');
+  ta.type = 'text/javascript';
+  ta.async = true;
+  ta.src = document.location.protocol+'//'+'s3.pstatp.com/bytecom/resource/track_log/src/toutiao-track-log.js';
+  ta.onerror = function () {
+    var request = new XMLHttpRequest();
+    var web_url = window.encodeURIComponent(window.location.href);
+    var js_url = ta.src;
+
+    if ( style==14 ) {
+      var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url+'&convert_id=62421367574';
+    } else {
+      var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url;
+    }
+    request.open('GET', url, true);
+    request.send(null);
+  }
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(ta, s);
+})(window);
+
 
 // 判断手机号、接收验证码
 $(function(){
@@ -53,7 +78,7 @@ $(function(){
      	$("#register_codeBtn").text("获取验证码");
      	clearInterval(timerInterval);
      	timerS = 60;
-			$("#register_codeBtn").attr("isState",0);
+			// $("#register_codeBtn").attr("isState",0);
     } else {
      	$("#register_codeBtn").text(timerS+" s");
     }
@@ -63,14 +88,15 @@ $(function(){
 	$("#register_codeBtn").click(function(){
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
-		if ( (isState==0 || !isState) && !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+		if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
 			$("#register_codeBtn").attr("disabled",true);
 			$.ajax({
   			url: "/app/user/getRegisterSmsCode",
   			type: "POST",
   			dataType: "JSON",
   			data: {
-  				mobile: mobileNum
+  				mobile: mobileNum,
+  				token: token
   			},
   			success: function(returnData){
   				if (returnData.success) {
@@ -115,12 +141,12 @@ $(function(){
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
 						if ( $("#register_codeBtn").attr("isState") == 1 ) {
               // 检测访问量
-              if ( style==7 ) {
-                _taq.push({convert_id:"62421367574", event_type:"form"})
+              if ( style==14 ) {
+                _taq.push({convert_id:"62421367574", event_type:"form"});
               } else if ( style==10 ) {
-                _taq.push({convert_id:"61747053456", event_type:"form"})  // oppo导流id
+                _taq.push({convert_id:"61747053456", event_type:"form"});  // oppo导流id
               } else {
-                _taq.push({convert_id:"59212981134", event_type:"form"})
+                _taq.push({convert_id:"59212981134", event_type:"form"});  // 其他统计
               }
 
 							$.ajax({ // 设置登录密码
