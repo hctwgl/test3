@@ -91,18 +91,18 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 	}
 
 	@Override
-	public int dealWithOrderNormalRefund(final AfOrderRefundDo orderRefundInfo, final AfOrderDo orderInfo) {
+	public int dealWithSelfGoodsOrderRefund(final AfOrderRefundDo orderRefundInfo, final AfOrderDo orderInfo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
-				logger.info("dealWithOrderNormalRefund begin: orderRefundInfo = {}, orderInfo = {}",orderRefundInfo, orderInfo);
+				logger.info("dealWithSelfGoodsOrderRefund begin: orderRefundInfo = {}, orderInfo = {}",orderRefundInfo, orderInfo);
 				try {
 					orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
 					updateOrderRefund(orderRefundInfo);
 					afOrderDao.updateOrder(orderInfo);
 				} catch (Exception e) {
-					logger.error("dealWithOrderNormalRefund  error: {}",e);
+					logger.error("dealWithSelfGoodsOrderRefund  error: {}",e);
 					status.setRollbackOnly();
 					return 0;
 				}
@@ -112,18 +112,18 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 	}
 
 	@Override
-	public int dealWithOrderNormalRefundFail(final AfOrderRefundDo orderRefundInfo, final AfOrderDo orderInfo) {
+	public int dealWithSelfGoodsOrderRefundFail(final AfOrderRefundDo orderRefundInfo, final AfOrderDo orderInfo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
-				logger.info("dealWithOrderNormalRefundFail begin: orderRefundInfo = {}, orderInfo = {}",orderRefundInfo, orderInfo);
+				logger.info("dealWithSelfGoodsOrderRefundFail begin: orderRefundInfo = {}, orderInfo = {}",orderRefundInfo, orderInfo);
 				try {
-					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
 					orderRefundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
 					updateOrderRefund(orderRefundInfo);
 					afOrderDao.updateOrder(orderInfo);
 				} catch (Exception e) {
-					logger.error("dealWithOrderNormalRefundFail  error: {}",e);
+					logger.error("dealWithSelfGoodsOrderRefundFail  error: {}",e);
 					status.setRollbackOnly();
 					return 0;
 				}

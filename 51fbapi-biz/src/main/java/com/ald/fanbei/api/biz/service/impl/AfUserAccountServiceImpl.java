@@ -181,7 +181,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	        		} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
 	        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 	        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-	        			afOrderRefundService.dealWithOrderNormalRefundFail(refundInfo, orderInfo);
+	        			afOrderRefundService.dealWithSelfGoodsOrderRefundFail(refundInfo, orderInfo);
 	        		}
 					return 1;
 				} catch (Exception e) {

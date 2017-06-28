@@ -42,18 +42,18 @@ public interface AfOrderRefundService {
 	int dealWithOrderRefund(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo, boolean isBoluome);
 	
 	/**
-	 * 处理正常退款
+	 * 处理自营商品退款成功
 	 * @param orderRefundInfo
 	 * @return
 	 */
-	int dealWithOrderNormalRefund(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo);
+	int dealWithSelfGoodsOrderRefund(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo);
 	
 	/**
-	 * 处理正常退款
+	 * 处理自营商品退款失败
 	 * @param orderRefundInfo
 	 * @return
 	 */
-	int dealWithOrderNormalRefundFail(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo);
+	int dealWithSelfGoodsOrderRefundFail(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo);
 	
 	
 }

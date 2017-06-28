@@ -174,7 +174,7 @@ public class PayRoutController {
         		} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
         			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-        			afOrderRefundService.dealWithOrderNormalRefund(refundInfo, orderInfo);
+        			afOrderRefundService.dealWithSelfGoodsOrderRefund(refundInfo, orderInfo);
         		}
     			return "SUCCESS";
 			}else{//代付失败
