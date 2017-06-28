@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
@@ -72,7 +73,7 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
 					updateOrderRefund(orderRefundInfo);
 				} catch (Exception e) {
-					logger.error("dealWithOrderRefund  error:",e);
+					logger.error("dealWithOrderRefund  error = {}",e);
 					status.setRollbackOnly();
 					return 0;
 				}
@@ -87,6 +88,48 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public int dealWithSelfGoodsOrderRefund(final AfOrderRefundDo orderRefundInfo, final AfOrderDo orderInfo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				logger.info("dealWithSelfGoodsOrderRefund begin: orderRefundInfo = {}, orderInfo = {}",orderRefundInfo, orderInfo);
+				try {
+					orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
+					updateOrderRefund(orderRefundInfo);
+					afOrderDao.updateOrder(orderInfo);
+				} catch (Exception e) {
+					logger.error("dealWithSelfGoodsOrderRefund  error: {}",e);
+					status.setRollbackOnly();
+					return 0;
+				}
+				return 1;
+			}
+		});
+	}
+
+	@Override
+	public int dealWithSelfGoodsOrderRefundFail(final AfOrderRefundDo orderRefundInfo, final AfOrderDo orderInfo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				logger.info("dealWithSelfGoodsOrderRefundFail begin: orderRefundInfo = {}, orderInfo = {}",orderRefundInfo, orderInfo);
+				try {
+					orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
+					orderRefundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
+					updateOrderRefund(orderRefundInfo);
+					afOrderDao.updateOrder(orderInfo);
+				} catch (Exception e) {
+					logger.error("dealWithSelfGoodsOrderRefundFail  error: {}",e);
+					status.setRollbackOnly();
+					return 0;
+				}
+				return 1;
+			}
+		});
 	}
 
 }

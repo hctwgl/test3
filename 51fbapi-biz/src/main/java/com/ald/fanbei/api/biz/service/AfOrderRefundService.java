@@ -33,9 +33,27 @@ public interface AfOrderRefundService {
 	AfOrderRefundDo getRefundInfoById(Long refundId);
 	
 	/**
-	 * 处理退款订单
+	 * 处理菠萝觅退款，以及后台代买退款
 	 * @param orderRefundInfo
+	 * @param isBoluome 是否是菠萝觅订单
+	 *
 	 * @return
 	 */
 	int dealWithOrderRefund(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo, boolean isBoluome);
+	
+	/**
+	 * 处理自营商品退款成功
+	 * @param orderRefundInfo
+	 * @return
+	 */
+	int dealWithSelfGoodsOrderRefund(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo);
+	
+	/**
+	 * 处理自营商品退款失败
+	 * @param orderRefundInfo
+	 * @return
+	 */
+	int dealWithSelfGoodsOrderRefundFail(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo);
+	
+	
 }
