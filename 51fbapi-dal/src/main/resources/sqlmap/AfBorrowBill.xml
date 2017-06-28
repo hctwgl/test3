@@ -145,6 +145,22 @@
 		  AND a.id = b.borrow_id
 		  AND b.id = #{id}
 	</update>   
+	
+	<update id="updateBorrowBillStatusByBillIdsAndStatus" >
+		UPDATE 
+		  af_borrow_bill
+		SET
+		  gmt_modified = NOW(),
+		  status = #{status}
+		WHERE 
+			is_delete = 0
+		AND
+			id in 
+			<foreach collection="items" item="item" open="(" close=")" separator=",">
+				#{item}	
+			</foreach> 
+		
+	</update>
  
     <update id="updateTotalBillStatus">
 		update af_borrow_total_bill  set gmt_modified=NOW(),status=#{status}

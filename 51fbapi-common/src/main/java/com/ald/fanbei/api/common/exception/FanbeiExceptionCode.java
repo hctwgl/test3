@@ -166,7 +166,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AVAILABLE_CREDIT_NOT_ENOUGH_THREE("AVAILABLE_CREDIT_NOT_ENOUGH_THREE",1716,"available credit not enough three","可用额度不足，您可在3天后进入信用认证页面重新提交审核。"),
     AVAILABLE_CREDIT_NOT_ENOUGH_TWO("AVAILABLE_CREDIT_NOT_ENOUGH_TWO",1717,"available credit not enough two","可用额度不足，您可在2天后进入信用认证页面重新提交审核。"),
     AVAILABLE_CREDIT_NOT_ENOUGH_ONE("AVAILABLE_CREDIT_NOT_ENOUGH_ONE",1718,"available credit not enough one","可用额度不足，您可在1天后进入信用认证页面重新提交审核。"),
-    
+    BORROW_BILL_IS_REPAYING("BORROW_BILL_IS_REPAYING",1719,"borrow bill is repaying","当前有一笔还款正在处理中，请耐心等待"),
     //h5 1800-1900
     RESOURES_H5_ERROR("RESOURES_H5_ERROR",1800,"resoures h5 not exist error","信息不存在，请联系管理员"),
 

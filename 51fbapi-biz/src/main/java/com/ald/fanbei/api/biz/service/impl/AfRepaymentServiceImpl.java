@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -33,6 +34,8 @@ import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -120,8 +123,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		final AfRepaymentDo repayment = buildRepayment(jfbAmount,repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
 		Map<String,Object> map = new HashMap<String,Object>();
+		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
 		afRepaymentDao.addRepayment(repayment);
+		List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(billIds.split(","), new Converter<String, Long>() {
+			@Override
+			public Long convert(String source) {
+				return Long.parseLong(source);
+			}
+		});
+		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		if(cardId==-1){//微信支付
+			//修改账单状态
 			map = UpsUtil.buildWxpayTradeOrderRepayment(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode(),true);
 		}else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
