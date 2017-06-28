@@ -36,7 +36,7 @@
     	<div class="tac mobileOperator">
             <span class="bgs_c"></span>
             <p id="warnMsgInfo">运营商认证申请已提交<br>请耐心等待审核结果</p>
-            <div class="mobileOperator_btn"><a href="/app/sys/authBack?fbapiNeedRefreshCurrData=1">返回信用认证</a></div>
+            <div class="mobileOperator_btn"><a href='/app/sys/authBack?fbapiNeedRefreshCurrData={"onOff":"1"}'>返回信用认证</a></div>
         </div>
     </body>
 
