@@ -23,6 +23,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -141,12 +142,16 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 		if(idNumberDo == null){
 			data.put("isUploadImage", "N");
-		}else if (StringUtils.isNotBlank(idNumberDo.getIdFrontUrl()) && StringUtils.isNotBlank(idNumberDo.getIdBehindUrl()) ) {
+		} else if (StringUtils.isNotBlank(idNumberDo.getIdFrontUrl()) && StringUtils.isNotBlank(idNumberDo.getIdBehindUrl()) ) {
 			data.put("isUploadImage", "Y");
-		}else {
+		} else {
 			data.put("isUploadImage", "N");
 		}
 		
+		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
+			long between = DateUtil.getNumberOfDatesBetween(authDo.getGmtRisk(), new Date(System.currentTimeMillis()));
+			data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
+		}
 		return data;
 	}
 

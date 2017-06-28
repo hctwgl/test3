@@ -156,7 +156,16 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     REPAYMENT_DETAIL_NOT_EXIST_ERROR("REPAYMENT_DETAIL_NOT_EXIST_ERROR",1706,"repayment detail not exist error","还款详情不存在"),
     BORROW_CONSUME_GOODS_IS_EMPTY("BORROW_CONSUME_GOODS_IS_EMPTY",1707,"borrow consume goods is empty","商品不存在"),
     AVAILABLE_CREDIT_NOT_ENOUGH("AVAILABLE_CREDIT_NOT_ENOUGH",1708,"available credit not enough","可用额度不足"),
-    
+    AVAILABLE_CREDIT_NOT_ENOUGH_TEN("AVAILABLE_CREDIT_NOT_ENOUGH_TEN",1709,"available credit not enough ten","可用额度不足，您可在10天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_NINE("AVAILABLE_CREDIT_NOT_ENOUGH_NINE",1710,"available credit not enough nine","可用额度不足，您可在9天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_EIGHT("AVAILABLE_CREDIT_NOT_ENOUGH_EIGHT",1711,"available credit not enough eight","可用额度不足，您可在8天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_SEVEN("AVAILABLE_CREDIT_NOT_ENOUGH_SEVEN",1712,"available credit not enough seven","可用额度不足，您可在7天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_SIX("AVAILABLE_CREDIT_NOT_ENOUGH_SIX",1713,"available credit not enough six","可用额度不足，您可在6天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_FIVE("AVAILABLE_CREDIT_NOT_ENOUGH_FIVE",1714,"available credit not enough five","可用额度不足，您可在5天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_FOUR("AVAILABLE_CREDIT_NOT_ENOUGH_FOUR",1715,"available credit not enough four","可用额度不足，您可在4天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_THREE("AVAILABLE_CREDIT_NOT_ENOUGH_THREE",1716,"available credit not enough three","可用额度不足，您可在3天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_TWO("AVAILABLE_CREDIT_NOT_ENOUGH_TWO",1717,"available credit not enough two","可用额度不足，您可在2天后进入信用认证页面重新提交审核。"),
+    AVAILABLE_CREDIT_NOT_ENOUGH_ONE("AVAILABLE_CREDIT_NOT_ENOUGH_ONE",1718,"available credit not enough one","可用额度不足，您可在1天后进入信用认证页面重新提交审核。"),
     
     //h5 1800-1900
     RESOURES_H5_ERROR("RESOURES_H5_ERROR",1800,"resoures h5 not exist error","信息不存在，请联系管理员"),
