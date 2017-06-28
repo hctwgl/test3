@@ -207,9 +207,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     PICK_BRAND_COUPON_FAILED("PICK_BRAND_COUPON_FAILED",4004,"pick brand coupon failed","领取优惠券失败"),
     
     
-    TONGTUN_FENGKONG_REGIST_ERROR("TONGTUN_FENGKONG_REGIST_ERROR",4004,"tongtun fengkong error","您注册手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
-    TONGTUN_FENGKONG_LOGIN_ERROR("TONGTUN_FENGKONG_LOGIN_ERROR",4005,"tongtun login fengkong error","您登录手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
-    TONGTUN_FENGKONG_TRADE_ERROR("TONGTUN_FENGKONG_TRADE_ERROR",4006,"tongtun trade fengkong error","您投资手机号存在安全风险，如有疑问请联系客服:400-135-3388"),
+    TONGTUN_FENGKONG_REGIST_ERROR("TONGTUN_FENGKONG_REGIST_ERROR",4004,"tongtun fengkong error","您注册手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
+    TONGTUN_FENGKONG_LOGIN_ERROR("TONGTUN_FENGKONG_LOGIN_ERROR",4005,"tongtun login fengkong error","您登录手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
+    TONGTUN_FENGKONG_TRADE_ERROR("TONGTUN_FENGKONG_TRADE_ERROR",4006,"tongtun trade fengkong error","您投资手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
     
     GAME_CHANCE_CODE_ERROR("GAME_CHANCE_CODE_ERROR",4030,"game chance code error","无效抓娃娃机会"),
     GAME_COUPONS_LIMIT_ERROR("GAME_COUPONS_LIMIT_ERROR",4031,"coupon limit","未中奖"),

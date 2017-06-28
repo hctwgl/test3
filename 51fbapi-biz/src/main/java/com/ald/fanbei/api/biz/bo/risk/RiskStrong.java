@@ -52,7 +52,7 @@ public class RiskStrong extends RiskRegisterStrongReqBo {
 		setDirectory(JSON.toJSONString(StringUtil.filterEmoji(directory)));
 
 		JSONObject linkManInfo = new JSONObject();
-		linkManInfo.put("name", afUserAuthDo.getContactorName());
+		linkManInfo.put("name", StringUtil.filterEmoji(afUserAuthDo.getContactorName()));
 		ContactRelationType contactRelationType = ContactRelationType.findRoleTypeByName(afUserAuthDo.getContactorType());
 		if (contactRelationType == null) {
 			linkManInfo.put("relation", ContactRelationType.others.getCode());
