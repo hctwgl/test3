@@ -228,7 +228,6 @@ public class RiskUtil extends AbstractThird {
 	public void batchRegister(int pageSize, String userName) {
 		int count = afUserAccountService.getUserAccountCountWithHasRealName();
 		int pageCount = (int) Math.ceil(count / pageSize) + 1;
-		logger.info("batchRegister begin,pageCount=" + pageCount);
 		for (int j = 1; j <= pageCount; j++) {
 			AfUserAccountQuery query = new AfUserAccountQuery();
 			query.setPageNo(j);
@@ -364,9 +363,7 @@ public class RiskUtil extends AbstractThird {
 			event = "REAUTH";
 		}
 		
-		logger.info("registerStrongRisk directory= {}", directory);
 		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
-		logger.info("registerStrongRisk reqBo= {}", reqBo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String content = JSONObject.toJSONString(reqBo);
@@ -433,7 +430,6 @@ public class RiskUtil extends AbstractThird {
 		commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
 
 		String reqResult = HttpUtil.post(url, reqBo);
-		logger.info(StringUtil.appendStrs("weakRiskVerify req=",JSON.toJSONString(reqBo) ,",resp=",reqResult));
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
@@ -489,7 +485,6 @@ public class RiskUtil extends AbstractThird {
 		String content = JSONObject.toJSONString(reqBo);
 		
 		String reqResult = HttpUtil.post(url, reqBo);
-		logger.info(StringUtil.appendStrs("raiseQuota req=",JSON.toJSONString(reqBo) ,",resp=",reqResult));
 		
 		commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
 		logThird(reqResult, "raiseQuota", reqBo);
@@ -517,20 +512,9 @@ public class RiskUtil extends AbstractThird {
 	public RiskVerifyRespBo transferBorrowInfo(String consumerNo, String scene, String orderNo, JSONArray details) {
 		RiskSynBorrowInfoReqBo reqBo = new RiskSynBorrowInfoReqBo();
 		reqBo.setOrderNo(orderNo);
-//		reqBo.setEventType(Constants.EVENT_FINANCE_COUNT);
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setScene(scene);
 
-//		JSONObject obj = new JSONObject();
-//		obj.put("borrowNo", borrowNo);
-//		obj.put("amount", amount);
-//		obj.put("orderTime", orderTime);
-//		obj.put("income", income);
-//		obj.put("overdueAmount", overdueAmount);
-//		obj.put("overdueDay", overdueDay);
-//		obj.put("overdueCount", overdueCount);
-//		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
-		
 		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(details)));
 		reqBo.setReqExt("");
 
@@ -1034,7 +1018,6 @@ public class RiskUtil extends AbstractThird {
 
 					logThird(signInfo, "asyPayOrder", reqBo);
 					if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验证签名成功
-						logger.info("reqBo.getSignInfo()" + reqBo.getSignInfo());
 						JSONObject obj = JSON.parseObject(data);
 						String orderNo = obj.getString("orderNo");
 
@@ -1043,9 +1026,7 @@ public class RiskUtil extends AbstractThird {
 						// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
 						JSONObject object = JSON.parseObject(data);
 
-						logger.info("risk_result =" + object.get("result").toString());
-						AfUserAccountDo userAccountInfo = afUserAccountService
-								.getUserAccountByUserId(orderInfo.getUserId());
+						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 						if (!object.get("result").toString().equals("10")) {
 							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
@@ -1057,8 +1038,7 @@ public class RiskUtil extends AbstractThird {
 							BigDecimal usedAmount = orderInfo.getActualAmount().multiply(BigDecimal.valueOf(-1));
 							afBorrowService.dealAgentPayClose(userAccountInfo, usedAmount, orderInfo.getRid());
 							if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-								AfAgentOrderDo afAgentOrderDo = afAgentOrderService
-										.getAgentOrderByOrderId(orderInfo.getRid());
+								AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
 								afAgentOrderDo.setClosedReason("风控审批失败");
 								afAgentOrderDo.setGmtClosed(new Date());
 								afAgentOrderService.updateAgentOrder(afAgentOrderDo);
@@ -1081,10 +1061,6 @@ public class RiskUtil extends AbstractThird {
 							jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 							return new Long(String.valueOf(re));
 						}
-//						// 在风控审批通过后额度不变生成账单
-//						afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
-//								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
-//								orderInfo.getOrderNo(), null);
 						
 						// 在风控审批通过后额度不变生成账单
 						afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
@@ -1113,7 +1089,6 @@ public class RiskUtil extends AbstractThird {
 
 				return 1L;
 			}
-
 		});
 	}
 
@@ -1134,7 +1109,6 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		logThird(signInfo, "asyVerify", reqBo);
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
-			logger.info("reqBo.getSignInfo()" + reqBo.getSignInfo());
 			JSONObject obj = JSON.parseObject(data);
 			String orderNo = obj.getString("orderNo");
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
@@ -1152,21 +1126,17 @@ public class RiskUtil extends AbstractThird {
 			List<String> whiteIdsList = new ArrayList<String>();
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 			// 判断是否在白名单里面
-			AfResourceDo whiteListInfo = afResourceService
-					.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
-			logger.info("whiteListInfo===" + whiteListInfo);
+			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
 			if (whiteListInfo != null) {
 				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
-						new Converter<String, String>() {
-							@Override
-							public String convert(String source) {
-								return source.trim();
-							}
-						});
+					new Converter<String, String>() {
+						@Override
+						public String convert(String source) {
+							return source.trim();
+						}
+					});
 			}
 
-			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + afUserDo.getUserName() + ",isContain="
-					+ whiteIdsList.contains(afUserDo.getUserName()));
 			if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
 
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
