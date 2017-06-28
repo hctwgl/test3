@@ -393,18 +393,25 @@ public class AppH5FanBeiWebController extends BaseController {
 	public void mobileOperator(HttpServletRequest request, ModelMap model) throws IOException {
 		Boolean processResult = true;
 		try {
-			//String appInfo = request.getParameter("_appInfo");
+			String appInfo = request.getParameter("_appInfo");
+			Long mobileReqTimeStamp = NumberUtil.objToLongDefault(request.getParameter("mobileReqTimeStamp"),0L);
+			Date reqTime = new Date(mobileReqTimeStamp);
+			
 			String mxcode = request.getParameter("mxcode");
-			String userName =  StringUtil.null2Str(request.getParameter("account"));
+			String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
 			AfUserDo  afUserDo = afUserDao.getUserByUserName(userName);
 			
 			if(MoXieResCodeType.ONE.getCode().equals(mxcode) || MoXieResCodeType.TWO.getCode().equals(mxcode) ){
 				//用户认证处理中
 				AfUserAuthDo authDo = new AfUserAuthDo();
 				authDo.setUserId(afUserDo.getRid());
-				authDo.setGmtMobile(new Date());
+				//此字段保存该笔认证申请的发起时间，更新时做校验，防止在更新时，风控对这笔认证已经回调处理成功，造成错误更新
+				authDo.setGmtMobile(reqTime);
 				authDo.setMobileStatus(MobileStatus.WAIT.getCode());
-				afUserAuthService.updateUserAuth(authDo);
+				int updateRowNums = afUserAuthService.updateUserAuthMobileStatusWait(authDo);
+				if(updateRowNums==0){
+					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.userId="+afUserDo.getRid());
+				}
 			}else{
 				processResult = false;
 			}

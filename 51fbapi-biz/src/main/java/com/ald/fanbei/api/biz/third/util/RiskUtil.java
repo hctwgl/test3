@@ -55,13 +55,13 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -806,7 +806,7 @@ public class RiskUtil extends AbstractThird {
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
 			if (StringUtil.equals("50", result)) {
-				// TODO 不做任何更新
+				//不做任何更新
 				return 0;
 			}
 			AfUserAuthDo auth = new AfUserAuthDo();
@@ -814,10 +814,10 @@ public class RiskUtil extends AbstractThird {
 			auth.setGmtMobile(new Date());
 			AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
 			if (StringUtil.equals("10", result)) {
-				auth.setMobileStatus(YesNoStatus.YES.getCode());
+				auth.setMobileStatus(MobileStatus.YES.getCode());
 				jpushService.mobileRiskSuccess(accountInfo.getUserName());
 			} else {
-				auth.setMobileStatus(YesNoStatus.NO.getCode());
+				auth.setMobileStatus(MobileStatus.FAIL.getCode());
 				jpushService.mobileRiskFail(accountInfo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);

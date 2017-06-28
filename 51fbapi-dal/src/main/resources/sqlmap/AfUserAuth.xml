@@ -15,6 +15,12 @@
 		)
 	</insert>
 	
+	<update id="updateUserAuthMobileStatusWait" parameterType="AfUserAuthDo" >
+		UPDATE af_user_auth SET gmt_modified = NOW(),gmt_mobile = NOW()
+    			,mobile_status='W'
+		WHERE user_id = #{userId} and (gmt_mobile is null  or  <![CDATA[ gmt_mobile <= #{gmtMobile}  ]]>) 
+	</update>
+	
 	<update id="updateUserAuth" parameterType="AfUserAuthDo" >
 		UPDATE af_user_auth SET gmt_modified = NOW()
 			<if test="zmStatus != null">
