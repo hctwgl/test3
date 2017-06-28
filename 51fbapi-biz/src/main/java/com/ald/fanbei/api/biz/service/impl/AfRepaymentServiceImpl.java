@@ -217,6 +217,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+					logger.info("updateBorrowBillStatusByIds repayment  = {}",repayment);
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 						return 0l;
 					}
@@ -261,7 +262,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.info("dealRepaymentSucess error", e);
+					logger.info("dealRepaymentSucess error = {}", e);
 					return 0l;
 				}
 			}
