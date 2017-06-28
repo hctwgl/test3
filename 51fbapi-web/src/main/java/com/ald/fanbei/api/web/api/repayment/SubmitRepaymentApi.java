@@ -102,7 +102,7 @@ public class SubmitRepaymentApi implements ApiHandle{
 		});
 		List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getBorrowBillByIds(billIdList);
 		if (constainsRepayingBill(borrowBillList)) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
 		}
 		AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
 		if(billDo.getCount()==0 ||repaymentAmount.compareTo(billDo.getBillAmount())!=0){
