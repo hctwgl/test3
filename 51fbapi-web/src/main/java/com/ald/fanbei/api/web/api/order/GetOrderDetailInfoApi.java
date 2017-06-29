@@ -77,7 +77,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setPayType(order.getPayType());
 		
 		//商品售价处理(订单价格除以商品数量)
-		BigDecimal saleCount = NumberUtil.objToBigDecimalDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
+		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
 		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
 		return vo;
 	}
