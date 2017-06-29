@@ -32,7 +32,7 @@
 		sort desc
 	</select>
 	
-		<select id="getModelH5ItemCategoryListByModelIdAndModelType" resultType="AfModelH5ItemDo">
+	<select id="getModelH5ItemCategoryListByModelIdAndModelType" resultType="AfModelH5ItemDo">
 		SELECT
 		<include refid="queryCategoryFields" />
 		FROM
@@ -104,6 +104,8 @@
 			h.type ='GOODSLIST'		
 		AND 
 			h.item_value2 =#{category}
+		ORDER BY 
+			h.gmt_create DESC
 		LIMIT #{start},#{end}
 	</select>
 		
