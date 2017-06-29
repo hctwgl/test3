@@ -165,4 +165,12 @@ public interface AfBorrowBillService {
 	 */
 	List<AfBorrowBillDo> getBorrowBillByIds(List<Long> billIdList);
 	
+	/**
+	 * 判断是否存在当月正在还款中的账单
+	 * 
+	 * @param query
+	 * @return
+	 */
+	boolean existMonthRepayingBill(AfBorrowBillQuery query);
+	
 }

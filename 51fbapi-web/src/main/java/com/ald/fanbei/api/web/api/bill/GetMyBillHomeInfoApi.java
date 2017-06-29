@@ -72,17 +72,14 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		query.setBillMonth(billMonth);
 		query.setBillYear(billYear);
 		List<AfBorrowBillDo> billList =  afBorrowBillService.getMonthBillList(query);
+		boolean isRepaying = afBorrowBillService.existMonthRepayingBill(query);
 		AfBillHomeVo vo = new AfBillHomeVo();
 		List<AfBillHomeListVo> list =new ArrayList<AfBillHomeListVo>();
-		boolean isRepaying = false;
 		for (AfBorrowBillDo afBorrowBillDo : billList) {
 			AfBillHomeListVo listVo = new AfBillHomeListVo();
 			listVo.setBiilId(afBorrowBillDo.getRid());
 			listVo.setBillAmount(afBorrowBillDo.getBillAmount());
 			listVo.setBillNper(afBorrowBillDo.getBillNper());
-			if (BorrowBillStatus.DEALING.getCode().equals(afBorrowBillDo.getStatus())) {
-				isRepaying = true;
-			}
 			if(afBorrowBillDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())
 					&&afBorrowBillDo.getStatus().equals(BorrowBillStatus.NO.getCode())){
 				listVo.setBillStatus(BorrowBillStatus.OVERDUE.getCode());

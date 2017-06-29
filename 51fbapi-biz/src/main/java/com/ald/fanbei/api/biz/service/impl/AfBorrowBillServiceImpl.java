@@ -151,6 +151,11 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public List<AfBorrowBillDo> getBorrowBillByIds(List<Long> billIdList) {
 		return afBorrowBillDao.getBillListByIds(billIdList);
+	}
+
+	@Override
+	public boolean existMonthRepayingBill(AfBorrowBillQuery query) {
+		return afBorrowBillDao.existMonthRepayingBill(query) > 1;
 	}	
 	
 }

@@ -25,6 +25,14 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query);
+	
+	/**
+	 * 判断是否存在当月正在还款中的订单
+	 * 
+	 * @param query
+	 * @return
+	 */
+	int existMonthRepayingBill(AfBorrowBillQuery query);
 
 	/**
 	 * 获取所有借款账单记录
