@@ -155,7 +155,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 	@Override
 	public boolean existMonthRepayingBill(Long userId, Integer billYear, Integer billMonth) {
-		return afBorrowBillDao.existMonthRepayingBill(userId, billYear, billMonth)> 1;
+		return afBorrowBillDao.existMonthRepayingBill(userId, billYear, billMonth)> 0;
 	}	
 	
 }

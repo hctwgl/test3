@@ -123,21 +123,19 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		final AfRepaymentDo repayment = buildRepayment(jfbAmount,repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
 		Map<String,Object> map = new HashMap<String,Object>();
-		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
-		afRepaymentDao.addRepayment(repayment);
 		List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(billIds.split(","), new Converter<String, Long>() {
 			@Override
 			public Long convert(String source) {
 				return Long.parseLong(source);
 			}
 		});
-		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		if(cardId==-1){//微信支付
 			//修改账单状态
 			map = UpsUtil.buildWxpayTradeOrderRepayment(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode(),true);
 		}else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-			
+			repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+			afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), 
 					Constants.DEFAULT_PAY_PURPOSE, name, "02",UserAccountLogType.REPAYMENT.getCode());
@@ -152,6 +150,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}else if(cardId==-2){//余额支付
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
 		}
+		afRepaymentDao.addRepayment(repayment);
 		map.put("refId", repayment.getRid());
 		map.put("type", UserAccountLogType.REPAYMENT.getCode());
 		return map;
