@@ -198,5 +198,12 @@ public interface AfOrderService {
 	 */
 	String getCurrentLastPayNo(Date current);
 	
+	/**
+	 * 获取订单详情，不管是否已经被删除掉
+	 * @param rid
+	 * @return
+	 */
+	public AfOrderDo getOrderInfoByIdWithoutDeleted(Long rid, Long userId);
+	
 }
 
