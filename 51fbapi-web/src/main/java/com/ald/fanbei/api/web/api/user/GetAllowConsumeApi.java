@@ -48,8 +48,8 @@ public class GetAllowConsumeApi implements ApiHandle {
 		}
 		
 		if (StringUtil.equals("N", autDo.getRiskStatus())) {
-			long between = DateUtil.getNumberOfDatesBetween(autDo.getGmtRisk(), new Date(System.currentTimeMillis()));
-			
+			Date afterTenDay = DateUtil.addDays(autDo.getGmtRisk(), 10);
+			long between = DateUtil.getNumberOfDatesBetween(new Date(System.currentTimeMillis()), afterTenDay);
 			if (between == 1) {
 				throw new FanbeiException("available credit not enough one", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_ONE);
 			} else if (between == 2) {
