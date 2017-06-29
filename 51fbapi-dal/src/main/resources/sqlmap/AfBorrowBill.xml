@@ -22,6 +22,13 @@
 		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status <![CDATA[<>'F']]>
     </select>
     
+    <select id="existMonthRepayingBill" resultType="java.lang.Integer" >
+		SELECT 
+			count(1)
+		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId} 
+		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status = 'D'
+    </select>
+    
     <select id="getBillListByBorrowIdAndStatus" resultType="AfBorrowBillDo" >
 		SELECT 
 			<include refid="queryFields"/>
@@ -97,7 +104,7 @@
 		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount,min(bill_year) bill_year,min(bill_month) bill_month,min(type) type,
 		min(borrow_no) borrow_no,min(name) name,count(1) count
 		FROM af_borrow_bill
-		WHERE is_delete=0  AND STATUS ='N'
+		WHERE is_delete=0  AND STATUS IN ('N','D') 
 		AND id in (
 		<foreach collection="ids" item="item" index="index" separator="," >
 			#{item}
@@ -145,6 +152,22 @@
 		  AND a.id = b.borrow_id
 		  AND b.id = #{id}
 	</update>   
+	
+	<update id="updateBorrowBillStatusByBillIdsAndStatus" >
+		UPDATE 
+		  af_borrow_bill
+		SET
+		  gmt_modified = NOW(),
+		  status = #{status}
+		WHERE 
+			is_delete = 0
+		AND
+			id in 
+			<foreach collection="items" item="item" open="(" close=")" separator=",">
+				#{item}	
+			</foreach> 
+		
+	</update>
  
     <update id="updateTotalBillStatus">
 		update af_borrow_total_bill  set gmt_modified=NOW(),status=#{status}

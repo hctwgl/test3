@@ -127,6 +127,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		// 密码判断
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		/** 去掉后台配置的金额限制(用户的借款额度根据可用额度进行限制)
 		AfResourceDo limitRangeResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashRange.getCode());
 		if (limitRangeResource != null) {
 			BigDecimal limitRangeStart =  new BigDecimal(limitRangeResource.getValue1());
@@ -136,6 +137,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
 			}
 		}
+		*/
 		if (accountDo == null || authDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}

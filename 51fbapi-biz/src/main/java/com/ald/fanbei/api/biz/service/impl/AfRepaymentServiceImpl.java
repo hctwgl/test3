@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -33,6 +34,8 @@ import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -120,12 +123,21 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		final AfRepaymentDo repayment = buildRepayment(jfbAmount,repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
 		Map<String,Object> map = new HashMap<String,Object>();
-		afRepaymentDao.addRepayment(repayment);
+		List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(billIds.split(","), new Converter<String, Long>() {
+			@Override
+			public Long convert(String source) {
+				return Long.parseLong(source);
+			}
+		});
 		if(cardId==-1){//微信支付
+			afRepaymentDao.addRepayment(repayment);
+			//修改账单状态
 			map = UpsUtil.buildWxpayTradeOrderRepayment(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode(),true);
 		}else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-			
+			repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+			afRepaymentDao.addRepayment(repayment);
+			afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), 
 					Constants.DEFAULT_PAY_PURPOSE, name, "02",UserAccountLogType.REPAYMENT.getCode());
@@ -138,6 +150,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //			}
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
+			afRepaymentDao.addRepayment(repayment);
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
 		}
 		map.put("refId", repayment.getRid());
@@ -205,6 +218,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+					logger.info("updateBorrowBillStatusByIds repayment  = {}",repayment);
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 						return 0l;
 					}
@@ -249,7 +263,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.info("dealRepaymentSucess error", e);
+					logger.info("dealRepaymentSucess error = {}", e);
 					return 0l;
 				}
 			}

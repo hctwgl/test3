@@ -78,7 +78,7 @@ public class GetBillDetailInfoApi implements ApiHandle{
 			vo.setOrderId(billDto.getOrderId());
 			vo.setOrderNo(billDto.getOrderNo());
 			if(billDto.getOrderId()>0){
-				AfOrderDo order = afOrderService.getOrderInfoById(billDto.getOrderId(), billDto.getUserId());
+				AfOrderDo order = afOrderService.getOrderInfoByIdWithoutDeleted(billDto.getOrderId(), billDto.getUserId());
 				vo.setGoodsId(order.getGoodsId());
 			}else{
 				AfBorrowTempDo temp = afBorrowService.getBorrowTempByBorrowId(billDto.getBorrowId());

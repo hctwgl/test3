@@ -25,6 +25,14 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query);
+	
+	/**
+	 * 判断是否存在当月正在还款中的订单
+	 * 
+	 * @param query
+	 * @return
+	 */
+	int existMonthRepayingBill(@Param("userId") Long userId, @Param("billYear") int billYear, @Param("billMonth") int billMonth);
 
 	/**
 	 * 获取所有借款账单记录
@@ -110,6 +118,8 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	int updateBorrowBillStatusByIds(@Param("ids") List<String> ids, @Param("status") String status, @Param("repaymentId") Long repaymentId);
+	
+	
 
 	/**
 	 * 变更账单状态
@@ -118,6 +128,14 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	int updateBorrowBillStatusById(@Param("id") String id, @Param("status") String status, @Param("repaymentId") Long repaymentId, @Param("couponAmount") BigDecimal couponAmount, @Param("jfbAmount") BigDecimal jfbAmountAvg, @Param("rebateAmount") BigDecimal rebateAmountAvg);
+	
+	/**
+	 * 修改账单状态
+	 * @param billIds 账单ids
+	 * @param status 状态
+	 * @return
+	 */
+	int updateBorrowBillStatusByBillIdsAndStatus(@Param("items")List<Long> billIds, @Param("status") String status);
 
 	/**
 	 * 获取未还款账单数量

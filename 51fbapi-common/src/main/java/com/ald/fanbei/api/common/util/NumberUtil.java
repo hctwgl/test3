@@ -174,6 +174,20 @@ public class NumberUtil {
             return defaultValue;
         }
     }
+    
+    public static BigDecimal objToBigDecimalZeroToDefault(Object obj, BigDecimal defaultValue) {
+        if (null == obj) return defaultValue;
+        try {
+        	BigDecimal objValue = new BigDecimal(obj.toString());
+        	if(objValue.compareTo(BigDecimal.ZERO)==0){
+        		return defaultValue;
+        	}
+            return objValue;
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+    
     /**
      * 无默认返回
      * <p>

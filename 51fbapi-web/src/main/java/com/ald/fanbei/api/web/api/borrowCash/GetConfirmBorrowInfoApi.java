@@ -99,7 +99,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
 			}
-			
+			/** 去掉后台配置的金额限制(用户的借款额度根据可用额度进行限制)
 			AfResourceDo limitRangeResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashRange.getCode());
 			if (limitRangeResource != null) {
 				BigDecimal limitRangeStart =  new BigDecimal(limitRangeResource.getValue1());
@@ -109,7 +109,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
 				}
 			}
-
+			*/
 			BigDecimal  usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
 			BigDecimal accountBorrow = calculateMaxAmount(usableAmount);
 			if(StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode()) && accountBorrow.compareTo(new BigDecimal(amountStr))<0){

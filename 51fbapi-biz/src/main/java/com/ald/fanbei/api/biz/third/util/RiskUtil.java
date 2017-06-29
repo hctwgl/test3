@@ -55,13 +55,13 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -656,15 +656,15 @@ public class RiskUtil extends AbstractThird {
       			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
-      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
-                                                否则把用户的额度设置成分控返回的额度*/
-      			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-      			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-      				AfUserAccountDo accountDo = new AfUserAccountDo();
-      				accountDo.setUserId(consumerNo);
-      				accountDo.setAuAmount(au_amount);
-      				afUserAccountService.updateUserAccount(accountDo);
-      			}
+      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(consumerNo);
+					accountDo.setAuAmount(au_amount);
+					afUserAccountService.updateUserAccount(accountDo);
+				}
       			jpushService.strongRiskSuccess(userAccountDo.getUserName());
 			} else if (StringUtils.equals("30", result)) {
 				AfUserAuthDo authDo = new AfUserAuthDo();
@@ -673,7 +673,7 @@ public class RiskUtil extends AbstractThird {
       			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
-      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
+      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
                                                 否则把用户的额度设置成分控返回的额度*/
       			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
       			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
@@ -681,6 +681,11 @@ public class RiskUtil extends AbstractThird {
       				accountDo.setUserId(consumerNo);
       				accountDo.setAuAmount(BigDecimal.ZERO);
       				afUserAccountService.updateUserAccount(accountDo);
+      			} else {
+      				AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(consumerNo);
+					accountDo.setAuAmount(userAccountDo.getUsedAmount());
+					afUserAccountService.updateUserAccount(accountDo);
       			}
       			jpushService.strongRiskFail(userAccountDo.getUserName());
 			}
@@ -785,7 +790,7 @@ public class RiskUtil extends AbstractThird {
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
 			if (StringUtil.equals("50", result)) {
-				// TODO 不做任何更新
+				//不做任何更新
 				return 0;
 			}
 			AfUserAuthDo auth = new AfUserAuthDo();
@@ -793,10 +798,10 @@ public class RiskUtil extends AbstractThird {
 			auth.setGmtMobile(new Date());
 			AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
 			if (StringUtil.equals("10", result)) {
-				auth.setMobileStatus(YesNoStatus.YES.getCode());
+				auth.setMobileStatus(MobileStatus.YES.getCode());
 				jpushService.mobileRiskSuccess(accountInfo.getUserName());
 			} else {
-				auth.setMobileStatus(YesNoStatus.NO.getCode());
+				auth.setMobileStatus(MobileStatus.NO.getCode());
 				jpushService.mobileRiskFail(accountInfo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);

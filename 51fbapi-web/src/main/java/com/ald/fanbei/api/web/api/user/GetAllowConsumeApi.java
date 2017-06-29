@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -46,7 +48,31 @@ public class GetAllowConsumeApi implements ApiHandle {
 		}
 		
 		if (StringUtil.equals("N", autDo.getRiskStatus())) {
-			throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
+			Date afterTenDay = DateUtil.addDays(autDo.getGmtRisk(), 10);
+			long between = DateUtil.getNumberOfDatesBetween(new Date(System.currentTimeMillis()), afterTenDay);
+			if (between == 1) {
+				throw new FanbeiException("available credit not enough one", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_ONE);
+			} else if (between == 2) {
+				throw new FanbeiException("available credit not enough two", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_TWO);
+			} else if (between == 3) {
+				throw new FanbeiException("available credit not enough three", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_THREE);
+			} else if (between == 4) {
+				throw new FanbeiException("available credit not enough four", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_FOUR);
+			} else if (between == 5) {
+				throw new FanbeiException("available credit not enough five", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_FIVE);
+			} else if (between == 6) {
+				throw new FanbeiException("available credit not enough six", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_SIX);
+			} else if (between == 7) {
+				throw new FanbeiException("available credit not enough seven", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_SEVEN);
+			} else if (between == 8) {
+				throw new FanbeiException("available credit not enough eight", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_EIGHT);
+			} else if (between == 9) {
+				throw new FanbeiException("available credit not enough nine", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_NINE);
+			} else if (between == 10) {
+				throw new FanbeiException("available credit not enough ten", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_TEN);
+			} else {
+				throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
+			}
 		}
 		
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(context.getUserId());

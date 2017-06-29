@@ -1,11 +1,14 @@
 package com.ald.fanbei.api.web.api.order;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -29,6 +32,8 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 
 	@Resource
 	AfOrderService afOrderService;
+	@Resource
+	AfGoodsService afGoodsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -70,6 +75,10 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setInvoiceHeader(order.getInvoiceHeader());
 		vo.setLogisticsInfo(order.getLogisticsInfo());
 		vo.setPayType(order.getPayType());
+		
+		//商品售价处理(订单价格除以商品数量)
+		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
+		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
 		return vo;
 	}
 }

@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.repayment;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -19,10 +20,14 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
@@ -89,7 +94,16 @@ public class SubmitRepaymentApi implements ApiHandle{
 		if(StringUtil.isEmpty(billIds)){
 			throw new FanbeiException("borrow bill not exist error", FanbeiExceptionCode.BORROW_BILL_NOT_EXIST_ERROR);
 		}
-		
+		List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(billIds.split(","), new Converter<String, Long>() {
+			@Override
+			public Long convert(String source) {
+				return Long.parseLong(source);
+			}
+		});
+		List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getBorrowBillByIds(billIdList);
+		if (constainsRepayingBill(borrowBillList)) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
+		}
 		AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
 		if(billDo.getCount()==0 ||repaymentAmount.compareTo(billDo.getBillAmount())!=0){
 			logger.info("repaymentAmount="+repaymentAmount+",billDo="+billDo);
@@ -151,6 +165,25 @@ public class SubmitRepaymentApi implements ApiHandle{
 			resp.setResponseData(newMap);
 		}
 		return resp;
+	}
+	
+	/**
+	 * 查看是否存在还款中的账单
+	 * @param borrowBillList
+	 * @return
+	 */
+	private boolean constainsRepayingBill(List<AfBorrowBillDo> borrowBillList) {
+		if (CollectionUtil.isEmpty(borrowBillList)) {
+			return false;
+		}
+		boolean constainRepaying = false;
+		for (AfBorrowBillDo borrowBillInfo : borrowBillList) {
+			if (BorrowBillStatus.DEALING.getCode().equals(borrowBillInfo.getStatus())) {
+				constainRepaying = true;
+				break;
+			}
+		}
+		return constainRepaying;
 	}
 	
 }

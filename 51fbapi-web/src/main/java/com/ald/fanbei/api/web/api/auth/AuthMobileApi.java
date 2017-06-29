@@ -40,6 +40,9 @@ public class AuthMobileApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+		//请求发起时间戳，避免风控回调发生在三方backUrl返回之前，形成错误更新
+		Long mobileReqTimeStamp = System.currentTimeMillis();
+		
 		Long userId = context.getUserId();
 		String apiHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
 		
@@ -62,13 +65,9 @@ public class AuthMobileApi implements ApiHandle {
 		
 		//获取基本地址成功时，本服务拼接用户信息串（可选，主要为了减少用户信息填写步骤操作），请求三方H5
 		AfUserAccountDo currUserAccount = afUserAccountService.getUserAccountByUserId(userId);
-//		MoXieReqBo moXieReqBo = new MoXieReqBo(StringUtil.null2Str(currUserAccount.getUserName()), StringUtil.null2Str(currUserAccount.getIdNumber()), StringUtil.null2Str(currUserAccount.getRealName()));
-//		String reqExtraInfoJsonStr = JSON.toJSONString(moXieReqBo);
-//		String reqUrl = respBo.getUrl()+"&loginParams="+reqExtraInfoJsonStr+"&backUrl="
-//		+apiHost+"/fanbei-web/app/mobileOperator&showTitleBar=NO&quitOnLoginDone=YES";
 		
 		String reqUrl = respBo.getUrl().trim()+"&showTitleBar=NO&quitOnLoginDone=YES&carrier_phone="+StringUtil.null2Str(currUserAccount.getUserName())
-				+"&carrier_idcard="+StringUtil.null2Str(currUserAccount.getIdNumber())+"&carrier_name="+StringUtil.UrlEncoder(currUserAccount.getRealName())+"&backUrl="+StringUtil.UrlEncoder(apiHost+"/fanbei-web/app/mobileOperator");
+				+"&carrier_idcard="+StringUtil.null2Str(currUserAccount.getIdNumber())+"&carrier_name="+StringUtil.UrlEncoder(currUserAccount.getRealName())+"&backUrl="+StringUtil.UrlEncoder(apiHost+"/fanbei-web/app/mobileOperator?mobileReqTimeStamp="+mobileReqTimeStamp);
 		
 		resp.addResponseData("url",reqUrl.trim());
 		return resp;
