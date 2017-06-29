@@ -178,6 +178,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	        			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 	        			afBorrowCashDo.setStatus("TRANSEDFAIL");
 	        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+	        			
 	        		} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
 	        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 	        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
