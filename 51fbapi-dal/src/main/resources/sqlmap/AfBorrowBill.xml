@@ -22,7 +22,7 @@
 		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status <![CDATA[<>'F']]>
     </select>
     
-    <select id="existMonthRepayingBill" resultType="java.lang.Integer" parameterType="AfBorrowBillQuery">
+    <select id="existMonthRepayingBill" resultType="java.lang.Integer" >
 		SELECT 
 			count(1)
 		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId} 

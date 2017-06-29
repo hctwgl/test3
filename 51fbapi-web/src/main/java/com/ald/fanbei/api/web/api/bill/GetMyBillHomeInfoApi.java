@@ -72,7 +72,7 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		query.setBillMonth(billMonth);
 		query.setBillYear(billYear);
 		List<AfBorrowBillDo> billList =  afBorrowBillService.getMonthBillList(query);
-		boolean isRepaying = afBorrowBillService.existMonthRepayingBill(query);
+		boolean isRepaying = afBorrowBillService.existMonthRepayingBill(query.getUserId(),query.getBillYear(),query.getBillMonth());
 		AfBillHomeVo vo = new AfBillHomeVo();
 		List<AfBillHomeListVo> list =new ArrayList<AfBillHomeListVo>();
 		for (AfBorrowBillDo afBorrowBillDo : billList) {

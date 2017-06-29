@@ -32,7 +32,7 @@ public interface AfBorrowBillDao {
 	 * @param query
 	 * @return
 	 */
-	int existMonthRepayingBill(AfBorrowBillQuery query);
+	int existMonthRepayingBill(@Param("userId") Long userId, @Param("billYear") int billYear, @Param("billMonth") int billMonth);
 
 	/**
 	 * 获取所有借款账单记录
