@@ -366,8 +366,13 @@ public class RiskUtil extends AbstractThird {
 		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，registerStrongRisk insert commitRecord fail,consumerNo="+consumerNo);
+//		}
+		
 
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 		
@@ -426,9 +431,13 @@ public class RiskUtil extends AbstractThird {
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
 		
-		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
-
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，weakverify insert commitRecord fail,consumerNo="+consumerNo);
+//		}
+		
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -482,11 +491,14 @@ public class RiskUtil extends AbstractThird {
 
 		String url = getUrl() + "/modules/api/user/action/raiseQuota.htm";
 		
-		String content = JSONObject.toJSONString(reqBo);
-		
 		String reqResult = HttpUtil.post(url, reqBo);
 		
-		commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，raiseQuota insert commitRecord fail,consumerNo="+consumerNo);
+//		}
 		logThird(reqResult, "raiseQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -522,11 +534,14 @@ public class RiskUtil extends AbstractThird {
 
 		String url = getUrl() + "/modules/api/risk/repayment.htm";
 		
-		String content = JSONObject.toJSONString(reqBo);
-		
 		String reqResult = HttpUtil.post(url, reqBo);
 		
-		commitRecordUtil.addRecord("transferBorrow", consumerNo, content, url);
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("transferBorrow", consumerNo, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，transferBorrow insert commitRecord fail,consumerNo="+consumerNo);
+//		}
 		logThird(reqResult, "transferBorrow", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -971,9 +986,12 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/examine/verify.htm";
-		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("verify", borrowId, content, url);
-
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("verify", borrowId, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，verify insert commitRecord fail,consumerNo="+consumerNo);
+//		}
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "verify", reqBo);
