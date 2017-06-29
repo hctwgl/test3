@@ -171,6 +171,6 @@ public interface AfBorrowBillService {
 	 * @param query
 	 * @return
 	 */
-	boolean existMonthRepayingBill(AfBorrowBillQuery query);
+	boolean existMonthRepayingBill(Long userId, Integer billYear, Integer billMonth);
 	
 }
