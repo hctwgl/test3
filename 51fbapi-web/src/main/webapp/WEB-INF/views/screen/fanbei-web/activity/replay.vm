@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>人气爆款专场</title>
+</head>
+<body>
+<div class="banner">
+    <a href="" class="tupian" @click="show"><img src="/images/huichang_02.jpg" alt=""></a>
+</div>
+<div id="replay">
+        <div class="goods">
+            <a class="tupian" @click="show(content.recommendGoodsList[0].goodsId)"><img src="/images/huichang_03.jpg" alt=""></a>
+        </div>
+         <div class="goods">
+            <a class="tupian" @click="show(content.recommendGoodsList[1].goodsId)"><img src="/images/huichang_04.jpg" alt=""></a>
+        </div>
+         <div class="goods">
+            <a class="tupian" @click="show(content.recommendGoodsList[2].goodsId)"><img src="/images/huichang_05.jpg" alt=""></a> 
+        </div>
+         <div class="goods">
+            <a class="tupian" @click="show(content.recommendGoodsList[3].goodsId)"><img src="/images/huichang_06.jpg" alt=""></a>
+        </div>
+         <div class="goods">
+             <a class="tupian" @click="show(content.recommendGoodsList[4].goodsId)"><img src="/images/huichang_06.jpg" alt=""></a>
+        </div>
+</div>
+</body>
+<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<script type="text/javascript" src="/dist/activity/06/demo1.js?version=$version"></script>
+
+</html>
