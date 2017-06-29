@@ -423,6 +423,7 @@ public class AppH5FanBeiWebController extends BaseController {
 				if(updateRowNums==0){
 					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.desStatus="+MobileStatus.NO.getCode()+"userId="+afUserDo.getRid());
 				}
+				processResult = false;
 			}else {
 				processResult = false;
 			}
