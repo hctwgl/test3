@@ -47,9 +47,9 @@ public class GetAllowConsumeApi implements ApiHandle {
 			throw new FanbeiException("authDo id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		long between = DateUtil.getNumberOfDatesBetween(autDo.getGmtRisk(), new Date(System.currentTimeMillis()));
-		
 		if (StringUtil.equals("N", autDo.getRiskStatus())) {
+			long between = DateUtil.getNumberOfDatesBetween(autDo.getGmtRisk(), new Date(System.currentTimeMillis()));
+			
 			if (between == 1) {
 				throw new FanbeiException("available credit not enough one", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_ONE);
 			} else if (between == 2) {
