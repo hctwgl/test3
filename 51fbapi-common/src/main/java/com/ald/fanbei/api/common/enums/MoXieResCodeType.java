@@ -14,7 +14,8 @@ public enum MoXieResCodeType {
 	DONOTHING("-1", "无操作退回"), 
 	ZERO("0", "失败"), 
 	ONE("1", "成功"), 
-	TWO("2", "认证中");
+	TWO("2", "认证中"), 
+	FIFTY("50", "认证失败");
 
 	private String code;
 
