@@ -410,9 +410,20 @@ public class AppH5FanBeiWebController extends BaseController {
 				authDo.setMobileStatus(MobileStatus.WAIT.getCode());
 				int updateRowNums = afUserAuthService.updateUserAuthMobileStatusWait(authDo);
 				if(updateRowNums==0){
-					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.userId="+afUserDo.getRid());
+					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.desStatus="+MobileStatus.WAIT.getCode()+"userId="+afUserDo.getRid());
 				}
-			}else{
+			}else if(MoXieResCodeType.FIFTY.getCode().equals(mxcode)){
+				//三方不经过强风控，直接通过backUrl返回api告知用户认证失败
+				AfUserAuthDo authDo = new AfUserAuthDo();
+				authDo.setUserId(afUserDo.getRid());
+				//此字段保存该笔认证申请的发起时间，更新时做校验，防止在更新时，风控对这笔认证已经回调处理成功，造成错误更新
+				authDo.setGmtMobile(reqTime);
+				authDo.setMobileStatus(MobileStatus.NO.getCode());
+				int updateRowNums = afUserAuthService.updateUserAuthMobileStatusWait(authDo);
+				if(updateRowNums==0){
+					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.desStatus="+MobileStatus.NO.getCode()+"userId="+afUserDo.getRid());
+				}
+			}else {
 				processResult = false;
 			}
 			model.put("processResult", processResult);

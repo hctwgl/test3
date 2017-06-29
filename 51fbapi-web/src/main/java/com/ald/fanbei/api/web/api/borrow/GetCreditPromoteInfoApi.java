@@ -117,6 +117,13 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		data.put("creditModel", creditModel);
 		data.put("rrCreditStatus", YesNoStatus.YES.getCode());
 		data.put("mobileStatus", authDo.getMobileStatus());
+		//添加是否已发起过运营商认证，来区分对应状态是初始化还是之前认证失败
+		if(authDo.getGmtMobile()!=null){
+			data.put("gmtMobileExist", YesNoStatus.YES.getCode());
+		}else{
+			data.put("gmtMobileExist", YesNoStatus.NO.getCode());
+		}
+		
 		data.put("teldirStatus", authDo.getTeldirStatus());
 		data.put("zmModel", zmModel);
 		data.put("locationModel", locationModel);
