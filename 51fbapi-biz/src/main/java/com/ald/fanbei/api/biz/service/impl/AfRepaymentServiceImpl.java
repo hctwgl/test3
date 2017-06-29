@@ -130,11 +130,13 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			}
 		});
 		if(cardId==-1){//微信支付
+			afRepaymentDao.addRepayment(repayment);
 			//修改账单状态
 			map = UpsUtil.buildWxpayTradeOrderRepayment(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode(),true);
 		}else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+			afRepaymentDao.addRepayment(repayment);
 			afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), 
@@ -148,9 +150,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //			}
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
+			afRepaymentDao.addRepayment(repayment);
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
 		}
-		afRepaymentDao.addRepayment(repayment);
 		map.put("refId", repayment.getRid());
 		map.put("type", UserAccountLogType.REPAYMENT.getCode());
 		return map;
