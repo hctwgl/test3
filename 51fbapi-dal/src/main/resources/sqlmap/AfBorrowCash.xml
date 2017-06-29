@@ -258,4 +258,20 @@
 		LIMIT
 		1
 	</select>
+	
+	<select id ="getNowUnfinishedBorrowCashByUserId" resultType="AfBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and status not in ('CLOSED','FINSH')
+		ORDER BY
+		gmt_create ASC
+		LIMIT
+		1
+	</select>
 </mapper>
