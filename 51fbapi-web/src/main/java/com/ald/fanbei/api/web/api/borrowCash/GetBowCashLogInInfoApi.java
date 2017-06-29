@@ -85,7 +85,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		//
 		String inRejectLoan = YesNoStatus.NO.getCode();
-		
+		String unfinished = YesNoStatus.NO.getCode();
+		AfBorrowCashDo afBorrowCash = afBorrowCashService.getNowUnfinishedBorrowCashByUserId(userId);
+		if (afBorrowCash != null) {
+			unfinished = YesNoStatus.YES.getCode();
+		}
+				
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 		//xiaotianjian 2017/06/20 增加最低借款金额资源判断，如果额度低于这个，则显示借款超市
 		AfResourceDo borrowCashLimitAmountResource = afResourceService.getSingleResourceBytype(Constants.RES_BORROW_CASH_LIMIT_AMOUNT);
@@ -104,11 +109,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else {
 			data.put("status", afBorrowCashDo.getStatus());
 
-			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())
-					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
+			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
-			} else if (!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) &&
-					usableAmount.compareTo(borrowCashLimitAmount) < 0) {
+			} else if (!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) && usableAmount.compareTo(borrowCashLimitAmount) < 0 && StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
 				inRejectLoan = YesNoStatus.YES.getCode();
 			}
 			data.put("jfbAmount", account.getJfbAmount());
@@ -247,7 +250,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("maxAmount", resource.getValue());
 		}
 		
-		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) && usableAmount.compareTo(borrowCashLimitAmount) < 0) {
+		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) && usableAmount.compareTo(borrowCashLimitAmount) < 0 && StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 		
