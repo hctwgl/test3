@@ -26,6 +26,7 @@ public class AfOrderListVo extends AbstractSerial {
 	private BigDecimal actualAmount;
 	private BigDecimal couponAmount;
 	private String payType;
+	private BigDecimal goodsSaleAmount;
 	
 	public Long getOrderId() {
 		return orderId;
@@ -98,6 +99,12 @@ public class AfOrderListVo extends AbstractSerial {
 	}
 	public void setPayType(String payType) {
 		this.payType = payType;
+	}
+	public BigDecimal getGoodsSaleAmount() {
+		return goodsSaleAmount;
+	}
+	public void setGoodsSaleAmount(BigDecimal goodsSaleAmount) {
+		this.goodsSaleAmount = goodsSaleAmount;
 	}
 	
 }
