@@ -5,7 +5,7 @@ let vm=new Vue({
         content:{}
     },
     created:function () {
-       
+
         this.logData();
     },
     methods:{
@@ -15,19 +15,19 @@ let vm=new Vue({
             $.ajax({
                     type: 'post',
                     url: '/fanbei-web/encoreActivityInfo',
-                    data:{'activityId':13},
-                    success:function(data) {                      
-                      self.content = eval('(' + data + ')');  
-                      console.log(self.content)                    
-                      self.content = self.content.data;  
+                    data:{'activityId':2},
+                    success:function(data) {
+                      self.content = eval('(' + data + ')');
+                      console.log(self.content)
+                      self.content = self.content.data;
                       console.log(self.content)
                       console.log(self.content.recommendGoodsList[0].goodsId)
-                     
-                    }, 
+
+                    },
                     error:function(){
                        requestMsg("请求失败");
-                    }                     
-                });                
+                    }
+                });
         },
         show:function(id){
             let self=this;
@@ -36,10 +36,10 @@ let vm=new Vue({
                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
             } else {
                window.location.href=self.content.notifyUrl+'&params={"goodsId":"'+id+'"}'
-            }                       
+            }
             // window.location.reload()
-        } 
-   
+        }
+
     }
 });
 
@@ -52,7 +52,7 @@ function alaShareData(){
             'shareAppTitle': '人气爆款专场',  // 分享的title
             'shareAppContent': '我抢到了一款爆款商品!\n点击查看',  // 分享的内容
             'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-            'shareAppUrl': ipUrl+'/fanbei-web/activity/replay?replayShare=replayShare&activityId='+13,  // 分享后的链接
+            'shareAppUrl': ipUrl+'/fanbei-web/activity/replay?replayShare=replayShare&activityId='+2,  // 分享后的链接
             'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
             'sharePage': 'replay' // 分享的页面
           };

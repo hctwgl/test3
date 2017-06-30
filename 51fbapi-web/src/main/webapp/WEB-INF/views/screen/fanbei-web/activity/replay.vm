@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    #set($version="2017063001")
     #set($src="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +20,7 @@
             <a class="tupian" @click="show(content.recommendGoodsList[1].goodsId)"><img src="$src/replay3.jpg" alt=""></a>
         </div>
          <div class="goods">
-            <a class="tupian" @click="show(content.recommendGoodsList[2].goodsId)"><img src="$src/replay4.jpg" alt=""></a> 
+            <a class="tupian" @click="show(content.recommendGoodsList[2].goodsId)"><img src="$src/replay4.jpg" alt=""></a>
         </div>
          <div class="goods">
             <a class="tupian" @click="show(content.recommendGoodsList[3].goodsId)"><img src="$src/replay5.jpg" alt=""></a>
