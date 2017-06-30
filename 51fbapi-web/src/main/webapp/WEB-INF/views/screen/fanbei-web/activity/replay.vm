@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    #set($src="https://fs.51fanbei.com/h5/app/activity/06")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -8,23 +9,23 @@
 </head>
 <body>
 <div class="banner">
-    <a href="" class="tupian" @click="show"><img src="/images/huichang_02.jpg" alt=""></a>
+    <a href="" class="tupian" @click="show"><img src="$src/replay1.jpg" alt=""></a>
 </div>
 <div id="replay">
         <div class="goods">
-            <a class="tupian" @click="show(content.recommendGoodsList[0].goodsId)"><img src="/images/huichang_03.jpg" alt=""></a>
+            <a class="tupian" @click="show(content.recommendGoodsList[0].goodsId)"><img src="$src/replay2.jpg" alt=""></a>
         </div>
          <div class="goods">
-            <a class="tupian" @click="show(content.recommendGoodsList[1].goodsId)"><img src="/images/huichang_04.jpg" alt=""></a>
+            <a class="tupian" @click="show(content.recommendGoodsList[1].goodsId)"><img src="$src/replay3.jpg" alt=""></a>
         </div>
          <div class="goods">
-            <a class="tupian" @click="show(content.recommendGoodsList[2].goodsId)"><img src="/images/huichang_05.jpg" alt=""></a> 
+            <a class="tupian" @click="show(content.recommendGoodsList[2].goodsId)"><img src="$src/replay4.jpg" alt=""></a> 
         </div>
          <div class="goods">
-            <a class="tupian" @click="show(content.recommendGoodsList[3].goodsId)"><img src="/images/huichang_06.jpg" alt=""></a>
+            <a class="tupian" @click="show(content.recommendGoodsList[3].goodsId)"><img src="$src/replay5.jpg" alt=""></a>
         </div>
          <div class="goods">
-             <a class="tupian" @click="show(content.recommendGoodsList[4].goodsId)"><img src="/images/huichang_06.jpg" alt=""></a>
+             <a class="tupian" @click="show(content.recommendGoodsList[4].goodsId)"><img src="$src/replay6.jpg" alt=""></a>
         </div>
 </div>
 </body>
