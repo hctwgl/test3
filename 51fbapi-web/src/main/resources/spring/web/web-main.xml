@@ -67,6 +67,17 @@
 	</bean>
 
 	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:order="2">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="viewNames" value="*" />
+		<property name="contentType" value="text/html" />
+		<property name="prefix" value="/WEB-INF/views/screen/" />
+		<property name="suffix" value=".html" />
+	</bean>
+
+	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
 			<list>
@@ -104,7 +115,7 @@
 				<value>/good/getBrandShopList</value>
 				<value>/good/getGoodsDetailInfo</value>
 				<value>/good/getGoodsTkRate</value>
-				
+
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				<value>/brand/getBrandList</value>
@@ -194,7 +205,7 @@
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
 				<entry key="/auth/authRealname" value-ref="authRealnameApi" />
 				<entry key="/auth/authContacts" value-ref="authContactsApi" />
-				<entry key="/auth/authCredit" value-ref="authCreditApi" /> 
+				<entry key="/auth/authCredit" value-ref="authCreditApi" />
 				<entry key="/auth/authZhima" value-ref="authZhimaApi" />
 				<entry key="/auth/authBankcard" value-ref="authBankcardApi" />
 				<entry key="/auth/checkBankcard" value-ref="checkBankcardApi" />
@@ -234,7 +245,7 @@
 				<entry key="/bill/getLimitDetailList" value-ref="getLimitDetailListApi" />
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
-				
+
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
 				<entry key="/brand/getOrderDetailUrl" value-ref="getOrderDetailUrlApi" />
@@ -245,8 +256,8 @@
 				<entry key="/brand/getBrandCouponList" value-ref="getBrandCouponListApi" />
 				<entry key="/brand/pickBrandCoupon" value-ref="pickBrandCouponApi" />
 				<entry key="/brand/payOrderV1" value-ref="payOrderV1Api" />
-				
-				<!--borrowCash  -->
+
+				<!--borrowCash -->
 				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />
 				<entry key="/borrowCash/getBowCashLogInInfo" value-ref="getBowCashLogInInfoApi" />
 				<entry key="/borrowCash/getConfirmBorrowInfo" value-ref="getConfirmBorrowInfoApi" />
@@ -255,8 +266,8 @@
 				<entry key="/borrowCash/getBorrowCashList" value-ref="getBorrowCashListApi" />
 				<entry key="/borrowCash/getBorrowOverdueList" value-ref="getBorrowOverdueListApi" />
 				<entry key="/borrowCash/applyRenewal" value-ref="applyRenewalApi" />
-				<entry key="/borrowCash/confirmRenewalPay" value-ref="confirmRenewalPayApi" />	
-				<entry key="/borrowCash/getRenewalList" value-ref="getRenewalListApi" />	
+				<entry key="/borrowCash/confirmRenewalPay" value-ref="confirmRenewalPayApi" />
+				<entry key="/borrowCash/getRenewalList" value-ref="getRenewalListApi" />
 				<entry key="/borrowCash/getRenewalDetail" value-ref="getRenewalDetailApi" />
 				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
@@ -264,7 +275,7 @@
 				<entry key="/borrowCash/getLoanSupermarketList" value-ref="getLoanSupermarketListApi" />
 				<entry key="/loanMarket/accessLoanSupermarket" value-ref="accessLoanSupermarketApi" />
 				<entry key="/borrowCash/applyBorrowCashV1" value-ref="applyBorrowCashV1Api" />
-		        
+
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
@@ -274,16 +285,17 @@
 				<entry key="/agencyBuy/submitAgencyBuyOrder" value-ref="submitAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/getAgencyBuyOrderDetail" value-ref="GetAgencyBuyOrderDetailApi" />
 				<entry key="/agencyBuy/cancelAgencyBuyOrder" value-ref="cancelAgencyBuyOrderApi" />
-				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder" value-ref="completedAgencyBuyOrderApi" />
+				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder"
+					value-ref="completedAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/getAgencyNperInfo" value-ref="getAgencyNperInfoApi" />
 				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
 				<entry key="/agencyBuy/getAgencyCouponList" value-ref="getAgencyCouponListApi" />
-				<entry key="/agencyBuy/payAgencyOrderV1" value-ref="payAgencyOrderV1Api" />			
-				
-				
-				
-				
-				<!--运营接口-->
+				<entry key="/agencyBuy/payAgencyOrderV1" value-ref="payAgencyOrderV1Api" />
+
+
+
+
+				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />
 
 				<entry key="/operateApp/getAgencyBuyOrderList" value-ref="getAgencyBuyOrderListApi" />
