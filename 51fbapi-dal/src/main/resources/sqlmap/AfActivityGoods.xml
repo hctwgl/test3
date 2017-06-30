@@ -45,6 +45,7 @@
 		AND g.is_delete = 0
 		AND now() > ag.valid_start
 		AND ag.valid_end > now()
+		ORDER BY ag.gmt_create DESC
 	</select>
 	
 	<select id="listRecommendGoodsByActivityId" resultType="AfGoodsDo" parameterType="java.lang.Long">
@@ -62,6 +63,7 @@
 			g.is_delete = 0
 		AND
 			m.is_delete = 0
+		ORDER BY m.gmt_create DESC
 	</select>
 	
 	<select id="getActivityGoodsByGoodsId" resultType="AfActivityGoodsDo">
