@@ -162,21 +162,31 @@ $(function(){
 									token:token
 								},
 								success: function(returnData){
-                  if ( style==10 || style==12 ) {  // 样式12弹窗
-                    $("#register_submitBtn").attr("disabled",true);
-                    $(".registerSuss").removeClass("hide");  // 显示弹窗，样式10
-                    $(".registerMask").removeClass("hide");  // 显示弹窗，样式10
+                  if (returnData.success) {
+                    if ( style==8 ) {
+                      layer.open({
+                        content: '跳转后直接下载【51返呗】！30分钟内登陆，领30元还款抵用券！',
+                        skin: 'msg',
+                        time: 3
+                      });
+                      // window.location.href = returnData.url;
+                      setTimeout(function(){
+                        window.location.href = returnData.url;
+                      }, 2000);
+                    } else if ( style==10 || style==12 ) {  // 样式12弹窗
+                      $("#register_submitBtn").attr("disabled",true);
+                      $(".registerSuss").removeClass("hide");  // 显示弹窗，样式10
+                      $(".registerMask").removeClass("hide");  // 显示弹窗，样式10
 
-                    $("#downloadApp").click(function(){  // 点击下载app
+                      $("#downloadApp").click(function(){  // 点击下载app
+                        window.location.href = returnData.url;
+                      });
+                    } else {
+                      $("#register_submitBtn").attr("disabled",true);
                       window.location.href = returnData.url;
-                    });
+                    }
                   } else {
-                    if ( returnData.success ) {
-  										$("#register_submitBtn").attr("disabled",true);
-  										window.location.href = returnData.url;
-  									} else {
-  										requestMsg(returnData.msg);
-  									}
+                    requestMsg(returnData.msg);
                   }
 								},
 								error: function(){
@@ -208,3 +218,17 @@ $(function(){
     };
   });
 });
+
+// setTimeout(function(){
+//   document.body.scrollTop=0;
+//   $(".registerMask").removeClass('hide');
+//   $(".channel8_rule").removeClass('hide');
+// }, 500);
+
+// layer.open({
+//   content: '跳转后直接下载【51返呗】！30分钟内登陆，领30元还款抵用券！',
+//   btn: ['确认', '取消'],
+//   yes: function(){
+//     window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+//   }
+// });

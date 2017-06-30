@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017062801")
+    #set($version="2017063007")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
@@ -12,7 +12,7 @@
 <input type="hidden" id="style" value="$!{style}">
 
 <div class="channelRegister_wrap">
-    #if( $!{style}==8 || $!{style}==9 || $!{style}==10 || $!{style}==11 || $!{style}==12)
+    #if( $!{style}==9 || $!{style}==10 || $!{style}==11 || $!{style}==12)
       <img src="$commonUrl/channel$!{style}_01.png">
     #elseif( $!{style}==14 )
       <img src="$commonUrl/channel7_01.jpg">
@@ -22,7 +22,7 @@
     <div class="channelRegisterWrap">
       #if( $!{style}==7 || $!{style}==9 || $!{style}==12 )
           <img src="$commonUrl/channel$!{style}_02.png">
-      #elseif( $!{style}==8 || $!{style}==11 || $!{style}==14 )
+      #elseif( $!{style}==11 || $!{style}==14 )
           <img src="$commonUrl/channel7_02.png">
       #else
           <img src="$commonUrl/channel$!{style}_02.jpg">
@@ -42,7 +42,7 @@
               <button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
             #end
         </li>
-        #if($!{style} == 13)
+        #if( $!{style}==8 || $!{style}==13 )
           <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
         #else
         <li class="clearfix">
@@ -52,16 +52,20 @@
           #end
         </li>
         #end
-        #if($!{style} == 13)
+        #if( $!{style}==8 || $!{style}==13 )
         <li class="clearfix">
           <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
-          <button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
+          <button class="register_codeBtn_right" id="register_codeBtn" style="
+            #if( $!{style}==8 )
+              color: #ffe402;
+            #end
+          ">点击获取</button>
         </li>
         #else
         <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
         #end
         <li>
-          #if( $!{style} == 12 )
+          #if( $!{style}==8 || $!{style}==12 )
           <button class="register_submitBtn" id="register_submitBtn"></button>
           #else
           <button class="register_submitBtn" id="register_submitBtn">立即注册</button>
@@ -80,19 +84,12 @@
         #end
       </ul>
     </div>
-
-    #if( $!{style}==4 )
+    #if( $!{style}==4 || $!{style}==8 || $!{style}==13 )
       <img src="$commonUrl/channel$!{style}_03.jpg">
-    #elseif( $!{style}==12 )
-      <img src="$commonUrl/channel$!{style}_03.png">
-      <div class="channelRegisterPopup10">
-        <div class="registerMask hide"></div>
-        <div class="registerSuss hide"><img id="downloadApp" src="$commonUrl/channel$!{style}_04.png"></div>
-      </div>
-    #elseif( $!{style}==7 || $!{style}==8 )
+    #elseif( $!{style}==7 )
       <img src="$commonUrl/channel7_03.png">
     #elseif( $!{style}==9 )
-      <div class="channel9_rule">
+      <div class="channel9_rule hide">
         <p><i></i><span>活动规则</span></p>
         <p>1.活动时间：2017年6月9日--2017年6月25日；</p>
         <p>2.此活动名额仅限前10000名，数量有限，抢完为止；</p>
@@ -115,14 +112,18 @@
           <span id="repeatRegister">重新注册</span>
         </div>
       </div>
-    #elseif( $!{style}==13 )
-      <img src="$commonUrl/channel13_03.jpg">
+    #elseif( $!{style}==12 )
+      <img src="$commonUrl/channel$!{style}_03.png">
+      <div class="channelRegisterPopup10">
+        <div class="registerMask hide"></div>
+        <div class="registerSuss hide"><img id="downloadApp" src="$commonUrl/channel$!{style}_04.png"></div>
+      </div>
     #end
     <div class="channelRegister_copyright
 			#if( $!{style}==2 || $!{style}==4 )
 				copyright2
-			#elseif( $!{style}==7 || $!{style}==8 || $!{style}==11 || $!{style}==14 )
-				copyright78
+			#elseif( $!{style}==7 || $!{style}==11 || $!{style}==14 )
+				copyright7
 			#else
 				copyright$!{style}
 			#end
