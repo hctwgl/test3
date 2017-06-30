@@ -637,7 +637,7 @@ public class RiskUtil extends AbstractThird {
 //			}
 
 //		});
-					return 1l;
+		return 1l;
 	}
 
 	/**
@@ -663,48 +663,51 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal au_amount = new BigDecimal(limitAmount);
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
 			String result = obj.getString("result");
-			 
-			if (StringUtils.equals("10", result)) {
-				AfUserAuthDo authDo = new AfUserAuthDo();
-      			authDo.setUserId(consumerNo);
-      			authDo.setRiskStatus(RiskStatus.YES.getCode());
-      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-      			afUserAuthService.updateUserAuth(authDo);
-      			
-      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
-                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
-				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
-					AfUserAccountDo accountDo = new AfUserAccountDo();
-					accountDo.setUserId(consumerNo);
-					accountDo.setAuAmount(au_amount);
-					afUserAccountService.updateUserAccount(accountDo);
-				}
-      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
-			} else if (StringUtils.equals("30", result)) {
-				AfUserAuthDo authDo = new AfUserAuthDo();
-      			authDo.setUserId(consumerNo);
-      			authDo.setRiskStatus(RiskStatus.NO.getCode());
-      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-      			afUserAuthService.updateUserAuth(authDo);
-      			
-      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
-                                                否则把用户的额度设置成分控返回的额度*/
-      			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-      			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-      				AfUserAccountDo accountDo = new AfUserAccountDo();
-      				accountDo.setUserId(consumerNo);
-      				accountDo.setAuAmount(BigDecimal.ZERO);
-      				afUserAccountService.updateUserAccount(accountDo);
-      			} else {
-      				AfUserAccountDo accountDo = new AfUserAccountDo();
-					accountDo.setUserId(consumerNo);
-					accountDo.setAuAmount(userAccountDo.getUsedAmount());
-					afUserAccountService.updateUserAccount(accountDo);
-      			}
-      			jpushService.strongRiskFail(userAccountDo.getUserName());
-			}
 			
+			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
+			//风控异步回调的话，以第一次异步回调成功为准
+			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+				if (StringUtils.equals("10", result)) {
+					AfUserAuthDo authDo = new AfUserAuthDo();
+	      			authDo.setUserId(consumerNo);
+	      			authDo.setRiskStatus(RiskStatus.YES.getCode());
+	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
+	      			afUserAuthService.updateUserAuth(authDo);
+	      			
+	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+	                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+					AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+					if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+						AfUserAccountDo accountDo = new AfUserAccountDo();
+						accountDo.setUserId(consumerNo);
+						accountDo.setAuAmount(au_amount);
+						afUserAccountService.updateUserAccount(accountDo);
+					}
+	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
+				} else if (StringUtils.equals("30", result)) {
+					AfUserAuthDo authDo = new AfUserAuthDo();
+	      			authDo.setUserId(consumerNo);
+	      			authDo.setRiskStatus(RiskStatus.NO.getCode());
+	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
+	      			afUserAuthService.updateUserAuth(authDo);
+	      			
+	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
+	                                                否则把用户的额度设置成分控返回的额度*/
+	      			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+	      			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
+	      				AfUserAccountDo accountDo = new AfUserAccountDo();
+	      				accountDo.setUserId(consumerNo);
+	      				accountDo.setAuAmount(BigDecimal.ZERO);
+	      				afUserAccountService.updateUserAccount(accountDo);
+	      			} else {
+	      				AfUserAccountDo accountDo = new AfUserAccountDo();
+						accountDo.setUserId(consumerNo);
+						accountDo.setAuAmount(userAccountDo.getUsedAmount());
+						afUserAccountService.updateUserAccount(accountDo);
+	      			}
+	      			jpushService.strongRiskFail(userAccountDo.getUserName());
+				}
+			}
 		}
 		return 0;
 	}
