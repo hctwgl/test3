@@ -84,56 +84,34 @@ $(function(){
     }
 	};
 
-  var mobileNum = $("#register_mobile").val();
-  // md5加密
-  var register_password = $("#register_password").val();
-  var password_md5 = String(CryptoJS.MD5(register_password));
-  var passwordLength = register_password.length;
-
-  // 正则判断密码为6-18位字母+字符的组合
-  var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
-  var password = pwdReg.test(register_password);
-
-  // var mobileNum = $("#register_mobile").val();
-  var register_verification = $("#register_verification").val();
-  var channelCode = $("#channelCode").val();
-  var pointCode = $("#pointCode").val();
-
-  var isState = $("#register_codeBtn").attr("isState");
-
-
 	// 获取验证码
 	$("#register_codeBtn").click(function(){
 		var isState = $(this).attr("isState");
-		// var mobileNum = $("#register_mobile").val();
+		var mobileNum = $("#register_mobile").val();
 		if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
-      if ( password && 6 <= passwordLength <= 18 ) { // 密码6-18位
-  			$("#register_codeBtn").attr("disabled",true);
-  			$.ajax({
-    			url: "/app/user/getRegisterSmsCode",
-    			type: "POST",
-    			dataType: "JSON",
-    			data: {
-    				mobile: mobileNum,
-    				token: token
-    			},
-    			success: function(returnData){
-    				if (returnData.success) {
-      				$("#register_codeBtn").attr("isState",1);
-  						$("#register_codeBtn").text(timerS+" s");
-             	timerInterval = setInterval(timeFunction,1000);
-    				} else {
-    					requestMsg(returnData.msg);
-    					$("#register_codeBtn").removeAttr("disabled");
-    				}
-    			},
-    			error: function(){
-  	      	requestMsg("请求失败");
-    			}
-    		})
-      }else{
-        requestMsg("请填写6-18位的数字、字母、字符组成的密码");
-      }
+			$("#register_codeBtn").attr("disabled",true);
+			$.ajax({
+  			url: "/app/user/getRegisterSmsCode",
+  			type: "POST",
+  			dataType: "JSON",
+  			data: {
+  				mobile: mobileNum,
+  				token: token
+  			},
+  			success: function(returnData){
+  				if (returnData.success) {
+    				$("#register_codeBtn").attr("isState",1);
+						$("#register_codeBtn").text(timerS+" s");
+           	timerInterval = setInterval(timeFunction,1000);
+  				} else {
+  					requestMsg(returnData.msg);
+  					$("#register_codeBtn").removeAttr("disabled");
+  				}
+  			},
+  			error: function(){
+	      	requestMsg("请求失败");
+  			}
+  		})
 		} else{
 	  	requestMsg("请填写正确的手机号");
 		}
@@ -142,30 +120,30 @@ $(function(){
   // 提交注册
   $("#register_submitBtn").click(function(){ // 完成注册提交
 		// md5加密
-		// var register_password = $("#register_password").val();
-		// var password_md5 = String(CryptoJS.MD5(register_password));
-		// var passwordLength = register_password.length;
+		var register_password = $("#register_password").val();
+		var password_md5 = String(CryptoJS.MD5(register_password));
+		var passwordLength = register_password.length;
 
 		// 正则判断密码为6-18位字母+字符的组合
 		// var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
 		// var password = pwdReg.test(register_password);
 
     // 正则判断密码为6-18位字母+字符的组合
-    // var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
-    // var password = pwdReg.test(register_password);
+    var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
+    var password = pwdReg.test(register_password);
 
-    // var mobileNum = $("#register_mobile").val();
-    // var register_verification = $("#register_verification").val();
-		// var channelCode = $("#channelCode").val();
-		// var pointCode = $("#pointCode").val();
-    //
-		// var isState = $("#register_codeBtn").attr("isState");
+    var mobileNum = $("#register_mobile").val();
+    var register_verification = $("#register_verification").val();
+		var channelCode = $("#channelCode").val();
+		var pointCode = $("#pointCode").val();
+
+		var isState = $("#register_codeBtn").attr("isState");
 
 		if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
 			if ( register_verification != "" ) { // 验证码不能为空
-				if ( password && 6 <= passwordLength <= 18 ) { // 密码6-18位
+				if ( password && 6 <= passwordLength && passwordLength <= 18 ) { // 密码6-18位
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
-						if ( $("#register_codeBtn").attr("isState") == 1 ) {
+						if ( $("#register_codeBtn").attr("isState")==1 ) {
               // 检测访问量
               if ( style==14 ) {
                 _taq.push({convert_id:"62421367574", event_type:"form"});
@@ -195,10 +173,9 @@ $(function(){
                         skin: 'msg',
                         time: 3
                       });
-                      // window.location.href = returnData.url;
                       setTimeout(function(){
                         window.location.href = returnData.url;
-                      }, 2000);
+                      }, 1000);
                     } else if ( style==10 || style==12 ) {  // 样式12弹窗
                       $("#register_submitBtn").attr("disabled",true);
                       $(".registerSuss").removeClass("hide");  // 显示弹窗，样式10
@@ -228,7 +205,7 @@ $(function(){
 								}
 							})
 						} else {
-							requestMsg("请输入正确的验证码");
+							requestMsg("请获取验证码");
 						}
 					} else {
 						requestMsg("请阅读并同意《51返呗用户注册协议》");
@@ -237,7 +214,7 @@ $(function(){
 					requestMsg("请填写6-18位的数字、字母、字符组成的密码");
 				}
 			} else {
-				requestMsg("请输入验证码");
+				requestMsg("请输入正确的验证码");
 			}
 		} else{
       requestMsg("请填写正确的手机号");
