@@ -66,16 +66,6 @@
 		</property>
 	</bean>
 
-	<bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
-		p:order="2">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="viewNames" value="*" />
-		<property name="contentType" value="text/html" />
-		<property name="prefix" value="/WEB-INF/views/screen/" />
-		<property name="suffix" value=".html" />
-	</bean>
 
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
