@@ -15,7 +15,7 @@ let vm=new Vue({
             $.ajax({
                     type: 'post',
                     url: '/fanbei-web/encoreActivityInfo',
-                    data:{'activityId':4},
+                    data:{'activityId':13},
                     success:function(data) {                      
                       self.content = eval('(' + data + ')');  
                       console.log(self.content)                    
@@ -52,7 +52,7 @@ function alaShareData(){
             'shareAppTitle': '人气爆款专场',  // 分享的title
             'shareAppContent': '我抢到了一款爆款商品！</br>点击查看',  // 分享的内容
             'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-            'shareAppUrl': ipUrl+'/fanbei-web/activity/replay?replayShare=replayShare&activityId='+4,  // 分享后的链接
+            'shareAppUrl': ipUrl+'/fanbei-web/activity/replay?replayShare=replayShare&activityId='+13,  // 分享后的链接
             'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
             'sharePage': 'replay' // 分享的页面
           };
