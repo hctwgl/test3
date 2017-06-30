@@ -29,6 +29,6 @@
 </div>
 </body>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
-<script type="text/javascript" src="/dist/activity/06/demo1.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/06/replay.js?version=$version"></script>
 
 </html>
