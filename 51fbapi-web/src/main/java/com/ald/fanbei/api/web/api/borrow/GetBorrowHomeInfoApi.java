@@ -83,11 +83,11 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		if(null == authDo.getGmtMobile()){
 			vo.setMobileStatus(authDo.getMobileStatus());
 		}else{
-			if(StringUtil.equals(MobileStatus.YES.getCode(), authDo.getMobileStatus())&&DateUtil.afterDay(authDo.getGmtMobile(), DateUtil.addMonths(new Date(), 2))){//超过两个月
-				vo.setMobileStatus(MobileStatus.NO.getCode());
-			}else{
+//			if(StringUtil.equals(MobileStatus.YES.getCode(), authDo.getMobileStatus())&&DateUtil.afterDay(authDo.getGmtMobile(), DateUtil.addMonths(new Date(), 2))){//超过两个月
+//				vo.setMobileStatus(MobileStatus.NO.getCode());
+//			}else{
 				vo.setMobileStatus(authDo.getMobileStatus());
-			}
+//			}
 		}
 		vo.setRealNameStatus(authDo.getRealnameStatus());
 		vo.setRepayLimitTime(afBorrowService.getReyLimitDate("",now));
