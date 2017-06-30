@@ -187,7 +187,7 @@ public class BoluomeController extends AbstractThird{
     		orderInfo.setGoodsId(0l);
     		orderInfo.setOpenId(StringUtils.EMPTY);
     		orderInfo.setGoodsIcon(shopInfo.getLogo());
-    		orderInfo.setCount(0);
+    		orderInfo.setCount(1);
     		orderInfo.setPriceAmount(priceAmount);
     		orderInfo.setSaleAmount(priceAmount);
     		orderInfo.setActualAmount(BigDecimal.ZERO);

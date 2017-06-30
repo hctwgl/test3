@@ -149,4 +149,28 @@ public interface AfBorrowBillService {
 	 */
 	int getSumOverdueCountByBorrowId(Long borrowId);
 	
+	/**
+	 * 修改账单状态
+	 * @param billIds 账单ids
+	 * @param status 状态
+	 * @return
+	 */
+	int updateBorrowBillStatusByBillIdsAndStatus(List<Long> billIds, String status);
+	
+	/**
+	 * 根据账单id获取账单列表
+	 * 
+	 * @param ids
+	 * @return
+	 */
+	List<AfBorrowBillDo> getBorrowBillByIds(List<Long> billIdList);
+	
+	/**
+	 * 判断是否存在当月正在还款中的账单
+	 * 
+	 * @param query
+	 * @return
+	 */
+	boolean existMonthRepayingBill(Long userId, Integer billYear, Integer billMonth);
+	
 }

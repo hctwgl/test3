@@ -23,6 +23,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -116,6 +117,13 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		data.put("creditModel", creditModel);
 		data.put("rrCreditStatus", YesNoStatus.YES.getCode());
 		data.put("mobileStatus", authDo.getMobileStatus());
+		//添加是否已发起过运营商认证，来区分对应状态是初始化还是之前认证失败
+		if(authDo.getGmtMobile()!=null){
+			data.put("gmtMobileExist", YesNoStatus.YES.getCode());
+		}else{
+			data.put("gmtMobileExist", YesNoStatus.NO.getCode());
+		}
+		
 		data.put("teldirStatus", authDo.getTeldirStatus());
 		data.put("zmModel", zmModel);
 		data.put("locationModel", locationModel);
@@ -141,12 +149,17 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 		if(idNumberDo == null){
 			data.put("isUploadImage", "N");
-		}else if (StringUtils.isNotBlank(idNumberDo.getIdFrontUrl()) && StringUtils.isNotBlank(idNumberDo.getIdBehindUrl()) ) {
+		} else if (StringUtils.isNotBlank(idNumberDo.getIdFrontUrl()) && StringUtils.isNotBlank(idNumberDo.getIdBehindUrl()) ) {
 			data.put("isUploadImage", "Y");
-		}else {
+		} else {
 			data.put("isUploadImage", "N");
 		}
 		
+		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
+			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtRisk()), 10);
+			long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+			data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
+		}
 		return data;
 	}
 

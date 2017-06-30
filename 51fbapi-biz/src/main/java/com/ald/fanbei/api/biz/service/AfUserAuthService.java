@@ -28,6 +28,13 @@ public interface AfUserAuthService {
 	int updateUserAuth(AfUserAuthDo afUserAuthDo);
 	
 	/**
+	 * 更新运营商认证状态为认证中-此更新比较特殊单独方法处理
+	 * @param afUserAuthDo
+	 * @return
+	 */
+	int updateUserAuthMobileStatusWait(AfUserAuthDo afUserAuthDo);
+	
+	/**
 	 * 获取用户认证信息
 	 * @param userId
 	 * @return

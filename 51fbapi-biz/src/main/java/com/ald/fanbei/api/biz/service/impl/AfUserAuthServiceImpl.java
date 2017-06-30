@@ -41,6 +41,11 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	public int updateUserAuth(AfUserAuthDo afUserAuthDo) {
 		return afUserAuthDao.updateUserAuth(afUserAuthDo);
 	}
+	
+	@Override
+	public int updateUserAuthMobileStatusWait(AfUserAuthDo afUserAuthDo) {
+		return afUserAuthDao.updateUserAuthMobileStatusWait(afUserAuthDo);
+	}
 
 	@Override
 	public AfUserAuthDo getUserAuthInfoByUserId(Long userId) {

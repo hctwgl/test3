@@ -72,6 +72,9 @@ public class AuthStrongRiskApi implements ApiHandle {
 		if (StringUtils.equals(afUserAuthDo.getContactorStatus(), YesNoStatus.NO.getCode())) {// 请先完成紧急联系人设置
 			throw new FanbeiException(FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
 		}
+		if (!StringUtils.equals(afUserAuthDo.getRiskStatus(), RiskStatus.A.getCode())&&!StringUtils.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {//已经走过强风控或者正在进行中
+			throw new FanbeiException(FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+		}		
 
 		Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
 		if (directoryCache == null) {

@@ -55,13 +55,13 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -228,7 +228,6 @@ public class RiskUtil extends AbstractThird {
 	public void batchRegister(int pageSize, String userName) {
 		int count = afUserAccountService.getUserAccountCountWithHasRealName();
 		int pageCount = (int) Math.ceil(count / pageSize) + 1;
-		logger.info("batchRegister begin,pageCount=" + pageCount);
 		for (int j = 1; j <= pageCount; j++) {
 			AfUserAccountQuery query = new AfUserAccountQuery();
 			query.setPageNo(j);
@@ -364,13 +363,16 @@ public class RiskUtil extends AbstractThird {
 			event = "REAUTH";
 		}
 		
-		logger.info("registerStrongRisk directory= {}", directory);
 		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
-		logger.info("registerStrongRisk reqBo= {}", reqBo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("registerStrongRisk", consumerNo, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，registerStrongRisk insert commitRecord fail,consumerNo="+consumerNo);
+//		}
+		
 
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 		
@@ -429,11 +431,14 @@ public class RiskUtil extends AbstractThird {
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
 		
-		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
-
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，weakverify insert commitRecord fail,consumerNo="+consumerNo);
+//		}
+		
 		String reqResult = HttpUtil.post(url, reqBo);
-		logger.info(StringUtil.appendStrs("weakRiskVerify req=",JSON.toJSONString(reqBo) ,",resp=",reqResult));
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
@@ -486,12 +491,14 @@ public class RiskUtil extends AbstractThird {
 
 		String url = getUrl() + "/modules/api/user/action/raiseQuota.htm";
 		
-		String content = JSONObject.toJSONString(reqBo);
-		
 		String reqResult = HttpUtil.post(url, reqBo);
-		logger.info(StringUtil.appendStrs("raiseQuota req=",JSON.toJSONString(reqBo) ,",resp=",reqResult));
 		
-		commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，raiseQuota insert commitRecord fail,consumerNo="+consumerNo);
+//		}
 		logThird(reqResult, "raiseQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -517,20 +524,9 @@ public class RiskUtil extends AbstractThird {
 	public RiskVerifyRespBo transferBorrowInfo(String consumerNo, String scene, String orderNo, JSONArray details) {
 		RiskSynBorrowInfoReqBo reqBo = new RiskSynBorrowInfoReqBo();
 		reqBo.setOrderNo(orderNo);
-//		reqBo.setEventType(Constants.EVENT_FINANCE_COUNT);
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setScene(scene);
 
-//		JSONObject obj = new JSONObject();
-//		obj.put("borrowNo", borrowNo);
-//		obj.put("amount", amount);
-//		obj.put("orderTime", orderTime);
-//		obj.put("income", income);
-//		obj.put("overdueAmount", overdueAmount);
-//		obj.put("overdueDay", overdueDay);
-//		obj.put("overdueCount", overdueCount);
-//		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
-		
 		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(details)));
 		reqBo.setReqExt("");
 
@@ -538,11 +534,14 @@ public class RiskUtil extends AbstractThird {
 
 		String url = getUrl() + "/modules/api/risk/repayment.htm";
 		
-		String content = JSONObject.toJSONString(reqBo);
-		
 		String reqResult = HttpUtil.post(url, reqBo);
 		
-		commitRecordUtil.addRecord("transferBorrow", consumerNo, content, url);
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("transferBorrow", consumerNo, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，transferBorrow insert commitRecord fail,consumerNo="+consumerNo);
+//		}
 		logThird(reqResult, "transferBorrow", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -672,15 +671,15 @@ public class RiskUtil extends AbstractThird {
       			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
-      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
-                                                否则把用户的额度设置成分控返回的额度*/
-      			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-      			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-      				AfUserAccountDo accountDo = new AfUserAccountDo();
-      				accountDo.setUserId(consumerNo);
-      				accountDo.setAuAmount(au_amount);
-      				afUserAccountService.updateUserAccount(accountDo);
-      			}
+      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(consumerNo);
+					accountDo.setAuAmount(au_amount);
+					afUserAccountService.updateUserAccount(accountDo);
+				}
       			jpushService.strongRiskSuccess(userAccountDo.getUserName());
 			} else if (StringUtils.equals("30", result)) {
 				AfUserAuthDo authDo = new AfUserAuthDo();
@@ -689,7 +688,7 @@ public class RiskUtil extends AbstractThird {
       			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
       			afUserAuthService.updateUserAuth(authDo);
       			
-      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，以老的额度为准，不做变更
+      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
                                                 否则把用户的额度设置成分控返回的额度*/
       			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
       			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
@@ -697,6 +696,11 @@ public class RiskUtil extends AbstractThird {
       				accountDo.setUserId(consumerNo);
       				accountDo.setAuAmount(BigDecimal.ZERO);
       				afUserAccountService.updateUserAccount(accountDo);
+      			} else {
+      				AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(consumerNo);
+					accountDo.setAuAmount(userAccountDo.getUsedAmount());
+					afUserAccountService.updateUserAccount(accountDo);
       			}
       			jpushService.strongRiskFail(userAccountDo.getUserName());
 			}
@@ -801,7 +805,7 @@ public class RiskUtil extends AbstractThird {
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
 			if (StringUtil.equals("50", result)) {
-				// TODO 不做任何更新
+				//不做任何更新
 				return 0;
 			}
 			AfUserAuthDo auth = new AfUserAuthDo();
@@ -809,10 +813,10 @@ public class RiskUtil extends AbstractThird {
 			auth.setGmtMobile(new Date());
 			AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
 			if (StringUtil.equals("10", result)) {
-				auth.setMobileStatus(YesNoStatus.YES.getCode());
+				auth.setMobileStatus(MobileStatus.YES.getCode());
 				jpushService.mobileRiskSuccess(accountInfo.getUserName());
 			} else {
-				auth.setMobileStatus(YesNoStatus.NO.getCode());
+				auth.setMobileStatus(MobileStatus.NO.getCode());
 				jpushService.mobileRiskFail(accountInfo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
@@ -982,9 +986,12 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/examine/verify.htm";
-		String content = JSONObject.toJSONString(reqBo);
-		commitRecordUtil.addRecord("verify", borrowId, content, url);
-
+//		String content = JSONObject.toJSONString(reqBo);
+//		try {
+//			commitRecordUtil.addRecord("verify", borrowId, content, url);
+//		} catch (Exception e) {
+//			logger.error("field too long，verify insert commitRecord fail,consumerNo="+consumerNo);
+//		}
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "verify", reqBo);
@@ -1029,7 +1036,6 @@ public class RiskUtil extends AbstractThird {
 
 					logThird(signInfo, "asyPayOrder", reqBo);
 					if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验证签名成功
-						logger.info("reqBo.getSignInfo()" + reqBo.getSignInfo());
 						JSONObject obj = JSON.parseObject(data);
 						String orderNo = obj.getString("orderNo");
 
@@ -1038,9 +1044,7 @@ public class RiskUtil extends AbstractThird {
 						// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
 						JSONObject object = JSON.parseObject(data);
 
-						logger.info("risk_result =" + object.get("result").toString());
-						AfUserAccountDo userAccountInfo = afUserAccountService
-								.getUserAccountByUserId(orderInfo.getUserId());
+						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 						if (!object.get("result").toString().equals("10")) {
 							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
@@ -1052,8 +1056,7 @@ public class RiskUtil extends AbstractThird {
 							BigDecimal usedAmount = orderInfo.getActualAmount().multiply(BigDecimal.valueOf(-1));
 							afBorrowService.dealAgentPayClose(userAccountInfo, usedAmount, orderInfo.getRid());
 							if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-								AfAgentOrderDo afAgentOrderDo = afAgentOrderService
-										.getAgentOrderByOrderId(orderInfo.getRid());
+								AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
 								afAgentOrderDo.setClosedReason("风控审批失败");
 								afAgentOrderDo.setGmtClosed(new Date());
 								afAgentOrderService.updateAgentOrder(afAgentOrderDo);
@@ -1076,10 +1079,6 @@ public class RiskUtil extends AbstractThird {
 							jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 							return new Long(String.valueOf(re));
 						}
-//						// 在风控审批通过后额度不变生成账单
-//						afBorrowService.dealAgentPayConsumeRisk(userAccountInfo, orderInfo.getActualAmount(),
-//								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),
-//								orderInfo.getOrderNo(), null);
 						
 						// 在风控审批通过后额度不变生成账单
 						afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
@@ -1108,7 +1107,6 @@ public class RiskUtil extends AbstractThird {
 
 				return 1L;
 			}
-
 		});
 	}
 
@@ -1129,7 +1127,6 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		logThird(signInfo, "asyVerify", reqBo);
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
-			logger.info("reqBo.getSignInfo()" + reqBo.getSignInfo());
 			JSONObject obj = JSON.parseObject(data);
 			String orderNo = obj.getString("orderNo");
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
@@ -1147,21 +1144,17 @@ public class RiskUtil extends AbstractThird {
 			List<String> whiteIdsList = new ArrayList<String>();
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 			// 判断是否在白名单里面
-			AfResourceDo whiteListInfo = afResourceService
-					.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
-			logger.info("whiteListInfo===" + whiteListInfo);
+			AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
 			if (whiteListInfo != null) {
 				whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
-						new Converter<String, String>() {
-							@Override
-							public String convert(String source) {
-								return source.trim();
-							}
-						});
+					new Converter<String, String>() {
+						@Override
+						public String convert(String source) {
+							return source.trim();
+						}
+					});
 			}
 
-			logger.info("whiteIdsList=" + whiteIdsList + ",userName=" + afUserDo.getUserName() + ",isContain="
-					+ whiteIdsList.contains(afUserDo.getUserName()));
 			if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
 
 				jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);

@@ -141,6 +141,21 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public int getSumOverdueCountByBorrowId(Long borrowId) {
 		return afBorrowBillDao.getSumOverdueCountByBorrowId(borrowId);
+	}
+
+	@Override
+	public int updateBorrowBillStatusByBillIdsAndStatus(List<Long> billIds, String status) {
+		return afBorrowBillDao.updateBorrowBillStatusByBillIdsAndStatus(billIds, status);
+	}
+
+	@Override
+	public List<AfBorrowBillDo> getBorrowBillByIds(List<Long> billIdList) {
+		return afBorrowBillDao.getBillListByIds(billIdList);
+	}
+
+	@Override
+	public boolean existMonthRepayingBill(Long userId, Integer billYear, Integer billMonth) {
+		return afBorrowBillDao.existMonthRepayingBill(userId, billYear, billMonth)> 0;
 	}	
 	
 }

@@ -118,4 +118,12 @@ public interface AfBorrowCashDao {
 	 * @return
 	 */
 	AfBorrowCashDo getNowTransedBorrowCashByUserId(Long userId);
+	
+	/***
+	 * 获取最近一次没有完成的打款借钱信息
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	AfBorrowCashDo getNowUnfinishedBorrowCashByUserId(Long userId);
 }

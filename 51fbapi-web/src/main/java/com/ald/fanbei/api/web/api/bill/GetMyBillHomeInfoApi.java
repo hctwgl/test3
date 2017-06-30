@@ -72,6 +72,7 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		query.setBillMonth(billMonth);
 		query.setBillYear(billYear);
 		List<AfBorrowBillDo> billList =  afBorrowBillService.getMonthBillList(query);
+		boolean isRepaying = afBorrowBillService.existMonthRepayingBill(query.getUserId(),query.getBillYear(),query.getBillMonth());
 		AfBillHomeVo vo = new AfBillHomeVo();
 		List<AfBillHomeListVo> list =new ArrayList<AfBillHomeListVo>();
 		for (AfBorrowBillDo afBorrowBillDo : billList) {
@@ -99,7 +100,9 @@ public class GetMyBillHomeInfoApi implements ApiHandle{
 		vo.setBillCount(afBorrowBillService.getUserMonthlyBillTotalCount(billYear, billMonth, userId));
 		vo.setPageNo(pageNo);
 		vo.setRepayDay(repayDate);
-		if(repaymentAmount.compareTo(BigDecimal.ZERO)==0){
+		if (isRepaying) {
+			vo.setRepayStatus(BorrowBillStatus.DEALING.getCode());
+		} else if(repaymentAmount.compareTo(BigDecimal.ZERO)==0){
 			vo.setRepayStatus(BorrowBillStatus.YES.getCode());
 		}else{
 			if(new Date().after(vo.getRepayDay())){

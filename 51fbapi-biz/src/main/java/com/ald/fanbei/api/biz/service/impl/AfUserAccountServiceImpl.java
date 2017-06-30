@@ -164,20 +164,13 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 						afUserAccountDao.updateUserAccount(updateAccountDo);
 					} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
 						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
-						
 	        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-	        			
 	        			orderInfo.setStatus(OrderStatus.PAID.getCode());
 	        			afOrderService.updateOrder(orderInfo);
 	        			
 	        			//订单退款记录
 	    				refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
 	    				afOrderRefundService.updateOrderRefund(refundInfo);
-	    				//TODO 更新打款记录状态
-//	        			//ups打款记录
-//	        			afUpsLogDao.addUpsLog(BuildInfoUtil.buildUpsLog(refundInfo.getAccountName(), refundInfo.getAccountNumber(), "delegatePay", orderInfo.getOrderNo(), 
-//	        					result+StringUtils.EMPTY, merPriv, orderInfo.getUserId() + StringUtils.EMPTY, UpsLogStatus.FAIL.getCode()));
-	        			
 	        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), refundInfo.getAmount(),refundInfo.getRefundNo());
 	        		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){
 	        			//借钱
@@ -185,6 +178,11 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	        			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 	        			afBorrowCashDo.setStatus("TRANSEDFAIL");
 	        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+	        			
+	        		} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
+	        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+	        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+	        			afOrderRefundService.dealWithSelfGoodsOrderRefundFail(refundInfo, orderInfo);
 	        		}
 					return 1;
 				} catch (Exception e) {

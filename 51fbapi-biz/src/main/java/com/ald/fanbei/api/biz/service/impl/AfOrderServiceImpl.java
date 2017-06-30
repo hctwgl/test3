@@ -1197,4 +1197,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public AfOrderDo getOrderInfoByIdWithoutDeleted(Long rid, Long userId) {
+		return orderDao.getOrderInfoByIdWithoutDeleted(rid, userId);
+	}
 }

@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.order;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,9 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setActualAmount(order.getActualAmount());
 		vo.setCouponAmount(order.getSaleAmount().subtract(order.getActualAmount()));
 		vo.setPayType(order.getPayType());
+		//商品售价处理(订单价格除以商品数量)
+		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
+		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
 		return vo;
 	}
 }

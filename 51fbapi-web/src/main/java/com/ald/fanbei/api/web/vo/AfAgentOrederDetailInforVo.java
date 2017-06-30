@@ -44,7 +44,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String couponName; // 优惠劵名称
 	private BigDecimal couponAmount; // 优惠劵的金额
 	private BigDecimal actualPayAmount;// 实际支付金额
-
+	private BigDecimal goodsSaleAmount;//商品售价
 	
 	
 	public String getCouponName() {
@@ -238,20 +238,16 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	/**
-	 * @return the nper
-	 */
 	public Integer getNper() {
 		return nper;
 	}
-	/**
-	 * @param nper the nper to set
-	 */
 	public void setNper(Integer nper) {
 		this.nper = nper;
 	}
-	
-	
-	
-
+	public BigDecimal getGoodsSaleAmount() {
+		return goodsSaleAmount;
+	}
+	public void setGoodsSaleAmount(BigDecimal goodsSaleAmount) {
+		this.goodsSaleAmount = goodsSaleAmount;
+	}
 }

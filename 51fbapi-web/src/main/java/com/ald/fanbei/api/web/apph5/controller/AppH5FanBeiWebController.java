@@ -393,19 +393,35 @@ public class AppH5FanBeiWebController extends BaseController {
 	public void mobileOperator(HttpServletRequest request, ModelMap model) throws IOException {
 		Boolean processResult = true;
 		try {
-			//String appInfo = request.getParameter("_appInfo");
+			String appInfo = request.getParameter("_appInfo");
+			Long mobileReqTimeStamp = NumberUtil.objToLongDefault(request.getParameter("mobileReqTimeStamp"),0L);
+			Date reqTime = new Date(mobileReqTimeStamp);
+			
 			String mxcode = request.getParameter("mxcode");
-			String userName =  StringUtil.null2Str(request.getParameter("account"));
+			String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
 			AfUserDo  afUserDo = afUserDao.getUserByUserName(userName);
+			
+			AfUserAuthDo authDo = new AfUserAuthDo();
+			authDo.setUserId(afUserDo.getRid());
+			//此字段保存该笔认证申请的发起时间，更新时做校验，防止在更新时，风控对这笔认证已经回调处理成功，造成错误更新
+			authDo.setGmtMobile(reqTime);
 			
 			if(MoXieResCodeType.ONE.getCode().equals(mxcode) || MoXieResCodeType.TWO.getCode().equals(mxcode) ){
 				//用户认证处理中
-				AfUserAuthDo authDo = new AfUserAuthDo();
-				authDo.setUserId(afUserDo.getRid());
-				authDo.setGmtMobile(new Date());
 				authDo.setMobileStatus(MobileStatus.WAIT.getCode());
-				afUserAuthService.updateUserAuth(authDo);
-			}else{
+				int updateRowNums = afUserAuthService.updateUserAuthMobileStatusWait(authDo);
+				if(updateRowNums==0){
+					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.desStatus="+MobileStatus.WAIT.getCode()+"userId="+afUserDo.getRid());
+				}
+			}else if(MoXieResCodeType.FIFTY.getCode().equals(mxcode)){
+				//三方不经过强风控，直接通过backUrl返回api告知用户认证失败
+				authDo.setMobileStatus(MobileStatus.NO.getCode());
+				int updateRowNums = afUserAuthService.updateUserAuthMobileStatusWait(authDo);
+				if(updateRowNums==0){
+					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.desStatus="+MobileStatus.NO.getCode()+"userId="+afUserDo.getRid());
+				}
+				processResult = false;
+			}else {
 				processResult = false;
 			}
 			model.put("processResult", processResult);
