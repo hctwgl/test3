@@ -125,8 +125,12 @@ $(function(){
 		var passwordLength = register_password.length;
 
 		// 正则判断密码为6-18位字母+字符的组合
-		var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
-		var password = pwdReg.test(register_password);
+		// var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
+		// var password = pwdReg.test(register_password);
+
+    // 正则判断密码为6-18位字母+字符的组合
+    var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
+    var password = pwdReg.test(register_password);
 
     var mobileNum = $("#register_mobile").val();
     var register_verification = $("#register_verification").val();
