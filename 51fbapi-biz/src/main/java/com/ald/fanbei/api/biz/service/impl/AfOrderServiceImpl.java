@@ -695,11 +695,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
-						logger.info("updateOrder orderInfo = {}", orderInfo);
+						
 						orderInfo.setNper(nper);
 						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setBorrowRate(boStr);
+						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 

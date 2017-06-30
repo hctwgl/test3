@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
@@ -54,62 +51,60 @@ public class PayOrderV1Api implements ApiHandle {
 	BoluomeUtil boluomeUtil;
 	@Resource
 	RiskUtil riskUtil;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		
-		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"),null);
-		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"),null);
-		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"),null);
+
+		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
+		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
+		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
 
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
-		
+
 		if (orderId == null || payId == null) {
 			logger.error("orderId is empty or payId is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		//TODO获取用户订单
+		// TODO获取用户订单
 		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
-		
-		if (orderInfo ==  null) {
+
+		if (orderInfo == null) {
 			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		
+
 		if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 		}
-		
+
 		if (orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_PAID);
 		}
-		
+
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		if(payId >= 0){
+		if (payId >= 0) {
 			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
 		}
-		
+
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
-		
-		
+
 		try {
-			BigDecimal saleAmount =orderInfo.getSaleAmount();
-			if(StringUtils.equals(type, OrderType.AGENTBUY.getCode())||StringUtils.equals(type, OrderType.SELFSUPPORT.getCode())){
+			BigDecimal saleAmount = orderInfo.getSaleAmount();
+			if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode())) {
 				saleAmount = orderInfo.getActualAmount();
 			}
-		   if(payId==0 && StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
-			  
-			   nper = orderInfo.getNper();
-		   }
-			Map<String,Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),saleAmount , nper,appName,ipAddress);
-			if(StringUtils.equals(type, OrderType.BOLUOME.getCode())&&payId.intValue()==0){
+			if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || nper == null)) {
+				nper = orderInfo.getNper();
+			}
+			Map<String, Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
+			if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
 				riskUtil.payOrderChangeAmount(orderInfo.getRid());
 			}
 			resp.setResponseData(result);
