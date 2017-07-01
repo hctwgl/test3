@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017063001")
+    #set($version="2017070104")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channel.css?version=$version">
@@ -84,12 +84,20 @@
         #end
       </ul>
     </div>
-    #if( $!{style}==4 || $!{style}==8 || $!{style}==13 )
+    <div class="registerMask hide"></div>
+    #if( $!{style}==4 || $!{style}==13 )
       <img src="$commonUrl/channel$!{style}_03.jpg">
     #elseif( $!{style}==7 )
       <img src="$commonUrl/channel7_03.png">
+    #elseif( $!{style}==8 )
+      <img src="$commonUrl/channel$!{style}_03.jpg">
+      <div class="registerSuss8 hide">
+        <p>点击下载【51返呗】</p>
+        <p>30分钟内登陆，领30元还款抵用券！</p>
+        <span id="downloadApp">点击下载</span>
+      </div>
     #elseif( $!{style}==9 )
-      <div class="channel9_rule hide">
+      <div class="channel9_rule">
         <p><i></i><span>活动规则</span></p>
         <p>1.活动时间：2017年6月9日--2017年6月25日；</p>
         <p>2.此活动名额仅限前10000名，数量有限，抢完为止；</p>
@@ -99,24 +107,20 @@
         <p>如有任何疑问，请拨打51返呗客服热线：0571-88193918</p>
       </div>
     #elseif( $!{style}==10 )
-      <div class="channelRegisterPopup10">
-        <div class="registerMask hide"></div>
-        <div class="registerSuss hide">
-          <!-- <i class="channelRegisterPopupIcon"></i> -->
-          <p>注册成功，248元红包已到账，再享300元返利，赶紧下载预定吧！</p>
-          <span id="downloadApp">下载51APP</span>
-        </div>
-        <div class="registerFail hide">
-          <!-- <i class="channelRegisterPopupIcon"></i> -->
-          <p>注册注册失败，请重新注册</p>
-          <span id="repeatRegister">重新注册</span>
-        </div>
+      <div class="registerSuss10 hide">
+        <!-- <i class="channelRegisterPopupIcon"></i> -->
+        <p>注册成功，248元红包已到账，再享300元返利，赶紧下载预定吧！</p>
+        <span id="downloadApp">下载51APP</span>
+      </div>
+      <div class="registerFail10 hide">
+        <!-- <i class="channelRegisterPopupIcon"></i> -->
+        <p>注册注册失败，请重新注册</p>
+        <span id="repeatRegister">重新注册</span>
       </div>
     #elseif( $!{style}==12 )
       <img src="$commonUrl/channel$!{style}_03.png">
-      <div class="channelRegisterPopup10">
-        <div class="registerMask hide"></div>
-        <div class="registerSuss hide"><img id="downloadApp" src="$commonUrl/channel$!{style}_04.png"></div>
+      <div class="registerSuss12 hide">
+        <img id="downloadApp" src="$commonUrl/channel$!{style}_04.png">
       </div>
     #end
     <div class="channelRegister_copyright
@@ -140,7 +144,7 @@
 <script type="text/javascript" src="/common/js/md5.js"></script>
 <script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
 <div style="display:none">
-    <script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script>
+<script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script>
 </div>
 </body>
 </html>

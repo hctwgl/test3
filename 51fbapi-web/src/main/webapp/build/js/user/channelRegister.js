@@ -1,8 +1,5 @@
 /*
-* @Author: yoe
 * @Date:   2017-04-12 10:53:28
-* @Last Modified by:   yoe
-* @Last Modified time: 2017-06-07 14:06:30
 */
 
 var token = formatDateTime()+Math.random().toString(36).substr(2);
@@ -167,18 +164,13 @@ $(function(){
 								},
 								success: function(returnData){
                   if (returnData.success) {
-                    if ( style==8 ) {
-                      layer.open({
-                        content: '跳转后直接下载【51返呗】！30分钟内登陆，领30元还款抵用券！',
-                        skin: 'msg',
-                        time: 3
-                      });
-                      setTimeout(function(){
-                        window.location.href = returnData.url;
-                      }, 1000);
-                    } else if ( style==10 || style==12 ) {  // 样式12弹窗
+                    if ( style==8 || style==10 || style==12 ) {  // 样式12弹窗
                       $("#register_submitBtn").attr("disabled",true);
-                      $(".registerSuss").removeClass("hide");  // 显示弹窗，样式10
+
+                      $(".registerSuss8").removeClass("hide");  // 显示样式8
+                      $(".registerSuss10").removeClass("hide");  // 显示样式10
+                      $(".registerSuss12").removeClass("hide");  // 显示样式10
+
                       $(".registerMask").removeClass("hide");  // 显示弹窗，样式10
 
                       $("#downloadApp").click(function(){  // 点击下载app
@@ -193,11 +185,11 @@ $(function(){
                   }
 								},
 								error: function(){
-                  if ( style==10 || style==12 ) {
-                    $(".registerFail").removeClass("hide");  // 显示弹窗
+                  if ( style==10 ) {
+                    $(".registerFail10").removeClass("hide");  // 显示弹窗
                     $("#repeatRegister").click(function(){  // 点击关闭弹窗
                       $(".registerMask").addClass("hide");
-                      $(".registerFail").addClass("hide");
+                      $(".registerFail10").addClass("hide");
                     });
                   }else {
                     requestMsg("注册失败");
