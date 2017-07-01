@@ -84,14 +84,14 @@
         #end
       </ul>
     </div>
-    <div class="registerMask"></div>
+    <div class="registerMask hide"></div>
     #if( $!{style}==4 || $!{style}==13 )
       <img src="$commonUrl/channel$!{style}_03.jpg">
     #elseif( $!{style}==7 )
       <img src="$commonUrl/channel7_03.png">
     #elseif( $!{style}==8 )
       <img src="$commonUrl/channel$!{style}_03.jpg">
-      <div class="registerSuss8">
+      <div class="registerSuss8 hide">
         <p>注册成功，立即下载【51返呗】</p>
         <p>借钱新口子，最高5000元任你借</p>
         <p>30分钟内登录，领取30元还款抵用券</p>
