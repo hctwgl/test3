@@ -92,8 +92,8 @@
     #elseif( $!{style}==8 )
       <img src="$commonUrl/channel$!{style}_03.jpg">
       <div class="registerSuss8 hide">
-        <p>点击下载【51返呗】</p>
-        <p>30分钟内登陆，领30元还款抵用券！</p>
+        <p>注册成功，立即下载【51返呗】</p>
+        <p>30分钟内登录，领取30元还款抵用券</p>
         <span id="downloadApp">点击下载</span>
       </div>
     #elseif( $!{style}==9 )
