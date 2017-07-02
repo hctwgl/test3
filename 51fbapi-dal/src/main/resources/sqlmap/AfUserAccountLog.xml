@@ -39,6 +39,7 @@
 		    AND r.is_delete = 0 
 		    AND l.`ref_id` = r.id 
 		WHERE l.user_id = #{userId}
+		  AND b.`user_id` = #{userId}
 		  AND l.is_delete = 0 
 		  AND l.type IN ('CASH', 'CONSUME', 'REPAYMENT','AP_REFUND') 
 		ORDER BY l.gmt_create DESC 
