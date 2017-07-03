@@ -108,7 +108,9 @@ public class BuySelfGoodsApi implements ApiHandle {
         if(null != afSchemeGoodsDo){
         	  Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
               AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
-      		  afOrder.setInterestFreeJson(afInterestFreeRulesDo.getRuleJson());
+              if (afInterestFreeRulesDo != null) {
+            	  afOrder.setInterestFreeJson(afInterestFreeRulesDo.getRuleJson());
+              }
         }
       
 		if (nper.intValue() > 0) {
@@ -122,7 +124,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("orderId", afOrder.getRid());
 		resp.setResponseData(data);
-		;
 		return resp;
 	}
 
