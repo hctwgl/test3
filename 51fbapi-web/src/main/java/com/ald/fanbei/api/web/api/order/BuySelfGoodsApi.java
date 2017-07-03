@@ -16,8 +16,10 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -29,7 +31,9 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -53,6 +57,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
 
+    @Resource
+    AfSchemeGoodsService afSchemeGoodsService;
+
+    @Resource
+    AfInterestFreeRulesService afInterestFreeRulesService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -94,6 +103,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setInvoiceHeader(invoiceHeader);
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
+	    //通过商品查询免息规则配置
+        AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+        if(null != afSchemeGoodsDo){
+        	  Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
+              AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
+      		  afOrder.setInterestFreeJson(afInterestFreeRulesDo.getRuleJson());
+        }
+      
 		if (nper.intValue() > 0) {
 			// 保存手续费信息
 			BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
