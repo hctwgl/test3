@@ -143,7 +143,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     REFUND_TOTAL_AMOUNT_ERROR("REFUND_TOTAL_AMOUNT_ERROR",1571,"refund total amount error","当前退款总金额大于订单金额"),
     REFUND_AMOUNT_ERROR("REFUND_AMOUNT_ERROR",1572,"refund amount error","退款金额有误"),
     REFUND_HAVE_SUCCESS("REFUND_HAVE_SUCCESS",1573,"refund have success","退款已完成"),
-    
+    CREDIT_AMOUNT_ORDER_PAY_LIMIT("CREDIT_AMOUNT_ORDER_PAY_LIMIT",1574,"credit amount order pay limit","该商品暂不支持信用分期,请切换其他支付方式"),
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1601,"goods not exist error","商品不存在"),
