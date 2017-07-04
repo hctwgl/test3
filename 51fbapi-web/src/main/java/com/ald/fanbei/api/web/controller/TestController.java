@@ -451,7 +451,7 @@ public class TestController {
 		PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
 		bo.setUser_id(userInfo.getRid()+StringUtil.EMPTY);
 		String resultString = HttpUtil.doHttpPostJsonParam(brandUrl, JSONObject.toJSONString(bo));
-		System.out.println(resultString);
+		logger.info("userName = " + userName + " brandUrl = " + brandUrl);
 		logger.info("allowcateBrandCoupon pickBrandCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
 	}
 }
