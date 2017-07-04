@@ -1,29 +1,21 @@
 package com.ald.fanbei.api.common.util;
 
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.UUID;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ald.fanbei.api.common.ImageBean;
 import com.ald.fanbei.api.common.ImageFormat;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.*;
 
 /**
  * 
@@ -196,4 +188,70 @@ public class ImageUtil {
             return null;
         }
     }
+
+    /**
+     * 生成随机验证码图片
+     * @return
+     */
+    public static Map<String, BufferedImage> createRandomImage() {
+        Map<String, BufferedImage> result = new HashMap<>();
+        int width = 258;//图片的width
+        int height = 100;//图片的height
+        int codeCount = 4;//图片上显示验证码的个数
+        int fontHeight = 50;
+        int xx = 45;
+        int codeY = 60;
+        char[] codeSequence = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+                'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+                'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
+                'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics gd = bufferedImage.getGraphics();
+        //随机数生成器类
+        Random random = new Random();
+        //将图像填充为白色
+        gd.setColor(Color.WHITE);
+        gd.fillRect(0, 0, width, height);
+
+        //设置字体
+        Font font = new Font("Default", Font.BOLD, fontHeight);
+        gd.setFont(font);
+
+        //随机产生30条干扰线
+        gd.setColor(Color.BLACK);
+        for (int i = 0; i < 30; i++) {
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            int xl = random.nextInt(12);
+            int yl = random.nextInt(12);
+            gd.drawLine(x, y, x + xl, y + yl);
+        }
+
+        //randomCode用于保存随机产生的验证码
+        StringBuffer randomCode = new StringBuffer();
+        int red = 0;
+        int green = 0;
+        int blue = 0;
+        for (int i = 0; i < codeCount; i++) {
+            //得到随机产生的验证码数字。
+            String code = String.valueOf(codeSequence[random.nextInt(62)]);
+            //产生随机的颜色分量来构造颜色值
+            red = random.nextInt(255);
+            green = random.nextInt(255);
+            blue = random.nextInt(255);
+
+            //用随机产生的颜色将验证码绘制到图像中。
+            gd.setColor(new Color(red, green, blue));
+            gd.drawString(code, (i + 1) * xx, codeY);
+
+            //将产生的四个随机数组合在一起。
+            randomCode.append(code);
+        }
+        result.put(randomCode.toString(), bufferedImage);
+
+        return result;
+    }
+
 }

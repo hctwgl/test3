@@ -4,6 +4,7 @@ package com.ald.fanbei.api.web.api.user;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,9 @@ public class CheckVerifyCodeApi implements ApiHandle {
 	AfSmsRecordService afSmsRecordService;
 	@Resource
 	SmsUtil smsUtil;
+	@Resource
+    BizCacheUtil bizCacheUtil;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -43,6 +47,23 @@ public class CheckVerifyCodeApi implements ApiHandle {
         if(StringUtil.isBlank(verifyCode) || StringUtil.isBlank(type) || SmsType.findByCode(type) == null){
         	logger.error("verifyCode or type is empty verifyCode = " + verifyCode + " type = " + type);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
+        }
+
+        //验证图片验证码
+        String imageCode = ObjectUtils.toString(requestDataVo.getParams().get("imageCode"));
+        if(StringUtil.isNotEmpty(imageCode)) {
+            String id = requestDataVo.getId().split("_")[1];
+            Object value = bizCacheUtil.getObject(id);
+            if(value != null) {
+                bizCacheUtil.delCache(id);
+                String realCode = value.toString();
+                if(!realCode.equalsIgnoreCase(imageCode)) {
+                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR);
+                }
+            }
+            else {
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_IMAGE_NOTEXIST);
+            }
         }
 
         smsUtil.checkSmsByMobileAndType(userName, verifyCode,SmsType.findByCode(type));
