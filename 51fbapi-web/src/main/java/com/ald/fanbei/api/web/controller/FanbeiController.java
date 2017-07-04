@@ -1,20 +1,5 @@
 package com.ald.fanbei.api.web.controller;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -27,21 +12,34 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 
 /**
- * 
+ *
  *@类描述：FanbeiController
  *@author 陈金虎 2017年1月17日 下午6:15:06
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
 public class FanbeiController extends BaseController {
-	
+
 	@Resource
 	AfResourceService afResourceService;
-	
+
     @RequestMapping(value ={
     	"/goods/getFootMarkList","/good/getGoodsTkRate","/goods/addFootMark","/goods/getHomeInfo","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList"
@@ -52,7 +50,7 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
-    
+
     @RequestMapping(value ={
     	"/address/addressList","/address/addAddress","/address/updateInfo","/address/deleteAddress","/mine/commitCode",
     	"/coupon/couponList","/mine/getInviteInfo","/mine/getOrderListCount","/mine/getSettingInfo","/order/payResultOfAlipay"
@@ -73,7 +71,7 @@ public class FanbeiController extends BaseController {
             response.setContentType("application/json;charset=utf-8");
             return this.processRequest(body, request, false);
     }
-    
+
     @RequestMapping(value ={
     	"/order/confirmReceipt","/order/buySelfGoods","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
@@ -83,7 +81,7 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
-    
+
     @RequestMapping(value ={
     	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage",
     	"/system/getTabbarInfor",
@@ -94,7 +92,7 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
-    
+
     @RequestMapping(value = {
     		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/login","/user/resetPwd","/user/getUserInfo",
     		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo",
@@ -102,7 +100,7 @@ public class FanbeiController extends BaseController {
     		"/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail",
     		"/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode",
     		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
-    		"/user/submitShareAction"
+    		"/user/submitShareAction","/user/getImageCode"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -110,7 +108,7 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
-    
+
     @RequestMapping(value = {
     		"/borrow/getCashConfirmInfo","/borrow/applyCash","/borrow/getBorrowHomeInfo","/borrow/getConsumeConfirmInfo","/borrow/applyConsume",
     		"/bill/getMyBillHomeInfo","/bill/getMyBillList","/bill/getBillDetailList","/bill/getBillDetailInfo","/repay/getRepaymentConfirmInfo",
@@ -122,7 +120,7 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
-    
+
     /**
      * 认证相关
      * @param body
@@ -144,7 +142,7 @@ public class FanbeiController extends BaseController {
 		return this.processRequest(body, request, false);
 	}
 
-    
+
     /**
      * 品牌商城相关
      * @param body
@@ -161,7 +159,7 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
-    
+
     /**
      * 借钱相关
      * @param body
@@ -180,7 +178,7 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
-    
+
     /**
      * 运营相关接口相关
      * @param body
@@ -216,7 +214,7 @@ public class FanbeiController extends BaseController {
             String userName = request.getHeader(Constants.REQ_SYS_NODE_USERNAME);
             String sign = request.getHeader(Constants.REQ_SYS_NODE_SIGN);
             String time = request.getHeader(Constants.REQ_SYS_NODE_TIME);
-            
+
             Map<String,Object> system = new HashMap<String,Object>();
             system.put(Constants.REQ_SYS_NODE_VERSION, appVersion);
             system.put(Constants.REQ_SYS_NODE_NETTYPE, netType);
@@ -224,10 +222,10 @@ public class FanbeiController extends BaseController {
             system.put(Constants.REQ_SYS_NODE_SIGN, sign);
             system.put(Constants.REQ_SYS_NODE_TIME, time);
             reqVo.setSystem(system);
-            
+
             JSONObject jsonObj = JSON.parseObject(requestData);
             reqVo.setParams((jsonObj == null || jsonObj.isEmpty()) ? new HashMap<String,Object>() : jsonObj);
-            
+
             return reqVo;
         } catch (Exception e) {
             throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
@@ -253,7 +251,7 @@ public class FanbeiController extends BaseController {
             throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
         }
 	}
-	
+
 	@RequestMapping(value = { "re1fla5shLoc3alReesC8a1sh" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	public void reflashLocalResCash(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String randomParam1 = request.getParameter("926d4e62fe23c77e");
@@ -264,5 +262,5 @@ public class FanbeiController extends BaseController {
 			afResourceService.cleanLocalCache();
 		}
 	}
-    
+
 }

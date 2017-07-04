@@ -256,6 +256,9 @@ public class Constants {
 	
 	// 三方接口调用限制
 	public static final String API_CALL_LIMIT = "API_CALL_LIMIT";
-	
+
+	//图片验证码
+	public static final String IMAGE_CODE_COOKIE_NAME = "IMAGE_CODE_NAME";
+	public static final String IMAGE_CODE_COOKIE_PASSWORD = "IMAGE_VERIFY_CODE_PASSWORD";
 
 }
