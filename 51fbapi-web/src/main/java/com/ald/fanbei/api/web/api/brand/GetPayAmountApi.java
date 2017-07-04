@@ -15,12 +15,9 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -65,10 +62,6 @@ public class GetPayAmountApi implements ApiHandle {
             logger.error("orderId is invalid");
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
-        
-        if (isVirtualGoods(orderInfo)) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_AMOUNT_ORDER_PAY_LIMIT);
-		}
 
         BigDecimal amount = orderInfo.getSaleAmount();
         if (StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
@@ -113,32 +106,4 @@ public class GetPayAmountApi implements ApiHandle {
 
     }
     
-    /**
-	 * 51判断菠萝觅订单是否为虚拟商品
-	 * @param afOrderInfo
-	 * @return
-	 */
-	private boolean isVirtualGoods(AfOrderDo afOrderInfo) {
-		if (afOrderInfo == null) {
-			return false;
-		}
-		String orderType = afOrderInfo.getOrderType();
-		//如果不是菠萝觅订单,暂时放过
-		if (!OrderType.BOLUOME.getCode().equals(orderType)) {
-			return false;
-		}
-		
-		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(AfResourceType.VIRTUAL_GOODS_SERVICE_PROVIDER.getCode());
-		String serviceProvider = resourceInfo.getValue();
-		if (StringUtils.isNotBlank(serviceProvider)) {
-			List<String> serviceProviderList = CollectionConverterUtil.convertToListFromArray(serviceProvider.split(","), new Converter<String, String>() {
-				@Override
-				public String convert(String source) {
-					return source;
-				}
-			});
-			return serviceProviderList.contains(afOrderInfo.getServiceProvider());
-		}
-		return false;
-	}
 }

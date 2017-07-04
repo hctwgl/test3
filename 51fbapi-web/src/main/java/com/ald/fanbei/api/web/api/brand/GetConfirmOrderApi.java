@@ -3,7 +3,9 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,14 +17,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -48,6 +56,8 @@ public class GetConfirmOrderApi implements ApiHandle {
 	AfUserAuthService afUserAuthService; 
 	@Resource
 	AfUserBankcardService afUserBankcardService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -73,6 +83,10 @@ public class GetConfirmOrderApi implements ApiHandle {
 		AfUserBankcardDo bankInfo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		BoluomeConfirmOrderVo vo = buildConfirmOrderVo(orderInfo,userDto, authDo, bankInfo,context);
 		resp.setResponseData(vo);
+		if (isVirtualGoods(orderInfo)) {
+			vo.setUseableAmount(BigDecimal.ZERO);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_AMOUNT_ORDER_PAY_LIMIT);
+		}
 		return resp;
 	}
 	
@@ -101,6 +115,35 @@ public class GetConfirmOrderApi implements ApiHandle {
 		vo.setIdNumber(Base64.encodeString(userDto.getIdNumber()));
 		
 		return vo;
+	}
+	
+	/**
+	 * 51判断菠萝觅订单是否为虚拟商品
+	 * @param afOrderInfo
+	 * @return
+	 */
+	private boolean isVirtualGoods(AfOrderDo afOrderInfo) {
+		if (afOrderInfo == null) {
+			return false;
+		}
+		String orderType = afOrderInfo.getOrderType();
+		//如果不是菠萝觅订单,暂时放过
+		if (!OrderType.BOLUOME.getCode().equals(orderType)) {
+			return false;
+		}
+		
+		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(AfResourceType.VIRTUAL_GOODS_SERVICE_PROVIDER.getCode());
+		String serviceProvider = resourceInfo.getValue();
+		if (StringUtil.isNotBlank(serviceProvider)) {
+			List<String> serviceProviderList = CollectionConverterUtil.convertToListFromArray(serviceProvider.split(","), new Converter<String, String>() {
+				@Override
+				public String convert(String source) {
+					return source;
+				}
+			});
+			return serviceProviderList.contains(afOrderInfo.getServiceProvider());
+		}
+		return false;
 	}
 
 }
