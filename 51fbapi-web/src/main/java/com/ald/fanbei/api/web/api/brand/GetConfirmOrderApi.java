@@ -85,7 +85,6 @@ public class GetConfirmOrderApi implements ApiHandle {
 		resp.setResponseData(vo);
 		if (isVirtualGoods(orderInfo)) {
 			vo.setUseableAmount(BigDecimal.ZERO);
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_AMOUNT_ORDER_PAY_LIMIT);
 		}
 		return resp;
 	}
