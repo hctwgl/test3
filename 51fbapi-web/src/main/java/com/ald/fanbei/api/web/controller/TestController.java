@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
@@ -30,7 +33,9 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
@@ -38,6 +43,7 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONArray;
@@ -405,4 +411,47 @@ public class TestController {
 //		}
 //		return message;
 //	}
+	
+	/**
+	 * app中微信支付回调接口
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/allowcateBrandCoupon" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String allowcateBrandCoupon(HttpServletRequest request, HttpServletResponse response) {
+		PrintWriter out = null;
+		try {
+			String brandUrl = request.getParameter("brandUrl");
+			
+			BufferedReader reader = request.getReader();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				pickBrandCoupon(line, brandUrl);
+			}
+		} catch (Exception e) {
+			logger.error("allowcateBrandCoupon", e);
+			return "fail";
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+		return "success";
+	}
+	
+	private void pickBrandCoupon(String userName, String brandUrl) {
+		AfUserDo userInfo = afUserDao.getUserByUserName(userName);
+		if (userInfo == null) {
+			logger.info(userName + "userName dosn't exist");
+			return;
+		}
+		PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+		bo.setUser_id(userInfo.getRid()+StringUtil.EMPTY);
+		String resultString = HttpUtil.doHttpPostJsonParam(brandUrl, JSONObject.toJSONString(bo));
+		System.out.println(resultString);
+		logger.info("allowcateBrandCoupon pickBrandCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+	}
 }
