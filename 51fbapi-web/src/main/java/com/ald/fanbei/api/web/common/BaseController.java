@@ -518,7 +518,7 @@ public abstract class BaseController {
 			JSONObject param = new JSONObject();
 			String userName = "no user";
 			JSONObject temp = null;
-			if(!StringUtil.isNotBlank(appInfo)){
+			if(StringUtil.isNotBlank(appInfo)){
 				temp = JSONObject.parseObject(appInfo);
 				userName = JSONObject.parseObject(appInfo).getString("userName");
 			}
