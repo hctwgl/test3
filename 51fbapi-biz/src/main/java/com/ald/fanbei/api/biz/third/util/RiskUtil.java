@@ -372,7 +372,6 @@ public class RiskUtil extends AbstractThird {
 //		} catch (Exception e) {
 //			logger.error("field too long，registerStrongRisk insert commitRecord fail,consumerNo="+consumerNo);
 //		}
-		
 
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 		

@@ -99,7 +99,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     OPERATOR_INFO_EXIST_ERROR("OPERATOR_INFO_EXIST_ERROR",1312,"operator exist error","请先完成运营商授权!"),
     EMERGENCY_CONTACT_INFO_EXIST_ERROR("EMERGENCY_CONTACT_INFO_EXIST_ERROR",1313,"emergency contact exist error","请先完成紧急联系人设置!"),
     CANOT_FIND_DIRECTORY_ERROR("CANOT_FIND_DIRECTORY_ERROR",1314,"canot find directory error","请重新设置紧急联系人!"),
-    RISK_OREADY_FINISH_ERROR("RISK_OREADY_FINISH_ERROR",1314,"risk oready finish error","正在认证中，请耐心等待!"),
+    NEED_AGAIN_DIRECTORY_PROOF_ERROR("NEED_AGAIN_DIRECTORY_PROOF_ERROR",1315,"need again directory proof error","请重新通讯录认证!"),
+    RISK_OREADY_FINISH_ERROR("RISK_OREADY_FINISH_ERROR",1316,"risk oready finish error","正在认证中，请耐心等待!"),
     
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
