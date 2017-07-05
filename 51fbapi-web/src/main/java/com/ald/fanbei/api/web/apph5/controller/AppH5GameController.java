@@ -129,7 +129,7 @@ public class AppH5GameController  extends BaseController{
 			logger.error("fb初始化失败" + context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 	}
@@ -182,7 +182,7 @@ public class AppH5GameController  extends BaseController{
 			logger.error("抽奖失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 	}
@@ -220,7 +220,7 @@ public class AppH5GameController  extends BaseController{
 			logger.error("提交失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 	}

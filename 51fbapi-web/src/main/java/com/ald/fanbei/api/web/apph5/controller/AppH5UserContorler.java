@@ -147,7 +147,7 @@ public class AppH5UserContorler extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
 			return resultStr;
 		}finally{
-			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("mobile"));
 		}
 
 	}
@@ -244,7 +244,7 @@ public class AppH5UserContorler extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 			return resultStr;
 		}finally{
-			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
 		}
 
 	}
@@ -390,7 +390,7 @@ public class AppH5UserContorler extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
 			return resultStr;
 		}finally{
-			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
 		}
 
 	}

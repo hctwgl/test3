@@ -209,7 +209,7 @@ public class AppActivitySignInController extends BaseController {
 			logger.error("fb初始化失败" + context, e);
 		} finally {
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis());
+			doLog(request, resultStr, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 
@@ -377,7 +377,7 @@ public class AppActivitySignInController extends BaseController {
 					logger.error("fb签到失败" + context, e);
 				} finally {
 					Calendar calEnd = Calendar.getInstance();
-					doLog(request, resultStr, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis());
+					doLog(request, resultStr, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(),context.getUserName());
 				}
 				return resultStr;
 			}
