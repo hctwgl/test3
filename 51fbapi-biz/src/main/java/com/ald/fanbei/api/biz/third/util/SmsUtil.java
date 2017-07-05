@@ -60,6 +60,7 @@ public class SmsUtil extends AbstractThird {
 	private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
 	private static String BORROWCASH_TEMPLATE = "您的借款审核通过，请留意您尾号&param1的银行卡资金变动，还款请使用51返呗app【任何索要银行卡号、要求存入现金的行为都是诈骗】";
 	private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前0元预约购机享12期免息更有超级返利300元，有！ 且只在51返呗。回复td退订";
+	private static String REGIST_SUCCESS_TEMPLATE = "恭喜您已经成功注册51返呗";
 
 	private static String REPAY_BORROWCASH_SUCCESS_REMAINNOTREPAY = "成功还款&param1元，剩余待还金额&param2元。";
 	private static String REPAY_BORROWCASH_SUCCESS_FINISH = "成功还款&param1元，该笔借钱已还完。";
@@ -339,6 +340,18 @@ public class SmsUtil extends AbstractThird {
 			throw new FanbeiException("mobile count error", FanbeiExceptionCode.SMS_MOBILE_COUNT_TOO_MANAY);
 		}
 		sendSmsToDhst(StringUtil.turnListToStr(mobiles), content);
+	}
+	
+	/**
+	 * 注册成功,发送注册成功短信
+	 * @param mobile
+	 * @param content
+	 */
+	public void sendRegisterSuccessSms(String mobile){
+		if (!CommonUtil.isMobile(mobile)) {
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+		}
+		sendSmsToDhst(mobile, REGIST_SUCCESS_TEMPLATE);
 	}
 
 	/**

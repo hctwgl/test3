@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
@@ -45,6 +46,8 @@ public class SetRegisterPwdApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource 
 	AfPromotionChannelPointService afPromotionChannelPointService;
+	@Resource
+	SmsUtil smsUtil;
 
 	
     @Override
@@ -120,9 +123,11 @@ public class SetRegisterPwdApi implements ApiHandle {
 		String inviteCode = Long.toString(invteLong, 36);
 		userDo.setRecommendCode(inviteCode);
 		afUserService.updateUser(userDo);
+		
+		// 注册完成,给用户发送注册成功的短信
+		smsUtil.sendRegisterSuccessSms(userDo.getUserName());;
         
-    
-        
+ 
         return resp;
     }
     
