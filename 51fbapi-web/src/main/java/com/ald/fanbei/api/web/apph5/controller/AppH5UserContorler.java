@@ -268,30 +268,34 @@ public class AppH5UserContorler extends BaseController {
 	public void channelRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 		String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
-		if (StringUtils.isBlank(channelCode) || StringUtils.isBlank(pointCode)) {
-			throw new FanbeiException("缺少参数！");
-		} else {
-			AfPromotionChannelPointDo pcp = afPromotionChannelPointService.getPoint(channelCode, pointCode);
-			if (pcp == null) {
-				throw new FanbeiException("推广渠道不存在！");
+		try{
+			if (StringUtils.isBlank(channelCode) || StringUtils.isBlank(pointCode)) {
+				throw new FanbeiException("缺少参数！");
 			} else {
-				AfPromotionChannelDo pc = afPromotionChannelService.getById(pcp.getChannelId());
-				model.put("copyright", pc.getCopyright());
-				model.put("sessionId", request.getSession().getId());
-				model.put("channelCode", pc.getCode());
-				model.put("pointCode", pcp.getCode());
-				model.put("style", pcp.getStyle());
-				model.put("tdHost", "https://fp.fraudmetrix.cn");
-				logger.info(JSON.toJSONString(model));
-
-				afPromotionChannelPointService.addVisit(pcp.getId());
-
-				AfPromotionLogsDo afPromotionLogsDo = new AfPromotionLogsDo();
-				afPromotionLogsDo.setChannelId(pc.getId());
-				afPromotionLogsDo.setPointId(pcp.getId());
-				afPromotionLogsDo.setIp(CommonUtil.getIpAddr(request));
-				afPromotionLogsService.addAfPromotionLogs(afPromotionLogsDo);
+				AfPromotionChannelPointDo pcp = afPromotionChannelPointService.getPoint(channelCode, pointCode);
+				if (pcp == null) {
+					throw new FanbeiException("推广渠道不存在！");
+				} else {
+					AfPromotionChannelDo pc = afPromotionChannelService.getById(pcp.getChannelId());
+					model.put("copyright", pc.getCopyright());
+					model.put("sessionId", request.getSession().getId());
+					model.put("channelCode", pc.getCode());
+					model.put("pointCode", pcp.getCode());
+					model.put("style", pcp.getStyle());
+					model.put("tdHost", "https://fp.fraudmetrix.cn");
+					logger.info(JSON.toJSONString(model));
+	
+					afPromotionChannelPointService.addVisit(pcp.getId());
+	
+					AfPromotionLogsDo afPromotionLogsDo = new AfPromotionLogsDo();
+					afPromotionLogsDo.setChannelId(pc.getId());
+					afPromotionLogsDo.setPointId(pcp.getId());
+					afPromotionLogsDo.setIp(CommonUtil.getIpAddr(request));
+					afPromotionLogsService.addAfPromotionLogs(afPromotionLogsDo);
+				}
 			}
+		}finally{
+			doLog(request, "", null, 0l, channelCode);
 		}
 
 	}
