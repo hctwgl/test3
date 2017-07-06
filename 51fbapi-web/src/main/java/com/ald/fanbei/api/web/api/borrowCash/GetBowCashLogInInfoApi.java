@@ -16,11 +16,13 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserOperationLogService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -31,6 +33,7 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogRefType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogType;
+import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -39,12 +42,14 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserOperationLogDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -74,6 +79,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfUserOperationLogService afUserOperationLogService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfGameResultService afGameResultService;
+	@Resource
+	AfUserCouponService afUserCouponService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -279,7 +288,30 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		}
 		data.put("existRepayingMoney", existRepayingMoney);
 		data.put("repayingMoney", repayingMoney);
-				
+		// 红包是否显示 Add by jrb 2017.7.6
+		try {
+			// 首先判断用户是否参与过拆红包活动
+			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId);
+			String status  = (String) data.get("status");
+			boolean takePart = false;
+			if(gameResultList != null && gameResultList.size() > 0){
+				takePart = true;
+			}
+			if(takePart == false && ("TRANSED".equals(status) || "FINSH".equals(status))) {
+				data.put("showPacket","Y");
+			} else{
+				data.put("showPacket","N");
+			}
+			// 查询是否有借钱免息优惠券
+			List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByType(userId, CouponType.FREEINTEREST.getCode());
+			if(couponList != null && couponList.size() > 0) {
+				AfUserCouponDto afUserCouponDto = couponList.get(0);
+				Long couponId = afUserCouponDto.getCouponId();
+				data.put("couponId",couponId);
+			}
+		} catch (Exception e){
+			logger.error(e.getMessage());
+		}
 		resp.setResponseData(data);
 		return resp;
 	}

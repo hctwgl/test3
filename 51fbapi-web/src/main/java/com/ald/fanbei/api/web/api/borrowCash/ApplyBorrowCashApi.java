@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -32,6 +33,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -46,6 +48,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -84,6 +87,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
 	@Resource
 	CommitRecordUtil commitRecordUtil;
+	@Resource
+	AfUserCouponService afUserCouponService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -176,6 +181,26 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		String ipAddress = CommonUtil.getIpAddr(request);
 		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province, county, address, userId, currentDay);
 
+		//FIXME Add by jrb, 如果有免息券，则实际到账金额为借钱金额
+		try {
+			String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
+			if (!StringUtils.isBlank(couponId)) {
+				AfUserCouponDo afUserCouponDoTmp = new AfUserCouponDo();
+				afUserCouponDoTmp.setCouponId(Long.parseLong(couponId));
+				afUserCouponDoTmp.setUserId(userId);
+				AfUserCouponDo afUserCouponDo = afUserCouponService.getUserCouponByDo(afUserCouponDoTmp);
+				if(afUserCouponDo != null) {
+					afUserCouponDo.setStatus(CouponStatus.USED.getCode());
+					afBorrowCashDo.setArrivalAmount(afBorrowCashDo.getAmount());
+					// 更新券的状态为已使用
+					afUserCouponService.updateUserCouponSatusUsedById(afUserCouponDo.getRid());
+				}
+			}
+		} catch (Exception e){
+			logger.error(e.getMessage());
+		}
+		
+		
 		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);

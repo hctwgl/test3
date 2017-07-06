@@ -116,4 +116,6 @@ public interface AfUserCouponService {
 	 */
 	List<AfUserCouponDto> getUserCouponByUserIdAndSourceType(Long userId,String sourceType);
 
+	AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo);
+
 }

@@ -159,7 +159,7 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	}
 
 	@Override
-
+<<<<<<< HEAD
 	public List<AfUserCouponDto> getUserCouponByUserIdAndSourceType(Long userId,
 			String sourceType) {
 		
@@ -167,9 +167,9 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	}
 
 	
-
+=======
 	public AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo) {
 		return afUserCouponDao.getUserCouponByDo(afUserCouponDo);
 	}
-
+>>>>>>> f030fb9fc23092e50ac60b62298fbbb893dd049b
 }
