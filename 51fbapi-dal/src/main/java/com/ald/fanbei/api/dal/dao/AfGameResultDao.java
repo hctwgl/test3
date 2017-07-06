@@ -29,4 +29,6 @@ public interface AfGameResultDao {
 	    List<AfGameResultDto> getResultDtoByUserId(Long userId);
 
 		List<AfGameResultDo> getTearPacketResultByUserId(@Param("userId")Long userId);
+
+		List<AfGameResultDo> getTearPacketLatestRecord();
 }

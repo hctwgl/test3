@@ -38,4 +38,6 @@ public interface AfGameResultService {
     AfGameResultDo addGameResult(Long gameId,AfUserDo user,Long couponId,String lotteryResult);
 
 	List<AfGameResultDo> getTearPacketResultByUserId(Long userId);
+
+	List<AfGameResultDo> getTearPacketLatestRecord();
 }

@@ -414,5 +414,10 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	public List<AfGameResultDo> getTearPacketResultByUserId(Long userId) {
 		return afGameResultDao.getTearPacketResultByUserId(userId);
 	}
+
+	@Override
+	public List<AfGameResultDo> getTearPacketLatestRecord() {
+		return afGameResultDao.getTearPacketLatestRecord();
+	}
 	
 }

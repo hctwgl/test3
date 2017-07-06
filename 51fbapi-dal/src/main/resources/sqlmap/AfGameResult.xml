@@ -34,6 +34,23 @@
 		FROM af_game_result WHERE is_delete = 0 AND lottery_result > 0 ORDER BY id DESC LIMIT 20;
 	</select>
 	
+	<select id="getTearPacketLatestRecord" resultType="AfGameResultDo">
+		SELECT 
+			<include refid="queryFieldsWithPrefix"/>
+		FROM 
+			af_game_result gr 
+		LEFT JOIN 
+			af_game g 
+		ON(g.id = gr.game_id) 
+		WHERE 
+			gr.is_delete = 0 
+		AND 
+			g.is_delete = 0 
+		AND 
+			g.code='tear_packet'
+		ORDER BY gr.id DESC LIMIT 20
+	</select>
+	
 	<select id="getResultDtoByUserId" resultType="AfGameResultDto">
 		SELECT 
 			<include refid="queryDtoFields"/>
