@@ -62,6 +62,7 @@ import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -1249,12 +1250,131 @@ public class RiskUtil extends AbstractThird {
 		return bigDecimal;
 
 	}
+	
 	public void payOrderChangeAmount(Long rid) throws InterruptedException{
-		
 		AfOrderDo orderInfo = orderDao.getOrderById(rid);
 		logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
 		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
 		}
 	}
+	
+	/**
+	 * 魔蝎公积金第三方数据查询异步通知
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param userName
+	 *            --用户名
+	 * @return
+	 */
+	public int fundNotify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "fundNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if (StringUtil.equals("50", result)) {
+				//不做任何更新
+				return 0;
+			}
+			AfUserAuthDo auth = new AfUserAuthDo();
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtFund(new Date(System.currentTimeMillis()));
+//			AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
+			if (StringUtil.equals("10", result)) {
+				auth.setFundStatus(YesNoStatus.YES.getCode());
+//				jpushService.mobileRiskSuccess(accountInfo.getUserName());
+			} else {
+				auth.setFundStatus(YesNoStatus.NO.getCode());
+//				jpushService.mobileRiskFail(accountInfo.getUserName());
+			}
+			return afUserAuthService.updateUserAuth(auth);
+		}
+		return 0;
+	}
+
+	/**
+	 * 魔蝎社保第三方数据查询异步通知
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param userName
+	 *            --用户名
+	 * @return
+	 */
+	public int jinpoNotify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "jinpoNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if (StringUtil.equals("50", result)) {//不做任何更新
+				return 0;
+			}
+			AfUserAuthDo auth = new AfUserAuthDo();
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtJinpo(new Date(System.currentTimeMillis()));
+//			AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
+			if (StringUtil.equals("10", result)) {
+				auth.setJinpoStatus(YesNoStatus.YES.getCode());
+//				jpushService.mobileRiskSuccess(accountInfo.getUserName());
+			} else {
+				auth.setJinpoStatus(YesNoStatus.NO.getCode());
+//				jpushService.mobileRiskFail(accountInfo.getUserName());
+			}
+			return afUserAuthService.updateUserAuth(auth);
+		}
+		return 0;
+	}
+	
+	/**
+	 * 魔蝎信用卡第三方数据查询异步通知
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param userName
+	 *            --用户名
+	 * @return
+	 */
+	public int creditCardNotify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "creditCardNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if (StringUtil.equals("50", result)) {//不做任何更新
+				return 0;
+			}
+			AfUserAuthDo auth = new AfUserAuthDo();
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtCredit(new Date(System.currentTimeMillis()));
+//			AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
+			if (StringUtil.equals("10", result)) {
+				auth.setCreditStatus(YesNoStatus.YES.getCode());
+//				jpushService.mobileRiskSuccess(accountInfo.getUserName());
+			} else {
+				auth.setCreditStatus(YesNoStatus.NO.getCode());
+//				jpushService.mobileRiskFail(accountInfo.getUserName());
+			}
+			return afUserAuthService.updateUserAuth(auth);
+		}
+		return 0;
+	}
+	
 }
