@@ -17,7 +17,8 @@ public enum CouponType {
 	FULLVOUCHER("FULLVOUCHER", "满减券"),
 	CASH("CASH", "现金"),
 	REBATE("REBATE", "返现(签到、注册)"),
-	ACTIVITY("ACTIVITY", "会场券");
+	ACTIVITY("ACTIVITY", "会场券"),
+	FREEINTEREST("FREEINTEREST","借钱免息劵");
 
     private String code;
     private String name;

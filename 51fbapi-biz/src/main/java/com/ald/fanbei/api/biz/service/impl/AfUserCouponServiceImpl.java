@@ -157,4 +157,13 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	public int getUserAcgencyCountByAmount(Long userId, BigDecimal amount, Long goodsId) {
 		return afUserCouponDao.getUserAcgencyCountByAmount(userId, amount, goodsId);
 	}
+
+	@Override
+	public List<AfUserCouponDto> getUserCouponByUserIdAndSourceType(Long userId,
+			String sourceType) {
+		
+		return afUserCouponDao.getUserCouponByUserIdAndSourceType(userId, sourceType);
+	}
+
+	
 }

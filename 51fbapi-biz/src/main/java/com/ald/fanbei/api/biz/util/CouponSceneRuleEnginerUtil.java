@@ -70,7 +70,6 @@ public class CouponSceneRuleEnginerUtil {
 	 * 首次过强风控发送优惠劵和现金
 	 * @param userId
 	 */
-	@Async
 	public void creditAuth(Long userId){
 		Map<String,Object> inputData = new HashMap<String,Object>();
 		inputData.put("userId", userId);

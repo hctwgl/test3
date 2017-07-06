@@ -225,4 +225,21 @@
 		
 	</select>
 	
+	<select id="getUserCouponByUserIdAndSourceType" resultType="AfUserCouponDto">
+		SELECT
+			<include refid="queryAllFields"/>
+		FROM 
+			af_user_coupon u
+		LEFT JOIN
+			af_coupon c
+		ON
+			c.is_delete = 0 and u.coupon_id = c.id
+		WHERE
+			u.is_delete = 0 
+		AND
+			u.user_id = #{userId}
+		AND
+		    u.source_type = #{sourceType} 
+	</select>
+	
 </mapper>
