@@ -98,7 +98,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setGoodsName(goodsName);
 		afOrder.setNumId(numId);
 		afOrder.setOpenId(openId);
-		
+		afOrder.setUserCouponId(couponId);
 		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if(addressDo==null){
