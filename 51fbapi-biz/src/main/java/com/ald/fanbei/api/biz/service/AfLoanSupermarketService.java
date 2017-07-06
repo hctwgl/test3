@@ -1,8 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.util.List;
-
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
+
+import java.util.List;
 
 /**
  * @类描述：
@@ -35,5 +35,12 @@ public interface AfLoanSupermarketService {
 	 * @return
 	 */
 	AfLoanSupermarketDo getLoanSupermarketByLsmNo(String lsmNo);
+
+	/**
+	 * 根据标签查询贷款超市
+	 * @param label
+	 * @return
+	 */
+	List<AfLoanSupermarketDo> getLoanSupermarketByLabel(String label);
 
 }

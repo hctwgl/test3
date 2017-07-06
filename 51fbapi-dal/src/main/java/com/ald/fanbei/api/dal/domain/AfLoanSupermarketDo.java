@@ -28,8 +28,16 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 	private Integer orderNo;
 	private Integer status;
 	private Integer isDelete;
-	
-	
+	private String marketPoint;
+
+	public String getMarketPoint() {
+		return marketPoint;
+	}
+
+	public void setMarketPoint(String marketPoint) {
+		this.marketPoint = marketPoint;
+	}
+
 	public Long getId() {
 		return id;
 	}

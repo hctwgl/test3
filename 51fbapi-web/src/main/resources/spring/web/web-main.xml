@@ -267,6 +267,8 @@
 				<entry key="/borrowCash/getLoanSupermarketList" value-ref="getLoanSupermarketListApi" />
 				<entry key="/loanMarket/accessLoanSupermarket" value-ref="accessLoanSupermarketApi" />
 				<entry key="/borrowCash/applyBorrowCashV1" value-ref="applyBorrowCashV1Api" />
+				<entry key="/borrowCash/getLoanSupermarketTabList" value-ref="getLoanSupermarketTabListApi" />
+				<entry key="/borrowCash/getLoanSupermarketListByTab" value-ref="getLoanSupermarketListByTabApi" />
 
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
