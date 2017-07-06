@@ -182,7 +182,7 @@ public class PayRoutController {
 					return "SUCCESS";
 				}
 			}
-			return "ERROR";
+			return "SUCCESS";
 		} catch (Exception e) {
 			logger.error("delegatePay", e);
 			return "ERROR";
