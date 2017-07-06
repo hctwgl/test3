@@ -32,9 +32,9 @@
 	<div class="elmCouponsHome" id="elmCouponsHome">
 		<img src="$commonUrl/elmCouponsHome.png">
 		<ul class="clearfix">
-			<li @click="boluomiCoupons(8483)"></li>
-			<li @click="boluomiCoupons(8484)"></li>
-			<li @click="boluomiCoupons(8485)"></li>
+			<li @click="boluomiCoupons(8486)"></li>
+			<li @click="boluomiCoupons(8487)"></li>
+			<li @click="boluomiCoupons(8488)"></li>
 			<span @click="boluomiHome(10)"></span>
 		</ul>
 	</div>
