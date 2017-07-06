@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfLoanSupermarketDao">
 	<sql id="queryFields">
-		id,lsm_no,icon_url,gmt_create,gmt_modified,create_user_id,modify_user_id,lsm_name,lsm_intro,link_url,label,order_no,status,is_delete
+		id,lsm_no,icon_url,gmt_create,gmt_modified,create_user_id,modify_user_id,lsm_name,lsm_intro,link_url,label,order_no,status,is_delete,market_point
 	</sql>
 
 	<insert id="addLoanSupermarket" parameterType="AfLoanSupermarketDo" useGeneratedKeys="true" keyProperty="id">
@@ -91,6 +91,20 @@
 		ORDER BY
 		id desc
 		LIMIT 1
+	</select>
+
+	<select id="getLoanSupermarketByLabel" resultType="AfLoanSupermarketDo" parameterType="java.lang.String">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_loan_supermarket
+		WHERE
+		is_delete = 0
+		AND
+		status = 1
+		AND
+		label = #{label}
+		ORDER BY order_no ASC
 	</select>
 	
 	
