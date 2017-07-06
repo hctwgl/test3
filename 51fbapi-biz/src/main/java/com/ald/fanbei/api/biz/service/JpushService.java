@@ -144,4 +144,18 @@ public interface JpushService {
 	 *  运营商认证失败推送
 	 */
 	public void mobileRiskFail(String userName);
+	
+	/**
+	 * 给指定的用户推送首页弹窗
+	 * @param userName
+	 */
+	public void pushHeaderImage(String userName);
+	
+	/**
+	 * 给所有用户推送首页弹窗
+	 * @param userName
+	 */
+	public void pushAllHeaderImage();
+	
+	
 }
