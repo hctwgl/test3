@@ -1088,4 +1088,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		return borrowRate;
 
 	}
+
+	@Override
+	public AfBorrowDo getBorrowInfoByBorrowNo(String borrowNo) {
+		return afBorrowDao.getBorrowInfoByBorrowNo(borrowNo);
+	}
 }

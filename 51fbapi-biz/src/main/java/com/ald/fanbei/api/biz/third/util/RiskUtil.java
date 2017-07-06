@@ -31,6 +31,8 @@ import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.RiskSynBorrowInfoReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaReqBo;
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
@@ -59,6 +61,7 @@ import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -73,7 +76,9 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
@@ -151,7 +156,10 @@ public class RiskUtil extends AbstractThird {
 	AfAgentOrderService afAgentOrderService;
 	@Resource
 	BoluomeUtil boluomeUtil;
-	
+	@Resource
+	AfUserAccountDao afUserAccountDao;
+	@Resource
+	AfBorrowDao afBorrowDao;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -391,13 +399,27 @@ public class RiskUtil extends AbstractThird {
 	
 	/**
 	 * 弱风控审批
-	 * 
-	 * @param orderNo
-	 * @param consumerNo
-	 * @param scene
+	 * @param consumerNo 用户ID
+	 * @param borrowNo 借款编号
+	 * @param borrowType  借款类型
+	 * @param scene 场景
+	 * @param cardNo 卡号
+	 * @param appName APP名称
+	 * @param ipAddress ip地址
+ 	 * @param blackBox  
+	 * @param orderNo 订单编号
+	 * @param phone 手机号
+	 * @param amount 订单金额
+	 * @param poundage 手续费
+	 * @param time 时间
+	 * @param productName 商品名称
+	 * @param virtualCode 商品编号
 	 * @return
 	 */
-	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal poundage, String time) {
+	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, 
+			String scene, String cardNo, String appName, String ipAddress, 
+			String blackBox, String orderNo, String phone, BigDecimal amount, 
+			BigDecimal poundage, String time,String productName,String virtualCode) {
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if(!"Y".equals(userAuth.getRiskStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -409,12 +431,14 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setBorrowType(borrowType);
 		reqBo.setChannel(CHANNEL);
 		reqBo.setScene(scene);
-
+		
 		JSONObject obj = new JSONObject();
 		obj.put("cardNo", cardNo);
 		obj.put("appName", appName);
 		obj.put("ipAddress", ipAddress);
 		obj.put("blackBox", blackBox);
+		obj.put("virtualCode", virtualCode);
+		obj.put("productName", productName);
 		reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
 		
 		JSONObject eventObj = new JSONObject();
@@ -431,13 +455,6 @@ public class RiskUtil extends AbstractThird {
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
 		
-//		String content = JSONObject.toJSONString(reqBo);
-//		try {
-//			commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
-//		} catch (Exception e) {
-//			logger.error("field too long，weakverify insert commitRecord fail,consumerNo="+consumerNo);
-//		}
-		
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -453,6 +470,10 @@ public class RiskUtil extends AbstractThird {
 			riskResp.setSuccess(true);
 			riskResp.setResult(result);
 			riskResp.setConsumerNo(consumerNo);
+			riskResp.setVirtualCode(dataObj.getString("virtualCode"));
+			riskResp.setVirtualQuota(dataObj.getBigDecimal("virtualQuota"));
+			riskResp.setRejectCode(dataObj.getString("rejectCode"));
+			riskResp.setBorrowNo(dataObj.getString("borrowNo"));
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -564,80 +585,69 @@ public class RiskUtil extends AbstractThird {
 	 *            --
 	 * @return 
 	 */
-	public long payOrder(final AfBorrowDo borrow, final String orderNo, final String result) {
+	public Map<String,Object> payOrder(final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo) {
+		String result = verifybo.getResult();
+		
 		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
-//		return transactionTemplate.execute(new TransactionCallback<Long>() {
-//			@Override
-//			public Long doInTransaction(TransactionStatus status) {
-//
-//				try {
-					// 增加事务
-//					RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
-//					reqBo.setCode(code);
-//					reqBo.setData(data);
-//					reqBo.setMsg(msg);
-//					reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-
-					// 添加一个根据风控号查找记录的方法
-					AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
-					// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
-
-					logger.info("risk_result =" + result);
-					AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
-					if (!result.equals("10")) {
-						orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
-						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
-						logger.info("updateOrder orderInfo = {}", orderInfo);
-						int re = orderDao.updateOrder(orderInfo);
-						// 审批不通过时，让额度还原到以前
-						
-						// TODO:额度增加，而非减少
-						BigDecimal usedAmount = orderInfo.getActualAmount().multiply(BigDecimal.valueOf(-1));
-						afBorrowService.dealAgentPayClose(userAccountInfo, usedAmount, orderInfo.getRid());
-						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-							AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
-							afAgentOrderDo.setClosedReason("风控审批失败");
-							afAgentOrderDo.setGmtClosed(new Date());
-							afAgentOrderService.updateAgentOrder(afAgentOrderDo);
-							
-							//添加关闭订单释放优惠券
-							if(afAgentOrderDo.getCouponId()>0){
-					            AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		// 添加一个根据风控号查找记录的方法
+		AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
+		// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
+		logger.info("risk_result =" + result);
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+		if (!result.equals("10")) {
+			resultMap.put("success", false);
+			resultMap.put("verifybo", JSONObject.toJSON(verifybo));
+			
+			orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+			logger.info("updateOrder orderInfo = {}", orderInfo);
+			orderDao.updateOrder(orderInfo);
+			// 审批不通过时，让额度还原到以前
+			
+			if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
+				AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+				afAgentOrderDo.setClosedReason("风控审批失败");
+				afAgentOrderDo.setGmtClosed(new Date());
+				afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+				
+				//添加关闭订单释放优惠券
+				if(afAgentOrderDo.getCouponId()>0){
+		            AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+		
+		            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+		            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
+		            		afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
+		            }
+		            else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+		        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+		        		afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
+		        	}
+				}
+			}
+			jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
+			return resultMap;
+		}
+		resultMap.put("success", true);
+		
+		orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+		orderInfo.setStatus(OrderStatus.PAID.getCode());
+		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+		// 新增借款信息
+		afBorrowDao.addBorrow(borrow);
+		// 在风控审批通过后额度不变生成账单
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount());
+		
+		// 修改用户账户信息
+		AfUserAccountDo account = new AfUserAccountDo();
+		account.setUsedAmount(orderInfo.getActualAmount());
+		account.setUserId(userAccountInfo.getUserId());
+		afUserAccountDao.updateUserAccount(account);
+		
+		logger.info("updateOrder orderInfo = {}", orderInfo);
+		orderDao.updateOrder(orderInfo);
 					
-					            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
-					            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
-					            		afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
-					            }
-					            else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
-					        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
-					        		afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
-					        	}
-							}
-						}
-						jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
-						return new Long(String.valueOf(re));
-					}
-
-					// 在风控审批通过后额度不变生成账单
-					afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount());
-					// 审批通过时
-					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
-					orderInfo.setStatus(OrderStatus.PAID.getCode());
-					// 关闭订单时间和原因的更新
-					
-					logger.info("updateOrder orderInfo = {}", orderInfo);
-					orderDao.updateOrder(orderInfo);
-					
-//				} catch (Exception e) {
-//					logger.info("asyPayOrder error:" + e);
-//					status.setRollbackOnly();
-//					throw e;
-//				}
-//				return 1l;
-//			}
-
-//		});
-		return 1l;
+		return resultMap;
 	}
 
 	/**
@@ -1256,6 +1266,37 @@ public class RiskUtil extends AbstractThird {
 		logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
 		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+		}
+	}
+	
+	/**
+	 * 获取虚拟商品可使用额度
+	 * @param consumerNo 用户id
+	 * @param virtualCode 虚拟商品代码 //菠萝觅已知
+	 * @param productName 商品名称
+	 * @return
+	 */
+	public RiskVirtualProductQuotaRespBo virtualProductQuota(String consumerNo, String virtualCode, String productName) {
+		RiskVirtualProductQuotaReqBo reqBo = new RiskVirtualProductQuotaReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		
+		JSONObject obj = new JSONObject();
+		obj.put("virtualCode", virtualCode);
+		obj.put("productName", productName);
+
+		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		String reqResult = HttpUtil.post(getUrl() + "modules/api/risk/virtualProductQuota.htm", reqBo);
+		logThird(reqResult, "quota", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.VIRTUAL_PRODUCT_QUOTA_ERROR);
+		}
+		RiskVirtualProductQuotaRespBo riskResp = JSONObject.parseObject(reqResult, RiskVirtualProductQuotaRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.VIRTUAL_PRODUCT_QUOTA_ERROR);
 		}
 	}
 }

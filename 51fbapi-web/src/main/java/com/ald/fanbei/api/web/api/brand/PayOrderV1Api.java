@@ -10,6 +10,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
@@ -19,16 +22,19 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.RiskErrorCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -51,6 +57,10 @@ public class PayOrderV1Api implements ApiHandle {
 	BoluomeUtil boluomeUtil;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -107,6 +117,7 @@ public class PayOrderV1Api implements ApiHandle {
 			if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
 				riskUtil.payOrderChangeAmount(orderInfo.getRid());
 			}
+			
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {
 			throw new FanbeiException("pay order failed", exception.getErrorCode());
@@ -115,5 +126,35 @@ public class PayOrderV1Api implements ApiHandle {
 			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 		return resp;
+	}
+	
+	private void dealWithPayOrderFailed(Map<String, Object> result, ApiHandleResponse resp) {
+		String success = result.get("success").toString();
+		//如果代付，风控支付是不通过的，找出其原因
+		if (StringUtils.isBlank(success) && !Boolean.getBoolean(success)) {
+			String verifyBoStr = (String) result.get("verifybo");
+			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
+			String rejectCode = riskResp.getRejectCode();
+			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+			switch (erorrCode) {
+			case AUTH_AMOUNT_LIMIT:
+				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_AUTH_AMOUNT_LIMIT);
+			case OVERDUE_BORROW:
+			{
+				String borrowNo = riskResp.getBorrowNo();
+				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+			}
+				break;
+			case OVERDUE_BORROW_CASH:
+				String borrowNo = riskResp.getBorrowNo();
+				
+				break;
+			case OTHER_RULE:
+				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_OTHER_RULE);
+			default:
+				break;
+			}
+			
+		}
 	}
 }

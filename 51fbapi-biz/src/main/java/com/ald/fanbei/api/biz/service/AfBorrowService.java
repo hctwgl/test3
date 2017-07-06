@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
@@ -257,5 +256,12 @@ public interface AfBorrowService {
 	 */
 	Long dealAgentPayConsumeRisk(AfUserAccountDo userDto, BigDecimal amount, String goodsName, int nper, Long rid,
 			String orderNo, Integer totalNper);
+	
+	/**
+	 * 根据借款编号获取借款信息
+	 * @param borrowNo
+	 * @return
+	 */
+	AfBorrowDo getBorrowInfoByBorrowNo(String borrowNo);
 
 }
