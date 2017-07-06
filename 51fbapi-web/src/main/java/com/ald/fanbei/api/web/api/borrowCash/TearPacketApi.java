@@ -120,7 +120,7 @@ public class TearPacketApi  implements ApiHandle {
 			// 获取优惠券信息
 			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
 			data.put("prizeName", afCouponDo.getName());
-			
+			data.put("prizeType", afCouponDo.getType());
 		} catch (Exception e) {
 			logger.error(e.toString());
 		}

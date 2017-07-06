@@ -18,10 +18,9 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -32,6 +31,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -55,6 +55,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserCouponService afUserCouponService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -144,6 +146,24 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			data.put("banKName", afUserBankcardDo.getBankName());
 			data.put("bankCard", afUserBankcardDo.getCardNumber());
 			data.put("type", type);
+			// 如果选择了优惠券，则不收任何手续费 add by jrb
+			try {
+				String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
+				if (!StringUtils.isBlank(couponId)) {
+					AfUserCouponDo afUserCouponDoTmp = new AfUserCouponDo();
+					afUserCouponDoTmp.setCouponId(Long.parseLong(couponId));
+					afUserCouponDoTmp.setUserId(userId);
+					AfUserCouponDo afUserCouponDo = afUserCouponService.getUserCouponByDo(afUserCouponDoTmp);
+					if(afUserCouponDo != null) {
+						data.put("serviceAmount", BigDecimal.ZERO);
+						data.put("arrivalAmount", data.get("amount"));
+					}
+				}
+			} catch (Exception e){
+				logger.error(e.getMessage());
+			}
+			
+			
 		}
 		resp.setResponseData(data);
 		return resp;
