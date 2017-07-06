@@ -26,4 +26,16 @@ public interface AfGameResultService {
      * @param code 抽奖码
      */
     AfGameResultDo dealWithResult(AfUserDo userInfo,String catchResult,String item,String code);
+    
+    /**
+     * 游戏结果
+     * @param gameId 游戏Id
+     * @param user 用户信息
+     * @param couponId 优惠券Id
+     * @param lotteryResult 结果
+     * @return
+     */
+    AfGameResultDo addGameResult(Long gameId,AfUserDo user,Long couponId,String lotteryResult);
+
+	List<AfGameResultDo> getTearPacketResultByUserId(Long userId);
 }

@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.dto.AfGameResultDto;
 
@@ -25,4 +27,6 @@ public interface AfGameResultDao {
 	     * @return
 	     */
 	    List<AfGameResultDto> getResultDtoByUserId(Long userId);
+
+		List<AfGameResultDo> getTearPacketResultByUserId(@Param("userId")Long userId);
 }

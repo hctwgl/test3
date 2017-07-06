@@ -109,4 +109,6 @@ public interface AfUserCouponService {
 	 */
 	int getUserAcgencyCountByAmount(Long userId,BigDecimal amount,Long goodsId);
 
+	AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo);
+
 }

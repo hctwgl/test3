@@ -379,6 +379,10 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		afGameChanceDao.updateGameChance(chanceUpdate);
 	}
 	
+	public AfGameResultDo addGameResult(Long gameId,AfUserDo user,Long couponId,String lotteryResult) {
+		return addGameResult(gameId,user,"","","",couponId,lotteryResult);
+	}
+	
 	/**
 	 * 增加抓娃娃中奖结果
 	 * @param gameId 游戏id
@@ -390,6 +394,7 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	 * @param lotteryResult 抓娃娃结果
 	 * @return
 	 */
+	
 	private AfGameResultDo addGameResult(Long gameId,AfUserDo user,String code,String item,String lotteryItem,Long couponId,String lotteryResult){
 		AfGameResultDo resultDo = new AfGameResultDo();
 		resultDo.setGameId(gameId);
@@ -403,6 +408,11 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		resultDo.setUserName(user.getUserName());
 		afGameResultDao.addGameResult(resultDo);
 		return resultDo;
+	}
+
+	@Override
+	public List<AfGameResultDo> getTearPacketResultByUserId(Long userId) {
+		return afGameResultDao.getTearPacketResultByUserId(userId);
 	}
 	
 }

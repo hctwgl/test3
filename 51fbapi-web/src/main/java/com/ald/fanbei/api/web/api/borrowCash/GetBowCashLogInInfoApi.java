@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -39,6 +40,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -74,6 +76,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfUserOperationLogService afUserOperationLogService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfGameResultService afGameResultService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -279,7 +283,23 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		}
 		data.put("existRepayingMoney", existRepayingMoney);
 		data.put("repayingMoney", repayingMoney);
-				
+		// 红包是否显示 Add by jrb 2017.7.6
+		try {
+			// 首先判断用户是否参与过拆红包活动
+			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId);
+			String status  = (String) data.get("status");
+			boolean takePart = false;
+			if(gameResultList != null && gameResultList.size() > 0){
+				takePart = true;
+			}
+			if(takePart == false && ("TRANSED".equals(status) || "FINSH".equals(status))) {
+				data.put("showPacket",true);
+			} else{
+				data.put("showPacket",false);
+			}
+		} catch (Exception e){
+			logger.error(e.getMessage());
+		}
 		resp.setResponseData(data);
 		return resp;
 	}

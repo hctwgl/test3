@@ -97,4 +97,6 @@ public interface AfUserCouponDao {
 	 * @return
 	 */
 	int getUserAcgencyCountByAmount(@Param("userId")Long userId,@Param("amount")BigDecimal amount,@Param("goodsId")Long goodsId);
+
+	AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo);
 }
