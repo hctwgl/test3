@@ -1,14 +1,20 @@
 package com.ald.fanbei.api.web.api.auth;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.html.ListView;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.service.AfCouponSceneService;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
@@ -17,6 +23,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -54,6 +61,10 @@ public class AuthStrongRiskApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
+	@Resource
+	AfResourceService afResourceService;
+	@Resource
+	AfCouponSceneService afCouponSceneService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -110,7 +121,21 @@ public class AuthStrongRiskApi implements ApiHandle {
 				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
 				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 			}
-
+			
+			// 提交过信用认证,给用户发放优惠劵
+			String creditAuthStr = CouponSenceRuleType.CREDITAUTH.getCode();
+			
+			
+			List<CouponSceneRuleBo> couponRuleList = afCouponSceneService.getRules(creditAuthStr,creditAuthStr.toLowerCase());
+			for (CouponSceneRuleBo couponSceneRuleBo : couponRuleList) {
+				if(couponSceneRuleBo.getResourceId()!= null){
+					
+					
+				}else{
+					
+				}
+			}
+			
 			return resp;
 		}
 
