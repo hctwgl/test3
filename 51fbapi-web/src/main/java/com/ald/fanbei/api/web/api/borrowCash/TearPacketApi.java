@@ -9,10 +9,9 @@ import java.util.Random;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameConfService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
@@ -20,14 +19,12 @@ import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGameConfDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -57,6 +54,8 @@ public class TearPacketApi  implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfCouponService afCouponService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -113,8 +112,15 @@ public class TearPacketApi  implements ApiHandle {
 			String couponId = (String) winPrizeInfo.get("prizeId"); 
 			// 获取用户信息
 			AfUserDo userInfo = afUserService.getUserByUserName(context.getUserName());
+			
+			// 获取用户最新一笔借款信息
+			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+			Long borrowId = 0l;
+			if(afBorrowCashDo != null){
+				borrowId = afBorrowCashDo.getRid();
+			}
 			// 添加抽奖结果信息
-			AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, Long.parseLong(couponId), "Y");
+			AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, borrowId, Long.parseLong(couponId), "Y");
 			afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "TEAR_PACKET", afGameResultDo.getRid() + "");
 			
 			// 获取优惠券信息

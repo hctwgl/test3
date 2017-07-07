@@ -291,17 +291,21 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		// 红包是否显示 Add by jrb 2017.7.6
 		try {
 			// 首先判断用户是否参与过拆红包活动
-			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId);
-			String status  = (String) data.get("status");
-			boolean takePart = false;
-			if(gameResultList != null && gameResultList.size() > 0){
-				takePart = true;
+			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid());
+			String status  = afLastBorrowCashDo.getStatus();
+			int takePartTime = 0;
+			if(gameResultList != null){
+				takePartTime = gameResultList.size();
 			}
-			if(takePart == false && ("TRANSED".equals(status) || "FINSH".equals(status))) {
+			if("TRANSED".equals(status) && takePartTime < 1) {
 				data.put("showPacket","Y");
-			} else{
+			} else if("FINSH".equals(status) && takePartTime < 2) {
+				data.put("showPacket","Y");
+			} else {
 				data.put("showPacket","N");
 			}
+			
 			// 查询是否有借钱免息优惠券
 			List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByType(userId, CouponType.FREEINTEREST.getCode());
 			if(couponList != null && couponList.size() > 0) {
