@@ -108,5 +108,14 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	int getUserAcgencyCountByAmount(Long userId,BigDecimal amount,Long goodsId);
+	
+	/**
+	 * 通过用户ID和优惠劵来源获取用户信息
+	 * @param userId
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserCouponByUserIdAndSourceType(Long userId,String sourceType);
+
+	AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo);
 
 }

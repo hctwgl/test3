@@ -50,6 +50,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.h5.controller.H5Controller;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -339,6 +340,35 @@ public class AppH5GameController  extends BaseController{
 		}
 		
 		return gameInitVo;
+	}
+	
+	@RequestMapping(value = "tearPacketAwardList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String tearPacketAwardList(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject jsonObj = new JSONObject();
+		try{
+			List<AfGameResultDo> latestResultList = afGameResultService.getTearPacketLatestRecord();
+			List awordList = new ArrayList();
+			if(latestResultList != null && latestResultList.size() > 0) {
+				for(AfGameResultDo  gameResultDo : latestResultList) {
+					Map tmpMap = new HashMap();
+					String mobile = gameResultDo.getUserName();
+					if(mobile != null && mobile.length() == 11) {
+						mobile = mobile.substring(0,3) + "xxxx" + mobile.substring(7, mobile.length());
+					}
+					tmpMap.put("mobile", mobile);
+					Long couponId = gameResultDo.getLotteryResult();
+					AfCouponDo afCouponDo = afCouponService.getCouponById(couponId);
+					tmpMap.put("prizeName", afCouponDo.getName());
+					awordList.add(tmpMap);
+				}
+				jsonObj.put("awordList", awordList);
+			}
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+		}
 	}
 	
 	@Override

@@ -4,6 +4,10 @@
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,game_id,user_id,user_name,user_avata,result,item,code,lottery_result
 	</sql>
+	<sql id="queryFieldsWithPrefix">
+		gr.id rid,gr.gmt_create,gr.gmt_modified,gr.game_id,gr.user_id,gr.user_name,gr.user_avata,gr.result,gr.item,gr.code,gr.lottery_result
+	</sql>
+	
 	<sql id="queryDtoFields">
 		result,item,lottery_result
 	</sql>
@@ -30,10 +34,45 @@
 		FROM af_game_result WHERE is_delete = 0 AND lottery_result > 0 ORDER BY id DESC LIMIT 20;
 	</select>
 	
+	<select id="getTearPacketLatestRecord" resultType="AfGameResultDo">
+		SELECT 
+			<include refid="queryFieldsWithPrefix"/>
+		FROM 
+			af_game_result gr 
+		LEFT JOIN 
+			af_game g 
+		ON(g.id = gr.game_id) 
+		WHERE 
+			gr.is_delete = 0 
+		AND 
+			g.is_delete = 0 
+		AND 
+			g.code='tear_packet'
+		ORDER BY gr.id DESC LIMIT 20
+	</select>
+	
 	<select id="getResultDtoByUserId" resultType="AfGameResultDto">
 		SELECT 
 			<include refid="queryDtoFields"/>
 		FROM af_game_result WHERE is_delete = 0 AND user_id = #{userId};
+	</select>
+	
+	<select id="getTearPacketResultByUserId" resultType="AfGameResultDto">
+		SELECT 
+			<include refid="queryFieldsWithPrefix"/>
+		FROM 
+			af_game_result gr 
+		LEFT JOIN 
+			af_game g 
+		ON(g.id = gr.game_id) 
+		WHERE 
+			gr.is_delete = 0 
+		AND 
+			g.is_delete = 0 
+		AND 
+			g.code='tear_packet' 
+		AND 
+			user_id = #{userId};
 	</select>
 	
 </mapper>
