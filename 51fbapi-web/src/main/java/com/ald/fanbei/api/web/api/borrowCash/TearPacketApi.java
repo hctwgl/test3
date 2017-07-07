@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
@@ -63,6 +64,18 @@ public class TearPacketApi  implements ApiHandle {
 		Long userId = context.getUserId();
 		Map<String, Object> data = new HashMap<String, Object>();
 		try {
+			// 首先判断用户是否有资格参与拆红包活动
+			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid());
+			String status  = afLastBorrowCashDo.getStatus();
+			int takePartTime = 0;
+			if(gameResultList != null){
+				takePartTime = gameResultList.size();
+			}
+			if(!("TRANSED".equals(status) && takePartTime < 1)
+					&& !("FINSH".equals(status) && takePartTime < 2)) {
+				throw new FanbeiException();
+			} 
 			// 获取拆红包游戏信息
 			AfGameDo gameDo = afGameService.getByCode("tear_packet");
 			if(gameDo == null){
