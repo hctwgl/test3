@@ -267,13 +267,9 @@
 				<entry key="/borrowCash/getLoanSupermarketList" value-ref="getLoanSupermarketListApi" />
 				<entry key="/loanMarket/accessLoanSupermarket" value-ref="accessLoanSupermarketApi" />
 				<entry key="/borrowCash/applyBorrowCashV1" value-ref="applyBorrowCashV1Api" />
-<<<<<<< HEAD
 				<entry key="/borrowCash/getLoanSupermarketTabList" value-ref="getLoanSupermarketTabListApi" />
 				<entry key="/borrowCash/getLoanSupermarketListByTab" value-ref="getLoanSupermarketListByTabApi" />
-
-=======
 				<entry key="/borrowCash/tearPacket" value-ref="tearPacketApi" />
->>>>>>> version_3.6.8_jrb
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
