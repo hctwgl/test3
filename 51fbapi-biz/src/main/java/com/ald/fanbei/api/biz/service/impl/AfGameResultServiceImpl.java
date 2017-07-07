@@ -379,8 +379,8 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		afGameChanceDao.updateGameChance(chanceUpdate);
 	}
 	
-	public AfGameResultDo addGameResult(Long gameId,AfUserDo user,Long couponId,String lotteryResult) {
-		return addGameResult(gameId,user,"","","",couponId,lotteryResult);
+	public AfGameResultDo addGameResult(Long gameId,AfUserDo user,Long borrowId,Long couponId,String lotteryResult) {
+		return addGameResult(gameId,user,borrowId + "","","",couponId,lotteryResult);
 	}
 	
 	/**
@@ -411,13 +411,14 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	}
 
 	@Override
-	public List<AfGameResultDo> getTearPacketResultByUserId(Long userId) {
-		return afGameResultDao.getTearPacketResultByUserId(userId);
+	public List<AfGameResultDo> getTearPacketResultByUserId(Long userId, Long borrowId) {
+		return afGameResultDao.getTearPacketResultByUserId(userId, borrowId);
 	}
 
 	@Override
 	public List<AfGameResultDo> getTearPacketLatestRecord() {
 		return afGameResultDao.getTearPacketLatestRecord();
 	}
+
 	
 }

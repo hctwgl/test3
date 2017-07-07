@@ -35,9 +35,9 @@ public interface AfGameResultService {
      * @param lotteryResult 结果
      * @return
      */
-    AfGameResultDo addGameResult(Long gameId,AfUserDo user,Long couponId,String lotteryResult);
+    AfGameResultDo addGameResult(Long gameId,AfUserDo user,Long borrowId,Long couponId,String lotteryResult);
 
-	List<AfGameResultDo> getTearPacketResultByUserId(Long userId);
+	List<AfGameResultDo> getTearPacketResultByUserId(Long userId, Long borrowId);
 
 	List<AfGameResultDo> getTearPacketLatestRecord();
 }

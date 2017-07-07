@@ -41,7 +41,7 @@ public class FanbeiController extends BaseController {
 	AfResourceService afResourceService;
 
     @RequestMapping(value ={
-    	"/goods/getFootMarkList","/good/getGoodsTkRate","/goods/addFootMark","/goods/getHomeInfo","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
+    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/addFootMark","/goods/getHomeInfo","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
