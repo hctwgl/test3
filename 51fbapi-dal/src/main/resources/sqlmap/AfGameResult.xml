@@ -72,7 +72,9 @@
 		AND 
 			g.code='tear_packet' 
 		AND 
-			user_id = #{userId};
+			user_id = #{userId}
+		AND
+			gr.code = #{borrowId}
 	</select>
 	
 </mapper>
