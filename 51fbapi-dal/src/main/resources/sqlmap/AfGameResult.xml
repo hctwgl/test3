@@ -72,7 +72,7 @@
 		AND 
 			g.code='tear_packet' 
 		AND 
-			user_id = #{userId};
+			user_id = #{userId}
 	</select>
 	
 </mapper>
