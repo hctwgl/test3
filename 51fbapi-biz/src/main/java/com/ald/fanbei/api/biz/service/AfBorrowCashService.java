@@ -123,7 +123,7 @@ public interface AfBorrowCashService {
 	 * @param userId
 	 * @return
 	 */
-	AfBorrowCashDo getBorrowCashInfoByBorrowNoAndUserId(String borrowNo, Long userId);
+	AfBorrowCashDo getBorrowCashInfoByBorrowNo(String borrowNo);
 	
 	
 }

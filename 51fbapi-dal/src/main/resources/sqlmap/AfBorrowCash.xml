@@ -275,15 +275,13 @@
 		1
 	</select>
 	
-	<select id ="getBorrowCashInfoByBorrowNoAndUserId" resultType="AfBorrowCashDo">
+	<select id ="getBorrowCashInfoByBorrowNo" resultType="AfBorrowCashDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM
 			af_borrow_cash
 		WHERE
 			is_delete = 0
-		AND
-			user_id = #{userId}
 		AND 
 			borrow_no = #{borrowNo}
 		LIMIT 1

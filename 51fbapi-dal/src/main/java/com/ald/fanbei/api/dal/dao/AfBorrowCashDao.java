@@ -132,5 +132,5 @@ public interface AfBorrowCashDao {
 	 * @param userId
 	 * @return
 	 */
-	AfBorrowCashDo getBorrowCashInfoByBorrowNoAndUserId(@Param("borrowNo")String borrowNo, @Param("userId")Long userId);
+	AfBorrowCashDo getBorrowCashInfoByBorrowNo(@Param("borrowNo")String borrowNo);
 }

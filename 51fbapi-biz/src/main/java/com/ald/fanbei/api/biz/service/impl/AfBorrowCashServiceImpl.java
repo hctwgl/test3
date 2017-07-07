@@ -126,8 +126,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	}
 
 	@Override
-	public AfBorrowCashDo getBorrowCashInfoByBorrowNoAndUserId(String borrowNo, Long userId) {
-		return afBorrowCashDao.getBorrowCashInfoByBorrowNoAndUserId(borrowNo, userId);
+	public AfBorrowCashDo getBorrowCashInfoByBorrowNo(String borrowNo) {
+		return afBorrowCashDao.getBorrowCashInfoByBorrowNo(borrowNo);
 	}
 
 }

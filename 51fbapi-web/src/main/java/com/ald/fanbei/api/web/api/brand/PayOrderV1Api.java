@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -117,6 +118,7 @@ public class PayOrderV1Api implements ApiHandle {
 			if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
 				riskUtil.payOrderChangeAmount(orderInfo.getRid());
 			}
+			dealWithPayOrderFailed(result, resp);
 			
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {
@@ -147,6 +149,7 @@ public class PayOrderV1Api implements ApiHandle {
 				break;
 			case OVERDUE_BORROW_CASH:
 				String borrowNo = riskResp.getBorrowNo();
+				AfBorrowCashDo borrowCashInfo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 				
 				break;
 			case OTHER_RULE:
