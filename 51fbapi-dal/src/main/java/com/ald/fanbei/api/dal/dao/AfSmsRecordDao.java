@@ -47,4 +47,13 @@ public interface AfSmsRecordDao {
 	int updateSmsIsCheck(Integer id);
 	
 	int updateSmsFailCount(AfSmsRecordDo afSmsRecordDo);
+	
+	/**
+	 * 根据手机号和验证码获取最近一次发送的短信
+	 * 
+	 *@param mobile
+	 *@param type
+	 *@return
+	 */
+	AfSmsRecordDo getLatestByMobileCode(@Param("mobile")String mobile,@Param("verifyCode")String verifyCode);	
 }

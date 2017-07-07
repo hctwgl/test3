@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 
 /**
@@ -33,4 +35,13 @@ public interface AfSmsRecordService {
 	int updateSmsIsCheck(Integer id);
 	
 	int updateSmsFailCount(AfSmsRecordDo afSmsRecordDo);
+	
+	/**
+	 * 根据手机号和验证码获取最近一次发送的短信
+	 * 
+	 *@param mobile
+	 *@param verifyCode
+	 *@return
+	 */
+	AfSmsRecordDo getLatestByMobileCode(@Param("mobile")String mobile,@Param("verifyCode")String verifyCode);
 }
