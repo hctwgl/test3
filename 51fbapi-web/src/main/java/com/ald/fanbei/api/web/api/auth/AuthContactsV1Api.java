@@ -51,7 +51,7 @@ public class AuthContactsV1Api implements ApiHandle {
 //			throw new FanbeiException("authContactsApi param error", FanbeiExceptionCode.PARAM_ERROR);
 //		}
 		
-		bizCacheUtil.saveObjectForever(Constants.CACHEKEY_USER_CONTACTS + context.getUserId(), contacts);
+		bizCacheUtil.saveObject(Constants.CACHEKEY_USER_CONTACTS + context.getUserId(), contacts, Constants.SECOND_OF_ONE_DAY);
 		
 //		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
 		
