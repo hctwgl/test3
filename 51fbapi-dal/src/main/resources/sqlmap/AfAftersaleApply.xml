@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_aftersale_apply表:售后申请模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfAftersaleApplyDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id,gmt_create,gmt_modified,gmt_apply,user_id,order_id,apply_no,status,verify_remark,user_reason,pic_vouchers,goods_back_address,logistics_company,logistics_no,remark 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="id !=null">
+            AND id  = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtApply !=null">
+            AND gmt_apply = #{gmtApply,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId,jdbcType=INTEGER}
+        </if>
+        <if test="applyNo != null and applyNo != ''">
+            AND apply_no = #{applyNo,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="verifyRemark != null and verifyRemark != ''">
+            AND verify_remark = #{verifyRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="userReason != null and userReason != ''">
+            AND user_reason = #{userReason,jdbcType=VARCHAR}
+        </if>
+        <if test="picVouchers != null and picVouchers != ''">
+            AND pic_vouchers = #{picVouchers,jdbcType=VARCHAR}
+        </if>
+        <if test="goodsBackAddress != null and goodsBackAddress != ''">
+            AND goods_back_address = #{goodsBackAddress,jdbcType=VARCHAR}
+        </if>
+        <if test="logisticsCompany != null and logisticsCompany != ''">
+            AND logistics_company = #{logisticsCompany,jdbcType=VARCHAR}
+        </if>
+        <if test="logisticsNo != null and logisticsNo != ''">
+            AND logistics_no = #{logisticsNo,jdbcType=VARCHAR}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="AfAftersaleApplyDo"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO af_aftersale_apply
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="gmtApply != null">        
+	            gmt_apply,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="orderId != null">        
+	            order_id,
+	        </if>
+	        <if test="applyNo != null">        
+	            apply_no,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="verifyRemark != null">        
+	            verify_remark,
+	        </if>
+	        <if test="userReason != null">        
+	            user_reason,
+	        </if>
+	        <if test="picVouchers != null">        
+	            pic_vouchers,
+	        </if>
+	        <if test="goodsBackAddress != null">        
+	            goods_back_address,
+	        </if>
+	        <if test="logisticsCompany != null">        
+	            logistics_company,
+	        </if>
+	        <if test="logisticsNo != null">        
+	            logistics_no,
+	        </if>
+	        <if test="remark != null">        
+	            remark,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtApply != null" >
+		       #{gmtApply,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="orderId != null" >
+		       #{orderId,jdbcType=INTEGER},
+		    </if>
+		    <if test="applyNo != null" >
+		       #{applyNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		    </if>
+		    <if test="verifyRemark != null" >
+		       #{verifyRemark,jdbcType=VARCHAR},
+		    </if>
+		    <if test="userReason != null" >
+		       #{userReason,jdbcType=VARCHAR},
+		    </if>
+		    <if test="picVouchers != null" >
+		       #{picVouchers,jdbcType=VARCHAR},
+		    </if>
+		    <if test="goodsBackAddress != null" >
+		       #{goodsBackAddress,jdbcType=VARCHAR},
+		    </if>
+		    <if test="logisticsCompany != null" >
+		       #{logisticsCompany,jdbcType=VARCHAR},
+		    </if>
+		    <if test="logisticsNo != null" >
+		       #{logisticsNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="remark != null" >
+		       #{remark,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="AfAftersaleApplyDo">
+        UPDATE af_aftersale_apply
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtApply != null and gmtApply != '' ">        
+                gmt_apply = #{gmtApply,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="orderId != null and orderId != '' ">        
+                order_id = #{orderId,jdbcType=INTEGER},                
+            </if>
+            <if test="applyNo != null and applyNo != '' ">        
+                apply_no = #{applyNo,jdbcType=VARCHAR},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
+            <if test="verifyRemark != null and verifyRemark != '' ">        
+                verify_remark = #{verifyRemark,jdbcType=VARCHAR},                
+            </if>
+            <if test="userReason != null and userReason != '' ">        
+                user_reason = #{userReason,jdbcType=VARCHAR},                
+            </if>
+            <if test="picVouchers != null and picVouchers != '' ">        
+                pic_vouchers = #{picVouchers,jdbcType=VARCHAR},                
+            </if>
+            <if test="goodsBackAddress != null and goodsBackAddress != '' ">        
+                goods_back_address = #{goodsBackAddress,jdbcType=VARCHAR},                
+            </if>
+            <if test="logisticsCompany != null and logisticsCompany != '' ">        
+                logistics_company = #{logisticsCompany,jdbcType=VARCHAR},                
+            </if>
+            <if test="logisticsNo != null and logisticsNo != '' ">        
+                logistics_no = #{logisticsNo,jdbcType=VARCHAR},                
+            </if>
+            <if test="remark != null and remark != '' ">        
+                remark = #{remark,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="AfAftersaleApplyDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_aftersale_apply
+        WHERE is_delete = 0 AND id=#{id ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="AfAftersaleApplyDo" parameterType="AfAftersaleApplyDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_aftersale_apply
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="AfAftersaleApplyDo" parameterType="AfAftersaleApplyDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_aftersale_apply
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
