@@ -124,19 +124,43 @@ new Vue({
 
 
 
+$.ajax({
+    url: '/fanbei-web/pickBoluomeCoupon',
+    type: 'POST',
+    dataType: "JSON",
+    data:{
+        'sceneId': sceneId,
+        'userName': userName
+    },
+    success: function(returnData){
+        if(returnData.success){
+            requestMsg("领劵成功");
+        }else{
+            if(returnData.url){
+            location.href=returnData.url;
+        }else{
+            requestMsg(returnData.msg);
+        }
+    }
+};
 
 
-
+let _this=this;
+_this.$http.post('/fanbei-web/pickBoluomeCoupon', {
+    userName: userName,
+    sceneId: 8386
+})
+.then(function (res) {
+    console.log(res.data);
+})
+.catch(function (error) {
+    console.log(error);
+});
 
 <!-- <script type="text/javascript">
-
-
-
     var returnNum = getBlatFrom();  // 判断1为Android，2为ios
-
     // 客户端调用H5方法
     function shareData(){
-
         // 分享
         var dataObj = {
             'shareAppTitle': '分享抓娃娃游戏获取优惠券',
@@ -144,19 +168,14 @@ new Vue({
             'shareAppImage': 'http://f.51fanbei.com/h5/app/activity/05/mumday28_01.jpg',
             'shareAppUrl': 'http://www.baidu.com'
         }
-
         var dataStr = JSON.stringify(dataObj);  // jsons数组转换成json对象
         console.log(dataStr);
-
-
         if(returnNum == 1){  // android机型
             alaAndroid.shareData(dataStr);  // 调用Android原生方法
         }else{
             alaIos.shareData(dataStr);  // 调用Android原生方法
         }
-
     }
-
     // shareData();
 </script> -->
 

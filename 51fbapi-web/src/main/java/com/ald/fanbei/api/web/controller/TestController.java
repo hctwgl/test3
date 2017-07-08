@@ -382,7 +382,7 @@ public class TestController {
 //		
 //		return message;
 //	}
-//	
+	
 	// TongdunUtil
 	
 //	@RequestMapping(value = { "/wxRefundMobile" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
@@ -442,6 +442,41 @@ public class TestController {
 		return "success";
 	}
 	
+	@RequestMapping(value = { "/testJPush" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String testJPush(HttpServletRequest request, HttpServletResponse response) {
+		PrintWriter out = null;
+		try {
+			String userName = request.getParameter("userName");
+			jpushService.pushHeaderImage(userName);;
+		} catch (Exception e) {
+			logger.error("allowcateBrandCoupon", e);
+			return "fail";
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+		return "success";
+	}
+	
+	@RequestMapping(value = { "/testAllJPush" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String testAllJPush(HttpServletRequest request, HttpServletResponse response) {
+		PrintWriter out = null;
+		try {
+			jpushService.pushAllHeaderImage();
+		} catch (Exception e) {
+			logger.error("allowcateBrandCoupon", e);
+			return "fail";
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+		return "success";
+	}
+	
 	private void pickBrandCoupon(String userName, String brandUrl) {
 		AfUserDo userInfo = afUserDao.getUserByUserName(userName);
 		if (userInfo == null) {
@@ -451,7 +486,7 @@ public class TestController {
 		PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
 		bo.setUser_id(userInfo.getRid()+StringUtil.EMPTY);
 		String resultString = HttpUtil.doHttpPostJsonParam(brandUrl, JSONObject.toJSONString(bo));
-		System.out.println(resultString);
+		logger.info("userName = " + userName + " brandUrl = " + brandUrl);
 		logger.info("allowcateBrandCoupon pickBrandCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
 	}
 }

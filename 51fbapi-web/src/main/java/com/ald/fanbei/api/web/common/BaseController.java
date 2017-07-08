@@ -108,25 +108,34 @@ public abstract class BaseController {
 			resultStr = JSON.toJSONString(exceptionresponse);
 			logger.error("system exception id=" + (requestDataVo == null ? reqData : requestDataVo.getId()), e);
 		} finally {
-			Calendar calEnd = Calendar.getInstance();
-			if (StringUtils.isNotBlank(reqData)) {
-				reqData = reqData.replace("\r", "").replace("\n", "").replace(" ", "");
-			}
-			if (biLogger.isInfoEnabled()) {
-				String req = "";
-				if (requestDataVo == null) {
-					req = reqData;
-				} else {
-					if ("/auth/checkFaceApi".equals(requestDataVo.getMethod())) {
-						req = reqData.length() + "";
-					} else {
-						req = requestDataVo.toString();
-					}
+			try{
+				Calendar calEnd = Calendar.getInstance();
+				if (StringUtils.isNotBlank(reqData)) {
+					reqData = reqData.replace("\r", "").replace("\n", "").replace(" ", "");
 				}
-				biLogger.info(StringUtil.appendStrs("reqD=", req, ";resD=",
-						requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod()))
-								? resultStr.length() + "" : resultStr,
-						";rmtIP=", CommonUtil.getIpAddr(request), ";exeT=", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), ";intefN=", request.getRequestURI()));
+				if (biLogger.isInfoEnabled()) {
+					String req = "";
+					String userName = "no user";
+					if (requestDataVo == null) {
+						req = reqData;
+					} else {
+						userName = (String)requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_USERNAME);
+						if ("/auth/checkFaceApi".equals(requestDataVo.getMethod())) {
+							req = reqData.length() + "";
+						} else {
+							req = requestDataVo.toString();
+						}
+					}
+					biLogger.info(StringUtil.appendStrs(
+							"rmtIP=", CommonUtil.getIpAddr(request), 
+							";userName=", userName, 
+							";exeT=", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), 
+							";intefN=", request.getRequestURI(),
+							";reqD=", req, 
+							";resD=",requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod()))? resultStr.length() + "" : resultStr));
+				}
+			}catch(Exception e){
+				logger.error("app bi exception",e);
 			}
 		}
 		return resultStr;
@@ -475,13 +484,26 @@ public abstract class BaseController {
 	 * @param exeT
 	 */
 	protected void doMaidianLog(HttpServletRequest request,String respData){
-		JSONObject param = new JSONObject();
-		Enumeration<String> enu=request.getParameterNames();  
-		while(enu.hasMoreElements()){  
-			String paraName=(String)enu.nextElement();  
-			param.put(paraName, request.getParameter(paraName));
+		try{
+			JSONObject param = new JSONObject();
+			Enumeration<String> enu=request.getParameterNames();  
+			while(enu.hasMoreElements()){  
+				String paraName=(String)enu.nextElement();  
+				param.put(paraName, request.getParameter(paraName));
+			}
+			String userName = "no user";
+			if(param.getString("_appInfo") != null){
+				userName = (String)JSONObject.parseObject(param.getString("_appInfo")).get("userName");
+			}
+			maidianLog.info(StringUtil.appendStrs(
+					"ip=",CommonUtil.getIpAddr(request),
+					";userName=",userName,
+					";inte=",request.getRequestURI(),
+					";param=",param.toString(),
+					";resp=",respData));
+		}catch(Exception e){
+			logger.error("maidian logger error",e);
 		}
-		maidianLog.info(StringUtil.appendStrs("inte=",request.getRequestURI(),";ip=",CommonUtil.getIpAddr(request),";param=",param.toString(),";resp=",respData));
 	}
 	
 	/**
@@ -491,15 +513,28 @@ public abstract class BaseController {
 	 * @param appInfo
 	 * @param exeT
 	 */
-	protected void doLog(HttpServletRequest request,String respData,String appInfo,long exeT){
-		JSONObject param = new JSONObject();
-		param.put("_appInfo", StringUtil.isNotBlank(appInfo)?JSONObject.parse(appInfo):"");
-		Enumeration<String> enu=request.getParameterNames();  
-		while(enu.hasMoreElements()){  
-			String paraName=(String)enu.nextElement();  
-			param.put(paraName, request.getParameter(paraName));
+	protected void doLog(HttpServletRequest request,String respData,String appInfo,long exeT,String userName){
+		try{
+			JSONObject param = new JSONObject();
+//			String userName = "no user";
+			if(StringUtil.isBlank(userName)){
+				userName = "no user";
+			}
+			JSONObject temp = null;
+			if(StringUtil.isNotBlank(appInfo)){
+				temp = JSONObject.parseObject(appInfo);
+				userName = JSONObject.parseObject(appInfo).getString("userName");
+			}
+			param.put("_appInfo", temp);
+			Enumeration<String> enu=request.getParameterNames();  
+			while(enu.hasMoreElements()){
+				String paraName=(String)enu.nextElement();  
+				param.put(paraName, request.getParameter(paraName));
+			}
+			this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI(),userName);
+		}catch(Exception e){
+			logger.error("do log exception",e);
 		}
-		this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI());
 	}
 
 	/**
@@ -511,8 +546,15 @@ public abstract class BaseController {
 	 * @param exeT 执行时间
 	 * @param inter 接口
 	 */
-	protected void doLog(String reqData,String resD,String httpMethod,String rmtIp,String exeT,String inter){
-		webbiLog.info(StringUtil.appendStrs("reqD=",reqData,";resD=",resD,";methd=",httpMethod,";rmtIp=",rmtIp,";exeT=",exeT,";inter=",inter));
+	protected void doLog(String reqData,String resD,String httpMethod,String rmtIp,String exeT,String inter,String userName){
+		webbiLog.info(StringUtil.appendStrs(
+				"rmtIp=",rmtIp,
+				";userName=",userName,
+				";exeT=",exeT,
+				";inter=",inter,
+				";reqD=",reqData,
+				";resD=",resD,
+				";methd=",httpMethod));
 	}
 	
 	private static String getAppInfo(String url) {

@@ -64,7 +64,9 @@ public enum AfResourceType {
 	
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置"),
 
-	SelfSupportGoods("SELFSUPPORT_GOODS", "自营商品相关配置");
+	SelfSupportGoods("SELFSUPPORT_GOODS", "自营商品相关配置"),
+	
+	VIRTUAL_GOODS_SERVICE_PROVIDER("VIRTUAL_GOODS_SERVICE_PROVIDER", "虚拟商品供应商");
 
 	
 

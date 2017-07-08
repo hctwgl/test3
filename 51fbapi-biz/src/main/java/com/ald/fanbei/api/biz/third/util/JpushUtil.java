@@ -60,8 +60,9 @@ public class JpushUtil extends AbstractThird{
 	 *@param msgContent
 	 *@param extras
 	 *@param alias
+	 *@param isAll
 	 */
-	public void pushMessageByAlias(String title,String msgContent,Map<String,String> extras,String[] alias){
+	public void pushMessageByAlias(String title,String msgContent,Map<String,String> extras,String[] alias,boolean isAll){
 		PushResult result = null;
 		try{
 			extras.put(EXTRAS_KEY_TITLE, title);
@@ -73,7 +74,7 @@ public class JpushUtil extends AbstractThird{
 			message.addExtras(extras);
 			message.setContentType(MESSAGE_CONTENT_TYPE);
 			
-			pushBuilder.setAudience(Audience.alias(alias));
+			pushBuilder.setAudience(isAll ? Audience.all() : Audience.alias(alias));
 			pushBuilder.setMessage(message.build());
 			pushBuilder.setOptions(getOptions());
 			pushBuilder.setPlatform(Platform.all());
