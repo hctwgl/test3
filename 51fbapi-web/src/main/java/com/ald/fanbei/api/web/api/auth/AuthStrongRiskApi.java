@@ -101,7 +101,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 		if (StringUtils.equals(afUserAuthDo.getMobileStatus(), YesNoStatus.NO.getCode())) {// 请先完成运营商授权
 			throw new FanbeiException(FanbeiExceptionCode.OPERATOR_INFO_EXIST_ERROR);
 		}
-		if (appVersion < 368 && StringUtils.equals(afUserAuthDo.getContactorStatus(), YesNoStatus.NO.getCode())) {// 请先完成紧急联系人设置
+		if (appVersion < 368 && StringUtils.equals(afUserAuthDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {// 请先完成紧急联系人设置
 			throw new FanbeiException(FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
 		}
 		
