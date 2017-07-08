@@ -39,6 +39,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private String allowConsume;//分期/代付的关键字段，Y：已授权；N：未授权
 	private String faceStatus;
 	private String idNumber;
+	private String isSupplyCertify;//是否完成补充认证
 
 	public char getIsValid() {
 		return isValid;
@@ -286,6 +287,14 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 
 	public void setIdNumber(String idNumber) {
 		this.idNumber = idNumber;
+	}
+
+	public String getIsSupplyCertify() {
+		return isSupplyCertify;
+	}
+
+	public void setIsSupplyCertify(String isSupplyCertify) {
+		this.isSupplyCertify = isSupplyCertify;
 	}
 	
 }

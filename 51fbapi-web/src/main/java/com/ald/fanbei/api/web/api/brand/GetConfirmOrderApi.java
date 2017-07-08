@@ -106,6 +106,11 @@ public class GetConfirmOrderApi implements ApiHandle {
         	vo.setBankIcon(bankInfo.getBankIcon());
         	vo.setIsValid(bankInfo.getIsValid());
         }
+        String isSupplyCertify = "N";
+        if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
+        	isSupplyCertify = "Y";
+        }
+        vo.setIsSupplyCertify(isSupplyCertify);
 		vo.setTotalAmount(userDto.getAuAmount());
 		vo.setUseableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
 		vo.setRealNameScore(authDo.getRealnameScore());
