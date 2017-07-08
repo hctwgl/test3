@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 
 /**
@@ -12,6 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
  */
 public interface AfUserVirtualAccountDao extends BaseDao<AfUserVirtualAccountDo, Long> {
 
-    
+	BigDecimal getCurrentMonthUsedAmount(@Param("year")Integer year, @Param("month")Integer month, @Param("userId")Long userId, 
+			@Param("virtualCode")String virtualCode);
 
 }

@@ -48,6 +48,7 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -165,7 +166,9 @@ public class RiskUtil extends AbstractThird {
 	AfBorrowDao afBorrowDao;
 	@Resource
 	AfOrderService afOrderService;
-
+	@Resource
+	AfUserVirtualAccountService afUserVirtualAccountService;
+	
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -584,13 +587,13 @@ public class RiskUtil extends AbstractThird {
 	
 	/**
 	 * 
-	 * @param consumerNo
-	 *            --用户唯一标识
-	 * @param orderNo
-	 *            --
-	 * @return 
+	 * @param borrow 借款信息
+	 * @param orderNo 订单编号
+	 * @param verifybo 风控返回结果
+	 * @param virtualCode 虚拟值
+	 * @return
 	 */
-	public Map<String,Object> payOrder(final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo) {
+	public Map<String,Object> payOrder(final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) {
 		String result = verifybo.getResult();
 		
 		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -638,15 +641,13 @@ public class RiskUtil extends AbstractThird {
 		orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 		orderInfo.setStatus(OrderStatus.PAID.getCode());
 		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
-		String virtualCode = afOrderService.getBoluomeVirualCode(orderInfo);
 		//是虚拟商品
-		if (StringUtils.isNotEmpty(virtualCode)) {
-			
-			RiskVirtualProductQuotaRespBo respBo = virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
+		if (StringUtils.isNotBlank(virtualCode)) {
 			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSaleAmount(), 
 					orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
+			//增加虚拟商品记录
+			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
 		}
-		
 		
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);

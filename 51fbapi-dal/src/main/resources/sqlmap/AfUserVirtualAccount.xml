@@ -180,4 +180,20 @@ id,gmt_create,gmt_modified,user_id,order_id,order_no,code,year,month,amount,tota
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getCurrentMonthUsedAmount" resultType="java.math.BigDecimal" >
+        SELECT
+        	IFNULL(sum(amount),0)
+       	FROM 
+       		af_user_virtual_account
+        WHERE
+        	is_delete = 0
+        AND	
+        	year = #{year}
+        AND
+        	month = #{month}
+        AND
+        	user_id = #{userId}
+       	LIMIT 1
+    </select>
+    
 </mapper>

@@ -260,5 +260,8 @@ public class Constants {
 	//图片验证码
 	public static final String IMAGE_CODE_COOKIE_NAME = "IMAGE_CODE_NAME";
 	public static final String IMAGE_CODE_COOKIE_PASSWORD = "IMAGE_VERIFY_CODE_PASSWORD";
+	
+	public static final String VIRTUAL_CODE = "virtualCode";
+	public static final String VIRTUAL_AMOUNT = "virtualAmount";
 
 }

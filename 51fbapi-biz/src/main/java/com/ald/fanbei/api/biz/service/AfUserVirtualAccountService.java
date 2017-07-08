@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
+
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 
 /**
@@ -12,4 +14,22 @@ import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
  */
 public interface AfUserVirtualAccountService extends ParentService<AfUserVirtualAccountDo, Long>{
 
+	/**
+	 * 获取用户当前月份已经使用额度
+	 * @param userId
+	 * @param virtualCode
+	 * @return
+	 */
+	BigDecimal getCurrentMonthUsedAmount(Long userId, String virtualCode);
+	
+	/**
+	 *  获取用户当前月份剩余可使用额度
+	 * @param userId
+	 * @param virtualCode
+	 * @param virtualTotalAmount 当月总额度
+	 * @return
+	 */
+	BigDecimal getCurrentMonthLeftAmount(Long userId, String virtualCode, BigDecimal virtualTotalAmount);
+	
+	
 }

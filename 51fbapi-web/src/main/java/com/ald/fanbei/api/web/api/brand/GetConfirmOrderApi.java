@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -62,6 +63,8 @@ public class GetConfirmOrderApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfUserVirtualAccountService afUserVirtualAccountService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -97,11 +100,12 @@ public class GetConfirmOrderApi implements ApiHandle {
 	}
 	
 	private void dealWithVirtualCodeGt368(BoluomeConfirmOrderVo vo, AfOrderDo orderInfo) {
-		String virtualCode = afOrderService.getBoluomeVirualCode(orderInfo);
-		if (StringUtil.isNotEmpty(virtualCode)) {
-			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtil.EMPTY, virtualCode, StringUtil.EMPTY);
-			BigDecimal virtualAmount = response.getData().getAmount();
-			vo.setVirtualGoodsUsableAmount(virtualAmount);
+		Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+		if (afOrderService.isVirtualGoods(virtualMap)) {
+			String virtualCode = afOrderService.getVirtualCode(virtualMap);
+			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
+			BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
+			vo.setVirtualGoodsUsableAmount(leftAmount);
 			vo.setIsVirtualGoods(YesNoStatus.YES.getCode());
 		} else {
 			vo.setIsVirtualGoods(YesNoStatus.NO.getCode());

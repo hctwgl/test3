@@ -206,11 +206,32 @@ public interface AfOrderService {
 	public AfOrderDo getOrderInfoByIdWithoutDeleted(Long rid, Long userId);
 	
 	/**
-	 * 获取菠萝觅虚拟Code
+	 * 获取虚拟商品Code以及Amount
 	 * @param orderInfo
 	 * @return
 	 */
-	String getBoluomeVirualCode(AfOrderDo orderInfo);
+	Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo);
+	
+	/**
+	 * 判断是否为虚拟商品
+	 * @param orderInfo
+	 * @return
+	 */
+	boolean isVirtualGoods(Map<String, Object> resultMap);
+	
+	/**
+	 * 获取虚拟商品的值
+	 * @param orderInfo
+	 * @return
+	 */
+	BigDecimal getVirtualAmount(Map<String, Object> resultMap);
+	
+	/**
+	 * 获取虚拟商品的Code
+	 * @param orderInfo
+	 * @return
+	 */
+	String getVirtualCode(Map<String, Object> resultMap);
 	
 }
 

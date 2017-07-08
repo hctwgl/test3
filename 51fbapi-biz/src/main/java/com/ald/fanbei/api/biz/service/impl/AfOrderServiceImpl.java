@@ -23,6 +23,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
@@ -32,6 +33,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
@@ -105,7 +107,7 @@ import com.taobao.api.response.TaeItemDetailGetResponse;
  */
 @Service("afOrderService")
 public class AfOrderServiceImpl extends BaseService implements AfOrderService{
-
+	
 	@Resource
 	private AfOrderDao orderDao;
 	@Resource
@@ -169,6 +171,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfOrderService afOrderService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfUserVirtualAccountService afUserVirtualAccountService;
 	
 	@Override
 	public int createOrderTrade(final String content) {
@@ -694,10 +698,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//代付
 						//先做判断
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-						if (useableAmount.compareTo(saleAmount) < 0) {
-							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-						}
+						Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+						//判断使用额度
+						checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+						
 						orderInfo.setNper(nper);
 						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
@@ -717,11 +721,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						// 最后调用风控控制
 						logger.info("verify userId" + userId);
 						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
-						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, orderInfo.getGoodsName(), getBoluomeVirualCode(orderInfo));
+						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, orderInfo.getGoodsName(), getVirtualCode(virtualMap));
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
-							return riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo);
+							return riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo, getVirtualCode(virtualMap));
 						}
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
@@ -1191,18 +1195,80 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public String getBoluomeVirualCode(AfOrderDo orderInfo) {
+	public Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		String virtualCode = StringUtils.EMPTY;
 		if (orderInfo == null) {
+			return resultMap;
+		}
+		//目前只有菠萝觅的值
+		if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+			VirtualGoodsCateogy type =  VirtualGoodsCateogy.findRoleTypeByCategory(orderInfo.getSecType());
+			if (type == null) {
+				return resultMap;
+			}
+			resultMap.put(Constants.VIRTUAL_CODE, type.getCode());
+			
+			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
+			if (response != null) {
+				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
+			}
+		}
+		return resultMap;
+	}
+
+	@Override
+	public boolean isVirtualGoods(Map<String, Object> resultMap) {
+		if (resultMap == null) {
+			return false;
+		}
+		if (resultMap.get(Constants.VIRTUAL_CODE) == null) {
+			return false;
+		} 
+		return true;
+	}
+
+	@Override
+	public BigDecimal getVirtualAmount(Map<String, Object> resultMap) {
+		if (resultMap == null) {
 			return null;
 		}
-		if (!OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+		if (resultMap.get(Constants.VIRTUAL_AMOUNT) == null) {
+			return null;
+		} 
+		return new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
+	}
+
+	@Override
+	public String getVirtualCode(Map<String, Object> resultMap) {
+		if (resultMap == null) {
 			return null;
 		}
-		VirtualGoodsCateogy type =  VirtualGoodsCateogy.findRoleTypeByCategory(orderInfo.getSecType());
-		if (type == null) {
+		if (resultMap.get(Constants.VIRTUAL_CODE) == null) {
 			return null;
+		} 
+		return resultMap.get(Constants.VIRTUAL_CODE).toString();
+	}
+	
+	/**
+	 * 判断额度是否足够
+	 * @param orderInfo
+	 * @param userAccountInfo
+	 */
+	private void checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountDo userAccountInfo) {
+		if (afOrderService.isVirtualGoods(resultMap)) {
+			BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(resultMap);
+			String virtualCode = afOrderService.getVirtualCode(resultMap);
+			BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
+			if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+			}
+		} else {
+			BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+			if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+			}
 		}
-		return type.getCode();
 	}
 	
 }
