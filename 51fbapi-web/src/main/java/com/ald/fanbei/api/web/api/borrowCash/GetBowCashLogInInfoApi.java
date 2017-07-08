@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
+import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -42,6 +43,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
@@ -83,7 +85,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfGameResultService afGameResultService;
 	@Resource
 	AfUserCouponService afUserCouponService;
-
+	@Resource
+	AfGameService afGameService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -298,14 +302,26 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			if(gameResultList != null){
 				takePartTime = gameResultList.size();
 			}
-			if("TRANSED".equals(status) && takePartTime < 1) {
-				data.put("showPacket","Y");
-			} else if("FINSH".equals(status) && takePartTime < 2) {
-				data.put("showPacket","Y");
+			// 获取拆红包游戏信息 FIXME
+			AfGameDo gameDo = afGameService.getByCode("tear_packet");
+			Date gmtStart = gameDo.getGmtStart();
+			Date gmtEnd = gameDo.getGmtEnd();
+			Date nowDate = new Date();
+			if(nowDate.after(gmtStart) && nowDate.before(gmtEnd)) {
+				if("TRANSED".equals(status) && takePartTime < 1) {
+					data.put("showPacket","Y");
+				} else if("FINSH".equals(status) && takePartTime < 2) {
+					data.put("showPacket","Y");
+				} else {
+					data.put("showPacket","N");
+				}
 			} else {
 				data.put("showPacket","N");
 			}
-			
+			Date borrowCreate = afLastBorrowCashDo.getGmtCreate();
+			if(borrowCreate.before(gmtStart) || borrowCreate.after(gmtEnd)) {
+				data.put("showPacket","N");
+			}
 			// 查询是否有借钱免息优惠券
 			List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByType(userId, CouponType.FREEINTEREST.getCode());
 			if(couponList != null && couponList.size() > 0) {
