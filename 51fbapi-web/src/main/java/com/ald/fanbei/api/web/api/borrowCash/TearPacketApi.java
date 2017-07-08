@@ -65,6 +65,7 @@ public class TearPacketApi  implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		try {
 			// 首先判断用户是否有资格参与拆红包活动
+		
 			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid());
 			String status  = afLastBorrowCashDo.getStatus();
@@ -119,6 +120,7 @@ public class TearPacketApi  implements ApiHandle {
 				endRate += Integer.parseInt(rate);
 				if(startRate < result && result <=endRate) {
 					winPrizeInfo = awardInfo;
+					logger.info("TearPacketApi winPrizeInfo=>" + winPrizeInfo);
 					break;
 				}
 			}
@@ -141,7 +143,7 @@ public class TearPacketApi  implements ApiHandle {
 			data.put("prizeName", afCouponDo.getName());
 			data.put("prizeType", afCouponDo.getType());
 		} catch (Exception e) {
-			logger.error(e.toString());
+			logger.error("TearPacketApi=>" + e.toString());
 		}
 		resp.setResponseData(data);
 		return resp;
