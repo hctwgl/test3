@@ -183,15 +183,18 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		//FIXME Add by jrb, 如果有免息券，则实际到账金额为借钱金额
 		try {
 			String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
+			logger.error("ApplyBorrowCashApi couponId=>" + couponId);
 			if (!StringUtils.isBlank(couponId)) {
 				AfUserCouponDo afUserCouponDoTmp = new AfUserCouponDo();
 				afUserCouponDoTmp.setCouponId(Long.parseLong(couponId));
 				afUserCouponDoTmp.setUserId(userId);
+				logger.error("ApplyBorrowCashApi userId=>" + userId);
 				AfUserCouponDo afUserCouponDo = afUserCouponService.getUserCouponByDo(afUserCouponDoTmp);
 				if(afUserCouponDo != null) {
 					afUserCouponDo.setStatus(CouponStatus.USED.getCode());
 					afBorrowCashDo.setArrivalAmount(afBorrowCashDo.getAmount());
 					// 更新券的状态为已使用
+					logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>" + afUserCouponDo.getRid());
 					afUserCouponService.updateUserCouponSatusUsedById(afUserCouponDo.getRid());
 				}
 			}

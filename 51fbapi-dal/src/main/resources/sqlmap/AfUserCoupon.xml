@@ -118,6 +118,7 @@
 		    u.status = 'NOUSE'
 		AND
 			now() between u.gmt_start and u.gmt_end
+		LIMIT 1
 	</select>
 	
 	
