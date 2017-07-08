@@ -180,36 +180,33 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		String ipAddress = CommonUtil.getIpAddr(request);
 		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province, county, address, userId, currentDay);
 
+		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
+				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+		}
 		//FIXME Add by jrb, 如果有免息券，则实际到账金额为借钱金额
 		try {
-			String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
-			logger.error("ApplyBorrowCashApi couponId=>" + couponId);
-			if (!StringUtils.isBlank(couponId)) {
-				AfUserCouponDo afUserCouponDoTmp = new AfUserCouponDo();
-				afUserCouponDoTmp.setCouponId(Long.parseLong(couponId));
-				afUserCouponDoTmp.setUserId(userId);
-				logger.error("ApplyBorrowCashApi userId=>" + userId);
-				AfUserCouponDo afUserCouponDo = afUserCouponService.getUserCouponByDo(afUserCouponDoTmp);
-				if(afUserCouponDo != null) {
-					afUserCouponDo.setStatus(CouponStatus.USED.getCode());
-					afBorrowCashDo.setArrivalAmount(afBorrowCashDo.getAmount());
-					// 更新券的状态为已使用
-					logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>" + afUserCouponDo.getRid());
-					afUserCouponService.updateUserCouponSatusUsedById(afUserCouponDo.getRid());
+			if (doRish) {
+				String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
+				logger.error("ApplyBorrowCashApi couponId=>" + couponId);
+				if (!StringUtils.isBlank(couponId)) {
+					AfUserCouponDo afUserCouponDoTmp = new AfUserCouponDo();
+					afUserCouponDoTmp.setCouponId(Long.parseLong(couponId));
+					afUserCouponDoTmp.setUserId(userId);
+					logger.error("ApplyBorrowCashApi userId=>" + userId);
+					AfUserCouponDo afUserCouponDo = afUserCouponService.getUserCouponByDo(afUserCouponDoTmp);
+					if(afUserCouponDo != null) {
+						afUserCouponDo.setStatus(CouponStatus.USED.getCode());
+						afBorrowCashDo.setArrivalAmount(afBorrowCashDo.getAmount());
+						// 更新券的状态为已使用
+						logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>" + afUserCouponDo.getRid());
+						afUserCouponService.updateUserCouponSatusUsedById(afUserCouponDo.getRid());
+					}
 				}
 			}
 		} catch (Exception e){
 			logger.error(e.getMessage());
 		}
-		
-		
-		if (borrowCashDo != null && (!StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.closed.getCode())
-				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
-		}
-		
-		
-		
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 
 		Long borrowId = afBorrowCashDo.getRid();
