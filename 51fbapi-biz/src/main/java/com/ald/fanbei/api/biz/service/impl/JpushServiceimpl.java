@@ -321,7 +321,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("强风控通过认证", msgContext, extras, new String[] { userName });
+			jpushUtil.pushNotifyByAlias("信用认证通过", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("strongRiskSuccess error", e);
 		}
@@ -339,7 +339,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("强风控认证失败", msgContext, extras, new String[] { userName });
+			jpushUtil.pushNotifyByAlias("信用认证未通过", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("strongRiskFail error", e);
 		}
