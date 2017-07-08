@@ -65,7 +65,7 @@ public class TearPacketApi  implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		try {
 			// 首先判断用户是否有资格参与拆红包活动
-			/*
+		
 			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid());
 			String status  = afLastBorrowCashDo.getStatus();
@@ -77,7 +77,6 @@ public class TearPacketApi  implements ApiHandle {
 					&& !("FINSH".equals(status) && takePartTime < 2)) {
 				throw new FanbeiException();
 			} 
-			*/
 			// 获取拆红包游戏信息
 			AfGameDo gameDo = afGameService.getByCode("tear_packet");
 			if(gameDo == null){
@@ -90,7 +89,6 @@ public class TearPacketApi  implements ApiHandle {
 			}
 			AfGameConfDo afGameConfDo = afGameConfList.get(0);
 			String rules = afGameConfDo.getRule();
-			logger.error("TearPacketApi rules=>"  + rules);
 			// 按照概率抽奖
 			JSONArray array = JSON.parseArray(rules);
 			JSONObject item1 = array.getJSONObject(0);
@@ -135,7 +133,6 @@ public class TearPacketApi  implements ApiHandle {
 			Long borrowId = 0l;
 			if(afBorrowCashDo != null){
 				borrowId = afBorrowCashDo.getRid();
-				logger.error("TearPacketApi borrowId=>" + borrowId);
 			}
 			// 添加抽奖结果信息
 			AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, borrowId, Long.parseLong(couponId), "Y");
@@ -145,7 +142,6 @@ public class TearPacketApi  implements ApiHandle {
 			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
 			data.put("prizeName", afCouponDo.getName());
 			data.put("prizeType", afCouponDo.getType());
-			logger.error(data.toString());
 		} catch (Exception e) {
 			logger.error("TearPacketApi=>" + e.toString());
 		}
