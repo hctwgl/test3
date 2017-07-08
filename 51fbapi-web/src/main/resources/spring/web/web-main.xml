@@ -220,7 +220,7 @@
 				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
 				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
-
+				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
