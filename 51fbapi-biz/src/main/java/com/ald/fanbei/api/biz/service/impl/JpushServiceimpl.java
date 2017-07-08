@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -302,7 +303,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "204");
 			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getName());
-			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName});
+			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, false);
 		} catch (Exception e) {
 			logger.info("gameShareSuccess error", e);
 		}
@@ -377,5 +378,43 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		} catch (Exception e) {
 			logger.info("mobileRiskFail error", e);
 		}
+	}
+
+	@Override
+	public void pushHeaderImage(String userName) {
+		try {
+			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes("APP_POP_IMAGE");
+			AfResourceDo afResourceDo = resourceDoList.get(0);
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("gameShareSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "204");
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getName());
+			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, false);
+		} catch (Exception e) {
+			logger.info("gameShareSuccess error", e);
+		}
+	}
+
+	@Override
+	public void pushAllHeaderImage() {
+		try {
+			String userName = StringUtils.EMPTY;
+			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes("APP_POP_IMAGE");
+			AfResourceDo afResourceDo = resourceDoList.get(0);
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("gameShareSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "204");
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getName());
+			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, true);
+		} catch (Exception e) {
+			logger.info("gameShareSuccess error", e);
+		}
+		
 	}
 }

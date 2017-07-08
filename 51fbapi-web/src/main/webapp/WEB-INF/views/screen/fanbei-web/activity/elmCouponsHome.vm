@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017070604")
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
+	<meta charset="UTF-8">
+	<title>美食暑假大放价</title>
+	<style type="text/css">
+		.elmCouponsHome{
+			position: relative;
+		}
+		.elmCouponsHome ul{
+			position: absolute;
+			top: 8.82rem;
+			left: 0;
+			z-index: 10;
+			width: 100%;
+		}
+		.elmCouponsHome li{
+			width: 100%;
+			height: 1.44rem;
+			margin-bottom: 0.2rem;
+		}
+		.elmCouponsHome span{
+			width: 100%;
+			height: 0.8rem;
+			margin-top: 0.76rem;
+		}
+	</style>
+</head>
+<body>
+	<div class="elmCouponsHome" id="elmCouponsHome">
+		<img src="$commonUrl/elmCouponsHome.png">
+		<ul class="clearfix">
+			<li @click="boluomiCoupons(8486)"></li>
+			<li @click="boluomiCoupons(8487)"></li>
+			<li @click="boluomiCoupons(8488)"></li>
+			<span @click="boluomiHome(10)"></span>
+		</ul>
+	</div>
+	<script type="text/javascript" src="/dist/activity/07/elmCouponsHome.js?version=$version"></script>
+</body>
+</html>
