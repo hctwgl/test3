@@ -151,8 +151,12 @@ public class AuthStrongRiskApi implements ApiHandle {
 					afUserAuthService.updateUserAuth(authDo);
 
 					bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
-					creditRebateMap.put("creditRebateMsg", creditRebateMsg);
-					resp.setResponseData(creditRebateMap);	
+					
+					if(context.getAppVersion()>367){
+						creditRebateMap.put("creditRebateMsg", creditRebateMsg);
+						resp.setResponseData(creditRebateMap);	
+					}
+					
 				}
 			} catch (Exception e) {
 				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
