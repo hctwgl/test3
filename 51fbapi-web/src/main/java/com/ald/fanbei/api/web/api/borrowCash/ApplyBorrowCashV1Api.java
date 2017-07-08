@@ -122,7 +122,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		String county = ObjectUtils.toString(requestDataVo.getParams().get("county"));
 		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
-
+		String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
 		if (StringUtils.isBlank(amountStr) || AfBorrowCashType.findRoleTypeByCode(type) == null || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
 				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
@@ -212,9 +212,10 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
 		//FIXME Add by jrb, 如果有免息券，则实际到账金额为借钱金额
+		BigDecimal orgArrivalAmount = afBorrowCashDo.getArrivalAmount();
+		Long userCouponId = 0l;
 		try {
 			if (doRish) {
-				String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
 				logger.error("ApplyBorrowCashApi couponId=>" + couponId);
 				if (!StringUtils.isBlank(couponId)) {
 					AfUserCouponDo afUserCouponDoTmp = new AfUserCouponDo();
@@ -226,7 +227,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 						afUserCouponDo.setStatus(CouponStatus.USED.getCode());
 						afBorrowCashDo.setArrivalAmount(afBorrowCashDo.getAmount());
 						// 更新券的状态为已使用
-						logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>" + afUserCouponDo.getRid());
+						userCouponId = afUserCouponDo.getRid();
+						logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>" + userCouponId);
 						afUserCouponService.updateUserCouponSatusUsedById(afUserCouponDo.getRid());
 					}
 				}
@@ -271,7 +273,14 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			logger.error("apply borrow cash v1 error",e);
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+			cashDo.setArrivalAmount(orgArrivalAmount);
 			afBorrowCashService.updateBorrowCash(cashDo);
+			
+			if (!StringUtils.isBlank(couponId)) {
+				// 更新券的状态为未使用
+				logger.error("ApplyBorrowCashApi userCouponId=>" + userCouponId);
+				afUserCouponService.updateUserCouponSatusNouseById(userCouponId);
+			}
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
