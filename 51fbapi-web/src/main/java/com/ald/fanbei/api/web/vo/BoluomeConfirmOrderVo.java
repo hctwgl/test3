@@ -39,7 +39,11 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private String allowConsume;//分期/代付的关键字段，Y：已授权；N：未授权
 	private String faceStatus;
 	private String idNumber;
-
+	
+	//3.6.9增加virtualGoodsUsableAmount, isVirtualGoods字段
+	private BigDecimal virtualGoodsUsableAmount;
+	private String isVirtualGoods;
+	
 	public char getIsValid() {
 		return isValid;
 	}
@@ -286,6 +290,34 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 
 	public void setIdNumber(String idNumber) {
 		this.idNumber = idNumber;
+	}
+
+	/**
+	 * @return the virtualGoodsUsableAmount
+	 */
+	public BigDecimal getVirtualGoodsUsableAmount() {
+		return virtualGoodsUsableAmount;
+	}
+
+	/**
+	 * @param virtualGoodsUsableAmount the virtualGoodsUsableAmount to set
+	 */
+	public void setVirtualGoodsUsableAmount(BigDecimal virtualGoodsUsableAmount) {
+		this.virtualGoodsUsableAmount = virtualGoodsUsableAmount;
+	}
+
+	/**
+	 * @return the isVirtualGoods
+	 */
+	public String getIsVirtualGoods() {
+		return isVirtualGoods;
+	}
+
+	/**
+	 * @param isVirtualGoods the isVirtualGoods to set
+	 */
+	public void setIsVirtualGoods(String isVirtualGoods) {
+		this.isVirtualGoods = isVirtualGoods;
 	}
 	
 }

@@ -41,6 +41,7 @@ import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -51,6 +52,7 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
@@ -91,6 +93,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
@@ -160,6 +163,8 @@ public class RiskUtil extends AbstractThird {
 	AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfBorrowDao afBorrowDao;
+	@Resource
+	AfOrderService afOrderService;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -633,6 +638,16 @@ public class RiskUtil extends AbstractThird {
 		orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 		orderInfo.setStatus(OrderStatus.PAID.getCode());
 		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+		String virtualCode = afOrderService.getBoluomeVirualCode(orderInfo);
+		//是虚拟商品
+		if (StringUtils.isNotEmpty(virtualCode)) {
+			
+			RiskVirtualProductQuotaRespBo respBo = virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSaleAmount(), 
+					orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
+		}
+		
+		
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);
 		// 在风控审批通过后额度不变生成账单
@@ -1286,7 +1301,9 @@ public class RiskUtil extends AbstractThird {
 
 		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		String reqResult = HttpUtil.post(getUrl() + "modules/api/risk/virtualProductQuota.htm", reqBo);
+//		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);
+		String reqResult = HttpUtil.post("http://192.168.110.22:80" + "/modules/api/risk/virtualProductQuota.htm", reqBo);
+		
 		logThird(reqResult, "quota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.VIRTUAL_PRODUCT_QUOTA_ERROR);

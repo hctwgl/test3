@@ -192,6 +192,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     VIRTUAL_PRODUCT_QUOTA_ERROR("VIRTUAL_PRODUCT_QUOTA_ERROR",1914,"virtual product quota error","获取虚拟商品可用额度失败"),
     RISK_AUTH_AMOUNT_LIMIT("AUTH_AMOUNT_LIMIT",1915,"auth amount limit","您的可用额度已经不够"),
     RISK_OTHER_RULE("RISK_OTHER_RULE",1916,"risk other rule","您的账号暂时无法进行分期消费,请用其他方式支付"),
+    RISK_BORROW_OVERDUED("RISK_BORROW_OVERDUED",1917,"risk borrow overdued","风控逾期分期限制"),
+    RISK_BORROW_CASH_OVERDUED("RISK_BORROW_CASH_OVERDUED",1918,"risk other rule","风控逾期借款限制"),
     
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","借钱金额或者时间有误"),

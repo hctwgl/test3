@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -28,12 +29,12 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.AppResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONObject;
 
@@ -62,12 +63,15 @@ public class PayOrderV1Api implements ApiHandle {
 	AfBorrowService afBorrowService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		resp.setResult(new AppResponse(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR));
+		resp.addResponseData("aa", "bb");
 		Long userId = context.getUserId();
-
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
@@ -115,10 +119,12 @@ public class PayOrderV1Api implements ApiHandle {
 				nper = orderInfo.getNper();
 			}
 			Map<String, Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
-			if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
+			String success = result.get("success").toString();
+			if (StringUtils.isBlank(success) && !Boolean.getBoolean(success)) {
+				dealWithPayOrderFailed(result, resp);
+			} else if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
 				riskUtil.payOrderChangeAmount(orderInfo.getRid());
 			}
-			dealWithPayOrderFailed(result, resp);
 			
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {
@@ -145,19 +151,19 @@ public class PayOrderV1Api implements ApiHandle {
 			{
 				String borrowNo = riskResp.getBorrowNo();
 				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
+				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_OVERDUED));
+				resp.addResponseData("billId", billId == null ? 0 : billId);
 			}
 				break;
 			case OVERDUE_BORROW_CASH:
-				String borrowNo = riskResp.getBorrowNo();
-				AfBorrowCashDo borrowCashInfo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
-				
+				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_CASH_OVERDUED));
 				break;
 			case OTHER_RULE:
-				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_OTHER_RULE);
+				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_OTHER_RULE));
 			default:
 				break;
 			}
-			
 		}
 	}
 }

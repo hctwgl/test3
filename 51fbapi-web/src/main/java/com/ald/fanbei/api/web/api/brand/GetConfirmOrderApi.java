@@ -16,11 +16,13 @@ import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -58,6 +60,8 @@ public class GetConfirmOrderApi implements ApiHandle {
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	RiskUtil riskUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -82,11 +86,27 @@ public class GetConfirmOrderApi implements ApiHandle {
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		AfUserBankcardDo bankInfo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		BoluomeConfirmOrderVo vo = buildConfirmOrderVo(orderInfo,userDto, authDo, bankInfo,context);
-		resp.setResponseData(vo);
-		if (isVirtualGoods(orderInfo)) {
+		//小于368版本，可用额度设置为0
+		if (context.getAppVersion() <= 368 && isVirtualGoods(orderInfo)) {
 			vo.setUseableAmount(BigDecimal.ZERO);
+		} else {
+			dealWithVirtualCodeGt368(vo, orderInfo);
 		}
+		resp.setResponseData(vo);
 		return resp;
+	}
+	
+	private void dealWithVirtualCodeGt368(BoluomeConfirmOrderVo vo, AfOrderDo orderInfo) {
+		String virtualCode = afOrderService.getBoluomeVirualCode(orderInfo);
+		if (StringUtil.isNotEmpty(virtualCode)) {
+			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtil.EMPTY, virtualCode, StringUtil.EMPTY);
+			BigDecimal virtualAmount = response.getData().getAmount();
+			vo.setVirtualGoodsUsableAmount(virtualAmount);
+			vo.setIsVirtualGoods(YesNoStatus.YES.getCode());
+		} else {
+			vo.setIsVirtualGoods(YesNoStatus.NO.getCode());
+			vo.setVirtualGoodsUsableAmount(BigDecimal.ZERO);
+		}
 	}
 	
 	private BoluomeConfirmOrderVo buildConfirmOrderVo(AfOrderDo orderInfo, AfUserAccountDto userDto, AfUserAuthDo authDo, AfUserBankcardDo bankInfo, FanbeiContext context){

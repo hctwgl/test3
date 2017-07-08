@@ -7,9 +7,7 @@ public class RiskVirtualProductQuotaRespBo extends RiskRespBo {
 	
 	private RiskVirtualProductQuotaDetailRespBo data;
 
-
-	@SuppressWarnings("unused")
-	private class RiskVirtualProductQuotaDetailRespBo {
+	public class RiskVirtualProductQuotaDetailRespBo {
 		
 		private BigDecimal amount; //虚拟商品的额度
 		private String virtualCode;//虚拟商品代码

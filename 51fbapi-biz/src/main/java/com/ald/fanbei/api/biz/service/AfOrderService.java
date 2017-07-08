@@ -205,5 +205,12 @@ public interface AfOrderService {
 	 */
 	public AfOrderDo getOrderInfoByIdWithoutDeleted(Long rid, Long userId);
 	
+	/**
+	 * 获取菠萝觅虚拟Code
+	 * @param orderInfo
+	 * @return
+	 */
+	String getBoluomeVirualCode(AfOrderDo orderInfo);
+	
 }
 

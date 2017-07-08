@@ -691,6 +691,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						resultMap.put("success", true);
 						return resultMap;
 					} else if (payId == 0) {
+						//代付
 						//先做判断
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
@@ -1188,8 +1189,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public AfOrderDo getOrderInfoByIdWithoutDeleted(Long rid, Long userId) {
 		return orderDao.getOrderInfoByIdWithoutDeleted(rid, userId);
 	}
-	
-	private String getBoluomeVirualCode(AfOrderDo orderInfo) {
+
+	@Override
+	public String getBoluomeVirualCode(AfOrderDo orderInfo) {
 		if (orderInfo == null) {
 			return null;
 		}
@@ -1202,4 +1204,5 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		return type.getCode();
 	}
+	
 }

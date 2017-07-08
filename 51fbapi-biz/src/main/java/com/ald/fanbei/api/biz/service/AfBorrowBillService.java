@@ -173,4 +173,11 @@ public interface AfBorrowBillService {
 	 */
 	boolean existMonthRepayingBill(Long userId, Integer billYear, Integer billMonth);
 	
+	/**
+	 * 找到逾期并且未还账单
+	 * @param borrowId
+	 * @return
+	 */
+	Long getOverduedAndNotRepayBill(Long borrowId);
+	
 }

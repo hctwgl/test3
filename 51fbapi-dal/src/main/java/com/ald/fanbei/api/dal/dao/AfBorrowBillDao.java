@@ -229,4 +229,12 @@ public interface AfBorrowBillDao {
 	 */
 	int getSumOverdueCountByBorrowId(@Param("borrowId") Long borrowId);
 	
+	/**
+	 * 根据借款id找出逾期未还且逾期天数最大的借款ID
+	 * 
+	 * @param borrowId
+	 * @return
+	 */
+	Long getOverduedAndNotRepayBill(@Param("borrowId") Long borrowId);
+	
 }
