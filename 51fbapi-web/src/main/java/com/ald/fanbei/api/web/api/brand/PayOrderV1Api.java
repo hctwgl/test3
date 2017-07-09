@@ -118,7 +118,7 @@ public class PayOrderV1Api implements ApiHandle {
 			}
 			Map<String, Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 			String success = result.get("success").toString();
-			if (StringUtils.isNotBlank(success) && !Boolean.getBoolean(success)) {
+			if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {
 				dealWithPayOrderRiskFailed(result, resp);
 			} else if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
 				riskUtil.payOrderChangeAmount(orderInfo.getRid());
@@ -139,7 +139,7 @@ public class PayOrderV1Api implements ApiHandle {
 	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
 		String success = result.get("success").toString();
 		//如果代付，风控支付是不通过的，找出其原因
-		if (StringUtils.isNotBlank(success) && !Boolean.getBoolean(success)) {
+		if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {
 			String verifyBoStr = (String) result.get("verifybo");
 			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
 			String rejectCode = riskResp.getRejectCode();
