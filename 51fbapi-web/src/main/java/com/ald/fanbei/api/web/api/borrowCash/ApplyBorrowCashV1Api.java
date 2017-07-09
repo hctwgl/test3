@@ -478,7 +478,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
 		String success = result.get("success").toString();
 		//如果代付，风控支付是不通过的，找出其原因
-		if (StringUtils.isBlank(success) && !Boolean.getBoolean(success)) {
+		if (StringUtils.isNotBlank(success) && !Boolean.getBoolean(success)) {
 			String verifyBoStr = (String) result.get("verifybo");
 			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
 			String rejectCode = riskResp.getRejectCode();

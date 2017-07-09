@@ -73,26 +73,18 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 		if (orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_PAID);
 		}
-//		try {
-			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
-			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
-			}
-			
-			Map<String,Object> result = afOrderService.payBrandOrder(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress);
-			String success = result.get("success").toString();
-			if (StringUtils.isBlank(success) && !Boolean.getBoolean(success)) {
-				dealWithPayOrderRiskFailed(result, resp);
-			}
-			resp.setResponseData(result);
-
-//		} catch (Exception e) {
-//			logger.error("pay Agency  order failed e = {}", e);
-//
-//			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
-//
-//		}
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
+		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+		}
+		
+		Map<String,Object> result = afOrderService.payBrandOrder(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), 
+				orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress);
+		String success = result.get("success").toString();
+		if (StringUtils.isNotBlank(success) && !Boolean.getBoolean(success)) {
+			dealWithPayOrderRiskFailed(result, resp);
+		}
 		return resp;
 
 	}
@@ -100,7 +92,7 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
 		String success = result.get("success").toString();
 		//如果代付，风控支付是不通过的，找出其原因
-		if (StringUtils.isBlank(success) && !Boolean.getBoolean(success)) {
+		if (StringUtils.isNotBlank(success) && !Boolean.getBoolean(success)) {
 			String verifyBoStr = (String) result.get("verifybo");
 			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
 			String rejectCode = riskResp.getRejectCode();
