@@ -176,7 +176,7 @@ public class AppH5SubjectController  extends BaseController{
 			logger.error("请求失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 	}
@@ -367,7 +367,7 @@ public class AppH5SubjectController  extends BaseController{
 			logger.error("请求失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 	}
@@ -453,7 +453,7 @@ public class AppH5SubjectController  extends BaseController{
 			logger.error("请求失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 	}
@@ -483,7 +483,7 @@ public class AppH5SubjectController  extends BaseController{
 			logger.error("请求失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 	}
@@ -508,7 +508,7 @@ public class AppH5SubjectController  extends BaseController{
 			logger.error("请求失败",e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis());
+			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
 		return resultStr;
 	}

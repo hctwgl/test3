@@ -15,7 +15,6 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.RefundSource;
@@ -82,12 +81,13 @@ public class RefundOrderApplyApi implements ApiHandle{
 			afOrderRefundDo.setContactsMobile(contactsMobile);
 			afOrderRefundService.addOrderRefund(afOrderRefundDo);
 			
+			logger.info("自营订单用户点击申请售后,系统对订单不做真实退款操作.orderId="+orderId+",userId="+userId);
 			//订单状态改为退款中
-			orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
-			afOrderService.updateOrder(orderInfo);
+//			orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
+//			afOrderService.updateOrder(orderInfo);
 			
 			//减少商品销量
-			afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
+//			afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
 			
 			return resp;
 		}else{

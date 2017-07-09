@@ -51,18 +51,20 @@ public class RiskStrong extends RiskRegisterStrongReqBo {
 
 		setDirectory(JSON.toJSONString(StringUtil.filterEmoji(directory)));
 
-		JSONObject linkManInfo = new JSONObject();
-		linkManInfo.put("name", StringUtil.filterEmoji(afUserAuthDo.getContactorName()));
-		ContactRelationType contactRelationType = ContactRelationType.findRoleTypeByName(afUserAuthDo.getContactorType());
-		if (contactRelationType == null) {
-			linkManInfo.put("relation", ContactRelationType.others.getCode());
-		} else {
-			linkManInfo.put("relation", contactRelationType.getCode());
+		if (!StringUtil.isBlank(afUserAuthDo.getContactorName())) {
+			JSONObject linkManInfo = new JSONObject();
+			linkManInfo.put("name", StringUtil.filterEmoji(afUserAuthDo.getContactorName()));
+			ContactRelationType contactRelationType = ContactRelationType.findRoleTypeByName(afUserAuthDo.getContactorType());
+			if (contactRelationType == null) {
+				linkManInfo.put("relation", ContactRelationType.others.getCode());
+			} else {
+				linkManInfo.put("relation", contactRelationType.getCode());
+			}
+			linkManInfo.put("idNo", "");
+			linkManInfo.put("phone", afUserAuthDo.getContactorMobile());
+			linkManInfo.put("reqExt", "");
+			setLinkManInfo(JSON.toJSONString(linkManInfo));
 		}
-		linkManInfo.put("idNo", "");
-		linkManInfo.put("phone", afUserAuthDo.getContactorMobile());
-		linkManInfo.put("reqExt", "");
-		setLinkManInfo(JSON.toJSONString(linkManInfo));
 
 		String notifyUrl = "/third/risk/registerStrongRisk";
 		JSONObject riskInfo = new JSONObject();

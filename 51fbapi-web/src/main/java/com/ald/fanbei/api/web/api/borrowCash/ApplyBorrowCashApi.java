@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -32,6 +33,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -46,6 +48,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -84,6 +87,8 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
 	@Resource
 	CommitRecordUtil commitRecordUtil;
+	@Resource
+	AfUserCouponService afUserCouponService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -127,10 +132,9 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		// 认证信息判断
 		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode())
-				|| !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode())
+//				|| !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode())/* || !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode())*/
 				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
-
 		}
 
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
@@ -180,9 +184,29 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 				&& !StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode()))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
-		
-		
-		
+		//FIXME Add by jrb, 如果有免息券，则实际到账金额为借钱金额
+		try {
+			if (doRish) {
+				String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
+				logger.error("ApplyBorrowCashApi couponId=>" + couponId);
+				if (!StringUtils.isBlank(couponId)) {
+					AfUserCouponDo afUserCouponDoTmp = new AfUserCouponDo();
+					afUserCouponDoTmp.setCouponId(Long.parseLong(couponId));
+					afUserCouponDoTmp.setUserId(userId);
+					logger.error("ApplyBorrowCashApi userId=>" + userId);
+					AfUserCouponDo afUserCouponDo = afUserCouponService.getUserCouponByDo(afUserCouponDoTmp);
+					if(afUserCouponDo != null) {
+						afUserCouponDo.setStatus(CouponStatus.USED.getCode());
+						afBorrowCashDo.setArrivalAmount(afBorrowCashDo.getAmount());
+						// 更新券的状态为已使用
+						logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>" + afUserCouponDo.getRid());
+						afUserCouponService.updateUserCouponSatusUsedById(afUserCouponDo.getRid());
+					}
+				}
+			}
+		} catch (Exception e){
+			logger.error(e.getMessage());
+		}
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 
 		Long borrowId = afBorrowCashDo.getRid();

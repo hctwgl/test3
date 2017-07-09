@@ -99,7 +99,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     OPERATOR_INFO_EXIST_ERROR("OPERATOR_INFO_EXIST_ERROR",1312,"operator exist error","请先完成运营商授权!"),
     EMERGENCY_CONTACT_INFO_EXIST_ERROR("EMERGENCY_CONTACT_INFO_EXIST_ERROR",1313,"emergency contact exist error","请先完成紧急联系人设置!"),
     CANOT_FIND_DIRECTORY_ERROR("CANOT_FIND_DIRECTORY_ERROR",1314,"canot find directory error","请重新设置紧急联系人!"),
-    RISK_OREADY_FINISH_ERROR("RISK_OREADY_FINISH_ERROR",1314,"risk oready finish error","正在认证中，请耐心等待!"),
+    NEED_AGAIN_DIRECTORY_PROOF_ERROR("NEED_AGAIN_DIRECTORY_PROOF_ERROR",1315,"need again directory proof error","请重新通讯录认证!"),
+    RISK_OREADY_FINISH_ERROR("RISK_OREADY_FINISH_ERROR",1316,"risk oready finish error","正在认证中，请耐心等待!"),
     
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
@@ -190,8 +191,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     API_RISK_MOBILE_VERIFYING("API_RISK_MOBILE_VERIFYING",1912,"api risk mobile verifying","认证中，请勿重复发起！"),
     API_RISK_MOBILE_VERIFY_PASSED("API_RISK_MOBILE_VERIFY_PASSED",1913,"api risk mobile verify passed","认证已通过，请勿重复发起！"),
     VIRTUAL_PRODUCT_QUOTA_ERROR("VIRTUAL_PRODUCT_QUOTA_ERROR",1914,"virtual product quota error","获取虚拟商品可用额度失败"),
-    RISK_AUTH_AMOUNT_LIMIT("AUTH_AMOUNT_LIMIT",1915,"auth amount limit","您的可用额度已经不够"),
-    RISK_OTHER_RULE("RISK_OTHER_RULE",1916,"risk other rule","您的账号暂时无法进行分期消费,请用其他方式支付"),
+    RISK_AUTH_AMOUNT_LIMIT("AUTH_AMOUNT_LIMIT",1915,"auth amount limit","亲，您的信用还需努力，本次分期购买申请没有通过。继续保持好的信用生活习惯，离下次成功只差一步了。"),
+    RISK_OTHER_RULE("RISK_OTHER_RULE",1916,"risk other rule","亲，您的信用还需努力，本次分期购买申请没有通过。继续保持好的信用生活习惯，离下次成功只差一步了。"),
     RISK_BORROW_OVERDUED("RISK_BORROW_OVERDUED",1917,"risk borrow overdued","风控逾期分期限制"),
     RISK_BORROW_CASH_OVERDUED("RISK_BORROW_CASH_OVERDUED",1918,"risk other rule","风控逾期借款限制"),
     
@@ -230,7 +231,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     
     GAME_CHANCE_CODE_ERROR("GAME_CHANCE_CODE_ERROR",4030,"game chance code error","无效抓娃娃机会"),
     GAME_COUPONS_LIMIT_ERROR("GAME_COUPONS_LIMIT_ERROR",4031,"coupon limit","未中奖"),
-    
+    NOT_CONFIG_GAME_INFO_ERROR("NOT_CONFIG_GAME_INFO_ERROR",4032,"not config game info error","请配置游戏信息"),
     // 地址管理
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),

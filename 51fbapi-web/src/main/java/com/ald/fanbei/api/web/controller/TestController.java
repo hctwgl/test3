@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -22,15 +20,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
-import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -46,12 +41,8 @@ import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.druid.util.StringUtils;
@@ -99,8 +90,6 @@ public class TestController {
 	AfOrderDao afOrderDao;
 	@Resource
 	AfBorrowService afBorrowService;
-	@Resource
-	AfUserBankcardService afUserBankcardService;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -393,7 +382,7 @@ public class TestController {
 //		
 //		return message;
 //	}
-//	
+	
 	// TongdunUtil
 	
 //	@RequestMapping(value = { "/wxRefundMobile" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
@@ -453,15 +442,15 @@ public class TestController {
 		return "success";
 	}
 	
-	@RequestMapping(value = { "/testRiskVirtual" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testJPush" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String testRiskVirtual(HttpServletRequest request, HttpServletResponse response) {
+	public String testJPush(HttpServletRequest request, HttpServletResponse response) {
 		PrintWriter out = null;
 		try {
-			RiskVirtualProductQuotaRespBo resp = riskUtil.virtualProductQuota("68885", StringUtil.EMPTY, "会员");
-			System.out.println(resp);
+			String userName = request.getParameter("userName");
+			jpushService.pushHeaderImage(userName);;
 		} catch (Exception e) {
-			logger.error("testRiskVirtual", e);
+			logger.error("allowcateBrandCoupon", e);
 			return "fail";
 		} finally {
 			if (out != null) {
@@ -471,27 +460,14 @@ public class TestController {
 		return "success";
 	}
 	
-	@RequestMapping(value = { "/testVeriyNew" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testAllJPush" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String testVeriyNew(HttpServletRequest request, HttpServletResponse response) {
+	public String testAllJPush(HttpServletRequest request, HttpServletResponse response) {
 		PrintWriter out = null;
 		try {
-			AfOrderDo orderInfo = afOrderDao.getOrderInfoById(194582l, 90755l);// new
-			// AfOrderDo();
-				// 查卡号，用于调用风控接口
-				AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(90755l);
-				AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(90755l);
-				AfBorrowDo borrowInfo = afBorrowService.getBorrowById(91275l);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String borrowTime = sdf.format(borrowInfo.getGmtCreate());
-				String riskOrderNo = riskUtil.getOrderNo("vefy", card.getCardNumber().substring(card.getCardNumber().length() - 4, card.getCardNumber().length()));
-				orderInfo.setRiskOrderNo(riskOrderNo);
-				RiskVerifyRespBo resp = riskUtil.verifyNew("90755", borrowInfo.getBorrowNo(), 
-				borrowInfo.getNper().toString(), "40", card.getCardNumber(), "alading_ios", "192.168.1.1", "", riskOrderNo,
-				userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, orderInfo.getGoodsName(),"101");
-			System.out.println(resp);
+			jpushService.pushAllHeaderImage();
 		} catch (Exception e) {
-			logger.error("testRiskVirtual", e);
+			logger.error("allowcateBrandCoupon", e);
 			return "fail";
 		} finally {
 			if (out != null) {
