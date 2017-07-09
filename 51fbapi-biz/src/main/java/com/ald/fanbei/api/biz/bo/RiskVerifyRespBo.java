@@ -98,5 +98,12 @@ public class RiskVerifyRespBo extends RiskRespBo {
 	public void setBorrowNo(String borrowNo) {
 		this.borrowNo = borrowNo;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "RiskVerifyRespBo [result=" + result + ", data=" + data + ", orderNo=" + orderNo + ", consumerNo=" + consumerNo + ", virtualCode=" + virtualCode + ", virtualQuota=" + virtualQuota + ", rejectCode=" + rejectCode + ", borrowNo=" + borrowNo + "]";
+	}
 
 }

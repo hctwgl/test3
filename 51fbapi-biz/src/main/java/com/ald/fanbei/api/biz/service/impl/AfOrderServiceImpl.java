@@ -1211,7 +1211,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			
 			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
 			if (response != null) {
-				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
+				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getDetails().getAmount());
 			}
 		}
 		return resultMap;

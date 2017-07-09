@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +18,10 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -39,6 +42,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.RiskErrorCode;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -53,6 +57,7 @@ import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -62,7 +67,9 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.AppResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：申请借钱
@@ -102,6 +109,10 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	CommitRecordUtil commitRecordUtil;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -209,12 +220,10 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
 		
-		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 
 		Long borrowId = afBorrowCashDo.getRid();
 
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
-		cashDo.setRid(borrowId);
 
 		try {
 			/// 临时解决方案
@@ -222,6 +231,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 				logger.info("风控拒绝过");
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
+			afBorrowCashService.addBorrowCash(afBorrowCashDo);
+			cashDo.setRid(borrowId);
 
 			String cardNo = card.getCardNumber();
 			String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
@@ -232,11 +243,16 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String borrowTime = sdf.format(new Date(System.currentTimeMillis()));
 			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox, riskOrderNo, 
-					accountDo.getUserName(), amount, afBorrowCashDo.getPoundage(), borrowTime,StringUtils.EMPTY, StringUtils.EMPTY);
+					accountDo.getUserName(), amount, afBorrowCashDo.getPoundage(), borrowTime,"借钱", StringUtils.EMPTY);
 			
 			if (verybo.isSuccess()) {
 				delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult());
 			} else {
+				Map<String,Object> result = new HashMap<String, Object>();
+				result.put("success", "10".equals(verybo.getResult()));
+				result.put("verifybo", JSONObject.toJSON(verybo));
+				dealWithPayOrderRiskFailed(result, resp);
+				
 				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 				afBorrowCashService.updateBorrowCash(cashDo);
@@ -414,6 +430,37 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		
 		return new BigDecimal(amount/100*100);
 		
+	}
+	
+	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
+		String success = result.get("success").toString();
+		//如果代付，风控支付是不通过的，找出其原因
+		if (StringUtils.isBlank(success) && !Boolean.getBoolean(success)) {
+			String verifyBoStr = (String) result.get("verifybo");
+			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
+			String rejectCode = riskResp.getRejectCode();
+			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+			switch (erorrCode) {
+			case AUTH_AMOUNT_LIMIT:
+				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_AUTH_AMOUNT_LIMIT);
+			case OVERDUE_BORROW:
+			{
+				String borrowNo = riskResp.getBorrowNo();
+				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
+				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_OVERDUED));
+				resp.addResponseData("billId", billId == null ? 0 : billId);
+			}
+				break;
+			case OVERDUE_BORROW_CASH:
+				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_CASH_OVERDUED));
+				break;
+			case OTHER_RULE:
+				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_OTHER_RULE));
+			default:
+				break;
+			}
+		}
 	}
 
 	
