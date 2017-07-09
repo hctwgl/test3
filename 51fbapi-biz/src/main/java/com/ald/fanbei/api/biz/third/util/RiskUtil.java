@@ -1318,6 +1318,12 @@ public class RiskUtil extends AbstractThird {
 		RiskVirtualProductQuotaRespBo riskResp = JSONObject.parseObject(reqResult, RiskVirtualProductQuotaRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
+			String data = riskResp.getData();
+			if (StringUtils.isNotBlank(data)) {
+				JSONObject json = JSONObject.parseObject(data);
+				riskResp.setAmount(json.getBigDecimal("amount"));
+				riskResp.setVirtualCode(json.getString("virtualCode"));
+			}
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.VIRTUAL_PRODUCT_QUOTA_ERROR);

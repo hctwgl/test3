@@ -193,6 +193,8 @@ id,gmt_create,gmt_modified,user_id,order_id,order_no,code,year,month,amount,tota
         	month = #{month}
         AND
         	user_id = #{userId}
+        AND
+        	code = #{virtualCode}
        	LIMIT 1
     </select>
     

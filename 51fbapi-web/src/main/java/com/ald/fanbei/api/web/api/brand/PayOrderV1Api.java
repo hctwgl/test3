@@ -69,8 +69,6 @@ public class PayOrderV1Api implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		resp.setResult(new AppResponse(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR));
-		resp.addResponseData("aa", "bb");
 		Long userId = context.getUserId();
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);

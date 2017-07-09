@@ -1207,11 +1207,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			if (type == null) {
 				return resultMap;
 			}
+			virtualCode = type.getCode();
 			resultMap.put(Constants.VIRTUAL_CODE, type.getCode());
 			
 			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
 			if (response != null) {
-				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getDetails().getAmount());
+				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
 			}
 		}
 		return resultMap;

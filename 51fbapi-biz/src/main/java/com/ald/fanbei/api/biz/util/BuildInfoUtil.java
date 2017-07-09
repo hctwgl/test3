@@ -1,13 +1,13 @@
 package com.ald.fanbei.api.biz.util;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
 
 import org.springframework.util.StringUtils;
 
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfUpsLogDo;
@@ -65,12 +65,11 @@ public class BuildInfoUtil {
 	public static AfUserVirtualAccountDo buildUserVirtualAccountDo(Long userId, BigDecimal amount, BigDecimal totalAmount,Long orderId, String orderNo, String virtualCode){
 		//增加虚拟商品使用日志
 		AfUserVirtualAccountDo virtualAccountInfo = new AfUserVirtualAccountDo();
-		Calendar calender = Calendar.getInstance();
 		virtualAccountInfo.setAmount(amount);
 		virtualAccountInfo.setOrderId(orderId);
 		virtualAccountInfo.setOrderNo(orderNo);
-		virtualAccountInfo.setYear(calender.get(Calendar.YEAR));
-		virtualAccountInfo.setMonth(calender.get(Calendar.MONTH));
+		virtualAccountInfo.setYear(DateUtil.getCurrentYear());
+		virtualAccountInfo.setMonth(DateUtil.getCurrentMonth());
 		virtualAccountInfo.setCode(virtualCode);
 		virtualAccountInfo.setUserId(userId);
 		virtualAccountInfo.setAmount(amount);
