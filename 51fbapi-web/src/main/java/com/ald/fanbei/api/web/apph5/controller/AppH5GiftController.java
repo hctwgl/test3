@@ -85,6 +85,7 @@ public class AppH5GiftController extends BaseController {
         			String couponType = coupontInfos[1];
         			AfResourceDo resourceDo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
         			String name = resourceDo.getName();
+        			couponInfoMap.put("couponId", couponId);
         			couponInfoMap.put("name", name);
         			couponInfoMap.put("type", "2");
         			couponInfoMap.put("desc", afResourceDo.getValue1());
@@ -158,7 +159,6 @@ public class AppH5GiftController extends BaseController {
               reqVo.setId(jsonObj.getString("id"));
               reqVo.setMethod(request.getRequestURI());
               reqVo.setSystem(jsonObj);
-              
               return reqVo;
           } catch (Exception e) {
               throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
