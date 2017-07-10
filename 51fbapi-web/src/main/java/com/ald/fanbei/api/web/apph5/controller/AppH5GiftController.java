@@ -42,7 +42,7 @@ public class AppH5GiftController extends BaseController {
 	@Resource
 	AfCouponService afCouponService;
     
-    @RequestMapping(value = "newUserGift", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "newUserGift", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String newUserGift(HttpServletRequest request, ModelMap model) throws IOException {
     	
@@ -55,20 +55,35 @@ public class AppH5GiftController extends BaseController {
     		}
     		AfResourceDo afResourceDo = afResourceList.get(0);
     		String couponIdValue = afResourceDo.getValue();
-    		String[] couponIds = couponIdValue.split(",");
+    		String[] couponIdAndTypes = couponIdValue.split(",");
     		List<HashMap<String,Object>> couponInfoList = new ArrayList<HashMap<String,Object>>();
-    		for(String couponId : couponIds) {
+    		for(String couponIdAndType : couponIdAndTypes) {
+    			String[] coupontInfos = couponIdAndType.split(":");
     			HashMap<String,Object> couponInfoMap = new HashMap<String,Object>();
-    			// 查询优惠券信息
-    			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
-    			if(afCouponDo == null){
-    				return H5CommonResponse.getNewInstance(false, "优惠券信息不存在:id=>" + couponId).toString();
+    			if(coupontInfos.length == 1){
+    				String couponId = coupontInfos[0];
+        			// 查询优惠券信息
+        			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			if(afCouponDo == null){
+        				return H5CommonResponse.getNewInstance(false, "优惠券信息不存在:id=>" + couponId).toString();
+        			}
+        			String name = afCouponDo.getName(); 
+        			couponInfoMap.put("name", name);
+        			couponInfoMap.put("couponId", couponId);
+        			couponInfoMap.put("type", "1");
+        			couponInfoMap.put("desc", afCouponDo.getUseRule());
+        			couponInfoMap.put("remark", "全场通用");
+    			} else {
+    				String couponId = coupontInfos[0];
+        			String couponType = coupontInfos[1];
+        			AfResourceDo resourceDo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
+        			String name = resourceDo.getName();
+        			couponInfoMap.put("name", name);
+        			couponInfoMap.put("type", "2");
+        			couponInfoMap.put("desc", resourceDo.getValue1());
+        			couponInfoMap.put("remark", resourceDo.getValue2());
     			}
-    			String name = afCouponDo.getName(); 
-    			couponInfoMap.put("name", name);
-    			couponInfoMap.put("couponId", couponId);
-    			couponInfoMap.put("desc", afCouponDo.getUseRule());
-    			couponInfoMap.put("remark", "全场通用");
+    			
     			couponInfoList.add(couponInfoMap);
     		}
     		jsonObj.put("couponInfoList", couponInfoList);
