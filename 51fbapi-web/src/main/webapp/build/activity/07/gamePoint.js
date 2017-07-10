@@ -14,9 +14,9 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'post',
-                url: '/fanbei-web/partActivityInfo',
+                url: "/fanbei-web/partActivityInfo?modelId="+modelId,
                 data: {
-                    'modelId': 92
+                    'modelId': modelId
                 },
                 success: function (data) {
                     //   self.content = ; 
@@ -56,7 +56,7 @@ let vm = new Vue({
             if (gamePointShare == "gamePointShare") {
                 window.location.href = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
             } else {
-                window.location.href = self.content.activityList + '&params={"modelId":"' + 92 + '"}'
+                window.location.href = self.content.activityList + '&params={"modelId":"' + id + '"}'
             }
         },
     }
@@ -71,7 +71,7 @@ function alaShareData(){
             'shareAppTitle': '特卖会',  // 分享的title
             'shareAppContent': '51返呗返场加购，精选好货抄低价！爆款精品仅在“特卖会”，拼的就是手速，赶紧来围观~',  // 分享的内容
             'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
-            'shareAppUrl': ipUrl+'/fanbei-web/activity/gamePoint?gamePointShare=gamePointShare&modelId='+92,  // 分享后的链接
+            'shareAppUrl': ipUrl+'/fanbei-web/activity/gamePoint?gamePointShare=gamePointShare&modelId='+modelId,  // 分享后的链接
             'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
             'sharePage': 'superGoods' // 分享的页面
           };

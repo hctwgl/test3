@@ -3,6 +3,10 @@
   padding: 0px;
   box-sizing: border-box;
 }
+a {
+  text-decoration: none;
+  color: black;
+}
 /*导航样式*/
 #gamePoint .gamePointBanner {
   width: 100%;
