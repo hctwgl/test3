@@ -33,16 +33,19 @@
                 </li>
             </ul>
             <ul class="detail right" v-bind:class='{show:isActive}'>
-                 <li class="goods"  v-for="item in content.activityList[1].activityGoodsList" @click="buyNow">
+                 <li class="goods"  v-for="item in content.activityList[1].activityGoodsList" @click="buyNow(item.goodsId)">
                     <a href="">
                         <div class="goods-img">
                             <img :src="item.goodsIcon" alt="">
                         </div>
-                        <div class="goods-words">
-                            <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-                            <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
-                            <p v-if="item.nperMap"><span class="monthpay">月供</span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>   
-                        </div>
+                       <div class="goods-words">
+                        <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
+                        <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
+                        <template v-if="item.goodsType==1">
+                                <p v-if="item.nperMap.isFree==2"><span class="monthpay">月供 </span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
+                                <p v-if="item.nperMap.isFree==1"><span class="monthpay">月供</span><span class="money">{{item.nperMap.freeAmount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
+						</template>
+                    </div>
                     </a>  
                 </li>
             </ul>
