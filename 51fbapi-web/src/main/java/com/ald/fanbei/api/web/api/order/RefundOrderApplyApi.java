@@ -67,7 +67,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 		//退款原因
 		String userReason = ObjectUtils.toString(requestDataVo.getParams().get("userReason"),"");
 		//退款图片凭证
-		String picVouchers = ObjectUtils.toString(requestDataVo.getParams().get("picVouchers"),"");
+		String picVouchers = StringUtil.UrlDecoder(ObjectUtils.toString(requestDataVo.getParams().get("picVouchers"),""));
 		
 		//参数基本检查
 		if(orderId == null){
@@ -148,6 +148,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 			afAftersaleApplyService.saveRecord(afAftersaleApplyDo);
 			
 			//订单状态改为退款中
+			orderInfo.setPreStatus(orderInfo.getStatus());
 			orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
 			afOrderService.updateOrder(orderInfo);
 			//自营商品减少商品销量
