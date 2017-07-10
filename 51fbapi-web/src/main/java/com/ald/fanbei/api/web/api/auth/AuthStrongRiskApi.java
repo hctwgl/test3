@@ -1,5 +1,10 @@
 package com.ald.fanbei.api.web.api.auth;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,28 +13,40 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.service.AfCouponSceneService;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.sun.org.apache.xml.internal.utils.IntVector;
 
 /**
  * @类描述：提交风控审核
@@ -54,6 +71,20 @@ public class AuthStrongRiskApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
+	@Resource
+	AfResourceService afResourceService;
+	@Resource
+	AfCouponSceneService afCouponSceneService;
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfUserCouponService afUserCouponService;
+	
+	
+	@Resource
+	private CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
+	
+	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -70,7 +101,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 		if (StringUtils.equals(afUserAuthDo.getMobileStatus(), YesNoStatus.NO.getCode())) {// 请先完成运营商授权
 			throw new FanbeiException(FanbeiExceptionCode.OPERATOR_INFO_EXIST_ERROR);
 		}
-		if (appVersion < 368 && StringUtils.equals(afUserAuthDo.getContactorStatus(), YesNoStatus.NO.getCode())) {// 请先完成紧急联系人设置
+		if (appVersion < 368 && StringUtils.equals(afUserAuthDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {// 请先完成紧急联系人设置
 			throw new FanbeiException(FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
 		}
 		
@@ -105,21 +136,80 @@ public class AuthStrongRiskApi implements ApiHandle {
 				if (!riskResp.isSuccess()) {
 					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 				} else {
+					// 提交过信用认证,第一次给用户发放优惠劵
+					HashMap<String, String> creditRebateMap = new HashMap<String, String>();
+					String creditRebateMsg = "" ;
+					if(afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode())){
+						// 发放优惠劵工作
+						couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+						creditRebateMsg = getCreditAuthMsg(context, creditRebateMsg);
+					}
+					
 					AfUserAuthDo authDo = new AfUserAuthDo();
 					authDo.setUserId(context.getUserId());
 					authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
 					afUserAuthService.updateUserAuth(authDo);
 
 					bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
+					
+					if(context.getAppVersion()>367){
+						creditRebateMap.put("creditRebateMsg", creditRebateMsg);
+						resp.setResponseData(creditRebateMap);	
+					}
+					
 				}
 			} catch (Exception e) {
 				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
 				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 			}
-
+			
+			// 
+			
 			return resp;
 		}
 
 	}
-
+	
+	// 获得优惠劵
+	private  String getCreditAuthMsg(FanbeiContext context, String creditRebateMsg ){
+		// 给客户端发送获得现金的信息
+		AfUserAccountLogDo userAccountLogDo = new AfUserAccountLogDo();
+		userAccountLogDo.setUserId(context.getUserId());
+		userAccountLogDo.setType(CouponSenceRuleType.CREDITAUTH.getCode());
+		BigDecimal crediRebateAmount = afUserAccountLogDao.getUserAmountByType(userAccountLogDo);
+		List<AfUserCouponDto> userCouponList = afUserCouponService.getUserCouponByUserIdAndSourceType(context.getUserId(),CouponSenceRuleType.CREDITAUTH.getCode());
+		if(!CollectionUtil.isEmpty(userCouponList)){
+			for (AfUserCouponDto afUserCouponDto : userCouponList) {
+				
+				if(afUserCouponDto.getType().equals(CouponType.MOBILE.getCode())){
+					creditRebateMsg = creditRebateMsg +  afUserCouponDto.getAmount().intValue()+"元话费充值劵\n";
+				}
+				if(afUserCouponDto.getType().equals(CouponType.REPAYMENT.getCode())){
+					creditRebateMsg = creditRebateMsg + afUserCouponDto.getAmount().intValue()+"元还款卷\n";
+				}
+				if(afUserCouponDto.getType().equals(CouponType.FULLVOUCHER.getCode())){
+					creditRebateMsg = creditRebateMsg + afUserCouponDto.getAmount().intValue()+"元满减卷\n";
+				}
+				if(afUserCouponDto.getType().equals(CouponType.CASH.getCode())){
+					creditRebateMsg = creditRebateMsg + afUserCouponDto.getAmount().intValue()+"元现金劵\n";
+				}
+				if(afUserCouponDto.getType().equals(CouponType.ACTIVITY.getCode())){
+					creditRebateMsg = creditRebateMsg + afUserCouponDto.getAmount().intValue()+"元会场劵\n";
+				}
+				if(afUserCouponDto.getType().equals(CouponType.FREEINTEREST.getCode())){
+					creditRebateMsg = creditRebateMsg + afUserCouponDto.getAmount().intValue()+"元借钱免息劵\n";
+				}
+			
+			}
+		}
+		if(crediRebateAmount != null ){
+			if (crediRebateAmount.compareTo(BigDecimal.ZERO)> 0){
+				creditRebateMsg = creditRebateMsg + crediRebateAmount.intValue() + "元现金奖励\n";
+			}
+		}
+		
+		return creditRebateMsg;
+	}
+	
+	
 }

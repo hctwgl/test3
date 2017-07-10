@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -39,6 +40,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -58,6 +60,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -102,7 +105,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	CommitRecordUtil commitRecordUtil;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
-	
+	@Resource
+	AfUserCouponService afUserCouponService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -118,7 +122,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		String county = ObjectUtils.toString(requestDataVo.getParams().get("county"));
 		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
-
+		String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
 		if (StringUtils.isBlank(amountStr) || AfBorrowCashType.findRoleTypeByCode(type) == null || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
 				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
@@ -155,7 +159,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		// 认证信息判断
 		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode())
-				|| !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode()) /*|| !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode())*/
+//				|| !StringUtils.equals(authDo.getContactorStatus(), YesNoStatus.YES.getCode()) /*|| !StringUtils.equals(authDo.getLocationStatus(), YesNoStatus.YES.getCode())*/
 				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 		}
@@ -203,11 +207,35 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
 		AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province, county, address, userId, currentDay);
-
+		
 		if (!isCanBorrow) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
-		
+		//FIXME Add by jrb, 如果有免息券，则实际到账金额为借钱金额
+		BigDecimal orgArrivalAmount = afBorrowCashDo.getArrivalAmount();
+		Long userCouponId = 0l;
+		try {
+			if (doRish) {
+				logger.error("ApplyBorrowCashApi couponId=>" + couponId);
+				if (!StringUtils.isBlank(couponId)) {
+					AfUserCouponDo afUserCouponDoTmp = new AfUserCouponDo();
+					afUserCouponDoTmp.setCouponId(Long.parseLong(couponId));
+					afUserCouponDoTmp.setUserId(userId);
+					logger.error("ApplyBorrowCashApi userId=>" + userId);
+					AfUserCouponDo afUserCouponDo = afUserCouponService.getUserCouponByDo(afUserCouponDoTmp);
+					if(afUserCouponDo != null) {
+						afUserCouponDo.setStatus(CouponStatus.USED.getCode());
+						afBorrowCashDo.setArrivalAmount(afBorrowCashDo.getAmount());
+						// 更新券的状态为已使用
+						userCouponId = afUserCouponDo.getRid();
+						logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>" + userCouponId);
+						afUserCouponService.updateUserCouponSatusUsedById(afUserCouponDo.getRid());
+					}
+				}
+			}
+		} catch (Exception e){
+			logger.error(e.getMessage());
+		}
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 
 		Long borrowId = afBorrowCashDo.getRid();
@@ -245,7 +273,14 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			logger.error("apply borrow cash v1 error",e);
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+			cashDo.setArrivalAmount(orgArrivalAmount);
 			afBorrowCashService.updateBorrowCash(cashDo);
+			
+			if (!StringUtils.isBlank(couponId)) {
+				// 更新券的状态为未使用
+				logger.error("ApplyBorrowCashApi userCouponId=>" + userCouponId);
+				afUserCouponService.updateUserCouponSatusNouseById(userCouponId);
+			}
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}

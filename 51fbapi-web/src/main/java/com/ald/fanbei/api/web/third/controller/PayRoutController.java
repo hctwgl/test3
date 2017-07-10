@@ -182,7 +182,7 @@ public class PayRoutController {
 					return "SUCCESS";
 				}
 			}
-			return "ERROR";
+			return "SUCCESS";
 		} catch (Exception e) {
 			logger.error("delegatePay", e);
 			return "ERROR";
@@ -302,7 +302,7 @@ public class PayRoutController {
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
 				}
-				return "SUCCESS";
+				
 			} else {// 代收失败
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo);
@@ -310,7 +310,7 @@ public class PayRoutController {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
 				}
 			}
-			return "ERROR";
+			return "SUCCESS";
 		} catch (Exception e) {
 			logger.error("collect", e);
 			return "ERROR";

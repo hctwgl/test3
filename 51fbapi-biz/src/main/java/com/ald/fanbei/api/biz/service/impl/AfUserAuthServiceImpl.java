@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;

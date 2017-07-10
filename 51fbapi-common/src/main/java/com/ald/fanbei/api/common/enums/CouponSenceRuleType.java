@@ -15,7 +15,9 @@ public enum CouponSenceRuleType {
     SIGNIN("SIGNIN", "签到"),
     AUTHNAME("AUTHNAME", "实名认证"),
     PICK("PICK", "领取"),
-    INVITE("INVITE", "邀请");
+    INVITE("INVITE", "邀请"),
+    CREDITAUTH("CREDITAUTH", "信用认证");
+    
 
     private String code;
     private String name;

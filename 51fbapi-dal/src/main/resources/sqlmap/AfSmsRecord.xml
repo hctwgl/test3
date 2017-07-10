@@ -33,4 +33,11 @@
 			</if>
 		 WHERE id=#{rid}
 	</update>
+	
+	<select id="getLatestByMobileCode" resultType="AfSmsRecordDo">
+		SELECT
+			<include refid="queryFields" />
+		FROM af_code_record WHERE is_delete = 0 AND send_account=#{mobile} AND verify_code=#{verifyCode} ORDER BY ID DESC LIMIT 1;
+	</select>
+	
 </mapper>

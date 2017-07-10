@@ -97,4 +97,17 @@ public interface AfUserCouponDao {
 	 * @return
 	 */
 	int getUserAcgencyCountByAmount(@Param("userId")Long userId,@Param("amount")BigDecimal amount,@Param("goodsId")Long goodsId);
+
+	
+	/**
+	 * 获得用户通过制定活动活动的优惠劵
+	 * @param userId
+	 * @param sourceType
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserCouponByUserIdAndSourceType(@Param("userId")Long userId, @Param("sourceType")String sourceType);
+
+
+	AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo);
+
 }

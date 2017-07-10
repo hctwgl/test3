@@ -513,12 +513,15 @@ public abstract class BaseController {
 	 * @param appInfo
 	 * @param exeT
 	 */
-	protected void doLog(HttpServletRequest request,String respData,String appInfo,long exeT){
+	protected void doLog(HttpServletRequest request,String respData,String appInfo,long exeT,String userName){
 		try{
 			JSONObject param = new JSONObject();
-			String userName = "no user";
+//			String userName = "no user";
+			if(StringUtil.isBlank(userName)){
+				userName = "no user";
+			}
 			JSONObject temp = null;
-			if(!StringUtil.isNotBlank(appInfo)){
+			if(StringUtil.isNotBlank(appInfo)){
 				temp = JSONObject.parseObject(appInfo);
 				userName = JSONObject.parseObject(appInfo).getString("userName");
 			}

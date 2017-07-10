@@ -47,11 +47,11 @@ public class AuthContactsV1Api implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String contacts = (String) requestDataVo.getParams().get("contacts");
-		if (StringUtil.isBlank(contacts)) {
-			throw new FanbeiException("authContactsApi param error", FanbeiExceptionCode.PARAM_ERROR);
-		}
+//		if (StringUtil.isBlank(contacts)) {
+//			throw new FanbeiException("authContactsApi param error", FanbeiExceptionCode.PARAM_ERROR);
+//		}
 		
-		bizCacheUtil.saveObjectForever(Constants.CACHEKEY_USER_CONTACTS + context.getUserId(), contacts);
+		bizCacheUtil.saveObject(Constants.CACHEKEY_USER_CONTACTS + context.getUserId(), contacts, Constants.SECOND_OF_ONE_DAY);
 		
 //		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
 		

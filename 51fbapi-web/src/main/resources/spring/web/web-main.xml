@@ -105,6 +105,8 @@
 				<value>/good/getBrandShopList</value>
 				<value>/good/getGoodsDetailInfo</value>
 				<value>/good/getGoodsTkRate</value>
+				<value>/goods/getGoodsInfoByNumId</value>
+
 
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
@@ -174,6 +176,7 @@
 				<entry key="/good/getRecommendGoods" value-ref="getRecommendGoodsApi" />
 				<entry key="/good/getGoodsDetailInfo" value-ref="getGoodsDetailInfoApi" />
 				<entry key="/good/getPayTypeList" value-ref="getPayTypeListApi" />
+				<entry key="/goods/getGoodsInfoByNumId" value-ref="getGoodsInfoByNumIdApi" />
 
 
 				<!-- 订单Order -->
@@ -220,7 +223,7 @@
 				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
 				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
-				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
+
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -269,7 +272,7 @@
 				<entry key="/borrowCash/applyBorrowCashV1" value-ref="applyBorrowCashV1Api" />
 				<entry key="/borrowCash/getLoanSupermarketTabList" value-ref="getLoanSupermarketTabListApi" />
 				<entry key="/borrowCash/getLoanSupermarketListByTab" value-ref="getLoanSupermarketListByTabApi" />
-
+				<entry key="/borrowCash/tearPacket" value-ref="tearPacketApi" />
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />

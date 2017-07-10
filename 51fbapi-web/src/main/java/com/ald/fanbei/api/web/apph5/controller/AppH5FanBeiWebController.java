@@ -319,7 +319,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			if (!"0".equals(resultJson.getString("code"))) {
 				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
 			} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
-				return H5CommonResponse.getNewInstance(false, "优惠券已经发放完,请期待下次活动", null, null).toString();
+				return H5CommonResponse.getNewInstance(false, "仅限领取一次，请勿重复领取！", null, null).toString();
 			}
 			return H5CommonResponse.getNewInstance(true, "领券成功", "", null).toString();
 

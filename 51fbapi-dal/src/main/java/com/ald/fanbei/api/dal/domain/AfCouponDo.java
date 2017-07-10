@@ -30,7 +30,7 @@ public class AfCouponDo extends AbstractSerial {
 	private Integer limitCount;
 	private String status;	
 	private String type; //优惠券类型【MOBILE：话费充值， REPAYMENT：还款, FULLVOUCHER:满减卷,CASH:现金奖励】
-	private String expiryType;
+	private String expiryType;//有效期类型【D:days固定天数，R:range固定时间范围】
 	private Integer quotaAlready;
 	private Long quota;
 
