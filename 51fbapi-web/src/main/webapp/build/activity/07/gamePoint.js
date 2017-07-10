@@ -23,7 +23,7 @@ let vm = new Vue({
                     //    console.log(self.content)
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content.activityList[0].activityGoodsList);
-
+                    console.log(self.content.activityList[1]);
 
                     $(function () {
                         //获取tab栏菜单，绑定鼠标点击事件
@@ -46,9 +46,7 @@ let vm = new Vue({
         },
         //点击tab栏切换
         isshow: function () {
-            // $('.gamePoint').addClass('line').siblings('.hotVip').removeClass('line');
-            // console.log(44444);
-            //  $('.hotVip').addClass('line').siblings('.gamePoint').removeClass('line');
+           
             this.isActive = !this.isActive;
 
         },
