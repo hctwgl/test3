@@ -144,7 +144,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     REFUND_AMOUNT_ERROR("REFUND_AMOUNT_ERROR",1572,"refund amount error","退款金额有误"),
     REFUND_HAVE_SUCCESS("REFUND_HAVE_SUCCESS",1573,"refund have success","退款已完成"),
     CREDIT_AMOUNT_ORDER_PAY_LIMIT("CREDIT_AMOUNT_ORDER_PAY_LIMIT",1574,"credit amount order pay limit","该商品暂不支持信用分期,请切换其他支付方式"),
-    AFTERSALE_PROCESSING("REFUND_PROCESSING",1575,"aftersale processing","售后正在处理中,提交失败"),
+    AFTERSALE_PROCESSING("REFUND_PROCESSING",1575,"aftersale processing","售后处理中,提交失败"),
     ORDER_HAVE_CLOSED("ORDER_HAVE_CLOSED",1576,"order have closed","订单已完结"),
     AFTERSALE_APPLY_NOT_EXIST("AFTERSALE_APPLY_NOT_EXIST",1577,"aftersale apply not exist","售后申请记录不存在"),
     

@@ -52,14 +52,18 @@ public class CancelAfterSaleApplyApi implements ApiHandle{
 		if(afAftersaleApplyDo==null){
 			throw new FanbeiException(FanbeiExceptionCode.AFTERSALE_APPLY_NOT_EXIST);
 		}
-		//更新售后申请状态
-		afAftersaleApplyDo.setStatus(AfAftersaleApplyStatus.CLOSE.getCode());
-		afAftersaleApplyService.updateById(afAftersaleApplyDo);
-		
-		//更新订单状态，返回至售后申请前状态
-		if(StringUtil.isNotBlank(orderInfo.getPreStatus())){
-			orderInfo.setStatus(orderInfo.getPreStatus());
-			afOrderService.updateOrder(orderInfo);
+		if(AfAftersaleApplyStatus.NEW.getCode().equals(afAftersaleApplyDo.getStatus()) || AfAftersaleApplyStatus.NOTPASS.getCode().equals(afAftersaleApplyDo.getStatus())){
+			//更新售后申请状态
+			afAftersaleApplyDo.setStatus(AfAftersaleApplyStatus.CLOSE.getCode());
+			afAftersaleApplyService.updateById(afAftersaleApplyDo);
+			
+			//更新订单状态，返回至售后申请前状态
+			if(StringUtil.isNotBlank(orderInfo.getPreStatus())){
+				orderInfo.setStatus(orderInfo.getPreStatus());
+				afOrderService.updateOrder(orderInfo);
+			}
+		}else{
+			throw new FanbeiException(FanbeiExceptionCode.AFTERSALE_PROCESSING);
 		}
 		
 		return resp;

@@ -147,10 +147,6 @@ public class RefundOrderApplyApi implements ApiHandle{
 			afAftersaleApplyDo = new AfAftersaleApplyDo(currDate, userId, orderId, applyNo, AfAftersaleApplyStatus.NEW.getCode(), userReason, picVouchers);
 			afAftersaleApplyService.saveRecord(afAftersaleApplyDo);
 			
-			//订单状态改为退款中
-			orderInfo.setPreStatus(orderInfo.getStatus());
-			orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
-			afOrderService.updateOrder(orderInfo);
 			//自营商品减少商品销量
 			if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
 				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
@@ -168,6 +164,11 @@ public class RefundOrderApplyApi implements ApiHandle{
 				afAftersaleApplyService.updateById(afAftersaleApplyDo);
 			}
 		}
+		
+		//订单状态改为退款中
+		orderInfo.setPreStatus(orderInfo.getStatus());
+		orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
+		afOrderService.updateOrder(orderInfo);
 	}
 	
 }
