@@ -66,6 +66,8 @@ public enum AfResourceType {
 
 	SelfSupportGoods("SELFSUPPORT_GOODS", "自营商品相关配置"),
 	
+	NewUserCouponGift("NEW_USER_COUPON_GIFT", "新手礼包优惠券"),
+	
 	VIRTUAL_GOODS_SERVICE_PROVIDER("VIRTUAL_GOODS_SERVICE_PROVIDER", "虚拟商品供应商");
 
 	
