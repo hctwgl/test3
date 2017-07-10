@@ -14,7 +14,7 @@
         <p>抢神券</p>
         <p><span>10:00</span>场</p>
         <p>距离下场</p>
-        <p class="countTime"><span>00</span>:<span>12</span>:<span>25</span></p>
+        <p class="countTime"><span></span>:<span></span>:<span></span></p>
         <p @click="ruleClick()">活动规则>></p> 
     </div>
     <div class="coupon">

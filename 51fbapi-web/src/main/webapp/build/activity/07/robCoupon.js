@@ -2,10 +2,12 @@
  * Created on 2017/07/10.
  */
 var activityId = getUrl("activityId");
+var couponId = getUrl("couponId");
 let vm=new Vue({
     el:'#robCoupon',
     data:{
-        content:{}
+        content:{},
+        couponContent:{}
     },
     created:function () {
         this.logData();
@@ -26,7 +28,7 @@ let vm=new Vue({
                       //var validStartTime = self.content.validStartTime;
                       //var validEndTime = self.content.validEndTime;
                       console.log(currentTime)
-                      var validStartTime = 1499731200000;
+                      var validStartTime = 1499738400000;
                       var validEndTime = 1500009315000;
                       var diff=0;
                       function showTime(time){
@@ -43,18 +45,42 @@ let vm=new Vue({
                               $('.countTime').find('span').eq(0).html(hour);
                               $('.countTime').find('span').eq(1).html(minute);
                               $('.countTime').find('span').eq(2).html(second);
-                              console.log(hour+minute+second)
                       }
-                      if(diff<0){
-                        showTime(validStartTime);
-                      }else{
-                        showTime(validStartTime);
-                      }
+                      function interval(start,end){
+                            if(currentTime<start){
+                                showTime(start);
+                            }else{
+                                showTime(end);
+                            }
+                                let time1=setInterval(function(){
+                                    if(currentTime<start){
+                                        start-=1000;
+                                        showTime(start);
+                                    }else{
+                                        end-=1000;
+                                        showTime(end);                                        
+                                    }
+                                }, 1000);
+
+                        }//定时器
+                       interval(validStartTime,validEndTime);
                     }, 
                     error:function(){
                        requestMsg("请求失败");
                     }
                 });
+            $.ajax({
+              type: 'post',
+              url: '/fanbei-web/superCouponList',
+              success:function(data) {                      
+                self.couponContent = eval('(' + data + ')');                      
+                self.couponContent = self.couponContent.data;  
+                console.log(self.couponContent)                
+              }, 
+              error:function(){
+                 requestMsg("请求失败");
+              }
+            })
         },
         buyNow(id){
           let self=this;            
