@@ -1311,7 +1311,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);
 		
-		logThird(reqResult, "quota", reqBo);
+		logThird(reqResult, "virtualProductQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.VIRTUAL_PRODUCT_QUOTA_ERROR);
 		}
@@ -1342,7 +1342,7 @@ public class RiskUtil extends AbstractThird {
 		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
 //		String reqResult = HttpUtil.post("http://192.168.110.22:80" + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
 		
-		logThird(reqResult, "quota", reqBo);
+		logThird(reqResult, "queryOverdueOrder", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.QUERY_OVERDUE_ORDER_ERROR);
 		}

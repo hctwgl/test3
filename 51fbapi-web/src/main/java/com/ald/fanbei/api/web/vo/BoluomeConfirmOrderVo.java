@@ -45,6 +45,9 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private String isVirtualGoods;
 	private String ovderduedCode;
 	private Long billId;
+	private BigDecimal jfbAmount;//集分宝
+	private BigDecimal userRebateAmount;//用户返利余额
+	private BigDecimal repaymentAmount;//应还金额
 	
 	public char getIsValid() {
 		return isValid;
@@ -348,6 +351,48 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	 */
 	public void setBillId(Long billId) {
 		this.billId = billId;
+	}
+
+	/**
+	 * @return the jfbAmount
+	 */
+	public BigDecimal getJfbAmount() {
+		return jfbAmount;
+	}
+
+	/**
+	 * @param jfbAmount the jfbAmount to set
+	 */
+	public void setJfbAmount(BigDecimal jfbAmount) {
+		this.jfbAmount = jfbAmount;
+	}
+
+	/**
+	 * @return the userRebateAmount
+	 */
+	public BigDecimal getUserRebateAmount() {
+		return userRebateAmount;
+	}
+
+	/**
+	 * @param userRebateAmount the userRebateAmount to set
+	 */
+	public void setUserRebateAmount(BigDecimal userRebateAmount) {
+		this.userRebateAmount = userRebateAmount;
+	}
+
+	/**
+	 * @return the repaymentAmount
+	 */
+	public BigDecimal getRepaymentAmount() {
+		return repaymentAmount;
+	}
+
+	/**
+	 * @param repaymentAmount the repaymentAmount to set
+	 */
+	public void setRepaymentAmount(BigDecimal repaymentAmount) {
+		this.repaymentAmount = repaymentAmount;
 	}
 	
 }

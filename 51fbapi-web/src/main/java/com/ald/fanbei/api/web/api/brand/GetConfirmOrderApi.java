@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -75,6 +77,8 @@ public class GetConfirmOrderApi implements ApiHandle {
 	AfBorrowService afBorrowService;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -103,7 +107,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 		if (context.getAppVersion() <= 368 && isVirtualGoods(orderInfo)) {
 			vo.setUseableAmount(BigDecimal.ZERO);
 		} else {
-			dealWithVirtualCodeGt368(vo, orderInfo);
+			dealWithVirtualCodeGt368(vo, orderInfo, userDto);
 		}
 		resp.setResponseData(vo);
 		return resp;
@@ -114,7 +118,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 	 * @param vo
 	 * @param orderInfo
 	 */
-	private void dealWithVirtualCodeGt368(BoluomeConfirmOrderVo vo, AfOrderDo orderInfo) {
+	private void dealWithVirtualCodeGt368(BoluomeConfirmOrderVo vo, AfOrderDo orderInfo, AfUserAccountDto userDto) {
 		Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
 		//风控逾期订单处理
 		RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
@@ -130,7 +134,11 @@ public class GetConfirmOrderApi implements ApiHandle {
 				vo.setOvderduedCode(erorrCode.getCode());
 				break;
 			case OVERDUE_BORROW_CASH:
+				AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
 				vo.setOvderduedCode(erorrCode.getCode());
+				vo.setJfbAmount(userDto.getJfbAmount());
+				vo.setUserRebateAmount(userDto.getRebateAmount());
+				vo.setRepaymentAmount(cashInfo.getAmount());
 				break;
 			default:
 				break;
