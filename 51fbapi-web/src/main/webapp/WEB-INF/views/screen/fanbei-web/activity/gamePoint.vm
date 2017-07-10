@@ -20,8 +20,8 @@
             </ul>
             <!--<div class="hotIntroWord">热门推荐</div> !-->
             <ul class="detail left" v-bind:class='{show:!isActive}'>
-                <li class="goods"  v-for="item in content.activityList[0].activityGoodsList" @click="buyNow">
-                    <a href="">
+                <li class="goods"  v-for="item in content.activityList[0].activityGoodsList" @click="buyNow(item.goodsId)">
+         
                         <div class="goods-img">
                             <img :src="item.goodsIcon" alt="">
                         </div>
@@ -30,7 +30,7 @@
                             <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
                             <p v-if="item.nperMap"><span class="monthpay">月供</span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>   
                         </div>
-                    </a>   
+           
                 </li>
             </ul>
             <ul class="detail right" v-bind:class='{show:isActive}'>
