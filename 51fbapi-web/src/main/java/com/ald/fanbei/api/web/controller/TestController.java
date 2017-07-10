@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -496,6 +498,24 @@ public class TestController {
 	public String testRiskQueryOverdueOrder(HttpServletRequest request, HttpServletResponse response) {
 		RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder("68885");
 		System.out.println(resp);
+		return "success";
+	}
+	
+	@RequestMapping(value = { "/test11" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String bo(HttpServletRequest request, HttpServletResponse response) {
+		
+		String identity = System.currentTimeMillis() + StringUtil.EMPTY;
+		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
+		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
+		RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
+		bo.setBorrowNo("jq2017071019291600495");
+		bo.setOverdueDays(1);
+		bo.setOverdueTimes(null);
+		boList.add(bo);
+		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
+		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		logger.info("dealWithSynchronizeOverduedOrder completed");
 		return "success";
 	}
 }

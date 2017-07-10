@@ -217,7 +217,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	 */
 	private void dealWithSynchronizeOverduedOrder(AfBorrowCashDo borrowCashInfo) {
 		String identity = System.currentTimeMillis() + StringUtils.EMPTY;
-		String orderNo = riskUtil.getOrderNo("overDued", identity.substring(identity.length() - 4, identity.length()));
+		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
 		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
 		boList.add(parseOverduedBorrowBo(borrowCashInfo.getBorrowNo(), 0,null));
 		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
