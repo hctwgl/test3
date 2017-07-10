@@ -356,9 +356,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
 		String[] billIdArray = billIds.split(",");
 		for (String billId : billIdArray) {
-			AfBorrowBillDo billDo = afBorrowBillService.getOverduedAndNotRepayBill(Long.parseLong(billId));
+			AfBorrowBillDo borrowBillInfo = afBorrowBillService.getBorrowBillById(Long.parseLong(billId));
+			AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowBillInfo.getBorrowNo());
+			//查询需要批量更新的账单
+			AfBorrowBillDo billDo = afBorrowBillService.getOverduedAndNotRepayBill(borrowBillInfo.getBorrowId(), Long.parseLong(billId));
 			try {
-				boList.add(parseOverduedBorrowBo(billDo.getBorrowNo(), billDo.getOverdueDays(), billDo.getNper()));
+				//如果为空 则代表没有其余的逾期订单，否则还有其余逾期订单
+				if (billDo == null) {
+					boList.add(parseOverduedBorrowBo(borrowBillInfo.getBorrowNo(), 0, borrowInfo.getNper()));
+				} else {
+					boList.add(parseOverduedBorrowBo(billDo.getBorrowNo(), billDo.getOverdueDays(), billDo.getNper()));
+				}
 			} catch (Exception e) {
 				logger.error("同步逾期订单失败", e);
 			}

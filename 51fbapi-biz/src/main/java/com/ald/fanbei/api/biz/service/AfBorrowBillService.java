@@ -183,8 +183,9 @@ public interface AfBorrowBillService {
 	/**
 	 * 找到逾期并且未还账单Id
 	 * @param borrowId
+	 * @param billId
 	 * @return
 	 */
-	AfBorrowBillDo getOverduedAndNotRepayBill(Long borrowId);
+	AfBorrowBillDo getOverduedAndNotRepayBill(Long borrowId, Long billId);
 	
 }

@@ -269,7 +269,8 @@
 			  AND b.overdue_num > 0 
 			  AND bb.overdue_status = 'Y' 
 			  AND bb.status  <![CDATA[<>]]> 'Y'
-			  AND bb.borrow_id = #{borrowId} 
+			  AND b.id = #{borrowId} 
+			  AND bb.id <![CDATA[<>]]> #{billId}
 			GROUP BY b.borrow_no 
 	</select>
 	
