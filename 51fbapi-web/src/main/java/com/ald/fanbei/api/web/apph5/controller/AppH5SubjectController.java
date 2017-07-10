@@ -198,7 +198,7 @@ public class AppH5SubjectController  extends BaseController{
     }
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "partActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "partActivityInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String partActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
@@ -282,7 +282,8 @@ public class AppH5SubjectController  extends BaseController{
 					activityGoodsInfo.put("activityName", activityName);
 					String tags = goodsDo.getTags();
 					// 如果是分期免息商品，则计算分期
-					if(tags != null && tags.contains("INTEREST_FREE")){
+					AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsDo.getRid());
+			        if(null != afSchemeGoodsDo){
 						Long goodsId = goodsDo.getRid();
 						AfSchemeGoodsDo  schemeGoodsDo = null;
 						try {
