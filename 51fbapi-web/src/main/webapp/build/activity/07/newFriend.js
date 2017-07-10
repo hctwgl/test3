@@ -39,7 +39,8 @@ let vue=new Vue({
             Vue.http.options.emulateJSON = true;
             self.$http.post("/fanbei-web/"+url,postData).then(function(res){
                 res=eval('(' + res.data + ')');
-                if(res.success=='false'){
+                console.log(res)
+                if(res.success==false){
                     window.location.href=res.url
                 }else{
                     requestMsg(res.msg)
