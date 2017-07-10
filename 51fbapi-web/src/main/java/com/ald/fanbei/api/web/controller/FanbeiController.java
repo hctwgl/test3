@@ -73,7 +73,7 @@ public class FanbeiController extends BaseController {
     }
 
     @RequestMapping(value ={
-    	"/order/confirmReceipt","/order/buySelfGoods","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo"
+    	"/order/confirmReceipt","/order/buySelfGoods","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo","/order/insufficientBalance"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String orderRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -134,7 +134,7 @@ public class FanbeiController extends BaseController {
 			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi",
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
-			"/auth/authSupplyCertify"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/authSupplyCertify","/auth/authFund","/auth/authJinpo","/auth/authCreditCard"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

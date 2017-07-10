@@ -187,6 +187,7 @@
 				<entry key="/order/refundOrderApply" value-ref="refundOrderApplyApi" />
 				<entry key="/order/deleteOrderInfo" value-ref="deleteOrderInfoApi" />
 				<entry key="/order/buySelfGoods" value-ref="buySelfGoodsApi" />
+				<entry key="/order/insufficientBalance" value-ref="insufficientBalanceApi" />
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
@@ -223,7 +224,10 @@
 				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
 				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
-
+				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
+				<entry key="/auth/authFund" value-ref="authFundApi" />
+				<entry key="/auth/authJinpo" value-ref="authJinpoApi" />
+				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
