@@ -25,19 +25,6 @@ let vm = new Vue({
                     console.log(self.content.activityList[0].activityGoodsList);
                     console.log(self.content.activityList[1]);
 
-                    $(function () {
-                        //获取tab栏菜单，绑定鼠标点击事件
-                        $(".gamePointNav > li").click(function () {
-                            console.log(11111111);
-                            $(this).addClass("line").siblings("li").removeClass("line");
-                            //获取当前元素的索引号
-                            var index = $(this).index();
-                            $(".left>li").eq(index).addClass("show").siblings().removeClass("show");
-
-                        })
-                    })
-
-
                 },
                 error: function () {
                     requestMsg("请求失败");
