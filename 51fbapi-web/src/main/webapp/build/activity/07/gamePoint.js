@@ -43,8 +43,8 @@ let vm = new Vue({
             if (gamePointShare == "gamePointShare") {
                 window.location.href = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
             } else {
-                 alert( self.content.activityList + '&params={"modelId":"' + id + '"}');
-                window.location.href = self.content.activityList.activityGoodsList + '&params={"modelId":"' + id + '"}'
+                //  alert( self.content.activityList + '&params={"modelId":"' + id + '"}');
+                window.location.href = '/fanbei-web/opennative?params={"modelId":"' + id + '"}'
                
             }
         },
