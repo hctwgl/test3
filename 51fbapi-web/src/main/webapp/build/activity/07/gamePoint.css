@@ -51,7 +51,7 @@ a {
 #gamePoint .goods-img {
   float: left;
   width: 3rem;
-  height: 2.6rem;
+  height: 2.5rem;
   border: 0.01rem solid white;
   margin-right: 0.3rem;
 }
@@ -80,9 +80,6 @@ a {
 #gamePoint .goods-words p:last-child {
   margin-top: 0.2rem;
 }
-#gamePoint .goods-words .backmoney {
-  font-weight: 700;
-}
 #gamePoint .goods-words .backmoney .dollor {
   color: red;
   font-weight: normal;
@@ -100,12 +97,17 @@ a {
   background-color: #1B8FEC;
   padding: 0 0.3rem;
   color: white;
+  width: 1.2rem;
+  height: 0.5rem;
+  line-height: 0.5rem;
+  vertical-align: middle;
 }
 #gamePoint .goods-words .money {
   font-size: 0.3rem;
   border: 0.02rem dashed #1B8FEC;
   padding: 0 0.1rem;
   color: #1B8FEC;
+  height: 0.5rem;
 }
 #gamePoint .goods-words .free {
   font-size: 0.2rem;
