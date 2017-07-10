@@ -41,7 +41,7 @@ let vue=new Vue({
                 res=eval('(' + res.data + ')');
                 console.log(res)
                 if(res.success==false){
-                    if(res.url.length>0){
+                    if(res.url&&res.url!==""){
                         window.location.href=res.url
                     }else{
                         requestMsg(res.msg)
