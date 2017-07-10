@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
@@ -45,9 +46,13 @@ public class AppH5GiftController extends BaseController {
     @RequestMapping(value = "newUserGift", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String newUserGift(HttpServletRequest request, ModelMap model) throws IOException {
-    	
     	try{
+    		FanbeiWebContext context = doWebCheck(request, false);
+    		String userName = context.getUserName();
     		JSONObject jsonObj = new JSONObject();
+    		if(userName != null) {
+    			jsonObj.put("userName", userName);
+    		}
     		// 获取优惠券配置信息
     		List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes(AfResourceType.NewUserCouponGift.getCode());
     		if(afResourceList == null || afResourceList.isEmpty()) {
