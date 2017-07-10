@@ -98,8 +98,8 @@ a {
   padding: 0 0.3rem;
   color: white;
   width: 1.2rem;
-  height: 0.55rem;
-  line-height: 0.55rem;
+  height: 0.5rem;
+  line-height: 0.5rem;
   vertical-align: middle;
 }
 #gamePoint .goods-words .money {
@@ -107,7 +107,7 @@ a {
   border: 0.04rem dashed #1B8FEC;
   padding: 0 0.1rem;
   color: #1B8FEC;
-  height: 0.55rem;
+  height: 0.5rem;
 }
 #gamePoint .goods-words .free {
   font-size: 0.2rem;
