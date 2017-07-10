@@ -42,7 +42,7 @@ public class AppH5GiftController extends BaseController {
 	@Resource
 	AfCouponService afCouponService;
     
-    @RequestMapping(value = "newUserGift", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "newUserGift", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String newUserGift(HttpServletRequest request, ModelMap model) throws IOException {
     	
@@ -80,8 +80,8 @@ public class AppH5GiftController extends BaseController {
         			String name = resourceDo.getName();
         			couponInfoMap.put("name", name);
         			couponInfoMap.put("type", "2");
-        			couponInfoMap.put("desc", resourceDo.getValue1());
-        			couponInfoMap.put("remark", resourceDo.getValue2());
+        			couponInfoMap.put("desc", afResourceDo.getValue1());
+        			couponInfoMap.put("remark", afResourceDo.getValue2());
     			}
     			
     			couponInfoList.add(couponInfoMap);
