@@ -58,8 +58,8 @@
         position: relative;
     }
     .productList li .productRight .fanPrice{font-size:.26rem;color:#f94014;}
-    .monthPrice{font-size:.24rem;color:#f94014;
-        padding-top:.1rem;}
+    .monthPrice{font-size:.28rem;color:#f94014;
+        padding-top:.2rem;}
 </style>
 <body>
 <div id="vueCon">
