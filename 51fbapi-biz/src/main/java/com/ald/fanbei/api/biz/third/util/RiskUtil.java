@@ -462,8 +462,8 @@ public class RiskUtil extends AbstractThird {
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-//		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
-		String url = "http://192.168.110.22:80" + "/modules/api/risk/weakRiskVerify.htm";
+		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
+//		String url = "http://192.168.110.22:80" + "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -1339,8 +1339,8 @@ public class RiskUtil extends AbstractThird {
 		RiskQueryOverdueOrderReqBo reqBo = new RiskQueryOverdueOrderReqBo();
 		reqBo.setConsumerNo(consumerNo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-//		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
-		String reqResult = HttpUtil.post("http://192.168.110.22:80" + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
+//		String reqResult = HttpUtil.post("http://192.168.110.22:80" + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
 		
 		logThird(reqResult, "quota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
