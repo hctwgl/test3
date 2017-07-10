@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017070802")
+    #set($version="2017071002")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -119,7 +119,11 @@
 				copyright$!{style}
 			#end
 		">
-        版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133   881939188<br>
+        版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
+        #if( $!{style}==10 )
+            881939188
+        #end
+        <br>
         #if( $!{style}==2 || $!{style}==7 )
             浙ICP备16001312号-3
         #end
