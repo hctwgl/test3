@@ -62,6 +62,7 @@ public class CancelAfterSaleApplyApi implements ApiHandle{
 				orderInfo.setStatus(orderInfo.getPreStatus());
 				afOrderService.updateOrder(orderInfo);
 			}
+			logger.info("cancelAfterSaleApply success. orderId="+orderId+",userId="+userId);
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.AFTERSALE_PROCESSING);
 		}

@@ -115,7 +115,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 			afOrderRefundDo.setContactsMobile(contactsMobile);
 			afOrderRefundService.addOrderRefund(afOrderRefundDo);
 			
-			logger.info("自营订单用户点击申请售后,系统对订单不做真实退款操作.orderId="+orderId+",userId="+userId);
+			logger.info("用户点击申请售后,系统对订单不做真实退款操作,联系电话方式orderId="+orderId+",userId="+userId);
 			//订单状态改为退款中
 //				orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
 //				afOrderService.updateOrder(orderInfo);
@@ -166,9 +166,11 @@ public class RefundOrderApplyApi implements ApiHandle{
 		}
 		
 		//订单状态改为退款中
-		orderInfo.setPreStatus(orderInfo.getStatus());
+		String preStatus = orderInfo.getStatus();
+		orderInfo.setPreStatus(preStatus);
 		orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
 		afOrderService.updateOrder(orderInfo);
+		logger.info("refundOrderApply success,userReason and picVouchers. orderId="+orderId+",userId="+userId+",preStatus="+preStatus);
 	}
 	
 }
