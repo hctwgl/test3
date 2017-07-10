@@ -33,6 +33,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.RiskErrorCode;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -129,24 +130,27 @@ public class GetConfirmOrderApi implements ApiHandle {
 			case OVERDUE_BORROW:
 				String borrowNo = resp.getBorrowNo();
 				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
+				Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
 				vo.setBillId(billId);
-				vo.setOvderduedCode(erorrCode.getCode());
+				vo.setOverduedCode(erorrCode.getCode());
 				break;
 			case OVERDUE_BORROW_CASH:
 				AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
-				vo.setOvderduedCode(erorrCode.getCode());
+				vo.setOverduedCode(erorrCode.getCode());
 				vo.setJfbAmount(userDto.getJfbAmount());
 				vo.setUserRebateAmount(userDto.getRebateAmount());
-				vo.setRepaymentAmount(cashInfo.getAmount());
+				BigDecimal allAmount = BigDecimalUtil.add(cashInfo.getAmount(), cashInfo.getSumOverdue(),
+						cashInfo.getOverdueAmount(), cashInfo.getRateAmount(), cashInfo.getSumRate());
+				BigDecimal repaymentAmount = BigDecimalUtil.subtract(allAmount, cashInfo.getRepayAmount());
+				vo.setRepaymentAmount(repaymentAmount);
+				vo.setBorrowId(cashInfo.getRid());
 				break;
 			default:
 				break;
 			}
 		} else {
-			vo.setOvderduedCode(SUCCESS_CODE);
+			vo.setOverduedCode(SUCCESS_CODE);
 		}
-		
 		
 		if (afOrderService.isVirtualGoods(virtualMap)) {
 			String virtualCode = afOrderService.getVirtualCode(virtualMap);

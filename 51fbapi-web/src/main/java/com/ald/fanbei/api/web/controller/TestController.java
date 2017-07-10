@@ -509,9 +509,9 @@ public class TestController {
 		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
 		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
 		RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
-		bo.setBorrowNo("jq2017071019291600495");
-		bo.setOverdueDays(1);
-		bo.setOverdueTimes(null);
+		bo.setBorrowNo("jk2017071020281800843");
+		bo.setOverdueDays(0);
+		bo.setOverdueTimes(1);
 		boList.add(bo);
 		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
 		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);

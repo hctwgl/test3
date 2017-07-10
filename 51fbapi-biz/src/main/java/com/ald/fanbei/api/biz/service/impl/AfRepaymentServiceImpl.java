@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -260,6 +262,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
 					
 					dealWithRaiseAmount(repayment.getUserId(), repayment.getBillIds());
+					
+					//还款成功同步逾期订单
+					dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());
+					
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -328,5 +334,44 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			logger.error("还款时给风控传输数据出错", e);
 		}
 	}
+	
+	/**
+	 * 同步风控订单
+	 * @param userId
+	 * @param billIds
+	 */
+	private void dealWithSynchronizeOverdueOrder(Long userId, String billIds) {
+		logger.info("dealWithSynchronizeOverdueOrder userId = {}, billIds ={} ",userId,billIds);
+		if (StringUtils.isBlank(billIds)) {
+			return;
+		} 
+		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+		String cardNo = StringUtils.EMPTY;
+		if (card != null) {
+			cardNo = card.getCardNumber();
+		} else {
+			cardNo = System.currentTimeMillis() + StringUtils.EMPTY;
+		}
+		String orderNo = riskUtil.getOrderNo("over", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
+		String[] billIdArray = billIds.split(",");
+		for (String billId : billIdArray) {
+			AfBorrowBillDo billDo = afBorrowBillService.getOverduedAndNotRepayBill(Long.parseLong(billId));
+			try {
+				boList.add(parseOverduedBorrowBo(billDo.getBorrowNo(), billDo.getOverdueDays(), billDo.getNper()));
+			} catch (Exception e) {
+				logger.error("同步逾期订单失败", e);
+			}
+		}
+		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+	}
+	
+	 private RiskOverdueBorrowBo parseOverduedBorrowBo(String borrowNo, Integer overdueDay, Integer overduetimes) {
+	    	RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
+	    	bo.setBorrowNo(borrowNo);
+	    	bo.setOverdueDays(overdueDay);
+	    	bo.setOverdueTimes(overduetimes);
+	    	return bo;
+	    }
 	
 }

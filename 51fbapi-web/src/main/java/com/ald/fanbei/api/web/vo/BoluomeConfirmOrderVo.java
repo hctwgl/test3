@@ -43,11 +43,12 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	//3.6.9增加virtualGoodsUsableAmount, isVirtualGoods字段
 	private BigDecimal virtualGoodsUsableAmount;
 	private String isVirtualGoods;
-	private String ovderduedCode;
+	private String overduedCode;
 	private Long billId;
 	private BigDecimal jfbAmount;//集分宝
 	private BigDecimal userRebateAmount;//用户返利余额
 	private BigDecimal repaymentAmount;//应还金额
+	private Long borrowId;//借钱id
 	
 	public char getIsValid() {
 		return isValid;
@@ -325,19 +326,6 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 		this.isVirtualGoods = isVirtualGoods;
 	}
 
-	/**
-	 * @return the ovderduedCode
-	 */
-	public String getOvderduedCode() {
-		return ovderduedCode;
-	}
-
-	/**
-	 * @param ovderduedCode the ovderduedCode to set
-	 */
-	public void setOvderduedCode(String ovderduedCode) {
-		this.ovderduedCode = ovderduedCode;
-	}
 
 	/**
 	 * @return the billId
@@ -393,6 +381,34 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	 */
 	public void setRepaymentAmount(BigDecimal repaymentAmount) {
 		this.repaymentAmount = repaymentAmount;
+	}
+
+	/**
+	 * @return the borrowId
+	 */
+	public Long getBorrowId() {
+		return borrowId;
+	}
+
+	/**
+	 * @param borrowId the borrowId to set
+	 */
+	public void setBorrowId(Long borrowId) {
+		this.borrowId = borrowId;
+	}
+
+	/**
+	 * @return the overduedCode
+	 */
+	public String getOverduedCode() {
+		return overduedCode;
+	}
+
+	/**
+	 * @param overduedCode the overduedCode to set
+	 */
+	public void setOverduedCode(String overduedCode) {
+		this.overduedCode = overduedCode;
 	}
 	
 }

@@ -252,8 +252,25 @@
 		select count(1) from `af_borrow_bill` where `borrow_id` = #{borrowId} and `overdue_status` ='Y'; 
 	</select>
 	
-	<select id="getOverduedAndNotRepayBill" resultType="java.lang.Long">
+	<select id="getOverduedAndNotRepayBillId" resultType="java.lang.Long">
 		select max(id) FROM af_borrow_bill WHERE status ='N' and overdue_status='Y' and borrow_id= #{borrowId}; 
+	</select>
+	
+	<select id="getOverduedAndNotRepayBill" resultType="AfBorrowBillDo">
+		SELECT 
+			b.borrow_no, max(bb.overdue_days) overdue_days, b.overdue_num bill_nper
+			FROM
+			    af_borrow b
+			LEFT JOIN af_borrow_bill bb 
+			    ON b.id = bb.borrow_id 
+			WHERE
+			      b.is_delete = 0
+			  AND bb.is_delete = 0
+			  AND b.overdue_num > 0 
+			  AND bb.overdue_status = 'Y' 
+			  AND bb.status  <![CDATA[<>]]> 'Y'
+			  AND bb.borrow_id = #{borrowId} 
+			GROUP BY b.borrow_no 
 	</select>
 	
 	

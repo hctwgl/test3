@@ -159,7 +159,12 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	}
 
 	@Override
-	public Long getOverduedAndNotRepayBill(Long borrowId) {
+	public Long getOverduedAndNotRepayBillId(Long borrowId) {
+		return afBorrowBillDao.getOverduedAndNotRepayBillId(borrowId);
+	}
+
+	@Override
+	public AfBorrowBillDo getOverduedAndNotRepayBill(Long borrowId) {
 		return afBorrowBillDao.getOverduedAndNotRepayBill(borrowId);
 	}	
 	
