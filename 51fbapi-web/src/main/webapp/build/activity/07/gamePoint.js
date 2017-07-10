@@ -20,10 +20,11 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     //   self.content = ; 
-                    //    console.log(self.content)
+                    //    console.log(self.content)a    
+                    console.log(data);
                     self.content = eval('(' + data + ')').data;
-                    console.log(self.content.activityList[0].activityGoodsList);
-                    console.log(self.content.activityList[1]);
+                    //console.log(self.content.activityList[0].activityGoodsList);
+                    //console.log(self.content.activityList[1]);
 
                 },
                 error: function () {

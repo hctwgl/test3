@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017071005")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
     <meta charset="UTF-8">
     <title>游戏点劵</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/07/gamePoint.css">
@@ -9,7 +10,7 @@
 <body>
     <div id="gamePoint">
         <div class="gamePointBanner">
-            <img :src="content.bannerImage" alt="">
+            <img src="$commonUrl/banner.png" alt="">
         </div>
         <div class="all">
             <ul class="gamePointNav clearfix">
@@ -26,7 +27,7 @@
                         <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
                         <template v-if="item.goodsType==1">
                                 <p v-if="item.nperMap.isFree==2"><span class="monthpay">月供 </span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
-                                <p v-if="item.nperMap.isFree==1"><span class="monthpay">月供</span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
+                                <p v-if="item.nperMap.isFree==1"><span class="monthpay">月供</span><span class="money">{{item.nperMap.freeAmount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
 						</template>
                     </div>
                 </li>
