@@ -43,6 +43,8 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	//3.6.9增加virtualGoodsUsableAmount, isVirtualGoods字段
 	private BigDecimal virtualGoodsUsableAmount;
 	private String isVirtualGoods;
+	private String ovderduedCode;
+	private Long billId;
 	
 	public char getIsValid() {
 		return isValid;
@@ -318,6 +320,34 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	 */
 	public void setIsVirtualGoods(String isVirtualGoods) {
 		this.isVirtualGoods = isVirtualGoods;
+	}
+
+	/**
+	 * @return the ovderduedCode
+	 */
+	public String getOvderduedCode() {
+		return ovderduedCode;
+	}
+
+	/**
+	 * @param ovderduedCode the ovderduedCode to set
+	 */
+	public void setOvderduedCode(String ovderduedCode) {
+		this.ovderduedCode = ovderduedCode;
+	}
+
+	/**
+	 * @return the billId
+	 */
+	public Long getBillId() {
+		return billId;
+	}
+
+	/**
+	 * @param billId the billId to set
+	 */
+	public void setBillId(Long billId) {
+		this.billId = billId;
 	}
 	
 }

@@ -278,20 +278,20 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			if (verybo.isSuccess()) {
 				delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult());
 			} else {
-				Map<String,Object> result = new HashMap<String,Object>();
-				result.put("success", false);
-				result.put("verifybo", JSONObject.toJSON(verybo));
-				//如果不是因为逾期还款给拒绝的，直接关闭订单
-				String rejectCode = verybo.getRejectCode();
-				if (StringUtils.isNotBlank(rejectCode) 
-						&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode()) 
-						&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode())) {
+//				Map<String,Object> result = new HashMap<String,Object>();
+//				result.put("success", false);
+//				result.put("verifybo", JSONObject.toJSON(verybo));
+//				//如果不是因为逾期还款给拒绝的，直接关闭订单
+//				String rejectCode = verybo.getRejectCode();
+//				if (StringUtils.isNotBlank(rejectCode) 
+//						&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode()) 
+//						&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode())) {
 					cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 					cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 					afBorrowCashService.updateBorrowCash(cashDo);
-				} else {
-					dealWithPayOrderRiskFailed(result, resp);
-				}
+//				} else {
+//					dealWithPayOrderRiskFailed(result, resp);
+//				}
 			}
 			return resp;
 		} catch (Exception e) {
@@ -475,36 +475,41 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		
 	}
 	
-	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
-		String success = result.get("success").toString();
-		//如果代付，风控支付是不通过的，找出其原因
-		if (StringUtils.isNotBlank(success) && !Boolean.getBoolean(success)) {
-			String verifyBoStr = (String) result.get("verifybo");
-			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
-			String rejectCode = riskResp.getRejectCode();
-			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
-			switch (erorrCode) {
-			case AUTH_AMOUNT_LIMIT:
-				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_AUTH_AMOUNT_LIMIT);
-			case OVERDUE_BORROW:
-			{
-				String borrowNo = riskResp.getBorrowNo();
-				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
-				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_OVERDUED));
-				resp.addResponseData("billId", billId == null ? 0 : billId);
-			}
-				break;
-			case OVERDUE_BORROW_CASH:
-				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_CASH_OVERDUED));
-				break;
-			case OTHER_RULE:
-				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_OTHER_RULE));
-			default:
-				break;
-			}
-		}
-	}
+//	/**
+//	 * 处理风控逾期借钱或者借款处理
+//	 * @param result
+//	 * @param resp
+//	 */
+//	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
+//		String success = result.get("success").toString();
+//		//如果代付，风控支付是不通过的，找出其原因
+//		if (StringUtils.isNotBlank(success) && !Boolean.getBoolean(success)) {
+//			String verifyBoStr = (String) result.get("verifybo");
+//			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
+//			String rejectCode = riskResp.getRejectCode();
+//			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+//			switch (erorrCode) {
+//			case AUTH_AMOUNT_LIMIT:
+//				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_AUTH_AMOUNT_LIMIT);
+//			case OVERDUE_BORROW:
+//			{
+//				String borrowNo = riskResp.getBorrowNo();
+//				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+//				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_OVERDUED));
+//				resp.addResponseData("billId", billId == null ? 0 : billId);
+//			}
+//				break;
+//			case OVERDUE_BORROW_CASH:
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_CASH_OVERDUED));
+//				break;
+//			case OTHER_RULE:
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_OTHER_RULE));
+//			default:
+//				break;
+//			}
+//		}
+//	}
 
 	
 }

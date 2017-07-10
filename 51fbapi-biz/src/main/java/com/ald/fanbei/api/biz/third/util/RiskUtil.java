@@ -24,6 +24,8 @@ import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
+import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderReqBo;
+import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.RiskRaiseQuotaReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
@@ -66,7 +68,6 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
-import com.ald.fanbei.api.common.enums.RiskErrorCode;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -461,8 +462,8 @@ public class RiskUtil extends AbstractThird {
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
-		
+//		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
+		String url = "http://192.168.110.22:80" + "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -604,19 +605,18 @@ public class RiskUtil extends AbstractThird {
 		logger.info("risk_result =" + result);
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		if (!result.equals("10")) {
-			resultMap.put("success", false);
-			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
+//			resultMap.put("success", false);
+//			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
 			
 			//如果不是因为逾期还款给拒绝的，直接关闭订单
-			String rejectCode = verifybo.getRejectCode();
-			if (StringUtils.isNotBlank(rejectCode) 
-					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode()) 
-					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode())) {
+//			String rejectCode = verifybo.getRejectCode();
+//			if (StringUtils.isNotBlank(rejectCode) 
+//					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode()) 
+//					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode())) {
 				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 				orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
 				orderDao.updateOrder(orderInfo);
-				// 审批不通过时，让额度还原到以前
 				
 				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
 					AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
@@ -639,11 +639,11 @@ public class RiskUtil extends AbstractThird {
 					}
 				}
 				jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
-			}
+//			}
 			
 			return resultMap;
 		}
-		resultMap.put("success", true);
+//		resultMap.put("success", true);
 		
 		orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 		orderInfo.setStatus(OrderStatus.PAID.getCode());
@@ -1330,11 +1330,35 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 	
-	
-	
-	public static void main(String[] args) {
-		String  str = "{'data':'{'amount':300,'virtualCode':101}','code':'0000','msg':'请求成功'}";
-		RiskVirtualProductQuotaRespBo resp = JSONObject.parseObject(str, RiskVirtualProductQuotaRespBo.class);
-		System.out.println(resp);
+	/**
+	 * 查询用户借钱或者分期订单
+	 * @param consumerNo
+	 * @return
+	 */
+	public RiskQueryOverdueOrderRespBo queryOverdueOrder(String consumerNo) {
+		RiskQueryOverdueOrderReqBo reqBo = new RiskQueryOverdueOrderReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+//		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
+		String reqResult = HttpUtil.post("http://192.168.110.22:80" + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
+		
+		logThird(reqResult, "quota", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.QUERY_OVERDUE_ORDER_ERROR);
+		}
+		RiskQueryOverdueOrderRespBo riskResp = JSONObject.parseObject(reqResult, RiskQueryOverdueOrderRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			String data = riskResp.getData();
+			if (StringUtils.isNotBlank(data)) {
+				JSONObject json = JSONObject.parseObject(data);
+				riskResp.setRejectCode(json.getString("rejectCode"));
+				riskResp.setBorrowNo(json.getString("borrowNo"));
+			}
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.QUERY_OVERDUE_ORDER_ERROR);
+		}
 	}
+	
 }

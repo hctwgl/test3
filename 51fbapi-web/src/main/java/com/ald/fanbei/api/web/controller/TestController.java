@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
@@ -488,5 +489,13 @@ public class TestController {
 		String resultString = HttpUtil.doHttpPostJsonParam(brandUrl, JSONObject.toJSONString(bo));
 		logger.info("userName = " + userName + " brandUrl = " + brandUrl);
 		logger.info("allowcateBrandCoupon pickBrandCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+	}
+	
+	@RequestMapping(value = { "/testRiskQueryOverdueOrder" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String testRiskQueryOverdueOrder(HttpServletRequest request, HttpServletResponse response) {
+		RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder("68885");
+		System.out.println(resp);
+		return "success";
 	}
 }
