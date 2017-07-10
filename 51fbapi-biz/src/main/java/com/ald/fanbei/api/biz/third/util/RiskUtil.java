@@ -24,6 +24,8 @@ import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
+import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
+import com.ald.fanbei.api.biz.bo.RiskOverdueOrderBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderReqBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.RiskRaiseQuotaReqBo;
@@ -1359,6 +1361,28 @@ public class RiskUtil extends AbstractThird {
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.QUERY_OVERDUE_ORDER_ERROR);
 		}
+	}
+	
+	/**
+	 * 批量化同步逾期订单
+	 * @param orderNo
+	 * @param boList
+	 * @return
+	 */
+	public RiskRespBo batchSychronizeOverdueBorrow(String orderNo, List<RiskOverdueBorrowBo> boList) {
+		RiskOverdueOrderBo reqBo = new RiskOverdueOrderBo();
+		reqBo.setOrderNo(orderNo);
+		reqBo.setDetails(Base64.encodeString(JSONObject.toJSONString(boList)));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/overdueOrder.htm";
+		//石桂红本地
+//		String url = "http://192.168.110.22:80" + "/modules/api/risk/overdueOrder.htm";  
+		String reqResult = HttpUtil.post(url, reqBo);
+
+		logThird(reqResult, "overDued", reqBo);
+		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		return riskResp;
 	}
 	
 }
