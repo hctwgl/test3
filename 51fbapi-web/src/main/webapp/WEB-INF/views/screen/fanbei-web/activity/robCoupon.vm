@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170710")
+    #set($src="https://fs.51fanbei.com/h5/app/activity/07")
+    <meta charset="UTF-8">
+    <title>神券限时抢</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/07/robCoupon.css?version=$version">
+</head>
+<body>
+<div id="robCoupon">
+    <div class="banner"><img src="$src/robCoupon01.jpg"></div>
+    <div class="desWord">
+        <p>抢神券</p>
+        <p><span>8:00</span>场</p>
+        <p>距离下场</p>
+        <p><span>00</span>:<span>12</span>:<span>25</span></p>
+        <p>活动规则>></p> 
+    </div>
+    <div class="coupon">
+       <ul class="couponList">
+           <li>
+               <p>￥<span>100</span></p>
+               <p>全场券</p>
+               <p>满<span>499</span>元使用</p>
+           </li>
+           <li>
+               <p>￥<span>100</span></p>
+               <p>全场券</p>
+               <p>满<span>499</span>元使用</p>
+           </li>
+           <li>
+               <p>￥<span>100</span></p>
+               <p>全场券</p>
+               <p>满<span>499</span>元使用</p>
+           </li>
+           <li>
+               <p>￥<span>100</span></p>
+               <p>全场券</p>
+               <p>满<span>499</span>元使用</p>
+           </li>
+       </ul>
+    </div>
+    <p class="recommend">热门推荐</p>
+    <div class="product">
+        <ul class="productList">
+            <li>
+                <div class="productImg"><img src='$src/robCoupon01.jpg'></div>
+                <div class="productRight">
+                    <p class="productDes">Apple MacBook Air 13.3英寸笔记本电脑2017年新款</p>
+                    <p class="buyPrice">￥6288</p>
+                    <p class="fan">返</p>
+                    <p class="fanPrice">￥10.00</p>
+                    <p class="monthPrice">月供￥<span>299.73</span>起</p>           
+                </div>
+            </li>
+            <li>
+                <div class="productImg"><img src='$src/robCoupon01.jpg'></div>
+                <div class="productRight">
+                    <p class="productDes">Apple MacBook Air 13.3英寸笔记本电脑2017年新款</p>
+                    <p class="buyPrice">￥6288</p>
+                    <p class="fan">返</p>
+                    <p class="fanPrice">￥10.00</p>
+                    <p class="monthPrice">月供￥<span>299.73</span>起</p>           
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="mask"></div>
+    <div class="rule">
+        <p class="title">活动规则</p>
+        <p class="cont">1.活动时间：2017.7.11-2017.7.14；<br/>2.活动期间每日10、14点整准时开抢；<br/>3.优惠券限量发放领取，先到先得，抢完为止！优惠券使用条件请以券上显示的使用规则为准；<br/>4.优惠券可在“我的-抵用券”里查看，因网络原因可能存在延迟到账情况，可稍后再次查询；<br/>5.在51返呗平台进行任意商品的分期消费，满足条件可进行抵扣相应金额；<br/>6.如发现恶意作弊行为，将取消优惠资格且用户做封号处理，奖励一律收回；<br/>7.如有任何疑问，请拨打51返呗客服热线：0571-88193918。
+        </p>
+    </div>
+</div>
+<script src="/dist/activity/07/robCoupon.js?version=$version"></script>
+</body>
+</html>
