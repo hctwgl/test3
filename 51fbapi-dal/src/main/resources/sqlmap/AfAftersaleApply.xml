@@ -62,15 +62,9 @@ id,gmt_create,gmt_modified,gmt_apply,user_id,order_id,apply_no,status,verify_rem
     <insert id="saveRecord" parameterType="AfAftersaleApplyDo"  useGeneratedKeys="true" keyProperty="id">
         INSERT INTO af_aftersale_apply
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
 	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
 	            gmt_modified,
-	        </if>
-	        <if test="gmtApply != null">        
 	            gmt_apply,
-	        </if>
 	        <if test="userId != null">        
 	            user_id,
 	        </if>
@@ -107,15 +101,9 @@ id,gmt_create,gmt_modified,gmt_apply,user_id,order_id,apply_no,status,verify_rem
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtApply != null" >
-		       #{gmtApply,jdbcType=TIMESTAMP},
-		    </if>
+		      NOW(),
+		      NOW(),
+		      NOW(),
 		    <if test="userId != null" >
 		       #{userId,jdbcType=INTEGER},
 		    </if>
@@ -155,12 +143,7 @@ id,gmt_create,gmt_modified,gmt_apply,user_id,order_id,apply_no,status,verify_rem
     <update id="updateById"  parameterType="AfAftersaleApplyDo">
         UPDATE af_aftersale_apply
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
+              gmt_modified = NOW(),                
             <if test="gmtApply != null and gmtApply != '' ">        
                 gmt_apply = #{gmtApply,jdbcType=TIMESTAMP},                
             </if>
@@ -208,6 +191,14 @@ id,gmt_create,gmt_modified,gmt_apply,user_id,order_id,apply_no,status,verify_rem
         WHERE is_delete = 0 AND id=#{id ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
+    
+	<select id="getByOrderId" resultType="AfAftersaleApplyDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_aftersale_apply
+        WHERE is_delete = 0 AND order_id=#{orderId ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
 
 	<select id="getByCommonCondition" resultType="AfAftersaleApplyDo" parameterType="AfAftersaleApplyDo">
         SELECT
@@ -224,4 +215,11 @@ id,gmt_create,gmt_modified,gmt_apply,user_id,order_id,apply_no,status,verify_rem
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getCurrentLastApplyNo" resultType="java.lang.String">
+		select apply_no from af_aftersale_apply WHERE #{endDate} >= gmt_create 
+		AND gmt_create >=#{startDate} 
+		and gmt_create is not null 
+		ORDER BY gmt_create DESC LIMIT 1;
+	</select>
+	
 </mapper>

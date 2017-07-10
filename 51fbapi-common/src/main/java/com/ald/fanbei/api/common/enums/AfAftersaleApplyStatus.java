@@ -14,11 +14,11 @@ import java.util.Map;
 public enum AfAftersaleApplyStatus {
 	NEW("NEW", "新建"),
 	CLOSE("CLOSE","用户关闭售后申请"),
-	NOTPASS("BUY","已审核不通过"),
-	WAIT_GOODS_BACK("BUY","审核通过待回寄商品"),
-	GOODS_BACKIING("BUY","商品回寄中"),
-	WAIT_REFUND("BUY","等待退款"),
-	FINISH("BUY","退款完成");
+	NOTPASS("NOTPASS","审核不通过"),
+	WAIT_GOODS_BACK("WAIT_GOODS_BACK","审核通过待回寄商品"),
+	GOODS_BACKIING("GOODS_BACKIING","商品回寄中"),
+	WAIT_REFUND("WAIT_REFUND","等待退款"),
+	FINISH("FINISH","退款完成");
     
     private String code;
     private String name;

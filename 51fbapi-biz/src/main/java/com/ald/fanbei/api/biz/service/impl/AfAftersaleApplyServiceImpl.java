@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -7,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfAftersaleApplyDao;
+import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 
 
 
@@ -27,4 +31,30 @@ public class AfAftersaleApplyServiceImpl implements AfAftersaleApplyService {
     @Resource
     private AfAftersaleApplyDao afAftersaleApplyDao;
 
+	@Override
+	public int saveRecord(AfAftersaleApplyDo afAftersaleApplyDo) {
+		return afAftersaleApplyDao.saveRecord(afAftersaleApplyDo);
+	}
+
+	@Override
+	public int updateById(AfAftersaleApplyDo afAftersaleApplyDo) {
+		return afAftersaleApplyDao.updateById(afAftersaleApplyDo);
+	}
+
+	@Override
+	public AfAftersaleApplyDo getById(Long id) {
+		return afAftersaleApplyDao.getById(id);
+	}
+
+	@Override
+	public AfAftersaleApplyDo getByOrderId(Long orderId) {
+		return afAftersaleApplyDao.getByOrderId(orderId);
+	}
+
+	@Override
+	public String getCurrentLastApplyNo(Date current) {
+		Date startDate = DateUtil.getStartOfDate(current);
+		Date endDate = DateUtil.getEndOfDate(current);
+		return afAftersaleApplyDao.getCurrentLastApplyNo(startDate, endDate);
+	}
 }

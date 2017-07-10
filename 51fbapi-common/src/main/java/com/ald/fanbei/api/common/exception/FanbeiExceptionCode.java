@@ -144,6 +144,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     REFUND_AMOUNT_ERROR("REFUND_AMOUNT_ERROR",1572,"refund amount error","退款金额有误"),
     REFUND_HAVE_SUCCESS("REFUND_HAVE_SUCCESS",1573,"refund have success","退款已完成"),
     CREDIT_AMOUNT_ORDER_PAY_LIMIT("CREDIT_AMOUNT_ORDER_PAY_LIMIT",1574,"credit amount order pay limit","该商品暂不支持信用分期,请切换其他支付方式"),
+    AFTERSALE_PROCESSING("REFUND_PROCESSING",1575,"refund processing","售后处理中,请勿耐心等待"),
+    ORDER_HAVE_CLOSED("ORDER_HAVE_CLOSED",1576,"order have closed","订单已完结"),
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1601,"goods not exist error","商品不存在"),
@@ -209,7 +211,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
 
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),
-    ORDER_REFUND_TYPE_ERROR("ORDER_REFUND_TYPE_ERROR",3001,"order refund type error","仅支持自营商品"),
+    ORDER_REFUND_TYPE_ERROR("ORDER_REFUND_TYPE_ERROR",3001,"order refund type error","此订单类型暂不支持"),
 
     //4000-4999
     PICK_BRAND_COUPON_NOT_START("PICK_BRAND_COUPON_NOT_START",4000,"pick brand not start","领取活动还未开始,敬请期待"),

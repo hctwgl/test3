@@ -19,7 +19,6 @@ import com.ald.fanbei.api.common.AbstractSerial;
      * 主键Id
      */
     private Long id;
-    
 
     /**
      * 创建时间
@@ -90,9 +89,26 @@ import com.ald.fanbei.api.common.AbstractSerial;
      * 备注说明
      */
     private String remark;
+    
+    public AfAftersaleApplyDo() {
+		super();
+	}
+
+	public AfAftersaleApplyDo(Date gmtApply, Long userId, Long orderId,
+			String applyNo, String status, String userReason, String picVouchers) {
+		super();
+		this.gmtApply = gmtApply;
+		this.userId = userId;
+		this.orderId = orderId;
+		this.applyNo = applyNo;
+		this.status = status;
+		this.userReason = userReason;
+		this.picVouchers = picVouchers;
+	}
 
 
-    /**
+
+	/**
      * 获取主键Id
      *
      * @return id
