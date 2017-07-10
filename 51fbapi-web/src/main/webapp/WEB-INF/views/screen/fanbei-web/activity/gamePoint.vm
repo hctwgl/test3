@@ -21,7 +21,7 @@
             <!--<div class="hotIntroWord">热门推荐</div> !-->
             <ul class="detail left" v-bind:class='{show:!isActive}'>
                 <li class="goods"  v-for="item in content.activityList[0].activityGoodsList" @click="buyNow">
-                    <a href="http://www.baidu.com">
+                    <a href="">
                         <div class="goods-img">
                             <img :src="item.goodsIcon" alt="">
                         </div>
@@ -35,7 +35,7 @@
             </ul>
             <ul class="detail right" v-bind:class='{show:isActive}'>
                  <li class="goods"  v-for="item in content.activityList[1].activityGoodsList" @click="buyNow">
-                    <a href="http://www.baidu.com">
+                    <a href="">
                         <div class="goods-img">
                             <img :src="item.goodsIcon" alt="">
                         </div>
