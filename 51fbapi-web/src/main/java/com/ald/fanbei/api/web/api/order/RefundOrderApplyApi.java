@@ -152,7 +152,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
 			}
 		}else{
-			if(!AfAftersaleApplyStatus.NOTPASS.getCode().equals(afAftersaleApplyDo.getStatus())){
+			if(!(AfAftersaleApplyStatus.NOTPASS.getCode().equals(afAftersaleApplyDo.getStatus()) || AfAftersaleApplyStatus.CLOSE.getCode().equals(afAftersaleApplyDo.getStatus()))){
 				//返回提示售后处理中
 				throw new FanbeiException(FanbeiExceptionCode.AFTERSALE_PROCESSING);
 			}else{

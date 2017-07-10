@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public enum AfOrderStatusMsgRemark {
 	
-	NEW("NEW", "待支付","下单后一小时内未支付将自动关闭订单"),
+	NEW("NEW", "待支付","后未支付将自动关闭订单"),
 	DEALING("DEALING", "支付中","支付可能会有几分钟延迟，请稍作等待"),
 	PAID("PAID", "待收货","请确认已签收商品/服务"),
 	AGENCYCOMPLETED("AGENCYCOMPLETED", "待收货","请确认已签收商品/服务"),

@@ -87,7 +87,7 @@ public class GetOrderAfterSaleInfoApi implements ApiHandle{
 			afAftersaleApplyVo.setStatusRemark(statusMsgRemark.getStatusRemark());
 			//对审核不通过及审核通过待回寄商品做特殊处理
 			if(StringUtil.isNotBlank(asApplyDo.getGoodsBackAddress()) && AfAftersaleApplyStatusMsgRemark.WAIT_GOODS_BACK.getCode().equals(asApplyDo.getStatus())){
-				afAftersaleApplyVo.setStatusRemark("请将货品寄回到："+asApplyDo.getGoodsBackAddress()+"<br/>并在下方填写寄回的物流单号<br/>货品回寄签收检查无误后即处理退款");
+				afAftersaleApplyVo.setStatusRemark("请将货品寄回到："+asApplyDo.getGoodsBackAddress()+"\n并在下方填写寄回的物流单号\n货品回寄签收检查无误后即处理退款");
 			}else if(AfAftersaleApplyStatusMsgRemark.NOTPASS.getCode().equals(asApplyDo.getStatus())){
 				afAftersaleApplyVo.setStatusRemark(asApplyDo.getVerifyRemark());
 			}
