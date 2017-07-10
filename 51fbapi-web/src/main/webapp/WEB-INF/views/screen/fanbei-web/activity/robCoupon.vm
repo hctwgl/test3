@@ -19,26 +19,11 @@
     </div>
     <div class="coupon">
        <ul class="couponList">
-           <li>
-               <p>￥<span>100</span></p>
-               <p>全场券</p>
-               <p>满<span>499</span>元使用</p>
-           </li>
-           <li>
-               <p>￥<span>100</span></p>
-               <p>全场券</p>
-               <p>满<span>499</span>元使用</p>
-           </li>
-           <li>
-               <p>￥<span>100</span></p>
-               <p>全场券</p>
-               <p>满<span>499</span>元使用</p>
-           </li>
-           <li>
-               <p>￥<span>100</span></p>
-               <p>全场券</p>
-               <p>满<span>499</span>元使用</p>
-           </li>
+           <li v-for="item in couponContent.couponInfoList">
+               <p>{{item.name}}</p>
+               <p>{{item.desc}}</p>
+               <p>({{item.remark}})</p>
+           </li>           
        </ul>
     </div>
     <p class="recommend">热门推荐</p>
