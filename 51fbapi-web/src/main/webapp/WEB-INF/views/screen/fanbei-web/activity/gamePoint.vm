@@ -3,8 +3,8 @@
 <head>
     #set($version="2017070707")
     <meta charset="UTF-8">
-    <title>Document</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/08/gamePoint.css">
+    <title>游戏点劵</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/07/gamePoint.css">
 </head>
 <body>
     <div id="gamePoint">
@@ -15,37 +15,41 @@
             <ul class="gamePointNav clearfix">
                <!-- <li class="gamePoint"  v-on:click="isshow">游戏点券</li>
                 <li class="hotVip"  v-on:click="isshow">热门会员</li>!-->
-                <li class="gamePoint" v-bind:class='{line:isActive}'  v-on:click="isshow">游戏点券</li>
-                <li class="hotVip" v-bind:class='{line:!isActive}'  v-on:click="isshow">热门会员</li>
+                <li class="gamePoint" v-bind:class='{line:isActive}'  v-on:click="isshow">{{content.activityList[0].name}}</li>
+                <li class="hotVip" v-bind:class='{line:!isActive}'  v-on:click="isshow">{{content.activityList[1].name}}</li>
             </ul>
             <!--<div class="hotIntroWord">热门推荐</div> !-->
             <ul class="detail left" v-bind:class='{show:!isActive}'>
-                <li class="goods"  v-for="item in content.activityList[0].activityGoodsList" @click="buyNow">
-                    <div class="goods-img">
-                        <img :src="item.goodsIcon" alt="">
-                    </div>
-                    <div class="goods-words">
-                        <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-                        <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
-                        <p v-if="item.nperMap"><span class="monthpay">月供</span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>   
-                    </div>
+                <li class="goods"  v-for="item in content.activityList[0].activityGoodsList" @click="buyNow(item.goodsId)">
+         
+                        <div class="goods-img">
+                            <img :src="item.goodsIcon" alt="">
+                        </div>
+                        <div class="goods-words">
+                            <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
+                            <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
+                            <p v-if="item.nperMap"><span class="monthpay">月供</span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>   
+                        </div>
+           
                 </li>
             </ul>
             <ul class="detail right" v-bind:class='{show:isActive}'>
-                 <li class="goods"  v-for="item in content.activityList[0].activityGoodsList" @click="buyNow">
-                    <div class="goods-img">
-                        <img :src="item.goodsIcon" alt="">
-                    </div>
-                    <div class="goods-words">
-                        <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-                        <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
-                        <p v-if="item.nperMap"><span class="monthpay">月供</span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>   
-                    </div>
+                 <li class="goods"  v-for="item in content.activityList[1].activityGoodsList" @click="buyNow">
+                    <a href="">
+                        <div class="goods-img">
+                            <img :src="item.goodsIcon" alt="">
+                        </div>
+                        <div class="goods-words">
+                            <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
+                            <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
+                            <p v-if="item.nperMap"><span class="monthpay">月供</span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>   
+                        </div>
+                    </a>  
                 </li>
             </ul>
         </div>
     </div>
 </body>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
-<script src="/dist/activity/08/gamePoint.js"></script>
+<script src="/dist/activity/07/gamePoint.js"></script>
 </html>
