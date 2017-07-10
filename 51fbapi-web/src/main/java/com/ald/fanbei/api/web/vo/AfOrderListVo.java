@@ -27,6 +27,9 @@ public class AfOrderListVo extends AbstractSerial {
 	private BigDecimal couponAmount;
 	private String payType;
 	private BigDecimal goodsSaleAmount;
+	private String orderStatusMsg;
+	private String orderStatusRemark;
+	private String afterSaleStatus;
 	
 	public Long getOrderId() {
 		return orderId;
@@ -105,6 +108,24 @@ public class AfOrderListVo extends AbstractSerial {
 	}
 	public void setGoodsSaleAmount(BigDecimal goodsSaleAmount) {
 		this.goodsSaleAmount = goodsSaleAmount;
+	}
+	public String getOrderStatusMsg() {
+		return orderStatusMsg;
+	}
+	public void setOrderStatusMsg(String orderStatusMsg) {
+		this.orderStatusMsg = orderStatusMsg;
+	}
+	public String getOrderStatusRemark() {
+		return orderStatusRemark;
+	}
+	public void setOrderStatusRemark(String orderStatusRemark) {
+		this.orderStatusRemark = orderStatusRemark;
+	}
+	public String getAfterSaleStatus() {
+		return afterSaleStatus;
+	}
+	public void setAfterSaleStatus(String afterSaleStatus) {
+		this.afterSaleStatus = afterSaleStatus;
 	}
 	
 }

@@ -11,9 +11,11 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatusMsgRemark;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -57,19 +59,43 @@ public class GetOrderAfterSaleInfoApi implements ApiHandle{
 			throw new FanbeiException(FanbeiExceptionCode.AFTERSALE_APPLY_NOT_EXIST);
 		}
 		
-		AfAftersaleApplyVo afAftersaleApplyVo = getAftersaleApplyVo(afAftersaleApplyDo);
+		AfAftersaleApplyVo afAftersaleApplyVo = getAftersaleApplyVo(orderInfo,afAftersaleApplyDo);
 		resp.setResponseData(afAftersaleApplyVo);
 		return resp;
 	}
 	
 	//售后信息vo转换
-	private AfAftersaleApplyVo getAftersaleApplyVo(AfAftersaleApplyDo asApplyDo){
+	private AfAftersaleApplyVo getAftersaleApplyVo(AfOrderDo orderInfo,AfAftersaleApplyDo asApplyDo){
 		AfAftersaleApplyVo afAftersaleApplyVo = new  AfAftersaleApplyVo();
+		//商品信息填充
 		List<AfGoodsVo> goodsList = new ArrayList<AfGoodsVo>();
-		
-		
+		goodsList.add(new AfGoodsVo(orderInfo.getGoodsName(), orderInfo.getGoodsIcon()));
+		afAftersaleApplyVo.setGoodsList(goodsList);
+		//售后信息填充
+		afAftersaleApplyVo.setPicVouchers(StringUtil.splitToList(asApplyDo.getPicVouchers(), ","));
+		afAftersaleApplyVo.setOrderId(asApplyDo.getOrderId());
+		afAftersaleApplyVo.setGmtApply(asApplyDo.getGmtApply());
+		afAftersaleApplyVo.setStatus(asApplyDo.getStatus());
+		afAftersaleApplyVo.setUserReason(asApplyDo.getUserReason());
+		afAftersaleApplyVo.setVerifyRemark(asApplyDo.getVerifyRemark());
+		afAftersaleApplyVo.setGoodsBackAddress(asApplyDo.getGoodsBackAddress());
+		afAftersaleApplyVo.setLogisticsCompany(asApplyDo.getLogisticsCompany());
+		afAftersaleApplyVo.setLogisticsNo(asApplyDo.getLogisticsNo());
+		AfAftersaleApplyStatusMsgRemark statusMsgRemark = AfAftersaleApplyStatusMsgRemark.findRoleTypeByCode(asApplyDo.getStatus());
+		if(statusMsgRemark!=null){
+			afAftersaleApplyVo.setStatusMsg(statusMsgRemark.getStatusMsg());
+			afAftersaleApplyVo.setStatusRemark(statusMsgRemark.getStatusRemark());
+			//对审核不通过及审核通过待回寄商品做特殊处理
+			if(StringUtil.isNotBlank(asApplyDo.getGoodsBackAddress()) && AfAftersaleApplyStatusMsgRemark.WAIT_GOODS_BACK.getCode().equals(asApplyDo.getStatus())){
+				afAftersaleApplyVo.setStatusRemark("请将货品寄回到："+asApplyDo.getGoodsBackAddress()+"<br/>并在下方填写寄回的物流单号<br/>货品回寄签收检查无误后即处理退款");
+			}else if(AfAftersaleApplyStatusMsgRemark.NOTPASS.getCode().equals(asApplyDo.getStatus())){
+				afAftersaleApplyVo.setStatusRemark(asApplyDo.getVerifyRemark());
+			}
+		}
 		
 		return afAftersaleApplyVo;
-		
 	}
+	
+	
+	
 }

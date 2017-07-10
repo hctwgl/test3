@@ -18,20 +18,6 @@ import com.ald.fanbei.api.common.AbstractSerial;
      * 商品列表
      */
     private List<AfGoodsVo> goodsList;
-    /**
-     * 主键Id
-     */
-    private Long id;
-
-    /**
-     * 创建时间
-     */
-    private Date gmtCreate;
-
-    /**
-     * 最后修改时间
-     */
-    private Date gmtModified;
 
     /**
      * 最新的售后申请时间
@@ -88,71 +74,15 @@ import com.ald.fanbei.api.common.AbstractSerial;
      */
     private String logisticsNo;
 
-    /**
-     * 备注说明
-     */
-    private String remark;
+    //售后状态说明
+    private String statusMsg;
+    //售后状态备注
+    private String statusRemark;
+    
     
     public AfAftersaleApplyVo() {
 		super();
 	}
-
-
-
-	/**
-     * 获取主键Id
-     *
-     * @return id
-     */
-    public Long getId(){
-      return id;
-    }
-
-    /**
-     * 设置主键Id
-     * 
-     * @param 要设置的主键Id
-     */
-    public void setId(Long id){
-      this.id = id;
-    }
-    
-
-    /**
-     * 获取创建时间
-     *
-     * @return 创建时间
-     */
-    public Date getGmtCreate(){
-      return gmtCreate;
-    }
-
-    /**
-     * 设置创建时间
-     * 
-     * @param gmtCreate 要设置的创建时间
-     */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
-
-    /**
-     * 获取最后修改时间
-     *
-     * @return 最后修改时间
-     */
-    public Date getGmtModified(){
-      return gmtModified;
-    }
-
-    /**
-     * 设置最后修改时间
-     * 
-     * @param gmtModified 要设置的最后修改时间
-     */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
-    }
 
     /**
      * 获取最新的售后申请时间
@@ -342,23 +272,6 @@ import com.ald.fanbei.api.common.AbstractSerial;
       this.logisticsNo = logisticsNo;
     }
 
-    /**
-     * 获取备注说明
-     *
-     * @return 备注说明
-     */
-    public String getRemark(){
-      return remark;
-    }
-
-    /**
-     * 设置备注说明
-     * 
-     * @param remark 要设置的备注说明
-     */
-    public void setRemark(String remark){
-      this.remark = remark;
-    }
 
 	public List<AfGoodsVo> getGoodsList() {
 		return goodsList;
@@ -366,6 +279,22 @@ import com.ald.fanbei.api.common.AbstractSerial;
 
 	public void setGoodsList(List<AfGoodsVo> goodsList) {
 		this.goodsList = goodsList;
+	}
+
+	public String getStatusMsg() {
+		return statusMsg;
+	}
+
+	public void setStatusMsg(String statusMsg) {
+		this.statusMsg = statusMsg;
+	}
+
+	public String getStatusRemark() {
+		return statusRemark;
+	}
+
+	public void setStatusRemark(String statusRemark) {
+		this.statusRemark = statusRemark;
 	}
 
 }

@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.vo;
 
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
@@ -45,7 +46,10 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private BigDecimal couponAmount; // 优惠劵的金额
 	private BigDecimal actualPayAmount;// 实际支付金额
 	private BigDecimal goodsSaleAmount;//商品售价
-	
+	private String orderStatusMsg;
+	private String orderStatusRemark;
+	private String afterSaleStatus;
+	private Date gmtRefundApply;
 	
 	public String getCouponName() {
 		return couponName;
@@ -250,4 +254,29 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	public void setGoodsSaleAmount(BigDecimal goodsSaleAmount) {
 		this.goodsSaleAmount = goodsSaleAmount;
 	}
+	public String getOrderStatusMsg() {
+		return orderStatusMsg;
+	}
+	public void setOrderStatusMsg(String orderStatusMsg) {
+		this.orderStatusMsg = orderStatusMsg;
+	}
+	public String getOrderStatusRemark() {
+		return orderStatusRemark;
+	}
+	public void setOrderStatusRemark(String orderStatusRemark) {
+		this.orderStatusRemark = orderStatusRemark;
+	}
+	public String getAfterSaleStatus() {
+		return afterSaleStatus;
+	}
+	public void setAfterSaleStatus(String afterSaleStatus) {
+		this.afterSaleStatus = afterSaleStatus;
+	}
+	public Date getGmtRefundApply() {
+		return gmtRefundApply;
+	}
+	public void setGmtRefundApply(Date gmtRefundApply) {
+		this.gmtRefundApply = gmtRefundApply;
+	}
+	
 }
