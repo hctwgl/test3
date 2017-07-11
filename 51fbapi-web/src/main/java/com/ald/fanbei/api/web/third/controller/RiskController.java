@@ -139,14 +139,14 @@ public class RiskController {
 	 */
 	@RequestMapping(value = { "/jinpo" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String jinpo(HttpServletRequest request, HttpServletResponse response) {
+	public String socialSecurity(HttpServletRequest request, HttpServletResponse response) {
 		String code = request.getParameter("code");
 		String data = request.getParameter("data");
 		String msg = request.getParameter("msg");
 		String signInfo = request.getParameter("signInfo");
-		logger.info("deal jinpo begin,code=" + code + ",data=" + data);
+		logger.info("deal socialSecurity begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
-			riskUtil.jinpoNotify(code, data, msg, signInfo);
+			riskUtil.socialSecurityNotify(code, data, msg, signInfo);
 			return "SUCCESS";
 		} else {
 			return "ERROR";

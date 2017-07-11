@@ -226,7 +226,7 @@
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
 				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
 				<entry key="/auth/authFund" value-ref="authFundApi" />
-				<entry key="/auth/authJinpo" value-ref="authJinpoApi" />
+				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
 				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
 
 				<!-- borrow -->

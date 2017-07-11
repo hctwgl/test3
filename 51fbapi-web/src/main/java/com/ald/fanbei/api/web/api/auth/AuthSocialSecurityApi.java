@@ -20,8 +20,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("authJinpoApi")
-public class AuthJinpoApi implements ApiHandle {
+@Component("authSocialSecurityApi")
+public class AuthSocialSecurityApi implements ApiHandle {
 
 	@Resource
 	RiskUtil riskUtil;
@@ -38,7 +38,7 @@ public class AuthJinpoApi implements ApiHandle {
 		
 		String idNumber = afUserAccountDo.getIdNumber();
 		
-		String riskOrderNo = riskUtil.getOrderNo("jinp", idNumber.substring(idNumber.length() - 4, idNumber.length()));
+		String riskOrderNo = riskUtil.getOrderNo("soci", idNumber.substring(idNumber.length() - 4, idNumber.length()));
 		
 		StringBuffer transPara = new StringBuffer();
 		transPara.append(riskOrderNo).append(",").append(userId);

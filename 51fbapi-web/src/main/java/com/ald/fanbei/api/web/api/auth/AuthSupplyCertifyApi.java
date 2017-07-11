@@ -57,7 +57,7 @@ public class AuthSupplyCertifyApi implements ApiHandle {
 		
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("fundStatus", afUserAuthDo.getFundStatus());
-		map.put("jinpoStatus", afUserAuthDo.getJinpoStatus());
+		map.put("socialSecurityStatus", afUserAuthDo.getJinpoStatus());
 		map.put("creditStatus", afUserAuthDo.getCreditStatus());
 		map.put("currentAmount", accountDo.getUcAmount());
 //		map.put("highestAmount", );
