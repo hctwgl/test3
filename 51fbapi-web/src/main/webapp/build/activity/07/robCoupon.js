@@ -69,7 +69,7 @@ let vm=new Vue({
                        requestMsg("请求失败");
                     }
                 });
-            $.ajax({
+            /*$.ajax({
               type: 'post',
               url: '/fanbei-web/superCouponList',
               success:function(data) {                      
@@ -80,7 +80,7 @@ let vm=new Vue({
               error:function(){
                  requestMsg("请求失败");
               }
-            })
+            })*/
         },
         buyNow(id){
           let self=this;            

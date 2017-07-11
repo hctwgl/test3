@@ -19,11 +19,51 @@
     </div>
     <div class="coupon">
        <ul class="couponList">
-           <li v-for="item in couponContent.couponInfoList">
+           <!-- <li v-for="item in couponContent.couponInfoList">
                <p>{{item.name}}</p>
                <p>{{item.desc}}</p>
                <p>({{item.remark}})</p>
-           </li>           
+           </li>   --> 
+          <li>
+               <div class="left">
+                   <p>￥<span>100</span></p>
+               </div>
+               <div class="right">
+                   <p>全场券</p>
+                   <p>满499元使用</p>
+                   <p>立即领券</p>
+               </div>               
+           </li>
+           <li>
+               <div class="left">
+                   <p>￥<span>100</span></p>
+               </div>
+               <div class="right">
+                   <p>全场券</p>
+                   <p>满499元使用</p>
+                   <p>立即领券</p>
+               </div>               
+           </li>
+           <li>
+               <div class="left">
+                   <p>￥<span>100</span></p>
+               </div>
+               <div class="right">
+                   <p>全场券</p>
+                   <p>满499元使用</p>
+                   <p>立即领券</p>
+               </div>               
+           </li>
+           <li>
+               <div class="left">
+                   <p>￥<span>100</span></p>
+               </div>
+               <div class="right">
+                   <p>全场券</p>
+                   <p>满499元使用</p>
+                   <p>立即领券</p>
+               </div>               
+           </li>    
        </ul>
     </div>
     <p class="recommend">热门推荐</p>
@@ -33,11 +73,12 @@
                 <div class="productImg"><img :src='item.goodsIcon'></div>
                 <div class="productRight">
                     <p class="productDes">{{txtFix(item.goodName)}}</p>
+                    <div class="monthPrice" v-if="item.goodsType==='1'">月供￥<span v-if="item.nperMap.isFree==1">{{item.nperMap.freeAmount}}</span><span v-else>{{item.nperMap.amount}}</span>起
+                    </div>
+                    <div  class="monthPrice"  v-if="item.goodsType==='0'"></div>            
                     <p class="buyPrice">￥{{(item.saleAmount).toFixed(1)}}</p>
-                    <p class="fan">返</p>
+                    <p class="fan"></p>
                     <p class="fanPrice">￥{{item.rebateAmount}}</p><br/>
-                <div class="monthPrice" v-if="item.goodsType==='1'">月供￥<span v-if="item.nperMap.isFree==1">{{item.nperMap.freeAmount}}</span><span v-else>{{item.nperMap.amount}}</span>起
-                </div>         
                 </div>
             </li>            
         </ul>
