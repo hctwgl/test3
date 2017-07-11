@@ -151,6 +151,11 @@ public class RefundOrderApplyApi implements ApiHandle{
 			if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
 				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
 			}
+			//订单状态改为退款中
+			String preStatus = orderInfo.getStatus();
+			orderInfo.setPreStatus(preStatus);
+			orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
+			afOrderService.updateOrder(orderInfo);
 		}else{
 			if(!(AfAftersaleApplyStatus.NOTPASS.getCode().equals(afAftersaleApplyDo.getStatus()) || AfAftersaleApplyStatus.CLOSE.getCode().equals(afAftersaleApplyDo.getStatus()))){
 				//返回提示售后处理中
@@ -163,14 +168,12 @@ public class RefundOrderApplyApi implements ApiHandle{
 				afAftersaleApplyDo.setStatus(AfAftersaleApplyStatus.NEW.getCode());
 				afAftersaleApplyService.updateById(afAftersaleApplyDo);
 			}
+			if(!OrderStatus.WAITING_REFUND.getCode().equals(orderInfo.getStatus())){
+				orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
+				afOrderService.updateOrder(orderInfo);
+			}
 		}
-		
-		//订单状态改为退款中
-		String preStatus = orderInfo.getStatus();
-		orderInfo.setPreStatus(preStatus);
-		orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
-		afOrderService.updateOrder(orderInfo);
-		logger.info("refundOrderApply success,userReason and picVouchers. orderId="+orderId+",userId="+userId+",preStatus="+preStatus);
+		logger.info("refundOrderApply success,userReason and picVouchers. orderId="+orderId+",userId="+userId+",preStatus="+orderInfo.getPreStatus()+",currStatus="+orderInfo.getStatus());
 	}
 	
 }
