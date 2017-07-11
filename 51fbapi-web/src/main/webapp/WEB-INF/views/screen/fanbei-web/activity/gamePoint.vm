@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>游戏点劵</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/07/gamePoint.css">
+    <!-- ?version=$version -->
 </head>
 <body>
     <div id="gamePoint">
@@ -14,8 +15,8 @@
         </div>
         <div class="all">
             <ul class="gamePointNav clearfix">
-                <li class="gamePoint" v-bind:class='{line:isActive}'  v-on:click="isshow">{{content.activityList[0].name}}</li>
-                <li class="hotVip" v-bind:class='{line:!isActive}'  v-on:click="isshow">{{content.activityList[1].name}}</li>
+                <li class="gamePoint" v-on:click="isshow"><span class="label" v-bind:class='{line:isActive}'>{{content.activityList[0].name}}</span></li>
+                <li class="hotVip" v-on:click="isshow"><span class="label" v-bind:class='{line:!isActive}'>{{content.activityList[1].name}}</span></li>
             </ul>
             <ul class="detail left" v-bind:class='{show:!isActive}'>
                 <li class="goods"  v-for="item in content.activityList[0].activityGoodsList" @click="buyNow(item.goodsId)">
@@ -26,8 +27,8 @@
                         <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
                         <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
                         <template v-if="item.goodsType==1">
-                                <p v-if="item.nperMap.isFree==2"><span class="monthpay">月供 </span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
-                                <p v-if="item.nperMap.isFree==1"><span class="monthpay">月供</span><span class="money">{{item.nperMap.freeAmount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
+                            <p v-if="item.nperMap.isFree==2" class="payments"><span class="monthpay">月供 </span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>
+                            <p v-if="item.nperMap.isFree==1" class="payments"><span class="monthpay">月供</span><span class="money">{{item.nperMap.freeAmount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>
 						</template>
                     </div>
                 </li>
@@ -39,10 +40,16 @@
                         </div>
                        <div class="goods-words">
                         <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-                        <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
+                        <div v-if="item.goodsType==1">
+                            <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
+                        </div>
+                        <div v-else="item.goodsType!=1">
+                            <p class="backmoney backmoney1"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p>
+                        </div>
+                        <!-- <p class="backmoney"><span class="dollor">￥{{item.saleAmount}}</span><span class="back">返利￥{{item.rebateAmount}}</span></p> -->
                         <template v-if="item.goodsType==1">
-                                <p v-if="item.nperMap.isFree==2"><span class="monthpay">月供 </span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
-                                <p v-if="item.nperMap.isFree==1"><span class="monthpay">月供</span><span class="money">{{item.nperMap.freeAmount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
+                            <p v-if="item.nperMap.isFree==2" class="payments"><span class="monthpay">月供 </span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>
+                            <p v-if="item.nperMap.isFree==1" class="payments"><span class="monthpay">月供</span><span class="money">{{item.nperMap.freeAmount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p>
 						</template>
                     </div>
                 </li>
@@ -50,6 +57,6 @@
         </div>
     </div>
 </body>
-<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<!-- <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script> -->
 <script src="/dist/activity/07/gamePoint.js"></script>
 </html>
