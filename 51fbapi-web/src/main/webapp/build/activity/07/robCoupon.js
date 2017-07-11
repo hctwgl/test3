@@ -119,7 +119,7 @@ let vm=new Vue({
                        requestMsg("请求失败");
                     }
                 });
-            /*$.ajax({
+            $.ajax({
               type: 'post',
               url: '/fanbei-web/superCouponList',
               success:function(data) {                      
@@ -130,7 +130,7 @@ let vm=new Vue({
               error:function(){
                  requestMsg("请求失败");
               }
-            })*/
+            })
         },
         buyNow(id){
           let self=this;            
@@ -143,6 +143,41 @@ let vm=new Vue({
         maskClick(){
           $('.mask').hide();
           $('.rule').hide();
+        },
+        couponClick(index){
+           let self=this;    
+           var couponIdNum=self.couponContent.couponInfoList[index].couponId;
+           var userName=self.couponContent.userName;
+           //console.log(couponIdNum)
+           $.ajax({
+                    url: "/fanbei-web/pickCoupon",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        couponId: couponIdNum,
+                        userName: userName
+                    },
+                    success: function(returnData){
+                        if (returnData.success) {
+                            requestMsg("优惠劵领取成功");
+                        } else {
+                            var status = returnData.data["status"];
+                            if (status == "USER_NOT_EXIST") { // 用户不存在
+                                window.location.href = returnData.url;
+                            }
+                            if (status == "OVER") { // 优惠券个数超过最大领券个数
+                                requestMsg(returnData.msg);
+                                requestMsg("优惠券个数超过最大领券个数");
+                            }
+                            if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                                requestMsg(returnData.msg);
+                            }
+                        }
+                    },
+                    error: function(){
+                        requestMsg("请求失败");
+                    }
+               });
         },
         txtFix(i){
             function get_length(s){

@@ -19,51 +19,16 @@
     </div>
     <div class="coupon">
        <ul class="couponList">
-           <!-- <li v-for="item in couponContent.couponInfoList">
-               <p>{{item.name}}</p>
-               <p>{{item.desc}}</p>
-               <p>({{item.remark}})</p>
-           </li>   --> 
-          <li>
+          <li v-for="(item,index) in couponContent.couponInfoList" @click="couponClick(index)">
                <div class="left">
-                   <p>￥<span>100</span></p>
+                   <p>￥<span>{{item.amount}}</span></p>
                </div>
                <div class="right">
-                   <p>全场券</p>
-                   <p>满499元使用</p>
+                   <p>{{item.name}}</p>
+                   <p>{{item.desc}}</p>
                    <p>立即领券</p>
                </div>               
-           </li>
-           <li>
-               <div class="left">
-                   <p>￥<span>100</span></p>
-               </div>
-               <div class="right">
-                   <p>全场券</p>
-                   <p>满499元使用</p>
-                   <p>立即领券</p>
-               </div>               
-           </li>
-           <li>
-               <div class="left">
-                   <p>￥<span>100</span></p>
-               </div>
-               <div class="right">
-                   <p>全场券</p>
-                   <p>满499元使用</p>
-                   <p>立即领券</p>
-               </div>               
-           </li>
-           <li>
-               <div class="left">
-                   <p>￥<span>100</span></p>
-               </div>
-               <div class="right">
-                   <p>全场券</p>
-                   <p>满499元使用</p>
-                   <p>立即领券</p>
-               </div>               
-           </li>    
+           </li>  
        </ul>
     </div>
     <p class="recommend">热门推荐</p>
