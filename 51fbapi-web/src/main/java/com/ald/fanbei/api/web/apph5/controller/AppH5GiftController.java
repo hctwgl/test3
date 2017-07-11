@@ -132,6 +132,7 @@ public class AppH5GiftController extends BaseController {
     			couponInfoMap.put("name", name);
     			couponInfoMap.put("couponId", couponId);
     			couponInfoMap.put("type", "1");
+    			couponInfoMap.put("amount", afCouponDo.getAmount());
     			couponInfoMap.put("desc", afCouponDo.getUseRule());
     			couponInfoMap.put("remark", "全场通用");
     			couponInfoList.add(couponInfoMap);
