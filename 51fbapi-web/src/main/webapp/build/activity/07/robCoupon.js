@@ -2,7 +2,7 @@
  * Created on 2017/07/10.
  */
 var activityId = getUrl("activityId");
-var couponId = getUrl("couponId");
+//console.log(activityId)
 let vm=new Vue({
     el:'#robCoupon',
     data:{
@@ -38,9 +38,9 @@ let vm=new Vue({
                       var currentTen= new Date(dateStr01).getTime();                         
                       var currentFourteen= new Date(dateStr02).getTime();
                       var nextTen= new Date(dateStr03).getTime();                                          
-                      console.log(currentTime)
-                      console.log(validStartTime)
-                      console.log(validEndTime)
+                      //console.log(currentTime)
+                      //console.log(validStartTime)
+                      //console.log(validEndTime)
                       var diff=0;
                       function showTime(time){
                           diff=parseInt((time-currentTime)/1000);
