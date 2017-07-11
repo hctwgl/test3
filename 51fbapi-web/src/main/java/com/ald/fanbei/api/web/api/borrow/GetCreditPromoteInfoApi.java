@@ -171,6 +171,12 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 				data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
 			}
 		}
+		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+			data.put("url", "http://f.51fanbei.com/test/3f1117c10e1396e1.png?currentTime=" + System.currentTimeMillis());
+		} else if (!StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())) {
+			data.put("url", "http://f.51fanbei.com/test/17177ce7f9940d21.png?currentTime=" + System.currentTimeMillis());
+		}
+		
 		return data;
 	}
 

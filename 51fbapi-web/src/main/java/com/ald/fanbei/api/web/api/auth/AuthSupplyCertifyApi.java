@@ -8,15 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -31,21 +30,13 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("authSupplyCertifyApi")
 public class AuthSupplyCertifyApi implements ApiHandle {
-
+	
 	@Resource
-	RiskUtil riskUtil;
-	@Resource
-	BizCacheUtil bizCacheUtil;
-	@Resource
-	AfUserService afUserService;
+	AfResourceService afResourceService;
 	@Resource
 	AfUserAuthService afUserAuthService;
 	@Resource
-	AfIdNumberService afIdNumberService;
-	@Resource
 	AfUserAccountService afUserAccountService;
-	@Resource
-	AfUserBankcardService afUserBankcardService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -54,17 +45,17 @@ public class AuthSupplyCertifyApi implements ApiHandle {
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowRiskMostAmount.getCode());
 		
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("fundStatus", afUserAuthDo.getFundStatus());
 		map.put("socialSecurityStatus", afUserAuthDo.getJinpoStatus());
 		map.put("creditStatus", afUserAuthDo.getCreditStatus());
 		map.put("currentAmount", accountDo.getUcAmount());
-//		map.put("highestAmount", );
+		map.put("highestAmount", afResourceDo.getValue());
 		resp.setResponseData(map);
 		
 		return resp;
-
 	}
 
 }

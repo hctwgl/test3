@@ -228,6 +228,7 @@
 				<entry key="/auth/authFund" value-ref="authFundApi" />
 				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
 				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
+				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -244,6 +245,7 @@
 				<entry key="/bill/getLimitDetailList" value-ref="getLimitDetailListApi" />
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
+				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
