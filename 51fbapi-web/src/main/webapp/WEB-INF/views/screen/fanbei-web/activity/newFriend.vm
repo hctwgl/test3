@@ -7,21 +7,22 @@
 </head>
 <style>
     .wrap{
-        padding:.08rem 0;
+        padding:.18rem 0;
         background: white;
         margin-top: .01rem;
         overflow: hidden;
         width: 7.5rem;
-        height: 3.5rem;
+        height: 3.3rem;
     }
     .coupon{
-        padding:.26rem 0 .25rem;
         margin:0 0 .08rem .08rem;
         border-radius:.08rem;
         float: left;
-        width:2.37rem;
-        height:1.1rem;
+        width:2.38rem;
+        height:1.61rem;
         overflow: hidden;
+        background: url("$src/newf.png") no-repeat;
+        background-size: cover;
     }
     .coupon p{
         text-align: center;
@@ -64,10 +65,10 @@
 <body>
 <div id="vueCon">
     <div class="wrap">
-        <div @click="getCoupon(content.couponInfoList[index].couponId,content.couponInfoList[index].type)" v-for="(data,index) in coupons" class="coupon" :style="{backgroundImage:'linear-gradient('+data+')'}">
-            <p style="font-size: .36rem;">{{content.couponInfoList[index].name}}</p>
-            <p style="font-size: .2rem;">{{content.couponInfoList[index].desc}}</p>
-            <p style="font-size: .2rem;">({{content.couponInfoList[index].remark}})</p>
+        <div v-for="(data,index) in content.couponInfoList" @click="getCoupon(data.couponId,data.type)" class="coupon">
+            <p style="font-size: .36rem;margin-top: .14rem">{{data.name}}</p>
+            <p style="font-size: .18rem;">{{data.desc}}</p>
+            <p style="font-size: .16rem;margin-top: .25rem;color:#e60012;">{{data.remark+' 立即领取'}}</p>
         </div>
     </div>
     <p class="recommend">热门推荐</p>

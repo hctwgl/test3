@@ -5,14 +5,6 @@ let activityId = getUrl("activityId");
 let vue=new Vue({
     el:'#vueCon',
     data:{
-        coupons:[
-            '-44deg, #fc858a 0%, #feb39e 100%'
-            ,'135deg, #fdcae5 0%, #fd9ea3 100%'
-            ,'-45deg, #fa9054 0%, #fdc98b 100%'
-            ,'-43deg, #3298f3 0%, #77f2f8 100%'
-            ,'-44deg, #ff517c 0%, #ffb199 100%'
-            ,'-44deg, #c357f8 0%, #afd9fe 100%'
-        ],
         content:[],
         tableContent:[]
     },
