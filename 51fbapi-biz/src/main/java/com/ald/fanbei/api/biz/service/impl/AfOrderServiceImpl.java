@@ -1194,9 +1194,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			agentbuyStatus.add(OrderStatus.FINISHED.getCode());
 			agentbuyStatus.add(OrderStatus.REBATED.getCode());
 			List<String> otherbuyStatus = new ArrayList<String>();
-			agentbuyStatus.add(OrderStatus.PAID.getCode());
-			agentbuyStatus.add(OrderStatus.FINISHED.getCode());
-			agentbuyStatus.add(OrderStatus.REBATED.getCode());
+			otherbuyStatus.add(OrderStatus.PAID.getCode());
+			otherbuyStatus.add(OrderStatus.FINISHED.getCode());
+			otherbuyStatus.add(OrderStatus.REBATED.getCode());
 			//代买和自营及状态匹配才满足申请售后条件
 			if(!((OrderType.AGENTBUY.getCode().equals(order.getOrderType()) && agentbuyStatus.contains(order.getStatus()))
 					|| (OrderType.SELFSUPPORT.getCode().equals(order.getOrderType()) && otherbuyStatus.contains(order.getStatus())))){
