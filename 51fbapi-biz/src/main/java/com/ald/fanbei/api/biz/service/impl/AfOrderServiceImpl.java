@@ -726,7 +726,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
-							return riskUtil.payOrder(borrow, verybo.getOrderNo(), verybo, getVirtualCode(virtualMap));
+							return riskUtil.payOrder(resultMap,borrow, verybo.getOrderNo(), verybo, getVirtualCode(virtualMap));
 						}
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());

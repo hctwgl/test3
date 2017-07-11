@@ -596,11 +596,10 @@ public class RiskUtil extends AbstractThird {
 	 * @param virtualCode 虚拟值
 	 * @return
 	 */
-	public Map<String,Object> payOrder(final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) {
+	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) {
 		String result = verifybo.getResult();
 		
 		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
-		Map<String, Object> resultMap = new HashMap<String, Object>();
 		// 添加一个根据风控号查找记录的方法
 		AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
 		// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
@@ -671,7 +670,7 @@ public class RiskUtil extends AbstractThird {
 		
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
-					
+		resultMap.put("success", true);
 		return resultMap;
 	}
 
