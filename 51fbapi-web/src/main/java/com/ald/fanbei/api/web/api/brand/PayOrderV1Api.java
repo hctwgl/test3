@@ -122,7 +122,7 @@ public class PayOrderV1Api implements ApiHandle {
 			resp.setResponseData(result);
 			
 		} catch (FanbeiException exception) {
-			throw new FanbeiException("pay order failed", exception);
+			return new ApiHandleResponse(requestDataVo.getId(), exception.getErrorCode());
 		} catch (Exception e) {
 			logger.error("pay order failed e = {}", e);
 			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
