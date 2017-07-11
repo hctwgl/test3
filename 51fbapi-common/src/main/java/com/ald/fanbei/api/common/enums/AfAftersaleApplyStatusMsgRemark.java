@@ -19,6 +19,7 @@ public enum AfAftersaleApplyStatusMsgRemark {
 	WAIT_GOODS_BACK("WAIT_GOODS_BACK","审核通过",""),
 	GOODS_BACKIING("GOODS_BACKIING","货品已回寄","货品回寄签收检查无误后即处理退款"),
 	WAIT_REFUND("WAIT_REFUND","待退款","退款处理中，请耐心等待！"),
+	REFUNDING("REFUNDING","待退款","退款处理中，请耐心等待！"),
 	FINISH("FINISH","退款完成","退款完成");
     
     private String code;

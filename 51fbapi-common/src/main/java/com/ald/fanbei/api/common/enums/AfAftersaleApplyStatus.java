@@ -18,6 +18,7 @@ public enum AfAftersaleApplyStatus {
 	WAIT_GOODS_BACK("WAIT_GOODS_BACK","审核通过待回寄商品"),
 	GOODS_BACKIING("GOODS_BACKIING","商品回寄中"),
 	WAIT_REFUND("WAIT_REFUND","等待退款"),
+	REFUNDING("REFUNDING","等待退款"),
 	FINISH("FINISH","退款完成");
     
     private String code;
