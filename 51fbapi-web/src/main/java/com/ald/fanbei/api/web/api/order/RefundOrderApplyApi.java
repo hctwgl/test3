@@ -139,7 +139,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 		if(StringUtil.isBlank(userReason)){
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 		}
-		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(orderId);
+		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderIdAndNotClose(orderId);
 		Date currDate = new Date();
 		if(afAftersaleApplyDo==null){
 			//新增申请记录
@@ -157,7 +157,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 			orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
 			afOrderService.updateOrder(orderInfo);
 		}else{
-			if(!(AfAftersaleApplyStatus.NOTPASS.getCode().equals(afAftersaleApplyDo.getStatus()) || AfAftersaleApplyStatus.CLOSE.getCode().equals(afAftersaleApplyDo.getStatus()))){
+			if(!AfAftersaleApplyStatus.NOTPASS.getCode().equals(afAftersaleApplyDo.getStatus())){
 				//返回提示售后处理中
 				throw new FanbeiException(FanbeiExceptionCode.AFTERSALE_PROCESSING);
 			}else{

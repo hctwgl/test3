@@ -6,9 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -31,6 +33,8 @@ public class CancelAfterSaleApplyApi implements ApiHandle{
 	AfOrderService afOrderService;
 	@Resource
 	AfAftersaleApplyService afAftersaleApplyService;
+	@Resource
+	AfGoodsService afGoodsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -61,6 +65,11 @@ public class CancelAfterSaleApplyApi implements ApiHandle{
 			if(StringUtil.isNotBlank(orderInfo.getPreStatus())){
 				orderInfo.setStatus(orderInfo.getPreStatus());
 				afOrderService.updateOrder(orderInfo);
+			}
+			
+			//自营商品增加商品销量
+			if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), orderInfo.getCount());
 			}
 			logger.info("cancelAfterSaleApply success. orderId="+orderId+",userId="+userId);
 		}else{
