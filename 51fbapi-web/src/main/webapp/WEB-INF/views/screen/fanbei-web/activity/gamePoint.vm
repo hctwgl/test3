@@ -50,6 +50,7 @@
         </div>
     </div>
 </body>
+
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
 <script src="/dist/activity/07/gamePoint.js"></script>
 </html>
