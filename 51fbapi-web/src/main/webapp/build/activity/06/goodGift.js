@@ -12,7 +12,7 @@ function AutoScroll(obj,x) {
 }
 
 $(document).ready(function() {
-    setInterval('AutoScroll(".prizeName","-0.75rem")', 1000);
+    setInterval('AutoScroll(".prizeName","-0.75rem")', 1300);
     $.ajax({
         url:'/fanbei-web/tearPacketAwardList',
         type:'post',
@@ -21,7 +21,7 @@ $(document).ready(function() {
            var prizeData=data.data.awordList
            //console.log(prizeData);
            for(var i=0;i<prizeData.length;i++){
-              var str='<li><p><span>'+prizeData[i].mobile+'</span><span>获得'+prizeData[i].prizeName+'</span></p></li>';
+              var str='<li><p><span>'+prizeData[i].mobile+'</span><span style="-webkit-box-orient: vertical;">获得'+prizeData[i].prizeName+'</span></p></li>';
               $('.roll').append(str);
            }
         },
