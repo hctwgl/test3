@@ -77,6 +77,17 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 				try {
 					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
 					updateOrderRefund(orderRefundInfo);
+					if(orderRefundInfo.getAftersaleApplyId()>0){
+						AfOrderDo orderT =new AfOrderDo();
+						orderT.setRid(orderInfo.getRid());
+						orderT.setStatus(OrderStatus.CLOSED.getCode());
+						afOrderDao.updateOrder(orderT);
+
+						AfAftersaleApplyDo saleDo =new AfAftersaleApplyDo();
+						saleDo.setId(orderRefundInfo.getAftersaleApplyId());
+						saleDo.setStatus(AfAftersaleApplyStatus.FINISH.getCode());
+						afAftersaleApplyDao.updateById(saleDo);
+					}
 				} catch (Exception e) {
 					logger.error("dealWithOrderRefund  error = {}",e);
 					status.setRollbackOnly();
