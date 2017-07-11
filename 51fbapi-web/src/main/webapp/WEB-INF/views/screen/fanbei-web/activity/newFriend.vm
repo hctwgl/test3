@@ -23,11 +23,14 @@
         overflow: hidden;
         background: url("$src/newf.png") no-repeat;
         background-size: cover;
+        position: relative;
     }
     .coupon p{
         text-align: center;
         color:white;
         white-space: nowrap;
+        position:absolute;
+        width: 100%;
     }
     .recommend{
         width:100%;
@@ -66,9 +69,9 @@
 <div id="vueCon">
     <div class="wrap">
         <div v-for="(data,index) in content.couponInfoList" @click="getCoupon(data.couponId,data.type)" class="coupon">
-            <p style="font-size: .36rem;margin-top: .14rem">{{data.name}}</p>
-            <p style="font-size: .18rem;">{{data.desc}}</p>
-            <p style="font-size: .16rem;margin-top: .25rem;color:#e60012;">{{data.remark+' 立即领取'}}</p>
+            <p style="font-size: .36rem;top: .14rem">{{data.name}}</p>
+            <p style="font-size: .18rem;top: .63rem">{{data.desc}}</p>
+            <p style="font-size: .16rem;bottom: .17rem;color:#e60012;line-height: .2rem;height: .2rem">{{data.remark+' 立即领取'}}</p>
         </div>
     </div>
     <p class="recommend">热门推荐</p>
