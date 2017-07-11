@@ -85,16 +85,18 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
 		//售后相关设置
 		Boolean isExistAftersaleApply = false;
+		String afterSaleStatus = "";
 		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(order.getRid());
 		if(afAftersaleApplyDo!=null){
 			isExistAftersaleApply = true;
+			afterSaleStatus = afAftersaleApplyDo.getStatus();
 			vo.setAfterSaleStatus(afAftersaleApplyDo.getStatus());
 		}else{
 			vo.setAfterSaleStatus("");
 		}
 		//状态备注及说明 
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
-				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0, isExistAftersaleApply);
+				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0, afterSaleStatus,isExistAftersaleApply);
 		if(orderStatusMsgRemark!=null){
 			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			vo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	

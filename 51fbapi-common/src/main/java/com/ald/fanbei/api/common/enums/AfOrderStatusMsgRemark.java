@@ -32,7 +32,7 @@ public enum AfOrderStatusMsgRemark {
         this.statusRemark = statusRemark;
     }
 
-    public static AfOrderStatusMsgRemark findRoleTypeByCodeAndOrderType(String code,String orderType,String payType,Boolean isExistRebates,Boolean isExistAftersaleApply) {
+    public static AfOrderStatusMsgRemark findRoleTypeByCodeAndOrderType(String code,String orderType,String payType,Boolean isExistRebates,String afterSaleStatus,Boolean isExistAftersaleApply) {
         for (AfOrderStatusMsgRemark roleType : AfOrderStatusMsgRemark.values()) {
             if (roleType.getCode().equals(code)) {
             	//OrderType
@@ -60,6 +60,12 @@ public enum AfOrderStatusMsgRemark {
             			roleType.setStatusRemark("已退款");
             		}else{
             			roleType.setStatusMsg("订单关闭");
+            			roleType.setStatusRemark("");
+            		}
+            	}
+            	if(WAITING_REFUND.getCode().equals(roleType.getCode())){
+            		if(AfAftersaleApplyStatus.WAIT_REFUND.getCode().equals(afterSaleStatus)){
+            			roleType.setStatusMsg("待退款");
             			roleType.setStatusRemark("");
             		}
             	}

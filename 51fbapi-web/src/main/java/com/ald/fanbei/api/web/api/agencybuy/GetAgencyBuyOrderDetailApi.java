@@ -231,9 +231,11 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setGoodsSaleAmount(afOrderDo.getSaleAmount().divide(saleCount, 2));
 		//售后相关设置
 		Boolean isExistAftersaleApply = false;
+		String afterSaleStatus = "";
 		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(afOrderDo.getRid());
 		if(afAftersaleApplyDo!=null){
 			isExistAftersaleApply = true;
+			afterSaleStatus = afAftersaleApplyDo.getStatus();
 			agentOrderDetailVo.setAfterSaleStatus(afAftersaleApplyDo.getStatus());
 			agentOrderDetailVo.setGmtRefundApply(afAftersaleApplyDo.getGmtApply());
 		}else{
@@ -242,7 +244,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		}
 		//状态备注及说明 
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
-				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0, isExistAftersaleApply);
+				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply);
 		if(orderStatusMsgRemark!=null){
 			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			agentOrderDetailVo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
