@@ -82,6 +82,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setInvoiceHeader(order.getInvoiceHeader());
 		vo.setLogisticsInfo(order.getLogisticsInfo());
 		vo.setPayType(order.getPayType());
+		vo.setGmtPayStart(new Date());
 		vo.setGmtPayEnd(DateUtil.addHoures(order.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
@@ -99,9 +100,10 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 			vo.setGmtRefundApply(new Date(0));
 			vo.setAfterSaleStatus("");
 		}
+		vo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(order.getRid()));
 		//状态备注及说明 
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
-				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply);
+				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,"");
 		if(orderStatusMsgRemark!=null){
 			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			vo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	

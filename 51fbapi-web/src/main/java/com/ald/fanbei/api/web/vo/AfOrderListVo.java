@@ -30,6 +30,7 @@ public class AfOrderListVo extends AbstractSerial {
 	private String orderStatusMsg;
 	private String orderStatusRemark;
 	private String afterSaleStatus;
+	private String isCanApplyAfterSale;
 	
 	public Long getOrderId() {
 		return orderId;
@@ -126,6 +127,12 @@ public class AfOrderListVo extends AbstractSerial {
 	}
 	public void setAfterSaleStatus(String afterSaleStatus) {
 		this.afterSaleStatus = afterSaleStatus;
+	}
+	public String getIsCanApplyAfterSale() {
+		return isCanApplyAfterSale;
+	}
+	public void setIsCanApplyAfterSale(String isCanApplyAfterSale) {
+		this.isCanApplyAfterSale = isCanApplyAfterSale;
 	}
 	
 }
