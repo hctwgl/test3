@@ -44,6 +44,7 @@
                                 <p v-if="item.nperMap.isFree==2"><span class="monthpay">月供 </span><span class="money">{{item.nperMap.amount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
                                 <p v-if="item.nperMap.isFree==1"><span class="monthpay">月供</span><span class="money">{{item.nperMap.freeAmount}}x{{item.nperMap.nper}}<i class="free">免息</i> </span></p> 
 						</template>
+						
                     </div>
                 </li>
             </ul>
