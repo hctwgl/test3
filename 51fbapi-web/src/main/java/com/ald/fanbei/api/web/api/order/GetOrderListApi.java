@@ -13,13 +13,17 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -39,6 +43,8 @@ public class GetOrderListApi implements ApiHandle{
 	AfOrderService afOrderService;
 	@Resource
 	AfAftersaleApplyService afAftersaleApplyService;
+	@Resource
+	AfAgentOrderService afAgentOrderService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -94,9 +100,20 @@ public class GetOrderListApi implements ApiHandle{
 		}else{
 			vo.setAfterSaleStatus("");
 		}
+		vo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(order.getRid()));
 		//状态备注及说明 
+		String closeReason = "";
+		if(OrderType.AGENTBUY.getCode().equals(order.getOrderType())){
+			AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(order.getRid());
+			if(afAgentOrderDo!=null){
+				closeReason = afAgentOrderDo.getCancelReason();
+				if(StringUtil.isBlank(closeReason)){
+					closeReason = afAgentOrderDo.getClosedReason();
+				}
+			}
+		}
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
-				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0, afterSaleStatus,isExistAftersaleApply);
+				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0, afterSaleStatus,isExistAftersaleApply,closeReason);
 		if(orderStatusMsgRemark!=null){
 			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			vo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	

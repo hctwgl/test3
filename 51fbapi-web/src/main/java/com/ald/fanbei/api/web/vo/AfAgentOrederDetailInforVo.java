@@ -50,7 +50,9 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String orderStatusRemark;
 	private String afterSaleStatus;
 	private Date gmtRefundApply;
+	private Date gmtPayStart;
 	private Date gmtPayEnd;
+	private String isCanApplyAfterSale;
 	
 	public String getCouponName() {
 		return couponName;
@@ -284,6 +286,18 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	}
 	public void setGmtPayEnd(Date gmtPayEnd) {
 		this.gmtPayEnd = gmtPayEnd;
+	}
+	public Date getGmtPayStart() {
+		return gmtPayStart;
+	}
+	public void setGmtPayStart(Date gmtPayStart) {
+		this.gmtPayStart = gmtPayStart;
+	}
+	public String getIsCanApplyAfterSale() {
+		return isCanApplyAfterSale;
+	}
+	public void setIsCanApplyAfterSale(String isCanApplyAfterSale) {
+		this.isCanApplyAfterSale = isCanApplyAfterSale;
 	}
 	
 }

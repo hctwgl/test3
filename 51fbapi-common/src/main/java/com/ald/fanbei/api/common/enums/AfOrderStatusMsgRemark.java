@@ -3,6 +3,8 @@ package com.ald.fanbei.api.common.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.util.StringUtil;
+
 /**
  * @类描述：订单状态对应app描述转换
  * @author chengkang 2017年7月10日下午15:31:23
@@ -32,7 +34,7 @@ public enum AfOrderStatusMsgRemark {
         this.statusRemark = statusRemark;
     }
 
-    public static AfOrderStatusMsgRemark findRoleTypeByCodeAndOrderType(String code,String orderType,String payType,Boolean isExistRebates,String afterSaleStatus,Boolean isExistAftersaleApply) {
+    public static AfOrderStatusMsgRemark findRoleTypeByCodeAndOrderType(String code,String orderType,String payType,Boolean isExistRebates,String afterSaleStatus,Boolean isExistAftersaleApply,String closeReason) {
         for (AfOrderStatusMsgRemark roleType : AfOrderStatusMsgRemark.values()) {
             if (roleType.getCode().equals(code)) {
             	//OrderType
@@ -60,11 +62,11 @@ public enum AfOrderStatusMsgRemark {
             			roleType.setStatusRemark("已退款");
             		}else{
             			roleType.setStatusMsg("订单关闭");
-            			roleType.setStatusRemark("");
+            			roleType.setStatusRemark(StringUtil.null2Str(closeReason));
             		}
             	}
             	if(WAITING_REFUND.getCode().equals(roleType.getCode())){
-            		if(AfAftersaleApplyStatus.WAIT_REFUND.getCode().equals(afterSaleStatus)){
+            		if(AfAftersaleApplyStatus.WAIT_REFUND.getCode().equals(afterSaleStatus) || AfAftersaleApplyStatus.REFUNDING.getCode().equals(afterSaleStatus)){
             			roleType.setStatusMsg("待退款");
             			roleType.setStatusRemark("");
             		}

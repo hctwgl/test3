@@ -1198,20 +1198,30 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			agentbuyStatus.add(OrderStatus.FINISHED.getCode());
 			agentbuyStatus.add(OrderStatus.REBATED.getCode());
 			//代买和自营及状态匹配才满足申请售后条件
-			if((OrderType.AGENTBUY.getCode().equals(order.getOrderType()) && agentbuyStatus.contains(order.getStatus()))
-					|| (OrderType.SELFSUPPORT.getCode().equals(order.getOrderType()) && otherbuyStatus.contains(order.getStatus()))){
-				//时间售后条件判断，自订单状态为待收货开始30个自然日内
-				Date waitDelieveDate = null;
-				if(OrderType.SELFSUPPORT.getCode().equals(order.getOrderType())){
-					waitDelieveDate = order.getGmtPay();
-				}else{
-					AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
-					waitDelieveDate = agentOrderDo.getGmtMatchOrder();
+			if(!((OrderType.AGENTBUY.getCode().equals(order.getOrderType()) && agentbuyStatus.contains(order.getStatus()))
+					|| (OrderType.SELFSUPPORT.getCode().equals(order.getOrderType()) && otherbuyStatus.contains(order.getStatus())))){
+				return isCanApply;
+			}
+			
+			//符合订单类型及状态，继续时间校验，自订单状态为待收货开始30个自然日内
+			Date waitDelieveDate = null;
+			if(OrderType.SELFSUPPORT.getCode().equals(order.getOrderType())){
+				waitDelieveDate = order.getGmtPay();
+			}else{
+				AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
+				AfOrderTempDo orderTemp = afOrderTempDao.getByOrderId(orderId);
+				waitDelieveDate = agentOrderDo.getGmtAgentBuy();
+				//涉及老的数据当初有问题，所有先取af_order_temp 如果没有，再取订单支付时间
+				if(waitDelieveDate==null && orderTemp!=null){
+					waitDelieveDate = orderTemp.getGmtCreate();
 				}
-				Date deadlineTime = DateUtil.addDays(waitDelieveDate,Constants.AFTER_SALE_DAYS);
-				if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(deadlineTime),DateUtil.getToday())<0){
-					isCanApply = YesNoStatus.YES.getCode();
+				if(waitDelieveDate == null){
+					waitDelieveDate = order.getGmtCreate();
 				}
+			}
+			Date deadlineTime = DateUtil.addDays(waitDelieveDate,Constants.AFTER_SALE_DAYS);
+			if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(deadlineTime),DateUtil.getToday())<0){
+				isCanApply = YesNoStatus.YES.getCode();
 			}
 		} catch (Exception e) {
 			logger.error("isCanApplyAfterSale request error,orderId:"+orderId,e);

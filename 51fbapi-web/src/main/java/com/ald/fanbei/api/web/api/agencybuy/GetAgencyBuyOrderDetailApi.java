@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
@@ -226,6 +227,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setSaleAmount(saleAmount);
 		agentOrderDetailVo.setActualAmount(actualAmount);
 		agentOrderDetailVo.setNper(afOrderDo.getNper());
+		agentOrderDetailVo.setGmtPayStart(new Date());
 		agentOrderDetailVo.setGmtPayEnd(DateUtil.addHoures(afOrderDo.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(afOrderDo.getCount()), BigDecimal.ONE);
@@ -243,9 +245,15 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			agentOrderDetailVo.setGmtRefundApply(new Date(0));
 			agentOrderDetailVo.setAfterSaleStatus("");
 		}
+		agentOrderDetailVo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(afOrderDo.getRid()));
 		//状态备注及说明 
+		String closeReason = "";
+		closeReason = afAgentOrderDo.getCancelReason();
+		if(StringUtil.isBlank(closeReason)){
+			closeReason = afAgentOrderDo.getClosedReason();
+		}
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
-				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply);
+				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason);
 		if(orderStatusMsgRemark!=null){
 			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			agentOrderDetailVo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	

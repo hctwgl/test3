@@ -25,6 +25,12 @@ public interface AfOrderTempDao {
      * @return
      */
     AfOrderTempDo getByOrderNo(@Param("orderNo")String orderNo);
+    /**
+     * 通过订单id查询临时订单
+     * @param orderNo
+     * @return
+     */
+    AfOrderTempDo getByOrderId(@Param("orderId")Long orderId);
     
     /**
      * 增加记录
