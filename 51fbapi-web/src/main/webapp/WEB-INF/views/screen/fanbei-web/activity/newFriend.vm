@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017052302")
+    #set($src="http://f.51fanbei.com/h5/app/activity/07")
+    <title>新朋友见面礼</title>
+</head>
+<style>
+    .wrap{
+        padding:.18rem 0;
+        background: white;
+        margin-top: .01rem;
+        overflow: hidden;
+        width: 7.5rem;
+        height: 3.3rem;
+    }
+    .coupon{
+        margin:0 0 .08rem .08rem;
+        border-radius:.08rem;
+        float: left;
+        width:2.38rem;
+        height:1.61rem;
+        overflow: hidden;
+        background: url("$src/newf.png") no-repeat;
+        background-size: cover;
+    }
+    .coupon p{
+        text-align: center;
+        color:white;
+        white-space: nowrap;
+    }
+    .recommend{
+        width:100%;
+        height:1.2rem;
+        background:#fff;
+        line-height:1.2rem;
+        font-size: .32rem;
+        text-align: center;
+        margin:.2rem 0 .03rem 0;
+    }
+    .productList li{width:100%;height:2.92rem;background:#fff;margin-bottom: .03rem;}
+    .productImg{width:2.92rem;height:2.92rem;float:left;}
+    .productList li .productRight{width:3.6rem;float:left;padding:.55rem 0 0 6%;}
+    .productList li p{display: inline-block;}
+    .productList li .productRight .productDes{font-size: .3rem;line-height: .38rem;}
+    .productList li .productRight .buyPrice{height:.38rem;line-height: .38rem;
+        padding-top:.18rem;font-size:.28rem;color:#999999;}
+    .fan{
+        width: 0.28rem;
+        height: 0.28rem;
+        padding:.01rem;
+        line-height: 0.28rem;
+        text-align: center;
+        border-radius: 50%;
+        background-color: #f94014;
+        color: #fff;
+        font-size: 0.16rem;
+        top: -.06rem;
+        position: relative;
+    }
+    .productList li .productRight .fanPrice{font-size:.26rem;color:#f94014;}
+    .monthPrice{font-size:.28rem;color:#f94014;
+        padding-top:.2rem;}
+</style>
+<body>
+<div id="vueCon">
+    <div class="wrap">
+        <div v-for="(data,index) in content.couponInfoList" @click="getCoupon(data.couponId,data.type)" class="coupon">
+            <p style="font-size: .36rem;margin-top: .14rem">{{data.name}}</p>
+            <p style="font-size: .18rem;">{{data.desc}}</p>
+            <p style="font-size: .16rem;margin-top: .25rem;color:#e60012;">{{data.remark+' 立即领取'}}</p>
+        </div>
+    </div>
+    <p class="recommend">热门推荐</p>
+        <ul class="productList">
+            <li v-for="item in tableContent.recommendGoodsList" @click="buyNow(item.goodsId)">
+                <div class="productImg"><img :src='item.goodsIcon'></div>
+                <div class="productRight">
+                    <p class="productDes">{{txtFix(item.goodName)}}</p>
+                    <div class="monthPrice" v-if="item.goodsType==='1'">月供￥<span v-if="item.nperMap.isFree==1">{{item.nperMap.freeAmount}}</span><span v-else>{{item.nperMap.amount}}</span>起                    </div>
+                    <div class="monthPrice" v-else style="opacity: 0">月供</div>
+                    <p class="buyPrice">￥{{(item.saleAmount).toFixed(1)}}</p>
+                    <i class="fan">返</i>
+                    <p class="fanPrice">￥{{item.rebateAmount}}</p><br/>
+                </div>
+            </li>
+##            <li>
+##                <img class="productImg" src='$src/robCoupon01.jpg'>
+##                <div class="productRight">
+##                    <p class="productDes">Apple MacBook Air 13.3英寸笔记本电脑2017年新款</p>
+##                    <p class="buyPrice">￥6288</p>
+##                    <p class="fan">返</p>
+##                    <p class="fanPrice">￥10.00</p>
+##                    <p class="monthPrice">月供￥<span>299.73</span>起</p>
+##                </div>
+##            </li>
+##            <li>
+##                <div class="productImg"><img src='$src/robCoupon01.jpg'></div>
+##                <div class="productRight">
+##                    <p class="productDes">Apple MacBook Air 13.3英寸笔记本电脑2017年新款</p>
+##                    <p class="buyPrice">￥6288</p>
+##                    <p class="fan">返</p>
+##                    <p class="fanPrice">￥10.00</p>
+##                    <p class="monthPrice">月供￥<span>299.73</span>起</p>
+##                </div>
+##            </li>
+        </ul>
+</div>
+</body>
+<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<script type="text/javascript" src="/dist/activity/07/newFriend.js"></script>
+
+<script>
+
+</script>
+</html>

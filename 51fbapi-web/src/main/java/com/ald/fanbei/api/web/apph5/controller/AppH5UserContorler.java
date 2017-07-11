@@ -233,6 +233,9 @@ public class AppH5UserContorler extends BaseController {
 				appDownLoadUrl = resourceCodeDo.getValue();
 			}
 			resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
+			
+			// 注册成功给用户发送注册短信
+			smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 			return resultStr;
 
 		}catch(FanbeiException e){
@@ -387,6 +390,8 @@ public class AppH5UserContorler extends BaseController {
 			}
 			afPromotionChannelPointService.addRegister(pcp.getId());
 			resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
+			// 注册成功,发送注册短信
+			smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 			return resultStr;
 
 		} catch (Exception e) {

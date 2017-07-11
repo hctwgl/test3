@@ -41,4 +41,9 @@ public class AfSmsRecordServiceImpl implements AfSmsRecordService{
 		return afSmsRecordDao.updateSmsFailCount(afSmsRecordDo);
 	}
 
+	@Override
+	public AfSmsRecordDo getLatestByMobileCode(String mobile, String verifyCode) {
+		return afSmsRecordDao.getLatestByMobileCode(mobile, verifyCode);
+	}
+
 }
