@@ -6,14 +6,14 @@
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
-		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info
+		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status
 	</sql>
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
-		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info
+		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
@@ -323,6 +323,9 @@
 		<if test="commissionAmount != null">
 		    ,commission_amount=#{commissionAmount}
 		</if>
+		<if test="preStatus != null">
+		    ,pre_status=#{preStatus}
+		</if>
 		where is_delete=0 and pay_trade_no = #{payTradeNo}
 	</update>
 
@@ -399,6 +402,9 @@
 		</if>
 		<if test="commissionAmount != null">
 		    ,commission_amount=#{commissionAmount}
+		</if>
+		<if test="preStatus != null">
+		    ,pre_status=#{preStatus}
 		</if>
 		where is_delete=0 and order_no = #{orderNo} 
 	</update>
@@ -637,6 +643,9 @@
 			</if>
 			<if test="interestFreeJson != null">
     			,interest_free_json=#{interestFreeJson}
+			</if>
+			<if test="preStatus != null">
+			    ,pre_status=#{preStatus}
 			</if>
 		WHERE id = #{rid}
 	</update>

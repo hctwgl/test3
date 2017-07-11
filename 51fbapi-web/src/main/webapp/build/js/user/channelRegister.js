@@ -162,7 +162,7 @@ $(function(){
 								},
 								success: function(returnData){
                                     if (returnData.success) {
-                                        if ( style==8 || style==12 ) {  // 样式12弹窗
+                                        if ( style==8 || style==10 || style==12 ) {
                                             $("#register_submitBtn").attr("disabled",true);
 
                                             $(".registerSuss8").removeClass("hide");  // 显示样式8

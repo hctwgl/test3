@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
+import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
@@ -339,11 +342,11 @@ public class TestController {
 //	}
 //	
 //
-//	/**
-//	 * 银行卡退款
-//	 * @author fumeiai
-//	 * @return
-//	 */
+	/**
+	 * 银行卡退款
+	 * @author fumeiai
+	 * @return
+	 */
 //	@RequestMapping(value = { "/bankRefund" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 //	@ResponseBody
 //	public String bankRefund(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -488,5 +491,31 @@ public class TestController {
 		String resultString = HttpUtil.doHttpPostJsonParam(brandUrl, JSONObject.toJSONString(bo));
 		logger.info("userName = " + userName + " brandUrl = " + brandUrl);
 		logger.info("allowcateBrandCoupon pickBrandCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+	}
+	
+	@RequestMapping(value = { "/testRiskQueryOverdueOrder" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String testRiskQueryOverdueOrder(HttpServletRequest request, HttpServletResponse response) {
+		RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder("68885");
+		System.out.println(resp);
+		return "success";
+	}
+	
+	@RequestMapping(value = { "/test11" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String bo(HttpServletRequest request, HttpServletResponse response) {
+		
+		String identity = System.currentTimeMillis() + StringUtil.EMPTY;
+		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
+		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
+		RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
+		bo.setBorrowNo("jk2017071020281800843");
+		bo.setOverdueDays(0);
+		bo.setOverdueTimes(1);
+		boList.add(bo);
+		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
+		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		logger.info("dealWithSynchronizeOverduedOrder completed");
+		return "success";
 	}
 }

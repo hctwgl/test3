@@ -126,4 +126,11 @@ public interface AfBorrowCashDao {
 	 * @return
 	 */
 	AfBorrowCashDo getNowUnfinishedBorrowCashByUserId(Long userId);
+	
+	/***
+	 * 根据借钱编号获取借钱账号
+	 * @param userId
+	 * @return
+	 */
+	AfBorrowCashDo getBorrowCashInfoByBorrowNo(@Param("borrowNo")String borrowNo);
 }

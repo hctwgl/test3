@@ -71,4 +71,11 @@ public interface AfBorrowDao {
 	 * @return
 	 */
 	int getBorrowNumByUserId(@Param("userId") Long userId);
+	
+	/**
+	 * 根据借款编号获取借款信息
+	 * @param borrowNo
+	 * @return
+	 */
+	AfBorrowDo getBorrowInfoByBorrowNo(String borrowNo);
 }

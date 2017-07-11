@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
@@ -41,7 +42,9 @@ public class GeneratorClusterNo {
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	@Resource
 	AfOrderRefundService afOrderRefundService;
-
+	@Resource
+	AfAftersaleApplyService afAftersaleApplyService;
+	
 	/**
 	 * 获取订单号
 	 * 
@@ -56,6 +59,18 @@ public class GeneratorClusterNo {
 		return orderSb.toString();
 	}
 
+	/**
+	 * 获取售后申请编号
+	 * @param currDate
+	 * @return
+	 */
+	public String getAfterSaleApplyNo(Date currDate) {// 支付号规则：14位日期_5位订单序号
+		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+		StringBuffer orderSb = new StringBuffer("AS");
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getAfterSaleApplyNoSequenceNum(currDate)));
+		return orderSb.toString();
+	}
+	
 	/**
 	 * 获取支付号
 	 * 
@@ -177,7 +192,39 @@ public class GeneratorClusterNo {
 		}
 		return Integer.parseInt(newStr);
 	}
+	
 
+	private int getAfterSaleApplyNoSequenceNum(Date currentDate) {// 加锁，防止并发
+		Integer channelNum = 1;
+		String lockKey = Constants.CACHEKEY_ORDER_PAY_NO_LOCK;
+		String cacheKey = Constants.CACHEKEY_ORDER_PAY_NO;
+		boolean isGetLock = TokenCacheUtil.getLockTryTimes(lockKey, "1",Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")));
+		try {
+			if (isGetLock) {// 获得同步锁
+				channelNum = (Integer) TokenCacheUtil.getObject(cacheKey);
+				if (channelNum == null) {// 缓存中无数据,从库中获取
+					String payNo = afAftersaleApplyService.getCurrentLastApplyNo(currentDate);
+					channelNum = payNo == null ? 1 : (getOrderSeqInt(payNo
+							.substring(16, 20)) + 1);
+				} else {
+					channelNum = channelNum + 1;
+				}
+			} else {// 获取锁失败，从库中取单号
+				String payNo = afAftersaleApplyService.getCurrentLastApplyNo(currentDate);
+				if (StringUtils.isNotBlank(payNo)) {
+					channelNum = getOrderSeqInt(payNo.substring(16, 21)) + 1;
+				}
+				return channelNum;
+			}
+			TokenCacheUtil.saveObject(cacheKey, channelNum,Constants.SECOND_OF_ONE_WEEK);
+		} finally {
+			if (isGetLock) {
+				TokenCacheUtil.delCache(lockKey);
+			}
+		}
+		return channelNum;
+	}
+	
 	private int getOrderPaySequenceNum(Date currentDate) {// 加锁，防止并发
 		Integer channelNum = 1;
 		String lockKey = Constants.CACHEKEY_ORDER_PAY_NO_LOCK;

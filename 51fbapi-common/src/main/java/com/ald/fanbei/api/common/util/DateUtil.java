@@ -1131,5 +1131,15 @@ public class DateUtil {
     	SimpleDateFormat fromat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	return fromat.parse(date);
     }
-
+    
+    public static Integer getCurrentYear() {
+    	Calendar calender = Calendar.getInstance();
+    	return calender.get(Calendar.YEAR);
+    }
+    
+    public static Integer getCurrentMonth() {
+    	Calendar calender = Calendar.getInstance();
+    	return calender.get(Calendar.MONTH) + 1;
+    }
+    
 }

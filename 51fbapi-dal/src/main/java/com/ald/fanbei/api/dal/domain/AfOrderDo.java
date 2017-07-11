@@ -64,6 +64,7 @@ public class AfOrderDo extends AbstractSerial{
 	private String consigneeMobile;//收件人电话
 	private String invoiceHeader;//发票抬头
 	private String logisticsInfo;//物流信息
+	private String preStatus;//状态更新前状态
 	
 	
 	public Long getRid() {
@@ -406,6 +407,12 @@ public class AfOrderDo extends AbstractSerial{
 	 */
 	public void setNper(Integer nper) {
 		this.nper = nper;
+	}
+	public String getPreStatus() {
+		return preStatus;
+	}
+	public void setPreStatus(String preStatus) {
+		this.preStatus = preStatus;
 	}
 	
 }

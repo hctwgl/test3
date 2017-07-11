@@ -10,6 +10,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
@@ -51,12 +54,17 @@ public class PayOrderV1Api implements ApiHandle {
 	BoluomeUtil boluomeUtil;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
@@ -104,16 +112,57 @@ public class PayOrderV1Api implements ApiHandle {
 				nper = orderInfo.getNper();
 			}
 			Map<String, Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
-			if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
-				riskUtil.payOrderChangeAmount(orderInfo.getRid());
+			String success = result.get("success").toString();
+			if (StringUtils.isNotBlank(success) && Boolean.parseBoolean(success)) {
+//				dealWithPayOrderRiskFailed(result, resp);
+				if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
+					riskUtil.payOrderChangeAmount(orderInfo.getRid());
+				}
 			}
 			resp.setResponseData(result);
+			
 		} catch (FanbeiException exception) {
-			throw new FanbeiException("pay order failed", exception.getErrorCode());
+			return new ApiHandleResponse(requestDataVo.getId(), exception.getErrorCode());
 		} catch (Exception e) {
 			logger.error("pay order failed e = {}", e);
 			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 		return resp;
 	}
+	
+//	/**
+//	 * 处理风控逾期订单处理
+//	 * @param result
+//	 * @param resp
+//	 */
+//	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
+//		String success = result.get("success").toString();
+//		//如果代付，风控支付是不通过的，找出其原因
+//		if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {
+//			String verifyBoStr = (String) result.get("verifybo");
+//			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
+//			String rejectCode = riskResp.getRejectCode();
+//			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+//			switch (erorrCode) {
+//			case AUTH_AMOUNT_LIMIT:
+//				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_AUTH_AMOUNT_LIMIT);
+//			case OVERDUE_BORROW:
+//			{
+//				String borrowNo = riskResp.getBorrowNo();
+//				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+//				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_OVERDUED));
+//				resp.addResponseData("billId", billId == null ? 0 : billId);
+//			}
+//				break;
+//			case OVERDUE_BORROW_CASH:
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_CASH_OVERDUED));
+//				break;
+//			case OTHER_RULE:
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_OTHER_RULE));
+//			default:
+//				break;
+//			}
+//		}
+//	}
 }

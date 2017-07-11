@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderRefundDao">
 	<sql id="queryAllFields">
-		id rid,gmt_create,gmt_modified,amount,actual_amount,user_id,order_id,order_no,status,refund_no,type,account_number,account_name,content,resource,pay_trade_no,contacts_mobile
+		id rid,gmt_create,gmt_modified,amount,actual_amount,user_id,order_id,order_no,status,refund_no,type,account_number,account_name,content,resource,pay_trade_no,contacts_mobile,aftersale_apply_id
 	</sql>
 	
 	<insert id="addOrderRefund" parameterType="AfOrderRefundDo" useGeneratedKeys="true" keyProperty="rid">

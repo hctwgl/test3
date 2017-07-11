@@ -274,4 +274,18 @@
 		LIMIT
 		1
 	</select>
+	
+	<select id ="getBorrowCashInfoByBorrowNo" resultType="AfBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+			af_borrow_cash
+		WHERE
+			is_delete = 0
+		AND 
+			borrow_no = #{borrowNo}
+		LIMIT 1
+	</select>
+	
+	
 </mapper>

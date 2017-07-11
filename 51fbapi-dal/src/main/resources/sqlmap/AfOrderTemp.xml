@@ -31,6 +31,17 @@
 	         order_no =#{orderNo}
 	</select>
 	
+	<select id="getByOrderId" resultType="AfOrderTempDo">
+	    SELECT
+	    	<include refid="queryFields" />
+	    FROM
+	   		 af_order_temp
+	    WHERE
+	    	is_delete = 0
+	     AND
+	         order_id =#{orderId}
+	</select>
+	
 	
 	<update id="updateUserOrderTemp" parameterType="AfOrderTempDo" >
 		update af_order_temp  set gmt_modified=NOW()

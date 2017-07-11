@@ -113,24 +113,43 @@ public class SubmitRepaymentApi implements ApiHandle{
 		if(null != coupon &&!coupon.getStatus().equals(CouponStatus.NOUSE.getCode())){
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
-		showAmount = actualAmount;
-
-		if(coupon!=null){
-			showAmount = BigDecimalUtil.add(actualAmount, coupon.getAmount());
-		}
-		if(afUserAccountDo.getRebateAmount().compareTo(rebateAmount)<0){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
-		}
 		
-		BigDecimal jfb=BigDecimalUtil.divide(jfbAmount, new BigDecimal(100));
-		if(afUserAccountDo.getJfbAmount().compareTo(jfbAmount)<0){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+		
+		
+		showAmount = repaymentAmount;
+		//使用优惠券结算金额
+		if(coupon!=null){
+			showAmount = BigDecimalUtil.subtract(repaymentAmount, coupon.getAmount());
 		}
-
-		showAmount =BigDecimalUtil.add(showAmount, jfb);
-		showAmount = BigDecimalUtil.add(showAmount, rebateAmount);
+		//优惠券金额大于还款金额其他数据处理
+		if(showAmount.compareTo(BigDecimal.ZERO)<=0){
+			logger.info(afUserAccountDo.getUserName()+"coupon repayment");
+			jfbAmount = BigDecimal.ZERO;
+			rebateAmount = BigDecimal.ZERO;
+			showAmount = BigDecimal.ZERO;
+		}
+		BigDecimal myjfb =	BigDecimalUtil.divide(afUserAccountDo.getJfbAmount(), new BigDecimal(100));
+		//使用集分宝处理
+		if( jfbAmount.compareTo(BigDecimal.ZERO)>0 &&showAmount.compareTo(myjfb)>0){
+			
+			showAmount = BigDecimalUtil.subtract(showAmount, myjfb);
+			jfbAmount = afUserAccountDo.getJfbAmount();
+		}else if(jfbAmount.compareTo(BigDecimal.ZERO)>0 &&showAmount.compareTo(myjfb)<=0){
+			//集分宝金额大于还款金额
+			jfbAmount =BigDecimalUtil.multiply(showAmount,  new BigDecimal(100)) ;
+			rebateAmount = BigDecimal.ZERO;
+			showAmount = BigDecimal.ZERO;
+		}
+		//余额处理
+		if(rebateAmount.compareTo(BigDecimal.ZERO)>0&&showAmount.compareTo(afUserAccountDo.getRebateAmount())>0){
+			showAmount = BigDecimalUtil.subtract(showAmount, afUserAccountDo.getRebateAmount());
+			rebateAmount = afUserAccountDo.getRebateAmount();
+		}else if(rebateAmount.compareTo(BigDecimal.ZERO)>0 &&showAmount.compareTo(afUserAccountDo.getRebateAmount())<=0){
+			rebateAmount = showAmount;
+			showAmount = BigDecimal.ZERO;
+		}
 	
-		if(repaymentAmount.compareTo(showAmount)!=0){
+		if(actualAmount.compareTo(showAmount)!=0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 		}
 		
