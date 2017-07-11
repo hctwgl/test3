@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,24 +12,31 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameConfService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfGameService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGameConfDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -57,6 +65,8 @@ public class TearPacketApi  implements ApiHandle {
 	AfCouponService afCouponService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfResourceService afResourceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -75,7 +85,7 @@ public class TearPacketApi  implements ApiHandle {
 			}
 			if(!("TRANSED".equals(status) && takePartTime < 1)
 					&& !("FINSH".equals(status) && takePartTime < 2)) {
-				throw new FanbeiException();
+				throw new FanbeiException("不符合抽奖条件");
 			} 
 			// 获取拆红包游戏信息
 			AfGameDo gameDo = afGameService.getByCode("tear_packet");
@@ -136,12 +146,52 @@ public class TearPacketApi  implements ApiHandle {
 			}
 			// 添加抽奖结果信息
 			AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, borrowId, Long.parseLong(couponId), "Y");
-			afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "TEAR_PACKET", afGameResultDo.getRid() + "");
 			
-			// 获取优惠券信息
-			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
-			data.put("prizeName", afCouponDo.getName());
-			data.put("prizeType", afCouponDo.getType());
+			String prizeType = (String) winPrizeInfo.get("prizeType");
+			if("BOLUOMI".equals(prizeType)) {
+				// 发送菠萝蜜优惠券
+				Long sceneId = Long.parseLong(couponId);
+				logger.info(" pickBoluomeCoupon begin , sceneId = {}, userId = {}",sceneId, userId);
+				if (sceneId == null) {
+					throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+				}
+				AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+				if (resourceInfo == null) {
+					logger.error("couponSceneId is invalid");
+					throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+				}
+				data.put("prizeName", resourceInfo.getName());
+				data.put("prizeType", "BOLUOMI");
+				
+				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+				bo.setUser_id(userId + StringUtil.EMPTY);
+				
+				Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+				Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+				
+				if (DateUtil.beforeDay(new Date(), gmtStart)) {
+					throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START);
+				}
+				if (DateUtil.afterDay(new Date(), gmtEnd)) {
+					throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END);
+				}
+				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+				logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+				JSONObject resultJson = JSONObject.parseObject(resultString);
+				if (!"0".equals(resultJson.getString("code"))) {
+					throw new FanbeiException(resultJson.getString("msg"));
+				} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
+					throw new FanbeiException("仅限领取一次，请勿重复领取！");
+				}
+				
+			} else{
+				// 获取优惠券信息
+				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+				data.put("prizeName", afCouponDo.getName());
+				data.put("prizeType", afCouponDo.getType());
+				// 发送本地平台优惠券
+				afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "TEAR_PACKET", afGameResultDo.getRid() + "");
+			}
 		} catch (Exception e) {
 			logger.error("TearPacketApi=>" + e.toString());
 		}
