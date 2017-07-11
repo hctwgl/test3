@@ -607,8 +607,8 @@ public class RiskUtil extends AbstractThird {
 		logger.info("risk_result =" + result);
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		if (!result.equals("10")) {
-//			resultMap.put("success", false);
-//			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
+			resultMap.put("success", false);
+			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
 			
 			//如果不是因为逾期还款给拒绝的，直接关闭订单
 //			String rejectCode = verifybo.getRejectCode();

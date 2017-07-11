@@ -156,6 +156,9 @@ public class GetConfirmOrderApi implements ApiHandle {
 			String virtualCode = afOrderService.getVirtualCode(virtualMap);
 			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
 			BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
+			BigDecimal useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+			//虚拟剩余额度大于信用可用额度 则为可用额度
+			leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
 			vo.setVirtualGoodsUsableAmount(leftAmount);
 			vo.setIsVirtualGoods(YesNoStatus.YES.getCode());
 		} else {

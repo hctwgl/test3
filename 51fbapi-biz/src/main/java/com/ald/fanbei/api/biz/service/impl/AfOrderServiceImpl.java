@@ -1308,6 +1308,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(resultMap);
 			String virtualCode = afOrderService.getVirtualCode(resultMap);
 			BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
+			BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+			//虚拟剩余额度大于信用可用额度 则为可用额度
+			leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
 			if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
 				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 			}
