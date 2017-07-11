@@ -24,6 +24,10 @@ import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
+import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
+import com.ald.fanbei.api.biz.bo.RiskOverdueOrderBo;
+import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderReqBo;
+import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.RiskRaiseQuotaReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
@@ -31,6 +35,8 @@ import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.RiskSynBorrowInfoReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaReqBo;
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
@@ -39,16 +45,19 @@ import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
@@ -59,6 +68,7 @@ import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -74,7 +84,9 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
@@ -87,6 +99,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
@@ -152,8 +165,15 @@ public class RiskUtil extends AbstractThird {
 	AfAgentOrderService afAgentOrderService;
 	@Resource
 	BoluomeUtil boluomeUtil;
+	@Resource
+	AfUserAccountDao afUserAccountDao;
+	@Resource
+	AfBorrowDao afBorrowDao;
+	@Resource
+	AfOrderService afOrderService;
+	@Resource
+	AfUserVirtualAccountService afUserVirtualAccountService;
 	
-
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -391,13 +411,27 @@ public class RiskUtil extends AbstractThird {
 	
 	/**
 	 * 弱风控审批
-	 * 
-	 * @param orderNo
-	 * @param consumerNo
-	 * @param scene
+	 * @param consumerNo 用户ID
+	 * @param borrowNo 借款编号
+	 * @param borrowType  借款类型
+	 * @param scene 场景
+	 * @param cardNo 卡号
+	 * @param appName APP名称
+	 * @param ipAddress ip地址
+ 	 * @param blackBox  
+	 * @param orderNo 订单编号
+	 * @param phone 手机号
+	 * @param amount 订单金额
+	 * @param poundage 手续费
+	 * @param time 时间
+	 * @param productName 商品名称
+	 * @param virtualCode 商品编号
 	 * @return
 	 */
-	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, String scene, String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone, BigDecimal amount, BigDecimal poundage, String time) {
+	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, 
+			String scene, String cardNo, String appName, String ipAddress, 
+			String blackBox, String orderNo, String phone, BigDecimal amount, 
+			BigDecimal poundage, String time,String productName,String virtualCode) {
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if(!"Y".equals(userAuth.getRiskStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -423,6 +457,8 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("realAmount", amount);//实际交易金额
 		eventObj.put("poundage", poundage); //手续费
 		eventObj.put("time", time);
+		eventObj.put("virtualCode", virtualCode);
+		eventObj.put("productName", productName);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
@@ -430,14 +466,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
-		
-//		String content = JSONObject.toJSONString(reqBo);
-//		try {
-//			commitRecordUtil.addRecord("weakverify", borrowNo, content, url);
-//		} catch (Exception e) {
-//			logger.error("field too long，weakverify insert commitRecord fail,consumerNo="+consumerNo);
-//		}
-		
+//		String url = "http://192.168.110.22:80" + "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -453,6 +482,10 @@ public class RiskUtil extends AbstractThird {
 			riskResp.setSuccess(true);
 			riskResp.setResult(result);
 			riskResp.setConsumerNo(consumerNo);
+			riskResp.setVirtualCode(dataObj.getString("virtualCode"));
+			riskResp.setVirtualQuota(dataObj.getBigDecimal("virtualQuota"));
+			riskResp.setRejectCode(dataObj.getString("rejectCode"));
+			riskResp.setBorrowNo(dataObj.getString("borrowNo"));
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -558,86 +591,88 @@ public class RiskUtil extends AbstractThird {
 	
 	/**
 	 * 
-	 * @param consumerNo
-	 *            --用户唯一标识
-	 * @param orderNo
-	 *            --
-	 * @return 
+	 * @param borrow 借款信息
+	 * @param orderNo 订单编号
+	 * @param verifybo 风控返回结果
+	 * @param virtualCode 虚拟值
+	 * @return
 	 */
-	public long payOrder(final AfBorrowDo borrow, final String orderNo, final String result) {
+	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) {
+		String result = verifybo.getResult();
+		
 		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
-//		return transactionTemplate.execute(new TransactionCallback<Long>() {
-//			@Override
-//			public Long doInTransaction(TransactionStatus status) {
-//
-//				try {
-					// 增加事务
-//					RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
-//					reqBo.setCode(code);
-//					reqBo.setData(data);
-//					reqBo.setMsg(msg);
-//					reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-
-					// 添加一个根据风控号查找记录的方法
-					AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
-					// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
-
-					logger.info("risk_result =" + result);
-					AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
-					if (!result.equals("10")) {
-						orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
-						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
-						logger.info("updateOrder orderInfo = {}", orderInfo);
-						int re = orderDao.updateOrder(orderInfo);
-						// 审批不通过时，让额度还原到以前
+		// 添加一个根据风控号查找记录的方法
+		AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
+		// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
+		logger.info("risk_result =" + result);
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+		if (!result.equals("10")) {
+			resultMap.put("success", false);
+			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
+			
+			//如果不是因为逾期还款给拒绝的，直接关闭订单
+//			String rejectCode = verifybo.getRejectCode();
+//			if (StringUtils.isNotBlank(rejectCode) 
+//					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode()) 
+//					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode())) {
+				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+				orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+				logger.info("updateOrder orderInfo = {}", orderInfo);
+				orderDao.updateOrder(orderInfo);
+				
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
+					AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+					afAgentOrderDo.setClosedReason("风控审批失败");
+					afAgentOrderDo.setGmtClosed(new Date());
+					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+					
+					//添加关闭订单释放优惠券
+					if(afAgentOrderDo.getCouponId()>0){
+						AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
 						
-						// TODO:额度增加，而非减少
-						BigDecimal usedAmount = orderInfo.getActualAmount().multiply(BigDecimal.valueOf(-1));
-						afBorrowService.dealAgentPayClose(userAccountInfo, usedAmount, orderInfo.getRid());
-						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-							AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
-							afAgentOrderDo.setClosedReason("风控审批失败");
-							afAgentOrderDo.setGmtClosed(new Date());
-							afAgentOrderService.updateAgentOrder(afAgentOrderDo);
-							
-							//添加关闭订单释放优惠券
-							if(afAgentOrderDo.getCouponId()>0){
-					            AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
-					
-					            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
-					            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
-					            		afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
-					            }
-					            else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
-					        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
-					        		afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
-					        	}
-							}
+						if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+							couponDo.setStatus(CouponStatus.NOUSE.getCode());
+							afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
 						}
-						jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
-						return new Long(String.valueOf(re));
+						else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+							couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+							afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
+						}
 					}
-
-					// 在风控审批通过后额度不变生成账单
-					afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount());
-					// 审批通过时
-					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
-					orderInfo.setStatus(OrderStatus.PAID.getCode());
-					// 关闭订单时间和原因的更新
-					
-					logger.info("updateOrder orderInfo = {}", orderInfo);
-					orderDao.updateOrder(orderInfo);
-					
-//				} catch (Exception e) {
-//					logger.info("asyPayOrder error:" + e);
-//					status.setRollbackOnly();
-//					throw e;
-//				}
-//				return 1l;
+				}
+				jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 //			}
-
-//		});
-		return 1l;
+			
+			return resultMap;
+		}
+//		resultMap.put("success", true);
+		
+		orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+		orderInfo.setStatus(OrderStatus.PAID.getCode());
+		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+		//是虚拟商品
+		if (StringUtils.isNotBlank(virtualCode)) {
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSaleAmount(), 
+					orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
+			//增加虚拟商品记录
+			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
+		}
+		
+		// 新增借款信息
+		afBorrowDao.addBorrow(borrow);
+		// 在风控审批通过后额度不变生成账单
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount());
+		
+		// 修改用户账户信息
+		AfUserAccountDo account = new AfUserAccountDo();
+		account.setUsedAmount(orderInfo.getActualAmount());
+		account.setUserId(userAccountInfo.getUserId());
+		afUserAccountDao.updateUserAccount(account);
+		
+		logger.info("updateOrder orderInfo = {}", orderInfo);
+		orderDao.updateOrder(orderInfo);
+		resultMap.put("success", true);
+		return resultMap;
 	}
 
 	/**
@@ -828,7 +863,7 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
-	 * @方法描述：¬ 用户联系人同步
+	 * @方法描述：? 用户联系人同步
 	 * 
 	 * 
 	 * @author huyang 2017年4月5日上午11:41:55
@@ -838,7 +873,7 @@ public class RiskUtil extends AbstractThird {
 	 * 
 	 * @return
 	 * @throws Exception
-	 *             ¬ 用户联系人同步
+	 *             ? 用户联系人同步
 	 * 
 	 * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
 	 */
@@ -1252,13 +1287,103 @@ public class RiskUtil extends AbstractThird {
 	}
 	
 	public void payOrderChangeAmount(Long rid) throws InterruptedException{
+		
 		AfOrderDo orderInfo = orderDao.getOrderById(rid);
 		logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
 		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
 		}
 	}
+	/**
+	 * 获取虚拟商品可使用额度
+	 * @param consumerNo 用户id
+	 * @param virtualCode 虚拟商品代码 //菠萝觅已知
+	 * @param productName 商品名称
+	 * @return
+	 */
+	public RiskVirtualProductQuotaRespBo virtualProductQuota(String consumerNo, String virtualCode, String productName) {
+		RiskVirtualProductQuotaReqBo reqBo = new RiskVirtualProductQuotaReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		
+		JSONObject obj = new JSONObject();
+		obj.put("virtualCode", virtualCode);
+		obj.put("productName", productName);
+
+		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);
+		
+		logThird(reqResult, "virtualProductQuota", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.VIRTUAL_PRODUCT_QUOTA_ERROR);
+		}
+		RiskVirtualProductQuotaRespBo riskResp = JSONObject.parseObject(reqResult, RiskVirtualProductQuotaRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			String data = riskResp.getData();
+			if (StringUtils.isNotBlank(data)) {
+				JSONObject json = JSONObject.parseObject(data);
+				riskResp.setAmount(json.getBigDecimal("amount"));
+				riskResp.setVirtualCode(json.getString("virtualCode"));
+			}
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.VIRTUAL_PRODUCT_QUOTA_ERROR);
+		}
+	}
 	
+	/**
+	 * 查询用户借钱或者分期订单
+	 * @param consumerNo
+	 * @return
+	 */
+	public RiskQueryOverdueOrderRespBo queryOverdueOrder(String consumerNo) {
+		RiskQueryOverdueOrderReqBo reqBo = new RiskQueryOverdueOrderReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
+//		String reqResult = HttpUtil.post("http://192.168.110.22:80" + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
+		
+		logThird(reqResult, "queryOverdueOrder", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.QUERY_OVERDUE_ORDER_ERROR);
+		}
+		RiskQueryOverdueOrderRespBo riskResp = JSONObject.parseObject(reqResult, RiskQueryOverdueOrderRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			String data = riskResp.getData();
+			if (StringUtils.isNotBlank(data)) {
+				JSONObject json = JSONObject.parseObject(data);
+				riskResp.setRejectCode(json.getString("rejectCode"));
+				riskResp.setBorrowNo(json.getString("borrowNo"));
+			}
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.QUERY_OVERDUE_ORDER_ERROR);
+		}
+	}
+	
+	/**
+	 * 批量化同步逾期订单
+	 * @param orderNo
+	 * @param boList
+	 * @return
+	 */
+	public RiskRespBo batchSychronizeOverdueBorrow(String orderNo, List<RiskOverdueBorrowBo> boList) {
+		RiskOverdueOrderBo reqBo = new RiskOverdueOrderBo();
+		reqBo.setOrderNo(orderNo);
+		reqBo.setDetails(Base64.encodeString(JSONObject.toJSONString(boList)));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/overdueOrder.htm";
+		//石桂红本地
+//		String url = "http://192.168.110.22:80" + "/modules/api/risk/overdueOrder.htm";  
+		String reqResult = HttpUtil.post(url, reqBo);
+
+		logThird(reqResult, "overDued", reqBo);
+		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		return riskResp;
+	}	
 	/**
 	 * 魔蝎公积金第三方数据查询异步通知
 	 * 
