@@ -1183,7 +1183,43 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		
 		return afUserOrderDao.addUserOrder(order);
 	}
-
+	
+	@Override
+	public String isCanApplyAfterSale(Long orderId){
+		String isCanApply = YesNoStatus.NO.getCode();
+		try {
+			AfOrderDo order = orderDao.getOrderById(orderId);
+			List<String> agentbuyStatus = new ArrayList<String>();
+			agentbuyStatus.add(OrderStatus.AGENCYCOMPLETED.getCode());
+			agentbuyStatus.add(OrderStatus.FINISHED.getCode());
+			agentbuyStatus.add(OrderStatus.REBATED.getCode());
+			List<String> otherbuyStatus = new ArrayList<String>();
+			agentbuyStatus.add(OrderStatus.PAID.getCode());
+			agentbuyStatus.add(OrderStatus.FINISHED.getCode());
+			agentbuyStatus.add(OrderStatus.REBATED.getCode());
+			//代买和自营及状态匹配才满足申请售后条件
+			if((OrderType.AGENTBUY.getCode().equals(order.getOrderType()) && agentbuyStatus.contains(order.getStatus()))
+					|| (OrderType.SELFSUPPORT.getCode().equals(order.getOrderType()) && otherbuyStatus.contains(order.getStatus()))){
+				//时间售后条件判断，自订单状态为待收货开始30个自然日内
+				Date waitDelieveDate = null;
+				if(OrderType.SELFSUPPORT.getCode().equals(order.getOrderType())){
+					waitDelieveDate = order.getGmtPay();
+				}else{
+					AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
+					waitDelieveDate = agentOrderDo.getGmtMatchOrder();
+				}
+				Date deadlineTime = DateUtil.addDays(waitDelieveDate,Constants.AFTER_SALE_DAYS);
+				if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(deadlineTime),DateUtil.getToday())<0){
+					isCanApply = YesNoStatus.YES.getCode();
+				}
+			}
+		} catch (Exception e) {
+			logger.error("isCanApplyAfterSale request error,orderId:"+orderId,e);
+		}
+		
+		return isCanApply;
+	}
+	
 	@Override
 	public AfOrderDo getThirdOrderInfoBythirdOrderNo(String thirdOrderNo) {
 		// TODO Auto-generated method stub

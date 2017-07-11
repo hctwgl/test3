@@ -26,6 +26,18 @@ public class AfGoodsVo extends AbstractSerial{
 	private String source;
 	private String remark;
 	
+	public AfGoodsVo() {
+		super();
+	}
+	
+	public AfGoodsVo(String goodsName, String goodsIcon) {
+		super();
+		this.goodsName = goodsName;
+		this.goodsIcon = goodsIcon;
+	}
+
+
+
 	public Long getGoodsId() {
 		return goodsId;
 	}

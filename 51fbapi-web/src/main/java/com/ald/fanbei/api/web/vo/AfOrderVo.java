@@ -38,6 +38,10 @@ public class AfOrderVo extends AbstractSerial {
 	private String logisticsInfo;
 	private String payType;
 	private BigDecimal goodsSaleAmount;
+	private String orderStatusMsg;
+	private String orderStatusRemark;
+	private String afterSaleStatus;
+	private Date gmtRefundApply;
 	
 	public String getOrderNo() {
 		return orderNo;
@@ -176,6 +180,30 @@ public class AfOrderVo extends AbstractSerial {
 	}
 	public void setGoodsSaleAmount(BigDecimal goodsSaleAmount) {
 		this.goodsSaleAmount = goodsSaleAmount;
+	}
+	public String getOrderStatusMsg() {
+		return orderStatusMsg;
+	}
+	public void setOrderStatusMsg(String orderStatusMsg) {
+		this.orderStatusMsg = orderStatusMsg;
+	}
+	public String getOrderStatusRemark() {
+		return orderStatusRemark;
+	}
+	public void setOrderStatusRemark(String orderStatusRemark) {
+		this.orderStatusRemark = orderStatusRemark;
+	}
+	public String getAfterSaleStatus() {
+		return afterSaleStatus;
+	}
+	public void setAfterSaleStatus(String afterSaleStatus) {
+		this.afterSaleStatus = afterSaleStatus;
+	}
+	public Date getGmtRefundApply() {
+		return gmtRefundApply;
+	}
+	public void setGmtRefundApply(Date gmtRefundApply) {
+		this.gmtRefundApply = gmtRefundApply;
 	}
 	
 }
