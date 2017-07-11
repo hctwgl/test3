@@ -204,6 +204,11 @@ public interface AfOrderService {
 	 * @return
 	 */
 	public AfOrderDo getOrderInfoByIdWithoutDeleted(Long rid, Long userId);
-	
+	/**
+	 *根据订单id，返回此订单是否可以发起售后申请操作
+	 * @param orderId
+	 * @return
+	 */
+	public String isCanApplyAfterSale(Long orderId);
 }
 
