@@ -31,6 +31,8 @@ public class AfOrderRefundDo extends AbstractSerial {
 	private String resource;
 	private String payTradeNo;
 	private String contactsMobile;
+	private Long aftersaleApplyId;
+
 	
 
 	/**
@@ -230,6 +232,18 @@ public class AfOrderRefundDo extends AbstractSerial {
 	}
 	public void setContactsMobile(String contactsMobile) {
 		this.contactsMobile = contactsMobile;
+	}
+	/**
+	 * @return the aftersaleApplyId
+	 */
+	public Long getAftersaleApplyId() {
+		return aftersaleApplyId;
+	}
+	/**
+	 * @param aftersaleApplyId the aftersaleApplyId to set
+	 */
+	public void setAftersaleApplyId(Long aftersaleApplyId) {
+		this.aftersaleApplyId = aftersaleApplyId;
 	}
 	
 	
