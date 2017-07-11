@@ -21,6 +21,7 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -105,7 +106,10 @@ public class GetOrderListApi implements ApiHandle{
 		if(OrderType.AGENTBUY.getCode().equals(order.getOrderType())){
 			AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(order.getRid());
 			if(afAgentOrderDo!=null){
-				closeReason = afAgentOrderDo.getClosedReason();
+				closeReason = afAgentOrderDo.getCancelReason();
+				if(StringUtil.isBlank(closeReason)){
+					closeReason = afAgentOrderDo.getClosedReason();
+				}
 			}
 		}
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),

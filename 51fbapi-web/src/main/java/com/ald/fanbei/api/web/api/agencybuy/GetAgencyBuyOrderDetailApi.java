@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
@@ -246,8 +247,13 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		}
 		agentOrderDetailVo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(afOrderDo.getRid()));
 		//状态备注及说明 
+		String closeReason = "";
+		closeReason = afAgentOrderDo.getCancelReason();
+		if(StringUtil.isBlank(closeReason)){
+			closeReason = afAgentOrderDo.getClosedReason();
+		}
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
-				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,afAgentOrderDo.getClosedReason());
+				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason);
 		if(orderStatusMsgRemark!=null){
 			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			agentOrderDetailVo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
