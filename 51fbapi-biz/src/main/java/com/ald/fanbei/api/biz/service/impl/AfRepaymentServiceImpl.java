@@ -363,7 +363,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			try {
 				//如果为空 则代表没有其余的逾期订单，否则还有其余逾期订单
 				if (billDo == null) {
-					boList.add(parseOverduedBorrowBo(borrowBillInfo.getBorrowNo(), 0, borrowInfo.getNper()));
+					boList.add(parseOverduedBorrowBo(borrowBillInfo.getBorrowNo(), 0, borrowInfo.getOverdueNum()));
 				} else {
 					boList.add(parseOverduedBorrowBo(billDo.getBorrowNo(), billDo.getOverdueDays(), billDo.getNper()));
 				}
