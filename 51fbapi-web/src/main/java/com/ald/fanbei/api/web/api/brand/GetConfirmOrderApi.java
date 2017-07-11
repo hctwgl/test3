@@ -185,7 +185,8 @@ public class GetConfirmOrderApi implements ApiHandle {
         	vo.setIsValid(bankInfo.getIsValid());
         }
 		vo.setTotalAmount(userDto.getAuAmount());
-		vo.setUseableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
+		BigDecimal usableAmount =  userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+		vo.setUseableAmount(usableAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : usableAmount);
 		vo.setRealNameScore(authDo.getRealnameScore());
 		vo.setAllowConsume(afUserAuthService.getConsumeStatus(orderInfo.getUserId(),context.getAppVersion()));
 		vo.setFaceStatus(authDo.getFacesStatus());
