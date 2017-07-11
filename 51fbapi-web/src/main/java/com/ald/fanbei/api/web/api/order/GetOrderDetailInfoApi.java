@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -81,7 +82,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setInvoiceHeader(order.getInvoiceHeader());
 		vo.setLogisticsInfo(order.getLogisticsInfo());
 		vo.setPayType(order.getPayType());
-		
+		vo.setGmtPayEnd(DateUtil.addHoures(order.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
 		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));

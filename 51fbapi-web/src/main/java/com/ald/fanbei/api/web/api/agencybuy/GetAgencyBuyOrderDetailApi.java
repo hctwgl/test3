@@ -226,6 +226,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setSaleAmount(saleAmount);
 		agentOrderDetailVo.setActualAmount(actualAmount);
 		agentOrderDetailVo.setNper(afOrderDo.getNper());
+		agentOrderDetailVo.setGmtPayEnd(DateUtil.addHoures(afOrderDo.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(afOrderDo.getCount()), BigDecimal.ONE);
 		agentOrderDetailVo.setGoodsSaleAmount(afOrderDo.getSaleAmount().divide(saleCount, 2));

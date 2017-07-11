@@ -26,6 +26,8 @@ public class Constants {
 	//自营商品超时支付时间-小时
 	public static final int SELFSUPPORT_PAY_TIMEOUT_HOUR = 1;
 	public static final BigDecimal DECIMAL_MONTH_OF_YEAR = new BigDecimal(Constants.MONTH_OF_YEAR);
+	//订单下单到截止支付的时间间隔小时
+	public static final int ORDER_PAY_TIME_LIMIT = 24;
 	//申请售后时间限制要求
 	public static final int AFTER_SALE_DAYS = 30;
 	//
