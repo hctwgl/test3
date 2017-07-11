@@ -24,12 +24,23 @@ let vm=new Vue({
                       self.content = eval('(' + data + ')');                      
                       self.content = self.content.data;  
                       console.log(self.content)
-                      var currentTime = self.content.currentTime;
-                      //var validStartTime = self.content.validStartTime;
-                      //var validEndTime = self.content.validEndTime;
+                      var currentTime = self.content.currentTime;//2017/7/11 13:58:49
+                      var validStartTime = self.content.validStartTime+3600*10*1000;//活动开始准确时间2017/7/12 10:0:0
+                      var startMore= self.content.validStartTime+3600*24*1000;//活动开始一天；
+                      var validEndTime = self.content.validEndTime;//活动结束时间
+                      var date=new Date(currentTime);//当前日期
+                      var year=date.getFullYear();
+                      var month=date.getMonth()+1;
+                      var day=date.getDate();
+                      var dateStr01=year+'/'+month+'/'+day+' '+'10:00:00'; //今天10:00                      
+                      var dateStr02=year+'/'+month+'/'+day+' '+'16:34:00'; //今天16:00
+                      var dateStr03=year+'/'+month+'/'+(day+1)+' '+'10:00:00'; //明天10:00
+                      var currentTen= new Date(dateStr01).getTime();                         
+                      var currentFourteen= new Date(dateStr02).getTime();
+                      var nextTen= new Date(dateStr03).getTime();                                          
                       console.log(currentTime)
-                      var validStartTime = 1499738400000;
-                      var validEndTime = 1500009315000;
+                      console.log(validStartTime)
+                      console.log(validEndTime)
                       var diff=0;
                       function showTime(time){
                           diff=parseInt((time-currentTime)/1000);
@@ -46,24 +57,63 @@ let vm=new Vue({
                               $('.countTime').find('span').eq(1).html(minute);
                               $('.countTime').find('span').eq(2).html(second);
                       }
-                      function interval(start,end){
+                      function interval(start,currentTen,currentFourteen,nextTen,end){
                             if(currentTime<start){
+                                //活动未开始
+                                start-=1000;
                                 showTime(start);
+                                $('.timeName').html('10:00');                                         
+                            }else if(currentTime>=start&&currentTime<end){
+                                if(currentTime<currentTen){
+                                    currentTen-=1000;
+                                    showTime(currentTen);
+                                    $('.timeName').html('10:00');
+                                }else if(currentTime>=currentTen&&currentTime<currentFourteen){
+                                    currentFourteen-=1000;
+                                    showTime(currentFourteen);
+                                    $('.timeName').html('10:00');
+                                }else if(currentTime>=currentFourteen){
+                                    nextTen-=1000;
+                                    showTime(nextTen);
+                                    $('.timeName').html('14:00');
+                                }
                             }else{
-                                showTime(end);
+                                //活动结束
+                                $('.timeName').html('14:00');
+                                $('.desWord').find('p').eq(2).hide();
+                                $('.countTime').hide();
                             }
-                                let time1=setInterval(function(){
-                                    if(currentTime<start){
-                                        start-=1000;
-                                        showTime(start);
-                                    }else{
-                                        end-=1000;
-                                        showTime(end);                                        
+                            //倒计时                           
+                            let time1=setInterval(function(){
+                                if(currentTime<start){
+                                    //活动未开始
+                                    start-=1000;
+                                    showTime(start);
+                                    $('.timeName').html('10:00');                                         
+                                }else if(currentTime>=start&&currentTime<end){
+                                    if(currentTime<currentTen){
+                                        currentTen-=1000;
+                                        showTime(currentTen);
+                                        $('.timeName').html('10:00');
+                                    }else if(currentTime>=currentTen&&currentTime<currentFourteen){
+                                        currentFourteen-=1000;
+                                        showTime(currentFourteen);
+                                        $('.timeName').html('10:00');
+                                    }else if(currentTime>=currentFourteen){
+                                        nextTen-=1000;
+                                        showTime(nextTen);
+                                        $('.timeName').html('14:00');
                                     }
-                                }, 1000);
+                                }else{
+                                    //活动结束
+                                    $('.timeName').html('14:00');
+                                    $('.desWord').find('p').eq(2).hide();
+                                    $('.countTime').hide();
+                                }
+                            }, 1000);
 
                         }//定时器
-                       interval(validStartTime,validEndTime);
+                       interval(validStartTime,currentTen,currentFourteen,nextTen,validEndTime);
                     }, 
                     error:function(){
                        requestMsg("请求失败");

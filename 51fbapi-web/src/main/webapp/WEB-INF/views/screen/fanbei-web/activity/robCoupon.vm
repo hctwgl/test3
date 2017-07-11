@@ -12,7 +12,7 @@
     <div class="banner"><img :src='content.bannerUrl'></div>
     <div class="desWord">
         <p>抢神券</p>
-        <p><span>10:00</span>场</p>
+        <p><span class="timeName"></span>场</p>
         <p>距离下场</p>
         <p class="countTime"><span></span>:<span></span>:<span></span></p>
         <p @click="ruleClick()">活动规则>></p> 
