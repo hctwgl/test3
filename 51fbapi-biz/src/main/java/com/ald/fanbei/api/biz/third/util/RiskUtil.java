@@ -1421,6 +1421,7 @@ public class RiskUtil extends AbstractThird {
 				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
                                                 如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
 				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					auth.setRiskStatus(RiskStatus.YES.getCode());
 					AfUserAccountDo accountDo = new AfUserAccountDo();
 					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 					accountDo.setAuAmount(au_amount);
@@ -1474,6 +1475,7 @@ public class RiskUtil extends AbstractThird {
 				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
 				      如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
 				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					auth.setRiskStatus(RiskStatus.YES.getCode());
 					AfUserAccountDo accountDo = new AfUserAccountDo();
 					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 					accountDo.setAuAmount(au_amount);
@@ -1527,6 +1529,7 @@ public class RiskUtil extends AbstractThird {
 				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
 				     如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
 				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					auth.setRiskStatus(RiskStatus.YES.getCode());
 					AfUserAccountDo accountDo = new AfUserAccountDo();
 					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 					accountDo.setAuAmount(au_amount);

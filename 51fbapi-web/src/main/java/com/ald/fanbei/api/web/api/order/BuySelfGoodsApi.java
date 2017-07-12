@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -34,6 +35,7 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -56,7 +58,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserAddressService afUserAddressService;
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
-
+	@Resource
+	AfUserAccountService afUserAccountService;
     @Resource
     AfSchemeGoodsService afSchemeGoodsService;
 
@@ -66,10 +69,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"), ""),
-				0l);
-		Long addressId = NumberUtil
-				.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
+		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"), ""), 0l);
+		Long addressId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
 		String invoiceHeader = ObjectUtils.toString(requestDataVo.getParams().get("invoiceHeader"));
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
@@ -121,8 +122,16 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		
+		String isEnoughAmount = "Y";
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+		if (useableAmount.compareTo(actualAmount) < 0) {
+			isEnoughAmount = "N";
+		}
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("orderId", afOrder.getRid());
+		data.put("isEnoughAmount", isEnoughAmount);
 		resp.setResponseData(data);
 		return resp;
 	}

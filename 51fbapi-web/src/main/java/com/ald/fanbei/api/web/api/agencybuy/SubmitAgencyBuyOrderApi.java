@@ -122,19 +122,21 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
 		}
+		String isEnoughAmount = "Y";
 		if(nper>0){
 			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-			BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount())
-					.subtract(userAccountInfo.getFreezeAmount());
+			BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 			if (useableAmount.compareTo(actualAmount) < 0) {
-				logger.error("borrow consume money error");
-
-				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+//				logger.error("borrow consume money error");
+//				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+				isEnoughAmount = "N";
 			}
 		}
+			
 		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder,nper)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
+			data.put("isEnoughAmount", isEnoughAmount);
 			resp.setResponseData(data);;
 			return resp;
 

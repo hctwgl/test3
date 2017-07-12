@@ -49,6 +49,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private BigDecimal userRebateAmount;//用户返利余额
 	private BigDecimal repaymentAmount;//应还金额
 	private Long borrowId;//借钱id
+	private String riskStatus;
 	
 	public char getIsValid() {
 		return isValid;
@@ -418,4 +419,13 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	public void setIsSupplyCertify(String isSupplyCertify) {
 		this.isSupplyCertify = isSupplyCertify;
 	}
+
+	public String getRiskStatus() {
+		return riskStatus;
+	}
+
+	public void setRiskStatus(String riskStatus) {
+		this.riskStatus = riskStatus;
+	}
+	
 }
