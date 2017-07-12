@@ -72,6 +72,7 @@ import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -442,7 +443,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setBorrowType(borrowType);
 		reqBo.setChannel(CHANNEL);
 		reqBo.setScene(scene);
-		
+
 		JSONObject obj = new JSONObject();
 		obj.put("cardNo", cardNo);
 		obj.put("appName", appName);
@@ -862,7 +863,7 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
-	 * @方法描述：¬ 用户联系人同步
+	 * @方法描述：? 用户联系人同步
 	 * 
 	 * 
 	 * @author huyang 2017年4月5日上午11:41:55
@@ -872,7 +873,7 @@ public class RiskUtil extends AbstractThird {
 	 * 
 	 * @return
 	 * @throws Exception
-	 *             ¬ 用户联系人同步
+	 *             ? 用户联系人同步
 	 * 
 	 * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
 	 */
@@ -1284,6 +1285,7 @@ public class RiskUtil extends AbstractThird {
 		return bigDecimal;
 
 	}
+	
 	public void payOrderChangeAmount(Long rid) throws InterruptedException{
 		
 		AfOrderDo orderInfo = orderDao.getOrderById(rid);
@@ -1292,7 +1294,6 @@ public class RiskUtil extends AbstractThird {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
 		}
 	}
-	
 	/**
 	 * 获取虚拟商品可使用额度
 	 * @param consumerNo 用户id
@@ -1382,6 +1383,163 @@ public class RiskUtil extends AbstractThird {
 		logThird(reqResult, "overDued", reqBo);
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		return riskResp;
+	}	
+	/**
+	 * 魔蝎公积金第三方数据查询异步通知
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param userName
+	 *            --用户名
+	 * @return
+	 */
+	public int fundNotify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "fundNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if (StringUtil.equals("50", result)) {
+				return 0;//不做任何更新
+			}
+			String limitAmount = obj.getString("amount");
+			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+				limitAmount = "0";
+			BigDecimal au_amount = new BigDecimal(limitAmount);
+			
+			AfUserAuthDo auth = new AfUserAuthDo();
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtFund(new Date(System.currentTimeMillis()));
+			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			if (StringUtil.equals("10", result)) {
+				auth.setFundStatus(YesNoStatus.YES.getCode());
+				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+					accountDo.setAuAmount(au_amount);
+					afUserAccountService.updateUserAccount(accountDo);
+				}
+				jpushService.fundRiskSuccess(userAccountDo.getUserName());
+			} else {
+				auth.setFundStatus(YesNoStatus.NO.getCode());
+				jpushService.fundRiskFail(userAccountDo.getUserName());
+			}
+			return afUserAuthService.updateUserAuth(auth);
+		}
+		return 0;
+	}
+
+	/**
+	 * 魔蝎社保第三方数据查询异步通知
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param userName
+	 *            --用户名
+	 * @return
+	 */
+	public int socialSecurityNotify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "socialSecurityNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if (StringUtil.equals("50", result)) {//不做任何更新
+				return 0;
+			}
+			String limitAmount = obj.getString("amount");
+			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+				limitAmount = "0";
+			BigDecimal au_amount = new BigDecimal(limitAmount);
+			
+			AfUserAuthDo auth = new AfUserAuthDo();
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtJinpo(new Date(System.currentTimeMillis()));
+			
+			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			if (StringUtil.equals("10", result)) {
+				auth.setJinpoStatus(YesNoStatus.YES.getCode());
+				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+				      如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+					accountDo.setAuAmount(au_amount);
+					afUserAccountService.updateUserAccount(accountDo);
+				}				
+				jpushService.socialSecurityRiskSuccess(userAccountDo.getUserName());
+			} else {
+				auth.setJinpoStatus(YesNoStatus.NO.getCode());
+				jpushService.socialSecurityRiskFail(userAccountDo.getUserName());
+			}
+			return afUserAuthService.updateUserAuth(auth);
+		}
+		return 0;
+	}
+	
+	/**
+	 * 魔蝎信用卡第三方数据查询异步通知
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param userName
+	 *            --用户名
+	 * @return
+	 */
+	public int creditCardNotify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "creditCardNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if (StringUtil.equals("50", result)) {//不做任何更新
+				return 0;
+			}
+			String limitAmount = obj.getString("amount");
+			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+				limitAmount = "0";
+			BigDecimal au_amount = new BigDecimal(limitAmount);
+			
+			AfUserAuthDo auth = new AfUserAuthDo();
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtCredit(new Date(System.currentTimeMillis()));
+			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			
+			if (StringUtil.equals("10", result)) {
+				auth.setCreditStatus(YesNoStatus.YES.getCode());
+				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+				     如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+					accountDo.setAuAmount(au_amount);
+					afUserAccountService.updateUserAccount(accountDo);
+				}					
+				jpushService.creditCardRiskSuccess(userAccountDo.getUserName());
+			} else {
+				auth.setCreditStatus(YesNoStatus.NO.getCode());
+				jpushService.creditCardRiskFail(userAccountDo.getUserName());
+			}
+			return afUserAuthService.updateUserAuth(auth);
+		}
+		return 0;
 	}
 	
 }

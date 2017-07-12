@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -47,7 +48,12 @@ public class GetAllowConsumeApi implements ApiHandle {
 			throw new FanbeiException("authDo id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		if (StringUtil.equals("N", autDo.getRiskStatus())) {
+        String isSupplyCertify = "N";
+        if (StringUtil.equals(autDo.getFundStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(autDo.getJinpoStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(autDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
+        	isSupplyCertify = "Y";
+        }
+        
+		if (StringUtil.equals(autDo.getRiskStatus(), RiskStatus.NO.getCode())&&StringUtil.equals(isSupplyCertify, YesNoStatus.YES.getCode())) {
 			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(autDo.getGmtRisk()), 10);
 			long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 			if (between == 1) {
@@ -93,7 +99,8 @@ public class GetAllowConsumeApi implements ApiHandle {
 
 		resp.addResponseData("idNumber", Base64.encodeString(accountDo.getIdNumber()));
 		resp.addResponseData("realName", accountDo.getRealName());
-
+		resp.addResponseData("isSupplyCertify", isSupplyCertify);
+		
 		return resp;
 	}
 }
