@@ -39,6 +39,12 @@ public interface AfAftersaleApplyService {
       */
      AfAftersaleApplyDo getByOrderId(Long orderId);
      /**
+      * 查找记录
+      * @param orderId
+      * @return
+      */
+     AfAftersaleApplyDo getByOrderIdAndNotClose(Long orderId);
+     /**
       * 查找对应申请编号
       * @param current
       * @return

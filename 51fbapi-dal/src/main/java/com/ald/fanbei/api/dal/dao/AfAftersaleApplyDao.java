@@ -42,6 +42,12 @@ public interface AfAftersaleApplyDao {
       */
      AfAftersaleApplyDo getByOrderId(@Param("orderId")Long orderId);
      /**
+      * 查找记录
+      * @param orderId
+      * @return
+      */
+     AfAftersaleApplyDo getByOrderIdAndNotClose(@Param("orderId")Long orderId);
+     /**
  	 * 获取最近申请编号
  	 * @param startDate
  	 * @param endDate

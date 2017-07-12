@@ -50,6 +50,11 @@ public class AfAftersaleApplyServiceImpl implements AfAftersaleApplyService {
 	public AfAftersaleApplyDo getByOrderId(Long orderId) {
 		return afAftersaleApplyDao.getByOrderId(orderId);
 	}
+	
+	@Override
+	public AfAftersaleApplyDo getByOrderIdAndNotClose(Long orderId) {
+		return afAftersaleApplyDao.getByOrderIdAndNotClose(orderId);
+	}
 
 	@Override
 	public String getCurrentLastApplyNo(Date current) {

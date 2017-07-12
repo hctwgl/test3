@@ -197,9 +197,19 @@ id,gmt_create,gmt_modified,gmt_apply,user_id,order_id,apply_no,status,verify_rem
         <include refid="queryFields" />
         FROM af_aftersale_apply
         WHERE is_delete = 0 AND order_id=#{orderId ,jdbcType=BIGINT}
+        ORDER BY id DESC 
         LIMIT 0,1
     </select>
 
+	<select id="getByOrderIdAndNotClose" resultType="AfAftersaleApplyDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_aftersale_apply
+        WHERE is_delete = 0 AND order_id=#{orderId ,jdbcType=BIGINT} AND status != 'CLOSE'
+        ORDER BY id DESC 
+        LIMIT 0,1
+    </select>
+    
 	<select id="getByCommonCondition" resultType="AfAftersaleApplyDo" parameterType="AfAftersaleApplyDo">
         SELECT
         <include refid="queryFields" />
