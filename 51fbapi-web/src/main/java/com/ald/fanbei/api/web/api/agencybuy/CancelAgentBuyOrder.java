@@ -67,8 +67,7 @@ public class CancelAgentBuyOrder implements ApiHandle {
 	            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
 	            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
 	            		afUserCouponService.updateUserCouponSatusNouseById(agOrder.getCouponId());
-	            }
-	            else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+	            }else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
 	        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
 	        		afUserCouponService.updateUserCouponSatusExpireById(agOrder.getCouponId());
 	        	}
