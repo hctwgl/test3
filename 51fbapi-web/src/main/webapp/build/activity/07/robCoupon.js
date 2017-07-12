@@ -67,7 +67,7 @@ let vm=new Vue({
                                 if(currentTime<currentTen){
                                     currentTen-=1000;
                                     showTime(currentTen);
-                                    $('.timeName').html('10:00');
+                                    $('.timeName').html('14:00');
                                 }else if(currentTime>=currentTen&&currentTime<currentFourteen){
                                     currentFourteen-=1000;
                                     showTime(currentFourteen);
@@ -94,7 +94,7 @@ let vm=new Vue({
                                     if(currentTime<currentTen){
                                         currentTen-=1000;
                                         showTime(currentTen);
-                                        $('.timeName').html('10:00');
+                                        $('.timeName').html('14:00');
                                     }else if(currentTime>=currentTen&&currentTime<currentFourteen){
                                         currentFourteen-=1000;
                                         showTime(currentFourteen);
