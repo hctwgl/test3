@@ -105,7 +105,24 @@
 			<if test="gmtRisk != null">
     			,gmt_risk=#{gmtRisk}
 			</if>
-			
+			<if test="fundStatus != null">
+    			,fund_status=#{fundStatus}
+			</if>
+			<if test="gmtFund != null">
+    			,gmt_fund=#{gmtFund}
+			</if>
+			<if test="jinpoStatus != null">
+    			,jinpo_status=#{jinpoStatus}
+			</if>
+			<if test="gmtJinpo != null">
+    			,gmt_jinpo=#{gmtJinpo}
+			</if>
+			<if test="creditStatus != null">
+    			,credit_status=#{creditStatus}
+			</if>
+			<if test="gmtCredit != null">
+    			,gmt_credit=#{gmtCredit}
+			</if>									
 		WHERE user_id = #{userId}
 	</update>
 	
