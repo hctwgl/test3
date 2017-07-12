@@ -170,7 +170,7 @@ let vm=new Vue({
                                      window.location.href = returnData.url;
                                  }
                                  if (status == "OVER") { // 优惠券个数超过最大领券个数
-                                     requestMsg("您已领取该优惠券！");
+                                     requestMsg("优惠券个数超过最大领券个数");
                                  }
                                  if (status == "MORE_THAN") { // 优惠券已领取完
                                      requestMsg("已抢完，请等下一场！");
