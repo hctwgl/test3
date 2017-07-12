@@ -1432,6 +1432,7 @@ public class RiskUtil extends AbstractThird {
 				auth.setFundStatus(YesNoStatus.NO.getCode());
 				jpushService.fundRiskFail(userAccountDo.getUserName());
 			}
+			auth.setGmtFund(new Date(System.currentTimeMillis()));
 			return afUserAuthService.updateUserAuth(auth);
 		}
 		return 0;
@@ -1486,6 +1487,7 @@ public class RiskUtil extends AbstractThird {
 				auth.setJinpoStatus(YesNoStatus.NO.getCode());
 				jpushService.socialSecurityRiskFail(userAccountDo.getUserName());
 			}
+			auth.setGmtJinpo(new Date(System.currentTimeMillis()));
 			return afUserAuthService.updateUserAuth(auth);
 		}
 		return 0;
@@ -1540,6 +1542,8 @@ public class RiskUtil extends AbstractThird {
 				auth.setCreditStatus(YesNoStatus.NO.getCode());
 				jpushService.creditCardRiskFail(userAccountDo.getUserName());
 			}
+			auth.setGmtCredit(new Date(System.currentTimeMillis()));
+			
 			return afUserAuthService.updateUserAuth(auth);
 		}
 		return 0;
