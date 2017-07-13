@@ -1205,20 +1205,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			
 			//符合订单类型及状态，继续时间校验，自订单状态为待收货开始30个自然日内
 			Date waitDelieveDate = null;
-			if(OrderType.SELFSUPPORT.getCode().equals(order.getOrderType())){
-				waitDelieveDate = order.getGmtPay();
+			if(order.getGmtDeliver()!=null){
+				//发货时间不为空，以发货时间为准，因为此字段app3.7.0版本后添加
+				waitDelieveDate = order.getGmtDeliver();
 			}else{
-				AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
-				AfOrderTempDo orderTemp = afOrderTempDao.getByOrderId(orderId);
-				waitDelieveDate = agentOrderDo.getGmtAgentBuy();
-				//涉及老的数据当初有问题，所有先取af_order_temp 如果没有，再取订单支付时间
-				if(waitDelieveDate==null && orderTemp!=null){
-					waitDelieveDate = orderTemp.getGmtCreate();
-				}
-				if(waitDelieveDate == null){
-					waitDelieveDate = order.getGmtCreate();
+				//代表app3.7.0版本前数据，做兼容
+				if(OrderType.SELFSUPPORT.getCode().equals(order.getOrderType())){
+					waitDelieveDate = order.getGmtPay();
+				}else{
+					AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
+					AfOrderTempDo orderTemp = afOrderTempDao.getByOrderId(orderId);
+					waitDelieveDate = agentOrderDo.getGmtAgentBuy();
+					//涉及老的数据当初有问题，所有先取af_order_temp 如果没有，再取订单支付时间
+					if(waitDelieveDate==null && orderTemp!=null){
+						waitDelieveDate = orderTemp.getGmtCreate();
+					}
+					if(waitDelieveDate == null){
+						waitDelieveDate = order.getGmtCreate();
+					}
 				}
 			}
+			
 			Date deadlineTime = DateUtil.addDays(waitDelieveDate,Constants.AFTER_SALE_DAYS);
 			if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(deadlineTime),DateUtil.getToday())<0){
 				isCanApply = YesNoStatus.YES.getCode();

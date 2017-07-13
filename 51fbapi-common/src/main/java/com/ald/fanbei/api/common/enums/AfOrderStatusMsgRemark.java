@@ -15,10 +15,10 @@ public enum AfOrderStatusMsgRemark {
 	NEW("NEW", "待支付","后未支付将自动关闭订单"),
 	DEALING("DEALING", "支付中","支付可能会有几分钟延迟，请稍作等待"),
 	PAYFAIL("PAYFAIL", "支付失败",""),
-	PAID("PAID", "待收货","请确认已签收商品/服务"),
-	REVIEW("REVIEW", "审核中","请确认已签收商品/服务"),
-	AGENCYCOMPLETED("AGENCYCOMPLETED", "待收货","请确认已签收商品/服务"),
-	DELIVERED("DELIVERED", "待收货",""),
+	PAID("PAID", "待发货","订单正准备发货"),
+	REVIEW("REVIEW", "审核中","分期申请正在审核，请耐心等待"),
+	AGENCYCOMPLETED("AGENCYCOMPLETED", "待发货","订单正准备发货"),
+	DELIVERED("DELIVERED", "待收货","请确认已签收商品/服务"),
 	FINISHED("FINISHED", "订单完成",""),
 	REBATED("REBATED", "订单完成",""),
 	CLOSED("CLOSED", "订单关闭",""),
@@ -38,7 +38,7 @@ public enum AfOrderStatusMsgRemark {
         this.statusRemark = statusRemark;
     }
 
-    public static AfOrderStatusMsgRemark findRoleTypeByCodeAndOrderType(String code,String orderType,String payType,Boolean isExistRebates,String afterSaleStatus,Boolean isExistAftersaleApply,String closeReason) {
+    public static AfOrderStatusMsgRemark findRoleTypeByCodeAndOrderType(String code,String orderType,String payType,Boolean isExistRebates,String afterSaleStatus,Boolean isExistAftersaleApply,String closeReason,String payFailReason) {
         for (AfOrderStatusMsgRemark roleType : AfOrderStatusMsgRemark.values()) {
             if (roleType.getCode().equals(code)) {
             	//OrderType
@@ -46,9 +46,6 @@ public enum AfOrderStatusMsgRemark {
             		if(OrderType.AGENTBUY.getCode().equals(orderType) && PayType.AGENT_PAY.getCode().equals(payType)){
             			roleType.setStatusMsg("待审核");
             			roleType.setStatusRemark("分期申请将尽快审核，请耐心等待");
-            		}else{
-            			roleType.setStatusMsg("待收货");
-            			roleType.setStatusRemark("请确认已签收商品/服务");
             		}
             	}
             	if(FINISHED.getCode().equals(roleType.getCode())){
@@ -74,6 +71,9 @@ public enum AfOrderStatusMsgRemark {
             			roleType.setStatusMsg("待退款");
             			roleType.setStatusRemark("");
             		}
+            	}
+            	if(PAYFAIL.getCode().equals(roleType.getCode())){
+            		roleType.setStatusRemark(StringUtil.null2Str(payFailReason));
             	}
                 return roleType;
             }

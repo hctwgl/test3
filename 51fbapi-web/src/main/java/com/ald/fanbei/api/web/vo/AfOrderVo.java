@@ -45,6 +45,9 @@ public class AfOrderVo extends AbstractSerial {
 	private Date gmtPayStart;
 	private Date gmtPayEnd;
 	private String isCanApplyAfterSale;
+	private String logisticsCompany;//发货物流公司
+	private String logisticsNo;//发货物流单号
+	private Date gmtDeliver;//发货时间
 	
 	public String getOrderNo() {
 		return orderNo;
@@ -225,6 +228,24 @@ public class AfOrderVo extends AbstractSerial {
 	}
 	public void setIsCanApplyAfterSale(String isCanApplyAfterSale) {
 		this.isCanApplyAfterSale = isCanApplyAfterSale;
+	}
+	public String getLogisticsCompany() {
+		return logisticsCompany;
+	}
+	public void setLogisticsCompany(String logisticsCompany) {
+		this.logisticsCompany = logisticsCompany;
+	}
+	public String getLogisticsNo() {
+		return logisticsNo;
+	}
+	public void setLogisticsNo(String logisticsNo) {
+		this.logisticsNo = logisticsNo;
+	}
+	public Date getGmtDeliver() {
+		return gmtDeliver;
+	}
+	public void setGmtDeliver(Date gmtDeliver) {
+		this.gmtDeliver = gmtDeliver;
 	}
 	
 }

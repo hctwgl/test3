@@ -75,7 +75,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 
 		Date currTime = new Date();
-		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.SELFSUPPORT_PAY_TIMEOUT_HOUR);
+		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
 		if(actualAmount.compareTo(BigDecimal.ZERO)==0){

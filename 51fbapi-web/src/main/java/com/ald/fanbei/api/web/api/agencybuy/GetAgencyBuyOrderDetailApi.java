@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -237,7 +238,6 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String afterSaleStatus = "";
 		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(afOrderDo.getRid());
 		if(afAftersaleApplyDo!=null){
-			isExistAftersaleApply = true;
 			afterSaleStatus = afAftersaleApplyDo.getStatus();
 			agentOrderDetailVo.setAfterSaleStatus(afAftersaleApplyDo.getStatus());
 			agentOrderDetailVo.setGmtRefundApply(afAftersaleApplyDo.getGmtApply());
@@ -248,18 +248,30 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(afOrderDo.getRid()));
 		//状态备注及说明 
 		String closeReason = "";
-		closeReason = afAgentOrderDo.getCancelReason();
+		closeReason = afOrderDo.getCancelReason();
 		if(StringUtil.isBlank(closeReason)){
-			closeReason = afAgentOrderDo.getClosedReason();
+			closeReason = afOrderDo.getClosedReason();
+		}
+		if(afAftersaleApplyDo!=null && !AfAftersaleApplyStatus.CLOSE.getCode().equals(afAftersaleApplyDo.getStatus())){
+			//如果存在售后申请记录并且未被用户关闭，则标识记录，后续结合订单关闭状态，确认订单关闭是退款还是其它操作导致
+			isExistAftersaleApply = true;
 		}
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
-				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason);
+				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason,afOrderDo.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			agentOrderDetailVo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
 		}else{
 			agentOrderDetailVo.setOrderStatusMsg("");
 			agentOrderDetailVo.setOrderStatusRemark("");
+		}
+		//发货物流信息及时间
+		agentOrderDetailVo.setLogisticsCompany(afOrderDo.getLogisticsCompany());
+		agentOrderDetailVo.setLogisticsNo(afOrderDo.getLogisticsNo());
+		if(afOrderDo.getGmtDeliver()!=null){
+			agentOrderDetailVo.setGmtDeliver(afOrderDo.getGmtDeliver());
+		}else{
+			agentOrderDetailVo.setGmtDeliver(new Date(0));
 		}
 		return agentOrderDetailVo;
 	}

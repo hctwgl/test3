@@ -16,14 +16,13 @@ import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -94,7 +93,6 @@ public class GetOrderListApi implements ApiHandle{
 		String afterSaleStatus = "";
 		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(order.getRid());
 		if(afAftersaleApplyDo!=null){
-			isExistAftersaleApply = true;
 			afterSaleStatus = afAftersaleApplyDo.getStatus();
 			vo.setAfterSaleStatus(afAftersaleApplyDo.getStatus());
 		}else{
@@ -103,17 +101,16 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(order.getRid()));
 		//状态备注及说明 
 		String closeReason = "";
-		if(OrderType.AGENTBUY.getCode().equals(order.getOrderType())){
-			AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(order.getRid());
-			if(afAgentOrderDo!=null){
-				closeReason = afAgentOrderDo.getCancelReason();
-				if(StringUtil.isBlank(closeReason)){
-					closeReason = afAgentOrderDo.getClosedReason();
-				}
-			}
+		closeReason = order.getCancelReason();
+		if(StringUtil.isBlank(closeReason)){
+			closeReason = order.getClosedReason();
+		}
+		if(afAftersaleApplyDo!=null && !AfAftersaleApplyStatus.CLOSE.getCode().equals(afAftersaleApplyDo.getStatus())){
+			//如果存在售后申请记录并且未被用户关闭，则标识记录，后续结合订单关闭状态，确认订单关闭是退款还是其它操作导致
+			isExistAftersaleApply = true;
 		}
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
-				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0, afterSaleStatus,isExistAftersaleApply,closeReason);
+				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0, afterSaleStatus,isExistAftersaleApply,closeReason,order.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			vo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	

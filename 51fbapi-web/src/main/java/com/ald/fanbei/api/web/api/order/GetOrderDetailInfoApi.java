@@ -14,11 +14,13 @@ import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -74,7 +76,6 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setType(order.getOrderType());
 		vo.setGmtClosed(order.getGmtModified());
 		vo.setMobile(order.getMobile());
-		
 		vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
 		vo.setAddress(order.getAddress());
 		vo.setConsignee(order.getConsignee());
@@ -92,7 +93,6 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		String afterSaleStatus = "";
 		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(order.getRid());
 		if(afAftersaleApplyDo!=null){
-			isExistAftersaleApply = true;
 			afterSaleStatus = afAftersaleApplyDo.getStatus();
 			vo.setAfterSaleStatus(afAftersaleApplyDo.getStatus());
 			vo.setGmtRefundApply(afAftersaleApplyDo.getGmtApply());
@@ -102,14 +102,31 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		}
 		vo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(order.getRid()));
 		//状态备注及说明 
+		String closeReason = "";
+		closeReason = order.getCancelReason();
+		if(StringUtil.isBlank(closeReason)){
+			closeReason = order.getClosedReason();
+		}
+		if(afAftersaleApplyDo!=null && !AfAftersaleApplyStatus.CLOSE.getCode().equals(afAftersaleApplyDo.getStatus())){
+			//如果存在售后申请记录并且未被用户关闭，则标识记录，后续结合订单关闭状态，确认订单关闭是退款还是其它操作导致
+			isExistAftersaleApply = true;
+		}
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
-				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,"");
+				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason,order.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			vo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
 		}else{
 			vo.setOrderStatusMsg("");
 			vo.setOrderStatusRemark("");
+		}
+		//发货物流信息及时间
+		vo.setLogisticsCompany(order.getLogisticsCompany());
+		vo.setLogisticsNo(order.getLogisticsNo());
+		if(order.getGmtDeliver()!=null){
+			vo.setGmtDeliver(order.getGmtDeliver());
+		}else{
+			vo.setGmtDeliver(new Date(0));
 		}
 		return vo;
 	}

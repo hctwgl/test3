@@ -73,6 +73,7 @@ public class AfOrderDo extends AbstractSerial{
 	private String cancelDetail; // 取消详情
 	private String closedReason; // 关闭理由
 	private String closedDetail; // 关闭详情
+	private String statusRemark; // 订单状态对应描述
 	
 	public Long getRid() {
 		return rid;
@@ -468,6 +469,12 @@ public class AfOrderDo extends AbstractSerial{
 	}
 	public void setGmtClosed(Date gmtClosed) {
 		this.gmtClosed = gmtClosed;
+	}
+	public String getStatusRemark() {
+		return statusRemark;
+	}
+	public void setStatusRemark(String statusRemark) {
+		this.statusRemark = statusRemark;
 	}
 	
 }

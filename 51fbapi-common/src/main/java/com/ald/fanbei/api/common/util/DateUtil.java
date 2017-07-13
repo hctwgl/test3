@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ald.fanbei.api.common.Constants;
+
 /**
  * 
  *@类描述：日期相关工具类
@@ -1106,22 +1108,11 @@ public class DateUtil {
 //        System.out.println(addHoures(new Date(), 1));
     	
     	
-    	Date date = new Date(System.currentTimeMillis());
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	Date arrivalStart = DateUtil.getStartOfDate(date);
-    	Integer day = 7;
-    	Date arrivalEnd = DateUtil.getEndOfDate(date);
-		Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
-		System.out.println(sdf.format(repaymentDay));
-		try {
-			date = sdf.parse(sdf.format(date));
-			date = DateUtil.addDays(date,1);
-			long betweenGmtArrival = DateUtil.getNumberOfDatesBetween(date, DateUtil.getToday());
-			System.out.println(betweenGmtArrival);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-    	
+    	Date currDate = new Date();
+    	Date gmtPayEnd1 = DateUtil.addDays(currDate, 1);
+    	Date gmtPayEnd2 = DateUtil.addHoures(currDate, Constants.ORDER_PAY_TIME_LIMIT);
+    	System.out.println(formatDateToYYYYMMddHHmmss(gmtPayEnd1));
+    	System.out.println(formatDateToYYYYMMddHHmmss(gmtPayEnd2));
     }
     
     public static Date stringToDate(String date) throws ParseException{
