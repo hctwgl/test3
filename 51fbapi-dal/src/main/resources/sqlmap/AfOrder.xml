@@ -528,51 +528,52 @@
 			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,status_remark
 		FROM
-		
-		(SELECT
-			id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
-			status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,num_id,
-			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,consignee,address,consignee_mobile,invoice_header,logistics_info,status_remark
-		FROM
-			af_order a
+			af_order
 		WHERE
-			a.is_delete=0 and a.user_id = #{userId} 
+			is_delete=0 and user_id = #{userId} 
 		<if test="orderStatus == 'WC'" >
-			and (a.status = 'NEW' or a.status = 'PAID')
+			and (status = 'NEW' or status = 'PAID')
 		</if>
 		<if test="orderStatus == 'WR'">
-			and a.status = 'FINISHED'
+			and status = 'FINISHED'
 		</if>
 		<if test="orderStatus == 'AR'">
-			and a.status = 'REBATED'
+			and status = 'REBATED'
 		</if>
-<!-- 		and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.status='NEW' AND a.id=b.id) -->
-		AND
-			a.order_type IN ('MOBILE','TAOBAO','TMALL','AGENTBUY','SELFSUPPORT')
-		UNION ALL
-		SELECT
-			id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
-			status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,num_id,
-			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,consignee,address,consignee_mobile,invoice_header,logistics_info,status_remark
-		FROM
-			af_order a
-		WHERE
-			a.is_delete=0 and a.user_id = #{userId} 
-		<if test="orderStatus == 'WC'" >
-			and (a.status = 'NEW' or a.status = 'PAID')
+		<if test="orderStatus == 'NEW'">
+			and status in('NEW','PAYFAIL')
 		</if>
-		<if test="orderStatus == 'WR'">
-			and a.status = 'FINISHED'
+		<if test="orderStatus == 'DEALING'">
+			and status = 'DEALING'
 		</if>
-		<if test="orderStatus == 'AR'">
-			and a.status = 'REBATED'
+		<if test="orderStatus == 'TOREVIEW'">
+			and status = 'PAID' and order_type='AGENTBUY'
 		</if>
-		AND
-			a.order_type = 'BOLUOME'
-		) a
-		order by a.gmt_create desc
+		<if test="orderStatus == 'REVIEWING'">
+			and status = 'REVIEW' and order_type='AGENTBUY'
+		</if>
+		<if test="orderStatus == 'TODELIVER'">
+			and (( status = 'PAID' and order_type!='AGENTBUY' ) or status = 'AGENCYCOMPLETED')
+		</if>
+		<if test="orderStatus == 'DELIVERED'">
+			and status = 'DELIVERED'
+		</if>
+		<if test="orderStatus == 'TOREBATE'">
+			and status = 'FINISHED' and rebate_amount <![CDATA[ > ]]> 0
+		</if>
+		<if test="orderStatus == 'FINISHED'">
+			and ((status = 'FINISHED' and rebate_amount <![CDATA[ = ]]> 0) or status = 'REBATED')
+		</if>
+		<if test="orderStatus == 'CLOSED'">
+			and status = 'CLOSED'
+		</if>
+		<if test="orderStatus == 'WAIT_REFUND'">
+			and status = 'WAIT_REFUND'
+		</if>
+		<if test="orderStatus == 'DEAL_REFUNDING'">
+			and status = 'DEAL_REFUNDING'
+		</if>
+		order by gmt_create desc
 	</select>
 	
 	<update id="updateOrder" parameterType="AfOrderDo" >
