@@ -171,20 +171,23 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 				data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
 			}
 		}
-		//是否跳轉到H5頁面，這個是為後續做擴展用，暫時還沒有跳轉到H5的需求（以免app發版）
-		String isSkipH5 = "N";
-		if (StringUtil.equals(isSkipH5, "Y")) {
-			data.put("H5Url", "");
+		//是否跳轉到H5頁面，這個是為後續做擴展用，暫時還沒有跳轉到H5的需求（以免app發版） NO(不跳)，H5(跳转到H5)，SC(跳转到补充认证)
+		String isSkipH5 = "NO";
+		if (StringUtil.equals(isSkipH5, "H5")) {
+			data.put("h5Url", "");
 		}
-		data.put("isSkipH5", isSkipH5);
 		
 		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())) {
 			data.put("url", "http://f.51fanbei.com/test/af8076f9f38a5315.png?currentTime=" + System.currentTimeMillis());
 		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
 			data.put("url", "http://f.51fanbei.com/test/3f1117c10e1396e1.png?currentTime=" + System.currentTimeMillis());
+			isSkipH5 = "SC";
 		} else {
 			data.put("url", "http://f.51fanbei.com/test/17177ce7f9940d21.png?currentTime=" + System.currentTimeMillis());
+			isSkipH5 = "SC";
 		}
+		
+		data.put("isSkipH5", isSkipH5);
 		
 		return data;
 	}
