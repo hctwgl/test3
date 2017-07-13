@@ -51,6 +51,18 @@
 		AND
 			status ='O'
 	</select>
+	
+	<select id="getCouponInfoById" resultType="AfCouponDo">
+	    SELECT
+	    	<include refid="queryAllFields" />
+	    FROM
+	   		 af_coupon
+	    WHERE
+	    	is_delete = 0
+	    AND
+			id = #{couponId}
+	</select>
+	
 	<update id="updateCouponquotaAlreadyById" parameterType="AfCouponDo">
 		UPDATE
 			af_coupon
