@@ -23,4 +23,6 @@ public interface AfCouponDao {
 	
 	int updateCouponquotaAlreadyById(AfCouponDo couponDo);
 
+	AfCouponDo getCouponInfoById(@Param("couponId")Long couponId);
+
 }
