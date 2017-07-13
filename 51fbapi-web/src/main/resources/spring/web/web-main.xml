@@ -291,9 +291,10 @@
 				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
 				<entry key="/agencyBuy/getAgencyCouponList" value-ref="getAgencyCouponListApi" />
 				<entry key="/agencyBuy/payAgencyOrderV1" value-ref="payAgencyOrderV1Api" />
+				
 
 
-
+				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
 
 				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />

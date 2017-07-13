@@ -70,6 +70,8 @@ public enum AfResourceType {
 	
 	SuperCouponGift("SUPER_COUPON_GIFT", "神券礼包"),
 	
+	CANCEL_ORDER_REASON("CANCEL_ORDER_REASON","用户取消订单原因"),
+	
 	VIRTUAL_GOODS_SERVICE_PROVIDER("VIRTUAL_GOODS_SERVICE_PROVIDER", "虚拟商品供应商");
 
 	

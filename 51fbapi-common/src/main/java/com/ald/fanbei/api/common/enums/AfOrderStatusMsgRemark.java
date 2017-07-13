@@ -14,6 +14,7 @@ public enum AfOrderStatusMsgRemark {
 	
 	NEW("NEW", "待支付","后未支付将自动关闭订单"),
 	DEALING("DEALING", "支付中","支付可能会有几分钟延迟，请稍作等待"),
+	PAYFAIL("PAYFAIL", "支付失败",""),
 	PAID("PAID", "待收货","请确认已签收商品/服务"),
 	REVIEW("REVIEW", "审核中","请确认已签收商品/服务"),
 	AGENCYCOMPLETED("AGENCYCOMPLETED", "待收货","请确认已签收商品/服务"),
@@ -23,6 +24,7 @@ public enum AfOrderStatusMsgRemark {
 	CLOSED("CLOSED", "订单关闭",""),
 	WAITING_REFUND("WAIT_REFUND", "售后处理中",""),
 	DEAL_REFUNDING("DEAL_REFUNDING", "退款中","");
+	
 	
 	private String code;
     private String statusMsg;

@@ -13,6 +13,7 @@ public enum OrderStatus {
 	
 	NEW("NEW", "新建/待付款"),
 	DEALING("DEALING", "支付中"),
+	PAYFAIL("PAYFAIL", "支付失败"),
 	PAID("PAID", "已支付/待收货"),
 	REVIEW("REVIEW", "代买审核中"),
 	AGENCYCOMPLETED("AGENCYCOMPLETED", "等待完成／等待收货"),

@@ -6,14 +6,16 @@
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
-		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status
+		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
+		logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail
 	</sql>
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
-		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status
+		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
+		logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
@@ -323,8 +325,23 @@
 		<if test="commissionAmount != null">
 		    ,commission_amount=#{commissionAmount}
 		</if>
+		<if test="gmtClosed != null">
+		    ,gmt_closed=#{gmtClosed}
+		</if>
 		<if test="preStatus != null">
 		    ,pre_status=#{preStatus}
+		</if>
+		<if test="cancelReason != null">
+		    ,cancel_reason=#{cancelReason}
+		</if>
+		<if test="cancelDetail != null">
+		    ,cancel_detail=#{cancelDetail}
+		</if>
+		<if test="closedReason != null">
+		    ,closed_reason=#{closedReason}
+		</if>
+		<if test="closedDetail != null">
+		    ,closed_detail=#{closedDetail}
 		</if>
 		where is_delete=0 and pay_trade_no = #{payTradeNo}
 	</update>
@@ -403,8 +420,23 @@
 		<if test="commissionAmount != null">
 		    ,commission_amount=#{commissionAmount}
 		</if>
+		<if test="gmtClosed != null">
+		    ,gmt_closed=#{gmtClosed}
+		</if>
 		<if test="preStatus != null">
 		    ,pre_status=#{preStatus}
+		</if>
+		<if test="cancelReason != null">
+		    ,cancel_reason=#{cancelReason}
+		</if>
+		<if test="cancelDetail != null">
+		    ,cancel_detail=#{cancelDetail}
+		</if>
+		<if test="closedReason != null">
+		    ,closed_reason=#{closedReason}
+		</if>
+		<if test="closedDetail != null">
+		    ,closed_detail=#{closedDetail}
 		</if>
 		where is_delete=0 and order_no = #{orderNo} 
 	</update>
@@ -644,8 +676,23 @@
 			<if test="interestFreeJson != null">
     			,interest_free_json=#{interestFreeJson}
 			</if>
+			<if test="gmtClosed != null">
+			    ,gmt_closed=#{gmtClosed}
+			</if>
 			<if test="preStatus != null">
 			    ,pre_status=#{preStatus}
+			</if>
+			<if test="cancelReason != null">
+			    ,cancel_reason=#{cancelReason}
+			</if>
+			<if test="cancelDetail != null">
+			    ,cancel_detail=#{cancelDetail}
+			</if>
+			<if test="closedReason != null">
+			    ,closed_reason=#{closedReason}
+			</if>
+			<if test="closedDetail != null">
+			    ,closed_detail=#{closedDetail}
 			</if>
 		WHERE id = #{rid}
 	</update>
