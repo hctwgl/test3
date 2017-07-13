@@ -359,6 +359,7 @@ public class AppH5GameController  extends BaseController{
 					tmpMap.put("mobile", mobile);
 					Long couponId = gameResultDo.getLotteryResult();
 					AfCouponDo afCouponDo = afCouponService.getCouponById(couponId);
+					if(afCouponDo == null) continue;
 					tmpMap.put("prizeName", afCouponDo.getName());
 					awordList.add(tmpMap);
 				}
