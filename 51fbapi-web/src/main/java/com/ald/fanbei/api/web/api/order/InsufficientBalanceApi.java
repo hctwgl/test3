@@ -93,9 +93,9 @@ public class InsufficientBalanceApi implements ApiHandle {
 		String isQuotaGoods = "N";
 		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", afOrderDo.getGoodsName());
 		String data = quotaBo.getData();
-		if (StringUtils.isNotBlank(data)) {
-			isQuotaGoods = "Y";
+		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
 			JSONObject json = JSONObject.parseObject(data);
+			isQuotaGoods = "Y";
 			responseMap.put("goodsTotalAmount", json.getBigDecimal("amount"));
 			String virtualCode = json.getString("virtualCode");
 			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));

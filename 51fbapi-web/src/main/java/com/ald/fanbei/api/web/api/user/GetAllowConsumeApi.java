@@ -82,10 +82,10 @@ public class GetAllowConsumeApi implements ApiHandle {
 		}
 		
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(context.getUserId());
-		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
-		if (StringUtil.equals(autDo.getRiskStatus(), RiskStatus.YES.getCode()) && usableAmount.compareTo(BigDecimal.ZERO) <= 0) {
-			throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
-		}
+//		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
+//		if (StringUtil.equals(autDo.getRiskStatus(), RiskStatus.YES.getCode()) && usableAmount.compareTo(BigDecimal.ZERO) <= 0) {
+//			throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
+//		}
 		
 		resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId(), context.getAppVersion()));
 		resp.addResponseData("bindCardStatus", autDo.getBankcardStatus());
