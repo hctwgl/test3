@@ -15,6 +15,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
@@ -22,11 +23,14 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -38,6 +42,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：
@@ -47,6 +52,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("submitAgencyBuyOrderApi")
 public class SubmitAgencyBuyOrderApi implements ApiHandle {
 
+	@Resource
+	RiskUtil riskUtil;
 	@Resource
 	AfAgentOrderService afAgentOrderService;
 	@Resource
@@ -61,6 +68,9 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 	AfSchemeGoodsService afSchemeGoodsService;
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	AfUserVirtualAccountService afUserVirtualAccountService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		
@@ -133,7 +143,18 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			}
 		}
 			
-		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder,nper)>0){
+		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
+		String quotaData = quotaBo.getData();
+		if (StringUtils.isNotBlank(quotaData)&&!StringUtil.equals(quotaData, "{}")) {
+			JSONObject json = JSONObject.parseObject(quotaData);
+			String virtualCode = json.getString("virtualCode");
+			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+			if (goodsUseableAmount.compareTo(actualAmount) < 0) {
+				isEnoughAmount = "N";
+			}
+		}
+		
+		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder, nper)>0){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
 			data.put("isEnoughAmount", isEnoughAmount);
