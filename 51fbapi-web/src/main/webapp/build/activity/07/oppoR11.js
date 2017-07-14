@@ -12,7 +12,7 @@ var vm=new Vue({
     el: '#oppoR11',
     data: {
         show: [true,false,false,false,],
-        url: domainName+'/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"110406"}',
+        url: domainName+'/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"121129"}',
         goodsMobileListMap: []
     },
     created:function(){
@@ -40,7 +40,7 @@ var vm=new Vue({
             Vue.set(vm.show,e-1,true);
 
             // 手机的privateGoodsId
-            let privateGoodsId=[110406,110425];
+            let privateGoodsId=[121129,121130];
             let notifyUrl = "https://app.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO";
             this.url=notifyUrl+'&params={"privateGoodsId":"'+privateGoodsId[e-1]+'"}';  // a链接的url
         },
