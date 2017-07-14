@@ -79,7 +79,7 @@ public class UpsUtil extends AbstractThird {
 	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 
 	private static String TRADE_STATUE_ALREADY__SUCC = "02"; // 已经成功
 	
-	private static String NEED_CODE ="10"; // 需要短信验证码表示
+//	private static String NEED_CODE ="10"; // 需要短信验证码标识
 	
 	private static String TRADE_STATUE_DEAL = "20";
 	private static String TRADE_RESP_SUCC = "0000";
@@ -330,7 +330,7 @@ public class UpsUtil extends AbstractThird {
 			已签约：
  			用户的银行卡在当前支付路由中所有渠道中都有签约记录时返回，用于解决试运行和生产环境连同一套数据库时重复签约问题
 		 */
-		if(authSignResp != null && authSignResp.getTradeState()!=null && (StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)|| (StringUtil.equals(authSignResp.getNeedCode(), NEED_CODE) && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_PART_SUCC)) || StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_ALREADY__SUCC))){
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)|| StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_PART_SUCC) || StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_ALREADY__SUCC))){
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
