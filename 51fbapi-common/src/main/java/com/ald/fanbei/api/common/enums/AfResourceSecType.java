@@ -20,10 +20,10 @@ public enum AfResourceSecType {
 		NAVIGATION_BOLUOME("NAVIGATION_BOLUOME", "菠萝蜜手机充值"),
 	
 
-	//活动相关
-    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
+		//活动相关
+	    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
     
-	//借钱模块
+	    //借钱模块
 		BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
 		BorrowCashRange("BORROW_CASH_RANGE", "借款金额"),
 		BorrowCashBaseBankDouble("BORROW_CASH_BASE_BANK_DOUBLE", "借钱最高倍数"),
@@ -43,8 +43,10 @@ public enum AfResourceSecType {
         MODEL_URL("MODEL_URL", "本地模板H5"),
         RejectTimePeriod("REJECT_TIME_PERIOD","拒绝借款期后指定周期内不可在本平台发起借款"),
 		RejectPageBannerUrl("REJECT_PAGE_BANNER_URL","拒绝借款期后不通过页面内图对应地址"),
-		SelfSupportGoodsPaytypes("SELFSUPPORT_GOODS_PAYTYPES","自营商品支付方式相关配置");
+		SelfSupportGoodsPaytypes("SELFSUPPORT_GOODS_PAYTYPES","自营商品支付方式相关配置"),
 
+		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度");
+		
 	 	private String    code;
 		private String name;
 	

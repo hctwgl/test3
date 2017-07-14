@@ -3,7 +3,8 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAuthDao">
 	<sql id="queryField">
 		id rid,gmt_modified,user_id,zm_status,gmt_zm,zm_score,ivs_status,gmt_ivs,ivs_score,realname_status,gmt_realname,realname_score,faces_status,similar_degree,mobile_status,gmt_mobile,
-		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type,risk_status,gmt_risk
+		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type,risk_status,gmt_risk,
+		fund_status,gmt_fund,jinpo_status,gmt_jinpo,credit_status,gmt_credit
 	</sql>
 
 
@@ -104,7 +105,24 @@
 			<if test="gmtRisk != null">
     			,gmt_risk=#{gmtRisk}
 			</if>
-			
+			<if test="fundStatus != null">
+    			,fund_status=#{fundStatus}
+			</if>
+			<if test="gmtFund != null">
+    			,gmt_fund=#{gmtFund}
+			</if>
+			<if test="jinpoStatus != null">
+    			,jinpo_status=#{jinpoStatus}
+			</if>
+			<if test="gmtJinpo != null">
+    			,gmt_jinpo=#{gmtJinpo}
+			</if>
+			<if test="creditStatus != null">
+    			,credit_status=#{creditStatus}
+			</if>
+			<if test="gmtCredit != null">
+    			,gmt_credit=#{gmtCredit}
+			</if>									
 		WHERE user_id = #{userId}
 	</update>
 	

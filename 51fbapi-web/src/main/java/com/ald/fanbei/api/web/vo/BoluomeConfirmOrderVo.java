@@ -39,7 +39,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private String allowConsume;//分期/代付的关键字段，Y：已授权；N：未授权
 	private String faceStatus;
 	private String idNumber;
-	
+	private String isSupplyCertify;//是否完成补充认证
 	//3.6.9增加virtualGoodsUsableAmount, isVirtualGoods字段
 	private BigDecimal virtualGoodsUsableAmount;
 	private String isVirtualGoods;
@@ -49,6 +49,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private BigDecimal userRebateAmount;//用户返利余额
 	private BigDecimal repaymentAmount;//应还金额
 	private Long borrowId;//借钱id
+	private String riskStatus;
 	
 	public char getIsValid() {
 		return isValid;
@@ -409,6 +410,22 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	 */
 	public void setOverduedCode(String overduedCode) {
 		this.overduedCode = overduedCode;
+	}
+			
+	public String getIsSupplyCertify() {
+		return isSupplyCertify;
+	}
+
+	public void setIsSupplyCertify(String isSupplyCertify) {
+		this.isSupplyCertify = isSupplyCertify;
+	}
+
+	public String getRiskStatus() {
+		return riskStatus;
+	}
+
+	public void setRiskStatus(String riskStatus) {
+		this.riskStatus = riskStatus;
 	}
 	
 }
