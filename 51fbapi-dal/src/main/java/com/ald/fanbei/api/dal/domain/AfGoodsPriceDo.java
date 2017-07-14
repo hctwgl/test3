@@ -18,7 +18,18 @@ import java.util.Date;
     /**
      * 主键Id
      */
-    private Long id;
+    private Long rid;
+
+
+    
+
+    public Long getRid() {
+		return rid;
+	}
+
+	public void setRid(Long rid) {
+		this.rid = rid;
+	}
     
 
     /**
@@ -87,26 +98,8 @@ import java.util.Date;
     private String isSale;
 
 
-    /**
-     * 获取主键Id
-     *
-     * @return id
-     */
-    public Long getId(){
-      return id;
-    }
 
-    /**
-     * 设置主键Id
-     * 
-     * @param 要设置的主键Id
-     */
-    public void setId(Long id){
-      this.id = id;
-    }
-    
-
-    /**
+	/**
      * 获取创建时间
      *
      * @return 创建时间
