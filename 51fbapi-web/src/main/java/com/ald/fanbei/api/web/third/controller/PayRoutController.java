@@ -243,12 +243,13 @@ public class PayRoutController {
 			if (!StringUtil.equals(properties.getProperty("sign"), checkSign.toUpperCase())) {
 				return "succ";
 			}
-
+			
 			String resultCode = properties.getProperty("result_code");
+			String outTradeNo = properties.getProperty("out_trade_no");
+			String transactionId = properties.getProperty("transaction_id");
+			String attach = properties.getProperty("attach");
+			
 			if (StringUtil.equals(resultCode, WxTradeState.SUCCESS.getCode())) {
-				String outTradeNo = properties.getProperty("out_trade_no");
-				String transactionId = properties.getProperty("transaction_id");
-				String attach = properties.getProperty("attach");
 				if (PayOrderSource.ORDER.getCode().equals(attach)) {
 					afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
@@ -261,14 +262,13 @@ public class PayRoutController {
 					afRenewalDetailService.dealRenewalSucess(outTradeNo, transactionId);
 				}
 			} else {
-				String outTradeNo = properties.getProperty("out_trade_no");
-				String transactionId = properties.getProperty("transaction_id");
-				String attach = properties.getProperty("attach");
 				if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId);
-				}
+				}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+					afOrderService.dealBrandOrderFail(outTradeNo, transactionId, PayType.WECHAT.getCode());
+				} 
 			}
 		} catch (Exception e) {
 			logger.error("wxpayNotify", e);
@@ -308,7 +308,9 @@ public class PayRoutController {
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
-				}
+				} else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+					afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+				} 
 			}
 			return "SUCCESS";
 		} catch (Exception e) {

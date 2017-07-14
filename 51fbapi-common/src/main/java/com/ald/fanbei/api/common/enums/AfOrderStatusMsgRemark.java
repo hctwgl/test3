@@ -46,6 +46,12 @@ public enum AfOrderStatusMsgRemark {
             		if(OrderType.AGENTBUY.getCode().equals(orderType) && PayType.AGENT_PAY.getCode().equals(payType)){
             			roleType.setStatusMsg("待审核");
             			roleType.setStatusRemark("分期申请将尽快审核，请耐心等待");
+            		}else if(OrderType.MOBILE.getCode().equals(orderType) 
+            				|| OrderType.TAOBAO.getCode().equals(orderType)
+            				|| OrderType.TMALL.getCode().equals(orderType)
+            				|| OrderType.BOLUOME.getCode().equals(orderType)){
+            			roleType.setStatusMsg("待收货");
+            			roleType.setStatusRemark("请确认已签收商品/服务");
             		}
             	}
             	if(FINISHED.getCode().equals(roleType.getCode())){

@@ -175,6 +175,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfUserVirtualAccountService afUserVirtualAccountService;
 	
 	@Override
+	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
+		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
+	}
+	
+	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:"+content);
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -670,12 +675,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
+				Date currentDate = new Date();
+				String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
+				Map<String, Object> resultMap = new HashMap<String, Object>();
+				AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
 				try {
-					Date currentDate = new Date();
-					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
-					Map<String, Object> resultMap = new HashMap<String, Object>();
-					AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);// new
-																						// AfOrderDo();
 					// 查卡号，用于调用风控接口
 					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
@@ -762,6 +766,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return resultMap;
 				} catch (FanbeiException exception) {
 					logger.error("payBrandOrder faied e = {}", exception);
+					//自营或代买记录支付失败信息，然后返回客户端提示
+					if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
+						String payFailMsg = "";
+						if(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR.getCode().equals(exception.getErrorCode().getCode())){
+							payFailMsg = Constants.PAY_ORDER_USE_AMOUNT_LESS;
+						}else if(FanbeiExceptionCode.RISK_VERIFY_ERROR.getCode().equals(exception.getErrorCode().getCode())
+								|| FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR.getCode().equals(exception.getErrorCode().getCode())
+								|| FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode()) 
+								|| FanbeiExceptionCode.BANK_CARD_PAY_ERR.getCode().equals(exception.getErrorCode().getCode()) ){
+							payFailMsg = exception.getErrorCode().getDesc();
+						}else if(FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode())){
+							payFailMsg = FanbeiExceptionCode.BANK_CARD_PAY_ERR.getDesc();
+						}
+						AfOrderDo currUpdateOrder = new AfOrderDo();
+						currUpdateOrder.setRid(orderInfo.getRid());
+						currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
+						currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+						currUpdateOrder.setStatusRemark(payFailMsg);
+						orderDao.updateOrder(currUpdateOrder);
+						logger.info("ap pay order fail,reason is useamount is too less orderId="+orderInfo.getRid());
+					}
 					throw exception;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -966,7 +991,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					if (orderInfo == null 
-   						 || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
+							|| (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
+									&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())
+									&& !orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()))) {
 						return 0;
 					}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
@@ -989,6 +1016,51 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 		}
+		return result;
+	}
+	
+	@Override
+	public int dealBrandOrderFail(final String payOrderNo, final String tradeNo, final String payType) {
+		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+		if(!OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
+			return 0;
+		}
+		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					if (orderInfo == null 
+							|| (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
+									&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())
+									&& !orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()))) {
+						return 0;
+					}
+					logger.info("dealBrandOrder fail begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
+					String failMsg = "";
+					if(PayType.BANK.getCode().equals(payType)){
+						failMsg =  Constants.PAY_ORDER_UPS_FAIL_BANK;
+					}else if(PayType.WECHAT.getCode().equals(payType)){
+						failMsg =  Constants.PAY_ORDER_UPS_FAIL_WX;
+					}else{
+						failMsg =  Constants.PAY_ORDER_UPS_FAIL;
+					}
+					orderInfo.setPayTradeNo(payOrderNo);
+					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+					orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
+					orderInfo.setStatusRemark(failMsg);
+					orderInfo.setPayType(payType);
+					orderInfo.setGmtPay(new Date());
+					orderInfo.setTradeNo(tradeNo);
+					orderDao.updateOrder(orderInfo);
+					logger.info("dealBrandOrder fail comlete , orderInfo = {} ", orderInfo);
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealBrandOrder fail error:",e);
+					return 0;
+				}
+			}
+		});
 		return result;
 	}
 
