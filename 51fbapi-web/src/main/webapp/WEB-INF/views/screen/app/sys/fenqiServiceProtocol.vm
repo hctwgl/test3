@@ -44,7 +44,7 @@
 				<li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
 		        <!-- <li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li> -->
 				<!-- <li><i>年利率</i><i>0%</i></li> -->
-				<li><i>利息和手续费</i><i>{{changeRate($!{poundage})}}</i></li>
+				<li><i>利息和手续费</i><i>¥$!{poundage}</i></li>
 				<li><i>借款期限</i><i>$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd")至$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
 				<!-- <li><i>还款方式</i><i>等本等息</i></li> -->
 				<li><i>还款日</i><i>每月20日</i></li>
