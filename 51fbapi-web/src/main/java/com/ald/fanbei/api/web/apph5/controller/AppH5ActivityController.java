@@ -321,6 +321,7 @@ public class AppH5ActivityController extends BaseController {
 		for (AfGoodsDo afGoods : goodsList) {
 			AfGoodsVo vo = new AfGoodsVo();
 			vo.setGoodsId(afGoods.getRid());
+			vo.setPrivateGoodsId(afGoods.getRid());
 			vo.setGoodsIcon(afGoods.getGoodsIcon());
 			vo.setGoodsName(afGoods.getName());
 			vo.setRemark(StringUtil.null2Str(afGoods.getRemark()));

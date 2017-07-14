@@ -13,6 +13,7 @@ public class AfGoodsVo extends AbstractSerial{
 	private static final long serialVersionUID = -7150400787252733902L;
 
 	private Long goodsId;
+	private Long privateGoodsId;
 	private String numId;
 	private String openId;
 	private String priceAmount;
@@ -115,6 +116,14 @@ public class AfGoodsVo extends AbstractSerial{
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Long getPrivateGoodsId() {
+		return privateGoodsId;
+	}
+
+	public void setPrivateGoodsId(Long privateGoodsId) {
+		this.privateGoodsId = privateGoodsId;
 	}
 	
 }
