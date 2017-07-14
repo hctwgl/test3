@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017070802")
+    #set($version="2017071101")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -82,11 +82,11 @@
             </ul>
         </div>
         <div class="registerMask hide"></div>
-        #if( $!{style}==4 || $!{style}==10 || $!{style}==13 )
+        #if( $!{style}==4 || $!{style}==13 )
         <img src="$commonUrl/channel$!{style}_03.jpg">
         #elseif( $!{style}==7 )
         <img src="$commonUrl/channel7_03.png">
-        #elseif( $!{style}==8 )
+        #elseif( $!{style}==8 || $!{style}==10 )
         <img src="$commonUrl/channel$!{style}_03.jpg">
         <div class="registerSuss8 hide">
             <p>注册成功，立即下载【51返呗】</p>
@@ -119,7 +119,11 @@
 				copyright$!{style}
 			#end
 		">
-        版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133   881939188<br>
+        版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
+        #if( $!{style}==10 )
+            881939188
+        #end
+        <br>
         #if( $!{style}==2 || $!{style}==7 )
             浙ICP备16001312号-3
         #end

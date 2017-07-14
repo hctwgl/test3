@@ -20,10 +20,10 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     //   self.content = ; 
-                    //    console.log(self.content)
+                    //    console.log(self.content)a    
+                    // console.log(data);
                     self.content = eval('(' + data + ')').data;
-                    console.log(self.content.activityList[0].activityGoodsList);
-                    console.log(self.content.activityList[1]);
+                    console.log(self.content);
 
                 },
                 error: function () {
@@ -33,9 +33,7 @@ let vm = new Vue({
         },
         //点击tab栏切换
         isshow: function () {
-           
             this.isActive = !this.isActive;
-
         },
         buyNow(id){
             // window.location.href = '/fanbei-web/opennative?params={"goodsId":"' + id + '"}'

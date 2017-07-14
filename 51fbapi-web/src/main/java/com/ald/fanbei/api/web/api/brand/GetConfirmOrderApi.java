@@ -16,19 +16,29 @@ import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.RiskErrorCode;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -47,6 +57,8 @@ import com.ald.fanbei.api.web.vo.BoluomeConfirmOrderVo;
  */
 @Component("getConfirmOrderApi")
 public class GetConfirmOrderApi implements ApiHandle {
+	
+	private static final String SUCCESS_CODE = "0000";
 
 	@Resource
 	AfOrderService afOrderService;
@@ -58,6 +70,16 @@ public class GetConfirmOrderApi implements ApiHandle {
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	RiskUtil riskUtil;
+	@Resource
+	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -82,11 +104,67 @@ public class GetConfirmOrderApi implements ApiHandle {
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		AfUserBankcardDo bankInfo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		BoluomeConfirmOrderVo vo = buildConfirmOrderVo(orderInfo,userDto, authDo, bankInfo,context);
-		resp.setResponseData(vo);
-		if (isVirtualGoods(orderInfo)) {
+		//小于368版本，可用额度设置为0
+		if (context.getAppVersion() <= 368 && isVirtualGoods(orderInfo)) {
 			vo.setUseableAmount(BigDecimal.ZERO);
+		} else {
+			dealWithVirtualCodeGt368(vo, orderInfo, userDto);
 		}
+		resp.setResponseData(vo);
 		return resp;
+	}
+	
+	/**
+	 * 处理大于368的版本
+	 * @param vo
+	 * @param orderInfo
+	 */
+	private void dealWithVirtualCodeGt368(BoluomeConfirmOrderVo vo, AfOrderDo orderInfo, AfUserAccountDto userDto) {
+		Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+		//风控逾期订单处理
+		RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
+		String rejectCode = resp.getRejectCode();
+		if (StringUtil.isNotBlank(rejectCode)) {
+			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+			switch (erorrCode) {
+			case OVERDUE_BORROW:
+				String borrowNo = resp.getBorrowNo();
+				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+				Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
+				vo.setBillId(billId);
+				vo.setOverduedCode(erorrCode.getCode());
+				break;
+			case OVERDUE_BORROW_CASH:
+				AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
+				vo.setOverduedCode(erorrCode.getCode());
+				vo.setJfbAmount(userDto.getJfbAmount());
+				vo.setUserRebateAmount(userDto.getRebateAmount());
+				BigDecimal allAmount = BigDecimalUtil.add(cashInfo.getAmount(), cashInfo.getSumOverdue(),
+						cashInfo.getOverdueAmount(), cashInfo.getRateAmount(), cashInfo.getSumRate());
+				BigDecimal repaymentAmount = BigDecimalUtil.subtract(allAmount, cashInfo.getRepayAmount());
+				vo.setRepaymentAmount(repaymentAmount);
+				vo.setBorrowId(cashInfo.getRid());
+				break;
+			default:
+				break;
+			}
+		} else {
+			vo.setOverduedCode(SUCCESS_CODE);
+		}
+		
+		if (afOrderService.isVirtualGoods(virtualMap)) {
+			String virtualCode = afOrderService.getVirtualCode(virtualMap);
+			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
+			BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
+			BigDecimal useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+			//虚拟剩余额度大于信用可用额度 则为可用额度
+			leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
+			vo.setVirtualGoodsUsableAmount(leftAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : leftAmount);
+			vo.setIsVirtualGoods(YesNoStatus.YES.getCode());
+		} else {
+			vo.setIsVirtualGoods(YesNoStatus.NO.getCode());
+			vo.setVirtualGoodsUsableAmount(BigDecimal.ZERO);
+		}
 	}
 	
 	private BoluomeConfirmOrderVo buildConfirmOrderVo(AfOrderDo orderInfo, AfUserAccountDto userDto, AfUserAuthDo authDo, AfUserBankcardDo bankInfo, FanbeiContext context){
@@ -107,7 +185,8 @@ public class GetConfirmOrderApi implements ApiHandle {
         	vo.setIsValid(bankInfo.getIsValid());
         }
 		vo.setTotalAmount(userDto.getAuAmount());
-		vo.setUseableAmount(userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()));
+		BigDecimal usableAmount =  userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+		vo.setUseableAmount(usableAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : usableAmount);
 		vo.setRealNameScore(authDo.getRealnameScore());
 		vo.setAllowConsume(afUserAuthService.getConsumeStatus(orderInfo.getUserId(),context.getAppVersion()));
 		vo.setFaceStatus(authDo.getFacesStatus());

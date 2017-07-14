@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.web.third.controller;
 
 import java.math.BigDecimal;
@@ -190,7 +191,7 @@ public class BoluomeController extends AbstractThird{
     		orderInfo.setCount(1);
     		orderInfo.setPriceAmount(priceAmount);
     		orderInfo.setSaleAmount(priceAmount);
-    		orderInfo.setActualAmount(BigDecimal.ZERO);
+    		orderInfo.setActualAmount(priceAmount);
     		orderInfo.setShopName(StringUtils.EMPTY);
     		orderInfo.setPayStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parsePayStatus(status).getCode() : null);
     		orderInfo.setPayType(StringUtils.EMPTY);

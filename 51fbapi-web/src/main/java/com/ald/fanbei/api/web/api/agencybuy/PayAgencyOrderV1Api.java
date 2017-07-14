@@ -3,8 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.agencybuy;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +10,8 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -37,6 +37,11 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 	private AfOrderService afOrderService;
 	@Resource
 	private AfUserAccountService afUserAccountService;
+	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -60,25 +65,56 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 		if (orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_PAID);
 		}
-//		try {
-			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
-			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
-			}
-			
-			Map<String,Object> result = afOrderService.payBrandOrder(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress);
-
-			resp.setResponseData(result);
-
-//		} catch (Exception e) {
-//			logger.error("pay Agency  order failed e = {}", e);
-//
-//			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
-//
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
+		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+		}
+		
+		afOrderService.payBrandOrder(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), 
+				orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress);
+//		String success = result.get("success").toString();
+//		if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {
+//			dealWithPayOrderRiskFailed(result, resp);
 //		}
 		return resp;
 
 	}
+	
+//	/**
+//	 * 处理风控逾期借款或者分期处理
+//	 * @param result
+//	 * @param resp
+//	 */
+//	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
+//		String success = result.get("success").toString();
+//		//如果代付，风控支付是不通过的，找出其原因
+//		if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {
+//			String verifyBoStr = (String) result.get("verifybo");
+//			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
+//			String rejectCode = riskResp.getRejectCode();
+//			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+//			switch (erorrCode) {
+//			case AUTH_AMOUNT_LIMIT:
+//				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_AUTH_AMOUNT_LIMIT);
+//			case OVERDUE_BORROW:
+//			{
+//				String borrowNo = riskResp.getBorrowNo();
+//				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+//				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_OVERDUED));
+//				resp.addResponseData("billId", billId == null ? 0 : billId);
+//			}
+//				break;
+//			case OVERDUE_BORROW_CASH:
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_CASH_OVERDUED));
+//				break;
+//			case OTHER_RULE:
+//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_OTHER_RULE));
+//			default:
+//				break;
+//			}
+//		}
+//	}
 
 }

@@ -12,11 +12,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -34,6 +41,10 @@ public class GetOrderListApi implements ApiHandle{
 
 	@Resource
 	AfOrderService afOrderService;
+	@Resource
+	AfAftersaleApplyService afAftersaleApplyService;
+	@Resource
+	AfAgentOrderService afAgentOrderService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -78,6 +89,38 @@ public class GetOrderListApi implements ApiHandle{
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
 		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
+		//售后相关设置
+		Boolean isExistAftersaleApply = false;
+		String afterSaleStatus = "";
+		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(order.getRid());
+		if(afAftersaleApplyDo!=null){
+			isExistAftersaleApply = true;
+			afterSaleStatus = afAftersaleApplyDo.getStatus();
+			vo.setAfterSaleStatus(afAftersaleApplyDo.getStatus());
+		}else{
+			vo.setAfterSaleStatus("");
+		}
+		vo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(order.getRid()));
+		//状态备注及说明 
+		String closeReason = "";
+		if(OrderType.AGENTBUY.getCode().equals(order.getOrderType())){
+			AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(order.getRid());
+			if(afAgentOrderDo!=null){
+				closeReason = afAgentOrderDo.getCancelReason();
+				if(StringUtil.isBlank(closeReason)){
+					closeReason = afAgentOrderDo.getClosedReason();
+				}
+			}
+		}
+		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
+				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0, afterSaleStatus,isExistAftersaleApply,closeReason);
+		if(orderStatusMsgRemark!=null){
+			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
+			vo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
+		}else{
+			vo.setOrderStatusMsg("");
+			vo.setOrderStatusRemark("");
+		}
 		return vo;
 	}
 }

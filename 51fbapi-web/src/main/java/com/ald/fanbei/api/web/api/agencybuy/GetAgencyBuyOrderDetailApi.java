@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.api.agencybuy;
 
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
@@ -21,10 +23,13 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
@@ -48,6 +53,9 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	AfBorrowService afBorrowService;
+	@Resource
+	AfAftersaleApplyService afAftersaleApplyService;
+	
 	/**
 	 * 3.6.4新增优惠劵使用
 	 */
@@ -219,9 +227,40 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setSaleAmount(saleAmount);
 		agentOrderDetailVo.setActualAmount(actualAmount);
 		agentOrderDetailVo.setNper(afOrderDo.getNper());
+		agentOrderDetailVo.setGmtPayStart(new Date());
+		agentOrderDetailVo.setGmtPayEnd(DateUtil.addHoures(afOrderDo.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(afOrderDo.getCount()), BigDecimal.ONE);
 		agentOrderDetailVo.setGoodsSaleAmount(afOrderDo.getSaleAmount().divide(saleCount, 2));
+		//售后相关设置
+		Boolean isExistAftersaleApply = false;
+		String afterSaleStatus = "";
+		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(afOrderDo.getRid());
+		if(afAftersaleApplyDo!=null){
+			isExistAftersaleApply = true;
+			afterSaleStatus = afAftersaleApplyDo.getStatus();
+			agentOrderDetailVo.setAfterSaleStatus(afAftersaleApplyDo.getStatus());
+			agentOrderDetailVo.setGmtRefundApply(afAftersaleApplyDo.getGmtApply());
+		}else{
+			agentOrderDetailVo.setGmtRefundApply(new Date(0));
+			agentOrderDetailVo.setAfterSaleStatus("");
+		}
+		agentOrderDetailVo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(afOrderDo.getRid()));
+		//状态备注及说明 
+		String closeReason = "";
+		closeReason = afAgentOrderDo.getCancelReason();
+		if(StringUtil.isBlank(closeReason)){
+			closeReason = afAgentOrderDo.getClosedReason();
+		}
+		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
+				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason);
+		if(orderStatusMsgRemark!=null){
+			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
+			agentOrderDetailVo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
+		}else{
+			agentOrderDetailVo.setOrderStatusMsg("");
+			agentOrderDetailVo.setOrderStatusRemark("");
+		}
 		return agentOrderDetailVo;
 	}
 	

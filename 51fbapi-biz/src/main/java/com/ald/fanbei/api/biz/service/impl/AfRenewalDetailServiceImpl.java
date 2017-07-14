@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,11 +10,13 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
@@ -21,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -74,6 +78,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	RiskUtil riskUtil;
 
 	@Override
 	public Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo) {
@@ -191,7 +197,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 					AfUserDo userDo = afUserService.getUserById(afBorrowCashDo.getUserId());
 					pushService.repayRenewalSuccess(userDo.getUserName());
-
+					
+					//当续期成功时,同步逾期天数为0
+					dealWithSynchronizeOverduedOrder(afBorrowCashDo);
+					
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -201,6 +210,28 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			}
 		});
 	}
+	
+	/**
+	 * 同步逾期订单
+	 * @param borrowCashInfo
+	 */
+	private void dealWithSynchronizeOverduedOrder(AfBorrowCashDo borrowCashInfo) {
+		String identity = System.currentTimeMillis() + StringUtils.EMPTY;
+		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
+		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
+		boList.add(parseOverduedBorrowBo(borrowCashInfo.getBorrowNo(), 0,null));
+		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
+		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		logger.info("dealWithSynchronizeOverduedOrder completed");
+	}
+	
+	private RiskOverdueBorrowBo parseOverduedBorrowBo(String borrowNo, Integer overdueDay, Integer overduetimes) {
+    	RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
+    	bo.setBorrowNo(borrowNo);
+    	bo.setOverdueDays(overdueDay);
+    	bo.setOverdueTimes(overduetimes);
+    	return bo;
+    }
 
 	private AfUserAccountLogDo addUserAccountLogDo(UserAccountLogType type, BigDecimal amount, Long userId, Long renewalDetailId) {
 		// 增加account变更日志

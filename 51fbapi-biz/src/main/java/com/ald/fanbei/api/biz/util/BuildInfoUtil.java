@@ -7,10 +7,12 @@ import org.springframework.util.StringUtils;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfUpsLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 
 /**
  *@类描述：
@@ -58,6 +60,21 @@ public class BuildInfoUtil {
 		accountLog.setRefId(orderId+"");
 		accountLog.setType(logType.getCode());
 		return accountLog;
+	}
+	
+	public static AfUserVirtualAccountDo buildUserVirtualAccountDo(Long userId, BigDecimal amount, BigDecimal totalAmount,Long orderId, String orderNo, String virtualCode){
+		//增加虚拟商品使用日志
+		AfUserVirtualAccountDo virtualAccountInfo = new AfUserVirtualAccountDo();
+		virtualAccountInfo.setAmount(amount);
+		virtualAccountInfo.setOrderId(orderId);
+		virtualAccountInfo.setOrderNo(orderNo);
+		virtualAccountInfo.setYear(DateUtil.getCurrentYear());
+		virtualAccountInfo.setMonth(DateUtil.getCurrentMonth());
+		virtualAccountInfo.setCode(virtualCode);
+		virtualAccountInfo.setUserId(userId);
+		virtualAccountInfo.setAmount(amount);
+		virtualAccountInfo.setTotalAmount(totalAmount);
+		return virtualAccountInfo;
 	}
 
 }

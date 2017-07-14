@@ -109,28 +109,44 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			}
 		}
 		
-		showAmount = actualAmount;
 		
+		
+		
+		showAmount = repaymentAmount;
+		//使用优惠券结算金额
 		if(coupon!=null){
-			showAmount = BigDecimalUtil.add(actualAmount, coupon.getAmount());
+			showAmount = BigDecimalUtil.subtract(repaymentAmount, coupon.getAmount());
 		}
-		if(userDto.getRebateAmount().compareTo(userAmount)<0){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+		//优惠券金额大于还款金额其他数据处理
+		if(showAmount.compareTo(BigDecimal.ZERO)<=0){
+			logger.info(userDto.getUserName()+"coupon repayment");
+			jfbAmount = BigDecimal.ZERO;
+			userAmount = BigDecimal.ZERO;
+			showAmount = BigDecimal.ZERO;
 		}
-		
-		BigDecimal jfb=BigDecimalUtil.divide(jfbAmount, new BigDecimal(100));
-		if(userDto.getJfbAmount().compareTo(jfbAmount)<0){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
-
+		BigDecimal myjfb =	BigDecimalUtil.divide(userDto.getJfbAmount(), new BigDecimal(100));
+		//使用集分宝处理
+		if( jfbAmount.compareTo(BigDecimal.ZERO)>0 &&showAmount.compareTo(myjfb)>0){
+			
+			showAmount = BigDecimalUtil.subtract(showAmount, myjfb);
+			jfbAmount = userDto.getJfbAmount();
+		}else if(jfbAmount.compareTo(BigDecimal.ZERO)>0 &&showAmount.compareTo(myjfb)<=0){
+			//集分宝金额大于还款金额
+			jfbAmount =BigDecimalUtil.multiply(showAmount,  new BigDecimal(100)) ;
+			userAmount = BigDecimal.ZERO;
+			showAmount = BigDecimal.ZERO;
 		}
-
-		showAmount =BigDecimalUtil.add(showAmount, jfb);
-		showAmount = BigDecimalUtil.add(showAmount, userAmount);
+		//余额处理
+		if(userAmount.compareTo(BigDecimal.ZERO)>0&&showAmount.compareTo(userDto.getRebateAmount())>0){
+			showAmount = BigDecimalUtil.subtract(showAmount, userDto.getRebateAmount());
+			userAmount = userDto.getRebateAmount();
+		}else if(userAmount.compareTo(BigDecimal.ZERO)>0 &&showAmount.compareTo(userDto.getRebateAmount())<=0){
+			userAmount = showAmount;
+			showAmount = BigDecimal.ZERO;
+		}
 	
-		
-		if(repaymentAmount.compareTo(showAmount)!=0){
+		if(actualAmount.compareTo(showAmount)!=0){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
-
 		}
 		
 		Map<String,Object> map;

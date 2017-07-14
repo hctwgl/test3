@@ -156,6 +156,16 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public boolean existMonthRepayingBill(Long userId, Integer billYear, Integer billMonth) {
 		return afBorrowBillDao.existMonthRepayingBill(userId, billYear, billMonth)> 0;
+	}
+
+	@Override
+	public Long getOverduedAndNotRepayBillId(Long borrowId) {
+		return afBorrowBillDao.getOverduedAndNotRepayBillId(borrowId);
+	}
+
+	@Override
+	public AfBorrowBillDo getOverduedAndNotRepayBill(Long borrowId, Long billId) {
+		return afBorrowBillDao.getOverduedAndNotRepayBill(borrowId, billId);
 	}	
 	
 }

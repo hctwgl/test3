@@ -12,11 +12,14 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.dal.dao.AfAftersaleApplyDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
+import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 
@@ -36,6 +39,8 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 	BoluomeUtil boluomeUtil;
 	@Resource
 	TransactionTemplate transactionTemplate;
+	@Resource
+	AfAftersaleApplyDao afAftersaleApplyDao;
 	
 	@Override
 	public int addOrderRefund(AfOrderRefundDo orderRefundInfo) {
@@ -72,6 +77,17 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 				try {
 					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
 					updateOrderRefund(orderRefundInfo);
+					if(orderRefundInfo.getAftersaleApplyId()>0){
+						AfOrderDo orderT =new AfOrderDo();
+						orderT.setRid(orderInfo.getRid());
+						orderT.setStatus(OrderStatus.CLOSED.getCode());
+						afOrderDao.updateOrder(orderT);
+
+						AfAftersaleApplyDo saleDo =new AfAftersaleApplyDo();
+						saleDo.setId(orderRefundInfo.getAftersaleApplyId());
+						saleDo.setStatus(AfAftersaleApplyStatus.FINISH.getCode());
+						afAftersaleApplyDao.updateById(saleDo);
+					}
 				} catch (Exception e) {
 					logger.error("dealWithOrderRefund  error = {}",e);
 					status.setRollbackOnly();
@@ -101,6 +117,12 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
 					updateOrderRefund(orderRefundInfo);
 					afOrderDao.updateOrder(orderInfo);
+					if(orderRefundInfo.getAftersaleApplyId()>0){
+						AfAftersaleApplyDo saleDo =new AfAftersaleApplyDo();
+						saleDo.setId(orderRefundInfo.getAftersaleApplyId());
+						saleDo.setStatus(AfAftersaleApplyStatus.FINISH.getCode());
+						afAftersaleApplyDao.updateById(saleDo);
+					}
 				} catch (Exception e) {
 					logger.error("dealWithSelfGoodsOrderRefund  error: {}",e);
 					status.setRollbackOnly();

@@ -189,4 +189,12 @@
 		select count(*) from `af_borrow` WHERE `status` in ('TRANSED','FINISH') and `user_id` =#{userId}; 
 	</select>
 	
+	<select id="getBorrowInfoByBorrowNo" resultType="AfBorrowDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_borrow WHERE is_delete = 0 AND borrow_no = #{borrowNo} LIMIT 1
+	</select>
+	
+	
+	
 </mapper>
