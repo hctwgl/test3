@@ -17,7 +17,7 @@ public class Create {
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 		//String table = "tt_test";
-		String table = "af_property_value";
+		String table = "af_goods_price";
 
 		
 		

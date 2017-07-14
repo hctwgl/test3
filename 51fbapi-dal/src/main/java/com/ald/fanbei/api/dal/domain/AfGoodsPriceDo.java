@@ -8,7 +8,7 @@ import java.util.Date;
  * 
  * @author maqiaopan-template
  * @version 1.0.0 初始化
- * @date 2017-07-13 20:34:26
+ * @date 2017-07-14 11:23:39
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfGoodsPriceDo extends AbstractSerial {
@@ -80,6 +80,11 @@ import java.util.Date;
      * 排序
      */
     private Long sort;
+
+    /**
+     * 上下架状态，N：下架，Y：上架
+     */
+    private String isSale;
 
 
     /**
@@ -315,6 +320,24 @@ import java.util.Date;
      */
     public void setSort(Long sort){
       this.sort = sort;
+    }
+
+    /**
+     * 获取上下架状态，N：下架，Y：上架
+     *
+     * @return 上下架状态，N：下架，Y：上架
+     */
+    public String getIsSale(){
+      return isSale;
+    }
+
+    /**
+     * 设置上下架状态，N：下架，Y：上架
+     * 
+     * @param isSale 要设置的上下架状态，N：下架，Y：上架
+     */
+    public void setIsSale(String isSale){
+      this.isSale = isSale;
     }
 
 }
