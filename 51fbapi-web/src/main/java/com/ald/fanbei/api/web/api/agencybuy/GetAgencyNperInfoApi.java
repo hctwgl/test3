@@ -13,6 +13,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -92,11 +93,12 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(params.get("amount"), BigDecimal.ZERO);
         JSONArray interestFreeArray = null;
         
-        String numId = params.get("numId") + "";
+        if(params.get("numId") != null) {
+            String numId = params.get("numId") + "";
+            String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.TAOBAO.getCode());
+            interestFreeArray = getInterestFreeArray(numId,type);
+        }
 
-		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.TAOBAO.getCode());
-        interestFreeArray = getInterestFreeArray(numId,type);
-        
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
         JSONArray array = JSON.parseArray(resource.getValue());
