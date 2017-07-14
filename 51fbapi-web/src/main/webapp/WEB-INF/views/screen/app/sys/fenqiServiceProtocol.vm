@@ -8,7 +8,7 @@
 			border: 1px solid #111;
 		}
 		ul i:first-child{
-			width: 1.6rem;
+			width: 2.0rem;
 			text-align: center;
 			border-right: 1px solid #111;
 			margin-right: 0.2rem;
@@ -23,7 +23,7 @@
 </head>
 <body style="background-color: #fff;">
 	<div class="protocol fenqiServiceProtocol">
-        <h2>借款合同</h2>
+        <h2>分期服务协议</h2>
         <p>
             甲方（借款人）：$!{realName}<br>
             身份证号：$!{idNumber}<br>
@@ -42,14 +42,16 @@
 			<ul>
 				<li><i>借款本金</i><i>￥$!{amountLower}</i></li>
 				<li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
-		        <li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li>
+		        <!-- <li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li> -->
+				<!-- <li><i>年利率</i><i>0%</i></li> -->
+				<li><i>利息和手续费</i><i>{{changeRate($!{poundage})}}</i></li>
 				<li><i>借款期限</i><i>$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd")至$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
-				<li><i>还款方式</i><i>等本等息</i></li>
-				<li><i>还款日</i><i>每月$!{repaymentDate}日</i></li>
+				<!-- <li><i>还款方式</i><i>等本等息</i></li> -->
+				<li><i>还款日</i><i>每月20日</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
-				<li><i>手续费率</i><i>{{changeRate($!{poundage})}}</i></li>
+
 			</ul><br>
-			
+
 			<span>第二条 借款发放</span><br>
 			1、甲乙双方对本协议所述借款相关信息全部认可，自主自愿依据本协议规定的内容，由乙方向甲方提供借款。<br>
 			2、在本协议签署生效之日，基于甲方不可撤销的委托，乙方可将本协议约定的借款资金直接或间接地通过乙方及/或乙方授权的其他第三人在银行或第三方支付机构开设的账户支付至甲方在丙方绑定的银行账户或甲方指定的第三方商户账户。<br>
@@ -123,7 +125,7 @@
 			2.、本协议自甲方在51返呗平台页面上点击 “确认”或“同意”按钮（具体点击页面以丙方平台上实际展示页面为准），即表明甲方已经先行认真阅读了本协议的全部内容，完全理解和认可本协议的全部内容且无异议。本条款于甲方点击“确认”或“同意”按钮之时自动生效，并发生法律效力。<br>
 			3、如果本协议中的任何一条或多条违反适用的法律法规，则该条将被视为无效，但该无效条款并不影响本协议其他条款的效力。<br>
 			4、本协议若有修改或者补充的，均由丙方以电子文本形式在其平台及合作方处进行公布，修改后或者补充后的内容与本协议有冲突的，以修改后或者补充后的效力为准。<br>
-        </p>   
+        </p>
     </div>
     <script type="text/javascript">
             new Vue({
