@@ -24,7 +24,7 @@
                     <p class="goodsListTitle">{{item.goodsName}}</p>
                     <p class="remark">{{item.remark}}</p>
                     <div class="priceWrap">
-                        <span class="saleAmount">¥{{item.realAmount}}</span>
+                        <span class="saleAmount">¥{{item.saleAmount}}</span>
                         <span class="rebateAmount"><i></i>{{item.rebateAmount}}</span>
                     </div>
                 </div>
