@@ -1420,7 +1420,7 @@ public class RiskUtil extends AbstractThird {
 				auth.setFundStatus(YesNoStatus.YES.getCode());
 				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
                                                 如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
-				if (au_amount.compareTo(userAccountDo.getAuAmount()) > 0 && (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0)) {
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
 					auth.setRiskStatus(RiskStatus.YES.getCode());
 					AfUserAccountDo accountDo = new AfUserAccountDo();
 					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
@@ -1475,7 +1475,7 @@ public class RiskUtil extends AbstractThird {
 				auth.setJinpoStatus(YesNoStatus.YES.getCode());
 				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
 				      如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
-				if (au_amount.compareTo(userAccountDo.getAuAmount()) > 0 && (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0)) {
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
 					auth.setRiskStatus(RiskStatus.YES.getCode());
 					AfUserAccountDo accountDo = new AfUserAccountDo();
 					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
@@ -1508,6 +1508,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setData(data);
 		reqBo.setMsg(msg);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logger.info(createLinkString(reqBo));
 		logThird(signInfo, "creditCardNotify", reqBo);
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
 			JSONObject obj = JSON.parseObject(data);
@@ -1530,7 +1531,7 @@ public class RiskUtil extends AbstractThird {
 				auth.setCreditStatus(YesNoStatus.YES.getCode());
 				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
 				     如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
-				if (au_amount.compareTo(userAccountDo.getAuAmount()) > 0 && (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0)) {
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
 					auth.setRiskStatus(RiskStatus.YES.getCode());
 					AfUserAccountDo accountDo = new AfUserAccountDo();
 					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
