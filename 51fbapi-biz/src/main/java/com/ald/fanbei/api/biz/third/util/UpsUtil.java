@@ -79,7 +79,7 @@ public class UpsUtil extends AbstractThird {
 	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 
 	private static String TRADE_STATUE_ALREADY__SUCC = "02"; // 已经成功
 	
-	private static String NEED_CODE ="20"; // 需要短信验证码
+	private static String NEED_CODE ="10"; // 需要短信验证码表示
 	
 	private static String TRADE_STATUE_DEAL = "20";
 	private static String TRADE_RESP_SUCC = "0000";
