@@ -9,47 +9,13 @@
 <body>
     <div id="oppoR11" style="background-color: #fff;">
         <img src="$src/oppo12_1.png">
-
         <img :src="bannerlist">
-        <!-- <div>
-          <img v-for='i of 4' v-show="show[i-1]" :src="'/images/activity/06/oppo12_3'+i+'.png'">
-        </div> -->
         <ul class="oppoR11List clearfix">
           <li v-for='i of 4' @click="oppoR11List(i)" :class="show[i-1]? 'item'+i:'item'"></li>
         </ul>
         <p class="oppoR11Content">{{content}}</p>
         <a id="oppoR11Btn" :href="url"><img src="$src/oppo12_2.png"></a>
-
-
-
-
-
-
-        <!-- <div class="banner">
-           <img @click="btnBox()" src="$src/oppo2.png" id="btn" style="height: 0.69rem;">
-           <div class="order"></div>
-        </div> -->
-        <!-- 按钮 -->
-        <!-- <a href="#mobileListWrap" class="buyBtn">
-          <p style="">立即抢购</p>
-        </a> -->
-        <!--分享-->
-        <!-- <div class="goRegister hide">
-            <a href="gameRegister"><img src="$src/oppo5.png" style="height: 0.7rem;"></a>
-            <p>登录51返呗APP进行预约</p>
-        </div> -->
         <img src="$src/oppo11_4.png">
-
-        <!-- <div class="countWrap hide">
-          <img src="$src/oppo9.png" style="height: 1.77rem;">
-          <div class="countDown" id="countDown">
-            <span class="time_item" id="day_show"></span>
-            <span class="time_item" id="hour_show"></span>
-            <span class="time_item" id="minute_show"></span>
-            <span class="time_item" id="second_show"></span>
-          </div>
-        </div> -->
-        <!-- <img src="$src/oppo8.png"> -->
         <div class="mobileListImg hide">
             <img src="$src/oppo8_2.png">
             <img src="$src/oppo8_3.png">
@@ -59,24 +25,6 @@
             <ul id="mobileList" class="mobileList clearfix">
             </ul>
         </a>
-        <!--弹框-->
-        <!-- <div class="mask"></div> -->
-        <!-- <div class="orderSuccess">
-        <img src="$src/r30.png" style="height: 3.64rem;">
-        <div class="close"></div>
-        </div> -->
-        <!-- <div class="popupWrap">
-            <div class="popupBox hide"></div>
-            <div class="popup hide">
-              <img src="$src/oppo9_time.png" style="height: 0.95rem;">
-              <p>享12期免息500元福<br />有且只在51返呗</p>
-              <div class="close">X</div>
-              <div class="btn">
-                <span>取消</span>
-                <span>确认</span>
-              </div>
-            </div>
-        </div> -->
     </div>
     <script type="text/javascript" src="/dist/activity/06/oppoR11.js?version=$version"></script>
 </body>

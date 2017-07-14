@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfGoodsStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -85,6 +86,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
 		if (goodsDo == null) {
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+		}
+		if(!AfGoodsStatus.PUBLISH.getCode().equals(goodsDo.getStatus())){
+			throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_CANCEL);
 		}
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 

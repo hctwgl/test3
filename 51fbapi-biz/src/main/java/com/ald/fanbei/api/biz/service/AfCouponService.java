@@ -19,5 +19,7 @@ public interface AfCouponService {
 	
 	AfCouponDo getCouponById(Long couponId);
 	
+	AfCouponDo getCouponInfoById(Long couponId);
+	
 	int updateCouponquotaAlreadyById(AfCouponDo couponDo);
 }

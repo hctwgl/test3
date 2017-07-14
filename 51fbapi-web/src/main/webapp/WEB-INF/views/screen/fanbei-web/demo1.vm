@@ -8,44 +8,50 @@
 </head>
 <body>
 <div class="footer" @click="bombBox">
-   <div class="words"><img src="$commonUrl/mayMovie_01_2.jpg"></div>
+   <div class="words" onclick="showState()"><img src="$commonUrl/mayMovie_01_2.jpg"></div>
    <div class="saleOff"><img src="$commonUrl/mumday30.jpg"></div>
+   <p v-for="item in show">{{item}}</p>
 </div>
 
 <script type="text/javascript">
 
-    new Vue({
+    // $(function(){
+    //     function showState(){
+    //         console.log(1111);
+    //         let show=[true,false,false,false];
+    //         for (let i = 0; i < show.length; i++) {
+    //             this.show.splice(i,1,false);
+    //             console.log(this.show.splice(i,1,false))
+    //         }
+    //     }
+    // });
+
+    var vm=new Vue({
         el:'.footer',
+        data: {
+            show: [true,false,false,false]
+        },
         methods:{
-            bombBox: function(){ // 规则弹窗
-
-                // var appVersion = "3.4.2";
-
-                /*var appVersion = getInfo().appVersion.replace(/\./g,"");
-                var appSystem = getInfo().id.substr(0,2);
-
-                if ( appSystem == "i_" ) {
-
-                    if ( appVersion <= "350" ) {
-                        requestMsg("你的版本过低请升级");
-                    } else {
-                        window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
-                    }
-                } else if( appSystem == "a_" ){
-
-                    if ( appVersion <= "351" ) {
-                        requestMsg("你的版本过低请升级");
-                    } else {
-                        window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY';
-                    }
-                }*/
-
-
+            bombBox: function(){
                 window.location.href = 'tel://' + '10086';
-
             }
         }
     });
+
+    Vue.set(vm.show,1,'2222');
+
+
+
+
+
+    // new Vue({
+    //     el:'.footer',
+    //     methods:{
+    //         bombBox: function(){
+    //             window.location.href = 'tel://' + '10086';
+    //         }
+    //     }
+    // });
 
 </script>
 </body>

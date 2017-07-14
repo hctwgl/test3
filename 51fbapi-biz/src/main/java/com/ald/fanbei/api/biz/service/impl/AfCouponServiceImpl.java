@@ -51,6 +51,20 @@ public class AfCouponServiceImpl implements AfCouponService {
 
 	
 	@Override
+	public AfCouponDo getCouponInfoById(Long couponId) {
+		String key = Constants.CACHEKEY_COUPON_INFO + couponId;
+		AfCouponDo couponDo = (AfCouponDo)bizCacheUtil.getObject(key);
+		if(couponDo != null){
+			return couponDo;
+		}
+		couponDo = afCouponDao.getCouponInfoById(couponId);
+		if(couponDo != null){
+			bizCacheUtil.saveObject(key, couponDo);
+		}
+		return couponDo;
+	}
+	
+	@Override
 	public int updateCouponquotaAlreadyById(AfCouponDo couponDo) {
 		return afCouponDao.updateCouponquotaAlreadyById(couponDo);
 	}

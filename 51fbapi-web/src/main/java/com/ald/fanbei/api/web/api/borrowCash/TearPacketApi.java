@@ -191,6 +191,11 @@ public class TearPacketApi  implements ApiHandle {
 				data.put("prizeType", afCouponDo.getType());
 				// 发送本地平台优惠券
 				afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "TEAR_PACKET", afGameResultDo.getRid() + "");
+				// 更新优惠券已领取数量
+				AfCouponDo couponDoT = new AfCouponDo();
+				couponDoT.setRid(Long.parseLong(couponId));
+				couponDoT.setQuotaAlready(1);
+				afCouponService.updateCouponquotaAlreadyById(couponDoT);
 			}
 		} catch (Exception e) {
 			logger.error("TearPacketApi=>" + e.toString());
