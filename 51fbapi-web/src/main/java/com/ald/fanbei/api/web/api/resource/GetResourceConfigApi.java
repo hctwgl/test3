@@ -34,6 +34,8 @@ public class GetResourceConfigApi implements ApiHandle{
 	@Resource
 	AfResourceService afResourceService;
 	
+	//类型（CANCEL_ORDER_REASON：订单取消原因 ORDER_SEARCH_CONDITION：订单筛选条件）
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
