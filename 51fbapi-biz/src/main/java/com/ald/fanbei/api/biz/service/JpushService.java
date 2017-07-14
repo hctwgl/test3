@@ -157,5 +157,33 @@ public interface JpushService {
 	 */
 	public void pushAllHeaderImage();
 	
+	/**
+	 *  公积金认证推送  
+	 */
+	public void fundRiskSuccess(String userName);
+
+	/**
+	 *  公积金认证失败推送
+	 */
+	public void fundRiskFail(String userName);	
 	
+	/**
+	 *  社保认证推送  
+	 */
+	public void socialSecurityRiskSuccess(String userName);
+
+	/**
+	 *  社保认证失败推送
+	 */
+	public void socialSecurityRiskFail(String userName);		
+	
+	/**
+	 *  信用卡认证推送  
+	 */
+	public void creditCardRiskSuccess(String userName);
+
+	/**
+	 *  信用卡认证失败推送
+	 */
+	public void creditCardRiskFail(String userName);			
 }
