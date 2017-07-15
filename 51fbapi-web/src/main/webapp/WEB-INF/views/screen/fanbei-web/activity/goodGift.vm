@@ -12,7 +12,7 @@
 <div class="banner"><img src="$src/goodGift07.jpg"></div>
 <div class="prizeShow">
     <img class="" src="$src/goodGift08.jpg">
-    <div class="toBorrowMoney"><img src="$src/goodGift04.png"></div>
+    <div class="toBorrowMoney"></div>
 </div>
 <div class="prizeTitle"><img src="$src/goodGift03.jpg"></div>
 <div class="prizeName">
