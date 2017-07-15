@@ -131,11 +131,14 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		data.put("realNameStatus", authDo.getRealnameStatus());
 		data.put("bankCardStatus", authDo.getBankcardStatus());
 		// 3.6.7是否显示运营图片
-		if(StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())){
-			data.put("isShowImage", "Y");
-		}else{
-			data.put("isShowImage", "N");
-		}
+//		if(StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())){
+//			data.put("isShowImage", "N");
+//		}else{
+//			data.put("isShowImage", "N");
+//		}
+//		3.6.9不在显示图片
+		data.put("isShowImage", "N");
+
 		
 		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {
 			data.put("riskStatus", RiskStatus.A.getCode());
