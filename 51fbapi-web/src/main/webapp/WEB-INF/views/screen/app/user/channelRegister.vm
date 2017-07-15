@@ -85,9 +85,8 @@
         #if( $!{style}==4 || $!{style}==13 )
         <img src="$commonUrl/channel$!{style}_03.jpg">
         #elseif( $!{style}==7 )
-        <img src="$commonUrl/channel7_03.png">
-        #elseif( $!{style}==10 )
-        <img src="$commonUrl/channel$!{style}_03.jpg">
+        <img src="$commonUrl/channel$!{style}_03.png">
+        #elseif( $!{style}==8 )
         <div class="registerSuss8 hide">
             <p>注册成功，立即下载【51返呗】</p>
             <p>借钱新口子，最高5000元任你借</p>
@@ -104,6 +103,14 @@
 
             <p>如有任何疑问，请拨打51返呗客服热线：0571-88193918</p>
         </div>
+        #elseif( $!{style}==10 )
+        <img src="$commonUrl/channel$!{style}_03.jpg">
+        <div class="registerSuss8 hide">
+            <p>注册成功，立即下载【51返呗】</p>
+            <p>借钱新口子，最高5000元任你借</p>
+            <p>30分钟内登录，领取30元还款抵用券</p>
+            <span id="downloadApp">点击下载</span>
+        </div>
         #elseif( $!{style}==12 )
         <img src="$commonUrl/channel$!{style}_03.png">
         <div class="registerSuss12 hide"><img id="downloadApp" src="$commonUrl/channel$!{style}_04.png"></div>
@@ -113,8 +120,10 @@
 				copyright2
 			#elseif( $!{style}==7 || $!{style}==11 || $!{style}==14 )
 				copyright7
-            #elseif( $!{style}==8 || $!{style}==10 )
+            #elseif( $!{style}==8 )
 				copyright8
+            #elseif( $!{style}==10 )
+				copyright10
 			#else
 				copyright$!{style}
 			#end
