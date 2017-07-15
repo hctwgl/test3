@@ -9,9 +9,9 @@
 </head>
 
 <body>
-<div class="banner"><img src="$src/goodGift07.jpg"></div>
+<div class="banner"><img src="$src/goodGift07.png"></div>
 <div class="prizeShow">
-    <img class="" src="$src/goodGift08.jpg">
+    <img class="" src="$src/goodGift08.png">
     <div class="toBorrowMoney"></div>
 </div>
 <div class="prizeTitle"><img src="$src/goodGift03.jpg"></div>
