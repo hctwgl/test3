@@ -136,11 +136,11 @@ public class AuthStrongRiskApi implements ApiHandle {
 					// 提交过信用认证,第一次给用户发放优惠劵
 					HashMap<String, String> creditRebateMap = new HashMap<String, String>();
 					String creditRebateMsg = "" ;
-					if(afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode())){
-						// 发放优惠劵工作
-						couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
-						creditRebateMsg = getCreditAuthMsg(context, creditRebateMsg);
-					}
+//					if(afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode())){
+//						// 发放优惠劵工作
+//						couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+//						creditRebateMsg = getCreditAuthMsg(context, creditRebateMsg);
+//					}
 					
 					AfUserAuthDo authDo = new AfUserAuthDo();
 					authDo.setUserId(context.getUserId());
