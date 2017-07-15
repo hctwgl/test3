@@ -10,7 +10,7 @@
 
 <body>
     <!-- <div class="banner"></div> -->
-    <img src="$src/goodGift07.png">
+    <img src="$src/goodGift07.jpg">
     <img class="toBorrowMoney" src="$src/goodGift08.png">
     <img src="$src/goodGift03.png">
     <!-- <div class="prizeShow">
