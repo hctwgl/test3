@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017071101")
+    #set($version="2017071501")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -12,7 +12,7 @@
     <input type="hidden" id="style" value="$!{style}">
 
     <div class="channelRegister_wrap">
-        #if( $!{style}==9 || $!{style}==11 || $!{style}==12)
+        #if( $!{style}==8 || $!{style}==9 || $!{style}==11 || $!{style}==12)
         <img src="$commonUrl/channel$!{style}_01.png">
         #elseif( $!{style}==14 )
         <img src="$commonUrl/channel7_01.jpg">
@@ -20,16 +20,18 @@
         <img src="$commonUrl/channel$!{style}_01.jpg">
         #end
         <div class="channelRegisterWrap">
-            #if( $!{style}==7 || $!{style}==9 || $!{style}==12 )
+            #if( $!{style}==7 || $!{style}==8 || $!{style}==9 || $!{style}==12 )
             <img src="$commonUrl/channel$!{style}_02.png">
             #elseif( $!{style}==11 || $!{style}==14 )
             <img src="$commonUrl/channel7_02.png">
             #else
             <img src="$commonUrl/channel$!{style}_02.jpg">
             #end
-           <ul class="
-			    #if( $!{style}==7 || $!{style}==8 || $!{style}==10 || $!{style}==11 || $!{style}==14 )
+           <ul class="clearfix
+			    #if( $!{style}==7 || $!{style}==10 || $!{style}==11 || $!{style}==14 )
 				channelRegister78
+                #elseif( $!{style}==8 )
+                channelRegister8
 			    #elseif( $!{style}==9 || $!{style}==12 || $!{style}==13 )
 				channelRegister$!{style}
 			    #else
@@ -44,16 +46,14 @@
                 #else
                 <li class="clearfix">
                     <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
-                    #if( $!{style} != 10 )
                     <button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
-                    #end
                 </li>
                 #end
                 #if( $!{style}==8 || $!{style}==10 || $!{style}==13 )
                 <li class="clearfix">
                   <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
                   <button class="register_codeBtn_right" id="register_codeBtn" style="
-                    #if( $!{style}==8 || $!{style}==10 )
+                    #if( $!{style}==10 )
                       color: #ffe402;
                     #end
                   ">点击获取</button>
@@ -86,7 +86,7 @@
         <img src="$commonUrl/channel$!{style}_03.jpg">
         #elseif( $!{style}==7 )
         <img src="$commonUrl/channel7_03.png">
-        #elseif( $!{style}==8 || $!{style}==10 )
+        #elseif( $!{style}==10 )
         <img src="$commonUrl/channel$!{style}_03.jpg">
         <div class="registerSuss8 hide">
             <p>注册成功，立即下载【51返呗】</p>
