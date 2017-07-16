@@ -169,8 +169,13 @@ public class AuthStrongRiskApi implements ApiHandle {
 						
 						couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
 						// 随机发放奖品
-						Map<String,Object> prizeInfo =  getAuthPrize(requestDataVo, context, request);
-						creditRebateMsg = (String) prizeInfo.get("prizeName");
+						try{
+							Map<String,Object> prizeInfo =  getAuthPrize(requestDataVo, context, request);
+							creditRebateMsg = (String) prizeInfo.get("prizeName");
+						} catch (Exception e) {
+							// ignore error
+							logger.error("getAuthPrize=>" + e.getMessage());
+						}
 					}
 					
 					AfUserAuthDo authDo = new AfUserAuthDo();
@@ -184,15 +189,11 @@ public class AuthStrongRiskApi implements ApiHandle {
 						creditRebateMap.put("creditRebateMsg", creditRebateMsg);
 						resp.setResponseData(creditRebateMap);	
 					}
-					
 				}
 			} catch (Exception e) {
 				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
 				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 			}
-			
-			// 
-			
 			return resp;
 		}
 
