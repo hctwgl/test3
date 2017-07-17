@@ -50,9 +50,7 @@ var _fmOpt;
         var web_url = window.encodeURIComponent(window.location.href);
         var js_url = ta.src;
 
-        if ( style==8 ) {
-            var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url=' + web_url + '&js_url=' + js_url + '&convert_id=63553308919';
-        } else if ( style==14 ) {
+        if ( style==14 ) {
             var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url+'&convert_id=62421367574';
         } else {
             var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url;
