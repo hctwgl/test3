@@ -167,7 +167,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 						// 发放优惠劵工作
 						//creditRebateMsg = getCreditAuthMsg(context, creditRebateMsg);
 						
-						couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+						//couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
 						// 随机发放奖品
 						try{
 							Map<String,Object> prizeInfo =  getAuthPrize(requestDataVo, context, request);
@@ -318,7 +318,6 @@ public class AuthStrongRiskApi implements ApiHandle {
 	
 	// 获得优惠劵
 	private  String getCreditAuthMsg(FanbeiContext context, String creditRebateMsg ){
-		logger.error("AuthStrongRiskApi getCreditAuthMsg");
 		// 给客户端发送获得现金的信息
 		AfUserAccountLogDo userAccountLogDo = new AfUserAccountLogDo();
 		userAccountLogDo.setUserId(context.getUserId());
