@@ -33,7 +33,7 @@ public class AfCouponDo extends AbstractSerial {
 	private String expiryType;//有效期类型【D:days固定天数，R:range固定时间范围】
 	private Integer quotaAlready;
 	private Long quota;
-
+	private String useRange;
 	
 	
 	/**
@@ -230,6 +230,12 @@ public class AfCouponDo extends AbstractSerial {
 	public void setQuota(Long quota) {
 		this.quota = quota;
 	}
-
-
+	
+	public String getUseRange() {
+		return useRange;
+	}
+	
+	public void setUseRange(String useRange) {
+		this.useRange = useRange;
+	}
 }

@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.web.apph5.controller;
  
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,12 +18,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -45,29 +49,67 @@ public class AppH5ConponController extends BaseController {
 	AfCouponService afCouponService;
 	@Resource
 	AfCouponCategoryService  afCouponCategoryService;
+    @Resource
+    AfUserCouponService afUserCouponService;
+    @Resource 
+	AfUserService afUserService;
     
-    @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String couponCategoryInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
-    		FanbeiWebContext context = doWebCheck(request, false);
+    		//FanbeiWebContext context = doWebCheck(request, false);
+    		String userName = null ;// context.getUserName();
     		JSONObject jsonObj = new JSONObject();
     		// 查询所有优惠券分类
     		List<AfCouponCategoryDo> afCouponCategoryList = afCouponCategoryService.listAllCouponCategory();
-    		
+    		List <Map<String,Object>> couponCategoryList = new ArrayList<Map<String,Object>>();
     		for(AfCouponCategoryDo afCouponCategoryDo: afCouponCategoryList) {
+    			Map<String,Object> couponCategoryMap = new HashMap<String,Object>();
+    			couponCategoryMap.put("name", afCouponCategoryDo.getName());
+    			
+    			List <Map<String,Object>> couponInfoList = new ArrayList<Map<String,Object>>();
     			String coupons = afCouponCategoryDo.getCoupons();
     			JSONArray array = (JSONArray) JSONArray.parse(coupons);
         		for(int i = 0; i < array.size(); i++){
         			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
         			String couponId = (String)array.getString(i);
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			couponInfoMap.put("name", afCouponDo.getName());
         			couponInfoMap.put("type", afCouponDo.getType());
+        			couponInfoMap.put("amount", afCouponDo.getAmount());
+        			couponInfoMap.put("useRange", afCouponDo.getUseRange());
+        			couponInfoMap.put("gmtStart", afCouponDo.getGmtStart().getTime());
+        			couponInfoMap.put("gmtEnd", afCouponDo.getGmtEnd().getTime());
+        			couponInfoMap.put("currentTime", System.currentTimeMillis());
+        			if(userName == null || "".equals(userName)) {
+        				couponInfoMap.put("isDraw", "N");
+        			} else {
+        				// 获取用户信息
+            			AfUserDo user = afUserService.getUserByUserName(userName);
+            			// 判断是否领取优惠券
+            			int userCouponCount = afUserCouponService.getUserCouponByUserIdAndCouponId(user.getRid(), Long.parseLong(couponId));
+            			if(userCouponCount > 0){
+            				couponInfoMap.put("isDraw", "Y");
+            			} else {
+            				couponInfoMap.put("isDraw", "N");
+            			}
+        			}
+        			// 判断优惠券是否领完
+        			Long quota = afCouponDo.getQuota();
+        			Integer quotaAlready = afCouponDo.getQuotaAlready();
+        			if(quota.intValue() == quotaAlready.intValue()){
+        				couponInfoMap.put("isOver", "Y");
+        			} else {
+        				couponInfoMap.put("isOver", "N");
+        			}
+        			// FIXME 判断优惠券分组在哪个专场中
+        			couponInfoList.add(couponInfoMap);
         		}
+        		couponCategoryMap.put("couponInfoList", couponInfoList);
+        		couponCategoryList.add(couponCategoryMap);
     		}
-    		
-    		
-    		//jsonObj.put("couponInfoList", couponInfoList);
+    		jsonObj.put("couponCategoryList", couponCategoryList);
         	return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
     	} catch (Exception e){
     		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
