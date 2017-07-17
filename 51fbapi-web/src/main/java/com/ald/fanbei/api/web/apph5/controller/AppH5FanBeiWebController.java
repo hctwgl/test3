@@ -321,7 +321,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
 				return H5CommonResponse.getNewInstance(false, "今日已领取，请明日再来！", null, null).toString();
 			}
-			return H5CommonResponse.getNewInstance(true, "领取成功，优惠券有效期3天。", "", null).toString();
+			return H5CommonResponse.getNewInstance(true, "领券成功，有效期3天", "", null).toString();
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
