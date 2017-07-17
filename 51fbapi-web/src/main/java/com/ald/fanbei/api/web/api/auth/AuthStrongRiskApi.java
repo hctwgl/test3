@@ -318,6 +318,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 	
 	// 获得优惠劵
 	private  String getCreditAuthMsg(FanbeiContext context, String creditRebateMsg ){
+		logger.error("AuthStrongRiskApi getCreditAuthMsg");
 		// 给客户端发送获得现金的信息
 		AfUserAccountLogDo userAccountLogDo = new AfUserAccountLogDo();
 		userAccountLogDo.setUserId(context.getUserId());
