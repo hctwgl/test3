@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.admin.dal.dao.AfCouponCategoryDao">
+	
+	<sql id="couponCategorySqlField">
+		id,is_delete,gmt_create,gmt_modified,creator,modifier,name,coupons
+	</sql>
+	
+	<insert id="addCouponCategory" parameterType="AfCouponCategoryDo" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO
+			af_coupon_category
+			(
+				gmt_create,
+				gmt_modified,
+				creator,
+				modifier,
+				name,
+				coupons
+			)
+		VALUES
+		    (
+				NOW(),
+				NOW(),
+				#{creator},
+				#{modifier},
+				#{name},
+				#{coupons}
+			)
+	</insert>
+	
+	<select id="listAllCouponCategory"  resultType="AfCouponCategoryDo">
+		SELECT
+			<include refid="couponCategorySqlField"/>
+		FROM
+			af_coupon_category 
+		WHERE
+			is_delete=0
+	</select>
+	
+	<update id="deleteCouponCategory" parameterType="java.lang.String">
+		UPDATE
+			af_coupon_category
+		SET
+			gmt_modified = NOW(),
+			is_delete = 1
+		WHERE
+			id = #{id}
+	</update>
+	
+	
+	<select id="getCouponCategoryById" parameterType="java.lang.String" resultType="AfCouponCategoryDo">
+		SELECT
+			<include refid="couponCategorySqlField"/>
+		FROM
+			af_coupon_category 
+		WHERE
+			is_delete=0
+		AND
+			id = #{id}
+	</select>
+	
+	<update id="updateCouponCategory"  parameterType="AfCouponCategoryDo">
+		UPDATE 
+			af_coupon_category
+		SET 
+			gmt_modified = NOW() 
+			<if test="name != null">
+			    ,name=#{name}
+			</if>
+			<if test="coupons != null">
+			    ,coupons=#{coupons}
+			</if>
+		WHERE id = #{id}
+	</update>
+</mapper>
