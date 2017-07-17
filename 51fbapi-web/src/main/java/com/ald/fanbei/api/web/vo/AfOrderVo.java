@@ -54,7 +54,8 @@ public class AfOrderVo extends AbstractSerial {
 	private BigDecimal nperAmount; //每期金额
 	private Integer nper; //分期数
 	private String installmentInfo;//分期详情
-
+	private Long goodsId;
+	
 	public String getBusinessIcon() {
 		return businessIcon;
 	}
@@ -292,6 +293,14 @@ public class AfOrderVo extends AbstractSerial {
 
 	public void setInstallmentInfo(String installmentInfo) {
 		this.installmentInfo = installmentInfo;
+	}
+
+	public Long getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
 	}
 
 	

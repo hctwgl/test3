@@ -106,6 +106,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setPayType(order.getPayType());
 		vo.setGmtPayStart(new Date());
 		vo.setGmtPayEnd(DateUtil.addHoures(order.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
+		vo.setGoodsId(order.getGoodsId());
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
 		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
