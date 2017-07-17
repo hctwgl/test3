@@ -272,4 +272,7 @@ public class Constants {
 	public static final String VIRTUAL_CODE = "virtualCode";
 	public static final String VIRTUAL_AMOUNT = "virtualAmount";
 
+	//商品AES解密的password
+	public static final String TRADE_AES_DECRYPT_PASSWORD = "trade";
+
 }
