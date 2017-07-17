@@ -47,6 +47,7 @@ let vue=new Vue({
         },
         buyNow(id){
             let self=this;
+
             window.location.href=self.tableContent.notifyUrl+'&params={"goodsId":"'+id+'"}'
         },
         txtFix(i){

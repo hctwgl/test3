@@ -67,6 +67,7 @@
 </style>
 <body>
 <div id="vueCon">
+    <img :src="tableContent.bannerUrl">
     <div class="wrap">
         <div v-for="(data,index) in content.couponInfoList" @click="getCoupon(data.couponId,data.type)" class="coupon">
             <p style="font-size: .36rem;top: .14rem">{{data.name}}</p>
@@ -87,33 +88,9 @@
                     <p class="fanPrice">￥{{item.rebateAmount}}</p><br/>
                 </div>
             </li>
-##            <li>
-##                <img class="productImg" src='$src/robCoupon01.jpg'>
-##                <div class="productRight">
-##                    <p class="productDes">Apple MacBook Air 13.3英寸笔记本电脑2017年新款</p>
-##                    <p class="buyPrice">￥6288</p>
-##                    <p class="fan">返</p>
-##                    <p class="fanPrice">￥10.00</p>
-##                    <p class="monthPrice">月供￥<span>299.73</span>起</p>
-##                </div>
-##            </li>
-##            <li>
-##                <div class="productImg"><img src='$src/robCoupon01.jpg'></div>
-##                <div class="productRight">
-##                    <p class="productDes">Apple MacBook Air 13.3英寸笔记本电脑2017年新款</p>
-##                    <p class="buyPrice">￥6288</p>
-##                    <p class="fan">返</p>
-##                    <p class="fanPrice">￥10.00</p>
-##                    <p class="monthPrice">月供￥<span>299.73</span>起</p>
-##                </div>
-##            </li>
         </ul>
 </div>
 </body>
 <script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
 <script type="text/javascript" src="/dist/activity/07/newFriend.js"></script>
-
-<script>
-
-</script>
 </html>
