@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170706")
+    #set($version="2017071501")
     #set($src="https://fs.51fanbei.com/h5/app/activity/07")
     <meta charset="UTF-8">
     <title>七月有钱 狂送一亿</title>
@@ -9,18 +9,21 @@
 </head>
 
 <body>
-<div class="banner"><img src="$src/goodGift07.jpg"></div>
-<div class="prizeShow">
-    <img class="" src="$src/goodGift08.jpg">
-    <div class="toBorrowMoney"><img src="$src/goodGift04.png"></div>
-</div>
-<div class="prizeTitle"><img src="$src/goodGift03.jpg"></div>
+    <!-- <div class="banner"></div> -->
+    <img src="$src/goodGift07.jpg">
+    <img class="toBorrowMoney" src="$src/goodGift08.png">
+    <img src="$src/goodGift03.png">
+    <!-- <div class="prizeShow">
+        <div class="toBorrowMoney"></div>
+    </div> -->
+    <!-- <div class="prizeTitle"></div> -->
 <div class="prizeName">
     <ul class="roll">
          <!-- <li><p><span>15666666611</span><span style="-webkit-box-orient: vertical;">获得100抵10元优惠券获得100抵10元优惠券获得100抵10元优惠券</span></p></li> -->
     </ul>
 </div>
-<div class="ruleTitle"><img src="$src/goodGift05.jpg"></div>
+<!-- <div class="ruleTitle"></div> -->
+<img src="$src/goodGift05.jpg">
 <div class="ruleCont">
    <p>1、活动时间：7月10日10:00——7月31日23:59；<br/> 2、活动对象：51返呗平台借款用户；<br/> 3、活动内容：<br/>在活动期间内，用户成功借款，即可获得一次抽奖机会；活动期间内全额还款成功的用户可额外获得一个抽奖机会，活动期间抽奖次数不限；<br/> 4、用户在活动期间内获得的现金红包、借钱免息券、还款抵用券、逛逛商家优惠券、购物分期满减券将适时发放到用户所对应的51返呗APP账户中；<br/>5、抽奖活动中用户获得的借钱免息券、还款抵用券、逛逛商家优惠券、购物分期满减券可在51返呗APP中的“我的—抵用券”中查看；<br/>6、抽奖活动中用户获得的现金红包，51返呗平台将以返现的形式返现到中奖用户所对应的51返呗账号，用户可在51返呗APP中的“我的—返现金额”中查看；<br/>7、如有疑问，请关注官方微信号“51返呗” （fengkuangfanli）咨询微信客服或致电客服电话：0571-88193918；<br/>8、本活动最终解释权归51返呗所有。</p>
 </div>
