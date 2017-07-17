@@ -171,7 +171,9 @@ public class AuthStrongRiskApi implements ApiHandle {
 						// 随机发放奖品
 						try{
 							Map<String,Object> prizeInfo =  getAuthPrize(requestDataVo, context, request);
-							creditRebateMsg = (String) prizeInfo.get("prizeName");
+							if(prizeInfo != null) {
+								creditRebateMsg = (String) prizeInfo.get("prizeName");
+							}
 						} catch (Exception e) {
 							// ignore error
 							logger.error("getAuthPrize=>" + e.getMessage());
@@ -201,11 +203,19 @@ public class AuthStrongRiskApi implements ApiHandle {
 	
 	private Map<String,Object> getAuthPrize(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request){
 		Long userId = context.getUserId();
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		// 获取拆红包游戏信息
 		AfGameDo gameDo = afGameService.getByCode("tear_packet");
 		if(gameDo == null){
 			throw new FanbeiException(requestDataVo.getId(), FanbeiExceptionCode.NOT_CONFIG_GAME_INFO_ERROR);
+		}
+		// 判断活动时间
+		Date startDate = gameDo.getGmtStart();
+		Date endDate = gameDo.getGmtEnd();
+		Date nowDate = new Date();
+		if(nowDate.before(startDate) || nowDate.after(endDate)) {
+			return null;
 		}
 		// 获取游戏配置信息
 		List<AfGameConfDo> afGameConfList = afGameConfService.getByGameId(gameDo.getRid());
