@@ -77,7 +77,7 @@
     </div>
     <p class="recommend">热门推荐</p>
         <ul class="productList">
-            <li v-for="item in tableContent.recommendGoodsList" @click="buyNow(item.goodsId)">
+            <li v-for="item in tableContent.recommendGoodsList" @click="buyNow(item)">
                 <div class="productImg"><img :src='item.goodsIcon'></div>
                 <div class="productRight">
                     <p class="productDes">{{txtFix(item.goodName)}}</p>
