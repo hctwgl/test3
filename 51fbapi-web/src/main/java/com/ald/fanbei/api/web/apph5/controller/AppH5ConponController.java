@@ -76,6 +76,7 @@ public class AppH5ConponController extends BaseController {
         			String couponId = (String)array.getString(i);
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
         			couponInfoMap.put("name", afCouponDo.getName());
+        			couponInfoMap.put("useRule", afCouponDo.getUseRule());
         			couponInfoMap.put("type", afCouponDo.getType());
         			couponInfoMap.put("amount", afCouponDo.getAmount());
         			couponInfoMap.put("useRange", afCouponDo.getUseRange());
