@@ -70,6 +70,7 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setGmtCreate(order.getGmtCreate());
 		vo.setGoodsIcon(order.getGoodsIcon());
 		vo.setGoodsName(order.getGoodsName());
+		vo.setGoodsPriceName(order.getGoodsPriceName());
 		vo.setOrderId(order.getRid());
 		vo.setOrderNo(order.getOrderNo());
 		String status =  order.getStatus();

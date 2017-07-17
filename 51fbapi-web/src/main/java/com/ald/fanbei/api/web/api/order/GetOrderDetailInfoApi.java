@@ -59,6 +59,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 
 	private AfOrderVo getOrderVo(AfOrderDo order){
 		AfOrderVo vo = new AfOrderVo();
+		vo.setGoodsPriceName(order.getGoodsPriceName());
 		vo.setGmtCreate(order.getGmtCreate());
 		vo.setGmtFinished(order.getGmtFinished());
 		vo.setGmtRebated(order.getGmtRebated());

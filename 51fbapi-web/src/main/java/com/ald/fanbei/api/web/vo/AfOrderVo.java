@@ -23,6 +23,13 @@ public class AfOrderVo extends AbstractSerial {
 	private String orderStatus;
 	private String goodsIcon;
 	private String goodsName;
+	private String goodsPriceName;
+	public String getGoodsPriceName() {
+		return goodsPriceName;
+	}
+	public void setGoodsPriceName(String goodsPriceName) {
+		this.goodsPriceName = goodsPriceName;
+	}
 	private Integer goodsCount;
 	private BigDecimal orderAmount;
 	private BigDecimal rebateAmount;

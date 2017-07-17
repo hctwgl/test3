@@ -242,6 +242,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),
     USER_ADDRESS_NOT_EXIST("USER_ADDRESS_NOT_EXIST",5002,"user_address_not_exist","地址信息不存在"),
 
+    //订单
+    ORDER_NOT_EXIST("ORDER_NOT_EXIST",6001,"order_not_exist","订单不存在"),
+
     //系统升级该code不能随便修改
     SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "OPPO R11 正式开售，下单即享12期免息，更有500元优惠相送\n打开“App Store”-“更新”，找到51返呗，点击“更新”"),
 

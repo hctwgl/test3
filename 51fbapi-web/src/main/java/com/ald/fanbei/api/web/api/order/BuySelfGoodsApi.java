@@ -15,6 +15,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -32,6 +33,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
@@ -57,7 +59,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserAddressService afUserAddressService;
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
-
+	@Resource 
+	AfGoodsPriceService afGoodsPriceService;
     @Resource
     AfSchemeGoodsService afSchemeGoodsService;
 
@@ -68,6 +71,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"), ""),
+				0l);
+		Long goodsPriceId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsPriceId"), ""),
 				0l);
 		Long addressId = NumberUtil
 				.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
@@ -82,8 +87,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if(actualAmount.compareTo(BigDecimal.ZERO)==0){
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 		}
+		AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
-		if (goodsDo == null) {
+		if (goodsDo == null || priceDo == null) {
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
 		}
 		if(!AfGoodsStatus.PUBLISH.getCode().equals(goodsDo.getStatus())){
@@ -96,6 +102,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		}
 		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo);
 		afOrder.setUserId(userId);
+		afOrder.setGoodsPriceId(goodsPriceId);
+		afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
 

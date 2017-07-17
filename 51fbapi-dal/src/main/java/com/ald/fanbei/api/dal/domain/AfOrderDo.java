@@ -65,8 +65,21 @@ public class AfOrderDo extends AbstractSerial{
 	private String invoiceHeader;//发票抬头
 	private String logisticsInfo;//物流信息
 	private String preStatus;//状态更新前状态
+	private Long goodsPriceId;//商品规格Id
+	private String goodsPriceName;//商品规格名字
 	
-	
+	public Long getGoodsPriceId() {
+		return goodsPriceId;
+	}
+	public void setGoodsPriceId(Long goodsPriceId) {
+		this.goodsPriceId = goodsPriceId;
+	}
+	public String getGoodsPriceName() {
+		return goodsPriceName;
+	}
+	public void setGoodsPriceName(String goodsPriceName) {
+		this.goodsPriceName = goodsPriceName;
+	}
 	public Long getRid() {
 		return rid;
 	}

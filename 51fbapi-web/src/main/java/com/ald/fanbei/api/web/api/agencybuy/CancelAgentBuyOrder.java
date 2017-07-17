@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -34,6 +35,8 @@ public class CancelAgentBuyOrder implements ApiHandle {
 	AfOrderService afOrderService;
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	AfGoodsPriceService afGoodsPriceService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -50,6 +53,11 @@ public class CancelAgentBuyOrder implements ApiHandle {
 		afOrderDo.setStatus("CLOSED");
 		afOrderDo.setRid(orderId);
 		
+		AfOrderDo orderDo = afOrderService.getOrderById(orderId);
+		if (orderDo == null) {
+			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.ORDER_NOT_EXIST);
+		}
+		afGoodsPriceService.updateStockAndSaleByPriceId(orderDo.getGoodsPriceId(), false);
 		
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		afAgentOrderDo.setOrderId(orderId);

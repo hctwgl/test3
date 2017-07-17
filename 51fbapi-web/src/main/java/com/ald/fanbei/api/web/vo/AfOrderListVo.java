@@ -31,7 +31,14 @@ public class AfOrderListVo extends AbstractSerial {
 	private String orderStatusRemark;
 	private String afterSaleStatus;
 	private String isCanApplyAfterSale;
+	private String goodsPriceName;
 	
+	public String getGoodsPriceName() {
+		return goodsPriceName;
+	}
+	public void setGoodsPriceName(String goodsPriceName) {
+		this.goodsPriceName = goodsPriceName;
+	}
 	public Long getOrderId() {
 		return orderId;
 	}
