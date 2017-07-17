@@ -14,8 +14,9 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -33,13 +34,10 @@ public class GetResourceConfigApi implements ApiHandle{
 	@Resource
 	AfResourceService afResourceService;
 	
-	//类型（CANCEL_ORDER_REASON：订单取消原因 ORDER_SEARCH_CONDITION：订单筛选条件）
-	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
         String resourceType = ObjectUtils.toString(requestDataVo.getParams().get("resourceType"),"");
         //参数校验
   		if(StringUtils.isBlank(resourceType)){
@@ -47,7 +45,7 @@ public class GetResourceConfigApi implements ApiHandle{
   		}
   		
   		Map<String,Object> map = new HashMap<String,Object>();
-  		List<AfResourceDo> batchAfResourceDo =  afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.CANCEL_ORDER_REASON.getCode());
+  		List<AfResourceDo> batchAfResourceDo =  afResourceService.getResourceHomeListByTypeOrderBy(resourceType);
         
   		List<AfAppResourceVo> batchResourceVo =convertToAfAppResourceVos(batchAfResourceDo);
   		
@@ -58,6 +56,11 @@ public class GetResourceConfigApi implements ApiHandle{
 
 	private List<AfAppResourceVo> convertToAfAppResourceVos(List<AfResourceDo> batchAfResourceDo){
 		List<AfAppResourceVo> batchResourceVo = new ArrayList<AfAppResourceVo>();
+		for (AfResourceDo tempResource : batchAfResourceDo) {
+			if(AfCounponStatus.O.getCode().equals(tempResource.getValue4())){
+				batchResourceVo.add(new AfAppResourceVo(StringUtil.null2Str(tempResource.getValue1()), StringUtil.null2Str(tempResource.getValue2()), StringUtil.null2Str(tempResource.getValue3())));
+			}
+		}
 		return batchResourceVo;
 	}
 }
