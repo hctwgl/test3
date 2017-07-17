@@ -315,9 +315,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			Date gmtEnd = gameDo.getGmtEnd();
 			Date nowDate = new Date();
 			if(nowDate.after(gmtStart) && nowDate.before(gmtEnd)) {
-				if("TRANSED".equals(status) && takePartTime < 1) {
-					data.put("showPacket","Y");
-				} else if("FINSH".equals(status) && takePartTime < 2) {
+				if("FINSH".equals(status) && takePartTime < 1) {
 					data.put("showPacket","Y");
 				} else {
 					data.put("showPacket","N");
