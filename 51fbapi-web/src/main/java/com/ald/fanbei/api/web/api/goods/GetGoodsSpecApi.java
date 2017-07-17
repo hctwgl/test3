@@ -85,7 +85,7 @@ public class GetGoodsSpecApi implements ApiHandle {
 					for (AfPropertyValueDo pvd : valueDos) {
 						AfpropertyValueVo pValueVo = new AfpropertyValueVo();
 						pValueVo.setPropertyValueId(pvd.getRid());
-						pValueVo.setPropertyValueName(pValueVo.getPropertyValueName());
+						pValueVo.setPropertyValueName(pvd.getValue());
 						propertyValues.add(pValueVo);
 					}
 				}
@@ -112,6 +112,7 @@ public class GetGoodsSpecApi implements ApiHandle {
 				AfGoodsPriceVo goodsPriceVo = new AfGoodsPriceVo();
 
 				goodsPriceVo.setActualAmount(priceDo.getActualAmount());
+				goodsPriceVo.setIsSale(priceDo.getIsSale());
 				goodsPriceVo.setPriceAmount(priceDo.getPriceAmount());
 				goodsPriceVo.setPriceId(priceDo.getRid());
 				goodsPriceVo.setPropertyValueIds(priceDo.getPropertyValueIds());

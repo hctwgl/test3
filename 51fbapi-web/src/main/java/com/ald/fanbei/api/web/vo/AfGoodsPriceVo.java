@@ -55,6 +55,14 @@ public class AfGoodsPriceVo extends AbstractSerial {
 		this.actualAmount = actualAmount;
 	}
 
+	public String getIsSale() {
+		return isSale;
+	}
+
+	public void setIsSale(String isSale) {
+		this.isSale = isSale;
+	}
+
 	/**
 	 * 各个属性的组合,以逗号分隔
 	 */
@@ -69,5 +77,6 @@ public class AfGoodsPriceVo extends AbstractSerial {
 	 * 销售价格
 	 */
 	private Double actualAmount;
+	private String isSale;
 
 }

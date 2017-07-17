@@ -11,6 +11,7 @@ public class AfpropertyValueVo extends AbstractSerial{
 	
 	private Long propertyValueId;
 	private String propertyValueName;
+	
 	public Long getPropertyValueId() {
 		return propertyValueId;
 	}
