@@ -188,6 +188,10 @@
 				<entry key="/order/deleteOrderInfo" value-ref="deleteOrderInfoApi" />
 				<entry key="/order/buySelfGoods" value-ref="buySelfGoodsApi" />
 				<entry key="/order/insufficientBalance" value-ref="insufficientBalanceApi" />
+				<entry key="/order/cancelAfterSaleApply" value-ref="cancelAfterSaleApplyApi" />
+				<entry key="/order/afterSaleLogisticSupply" value-ref="afterSaleLogisticSupplyApi" />
+				<entry key="/order/getOrderAfterSaleInfo" value-ref="getOrderAfterSaleInfoApi" />
+
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
