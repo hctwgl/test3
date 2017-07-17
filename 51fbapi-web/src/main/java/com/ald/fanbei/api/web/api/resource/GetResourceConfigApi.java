@@ -14,14 +14,13 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfAppResourceVo;
 
 /**
  * @类描述：获取资源配置信息
@@ -48,18 +47,17 @@ public class GetResourceConfigApi implements ApiHandle{
   		}
   		
   		Map<String,Object> map = new HashMap<String,Object>();
-  		List<AfResourceDo> afResourceDoList =  afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.CANCEL_ORDER_REASON.getCode());
-        if(afResourceDoList!=null && afResourceDoList.size()>0){
-        	AfResourceDo afResourceDo = afResourceDoList.get(0);
-        	if(AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())){
-        		map.put("resources", StringUtil.splitToList(afResourceDo.getValue(), "||"));
-        	}
-        }else{
-        	logger.info("getResourceConfig fail,resource is not found or not open.userId="+userId);
-        	map.put("resources", new ArrayList<String>());
-        }
+  		List<AfResourceDo> batchAfResourceDo =  afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.CANCEL_ORDER_REASON.getCode());
+        
+  		List<AfAppResourceVo> batchResourceVo =convertToAfAppResourceVos(batchAfResourceDo);
+  		
+  		map.put("resources", batchResourceVo);
         resp.setResponseData(map);
 		return resp;
 	}
 
+	private List<AfAppResourceVo> convertToAfAppResourceVos(List<AfResourceDo> batchAfResourceDo){
+		List<AfAppResourceVo> batchResourceVo = new ArrayList<AfAppResourceVo>();
+		return batchResourceVo;
+	}
 }
