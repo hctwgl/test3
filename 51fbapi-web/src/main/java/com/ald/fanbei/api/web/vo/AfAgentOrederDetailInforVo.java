@@ -53,6 +53,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private Date gmtPayStart;
 	private Date gmtPayEnd;
 	private String isCanApplyAfterSale;
+	private String logisticsInfo;
 	private String logisticsCompany;//发货物流公司
 	private String logisticsNo;//发货物流单号
 	private Date gmtDeliver;//发货时间
@@ -319,6 +320,12 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	}
 	public void setGmtDeliver(Date gmtDeliver) {
 		this.gmtDeliver = gmtDeliver;
+	}
+	public String getLogisticsInfo() {
+		return logisticsInfo;
+	}
+	public void setLogisticsInfo(String logisticsInfo) {
+		this.logisticsInfo = logisticsInfo;
 	}
 	
 }
