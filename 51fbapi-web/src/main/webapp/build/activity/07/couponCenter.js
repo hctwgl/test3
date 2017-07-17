@@ -1,26 +1,6 @@
-//var liLength=$('.navList').find('li').length;
 var tabWidth=0;
 var liWidth=0;
 var ulWidth=0;
-/*if(liLength<2){
-     $('#tabNav').hide();
-}else if(liLength>=2&&liLength<=5){
-
-     tabWidth=$('#tabNav').width();
-     console.log(tabWidth)
-     liWidth=tabWidth/liLength;
-     $('.navList').find('li').width(liWidth);
-     liClick();
-}else if(liLength>5){
-     tabWidth=$('#tabNav').width();
-     liWidth=tabWidth/5;
-     ulWidth=liWidth*liLength;
-     $('.navList').find('li').width(liWidth);
-     //$('.navList li').eq(0).find('span').width(28*liWidth/75)
-     //console.log($('.navList li').eq(0).find('span').width())
-     $('.navList').width(ulWidth);
-     liClick();
-}*/
 //获取数据
 let vm = new Vue({
     el: '#couponCenter',
@@ -97,6 +77,9 @@ let vm = new Vue({
             $('.navList li').eq(index).find('span').addClass('border');
             $('.navList li').eq(index).siblings().find('span').removeClass('border');
             $('.contList').find('li').eq(index).show().siblings().hide();         
+        },
+        couponClick:function(){
+            alert(0)    
         }
     }
 })

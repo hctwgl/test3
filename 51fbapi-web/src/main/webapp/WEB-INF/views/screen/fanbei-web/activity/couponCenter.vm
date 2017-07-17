@@ -26,11 +26,11 @@
    <div class="banner">图片</div>
    <div id="tabCont">
        <ul class="contList">
-           <li v-for="items in content.couponCategoryList">
+           <li v-for="items in content.couponCategoryList" @click="couponClick()">
               <div class="everyCont" v-for="item in items.couponInfoList">
                  <div class="left">
                      <p>￥<span>{{item.amount}}</span></p>
-                     <p>满1000元使用</p>
+                     <p>{{item.useRule}}</p>
                  </div>
                  <div class="right">
                      <p v-if="item.type==='MOBILE'" style="background: #fab677;">充值券</p>
@@ -40,7 +40,7 @@
                      <p v-if="item.type==='ACTIVITY'" style="background: #fc8aa4;">会场券</p>
                      <p v-if="item.type==='FREEINTEREST'" style="background: #fab677;">免息券</p>
                      <p>{{item.useRange}}</p>
-                     <p>使用店铺使用券</p>
+                     <p>{{item.name}}</p>
                      <p>{{item.start}}-{{item.end}}</p>
                      <p>点我领取</p>
                      <p v-if="item.state==='timeOver'"></p>
