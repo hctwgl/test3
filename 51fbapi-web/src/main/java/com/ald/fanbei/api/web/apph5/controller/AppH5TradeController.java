@@ -59,8 +59,8 @@ public class AppH5TradeController extends BaseController {
         model.put("isLogin", "yes");
         String userName = context.getUserName();
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountInfoByUserName(userName);
-        Double canUserAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), BigDecimalUtil.add(afUserAccountDo.getUsedAmount(), afUserAccountDo.getFreezeAmount())).doubleValue();
-        model.put("canUserAmount", canUserAmount);
+        Double canUseAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), BigDecimalUtil.add(afUserAccountDo.getUsedAmount(), afUserAccountDo.getFreezeAmount())).doubleValue();
+        model.put("canUseAmount", canUseAmount);
     }
 
     @Override

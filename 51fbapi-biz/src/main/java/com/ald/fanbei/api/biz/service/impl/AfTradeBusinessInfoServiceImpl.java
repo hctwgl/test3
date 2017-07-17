@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
 
+import java.util.List;
 
 
 /**
@@ -32,5 +34,14 @@ public class AfTradeBusinessInfoServiceImpl extends ParentServiceImpl<AfTradeBus
 	@Override
 	public BaseDao<AfTradeBusinessInfoDo, Long> getDao() {
 		return afTradeBusinessInfoDao;
+	}
+
+	@Override
+	public List<AfTradeBusinessInfoDto> getByOrderId(Long orderId) {
+		List<AfTradeBusinessInfoDto> reslut = afTradeBusinessInfoDao.getByOrderId(orderId);
+		for(AfTradeBusinessInfoDto dto : reslut) {
+			dto.setImageUrl(dto.getImageUrl().split(",")[0]);
+		}
+		return reslut;
 	}
 }

@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 商圈商户信息表Dao
@@ -12,6 +16,6 @@ import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
  */
 public interface AfTradeBusinessInfoDao extends BaseDao<AfTradeBusinessInfoDo, Long> {
 
-    
+    List<AfTradeBusinessInfoDto> getByOrderId(@Param("orderId")Long orderId);
 
 }

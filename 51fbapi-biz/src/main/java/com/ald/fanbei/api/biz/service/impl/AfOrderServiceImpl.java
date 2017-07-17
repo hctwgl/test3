@@ -723,10 +723,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
 						// 最后调用风控控制
+						String str = orderInfo.getGoodsName();
+						if(OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+							str = OrderType.BOLUOME.getCode();
+						}
+						if(OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+							str = OrderType.TRADE.getCode();
+						}
 						logger.info("verify userId" + userId);
 						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
-						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, 
-						OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() :orderInfo.getGoodsName(), getVirtualCode(virtualMap));
+						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, getVirtualCode(virtualMap));
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");

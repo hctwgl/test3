@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 商圈商户信息表Service
@@ -12,4 +16,5 @@ import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
  */
 public interface AfTradeBusinessInfoService extends ParentService<AfTradeBusinessInfoDo, Long>{
 
+    List<AfTradeBusinessInfoDto> getByOrderId(@Param("orderId")Long orderId);
 }

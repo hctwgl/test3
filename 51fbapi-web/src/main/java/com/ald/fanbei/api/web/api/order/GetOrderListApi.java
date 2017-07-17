@@ -9,12 +9,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
@@ -44,6 +45,10 @@ public class GetOrderListApi implements ApiHandle{
 	AfAftersaleApplyService afAftersaleApplyService;
 	@Resource
 	AfAgentOrderService afAgentOrderService;
+	@Resource
+	AfTradeOrderService afTradeOrderService;
+	@Resource
+	AfTradeBusinessInfoService afTradeBusinessInfoService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -117,6 +122,15 @@ public class GetOrderListApi implements ApiHandle{
 		}else{
 			vo.setOrderStatusMsg("");
 			vo.setOrderStatusRemark("");
+		}
+
+		//商圈订单
+		if(order.getOrderType().equals(OrderType.TRADE.getCode())) {
+			List<AfTradeBusinessInfoDto> list = afTradeBusinessInfoService.getByOrderId(order.getRid());
+			if(list != null && list.size() > 0) {
+				AfTradeBusinessInfoDto dto = list.get(0);
+				vo.setBusinessIcon(dto.getImageUrl());
+			}
 		}
 		return vo;
 	}

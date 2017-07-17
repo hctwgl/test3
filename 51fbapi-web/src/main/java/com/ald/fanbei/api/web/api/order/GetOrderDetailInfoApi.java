@@ -2,16 +2,18 @@ package com.ald.fanbei.api.web.api.order;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
@@ -43,6 +45,10 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 	AfGoodsService afGoodsService;
 	@Resource
 	AfAftersaleApplyService afAftersaleApplyService;
+	@Resource
+	AfTradeBusinessInfoService afTradeBusinessInfoService;
+	@Resource
+	AfBorrowService afBorrowService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -127,6 +133,20 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 			vo.setGmtDeliver(order.getGmtDeliver());
 		}else{
 			vo.setGmtDeliver(new Date(0));
+		}
+		//商圈订单
+		if(order.getOrderType().equals(OrderType.TRADE.getCode())) {
+			List<AfTradeBusinessInfoDto> list = afTradeBusinessInfoService.getByOrderId(order.getRid());
+			if(list != null && list.size() > 0) {
+				AfTradeBusinessInfoDto dto = list.get(0);
+				vo.setBusinessIcon(dto.getImageUrl());
+				vo.setBusinessName(dto.getName());
+				//查询分期信息
+				AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(order.getRid());
+				vo.setNper(afBorrowDo.getNper());
+				vo.setNperAmount(afBorrowDo.getNperAmount());
+			}
+
 		}
 		return vo;
 	}

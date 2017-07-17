@@ -48,7 +48,44 @@ public class AfOrderVo extends AbstractSerial {
 	private String logisticsCompany;//发货物流公司
 	private String logisticsNo;//发货物流单号
 	private Date gmtDeliver;//发货时间
-	
+
+	private String businessName; //商家名称
+	private String businessIcon; //商家图片
+	private BigDecimal nperAmount; //每期金额
+	private Integer nper; //分期数
+
+	public String getBusinessIcon() {
+		return businessIcon;
+	}
+
+	public void setBusinessIcon(String businessIcon) {
+		this.businessIcon = businessIcon;
+	}
+
+	public String getBusinessName() {
+		return businessName;
+	}
+
+	public void setBusinessName(String businessName) {
+		this.businessName = businessName;
+	}
+
+	public BigDecimal getNperAmount() {
+		return nperAmount;
+	}
+
+	public void setNperAmount(BigDecimal nperAmount) {
+		this.nperAmount = nperAmount;
+	}
+
+	public Integer getNper() {
+		return nper;
+	}
+
+	public void setNper(Integer nper) {
+		this.nper = nper;
+	}
+
 	public String getOrderNo() {
 		return orderNo;
 	}

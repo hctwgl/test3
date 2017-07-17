@@ -31,7 +31,16 @@ public class AfOrderListVo extends AbstractSerial {
 	private String orderStatusRemark;
 	private String afterSaleStatus;
 	private String isCanApplyAfterSale;
-	
+	private String businessIcon;
+
+	public String getBusinessIcon() {
+		return businessIcon;
+	}
+
+	public void setBusinessIcon(String businessIcon) {
+		this.businessIcon = businessIcon;
+	}
+
 	public Long getOrderId() {
 		return orderId;
 	}

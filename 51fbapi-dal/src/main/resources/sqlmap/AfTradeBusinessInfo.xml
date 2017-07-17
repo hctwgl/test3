@@ -455,5 +455,15 @@ id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_
         FROM af_trade_business_info
         <include refid="commonCondition"/>
     </select>
+
+    <select id="getByOrderId" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto">
+        SELECT
+        i.image_url,i.business_id,o.order_id,i.name
+        FROM af_trade_business_info i, af_trade_order o
+        WHERE o.business_id = i.business_id AND o.is_delete = 0 AND i.is_delete = 0
+        <if test="orderId != null">
+            o.order_id = #{orderId}
+        </if>
+    </select>
     
 </mapper>
