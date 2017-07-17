@@ -11,7 +11,8 @@ import java.util.Map;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum AppOrderSearchStatus {
-	NEW("NEW", "待付款"),
+	ALL("ALL", "全部订单"),
+	NEW("NEW", "待支付"),
 	DEALING("DEALING", "支付中"),
 	TOREVIEW("TOREVIEW", "待审核"),
 	REVIEWING("REVIEWING", "审核中"),
