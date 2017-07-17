@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017071701")
+    #set($version="2017071702")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -10,6 +10,36 @@
     <input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
     <input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
     <input type="hidden" id="style" value="$!{style}">
+
+    <script type="text/javascript">
+        var style = $("#style").val();
+        console.log(style);
+        (function (root) {
+            root._tt_config = true;
+            var ta = document.createElement('script');
+            ta.type = 'text/javascript';
+            ta.async = true;
+            ta.src = document.location.protocol+'//'+'s3.pstatp.com/bytecom/resource/track_log/src/toutiao-track-log.js';
+            ta.onerror = function () {
+                var request = new XMLHttpRequest();
+                var web_url = window.encodeURIComponent(window.location.href);
+                var js_url = ta.src;
+
+                if ( style==8 ) {
+                    var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url=' + web_url + '&js_url=' + js_url + '&convert_id=63553308919';
+                    console.log(2222);
+                } else if ( style==14 ) {
+                    var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url+'&convert_id=62421367574';
+                } else {
+                    var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url;
+                }
+                request.open('GET', url, true);
+                request.send(null);
+            }
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ta, s);
+        })(window);
+    </script>
 
     <div class="channelRegister_wrap">
         #if( $!{style}==8 || $!{style}==9 || $!{style}==11 || $!{style}==12)
