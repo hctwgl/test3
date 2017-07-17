@@ -166,8 +166,11 @@ public class StringUtil extends StringUtils {
         return (str != null) ? str.toString() : "";
     }
     
-    public static String LogisticsInfoDeal(Object str) {
-        return (str != null) ? str.toString() : "";
+    public static String logisticsInfoDeal(String str) {
+    	if(str==null || "暂无".equals(str.trim())){
+    		return "";
+    	}
+    	return str.trim();
     }
     
     /** 

@@ -53,6 +53,7 @@ public class AfOrderVo extends AbstractSerial {
 	private String businessIcon; //商家图片
 	private BigDecimal nperAmount; //每期金额
 	private Integer nper; //分期数
+	private String installmentInfo;//分期详情
 
 	public String getBusinessIcon() {
 		return businessIcon;
@@ -284,5 +285,14 @@ public class AfOrderVo extends AbstractSerial {
 	public void setGmtDeliver(Date gmtDeliver) {
 		this.gmtDeliver = gmtDeliver;
 	}
+
+	public String getInstallmentInfo() {
+		return installmentInfo;
+	}
+
+	public void setInstallmentInfo(String installmentInfo) {
+		this.installmentInfo = installmentInfo;
+	}
+
 	
 }

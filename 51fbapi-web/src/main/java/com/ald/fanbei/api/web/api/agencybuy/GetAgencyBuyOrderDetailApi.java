@@ -165,6 +165,9 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 */
 		
 //		优惠券类型【MOBILE：话费充值， REPAYMENT：还款, FULLVOUCHER:满减卷,CASH:现金奖励】
+		BigDecimal couponAmount = BigDecimal.ZERO;
+		// 如果有优惠劵,那么实际支付金额就是填写的订单金额
+		BigDecimal actualPayAmount = actualAmount;
 		AfUserCouponDo userCouponDo = afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
 		if (userCouponDo != null){
 			 AfCouponDo couponDo = afCouponService.getCouponById(userCouponDo.getCouponId());
@@ -188,17 +191,14 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 				 if(StringUtils.equals("ACTIVITY", couponDo.getType())){
 					 agentOrderDetailVo.setCouponName("会场劵");
 				 }
-				 agentOrderDetailVo.setCouponAmount(couponDo.getAmount());
-				 
-				 // 如果有优惠劵,那么实际支付金额就是填写的订单金额
-				 BigDecimal actualPayAmount = actualAmount;
-				 actualAmount = actualAmount.add(couponDo.getAmount());
-				 
-				 agentOrderDetailVo.setActualPayAmount(actualPayAmount);
-				
+				 couponAmount = couponDo.getAmount();
+				 actualAmount = actualAmount.add(couponAmount);
 			 }
 		}
+		agentOrderDetailVo.setActualPayAmount(actualPayAmount);
+		agentOrderDetailVo.setCouponAmount(couponAmount);
 		
+		agentOrderDetailVo.setOrderNo(afOrderDo.getOrderNo());
 		agentOrderDetailVo.setStatus(StringUtils.isBlank(status)?"":status);
 		agentOrderDetailVo.setPayStatus(StringUtils.isBlank(payStatus)?payStatus:"");
 		agentOrderDetailVo.setConsignee(StringUtils.isBlank(consignee)?"":consignee);
@@ -266,12 +266,19 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			agentOrderDetailVo.setOrderStatusRemark("");
 		}
 		//发货物流信息及时间
+		agentOrderDetailVo.setLogisticsInfo(StringUtil.logisticsInfoDeal(afOrderDo.getLogisticsInfo()));
 		agentOrderDetailVo.setLogisticsCompany(afOrderDo.getLogisticsCompany());
 		agentOrderDetailVo.setLogisticsNo(afOrderDo.getLogisticsNo());
 		if(afOrderDo.getGmtDeliver()!=null){
 			agentOrderDetailVo.setGmtDeliver(afOrderDo.getGmtDeliver());
 		}else{
 			agentOrderDetailVo.setGmtDeliver(new Date(0));
+		}
+		//分期信息设置 ¥300.00X12期
+		if(borrowDo!=null){
+			agentOrderDetailVo.setInstallmentInfo(NumberUtil.format2Str(borrowDo.getNperAmount())+"X"+borrowDo.getNper()+"期");
+		}else{
+			agentOrderDetailVo.setInstallmentInfo("");
 		}
 		return agentOrderDetailVo;
 	}

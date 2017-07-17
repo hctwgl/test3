@@ -11,6 +11,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,9 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -49,6 +52,10 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 	AfTradeBusinessInfoService afTradeBusinessInfoService;
 	@Resource
 	AfBorrowService afBorrowService;
+	@Resource
+	AfUserCouponService  afUserCouponService;
+	@Resource
+	AfCouponService afCouponService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -74,7 +81,15 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setGoodsIcon(order.getGoodsIcon());
 		vo.setGoodsName(order.getGoodsName());
 		vo.setOrderAmount(order.getSaleAmount());
-		vo.setCouponAmount(order.getSaleAmount().subtract(order.getActualAmount()));
+		AfUserCouponDo userCouponDo = afUserCouponService.getUserCouponById(order.getUserCouponId());
+		BigDecimal couponAmount = BigDecimal.ZERO;
+		if (userCouponDo != null){
+			 AfCouponDo couponDo = afCouponService.getCouponById(userCouponDo.getCouponId());
+			 if (couponDo != null){
+				 couponAmount = couponDo.getAmount();
+			 }
+		}
+		vo.setCouponAmount(couponAmount);
 		vo.setActualAmount(order.getActualAmount());
 		vo.setOrderNo(order.getOrderNo());
 		vo.setOrderStatus(order.getStatus());
@@ -87,7 +102,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setConsignee(order.getConsignee());
 		vo.setConsigneeMobile(order.getConsigneeMobile());
 		vo.setInvoiceHeader(order.getInvoiceHeader());
-		vo.setLogisticsInfo(order.getLogisticsInfo());
+		vo.setLogisticsInfo(StringUtil.logisticsInfoDeal(order.getLogisticsInfo()));
 		vo.setPayType(order.getPayType());
 		vo.setGmtPayStart(new Date());
 		vo.setGmtPayEnd(DateUtil.addHoures(order.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
@@ -134,6 +149,15 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		}else{
 			vo.setGmtDeliver(new Date(0));
 		}
+		//查询分期信息
+		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(order.getRid());
+		if(afBorrowDo!=null){
+			//分期信息设置 ¥300.00X12期
+			vo.setInstallmentInfo(NumberUtil.format2Str(afBorrowDo.getNperAmount())+"X"+afBorrowDo.getNper()+"期");
+		}else{
+			vo.setInstallmentInfo("");
+		}
+			
 		//商圈订单
 		if(order.getOrderType().equals(OrderType.TRADE.getCode())) {
 			List<AfTradeBusinessInfoDto> list = afTradeBusinessInfoService.getByOrderId(order.getRid());
@@ -141,8 +165,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 				AfTradeBusinessInfoDto dto = list.get(0);
 				vo.setBusinessIcon(dto.getImageUrl());
 				vo.setBusinessName(dto.getName());
-				//查询分期信息
-				AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(order.getRid());
+				
 				vo.setNper(afBorrowDo.getNper());
 				vo.setNperAmount(afBorrowDo.getNperAmount());
 			}

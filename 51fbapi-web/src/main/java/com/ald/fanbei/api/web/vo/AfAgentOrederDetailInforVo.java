@@ -13,6 +13,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	
 	private static final long serialVersionUID = -5983291447985020112L;
 	
+	private String orderNo;
 	private String goodName; // 商品名称
 	private String goodsIcon; // 商品图片
 	private Long count; // 商品数量
@@ -57,6 +58,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String logisticsCompany;//发货物流公司
 	private String logisticsNo;//发货物流单号
 	private Date gmtDeliver;//发货时间
+	private String installmentInfo;//分期详情
 	
 	public String getCouponName() {
 		return couponName;
@@ -326,6 +328,18 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	}
 	public void setLogisticsInfo(String logisticsInfo) {
 		this.logisticsInfo = logisticsInfo;
+	}
+	public String getInstallmentInfo() {
+		return installmentInfo;
+	}
+	public void setInstallmentInfo(String installmentInfo) {
+		this.installmentInfo = installmentInfo;
+	}
+	public String getOrderNo() {
+		return orderNo;
+	}
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
 	}
 	
 }
