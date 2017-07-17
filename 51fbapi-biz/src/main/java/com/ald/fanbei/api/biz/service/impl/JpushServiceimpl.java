@@ -417,4 +417,108 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 		
 	}
+
+	@Override
+	public void fundRiskSuccess(String userName) {
+		try {
+			String msgContext = "恭喜，您已通过公积金认证！马上去下一步认证吧。可以获得更高额度哦！";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("fundRiskSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "222");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("公积金认证成功", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("fundRiskSuccess error", e);
+		}		
+	}
+
+	@Override
+	public void fundRiskFail(String userName) {
+		try {
+			String msgContext = "您好，您本次公积金认证未通过！请您核对身份信息后,重新尝试认证。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("fundRiskFail,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "223");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("公积金认证失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("fundRiskFail error", e);
+		}		
+	}
+
+	@Override
+	public void socialSecurityRiskSuccess(String userName) {
+		try {
+			String msgContext = "恭喜，您已通过社保认证！马上去下一步认证吧。可以获得更高额度哦！";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("socialSecurityRiskSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "222");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("社保认证成功", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("socialSecurityRiskSuccess error", e);
+		}	
+	}
+
+	@Override
+	public void socialSecurityRiskFail(String userName) {
+		try {
+			String msgContext = "您好，您本次社保认证未通过！请您核对身份信息后,重新尝试认证。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("socialSecurityRiskFail,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "223");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("社保认证失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("socialSecurityRiskFail error", e);
+		}
+	}
+
+	@Override
+	public void creditCardRiskSuccess(String userName) {
+		try {
+			String msgContext = "恭喜，您已通过信用卡认证！";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("creditCardRiskSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "222");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("信用卡认证成功", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("creditCardRiskSuccess error", e);
+		}			
+	}
+
+	@Override
+	public void creditCardRiskFail(String userName) {
+		try {
+			String msgContext = "您好，您本次信用卡认证未通过！请您核对身份信息后,重新尝试认证。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("creditCardRiskFail,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "223");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("信用卡认证失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("creditCardRiskFail error", e);
+		}		
+	}
+	
+	
 }

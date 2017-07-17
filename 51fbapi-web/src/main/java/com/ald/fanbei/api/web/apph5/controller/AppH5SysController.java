@@ -76,7 +76,8 @@ public class AppH5SysController extends BaseController {
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
-
+		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
+		
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
 		Long userId = afUserDo.getRid();
@@ -104,8 +105,9 @@ public class AppH5SysController extends BaseController {
 		}
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
-		model.put("poundage", consumeDo.getValue1());
-
+//		model.put("poundage", consumeDo.getValue1());
+		model.put("poundage", poundage);
+		
 		Date date = new Date();
 		model.put("gmtStart", date);
 		model.put("gmtEnd", DateUtil.addMonths(date, nper));

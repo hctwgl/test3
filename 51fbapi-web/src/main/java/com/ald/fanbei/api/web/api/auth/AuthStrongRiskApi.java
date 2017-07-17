@@ -3,7 +3,6 @@ package com.ald.fanbei.api.web.api.auth;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +31,6 @@ import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -46,7 +44,6 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.sun.org.apache.xml.internal.utils.IntVector;
 
 /**
  * @类描述：提交风控审核
@@ -139,11 +136,11 @@ public class AuthStrongRiskApi implements ApiHandle {
 					// 提交过信用认证,第一次给用户发放优惠劵
 					HashMap<String, String> creditRebateMap = new HashMap<String, String>();
 					String creditRebateMsg = "" ;
-					if(afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode())){
-						// 发放优惠劵工作
-						couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
-						creditRebateMsg = getCreditAuthMsg(context, creditRebateMsg);
-					}
+//					if(afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode())){
+//						// 发放优惠劵工作
+//						couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+//						creditRebateMsg = getCreditAuthMsg(context, creditRebateMsg);
+//					}
 					
 					AfUserAuthDo authDo = new AfUserAuthDo();
 					authDo.setUserId(context.getUserId());
@@ -162,8 +159,6 @@ public class AuthStrongRiskApi implements ApiHandle {
 				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
 				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 			}
-			
-			// 
 			
 			return resp;
 		}

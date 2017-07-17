@@ -1,17 +1,16 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -39,23 +38,18 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		if(null == orderInfo){
 			throw new FanbeiException(FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
 		}
-		List<String> canCompleteStatus = new ArrayList<String>();
-		canCompleteStatus.add(OrderStatus.PAID.getCode());
-		canCompleteStatus.add(OrderStatus.AGENCYCOMPLETED.getCode());
-		
-		if(canCompleteStatus.contains(orderInfo.getStatus())){
+		//如果为自营订单,不改变订单状态,直接返回操作成功
+		if(StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
+			logger.info("自营订单用户点击确认收货,系统对订单不做修改记录.orderId="+orderId+",userId="+userId);
+			return resp;
+		}else{
 			AfOrderDo afOrderDo = new AfOrderDo();
 			afOrderDo.setRid(orderId);
-			afOrderDo.setStatus(OrderStatus.FINISHED.getCode());
+			afOrderDo.setStatus("FINISHED");
 			afOrderDo.setGmtFinished(new Date());
-			afOrderDo.setLogisticsInfo("已签收");
 			if(afOrderService.updateOrder(afOrderDo) > 0){
 				return resp;
-			}else{
-				logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);
 			}
-		}else{
-			logger.info("completedAgencyBuyOrder fail,order status not support.orderId="+orderId);
 		}
 		return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 	}
