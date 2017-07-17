@@ -83,7 +83,7 @@ public class TearPacketApi  implements ApiHandle {
 			if(gameResultList != null){
 				takePartTime = gameResultList.size();
 			}
-			if("FINSH".equals(status) || takePartTime > 1) {
+			if("FINSH".equals(status) && takePartTime > 1) {
 				throw new FanbeiException("不符合抽奖条件");
 			} 
 			// 获取拆红包游戏信息
