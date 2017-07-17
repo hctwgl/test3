@@ -54,7 +54,7 @@ public class AppH5ConponController extends BaseController {
     @Resource 
 	AfUserService afUserService;
     
-    @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String couponCategoryInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
