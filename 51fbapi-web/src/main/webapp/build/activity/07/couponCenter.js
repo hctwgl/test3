@@ -1,6 +1,11 @@
 var tabWidth=0;
 var liWidth=0;
 var ulWidth=0;
+var userName = "";
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
+
 //获取数据
 let vm = new Vue({
     el: '#couponCenter',
@@ -79,7 +84,22 @@ let vm = new Vue({
             $('.contList').find('li').eq(index).show().siblings().hide();         
         },
         couponClick:function(){
-            alert(0)    
+            alert(0)
+            console.log(userName)
+            $.ajax({
+                    url: "/fanbei-web/pickCoupon",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        userName: userName
+                    },
+                    success: function(returnData){
+                        
+                    },
+                    error: function(){
+                        requestMsg("请求失败");
+                    }
+               });
         }
     }
 })
