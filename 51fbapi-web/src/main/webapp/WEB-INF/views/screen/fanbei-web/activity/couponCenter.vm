@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170717")
+    #set($src="https://fs.51fanbei.com/h5/app/activity/07")
+    <meta charset="UTF-8">
+    <title>领券中心</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/07/couponCenter.css?version=$version">
+</head>
+
+<body>
+<div id="tabNav">
+    <ul class="navList">
+        <li class="border">推荐</li>
+        <li>年中大促</li>
+        <li>数码相机</li>
+        <li>水果生鲜</li>
+       <!--  <li>家居产品</li>
+        <li>母婴玩具</li> -->
+    </ul>
+</div>
+<div id="content">
+   <div class="banner">图片</div>
+   <div id="tabCont">
+       <ul class="contList">
+           <li class="active">
+              <div class="everyCont">
+                 <div class="left">
+                     <p>￥<span>101</span></p>
+                     <p>满1000元使用</p>
+                 </div>
+                 <div class="right">
+                     <p>充值券</p>
+                     <p>仅限某某专场某某品类</p>
+                     <p>使用店铺使用券</p>
+                     <p>2017.09.10-2017.10.10</p>
+                     <p>点我领取</p>
+                     <p></p>
+                 </div>
+              </div>  
+           </li>
+           <li>
+              <div class="everyCont">
+                 <div class="left">
+                     <p>￥<span>102</span></p>
+                     <p>满1000元使用</p>
+                 </div>
+                 <div class="right">
+                     <p>充值券</p>
+                     <p>仅限某某专场某某品类</p>
+                     <p>使用店铺使用券</p>
+                     <p>2017.09.10-2017.10.10</p>
+                     <p>点我领取</p>
+                     <p></p>
+                 </div>
+              </div>  
+           </li>
+       </ul>
+   </div> 
+</div>
+
+<script src="/dist/activity/07/couponCenter.js?version=$version"></script>
+</body>
+</html>
