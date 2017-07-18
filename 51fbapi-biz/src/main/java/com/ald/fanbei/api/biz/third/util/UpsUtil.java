@@ -75,6 +75,12 @@ public class UpsUtil extends AbstractThird {
 	
 	private static String SYS_KEY = "01";
 	private static String TRADE_STATUE_SUCC = "00";
+	
+	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 
+	private static String TRADE_STATUE_ALREADY__SUCC = "02"; // 已经成功
+	
+//	private static String NEED_CODE ="10"; // 需要短信验证码标识
+	
 	private static String TRADE_STATUE_DEAL = "20";
 	private static String TRADE_RESP_SUCC = "0000";
 
@@ -315,7 +321,16 @@ public class UpsUtil extends AbstractThird {
 		
 		UpsAuthSignRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignRespBo.class);
 		logThird(authSignResp, "authSign", reqBo);
-		if(authSignResp != null && authSignResp.getTradeState()!=null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
+		/**
+		 * 关于交易状态（tradeState）
+			部分成功：
+ 			只要有一个渠道成功就算作部分成功
+ 			如果成功的不是宝付，那么交易状态描述里面会带上宝付错误信息；
+ 			如果成功的为宝付，那么交易状态描述不会显示错误信息（防止后面如果增加多渠道时错误信息不知道显示哪一个）
+			已签约：
+ 			用户的银行卡在当前支付路由中所有渠道中都有签约记录时返回，用于解决试运行和生产环境连同一套数据库时重复签约问题
+		 */
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)|| StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_PART_SUCC) || StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_ALREADY__SUCC))){
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{

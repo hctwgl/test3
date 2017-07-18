@@ -187,9 +187,11 @@
 				<entry key="/order/refundOrderApply" value-ref="refundOrderApplyApi" />
 				<entry key="/order/deleteOrderInfo" value-ref="deleteOrderInfoApi" />
 				<entry key="/order/buySelfGoods" value-ref="buySelfGoodsApi" />
+				<entry key="/order/insufficientBalance" value-ref="insufficientBalanceApi" />
 				<entry key="/order/cancelAfterSaleApply" value-ref="cancelAfterSaleApplyApi" />
 				<entry key="/order/afterSaleLogisticSupply" value-ref="afterSaleLogisticSupplyApi" />
 				<entry key="/order/getOrderAfterSaleInfo" value-ref="getOrderAfterSaleInfoApi" />
+
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
@@ -226,7 +228,11 @@
 				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
 				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
-
+				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
+				<entry key="/auth/authFund" value-ref="authFundApi" />
+				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
+				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
+				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -243,6 +249,7 @@
 				<entry key="/bill/getLimitDetailList" value-ref="getLimitDetailListApi" />
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
+				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />

@@ -40,4 +40,7 @@ public interface AfGameResultService {
 	List<AfGameResultDo> getTearPacketResultByUserId(Long userId, Long borrowId);
 
 	List<AfGameResultDo> getTearPacketLatestRecord();
+
+	AfGameResultDo addGameResult(Long gameId, AfUserDo user,String type, long couponId, String lotteryResult);
+
 }

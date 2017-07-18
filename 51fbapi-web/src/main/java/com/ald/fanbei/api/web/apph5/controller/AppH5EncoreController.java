@@ -119,6 +119,7 @@ public class AppH5EncoreController extends BaseController {
     			activityGoodsInfo.put("goodsId", activityGoodsDto.getRid());
     			activityGoodsInfo.put("thumbnailIcon", activityGoodsDto.getThumbnailIcon());
     			activityGoodsInfo.put("goodsUrl", activityGoodsDto.getGoodsUrl());
+    			activityGoodsInfo.put("source", activityGoodsDto.getSource());
     			// 如果是分期免息商品，则计算分期
 				Long goodsId = activityGoodsDto.getRid();
 				AfSchemeGoodsDo schemeGoodsDo = null;
@@ -158,6 +159,7 @@ public class AppH5EncoreController extends BaseController {
     			recommendGoodsInfo.put("goodsId", goodsDo.getRid());
     			recommendGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
     			recommendGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+    			recommendGoodsInfo.put("source", goodsDo.getSource());
     			recommendGoodsInfo.put("goodsType", "0");
     			// 如果是分期免息商品，则计算分期
     			Long goodsId = goodsDo.getRid();

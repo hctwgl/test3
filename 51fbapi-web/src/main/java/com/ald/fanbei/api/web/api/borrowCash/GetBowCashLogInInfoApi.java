@@ -264,6 +264,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("maxAmount", resource.getValue());
 		}
 		
+		/*如果设置金额小于可用金额，则将设置金额作为最大可借金额 add by fmai*/
+		BigDecimal setMaxAmount = new BigDecimal(resource.getValue());
+		if (setMaxAmount.compareTo(calculateMaxAmount(usableAmount)) < 0) {
+			data.put("maxAmount", setMaxAmount);
+		}
+		
 		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) && usableAmount.compareTo(borrowCashLimitAmount) < 0 && StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
 		}
@@ -309,9 +315,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			Date gmtEnd = gameDo.getGmtEnd();
 			Date nowDate = new Date();
 			if(nowDate.after(gmtStart) && nowDate.before(gmtEnd)) {
-				if("TRANSED".equals(status) && takePartTime < 1) {
-					data.put("showPacket","Y");
-				} else if("FINSH".equals(status) && takePartTime < 2) {
+				if("FINSH".equals(status) && takePartTime < 1) {
 					data.put("showPacket","Y");
 				} else {
 					data.put("showPacket","N");

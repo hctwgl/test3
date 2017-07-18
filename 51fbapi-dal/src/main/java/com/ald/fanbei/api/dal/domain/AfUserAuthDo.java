@@ -43,6 +43,12 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String locationAddress;
 	private String riskStatus; //强风控审核状态【A:未审核，N:未通过审核，P: 审核中，Y:已通过审核】
 	private Date gmtRisk;
+	private String fundStatus;
+	private Date gmtFund;
+	private String jinpoStatus;
+	private Date gmtJinpo;
+	private String creditStatus;
+	private Date gmtCredit;
 	
 	public Long getRid() {
 		return rid;
@@ -224,6 +230,42 @@ public class AfUserAuthDo extends AbstractSerial {
 	}
 	public void setGmtRisk(Date gmtRisk) {
 		this.gmtRisk = gmtRisk;
+	}
+	public String getFundStatus() {
+		return fundStatus;
+	}
+	public void setFundStatus(String fundStatus) {
+		this.fundStatus = fundStatus;
+	}
+	public Date getGmtFund() {
+		return gmtFund;
+	}
+	public void setGmtFund(Date gmtFund) {
+		this.gmtFund = gmtFund;
+	}
+	public String getJinpoStatus() {
+		return jinpoStatus;
+	}
+	public void setJinpoStatus(String jinpoStatus) {
+		this.jinpoStatus = jinpoStatus;
+	}
+	public Date getGmtJinpo() {
+		return gmtJinpo;
+	}
+	public void setGmtJinpo(Date gmtJinpo) {
+		this.gmtJinpo = gmtJinpo;
+	}
+	public String getCreditStatus() {
+		return creditStatus;
+	}
+	public void setCreditStatus(String creditStatus) {
+		this.creditStatus = creditStatus;
+	}
+	public Date getGmtCredit() {
+		return gmtCredit;
+	}
+	public void setGmtCredit(Date gmtCredit) {
+		this.gmtCredit = gmtCredit;
 	}
 	
 }
