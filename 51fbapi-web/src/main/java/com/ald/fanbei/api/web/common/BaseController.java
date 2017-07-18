@@ -223,7 +223,7 @@ public abstract class BaseController {
 		//如果是测试环境
 		if(Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)) && StringUtil.isBlank(appInfo)){
 			String testUser = getTestUser(request.getHeader("Referer"));
-			if(testUser != null){
+			if(testUser != null && !"".equals(testUser)){
 				if("no".equals(testUser)){
 					return webContext;
 				}else{
