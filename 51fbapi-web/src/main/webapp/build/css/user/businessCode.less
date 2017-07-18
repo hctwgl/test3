@@ -28,26 +28,35 @@ body{
     font-weight:600;
 }
 #businessCode .blank{
-        text-align:center;
-        position:relative;
-}
-#businessCode .blank input{
     width:6.8rem;
     height:1.08rem;
+    line-height:1.08rem;
     border:0.01px solid #979797;
-    background-color:#FFFFFF;
-    border-radius:0.08rem;
     margin-top:0.62rem;
-    font-size:0.3rem;
-    color:#9B9B9B;
-    padding-left:0.32rem;
-
+    margin-left:0.38rem;
+    border-radius:0.08rem;
+    // padding-left:0.3rem;
+    text-align:center;
+    position:relative;
+}
+#businessCode .blank input{
+    display:block;
+    font-size:0.56rem;
+    width:2rem;
+    position:absolute;
+    right:0rem;
+    bottom: 0.16rem;
+    background-color:#FAFAFA;
+}
+#businessCode .blank input:-ms-input-placeholder {
+color: #000 !important;
 }
 #businessCode .blank span{
     position:absolute;
-    font-size:0.56rem;
-    right:0.4rem;
-    bottom: 0.16rem;
+    font-size:0.32rem;
+    left:0.4rem;
+
+    color:#9B9B9B;
 }
 #businessCode .fukuan .fukuan-one{
     margin-top:0.46rem;
