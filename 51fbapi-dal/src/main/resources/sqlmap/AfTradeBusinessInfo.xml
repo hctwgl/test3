@@ -2,15 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- af_trade_business_info表:商圈商户信息表模块 -->
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao">
-    
+
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_name,corporation_mobile,corporation_email,licence_url,front_url,inverse_url,protocol_url,withdraw_cycle,card_name,card_no,card_id,card_code,card_bank,link_name,link_mobile,link_qq,link_wx,link_email,status,can_withdraw,cannot_withdraw,creator,gmt_create,modifier,gmt_modified,
+        id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_name,corporation_mobile,corporation_email,licence_url,front_url,inverse_url,protocol_url,withdraw_cycle,card_name,card_no,card_id,card_code,card_bank,link_name,link_mobile,link_qq,link_wx,link_email,status,can_withdraw,cannot_withdraw,creator,gmt_create,modifier,gmt_modified,workdays
     </sql>
-    
+
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
-    	WHERE is_delete = 0
+        WHERE is_delete = 0
         <if test="id !=null">
             AND id  = #{id,jdbcType=INTEGER}
         </if>
@@ -30,10 +30,10 @@ id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_
             AND address = #{address,jdbcType=VARCHAR}
         </if>
         <if test="openTime !=null">
-            AND open_time = #{openTime,jdbcType=TIMESTAMP}
+            AND open_time = #{openTime,jdbcType=VARCHAR}
         </if>
         <if test="endTime !=null">
-            AND end_time = #{endTime,jdbcType=TIMESTAMP}
+            AND end_time = #{endTime,jdbcType=VARCHAR}
         </if>
         <if test="phone != null and phone != ''">
             AND phone = #{phone,jdbcType=VARCHAR}
@@ -112,328 +112,339 @@ id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_
         </if>
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
-        </if>
+        </if><if test="workdays !=null">
+        AND workdays = #{workdays,jdbcType=VARCHAR}
+    </if>
     </sql>
 
-    
+
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo" keyProperty="id">
-    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
         INSERT INTO af_trade_business_info
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="businessId != null">        
-	            business_id,
-	        </if>
-	        <if test="name != null">        
-	            name,
-	        </if>
-	        <if test="type != null">        
-	            type,
-	        </if>
-	        <if test="imageUrl != null">        
-	            image_url,
-	        </if>
-	        <if test="address != null">        
-	            address,
-	        </if>
-	        <if test="openTime != null">        
-	            open_time,
-	        </if>
-	        <if test="endTime != null">        
-	            end_time,
-	        </if>
-	        <if test="phone != null">        
-	            phone,
-	        </if>
-	        <if test="corporationName != null">        
-	            corporation_name,
-	        </if>
-	        <if test="corporationMobile != null">        
-	            corporation_mobile,
-	        </if>
-	        <if test="corporationEmail != null">        
-	            corporation_email,
-	        </if>
-	        <if test="licenceUrl != null">        
-	            licence_url,
-	        </if>
-	        <if test="frontUrl != null">        
-	            front_url,
-	        </if>
-	        <if test="inverseUrl != null">        
-	            inverse_url,
-	        </if>
-	        <if test="protocolUrl != null">        
-	            protocol_url,
-	        </if>
-	        <if test="withdrawCycle != null">        
-	            withdraw_cycle,
-	        </if>
-	        <if test="cardName != null">        
-	            card_name,
-	        </if>
-	        <if test="cardNo != null">        
-	            card_no,
-	        </if>
-	        <if test="cardId != null">        
-	            card_id,
-	        </if>
-	        <if test="cardCode != null">        
-	            card_code,
-	        </if>
-	        <if test="cardBank != null">        
-	            card_bank,
-	        </if>
-	        <if test="linkName != null">        
-	            link_name,
-	        </if>
-	        <if test="linkMobile != null">        
-	            link_mobile,
-	        </if>
-	        <if test="linkQq != null">        
-	            link_qq,
-	        </if>
-	        <if test="linkWx != null">        
-	            link_wx,
-	        </if>
-	        <if test="linkEmail != null">        
-	            link_email,
-	        </if>
-	        <if test="status != null">        
-	            status,
-	        </if>
-	        <if test="canWithdraw != null">        
-	            can_withdraw,
-	        </if>
-	        <if test="cannotWithdraw != null">        
-	            cannot_withdraw,
-	        </if>
-	        <if test="creator != null">        
-	            creator,
-	        </if>
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="modifier != null">        
-	            modifier,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
+            <if test="businessId != null">
+                business_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="imageUrl != null">
+                image_url,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="openTime != null">
+                open_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="corporationName != null">
+                corporation_name,
+            </if>
+            <if test="corporationMobile != null">
+                corporation_mobile,
+            </if>
+            <if test="corporationEmail != null">
+                corporation_email,
+            </if>
+            <if test="licenceUrl != null">
+                licence_url,
+            </if>
+            <if test="frontUrl != null">
+                front_url,
+            </if>
+            <if test="inverseUrl != null">
+                inverse_url,
+            </if>
+            <if test="protocolUrl != null">
+                protocol_url,
+            </if>
+            <if test="withdrawCycle != null">
+                withdraw_cycle,
+            </if>
+            <if test="cardName != null">
+                card_name,
+            </if>
+            <if test="cardNo != null">
+                card_no,
+            </if>
+            <if test="cardId != null">
+                card_id,
+            </if>
+            <if test="cardCode != null">
+                card_code,
+            </if>
+            <if test="cardBank != null">
+                card_bank,
+            </if>
+            <if test="linkName != null">
+                link_name,
+            </if>
+            <if test="linkMobile != null">
+                link_mobile,
+            </if>
+            <if test="linkQq != null">
+                link_qq,
+            </if>
+            <if test="linkWx != null">
+                link_wx,
+            </if>
+            <if test="linkEmail != null">
+                link_email,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="canWithdraw != null">
+                can_withdraw,
+            </if>
+            <if test="cannotWithdraw != null">
+                cannot_withdraw,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="modifier != null">
+                modifier,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="workdays != null">
+                workdays,
+            </if>
         </trim>
-        
+
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="businessId != null" >
-		       #{businessId,jdbcType=INTEGER},
-		    </if>
-		    <if test="name != null" >
-		       #{name,jdbcType=VARCHAR},
-		    </if>
-		    <if test="type != null" >
-		       #{type,jdbcType=INTEGER},
-		    </if>
-		    <if test="imageUrl != null" >
-		       #{imageUrl,jdbcType=VARCHAR},
-		    </if>
-		    <if test="address != null" >
-		       #{address,jdbcType=VARCHAR},
-		    </if>
-		    <if test="openTime != null" >
-		       #{openTime,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="endTime != null" >
-		       #{endTime,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="phone != null" >
-		       #{phone,jdbcType=VARCHAR},
-		    </if>
-		    <if test="corporationName != null" >
-		       #{corporationName,jdbcType=VARCHAR},
-		    </if>
-		    <if test="corporationMobile != null" >
-		       #{corporationMobile,jdbcType=VARCHAR},
-		    </if>
-		    <if test="corporationEmail != null" >
-		       #{corporationEmail,jdbcType=VARCHAR},
-		    </if>
-		    <if test="licenceUrl != null" >
-		       #{licenceUrl,jdbcType=VARCHAR},
-		    </if>
-		    <if test="frontUrl != null" >
-		       #{frontUrl,jdbcType=VARCHAR},
-		    </if>
-		    <if test="inverseUrl != null" >
-		       #{inverseUrl,jdbcType=VARCHAR},
-		    </if>
-		    <if test="protocolUrl != null" >
-		       #{protocolUrl,jdbcType=VARCHAR},
-		    </if>
-		    <if test="withdrawCycle != null" >
-		       #{withdrawCycle,jdbcType=INTEGER},
-		    </if>
-		    <if test="cardName != null" >
-		       #{cardName,jdbcType=VARCHAR},
-		    </if>
-		    <if test="cardNo != null" >
-		       #{cardNo,jdbcType=VARCHAR},
-		    </if>
-		    <if test="cardId != null" >
-		       #{cardId,jdbcType=INTEGER},
-		    </if>
-		    <if test="cardCode != null" >
-		       #{cardCode,jdbcType=VARCHAR},
-		    </if>
-		    <if test="cardBank != null" >
-		       #{cardBank,jdbcType=VARCHAR},
-		    </if>
-		    <if test="linkName != null" >
-		       #{linkName,jdbcType=VARCHAR},
-		    </if>
-		    <if test="linkMobile != null" >
-		       #{linkMobile,jdbcType=VARCHAR},
-		    </if>
-		    <if test="linkQq != null" >
-		       #{linkQq,jdbcType=VARCHAR},
-		    </if>
-		    <if test="linkWx != null" >
-		       #{linkWx,jdbcType=VARCHAR},
-		    </if>
-		    <if test="linkEmail != null" >
-		       #{linkEmail,jdbcType=VARCHAR},
-		    </if>
-		    <if test="status != null" >
-		       #{status,jdbcType=INTEGER},
-		    </if>
-		    <if test="canWithdraw != null" >
-		       #{canWithdraw,jdbcType=DECIMAL},
-		    </if>
-		    <if test="cannotWithdraw != null" >
-		       #{cannotWithdraw,jdbcType=DECIMAL},
-		    </if>
-		    <if test="creator != null" >
-		       #{creator,jdbcType=VARCHAR},
-		    </if>
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="modifier != null" >
-		       #{modifier,jdbcType=VARCHAR},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
+            <if test="businessId != null" >
+                #{businessId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null" >
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null" >
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="imageUrl != null" >
+                #{imageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="openTime != null" >
+                #{openTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null" >
+                #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null" >
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="corporationName != null" >
+                #{corporationName,jdbcType=VARCHAR},
+            </if>
+            <if test="corporationMobile != null" >
+                #{corporationMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="corporationEmail != null" >
+                #{corporationEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="licenceUrl != null" >
+                #{licenceUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="frontUrl != null" >
+                #{frontUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="inverseUrl != null" >
+                #{inverseUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="protocolUrl != null" >
+                #{protocolUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="withdrawCycle != null" >
+                #{withdrawCycle,jdbcType=INTEGER},
+            </if>
+            <if test="cardName != null" >
+                #{cardName,jdbcType=VARCHAR},
+            </if>
+            <if test="cardNo != null" >
+                #{cardNo,jdbcType=VARCHAR},
+            </if>
+            <if test="cardId != null" >
+                #{cardId,jdbcType=INTEGER},
+            </if>
+            <if test="cardCode != null" >
+                #{cardCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cardBank != null" >
+                #{cardBank,jdbcType=VARCHAR},
+            </if>
+            <if test="linkName != null" >
+                #{linkName,jdbcType=VARCHAR},
+            </if>
+            <if test="linkMobile != null" >
+                #{linkMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="linkQq != null" >
+                #{linkQq,jdbcType=VARCHAR},
+            </if>
+            <if test="linkWx != null" >
+                #{linkWx,jdbcType=VARCHAR},
+            </if>
+            <if test="linkEmail != null" >
+                #{linkEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="canWithdraw != null" >
+                #{canWithdraw,jdbcType=DECIMAL},
+            </if>
+            <if test="cannotWithdraw != null" >
+                #{cannotWithdraw,jdbcType=DECIMAL},
+            </if>
+            <if test="creator != null" >
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null" >
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null" >
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtModified != null" >
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="workdays != null" >
+                #{workdays,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
-    
+
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo">
         UPDATE af_trade_business_info
-          <set>
-            <if test="businessId != null and businessId != '' ">        
-                business_id = #{businessId,jdbcType=INTEGER},                
+        <set>
+            <if test="businessId != null and businessId != '' ">
+                business_id = #{businessId,jdbcType=INTEGER},
             </if>
-            <if test="name != null and name != '' ">        
-                name = #{name,jdbcType=VARCHAR},                
+            <if test="name != null and name != '' ">
+                name = #{name,jdbcType=VARCHAR},
             </if>
-            <if test="type != null and type != '' ">        
-                type = #{type,jdbcType=INTEGER},                
+            <if test="type != null and type != '' ">
+                type = #{type,jdbcType=INTEGER},
             </if>
-            <if test="imageUrl != null and imageUrl != '' ">        
-                image_url = #{imageUrl,jdbcType=VARCHAR},                
+            <if test="imageUrl != null and imageUrl != '' ">
+                image_url = #{imageUrl,jdbcType=VARCHAR},
             </if>
-            <if test="address != null and address != '' ">        
-                address = #{address,jdbcType=VARCHAR},                
+            <if test="address != null and address != '' ">
+                address = #{address,jdbcType=VARCHAR},
             </if>
-            <if test="openTime != null and openTime != '' ">        
-                open_time = #{openTime,jdbcType=TIMESTAMP},                
+            <if test="openTime != null and openTime != '' ">
+                open_time = #{openTime,jdbcType=VARCHAR},
             </if>
-            <if test="endTime != null and endTime != '' ">        
-                end_time = #{endTime,jdbcType=TIMESTAMP},                
+            <if test="endTime != null and endTime != '' ">
+                end_time = #{endTime,jdbcType=VARCHAR},
             </if>
-            <if test="phone != null and phone != '' ">        
-                phone = #{phone,jdbcType=VARCHAR},                
+            <if test="phone != null and phone != '' ">
+                phone = #{phone,jdbcType=VARCHAR},
             </if>
-            <if test="corporationName != null and corporationName != '' ">        
-                corporation_name = #{corporationName,jdbcType=VARCHAR},                
+            <if test="corporationName != null and corporationName != '' ">
+                corporation_name = #{corporationName,jdbcType=VARCHAR},
             </if>
-            <if test="corporationMobile != null and corporationMobile != '' ">        
-                corporation_mobile = #{corporationMobile,jdbcType=VARCHAR},                
+            <if test="corporationMobile != null and corporationMobile != '' ">
+                corporation_mobile = #{corporationMobile,jdbcType=VARCHAR},
             </if>
-            <if test="corporationEmail != null and corporationEmail != '' ">        
-                corporation_email = #{corporationEmail,jdbcType=VARCHAR},                
+            <if test="corporationEmail != null and corporationEmail != '' ">
+                corporation_email = #{corporationEmail,jdbcType=VARCHAR},
             </if>
-            <if test="licenceUrl != null and licenceUrl != '' ">        
-                licence_url = #{licenceUrl,jdbcType=VARCHAR},                
+            <if test="licenceUrl != null and licenceUrl != '' ">
+                licence_url = #{licenceUrl,jdbcType=VARCHAR},
             </if>
-            <if test="frontUrl != null and frontUrl != '' ">        
-                front_url = #{frontUrl,jdbcType=VARCHAR},                
+            <if test="frontUrl != null and frontUrl != '' ">
+                front_url = #{frontUrl,jdbcType=VARCHAR},
             </if>
-            <if test="inverseUrl != null and inverseUrl != '' ">        
-                inverse_url = #{inverseUrl,jdbcType=VARCHAR},                
+            <if test="inverseUrl != null and inverseUrl != '' ">
+                inverse_url = #{inverseUrl,jdbcType=VARCHAR},
             </if>
-            <if test="protocolUrl != null and protocolUrl != '' ">        
-                protocol_url = #{protocolUrl,jdbcType=VARCHAR},                
+            <if test="protocolUrl != null and protocolUrl != '' ">
+                protocol_url = #{protocolUrl,jdbcType=VARCHAR},
             </if>
-            <if test="withdrawCycle != null and withdrawCycle != '' ">        
-                withdraw_cycle = #{withdrawCycle,jdbcType=INTEGER},                
+            <if test="withdrawCycle != null and withdrawCycle != '' ">
+                withdraw_cycle = #{withdrawCycle,jdbcType=INTEGER},
             </if>
-            <if test="cardName != null and cardName != '' ">        
-                card_name = #{cardName,jdbcType=VARCHAR},                
+            <if test="cardName != null and cardName != '' ">
+                card_name = #{cardName,jdbcType=VARCHAR},
             </if>
-            <if test="cardNo != null and cardNo != '' ">        
-                card_no = #{cardNo,jdbcType=VARCHAR},                
+            <if test="cardNo != null and cardNo != '' ">
+                card_no = #{cardNo,jdbcType=VARCHAR},
             </if>
-            <if test="cardId != null and cardId != '' ">        
-                card_id = #{cardId,jdbcType=INTEGER},                
+            <if test="cardId != null and cardId != '' ">
+                card_id = #{cardId,jdbcType=INTEGER},
             </if>
-            <if test="cardCode != null and cardCode != '' ">        
-                card_code = #{cardCode,jdbcType=VARCHAR},                
+            <if test="cardCode != null and cardCode != '' ">
+                card_code = #{cardCode,jdbcType=VARCHAR},
             </if>
-            <if test="cardBank != null and cardBank != '' ">        
-                card_bank = #{cardBank,jdbcType=VARCHAR},                
+            <if test="cardBank != null and cardBank != '' ">
+                card_bank = #{cardBank,jdbcType=VARCHAR},
             </if>
-            <if test="linkName != null and linkName != '' ">        
-                link_name = #{linkName,jdbcType=VARCHAR},                
+            <if test="linkName != null and linkName != '' ">
+                link_name = #{linkName,jdbcType=VARCHAR},
             </if>
-            <if test="linkMobile != null and linkMobile != '' ">        
-                link_mobile = #{linkMobile,jdbcType=VARCHAR},                
+            <if test="linkMobile != null and linkMobile != '' ">
+                link_mobile = #{linkMobile,jdbcType=VARCHAR},
             </if>
-            <if test="linkQq != null and linkQq != '' ">        
-                link_qq = #{linkQq,jdbcType=VARCHAR},                
+            <if test="linkQq != null and linkQq != '' ">
+                link_qq = #{linkQq,jdbcType=VARCHAR},
             </if>
-            <if test="linkWx != null and linkWx != '' ">        
-                link_wx = #{linkWx,jdbcType=VARCHAR},                
+            <if test="linkWx != null and linkWx != '' ">
+                link_wx = #{linkWx,jdbcType=VARCHAR},
             </if>
-            <if test="linkEmail != null and linkEmail != '' ">        
-                link_email = #{linkEmail,jdbcType=VARCHAR},                
+            <if test="linkEmail != null and linkEmail != '' ">
+                link_email = #{linkEmail,jdbcType=VARCHAR},
             </if>
-            <if test="status != null and status != '' ">        
-                status = #{status,jdbcType=INTEGER},                
+            <if test="status != null and status != '' ">
+                status = #{status,jdbcType=INTEGER},
             </if>
-            <if test="canWithdraw != null and canWithdraw != '' ">        
-                can_withdraw = #{canWithdraw,jdbcType=DECIMAL},                
+            <if test="canWithdraw != null and canWithdraw != '' ">
+                can_withdraw = #{canWithdraw,jdbcType=DECIMAL},
             </if>
-            <if test="cannotWithdraw != null and cannotWithdraw != '' ">        
-                cannot_withdraw = #{cannotWithdraw,jdbcType=DECIMAL},                
+            <if test="cannotWithdraw != null and cannotWithdraw != '' ">
+                cannot_withdraw = #{cannotWithdraw,jdbcType=DECIMAL},
             </if>
-            <if test="creator != null and creator != '' ">        
-                creator = #{creator,jdbcType=VARCHAR},                
+            <if test="creator != null and creator != '' ">
+                creator = #{creator,jdbcType=VARCHAR},
             </if>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            <if test="gmtCreate != null and gmtCreate != '' ">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            <if test="modifier != null and modifier != '' ">        
-                modifier = #{modifier,jdbcType=VARCHAR},                
+            <if test="modifier != null and modifier != '' ">
+                modifier = #{modifier,jdbcType=VARCHAR},
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            <if test="gmtModified != null and gmtModified != '' ">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
             </if>
-        </set>    
+            <if test="workdays != null and workdays != '' ">
+                workdays = #{workdays,jdbcType=VARCHAR},
+            </if>
+        </set>
         WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo">
+    <select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo">
         SELECT
         <include refid="queryFields" />
         FROM af_trade_business_info
@@ -441,19 +452,27 @@ id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_
         LIMIT 0,1
     </select>
 
-	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo">
+    <select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo">
         SELECT
         <include refid="queryFields" />
         FROM af_trade_business_info
-        <include refid="commonCondition"/> 
+        <include refid="commonCondition"/>
         limit 0,1
     </select>
-               
+
     <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo">
         SELECT
         <include refid="queryFields" />
         FROM af_trade_business_info
         <include refid="commonCondition"/>
+    </select>
+
+    <select id="getByBusinessId" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_business_info
+        WHERE is_delete = 0 AND business_id=#{businessId}
+        LIMIT 0,1
     </select>
 
     <select id="getByOrderId" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto">
@@ -465,5 +484,4 @@ id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_
             o.order_id = #{orderId}
         </if>
     </select>
-    
 </mapper>
