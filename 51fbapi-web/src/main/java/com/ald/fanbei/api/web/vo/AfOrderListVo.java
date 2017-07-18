@@ -32,6 +32,7 @@ public class AfOrderListVo extends AbstractSerial {
 	private String afterSaleStatus;
 	private String isCanApplyAfterSale;
 	private String businessIcon;
+	private String isCanDelOrder;
 
 	public String getBusinessIcon() {
 		return businessIcon;
@@ -142,6 +143,14 @@ public class AfOrderListVo extends AbstractSerial {
 	}
 	public void setIsCanApplyAfterSale(String isCanApplyAfterSale) {
 		this.isCanApplyAfterSale = isCanApplyAfterSale;
+	}
+
+	public String getIsCanDelOrder() {
+		return isCanDelOrder;
+	}
+
+	public void setIsCanDelOrder(String isCanDelOrder) {
+		this.isCanDelOrder = isCanDelOrder;
 	}
 	
 }
