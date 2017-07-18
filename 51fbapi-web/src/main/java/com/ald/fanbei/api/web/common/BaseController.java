@@ -625,4 +625,30 @@ public abstract class BaseController {
 			throw new AssertionError(ex);
 		}
 	}
+
+	/**
+	 * h5接口验证，验证基础参数、签名
+	 * @param request
+	 * @param needToken
+	 * @return
+	 */
+	protected FanbeiWebContext doWebCheckNoAjax(HttpServletRequest request,boolean needToken){
+		FanbeiWebContext webContext = new FanbeiWebContext();
+		String appInfo = request.getParameter("_appInfo");
+		webContext.setAppInfo(appInfo);
+		if(StringUtil.isBlank(appInfo)){
+			if(needToken){
+				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}else{
+				return webContext;
+			}
+		}
+		RequestDataVo requestDataVo = parseRequestData(appInfo, request);
+		requestDataVo.setParams(new HashMap<String, Object>());
+		FanbeiContext baseContext = this.doBaseParamCheck(requestDataVo);
+		webContext.setUserName(baseContext.getUserName());
+		webContext.setAppVersion(baseContext.getAppVersion());
+		checkWebSign(webContext,requestDataVo, needToken);
+		return webContext;
+	}
 }

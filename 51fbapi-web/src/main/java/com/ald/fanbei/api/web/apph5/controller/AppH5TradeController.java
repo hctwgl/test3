@@ -14,6 +14,8 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,7 +57,7 @@ public class AppH5TradeController extends BaseController {
 
         FanbeiWebContext context = null;
         try {
-            context = doWebCheck(request, true);
+            context = doWebCheckNoAjax(request, true);
         } catch (Exception e) {
             return;
         }
@@ -79,7 +81,14 @@ public class AppH5TradeController extends BaseController {
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        return null;
+        RequestDataVo reqVo = new RequestDataVo();
+
+        JSONObject jsonObj = JSON.parseObject(requestData);
+        reqVo.setId(jsonObj.getString("id"));
+        reqVo.setMethod(request.getRequestURI());
+        reqVo.setSystem(jsonObj);
+
+        return reqVo;
     }
 
     @Override
