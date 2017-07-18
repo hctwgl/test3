@@ -1,4 +1,4 @@
-   var bid = getUrl("d0pmttf8U7MI/D4DoHN7Brw");
+   var bid = getUrl("bid");
    let vm=new Vue({
     el:'#businessCode',
     data:{
@@ -14,7 +14,7 @@
             $.ajax({
                     type: 'post',
                     url: '/fanbei-web/initTradeInfo',
-                    data:{'bid':bid},
+                    data:{bid:'d0pmtf8U7Ml/D4DoHN7Brw=='},
                     success:function(data) {   
                         console.log(data);
                        self.content = eval('(' + data + ')');                      

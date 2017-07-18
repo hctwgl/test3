@@ -11,8 +11,7 @@
 <body>
     <div id="businessCode" class="clearfix">
         <div class="businessName">
-            <img class="shangjia" src="https://fs.51fanbei.com/h5/app/images/user/business.png 
-" alt="">
+            <img class="shangjia" src="https://fs.51fanbei.com/h5/app/images/user/business.png" alt="">
             <span>商家名称xxxxx名称</span>
         </div>
         <div class="blank">
@@ -23,8 +22,7 @@
         </div>
         <div class="fukuan clearfix">
             <div class="fukuan-one">
-                <img src="https://fs.51fanbei.com/h5/app/images/user/slience.png 
-" alt="">
+                <img src="https://fs.51fanbei.com/h5/app/images/user/slience.png" alt="">
                 <span class="xinyong">51信用分期</span>
             </div>
             <p class="edu">剩余可用额度<span class="money">3000元</span></p>
@@ -32,5 +30,5 @@
         </div>
     </div>
 </body>
-<script src="/dist/css/user/businessCode.js"></script>
+<script src="/dist/js/user/businessCode.js"></script>
 </html>
