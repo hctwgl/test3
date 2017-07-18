@@ -59,6 +59,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String logisticsNo;//发货物流单号
 	private Date gmtDeliver;//发货时间
 	private String installmentInfo;//分期详情
+	private String isCanDelOrder;
 	
 	public String getCouponName() {
 		return couponName;
@@ -340,6 +341,12 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	}
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
+	}
+	public String getIsCanDelOrder() {
+		return isCanDelOrder;
+	}
+	public void setIsCanDelOrder(String isCanDelOrder) {
+		this.isCanDelOrder = isCanDelOrder;
 	}
 	
 }

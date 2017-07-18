@@ -19,6 +19,8 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
+import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -27,6 +29,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -56,6 +59,8 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 	AfUserCouponService  afUserCouponService;
 	@Resource
 	AfCouponService afCouponService;
+	@Resource
+	AfResourceService afResourceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -133,8 +138,18 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 			//如果存在售后申请记录并且未被用户关闭，则标识记录，后续结合订单关闭状态，确认订单关闭是退款还是其它操作导致
 			isExistAftersaleApply = true;
 		}
+		Boolean isExistRebates = order.getRebateAmount().compareTo(BigDecimal.ZERO)>0;
+		//代买类型订单，返利是一个范围，按最大返利来看是否存在返利,特殊处理
+		if(isExistRebates==false && OrderType.AGENTBUY.getCode().equals(order.getOrderType())){
+			AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
+			BigDecimal maxRate = NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO);
+			BigDecimal maxRebateAmount = order.getSaleAmount().multiply(maxRate).setScale(2,BigDecimal.ROUND_HALF_UP);
+			if(maxRebateAmount.compareTo(BigDecimal.ZERO)>0){
+				isExistRebates = true;
+			}
+		}
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
-				order.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason,order.getStatusRemark());
+				isExistRebates,afterSaleStatus, isExistAftersaleApply,closeReason,order.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			vo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
@@ -142,6 +157,16 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 			vo.setOrderStatusMsg("");
 			vo.setOrderStatusRemark("");
 		}
+		
+		//订单是否满足删除条件设置 1、订单完成 （无返利-确认收货 有返利-返利完成）2、订单关闭
+		String isCanDelOrder = YesNoStatus.NO.getCode();
+		if(OrderStatus.CLOSED.getCode().equals(order.getStatus()) 
+				|| OrderStatus.REBATED.getCode().equals(order.getStatus())
+				||(OrderStatus.FINISHED.getCode().equals(order.getStatus()) && isExistRebates==false)){
+			isCanDelOrder = YesNoStatus.YES.getCode();
+		}
+		vo.setIsCanDelOrder(isCanDelOrder);
+				
 		//发货物流信息及时间
 		vo.setLogisticsCompany(order.getLogisticsCompany());
 		vo.setLogisticsNo(order.getLogisticsNo());

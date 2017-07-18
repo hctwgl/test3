@@ -26,6 +26,8 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -256,8 +258,19 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			//如果存在售后申请记录并且未被用户关闭，则标识记录，后续结合订单关闭状态，确认订单关闭是退款还是其它操作导致
 			isExistAftersaleApply = true;
 		}
+		
+		Boolean isExistRebates = afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0;
+		//代买类型订单，返利是一个范围，按最大返利来看是否存在返利,特殊处理
+		if(isExistRebates==false){
+			BigDecimal maxRate = NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO);
+			BigDecimal maxRebateAmount = afOrderDo.getSaleAmount().multiply(maxRate).setScale(2,BigDecimal.ROUND_HALF_UP);
+			if(maxRebateAmount.compareTo(BigDecimal.ZERO)>0){
+				isExistRebates = true;
+			}
+		}
+		
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
-				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason,afOrderDo.getStatusRemark());
+				isExistRebates,afterSaleStatus, isExistAftersaleApply,closeReason,afOrderDo.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			agentOrderDetailVo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
@@ -265,6 +278,15 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			agentOrderDetailVo.setOrderStatusMsg("");
 			agentOrderDetailVo.setOrderStatusRemark("");
 		}
+		//订单是否满足删除条件设置 1、订单完成 （无返利-确认收货 有返利-返利完成）2、订单关闭
+		String isCanDelOrder = YesNoStatus.NO.getCode();
+		if(OrderStatus.CLOSED.getCode().equals(afOrderDo.getStatus()) 
+				|| OrderStatus.REBATED.getCode().equals(afOrderDo.getStatus())
+				||(OrderStatus.FINISHED.getCode().equals(afOrderDo.getStatus()) && isExistRebates==false)){
+			isCanDelOrder = YesNoStatus.YES.getCode();
+		}
+		agentOrderDetailVo.setIsCanDelOrder(isCanDelOrder);
+				
 		//发货物流信息及时间
 		agentOrderDetailVo.setLogisticsInfo(StringUtil.logisticsInfoDeal(afOrderDo.getLogisticsInfo()));
 		agentOrderDetailVo.setLogisticsCompany(afOrderDo.getLogisticsCompany());
