@@ -84,8 +84,7 @@ let vm = new Vue({
             var shopUrl=e.shopUrl;
             var couponType=e.type;
             //只有现金券、满减券、会场券时，券状态有去用券 可点击跳转 其他不可
-            if(couponType=='FULLVOUCHER' || couponType=='CASH' || couponType=='ACTIVITY'){
-                if(e.isDraw=='N'){                 
+                if(e.isDraw=='N' && (couponType=='FULLVOUCHER' || couponType=='CASH' || couponType=='ACTIVITY')){                 
                 //event.preventDefault();
                     //去用券
                     if(shopUrl){
@@ -95,7 +94,7 @@ let vm = new Vue({
                         //window.location.href="https://www.baidu.com/";
                         window.location.href='/fanbei-web/opennative?name=APP_HOME';
                     }
-                }else{
+                }else if(e.isDraw=='Y'){
                     //点击领券
                     //console.log(1)
                         $.ajax({
@@ -128,8 +127,7 @@ let vm = new Vue({
                                 requestMsg("请求失败");
                             }
                         });
-                } 
-            }     
+                }     
         }//couponClick--
 
     }

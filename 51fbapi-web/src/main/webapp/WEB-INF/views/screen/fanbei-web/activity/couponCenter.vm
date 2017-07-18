@@ -36,9 +36,10 @@
                      <p>{{item.useRange}}</p>
                      <p>{{item.name}}</p>
                      <p>{{item.start}}-{{item.end}}</p>
-                     <p class="clickMe" v-if="item.isDraw==='Y'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">点我领取</p>
-                     <p class="clickMe01" v-else-if="item.isDraw==='N'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">去用券</p>
-                     <p class="clickMe01" v-else>已领券</p>             
+                     <!-- <p class="clickMe" v-if="item.isDraw==='Y'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">点我领取</p> -->
+                     <p class="clickMe" v-if="item.isDraw==='Y'">点我领取</p>
+                     <p class="clickMe01" v-if="item.isDraw==='N'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">去用券</p>
+                     <p class="clickMe01" v-if="item.isDraw==='N'&&(item.type==='MOBILE' || item.type==='REPAYMENT')">已领券</p>             
                      <p v-if="item.state==='timeOver'"></p>
                  </div>
               </div>
