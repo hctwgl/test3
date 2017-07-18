@@ -166,9 +166,6 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 				AfTradeBusinessInfoDto dto = list.get(0);
 				vo.setBusinessIcon(dto.getImageUrl());
 				vo.setBusinessName(dto.getName());
-				
-				vo.setNper(afBorrowDo.getNper());
-				vo.setNperAmount(afBorrowDo.getNperAmount());
 			}
 
 		}
