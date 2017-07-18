@@ -28,13 +28,13 @@
                 });
         }
     },
-     buyNow(id){
-          let self=this
-            var businessCodePay = getUrl("businessCodePay");
-            if (superGoodsShare == "superGoodsShare") {
-               window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-            } else {
-               window.location.href=self.content.notifyUrl+'&params={"goodsId":"'+id+'"}'
-            }
-        },
+    //  buyNow(id){
+    //       let self=this
+    //         var businessCodePay = getUrl("businessCodePay");
+    //         if (superGoodsShare == "superGoodsShare") {
+    //            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+    //         } else {
+    //            window.location.href=self.content.notifyUrl+'&params={"goodsId":"'+id+'"}'
+    //         }
+    //     },
    })
