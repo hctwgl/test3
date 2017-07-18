@@ -155,8 +155,12 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		if(afBorrowDo!=null){
 			//分期信息设置 ¥300.00X12期
 			vo.setInstallmentInfo(NumberUtil.format2Str(afBorrowDo.getNperAmount())+"X"+afBorrowDo.getNper()+"期");
+			vo.setNper(afBorrowDo.getNper());
+			vo.setNperAmount(afBorrowDo.getNperAmount());
 		}else{
 			vo.setInstallmentInfo("");
+			vo.setNper(0);
+			vo.setNperAmount(BigDecimal.ZERO);
 		}
 			
 		//商圈订单
