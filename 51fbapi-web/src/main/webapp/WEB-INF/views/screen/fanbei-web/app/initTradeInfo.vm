@@ -10,6 +10,10 @@
 </head>
 <body>
     <div id="businessCode" class="clearfix">
+        <input value="${isLogin}">
+        <input value="$!{name}">
+        <input value="$!{canUseAmount}">
+        <input value="$!{isLogin}">
         <div class="businessName">
             <img class="shangjia" src="https://fs.51fanbei.com/h5/app/images/user/business.png" alt="">
             <span>商家名称xxxxx名称</span>
