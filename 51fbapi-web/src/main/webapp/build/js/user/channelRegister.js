@@ -50,8 +50,8 @@ var _fmOpt;
         var web_url = window.encodeURIComponent(window.location.href);
         var js_url = ta.src;
 
-        if ( style==15 ) {
-            var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url=' + web_url + '&js_url=' + js_url + '&convert_id=63553308919';
+        if ( style==16 ) { // 钜美头条访问量
+            var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url=' + web_url + '&js_url=' + js_url + '&convert_id=63736236689';
         } else if ( style==14 ) {
             var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url+'&convert_id=62421367574';
         } else {
@@ -144,8 +144,8 @@ $(function(){
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
 						if ( $("#register_codeBtn").attr("isState")==1 ) {
                             // 检测访问量
-                            if ( style==15 ) {
-                                _taq.push({convert_id:"63553308919", event_type:"form"});
+                            if ( style==16 ) { // 钜美头条注册量
+                                _taq.push({convert_id:"63736236689", event_type:"form"})
                             } else if ( style==14 ) {
                                 _taq.push({convert_id:"62421367574", event_type:"form"});
                             } else {
@@ -166,7 +166,7 @@ $(function(){
 								},
 								success: function(returnData){
                                     if (returnData.success) {
-                                        if ( style==15 || style==10 || style==12 ) {
+                                        if ( style==10 || style==12 || style==15 || style==16 ) {
                                             $("#register_submitBtn").attr("disabled",true);
 
                                             $(".registerSuss8").removeClass("hide");  // 显示样式8
