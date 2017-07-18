@@ -49,7 +49,14 @@ public class AppH5TradeController extends BaseController {
             return;
         }
 
-        FanbeiWebContext context = doWebCheck(request, true);
+        FanbeiWebContext context = new FanbeiWebContext();
+        try {
+            context = doWebCheck(request, true);
+        } catch (Exception e) {
+            model.put("isLogin", "no");
+            return;
+        }
+
         if (!context.isLogin()) {
             model.put("isLogin", "no");
             return;
