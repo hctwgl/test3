@@ -39,50 +39,37 @@ public class AppH5TradeController extends BaseController {
     @Resource
     AfTradeBusinessInfoService afTradeBusinessInfoService;
 
-    @RequestMapping(value = "initTradeInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String initTradeInfo(HttpServletRequest request, ModelMap model) {
-        Map<String, Object> returnData = new HashMap<String, Object>();
-        returnData.put("isLogin", "no");
+    @RequestMapping(value = "initTradeInfo", method = RequestMethod.GET)
+    public void initTradeInfo(HttpServletRequest request, ModelMap model) {
+        model.put("isLogin", "no");
         String bid = request.getParameter("bid");
         if (StringUtil.isBlank(bid)) {
-            return H5CommonResponse
-                    .getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData)
-                    .toString();
+            return;
         }
 
         bid = AesUtil.decryptFromBase64(bid, Constants.TRADE_AES_DECRYPT_PASSWORD);
         AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getById(Long.parseLong(bid));
         if (afTradeBusinessInfoDo == null) {
-            return H5CommonResponse
-                    .getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData)
-                    .toString();
+            return;
         }
 
         FanbeiWebContext context = null;
         try {
             context = doWebCheck(request, true);
         } catch (Exception e) {
-            return H5CommonResponse
-                    .getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData)
-                    .toString();
+            return;
         }
 
         if (!context.isLogin()) {
-            return H5CommonResponse
-                    .getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData)
-                    .toString();
+            return;
         }
-        returnData.put("name", afTradeBusinessInfoDo.getName());
-        returnData.put("id", afTradeBusinessInfoDo.getId());
-        returnData.put("isLogin", "yes");
+        model.put("name", afTradeBusinessInfoDo.getName());
+        model.put("id", afTradeBusinessInfoDo.getId());
+        model.put("isLogin", "yes");
         String userName = context.getUserName();
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountInfoByUserName(userName);
         Double canUseAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), BigDecimalUtil.add(afUserAccountDo.getUsedAmount(), afUserAccountDo.getFreezeAmount())).doubleValue();
-        returnData.put("canUseAmount", canUseAmount);
-        return H5CommonResponse
-                .getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData)
-                .toString();
+        model.put("canUseAmount", canUseAmount);
     }
 
     @Override
