@@ -22,10 +22,12 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -62,6 +64,15 @@ public class AppH5ConponController extends BaseController {
     		FanbeiWebContext context = doWebCheck(request, false);
     		String userName = context.getUserName();
     		JSONObject jsonObj = new JSONObject();
+    		// 获取Banner信息
+    		List<AfResourceDo> bannerInfoList = afResourceService.getConfigByTypes(ResourceType.COUPON_CENTER_BANNER.getCode());
+    		if(bannerInfoList != null && !bannerInfoList.isEmpty()) {
+    			AfResourceDo bannerInfo = bannerInfoList.get(0);
+    			String bannerImage = bannerInfo.getValue();
+    			String bannerUrl = bannerInfo.getValue2();
+    			jsonObj.put("bannerImage", bannerImage);
+    			jsonObj.put("bannerUrl", bannerUrl);
+    		}
     		// 查询所有优惠券分类
     		List<AfCouponCategoryDo> afCouponCategoryList = afCouponCategoryService.listAllCouponCategory();
     		List <Map<String,Object>> couponCategoryList = new ArrayList<Map<String,Object>>();
