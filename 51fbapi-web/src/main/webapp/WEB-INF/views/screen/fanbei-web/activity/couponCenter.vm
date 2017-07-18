@@ -32,13 +32,13 @@
                      <p v-if="item.type==='REPAYMENT'" style="background: #38d7c2;">还款券</p>
                      <p v-if="item.type==='FULLVOUCHER'" style="background: #5c99d7;">满减券</p>
                      <p v-if="item.type==='CASH'" style="background: #fab677;">现金券</p>
-                     <p v-if="item.type==='ACTIVITY'" style="background: #fc8aa4;">会场券</p>
-                     <p v-if="item.type==='FREEINTEREST'" style="background: #fab677;">免息券</p>
+                     <p v-if="item.type==='ACTIVITY'" style="background: #fc8aa4;">会场券</p>                    
                      <p>{{item.useRange}}</p>
                      <p>{{item.name}}</p>
                      <p>{{item.start}}-{{item.end}}</p>
                      <p class="clickMe" v-if="item.isDraw==='N'">点我领取</p>
-                     <p class="clickMe01" v-if="item.isDraw==='Y'">去用券</p>             
+                     <p class="clickMe01" v-else-if="item.isDraw==='Y'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">去用券</p>
+                     <p class="clickMe01" v-else>已领券</p>             
                      <p v-if="item.state==='timeOver'"></p>
                  </div>
               </div>
@@ -53,8 +53,7 @@
                      <p v-if="item.type==='REPAYMENT'" style="background:#d8d8d8;color:#fff;">还款券</p>
                      <p v-if="item.type==='FULLVOUCHER'" style="background:#d8d8d8;color:#fff;">满减券</p>
                      <p v-if="item.type==='CASH'" style="background:#d8d8d8;color:#fff;">现金券</p>
-                     <p v-if="item.type==='ACTIVITY'" style="background:#d8d8d8;color:#fff;">会场券</p>
-                     <p v-if="item.type==='FREEINTEREST'" style="background:#d8d8d8;color:#fff;">免息券</p>
+                     <p v-if="item.type==='ACTIVITY'" style="background:#d8d8d8;color:#fff;">会场券</p>                     
                      <p style="color:#d8d8d8">{{item.useRange}}</p>
                      <p style="color:#d8d8d8">{{item.name}}</p>
                      <p style="color:#d8d8d8">{{item.start}}-{{item.end}}</p>              
