@@ -1,10 +1,6 @@
 var tabWidth=0;
 var liWidth=0;
 var ulWidth=0;
-var userName = "";
-if(getInfo().userName){
-    userName=getInfo().userName;
-};
 
 //获取数据
 let vm = new Vue({
@@ -13,8 +9,7 @@ let vm = new Vue({
         content: {}
     },
     created: function () {
-        this.logData();
-        
+        this.logData();        
     },
     methods: {
         logData() {
@@ -39,7 +34,7 @@ let vm = new Vue({
                              $('.navList').find('li').width(liWidth);                        
                         }
                     })
-                    //计算是否过期
+                    //计算有效期与是否过期
                     var diff=0;
                     for(var i=0;i<liLength;i++){
                         var couponCategory=self.content.couponCategoryList[i];
@@ -85,7 +80,7 @@ let vm = new Vue({
         },
         couponClick:function(){
             alert(0)
-            console.log(userName)
+            
             $.ajax({
                     url: "/fanbei-web/pickCoupon",
                     type: "POST",
@@ -93,7 +88,7 @@ let vm = new Vue({
                     data: {
                         userName: userName
                     },
-                    success: function(returnData){
+                    success: function(data){
                         
                     },
                     error: function(){
