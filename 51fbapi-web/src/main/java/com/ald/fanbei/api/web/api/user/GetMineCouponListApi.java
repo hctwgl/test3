@@ -11,10 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -33,6 +36,8 @@ public class GetMineCouponListApi implements ApiHandle{
 
 	@Resource
 	private AfUserCouponService afUserCouponService;
+	@Resource
+	private AfResourceService afResourceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -41,7 +46,18 @@ public class GetMineCouponListApi implements ApiHandle{
         Long userId = context.getUserId();
         Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
         String status = ObjectUtils.toString(requestDataVo.getParams().get("status"));
-
+        Map<String, Object> data = new HashMap<String, Object>();
+        // 获取领券中心URL add by jrb
+        List<AfResourceDo>  resourceList = afResourceService.getConfigByTypes(ResourceType.COUPON_CENTER_URL.getCode());
+        if(resourceList != null && !resourceList.isEmpty()) {
+        	AfResourceDo resourceDo = resourceList.get(0);
+        	String couponCenterUrl = resourceDo.getValue();
+        	String isShow = resourceDo.getValue1();
+        	if("Y".equals(isShow)) {
+        		data.put("couponCenterUrl", couponCenterUrl);
+        	}
+        }
+        
         logger.info("userId=" + userId + ",pageNo=" + pageNo + ",status=" + status);
         
         AfUserCouponQuery query = new AfUserCouponQuery();
@@ -54,7 +70,7 @@ public class GetMineCouponListApi implements ApiHandle{
         	AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);
         	couponVoList.add(couponVo);
 		}
-        Map<String, Object> data = new HashMap<String, Object>();
+        
         data.put("pageNo", pageNo);
 		data.put("couponList", couponVoList);
 		resp.setResponseData(data);

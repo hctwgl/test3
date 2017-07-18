@@ -172,4 +172,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		return afUserCouponDao.getUserCouponByDo(afUserCouponDo);
 	}
 
+	@Override
+	public AfUserCouponDto getSubjectUserCouponByAmountAndCouponId(Long userId,
+			BigDecimal actualAmount, String couponId) {
+		return afUserCouponDao.getSubjectUserCouponByAmountAndCouponId(userId, actualAmount, couponId);
+	}
+
 }

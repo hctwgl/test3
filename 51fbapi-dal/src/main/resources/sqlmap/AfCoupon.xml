@@ -76,4 +76,17 @@
 		AND
 			id = #{rid}
 	</update>
+	
+	<update id="updateCouponNotGlobalById" parameterType="java.lang.String">
+		UPDATE
+			af_coupon
+		SET
+			gmt_modified = NOW(),
+			is_global = 1
+		WHERE
+			is_delete = 0
+		AND
+			id = #{couponId}
+	</update>
+	
 </mapper>
