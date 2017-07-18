@@ -1,10 +1,6 @@
 var tabWidth=0;
 var liWidth=0;
 var ulWidth=0;
-var userName = "";
-if(getInfo().userName){
-    userName=getInfo().userName;
-};
 
 //获取数据
 let vm = new Vue({
@@ -13,8 +9,7 @@ let vm = new Vue({
         content: {}
     },
     created: function () {
-        this.logData();
-        
+        this.logData();        
     },
     methods: {
         logData() {
@@ -39,7 +34,7 @@ let vm = new Vue({
                              $('.navList').find('li').width(liWidth);                        
                         }
                     })
-                    //计算是否过期
+                    //计算有效期与是否过期
                     var diff=0;
                     for(var i=0;i<liLength;i++){
                         var couponCategory=self.content.couponCategoryList[i];
@@ -83,23 +78,55 @@ let vm = new Vue({
             $('.navList li').eq(index).siblings().find('span').removeClass('border');
             $('.contList').find('li').eq(index).show().siblings().hide();         
         },
-        couponClick:function(){
-            alert(0)
-            console.log(userName)
-            $.ajax({
-                    url: "/fanbei-web/pickCoupon",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        userName: userName
-                    },
-                    success: function(returnData){
-                        
-                    },
-                    error: function(){
-                        requestMsg("请求失败");
+        couponClick:function(e){
+            let self=this;
+            var couponId=e.couponId;
+            var shopUrl=e.shopUrl; 
+            if(e.isDraw=='Y'){                 
+                //event.preventDefault();
+                    //去用券
+                    if(shopUrl){
+                        window.location.href=shopUrl;
+                    }else{
+                        console.log(0)
+                        window.location.href="https://www.baidu.com/";
                     }
-               });
+            }else{
+                //点击领券
+                console.log(1)
+                    $.ajax({
+                        url: "/fanbei-web/pickCoupon",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            couponId:couponId
+                        },
+                        success: function(returnData){
+                            if(returnData.success){
+                                //alert(0)
+                               e.isDraw='Y';                           
+                            }else{
+                                var status = returnData.data["status"];
+                                if (status == "USER_NOT_EXIST") { // 用户不存在                                
+                                    window.location.href = returnData.url;
+                                }
+                                if (status == "OVER") { // 优惠券个数超过最大领券个数
+                                    requestMsg(returnData.msg);
+                                    requestMsg("优惠券个数超过最大领券个数");
+                                }
+                                if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                                    requestMsg(returnData.msg);
+                                    $(".couponLi").eq(i).css('display', 'none');
+                                } 
+                            }
+                        },
+                        error: function(){
+                            requestMsg("请求失败");
+                        }
+                    });
+            }                   
+            
         }
+
     }
 })

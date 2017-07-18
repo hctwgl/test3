@@ -15,19 +15,14 @@
         <li v-for="(item,index) in content.couponCategoryList">
             <span @click="liClick(index)">{{item.name}}</span>
         </li>
-        <!-- <li><span>年中大促</span></li>
-        <li><span>数码相机</span></li>
-        <li><span>水果生鲜</span></li>
-        <li><span>家居产品</span></li>
-        <li><span>母婴玩具</span></li> -->
     </ul>
 </div>
 <div id="content">
    <div class="banner">图片</div>
    <div id="tabCont">
        <ul class="contList">
-           <li v-for="items in content.couponCategoryList" @click="couponClick()">
-              <div class="everyCont" v-for="item in items.couponInfoList">
+           <li v-for="items in content.couponCategoryList">
+              <div v-if="item.isOver==='N'" class="everyCont" v-for="item in items.couponInfoList" @click="couponClick(item)">
                  <div class="left">
                      <p>￥<span>{{item.amount}}</span></p>
                      <p>{{item.useRule}}</p>
@@ -42,10 +37,31 @@
                      <p>{{item.useRange}}</p>
                      <p>{{item.name}}</p>
                      <p>{{item.start}}-{{item.end}}</p>
-                     <p>点我领取</p>
+                     <p class="clickMe" v-if="item.isDraw==='N'">点我领取</p>
+                     <p class="clickMe01" v-if="item.isDraw==='Y'">去用券</p>             
                      <p v-if="item.state==='timeOver'"></p>
                  </div>
-              </div>  
+              </div>
+              <!--已领完-->
+              <div v-if="item.isOver==='Y'" class="everyCont" v-for="item in items.couponInfoList">
+                 <div class="left">
+                     <p style="color:#d8d8d8">￥<span>{{item.amount}}</span></p>
+                     <p style="color:#d8d8d8">{{item.useRule}}</p>
+                 </div>
+                 <div class="right">
+                     <p v-if="item.type==='MOBILE'" style="background:#d8d8d8;color:#fff;">充值券</p>
+                     <p v-if="item.type==='REPAYMENT'" style="background:#d8d8d8;color:#fff;">还款券</p>
+                     <p v-if="item.type==='FULLVOUCHER'" style="background:#d8d8d8;color:#fff;">满减券</p>
+                     <p v-if="item.type==='CASH'" style="background:#d8d8d8;color:#fff;">现金券</p>
+                     <p v-if="item.type==='ACTIVITY'" style="background:#d8d8d8;color:#fff;">会场券</p>
+                     <p v-if="item.type==='FREEINTEREST'" style="background:#d8d8d8;color:#fff;">免息券</p>
+                     <p style="color:#d8d8d8">{{item.useRange}}</p>
+                     <p style="color:#d8d8d8">{{item.name}}</p>
+                     <p style="color:#d8d8d8">{{item.start}}-{{item.end}}</p>              
+                     <p style="color:#d8d8d8;border:1px solid #d8d8d8;">已领完</p>              
+                 </div>
+              </div> 
+              <!--已领完-->   
            </li>
        </ul>
    </div> 
