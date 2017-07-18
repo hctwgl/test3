@@ -49,7 +49,7 @@ public class AppH5TradeController extends BaseController {
             return;
         }
 
-        FanbeiWebContext context = new FanbeiWebContext();
+        FanbeiWebContext context = null;
         try {
             context = doWebCheck(request, true);
         } catch (Exception e) {
