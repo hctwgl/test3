@@ -62,7 +62,6 @@ public class AppH5ConponController extends BaseController {
     public String couponCategoryInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
     		FanbeiWebContext context = doWebCheck(request, false);
-    		String userName = context.getUserName();
     		JSONObject jsonObj = new JSONObject();
     		// 获取Banner信息
     		List<AfResourceDo> bannerInfoList = afResourceService.getConfigByTypes(ResourceType.COUPON_CENTER_BANNER.getCode());
@@ -79,7 +78,6 @@ public class AppH5ConponController extends BaseController {
     		for(AfCouponCategoryDo afCouponCategoryDo: afCouponCategoryList) {
     			Map<String,Object> couponCategoryMap = new HashMap<String,Object>();
     			couponCategoryMap.put("name", afCouponCategoryDo.getName());
-    			
     			List <Map<String,Object>> couponInfoList = new ArrayList<Map<String,Object>>();
     			String coupons = afCouponCategoryDo.getCoupons();
     			JSONArray array = (JSONArray) JSONArray.parse(coupons);
@@ -96,14 +94,15 @@ public class AppH5ConponController extends BaseController {
         			couponInfoMap.put("gmtStart", afCouponDo.getGmtStart().getTime());
         			couponInfoMap.put("gmtEnd", afCouponDo.getGmtEnd().getTime());
         			couponInfoMap.put("currentTime", System.currentTimeMillis());
-        			if(userName == null || "".equals(userName)) {
+        			if (!context.isLogin()) {
         				couponInfoMap.put("isDraw", "N");
         			} else {
         				// 获取用户信息
+        				String userName = context.getUserName();
             			AfUserDo user = afUserService.getUserByUserName(userName);
             			// 判断是否领取优惠券
             			int userCouponCount = afUserCouponService.getUserCouponByUserIdAndCouponId(user.getRid(), Long.parseLong(couponId));
-            			if(userCouponCount > 0){
+            			if(userCouponCount < afCouponDo.getLimitCount()){
             				couponInfoMap.put("isDraw", "Y");
             			} else {
             				couponInfoMap.put("isDraw", "N");
