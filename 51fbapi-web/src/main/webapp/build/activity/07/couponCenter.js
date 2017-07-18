@@ -97,7 +97,7 @@ let vm = new Vue({
                     }
                 }else{
                     //点击领券
-                    console.log(1)
+                    //console.log(1)
                         $.ajax({
                             url: "/fanbei-web/pickCoupon",
                             type: "POST",
@@ -107,7 +107,7 @@ let vm = new Vue({
                             },
                             success: function(returnData){
                                 if(returnData.success){
-                                    //alert(0)
+                                   requestMsg("优惠劵领取成功");
                                    e.isDraw='Y';                           
                                 }else{
                                     var status = returnData.data["status"];
