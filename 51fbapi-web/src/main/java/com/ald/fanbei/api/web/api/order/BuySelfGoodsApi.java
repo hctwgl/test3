@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -37,6 +38,7 @@ import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -63,6 +65,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfGoodsPriceService afGoodsPriceService;
     @Resource
     AfSchemeGoodsService afSchemeGoodsService;
+    @Resource
+    AfUserAccountService afUserAccountService;
 
     @Resource
     AfInterestFreeRulesService afInterestFreeRulesService;
@@ -133,8 +137,18 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		
+		String isEnoughAmount = "Y";
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+		if (useableAmount.compareTo(actualAmount) < 0) {
+			isEnoughAmount = "N";
+		}
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("orderId", afOrder.getRid());
+		data.put("isEnoughAmount", isEnoughAmount);
+		
+
 		resp.setResponseData(data);
 		return resp;
 	}
