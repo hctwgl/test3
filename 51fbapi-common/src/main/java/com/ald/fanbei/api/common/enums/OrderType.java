@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.common.enums;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,13 +19,16 @@ public enum OrderType {
 	AGENTBUY("AGENTBUY", "代买订单","DM"),
 	SELFSUPPORT("SELFSUPPORT", "自营商品订单","SG"),
 
-	BOLUOME("BOLUOME", "菠萝觅","BL");
+	BOLUOME("BOLUOME", "菠萝觅","BL"),
+
+    TRADE("TRADE", "商圈订单", "TR");
     
     private String code;
     private String name;
     private String shortName;
 
     private static Map<String,InterestType> codeRoleTypeMap = null;
+    private static List<String> needRecordPayFailCodes = null;
 
     OrderType(String code, String name,String shortName) {
         this.code = code;
@@ -40,6 +45,17 @@ public enum OrderType {
         return null;
     }
 
+    public static List<String> getNeedRecordPayFailCodes(){
+        if(needRecordPayFailCodes != null && needRecordPayFailCodes.size() > 0){
+            return needRecordPayFailCodes;
+        }
+        needRecordPayFailCodes = new ArrayList<String>();
+        for(InterestType item:InterestType.values()){
+        	needRecordPayFailCodes.add(item.getCode());
+        }
+        return needRecordPayFailCodes;
+    }
+    
     
     public static Map<String,InterestType> getCodeRoleTypeMap(){
         if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
