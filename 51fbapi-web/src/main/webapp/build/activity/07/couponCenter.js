@@ -73,7 +73,7 @@ let vm = new Vue({
             });
         },
         liClick:function(index){
-            console.log(index);
+            //console.log(index);
             $('.navList li').eq(index).find('span').addClass('border');
             $('.navList li').eq(index).siblings().find('span').removeClass('border');
             $('.contList').find('li').eq(index).show().siblings().hide();         
@@ -85,7 +85,7 @@ let vm = new Vue({
             var couponType=e.type;
             //只有现金券、满减券、会场券时，券状态有去用券 可点击跳转 其他不可
             if(couponType=='FULLVOUCHER' || couponType=='CASH' || couponType=='ACTIVITY'){
-                if(e.isDraw=='Y'){                 
+                if(e.isDraw=='N'){                 
                 //event.preventDefault();
                     //去用券
                     if(shopUrl){
@@ -108,7 +108,7 @@ let vm = new Vue({
                             success: function(returnData){
                                 if(returnData.success){
                                    requestMsg("优惠劵领取成功");
-                                   e.isDraw='Y';                           
+                                   e.isDraw='N';                           
                                 }else{
                                     var status = returnData.data["status"];
                                     if (status == "USER_NOT_EXIST") { // 用户不存在                                

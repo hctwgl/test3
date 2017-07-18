@@ -18,7 +18,7 @@
     </ul>
 </div>
 <div id="content">
-   <div class="banner">图片</div>
+   <div class="banner"><img :src="content.bannerImage"></div>
    <div id="tabCont">
        <ul class="contList">
            <li v-for="items in content.couponCategoryList">
@@ -36,8 +36,8 @@
                      <p>{{item.useRange}}</p>
                      <p>{{item.name}}</p>
                      <p>{{item.start}}-{{item.end}}</p>
-                     <p class="clickMe" v-if="item.isDraw==='N'">点我领取</p>
-                     <p class="clickMe01" v-else-if="item.isDraw==='Y'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">去用券</p>
+                     <p class="clickMe" v-if="item.isDraw==='Y'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">点我领取</p>
+                     <p class="clickMe01" v-else-if="item.isDraw==='N'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">去用券</p>
                      <p class="clickMe01" v-else>已领券</p>             
                      <p v-if="item.state==='timeOver'"></p>
                  </div>
