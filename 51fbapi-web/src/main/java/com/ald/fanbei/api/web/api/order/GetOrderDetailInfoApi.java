@@ -184,7 +184,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 			vo.setNperAmount(afBorrowDo.getNperAmount());
 		}else{
 			vo.setInstallmentInfo("");
-			vo.setNper(0);
+			vo.setNper(order.getNper());
 			vo.setNperAmount(BigDecimal.ZERO);
 		}
 			
