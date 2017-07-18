@@ -15,10 +15,10 @@
 " alt="">
             <span>商家名称xxxxx名称</span>
         </div>
-        <div class="blank"> 
+        <div class="blank">
             <form action="#">
-                <input class="paymoney" type="text" placeHolder="付款金额">
-                <span>￥200</span>
+                <input class="paymoney" type="text" placeHolder="￥200">
+                <span>付款金额</span>
             </form>
         </div>
         <div class="fukuan clearfix">

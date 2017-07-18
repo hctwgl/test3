@@ -42,14 +42,21 @@ public class AppH5TradeController extends BaseController {
             return;
         }
 
-        bid = AesUtil.decrypt(bid, Constants.TRADE_AES_DECRYPT_PASSWORD);
+        bid = AesUtil.decryptFromBase64(bid, Constants.TRADE_AES_DECRYPT_PASSWORD);
         AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getById(Long.parseLong(bid));
         if (afTradeBusinessInfoDo == null) {
             model.put("isLogin", "no");
             return;
         }
 
-        FanbeiWebContext context = doWebCheck(request, true);
+        FanbeiWebContext context = null;
+        try {
+            context = doWebCheck(request, true);
+        } catch (Exception e) {
+            model.put("isLogin", "no");
+            return;
+        }
+
         if (!context.isLogin()) {
             model.put("isLogin", "no");
             return;

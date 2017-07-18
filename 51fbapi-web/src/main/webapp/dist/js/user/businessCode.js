@@ -1,2 +1,2 @@
-"use strict";
+"use strict";var bid=getUrl("d0pmttf8U7MI/D4DoHN7Brw"),vm=new Vue({el:"#businessCode",data:{content:{}},created:function(){this.logData()},methods:{logData:function logData(){var self=this;$.ajax({type:"post",url:"/fanbei-web/initTradeInfo",data:{bid:bid},success:function success(data){console.log(data),self.content=eval("("+data+")"),self.content=self.content.data,console.log(self.content)},error:function(){requestMsg("请求失败")}})}}});
 //# sourceMappingURL=../../_srcmap/js/user/businessCode.js.map
