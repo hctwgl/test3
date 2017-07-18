@@ -95,7 +95,7 @@ public class AppH5ConponController extends BaseController {
         			couponInfoMap.put("gmtEnd", afCouponDo.getGmtEnd().getTime());
         			couponInfoMap.put("currentTime", System.currentTimeMillis());
         			if (!context.isLogin()) {
-        				couponInfoMap.put("isDraw", "N");
+        				couponInfoMap.put("isDraw", "Y");
         			} else {
         				// 获取用户信息
         				String userName = context.getUserName();
@@ -116,7 +116,8 @@ public class AppH5ConponController extends BaseController {
         			} else {
         				couponInfoMap.put("isOver", "N");
         			}
-        			// FIXME 判断优惠券分组在哪个专场中
+        			
+        			
         			couponInfoList.add(couponInfoMap);
         		}
         		couponCategoryMap.put("couponInfoList", couponInfoList);
