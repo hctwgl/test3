@@ -177,7 +177,9 @@
 		WHERE
 			is_delete=0 
 		AND 
-			card_number = #{cardNumber} 
+			card_number = #{cardNumber}
+		AND 
+			status = 'B'		
 	</select>
 	
 </mapper>

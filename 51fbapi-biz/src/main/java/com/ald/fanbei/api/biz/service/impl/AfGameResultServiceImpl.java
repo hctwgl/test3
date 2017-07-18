@@ -383,6 +383,11 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		return addGameResult(gameId,user,borrowId + "","","",couponId,lotteryResult);
 	}
 	
+	@Override
+	public AfGameResultDo addGameResult(Long gameId, AfUserDo user,String type, long couponId, String lotteryResult) {
+		return addGameResult(gameId,user,type,"","",couponId,lotteryResult);
+	}
+	
 	/**
 	 * 增加抓娃娃中奖结果
 	 * @param gameId 游戏id
@@ -420,5 +425,6 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 		return afGameResultDao.getTearPacketLatestRecord();
 	}
 
+	
 	
 }

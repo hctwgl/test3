@@ -20,14 +20,6 @@ let vue=new Vue({
                 url='pickCoupon';
                 postData={couponId:data};
             }
-            // $.ajax({
-            //     url:'/fanbei-web/'+url,
-            //     type:'post',
-            //     data:postData,
-            //     success:function (data) {
-            //         requestMsg(data.msg)
-            //     }
-            // });
             Vue.http.options.emulateJSON = true;
             self.$http.post("/fanbei-web/"+url,postData).then(function(res){
                 res=eval('(' + res.data + ')');
@@ -45,9 +37,13 @@ let vue=new Vue({
                 console.log(response)
             })
         },
-        buyNow(id){
+        buyNow(item){
             let self=this;
-            window.location.href=self.tableContent.notifyUrl+'&params={"goodsId":"'+id+'"}'
+            if (item.source=="SELFSUPPORT"){
+                window.location.href=self.tableContent.notifyUrl+'&params={"privateGoodsId":"'+item.goodsId+'"}'
+            }else{
+                window.location.href=self.tableContent.notifyUrl+'&params={"goodsId":"'+item.goodsId+'"}'
+            }
         },
         txtFix(i){
             function cut_str(str,len){
@@ -80,11 +76,9 @@ let vue=new Vue({
                     console.log(self.tableContent)
                 }
             });
-
             self.$http.post("/fanbei-web/newUserGift").then(function(res){
                 self.content = eval('(' + res.data + ')');
                 self.content = self.content.data;
-                console.log(self.content);
             },function (response) {
                 requestMsg("请求失败");
             })

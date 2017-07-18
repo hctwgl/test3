@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
@@ -58,8 +59,8 @@ public class AppH5ConponController extends BaseController {
 	@ResponseBody
     public String couponCategoryInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
-    		//FanbeiWebContext context = doWebCheck(request, false);
-    		String userName = null ;// context.getUserName();
+    		FanbeiWebContext context = doWebCheck(request, false);
+    		String userName = context.getUserName();
     		JSONObject jsonObj = new JSONObject();
     		// 查询所有优惠券分类
     		List<AfCouponCategoryDo> afCouponCategoryList = afCouponCategoryService.listAllCouponCategory();
@@ -75,6 +76,7 @@ public class AppH5ConponController extends BaseController {
         			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
         			String couponId = (String)array.getString(i);
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			couponInfoMap.put("couponId", afCouponDo.getRid());
         			couponInfoMap.put("name", afCouponDo.getName());
         			couponInfoMap.put("useRule", afCouponDo.getUseRule());
         			couponInfoMap.put("type", afCouponDo.getType());

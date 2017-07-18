@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017070604")
+	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
+	<meta charset="UTF-8">
+	<title>美食暑假大放价</title>
+	<style type="text/css">
+		.couponsList{
+			position: relative;
+			width: 100%;
+			height: 5.8rem;
+			background-image: url("$commonUrl/elmCouponsHome5.png");
+			-webkit-background-size: cover;
+			background-size: cover;
+		}
+		.couponsList p{
+			width: 100%;
+			height: 1.45rem;
+			margin-bottom: 0.2rem;
+		}
+		.couponsList p:first-child{
+			padding-top: 0.45rem;
+		}
+		.couponsRule{
+			width: 100%;
+			height: 8.0rem;
+			background-image: url("$commonUrl/elmCouponsHome6.png");
+			-webkit-background-size: cover;
+			background-size: cover;
+		}
+		.couponsRule span{
+			width: 100%;
+			height: 0.8rem;
+			margin-top: 0.38rem;
+		}
+	</style>
+</head>
+<body>
+	<div class="elmCouponsHome" id="elmCouponsHome">
+		<img src="$commonUrl/elmCouponsHome4.png">
+		<div class="couponsList">
+			<p @click="boluomiCoupons(8486)"></p>
+			<p @click="boluomiCoupons(8487)"></p>
+			<p @click="boluomiCoupons(8488)"></p>
+		</div>
+		<div class="couponsRule"><span @click="boluomiHome(10)"></span></div>
+	</div>
+	<script type="text/javascript" src="/dist/activity/07/elmCouponsHome.js?version=$version"></script>
+</body>
+</html>
