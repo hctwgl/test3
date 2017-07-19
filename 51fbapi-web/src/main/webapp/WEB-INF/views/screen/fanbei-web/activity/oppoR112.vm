@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017071902")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
+    <title>oppoR11 Plus 新品上市</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/07/oppoR11.css?version=$version">
+</head>
+<body>
+    <div id="oppoR11">
+        <div class="banner">
+            <img src="$commonUrl/oppo1.png">
+            <ul class="oppoList">
+                <li v-for='i of 2' @click="oppoList(i)" :class="show[i-1]? 'item'+i:'item'"></li>
+            </ul>
+            <a :href="url" class="byBtn"></a>
+        </div>
+        <p class="line"></p>
+        <p class="title">R和A系列-自拍颜值满分King</p>
+        <ul class="goodsList clearfix">
+            <li v-for="item in goodsMobileListMap.recommendGoodsList" @click="goGoodsDetail(item.goodsId)">
+                <img :src="item.goodsIcon">
+                <div class="goodsListContent">
+                    <p class="goodsListTitle">{{item.goodName}}</p>
+                    <p class="remark">{{item.remark}}</p>
+                    <div class="priceWrap">
+                        <span class="saleAmount">¥{{item.saleAmount}}</span>
+                        <span class="rebateAmount"><i></i>{{item.rebateAmount}}</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript" src="/dist/activity/07/oppoR112.js?version=$version"></script>
+</body>
+</html>
