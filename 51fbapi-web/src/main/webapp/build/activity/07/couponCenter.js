@@ -59,7 +59,6 @@ let vm = new Vue({
                              }else{
                                 state='noTimeOver';
                              }
-                             console.log(h)
                              couponCategory.couponInfoList[j].state=state;
                              //排序                            
                              for(var k = j + 1;k<couponCategory.couponInfoList.length;k++){
