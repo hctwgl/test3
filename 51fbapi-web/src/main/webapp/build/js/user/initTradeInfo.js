@@ -13,7 +13,7 @@ if(isLogin=='no'){
 }
 function buyNow(){
       var amount=$('.paymoney').val();
-         window.location.href='/fanbei-web/opennative?name=APP_PAY&params={"tradeAmount":"'+amount+'"&tradeId":"'+id+'"&tradeName":"'+name+'"}';
+         window.location.href='/fanbei-web/opennative?name=APP_TRADE_PAY&params={"tradeAmount":"'+amount+'"&tradeId":"'+id+'"&tradeName":"'+name+'"}';
 }
 function btn() {
     $('.btn').show();
