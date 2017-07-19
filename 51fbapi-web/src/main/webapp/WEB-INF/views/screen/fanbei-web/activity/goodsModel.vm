@@ -45,7 +45,12 @@
     .productImg{width:2.92rem;height:2.92rem;float:left;}
     .productList li .productRight{width:3.6rem;float:left;padding:.55rem 0 0 6%;}
     .productList li p{display: inline-block;}
-    .productList li .productRight .productDes{font-size: .3rem;line-height: .38rem;}
+    .productList li .productRight .productDes{
+        font-size: .3rem;
+        height: 0.8rem;
+        line-height: .38rem;
+        overflow: hidden;
+    }
 
     .productList li .productRight .buyPrice{height:.38rem;line-height: .38rem;
         font-size:.28rem;color:#999999;}
