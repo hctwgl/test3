@@ -965,8 +965,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
+					//菠萝觅，临时增加CLOSED订单：因为额度支付可能会先关闭订单
 					if (orderInfo == null 
-   						 || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
+   						 || (!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode()) 
+   								 &&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
+   								 && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
 						return 0;
 					}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
