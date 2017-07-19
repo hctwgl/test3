@@ -609,6 +609,7 @@ public class RiskUtil extends AbstractThird {
 		if (!result.equals("10")) {
 			resultMap.put("success", false);
 			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
+			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			
 			//如果不是因为逾期还款给拒绝的，直接关闭订单
 //			String rejectCode = verifybo.getRejectCode();
@@ -642,8 +643,7 @@ public class RiskUtil extends AbstractThird {
 				}
 				jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 //			}
-			throw new FanbeiException("risk verify error", FanbeiExceptionCode.RISK_VERIFY_ERROR);
-			//return resultMap;
+			return resultMap;
 		}
 //		resultMap.put("success", true);
 		
