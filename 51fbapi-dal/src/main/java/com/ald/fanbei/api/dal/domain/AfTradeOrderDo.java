@@ -4,14 +4,14 @@ import com.ald.fanbei.api.common.AbstractSerial;
 import java.util.Date;
 
 /**
- * 商圈订单扩展表实体
- * 
+ * 商圈商户提现记录表实体
+ *
  * @author huyang
  * @version 1.0.0 初始化
- * @date 2017-07-14 16:46:31
+ * @date 2017-07-19 09:30:13
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- public class AfTradeOrderDo extends AbstractSerial {
+public class AfTradeOrderDo extends AbstractSerial {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,7 +21,7 @@ import java.util.Date;
     private Long orderId;
 
     /**
-     * 
+     *
      */
     private Date gmtModified;
 
@@ -37,14 +37,9 @@ import java.util.Date;
     private String refundType;
 
     /**
-     * 退款状态：NEW:新建 REFUNDING:退款中 FAIL:退款失败 FINISH:退款完成
+     * 状态：NEW:新建 REFUNDING:退款中 REFUND:退款 EXTRACT:提现 EXTRACTING:提现中
      */
-    private String refundStatus;
-
-    /**
-     * 
-     */
-    private Double refundAmount;
+    private String status;
 
 
     /**
@@ -53,34 +48,34 @@ import java.util.Date;
      * @return 订单ID
      */
     public Long getOrderId(){
-      return orderId;
+        return orderId;
     }
 
     /**
      * 设置订单ID
-     * 
+     *
      * @param orderId 要设置的订单ID
      */
     public void setOrderId(Long orderId){
-      this.orderId = orderId;
+        this.orderId = orderId;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
     public Date getGmtModified(){
-      return gmtModified;
+        return gmtModified;
     }
 
     /**
      * 设置
-     * 
+     *
      * @param gmtModified 要设置的
      */
     public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
+        this.gmtModified = gmtModified;
     }
 
 
@@ -90,16 +85,16 @@ import java.util.Date;
      * @return 商户id
      */
     public Long getBusinessId(){
-      return businessId;
+        return businessId;
     }
 
     /**
      * 设置商户id
-     * 
+     *
      * @param businessId 要设置的商户id
      */
     public void setBusinessId(Long businessId){
-      this.businessId = businessId;
+        this.businessId = businessId;
     }
 
     /**
@@ -108,52 +103,34 @@ import java.util.Date;
      * @return 退款类型：U:商户退款，P:系统退款
      */
     public String getRefundType(){
-      return refundType;
+        return refundType;
     }
 
     /**
      * 设置退款类型：U:商户退款，P:系统退款
-     * 
+     *
      * @param refundType 要设置的退款类型：U:商户退款，P:系统退款
      */
     public void setRefundType(String refundType){
-      this.refundType = refundType;
+        this.refundType = refundType;
     }
 
     /**
-     * 获取退款状态：NEW:新建 REFUNDING:退款中 FAIL:退款失败 FINISH:退款完成
+     * 获取状态：NEW:新建 REFUNDING:退款中 REFUND:退款 EXTRACT:提现 EXTRACTING:提现中
      *
-     * @return 退款状态：NEW:新建 REFUNDING:退款中 FAIL:退款失败 FINISH:退款完成
+     * @return 状态：NEW:新建 REFUNDING:退款中 REFUND:退款 EXTRACT:提现 EXTRACTING:提现中
      */
-    public String getRefundStatus(){
-      return refundStatus;
+    public String getStatus(){
+        return status;
     }
 
     /**
-     * 设置退款状态：NEW:新建 REFUNDING:退款中 FAIL:退款失败 FINISH:退款完成
-     * 
-     * @param refundStatus 要设置的退款状态：NEW:新建 REFUNDING:退款中 FAIL:退款失败 FINISH:退款完成
-     */
-    public void setRefundStatus(String refundStatus){
-      this.refundStatus = refundStatus;
-    }
-
-    /**
-     * 获取
+     * 设置状态：NEW:新建 REFUNDING:退款中 REFUND:退款 EXTRACT:提现 EXTRACTING:提现中
      *
-     * @return 
+     * @param status 要设置的状态：NEW:新建 REFUNDING:退款中 REFUND:退款 EXTRACT:提现 EXTRACTING:提现中
      */
-    public Double getRefundAmount(){
-      return refundAmount;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param refundAmount 要设置的
-     */
-    public void setRefundAmount(Double refundAmount){
-      this.refundAmount = refundAmount;
+    public void setStatus(String status){
+        this.status = status;
     }
 
 }
