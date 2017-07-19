@@ -58,6 +58,7 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
 
     private AfOrderVo getOrderVo(AfOrderDo order, FanbeiContext context) {
         AfOrderVo vo = new AfOrderVo();
+        vo.setGmtCreate(order.getGmtCreate());
         vo.setOrderNo(order.getOrderNo());
         vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
         vo.setActualAmount(order.getActualAmount());
@@ -70,6 +71,7 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
             //订单状态为取消
             if(afOrderRefundDo == null) {
                 vo.setOrderStatus("CANCEL");
+                vo.setGmtClosed(order.getGmtClosed());
             }
             else {
                 vo.setRefundTime(DateUtil.formatDateToYYYYMMddHHmmss(afOrderRefundDo.getGmtModified()));
@@ -79,15 +81,9 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
         }
         //查询分期信息
         AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(order.getRid());
-        if(afBorrowDo!=null){
+        if(afBorrowDo != null){
             //分期信息设置 ¥300.00X12期
             vo.setInstallmentInfo(NumberUtil.format2Str(afBorrowDo.getNperAmount())+"X"+afBorrowDo.getNper()+"期");
-            vo.setNper(afBorrowDo.getNper());
-            vo.setNperAmount(afBorrowDo.getNperAmount());
-        }else{
-            vo.setInstallmentInfo("");
-            vo.setNper(order.getNper());
-            vo.setNperAmount(BigDecimal.ZERO);
         }
         List<AfTradeBusinessInfoDto> list = afTradeBusinessInfoService.getByOrderId(order.getRid());
         if(list != null && list.size() > 0) {
