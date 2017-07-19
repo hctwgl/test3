@@ -32,6 +32,12 @@ let vm = new Vue({
                              tabWidth=$('#tabNav').width();
                              liWidth=tabWidth/liLength;
                              $('.navList').find('li').width(liWidth);                        
+                        }else{
+                             tabWidth=$('#tabNav').width();
+                             liWidth=tabWidth/5;
+                             ulWidth=liWidth*liLength;
+                             $('.navList').find('li').width(liWidth);
+                             $('.navList').width(ulWidth); 
                         }
                     })
                     //计算有效期与是否过期
@@ -53,6 +59,7 @@ let vm = new Vue({
                              }else{
                                 state='noTimeOver';
                              }
+                             console.log(h)
                              couponCategory.couponInfoList[j].state=state;
                              //排序                            
                              for(var k = j + 1;k<couponCategory.couponInfoList.length;k++){
@@ -95,13 +102,10 @@ let vm = new Vue({
             var couponType=e.type;
             //只有现金券、满减券、会场券时，券状态有去用券 可点击跳转 其他不可
                 if(e.isDraw=='N' && (couponType=='FULLVOUCHER' || couponType=='CASH' || couponType=='ACTIVITY')){                 
-                //event.preventDefault();
                     //去用券
                     if(shopUrl){
                         window.location.href=shopUrl;
                     }else{
-                        //alert(0)
-                        //window.location.href="https://www.baidu.com/";
                         window.location.href='/fanbei-web/opennative?name=APP_HOME';
                     }
                 }else if(e.isDraw=='Y'){
