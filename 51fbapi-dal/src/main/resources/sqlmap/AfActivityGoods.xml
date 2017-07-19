@@ -14,7 +14,7 @@
 	
 	<sql id="goodsSqlField">
 		g.id rid,g.gmt_create,g.gmt_modified,g.creator,g.modifier,g.name,g.goods_icon,g.goods_url,g.thumbnail_icon,g.open_id,g.num_id,g.price_amount,g.sale_amount,g.primary_category_id,
-		g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,g.commission_amount,g.commission_rate,g.tags,g.interest_tags
+		g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,g.commission_amount,g.commission_rate,g.tags,g.interest_tags,g.remark
 	</sql>
 	
 	<select id="listActivityGoodsByActivityId" resultType="AfActivityGoodsDto" parameterType="java.lang.Long">
