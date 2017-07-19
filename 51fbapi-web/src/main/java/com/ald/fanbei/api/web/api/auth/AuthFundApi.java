@@ -32,21 +32,21 @@ public class AuthFundApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		
-		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FUNCTION_REPAIRING_ERROR);
+//		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FUNCTION_REPAIRING_ERROR);
 		
-//		Long userId = context.getUserId();
-//		
-//		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
-//		
-//		String idNumber = afUserAccountDo.getIdNumber();
-//		
-//		String riskOrderNo = riskUtil.getOrderNo("fund", idNumber.substring(idNumber.length() - 4, idNumber.length()));
-//		
-//		StringBuffer transPara = new StringBuffer();
-//		transPara.append(riskOrderNo).append(",").append(userId);
-//		
-//		resp.addResponseData("transPara", transPara);
-//		return resp;
+		Long userId = context.getUserId();
+		
+		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+		
+		String idNumber = afUserAccountDo.getIdNumber();
+		
+		String riskOrderNo = riskUtil.getOrderNo("fund", idNumber.substring(idNumber.length() - 4, idNumber.length()));
+		
+		StringBuffer transPara = new StringBuffer();
+		transPara.append(riskOrderNo).append(",").append(userId);
+		
+		resp.addResponseData("transPara", transPara);
+		return resp;
 	}
 
 }
