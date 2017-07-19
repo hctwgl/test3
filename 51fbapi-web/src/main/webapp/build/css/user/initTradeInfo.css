@@ -1,0 +1,104 @@
+body {
+  background-color: #FAFAFA;
+  position: relative;
+}
+* {
+  box-sizing: border-box;
+}
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+#businessCode .businessName {
+  text-align: center;
+  margin-top: 0.34rem;
+}
+#businessCode .businessName .shangjia {
+  width: 0.798rem;
+  height: 0.798rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+#businessCode .businessName span {
+  font-size: 0.3rem;
+  color: black;
+  margin-left: 0.12rem;
+  font-family: "Helvetica";
+  font-weight: 600;
+}
+#businessCode .blank {
+  width: 6.8rem;
+  height: 1.08rem;
+  line-height: 1.08rem;
+  border: 0.02px solid #979797;
+  margin-top: 0.62rem;
+  margin-left: 0.38rem;
+  border-radius: 0.08rem;
+  text-align: center;
+  background: white;
+  position: relative;
+}
+#businessCode .blank input {
+  display: inline-block;
+  font-size: 0.56rem;
+  padding: 0 0.1rem 0 0;
+  text-align: right;
+  position: absolute;
+  right: 0;
+  bottom: 0.16rem;
+  width: 75%;
+}
+#businessCode .blank input:-ms-input-placeholder {
+  color: #000 !important;
+}
+#businessCode .blank span {
+  position: absolute;
+  font-size: 0.32rem;
+  left: 0.4rem;
+  color: #9B9B9B;
+}
+#businessCode .fukuan .fukuan-one {
+  margin-top: 0.46rem;
+}
+.pro-word {
+  display: none;
+  color: #79c0ff;
+  margin-right: .4rem;
+  float: right;
+}
+#businessCode .fukuan .fukuan-one img {
+  width: 0.48rem;
+  height: 0.48rem;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.36rem;
+}
+#businessCode .fukuan .fukuan-one .xinyong {
+  font-size: 0.3rem;
+  font-family: "PingFangSC-Regular";
+  font-weight: 600;
+}
+#businessCode .fukuan .edu {
+  font-size: 0.24rem;
+  color: #9B9B9B ;
+  margin-left: 0.74rem;
+}
+#businessCode .fukuan .edu .money {
+  color: #F0887F;
+}
+#businessCode .fukuan .btn {
+  width: 6rem;
+  height: 0.96rem;
+  border-radius: 4px;
+  background-color: #FE963B ;
+  display: none;
+  font-size: 0.36rem;
+  color: white;
+  position: absolute;
+  left: 50%;
+  bottom: -80%;
+  transform: translateX(-50%) translateY(-50%);
+}

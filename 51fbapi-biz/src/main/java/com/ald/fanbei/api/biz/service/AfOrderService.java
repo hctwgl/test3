@@ -166,11 +166,17 @@ public interface AfOrderService {
 	Map<String,Object> payBrandOrderOld(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress);
 	
 	/**
-	 * 处理菠萝觅回调订单 
+	 * 处理菠萝觅回调订单 成功
 	 * @param payOrderNo
 	 * @param tradeNo
 	 */
 	int dealBrandOrderSucc(String payOrderNo, String tradeNo, String payType);
+	/**
+	 * 处理菠萝觅回调订单 失败
+	 * @param payOrderNo
+	 * @param tradeNo
+	 */
+	int dealBrandOrderFail(String payOrderNo, String tradeNo, String payType);
 	
 	/**
 	 * 
@@ -239,5 +245,12 @@ public interface AfOrderService {
 	 * @return
 	 */
 	public String isCanApplyAfterSale(Long orderId);
+
+	/**
+	 * 获取订单详情
+	 * @param rid
+	 * @return
+	 */
+	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo);
 }
 

@@ -15,6 +15,8 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
@@ -30,13 +32,13 @@ public class CancelAgentBuyOrder implements ApiHandle {
 
 	@Resource
 	AfAgentOrderService afAgentOrderService;
-	
 	@Resource
 	AfOrderService afOrderService;
 	@Resource
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfGoodsPriceService afGoodsPriceService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -45,49 +47,57 @@ public class CancelAgentBuyOrder implements ApiHandle {
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), 0);
 		String cancelReason = ObjectUtils.toString(requestDataVo.getParams().get("cancelReason"), null);
 		String cancelDetail = ObjectUtils.toString(requestDataVo.getParams().get("cancelDetail"), null);
+		//参数校验
 		if(0 ==  orderId || StringUtils.isBlank(cancelReason)){
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
-		
-		AfOrderDo afOrderDo = new AfOrderDo();
-		afOrderDo.setStatus("CLOSED");
-		afOrderDo.setRid(orderId);
-		
-		AfOrderDo orderDo = afOrderService.getOrderById(orderId);
-		if (orderDo == null) {
-			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.ORDER_NOT_EXIST);
+		Date currDate = new Date();
+		AfOrderDo currAfOrderDo = afOrderService.getOrderById(orderId);
+		//订单校验
+		if(currAfOrderDo == null){
+			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
 		}
-		afGoodsPriceService.updateStockAndSaleByPriceId(orderDo.getGoodsPriceId(), false);
+		if(OrderStatus.CLOSED.getCode().equals(currAfOrderDo.getStatus())){
+			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ORDER_HAVE_CLOSED);
+		}
 		
-		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
-		afAgentOrderDo.setOrderId(orderId);
-		afAgentOrderDo.setCancelReason(cancelReason);
-		afAgentOrderDo.setCancelDetail(cancelDetail);
-		afAgentOrderDo.setGmtClosed(new Date());
-		
-		
-		if(afOrderService.updateOrder(afOrderDo) > 0){
-			AfAgentOrderDo agOrder= afAgentOrderService.getAgentOrderByOrderId(orderId);
-          //恢复使用优惠券
-			if(agOrder.getCouponId()>0){
-	            AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(agOrder.getCouponId());
-	
-	            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
-	            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
-	            		afUserCouponService.updateUserCouponSatusNouseById(agOrder.getCouponId());
-	            }
-	            else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
-	        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
-	        		afUserCouponService.updateUserCouponSatusExpireById(agOrder.getCouponId());
-	        	}
-			}
-		
-			if(afAgentOrderService.updateAgentOrder(afAgentOrderDo) > 0){
-
+		try {
+			AfOrderDo afOrderDo = new AfOrderDo();
+			afOrderDo.setStatus(OrderStatus.CLOSED.getCode());
+			afOrderDo.setRid(orderId);
+			afOrderDo.setCancelReason(cancelReason);
+			afOrderDo.setCancelDetail(cancelDetail);
+			afOrderDo.setGmtClosed(currDate);
+			
+			if(afOrderService.updateOrder(afOrderDo) > 0){
+				//更新库存
+				afGoodsPriceService.updateStockAndSaleByPriceId(currAfOrderDo.getGoodsPriceId(), false);
+				
+				//优惠券处理
+				if(currAfOrderDo.getUserCouponId()>0){
+					AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(currAfOrderDo.getUserCouponId());
+		            if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+		            		couponDo.setStatus(CouponStatus.NOUSE.getCode());
+		            		afUserCouponService.updateUserCouponSatusNouseById(currAfOrderDo.getUserCouponId());
+		            }else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+		        		couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+		        		afUserCouponService.updateUserCouponSatusExpireById(currAfOrderDo.getUserCouponId());
+		        	}
+				}
+				//区分代买和非代买
+				if(OrderType.AGENTBUY.getCode().equals(currAfOrderDo.getOrderType())){
+					AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
+					afAgentOrderDo.setOrderId(orderId);
+					afAgentOrderDo.setCancelReason(cancelReason);
+					afAgentOrderDo.setCancelDetail(cancelDetail);
+					afAgentOrderDo.setGmtClosed(currDate);
+					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+				}
 				return resp;
 			}
+		} catch (Exception e) {
+			logger.error("cancelOrder request error,orderId="+orderId,e);
 		}
-		
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 	}
 

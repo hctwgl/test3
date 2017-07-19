@@ -184,6 +184,11 @@ public class GetConfirmOrderApi implements ApiHandle {
         	vo.setBankIcon(bankInfo.getBankIcon());
         	vo.setIsValid(bankInfo.getIsValid());
         }
+        String isSupplyCertify = "N";
+        if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
+        	isSupplyCertify = "Y";
+        }
+        vo.setIsSupplyCertify(isSupplyCertify);
 		vo.setTotalAmount(userDto.getAuAmount());
 		BigDecimal usableAmount =  userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
 		vo.setUseableAmount(usableAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : usableAmount);
@@ -191,7 +196,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 		vo.setAllowConsume(afUserAuthService.getConsumeStatus(orderInfo.getUserId(),context.getAppVersion()));
 		vo.setFaceStatus(authDo.getFacesStatus());
 		vo.setIdNumber(Base64.encodeString(userDto.getIdNumber()));
-		
+		vo.setRiskStatus(authDo.getRiskStatus());
 		return vo;
 	}
 	

@@ -73,7 +73,8 @@ public class FanbeiController extends BaseController {
     }
 
     @RequestMapping(value ={
-    	"/order/confirmReceipt","/order/buySelfGoods","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo","/order/cancelAfterSaleApply","/order/afterSaleLogisticSupply","/order/getOrderAfterSaleInfo"
+    	"/order/confirmReceipt","/order/buySelfGoods","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo","/order/cancelAfterSaleApply","/order/afterSaleLogisticSupply","/order/getOrderAfterSaleInfo","/order/insufficientBalance"
+        ,"/order/tradeOrder","/order/getTradeOrderDetailInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String orderRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -84,7 +85,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage",
-    	"/system/getTabbarInfor",
+    	"/system/getTabbarInfor","/resource/getResourceConfig"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -112,7 +113,7 @@ public class FanbeiController extends BaseController {
     @RequestMapping(value = {
     		"/borrow/getCashConfirmInfo","/borrow/applyCash","/borrow/getBorrowHomeInfo","/borrow/getConsumeConfirmInfo","/borrow/applyConsume",
     		"/bill/getMyBillHomeInfo","/bill/getMyBillList","/bill/getBillDetailList","/bill/getBillDetailInfo","/repay/getRepaymentConfirmInfo",
-            "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo","/borrow/getCreditPromoteInfo"
+            "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo","/borrow/getCreditPromoteInfo","/borrow/getOtherPayWay"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -129,12 +130,12 @@ public class FanbeiController extends BaseController {
      * @return
      * @throws IOException
      */
-
 	@RequestMapping(value = { "/auth/authRealname", "/auth/authContacts", "/auth/authCredit", "/auth/authZhima", "/auth/authBankcard", "/auth/checkBankcard", "/auth/getBankList",
 			"/auth/checkBankcardPay", "/auth/authFace", "/auth/authMobile", "/auth/authContactor", "/auth/authLocation", "/auth/authMobileBack", "/auth/getAllowConsume",
 			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi",
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk",
-			"auth/authContactorV1","auth/authContactsV1","auth/authCreditV1","auth/authFaceV1","auth/authRealnameV1","auth/submitIdNumberInfoV1","auth/updateIdCardV1"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
+			"/auth/authSupplyCertify","/auth/authFund","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -173,7 +174,6 @@ public class FanbeiController extends BaseController {
     		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo","/borrowCash/applyRenewal","/borrowCash/confirmRenewalPay","/borrowCash/getRenewalList",
     		"/borrowCash/getRenewalDetail","/borrowCash/getLoanSupermarketList","/loanMarket/accessLoanSupermarket","borrowCash/applyBorrowCashV1",
             "/borrowCash/getLoanSupermarketTabList","/borrowCash/getLoanSupermarketListByTab","/borrowCash/tearPacket"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
-
     @ResponseBody
     public String borrowCashRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -210,7 +210,11 @@ public class FanbeiController extends BaseController {
             RequestDataVo reqVo = new RequestDataVo();
             String method = request.getRequestURI();
             reqVo.setMethod(method);
+            
+           // reqVo.setId("i_247849E9-69A3-4E50-BA82-38E0F55CBA6C_1499245951290_www");
+            
             reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
+            
             String appVersion = request.getHeader(Constants.REQ_SYS_NODE_VERSION);
             String netType = request.getHeader(Constants.REQ_SYS_NODE_NETTYPE);
             String userName = request.getHeader(Constants.REQ_SYS_NODE_USERNAME);
@@ -218,12 +222,26 @@ public class FanbeiController extends BaseController {
             String time = request.getHeader(Constants.REQ_SYS_NODE_TIME);
 
             Map<String,Object> system = new HashMap<String,Object>();
+            
+/*            
+            system.put(Constants.REQ_SYS_NODE_VERSION, "370");
+            system.put(Constants.REQ_SYS_NODE_NETTYPE, "Wifi");
+            system.put(Constants.REQ_SYS_NODE_USERNAME, "18268189043");
+            system.put(Constants.REQ_SYS_NODE_SIGN, "1a020532913fe40426951e7594829623d7042aa8d8249969a4bd96ce469b1d32");
+            system.put(Constants.REQ_SYS_NODE_TIME, "1499245951290");*/
+            
+            
             system.put(Constants.REQ_SYS_NODE_VERSION, appVersion);
             system.put(Constants.REQ_SYS_NODE_NETTYPE, netType);
             system.put(Constants.REQ_SYS_NODE_USERNAME, userName);
             system.put(Constants.REQ_SYS_NODE_SIGN, sign);
             system.put(Constants.REQ_SYS_NODE_TIME, time);
+            
+            
+            
             reqVo.setSystem(system);
+            
+            
 
             JSONObject jsonObj = JSON.parseObject(requestData);
             reqVo.setParams((jsonObj == null || jsonObj.isEmpty()) ? new HashMap<String,Object>() : jsonObj);

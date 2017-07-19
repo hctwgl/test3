@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.common.enums;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -17,13 +17,15 @@ public enum OrderType {
 	AGENTBUY("AGENTBUY", "代买订单","DM"),
 	SELFSUPPORT("SELFSUPPORT", "自营商品订单","SG"),
 
-	BOLUOME("BOLUOME", "菠萝觅","BL");
+	BOLUOME("BOLUOME", "菠萝觅","BL"),
+
+    TRADE("TRADE", "商圈订单", "TR");
     
     private String code;
     private String name;
     private String shortName;
 
-    private static Map<String,InterestType> codeRoleTypeMap = null;
+    private static List<String> needRecordPayFailCodes = null;
 
     OrderType(String code, String name,String shortName) {
         this.code = code;
@@ -31,8 +33,8 @@ public enum OrderType {
         this.shortName = shortName;
     }
 
-    public static InterestType findRoleTypeByCode(String code) {
-        for (InterestType roleType : InterestType.values()) {
+    public static OrderType findRoleTypeByCode(String code) {
+        for (OrderType roleType : OrderType.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
@@ -40,17 +42,18 @@ public enum OrderType {
         return null;
     }
 
-    
-    public static Map<String,InterestType> getCodeRoleTypeMap(){
-        if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
-            return codeRoleTypeMap;
+    public static List<String> getNeedRecordPayFailCodes(){
+        if(needRecordPayFailCodes != null && needRecordPayFailCodes.size() > 0){
+            return needRecordPayFailCodes;
         }
-        codeRoleTypeMap = new HashMap<String, InterestType>();
-        for(InterestType item:InterestType.values()){
-            codeRoleTypeMap.put(item.getCode(), item);
-        }
-        return codeRoleTypeMap;
+        needRecordPayFailCodes = new ArrayList<String>();
+        needRecordPayFailCodes.add(OrderType.SELFSUPPORT.getCode());
+        needRecordPayFailCodes.add(OrderType.AGENTBUY.getCode());
+        needRecordPayFailCodes.add(OrderType.TRADE.getCode());
+        return needRecordPayFailCodes;
     }
+    
+    
 
 	public String getCode() {
 		return code;

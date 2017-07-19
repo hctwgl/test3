@@ -2,760 +2,827 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderDao">
 	<sql id="queryFields">
-		id
-		rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
+		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
-		goods_price_id,goods_price_name
+		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark
 	</sql>
 	<sql id="queryAllFields">
-		id
-		rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
+		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
-		goods_price_id,goods_price_name
+		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark
 	</sql>
-	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"
-		parameterType="AfOrderDo">
+	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
-		gmt_create ,
-		gmt_modified ,
-		<if test="userId != null">
-			user_id ,
-		</if>
-		order_no ,
-		<if test="userCouponId != null">
-			user_coupon_id,
-		</if>
-		<if test="payTradeNo != null">
-			pay_trade_no,
-		</if>
-		order_type ,
-		goods_id ,
-		<if test="goodsPriceId != null">
-			goods_price_id,
-		</if>
-
-		open_id ,
-		<if test="numId != null">
-			num_id,
-		</if>
-		goods_name ,
-		<if test="goodsPriceName != null">
-			goods_price_name,
-		</if>
-
-		goods_icon ,
-		count ,
-		price_amount ,
-		sale_amount ,
-		actual_amount ,
-		shop_name ,
-		rebate_amount ,
-		<if test="commissionAmount != null">
-			commission_amount,
-		</if>
-		<if test="nper != null">
-			nper,
-		</if>
-
-		mobile,
-		bank_id
-		<if test="gmtPayEnd != null">
-			,gmt_pay_end
-		</if>
-		<if test="secType != null">
-			,sec_type
-		</if>
-		<if test="thirdOrderNo != null">
-			,third_order_no
-		</if>
-		<if test="thirdDetailUrl != null">
-			,third_detail_url
-		</if>
-		<if test="consignee != null">
-			,consignee
-		</if>
-		<if test="address != null">
-			,address
-		</if>
-		<if test="consigneeMobile != null">
-			,consignee_mobile
-		</if>
-		<if test="invoiceHeader != null">
-			,invoice_header
-		</if>
-		<if test="logisticsInfo != null">
-			,logistics_info
-		</if>
-		<if test="borrowRate != null">
-			,borrow_rate
-		</if>
-		<if test="serviceProvider != null">
-			,service_provider
-		</if>
-		<if test="payType != null">
-			,pay_type
-		</if>
-		<if test="interestFreeJson != null">
-			,interest_free_json
-		</if>
+			<if test="userId != null">
+		    	user_id , 
+			</if>
+			order_no , 
+			<if test="userCouponId != null">
+		    	user_coupon_id, 
+			</if>
+			<if test="payTradeNo != null">
+		    	pay_trade_no, 
+			</if>
+			order_type ,
+			<if test="goodsId != null">
+				goods_id ,
+			</if>
+			<if test="openId != null">
+				open_id ,
+			</if>
+		    <if test="numId != null" >
+				num_id,
+			</if>
+			<if test="goodsName != null">
+				goods_name ,
+			</if>
+			<if test="goodsIcon != null">
+				goods_icon ,
+			</if>
+			<if test="count != null">
+				count ,
+			</if>
+			<if test="priceAmount != null">
+				price_amount ,
+			</if>
+			<if test="saleAmount != null">
+				sale_amount ,
+			</if>
+			<if test="actualAmount != null">
+				actual_amount ,
+			</if>
+			<if test="shopName != null">
+				shop_name ,
+			</if>
+			<if test="rebateAmount != null">
+				rebate_amount ,
+			</if>
+			<if test="commissionAmount != null" >
+				commission_amount,
+			</if>
+			<if test="nper != null" >
+				nper,
+			</if>
+			<if test="mobile != null">
+				mobile,
+			</if>
+			<if test="bankId != null">
+				bank_id,
+			</if>
+			<if test="gmtPayEnd != null" >
+				gmt_pay_end,
+			</if>
+			<if test="secType != null" >
+				sec_type,
+			</if>
+			<if test="thirdOrderNo != null" >
+				third_order_no,
+			</if>
+			<if test="thirdDetailUrl != null" >
+				third_detail_url,
+			</if>
+			<if test="consignee != null" >
+				consignee,
+			</if>
+			<if test="address != null" >
+				address,
+			</if>
+			<if test="consigneeMobile != null" >
+				consignee_mobile,
+			</if>
+			<if test="invoiceHeader != null" >
+				invoice_header,
+			</if>
+			<if test="logisticsInfo != null" >
+				logistics_info,
+			</if>
+			<if test="borrowRate != null" >
+				borrow_rate,
+			</if>
+			<if test="serviceProvider != null">
+				service_provider,
+			</if>
+			<if test="payType != null">
+    			pay_type,
+			</if>
+			<if test="interestFreeJson != null">
+				interest_free_json,
+			</if>
+			<if test="goodsPriceId != null">
+	            goods_price_id,
+	        </if>
+	        <if test="goodsPriceName != null">
+	            goods_price_name,
+	        </if>
+			gmt_create ,
+			gmt_modified
 		)
 		VALUES (
-		<if test="gmtCreate != null">
-			#{gmtCreate} ,
-			#{gmtCreate} ,
-		</if>
-		<if test="gmtCreate == null">
+		    <if test="userId != null">
+		    	#{userId},
+			</if>
+		    #{orderNo},
+		    <if test="userCouponId != null">
+		    	 #{userCouponId},
+			</if>
+			<if test="payTradeNo != null">
+		    	 #{payTradeNo},
+			</if>
+		    #{orderType},
+			<if test="goodsId != null">
+				#{goodsId},
+			</if>
+	    	<if test="openId != null">
+				#{openId},
+			</if>
+	    	<if test="numId != null" >
+				#{numId},
+			</if>
+			<if test="goodsName != null">
+				#{goodsName},
+			</if>
+		    <if test="goodsIcon != null">
+				#{goodsIcon},
+			</if>
+		    <if test="count != null">
+				#{count},
+			</if>
+		    <if test="priceAmount != null">
+				#{priceAmount},
+			</if>
+		    <if test="saleAmount != null">
+				#{saleAmount},
+			</if>
+		    <if test="actualAmount != null">
+				#{actualAmount},
+			</if>
+		    <if test="shopName != null">
+				#{shopName},
+			</if>
+		    <if test="rebateAmount != null">
+				#{rebateAmount},
+			</if>
+		    <if test="commissionAmount != null" >
+		    	#{commissionAmount},
+		    </if>
+		    <if test="nper != null" >
+				#{nper},
+			</if>
+			<if test="mobile != null">
+				#{mobile},
+			</if>
+		    <if test="bankId != null">
+				#{bankId},
+			</if>
+		    <if test="gmtPayEnd != null">
+		    	#{gmtPayEnd},
+		    </if>
+		    <if test="secType != null">
+		    	#{secType},
+		    </if>
+		    <if test="thirdOrderNo != null" >
+				#{thirdOrderNo},
+			</if>
+			<if test="thirdDetailUrl != null" >
+				#{thirdDetailUrl},
+			</if>
+			<if test="consignee != null" >
+				#{consignee},
+			</if>
+			<if test="address != null" >
+				#{address},
+			</if>
+			<if test="consigneeMobile != null" >
+				#{consigneeMobile},
+			</if>
+			<if test="invoiceHeader != null" >
+				#{invoiceHeader},
+			</if>
+			<if test="logisticsInfo != null" >
+				#{logisticsInfo},
+			</if>
+			<if test="borrowRate != null" >
+				#{borrowRate},
+			</if>
+			<if test="serviceProvider != null">
+				#{serviceProvider},
+			</if>
+			<if test="payType != null">
+    			#{payType},
+			</if>
+			<if test="interestFreeJson != null">
+				#{interestFreeJson},
+			</if>
+			<if test="goodsPriceId != null">
+	            #{goodsPriceId},
+		     </if>
+			<if test="goodsPriceName != null">
+	            #{goodsPriceName},
+	        </if>
 			NOW(),
-			NOW(),
-		</if>
-		<if test="userId != null">
-			#{userId},
-		</if>
-		#{orderNo},
-		<if test="userCouponId != null">
-			#{userCouponId},
-		</if>
-		<if test="payTradeNo != null">
-			#{payTradeNo},
-		</if>
-		#{orderType},
-		#{goodsId},
-		<if test="goodsPriceId != null">
-			#{goodsPriceId},
-		</if>
-
-		#{openId},
-		<if test="numId != null">
-			#{numId},
-		</if>
-		#{goodsName},
-		<if test="goodsPriceName != null">
-			#{goodsPriceName},
-		</if>
-
-		#{goodsIcon},
-		#{count},
-		#{priceAmount},
-		#{saleAmount},
-		#{actualAmount},
-		#{shopName},
-		#{rebateAmount},
-		<if test="commissionAmount != null">
-			#{commissionAmount},
-		</if>
-		<if test="nper != null">
-			#{nper},
-		</if>
-		#{mobile},
-		#{bankId}
-		<if test="gmtPayEnd != null">
-			,#{gmtPayEnd}
-		</if>
-		<if test="secType != null">
-			,#{secType}
-		</if>
-		<if test="thirdOrderNo != null">
-			,#{thirdOrderNo}
-		</if>
-		<if test="thirdDetailUrl != null">
-			,#{thirdDetailUrl}
-		</if>
-		<if test="consignee != null">
-			,#{consignee}
-		</if>
-		<if test="address != null">
-			,#{address}
-		</if>
-		<if test="consigneeMobile != null">
-			,#{consigneeMobile}
-		</if>
-		<if test="invoiceHeader != null">
-			,#{invoiceHeader}
-		</if>
-		<if test="logisticsInfo != null">
-			,#{logisticsInfo}
-		</if>
-		<if test="borrowRate != null">
-			,#{borrowRate}
-		</if>
-		<if test="serviceProvider != null">
-			,#{serviceProvider}
-		</if>
-		<if test="payType != null">
-			,#{payType}
-		</if>
-		<if test="interestFreeJson != null">
-			,#{interestFreeJson}
-		</if>
+			NOW()
 		)
 	</insert>
-
-	<insert id="createOrderList" parameterType="java.util.List">
+	
+	<insert id="createOrderList" parameterType="java.util.List" >
 		INSERT INTO af_order(
-		gmt_create ,
-		gmt_modified ,
-		user_id ,
-		order_no ,
-		third_order_no ,
-		third_detail_url ,
-		status ,
-		user_coupon_id ,
-		order_type ,
-		sec_type ,
-		goods_id ,
-		<if test="goodsPriceName != null">
-			goods_price_name,
-		</if>
-
-		<if test="goodsPriceId != null">
-			goods_price_id,
-		</if>
-		open_id ,
-		num_id ,
-		goods_name ,
-		goods_icon ,
-		count ,
-		price_amount ,
-		sale_amount ,
-		actual_amount ,
-		shop_name ,
-		pay_status ,
-		pay_type ,
-		pay_trade_no ,
-		gmt_pay
-		,
-		trade_no ,
-		gmt_rebated ,
-		mobile ,
-		gmt_finished ,
-		rebate_amount ,
-		commission_amount ,
-		bank_id ,
-		gmt_pay_end
-		)
+			gmt_create , 
+			gmt_modified , 
+			user_id , 
+			order_no , 
+			third_order_no , 
+			third_detail_url , 
+			status , 
+			user_coupon_id , 
+			order_type , 
+			sec_type , 
+			goods_id , 
+			<if test="goodsPriceName != null">
+		       goods_price_name,
+		    </if>
+	        <if test="goodsPriceId != null">
+	            goods_price_id,
+	        </if>
+			open_id , 
+			num_id , 
+			goods_name , 
+			goods_icon , 
+			count , 
+			price_amount , 
+			sale_amount , 
+			actual_amount , 
+			shop_name , 
+			pay_status , 
+			pay_type , 
+			pay_trade_no , 
+			gmt_pay , 
+			trade_no , 
+			gmt_rebated , 
+			mobile , 
+			gmt_finished , 
+			rebate_amount , 
+			commission_amount ,
+			bank_id , 
+			gmt_pay_end
+			)
 		VALUES
 		<foreach collection="items" separator="," item="item">
 			(
-			NOW(),
-			NOW(),
-			#{item.userId},
-			#{item.orderNo},
-			#{item.thirdOrderNo},
-			#{item.thirdDetailUrl},
-			#{item.status},
-			#{item.userCouponId},
-			#{item.orderType},
-			#{item.secType},
-			#{item.goodsId},
-			<if test="goodsPriceId != null">
-				#{goodsPriceId},
-			</if>
-			<if test="goodsPriceName != null">
-				#{goodsPriceName},
-			</if>
-			#{item.openId},
-			#{item.numId},
-			#{item.goodsName},
-			#{item.goodsIcon},
-			#{item.count},
-			#{item.priceAmount},
-			#{item.saleAmount},
-			#{item.actualAmount},
-			#{item.shopName},
-			#{item.payStatus},
-			#{item.payType},
-			#{item.payTradeNo},
-			#{item.gmtPay},
-			#{item.tradeNo},
-			#{item.gmtRebated},
-			#{item.mobile},
-			#{item.gmtFinished},
-			#{item.rebateAmount},
-			#{item.commissionAmount},
-			#{item.bankId},
-			#{item.gmtPayEnd}
-			)
+    		NOW(),
+    		NOW(),
+    		#{item.userId},
+    		#{item.orderNo},
+    		#{item.thirdOrderNo},
+    		#{item.thirdDetailUrl},
+    		#{item.status},
+    		#{item.userCouponId},
+    		#{item.orderType},
+    		#{item.secType},
+    		#{item.goodsId},
+            <if test="goodsPriceName != null">
+                #{goodsPriceName},
+            </if>
+            <if test="goodsPriceId != null">
+                #{goodsPriceId},
+            </if>
+    		#{item.openId},
+    		#{item.numId},
+    		#{item.goodsName},
+    		#{item.goodsIcon},
+    		#{item.count},
+    		#{item.priceAmount},
+    		#{item.saleAmount},
+    		#{item.actualAmount},
+    		#{item.shopName},
+    		#{item.payStatus},
+    		#{item.payType},
+    		#{item.payTradeNo},
+    		#{item.gmtPay},
+    		#{item.tradeNo},
+    		#{item.gmtRebated},
+    		#{item.mobile},
+    		#{item.gmtFinished},
+    		#{item.rebateAmount},
+    		#{item.commissionAmount},
+    		#{item.bankId},
+    		#{item.gmtPayEnd}
+		)
 		</foreach>
 	</insert>
-
+	
 	<update id="updateOrderByOutTradeNo" parameterType="AfOrderDo">
-		update af_order set gmt_modified=NOW()
+		update af_order  set gmt_modified=NOW()
 		<if test="userId != null">
-			,user_id=#{userId}
+		    ,user_id=#{userId}
 		</if>
 		<if test="orderNo != null">
-			,order_no=#{orderNo}
+		    ,order_no=#{orderNo}
 		</if>
 		<if test="status != null">
-			,status=#{status}
+		    ,status=#{status}
 		</if>
 		<if test="userCouponId != null">
-			,user_coupon_id=#{userCouponId}
+		    ,user_coupon_id=#{userCouponId}
 		</if>
 		<if test="orderType != null">
-			,order_type=#{orderType}
+		    ,order_type=#{orderType}
 		</if>
 		<if test="goodsId != null">
-			,goods_id=#{goodsId}
+		    ,goods_id=#{goodsId}
 		</if>
 		<if test="goodsPriceId != null">
-			,goods_price_id=#{goodsPriceId}
-		</if>
+            ,goods_price_id=#{goodsPriceId}
+        </if>
 		<if test="openId != null">
-			,open_id=#{openId}
+		    ,open_id=#{openId}
 		</if>
 		<if test="goodsName != null">
-			,goods_name=#{goodsName}
+		    ,goods_name=#{goodsName}
 		</if>
 		<if test="goodsPriceName != null">
-			,goods_price_name=#{goodsPriceName}
-		</if>
+            ,goods_price_name=#{goodsPriceName}
+        </if>
 		<if test="goodsIcon != null">
-			,goods_icon=#{goodsIcon}
+		    ,goods_icon=#{goodsIcon}
 		</if>
 		<if test="count != null">
-			,count=#{count}
+		    ,count=#{count}
 		</if>
 		<if test="priceAmount != null">
-			,price_amount=#{priceAmount}
+		    ,price_amount=#{priceAmount}
 		</if>
 		<if test="saleAmount != null">
-			,sale_amount=#{saleAmount}
+		    ,sale_amount=#{saleAmount}
 		</if>
 		<if test="actualAmount != null">
-			,actual_amount=#{actualAmount}
+		    ,actual_amount=#{actualAmount}
 		</if>
 		<if test="shopName != null">
-			,shop_name=#{shopName}
+		    ,shop_name=#{shopName}
 		</if>
 		<if test="payStatus != null">
-			,pay_status=#{payStatus}
+		    ,pay_status=#{payStatus}
 		</if>
 		<if test="payType != null">
-			,pay_type=#{payType}
+		    ,pay_type=#{payType}
 		</if>
 		<if test="payTradeNo != null">
-			,pay_trade_no=#{payTradeNo}
+		    ,pay_trade_no=#{payTradeNo}
 		</if>
 		<if test="gmtPay != null">
-			,gmt_pay=#{gmtPay}
+		    ,gmt_pay=#{gmtPay}
 		</if>
 		<if test="tradeNo != null">
-			,trade_no=#{tradeNo}
+		    ,trade_no=#{tradeNo}
 		</if>
 		<if test="rebateAmount != null">
-			,rebate_amount=#{rebateAmount}
+		    ,rebate_amount=#{rebateAmount}
 		</if>
 		<if test="gmtRebated != null">
-			,gmt_rebated=#{gmtRebated}
+		    ,gmt_rebated=#{gmtRebated}
 		</if>
 		<if test="mobile != null">
-			,mobile=#{mobile}
+		    ,mobile=#{mobile}
 		</if>
 		<if test="gmtFinished != null">
-			,gmt_finished=#{gmtFinished}
+		    ,gmt_finished=#{gmtFinished}
 		</if>
 		<if test="commissionAmount != null">
-			,commission_amount=#{commissionAmount}
+		    ,commission_amount=#{commissionAmount}
+		</if>
+		<if test="gmtClosed != null">
+		    ,gmt_closed=#{gmtClosed}
 		</if>
 		<if test="preStatus != null">
-			,pre_status=#{preStatus}
+		    ,pre_status=#{preStatus}
+		</if>
+		<if test="cancelReason != null">
+		    ,cancel_reason=#{cancelReason}
+		</if>
+		<if test="cancelDetail != null">
+		    ,cancel_detail=#{cancelDetail}
+		</if>
+		<if test="closedReason != null">
+		    ,closed_reason=#{closedReason}
+		</if>
+		<if test="closedDetail != null">
+		    ,closed_detail=#{closedDetail}
+		</if>
+		<if test="statusRemark != null">
+		    ,status_remark=#{statusRemark}
 		</if>
 		where is_delete=0 and pay_trade_no = #{payTradeNo}
 	</update>
 
 	<update id="updateOrderByOrderNo" parameterType="AfOrderDo">
-		update af_order set gmt_modified=NOW()
+		update af_order  set gmt_modified=NOW()
 		<if test="userId != null">
-			,user_id=#{userId}
+		    ,user_id=#{userId}
 		</if>
 		<if test="orderNo != null">
-			,order_no=#{orderNo}
+		    ,order_no=#{orderNo}
 		</if>
 		<if test="status != null">
-			,status=#{status}
+		    ,status=#{status}
 		</if>
 		<if test="userCouponId != null">
-			,user_coupon_id=#{userCouponId}
+		    ,user_coupon_id=#{userCouponId}
 		</if>
 		<if test="orderType != null">
-			,order_type=#{orderType}
+		    ,order_type=#{orderType}
 		</if>
 		<if test="goodsId != null">
-			,goods_id=#{goodsId}
+		    ,goods_id=#{goodsId}
 		</if>
 		<if test="goodsPriceId != null">
-			,goods_price_id=#{goodsPriceId}
-		</if>
+	        ,goods_price_id=#{goodsPriceId}
+        </if>
+        <if test="goodsPriceName != null">
+            ,goods_price_name=#{goodsPriceName}
+        </if>
 		<if test="openId != null">
-			,open_id=#{openId}
+		    ,open_id=#{openId}
 		</if>
 		<if test="goodsName != null">
-			,goods_name=#{goodsName}
-		</if>
-		<if test="goodsPriceName != null">
-			,goods_price_name=#{goodsPriceName}
+		    ,goods_name=#{goodsName}
 		</if>
 		<if test="goodsIcon != null">
-			,goods_icon=#{goodsIcon}
+		    ,goods_icon=#{goodsIcon}
 		</if>
 		<if test="count != null">
-			,count=#{count}
+		    ,count=#{count}
 		</if>
 		<if test="priceAmount != null">
-			,price_amount=#{priceAmount}
+		    ,price_amount=#{priceAmount}
 		</if>
 		<if test="saleAmount != null">
-			,sale_amount=#{saleAmount}
+		    ,sale_amount=#{saleAmount}
 		</if>
 		<if test="actualAmount != null">
-			,actual_amount=#{actualAmount}
+		    ,actual_amount=#{actualAmount}
 		</if>
 		<if test="shopName != null">
-			,shop_name=#{shopName}
+		    ,shop_name=#{shopName}
 		</if>
 		<if test="payStatus != null">
-			,pay_status=#{payStatus}
+		    ,pay_status=#{payStatus}
 		</if>
 		<if test="payType != null">
-			,pay_type=#{payType}
+		    ,pay_type=#{payType}
 		</if>
 		<if test="payTradeNo != null">
-			,pay_trade_no=#{payTradeNo}
+		    ,pay_trade_no=#{payTradeNo}
 		</if>
 		<if test="gmtPay != null">
-			,gmt_pay=#{gmtPay}
+		    ,gmt_pay=#{gmtPay}
 		</if>
 		<if test="tradeNo != null">
-			,trade_no=#{tradeNo}
+		    ,trade_no=#{tradeNo}
 		</if>
 		<if test="rebateAmount != null">
-			,rebate_amount=#{rebateAmount}
+		    ,rebate_amount=#{rebateAmount}
 		</if>
 		<if test="gmtRebated != null">
-			,gmt_rebated=#{gmtRebated}
+		    ,gmt_rebated=#{gmtRebated}
 		</if>
 		<if test="mobile != null">
-			,mobile=#{mobile}
+		    ,mobile=#{mobile}
 		</if>
 		<if test="gmtFinished != null">
-			,gmt_finished=#{gmtFinished}
+		    ,gmt_finished=#{gmtFinished}
 		</if>
 		<if test="commissionAmount != null">
-			,commission_amount=#{commissionAmount}
+		    ,commission_amount=#{commissionAmount}
+		</if>
+		<if test="gmtClosed != null">
+		    ,gmt_closed=#{gmtClosed}
 		</if>
 		<if test="preStatus != null">
-			,pre_status=#{preStatus}
+		    ,pre_status=#{preStatus}
 		</if>
-		where is_delete=0 and order_no = #{orderNo}
+		<if test="cancelReason != null">
+		    ,cancel_reason=#{cancelReason}
+		</if>
+		<if test="cancelDetail != null">
+		    ,cancel_detail=#{cancelDetail}
+		</if>
+		<if test="closedReason != null">
+		    ,closed_reason=#{closedReason}
+		</if>
+		<if test="closedDetail != null">
+		    ,closed_detail=#{closedDetail}
+		</if>
+		<if test="statusRemark != null">
+		    ,status_remark=#{statusRemark}
+		</if>
+		where is_delete=0 and order_no = #{orderNo} 
 	</update>
-
+	
 	<select id="getCurrentLastOrderNo" resultType="java.lang.String">
-		select order_no
-		from af_order WHERE #{endDate} >= gmt_create AND gmt_create
-		>=#{startDate} AND order_type = #{orderType} ORDER BY id DESC LIMIT 1;
+		select order_no from af_order WHERE #{endDate} >= gmt_create AND gmt_create >=#{startDate} AND order_type = #{orderType} ORDER BY id DESC LIMIT 1;
 	</select>
-
+	
 	<select id="getOrderInfoById" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryAllFields" />
+			<include refid="queryAllFields"/>
 		FROM
-		af_order
+			af_order
 		WHERE
-		is_delete=0 AND id = #{rid} AND user_id = #{userId}
+			is_delete=0 AND id = #{rid} AND user_id = #{userId}
 	</select>
-
+	
 	<select id="getOrderInfoByIdWithoutDeleted" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryAllFields" />
+			<include refid="queryAllFields"/>
 		FROM
-		af_order
+			af_order
 		WHERE
-		id = #{rid} AND user_id = #{userId}
+			id = #{rid} AND user_id = #{userId}
 	</select>
-
+	
 	<select id="getOrderInfoByOrderNo" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryFields" />
+			<include refid="queryFields"/>
 		FROM
-		af_order
+			af_order
 		WHERE
-		is_delete=0 AND order_no = #{orderNo} and order_type
-		!='AGENTBUY'
+			is_delete=0 AND order_no = #{orderNo} and order_type !='AGENTBUY'
 	</select>
-
+	
 	<select id="getOrderInfoByRiskOrderNo" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryFields" />
+			<include refid="queryFields"/>
 		FROM
-		af_order
+			af_order
 		WHERE
-		is_delete=0 AND risk_order_no = #{riskOrderNo}
+			is_delete=0 AND risk_order_no = #{riskOrderNo} 
 	</select>
-
+	
 	<select id="getOrderInfoByPayOrderNo" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryFields" />
+			<include refid="queryFields"/>
 		FROM
-		af_order
+			af_order
 		WHERE
-		is_delete=0 AND pay_trade_no = #{payTradeNo}
+			is_delete=0 AND pay_trade_no = #{payTradeNo}
 	</select>
-
-	<select id="getThirdOrderInfoByOrderTypeAndOrderNo" flushCache="true"
-		resultType="AfOrderDo">
+	
+	<select id="getThirdOrderInfoByOrderTypeAndOrderNo" flushCache="true" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryFields" />
+			<include refid="queryFields"/>
 		FROM
-		af_order
+			af_order
 		WHERE
-		is_delete=0
-		AND
-		order_type = #{orderType}
-		AND
-		third_order_no = #{thirdOrderNo}
+			is_delete=0 
+		AND 
+			order_type = #{orderType}
+		AND	
+			third_order_no = #{thirdOrderNo}
 	</select>
-	<select id="getThirdOrderInfoBythirdOrderNo" flushCache="true"
-		resultType="AfOrderDo">
+	<select id="getThirdOrderInfoBythirdOrderNo" flushCache="true" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryFields" />
+			<include refid="queryFields"/>
 		FROM
-		af_order
+			af_order
 		WHERE
-		is_delete=0
-		AND
-		third_order_no = #{thirdOrderNo}
+			is_delete=0 
+		AND 
+			third_order_no = #{thirdOrderNo}
 	</select>
-
-
-
-	<select id="getOrderListByStatus" resultType="AfOrderDo"
-		parameterType="AfOrderQuery">
+	
+	
+	
+	<select id="getOrderListByStatus" resultType="AfOrderDo" parameterType="AfOrderQuery">
 		SELECT
-		id
-		rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
-		status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
-		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no
+			id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
+			status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
+			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,status_remark
 		FROM
-
-		(SELECT
-		id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
-		status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,num_id,
-		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,consignee,address,consignee_mobile,invoice_header,logistics_info
-		FROM
-		af_order a
+			af_order
 		WHERE
-		a.is_delete=0 and a.user_id = #{userId}
-		<if test="orderStatus == 'WC'">
-			and (a.status = 'NEW' or a.status =
-			'PAID')
+			is_delete=0 and user_id = #{userId} 
+		<if test="orderStatus == 'WC'" >
+			and (status = 'NEW' or status = 'PAID')
 		</if>
 		<if test="orderStatus == 'WR'">
-			and a.status = 'FINISHED'
+			and status = 'FINISHED'
 		</if>
 		<if test="orderStatus == 'AR'">
-			and a.status = 'REBATED'
+			and status = 'REBATED'
 		</if>
-		<!-- and NOT EXISTS (SELECT 1 FROM af_order b WHERE b.status='NEW' AND 
-			a.id=b.id) -->
-		AND
-		a.order_type IN
-		('MOBILE','TAOBAO','TMALL','AGENTBUY','SELFSUPPORT')
-		UNION ALL
-		SELECT
-		id,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
-		status,user_coupon_id,order_type,sec_type,goods_id,open_id,goods_name,goods_icon,count,num_id,
-		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,consignee,address,consignee_mobile,invoice_header,logistics_info
-		FROM
-		af_order a
-		WHERE
-		a.is_delete=0 and a.user_id = #{userId}
-		<if test="orderStatus == 'WC'">
-			and (a.status = 'NEW' or a.status =
-			'PAID')
+		<if test="orderStatus == 'NEW'">
+			and status in('NEW','PAYFAIL')
 		</if>
-		<if test="orderStatus == 'WR'">
-			and a.status = 'FINISHED'
+		<if test="orderStatus == 'DEALING'">
+			and status = 'DEALING'
 		</if>
-		<if test="orderStatus == 'AR'">
-			and a.status = 'REBATED'
+		<if test="orderStatus == 'TOREVIEW'">
+			and status = 'PAID' and order_type='AGENTBUY'
 		</if>
-		AND
-		a.order_type = 'BOLUOME'
-		) a
-		order by a.gmt_create desc
+		<if test="orderStatus == 'REVIEWING'">
+			and status = 'REVIEW' and order_type='AGENTBUY'
+		</if>
+		<if test="orderStatus == 'TODELIVER'">
+			and (( status = 'PAID' and order_type!='AGENTBUY' ) or status = 'AGENCYCOMPLETED')
+		</if>
+		<if test="orderStatus == 'DELIVERED'">
+			and status = 'DELIVERED'
+		</if>
+		<if test="orderStatus == 'TOREBATE'">
+			and status = 'FINISHED' and rebate_amount <![CDATA[ > ]]> 0
+		</if>
+		<if test="orderStatus == 'FINISHED'">
+			and ((status = 'FINISHED' and rebate_amount <![CDATA[ = ]]> 0) or status = 'REBATED')
+		</if>
+		<if test="orderStatus == 'CLOSED'">
+			and status = 'CLOSED'
+		</if>
+		<if test="orderStatus == 'WAIT_REFUND'">
+			and status = 'WAIT_REFUND'
+		</if>
+		<if test="orderStatus == 'DEAL_REFUNDING'">
+			and status = 'DEAL_REFUNDING'
+		</if>
+		order by gmt_create desc
 	</select>
-
-	<update id="updateOrder" parameterType="AfOrderDo">
-		UPDATE
-		af_order
-		SET
-		gmt_modified = NOW()
-		<if test="userId != null">
-			,user_id=#{userId}
-		</if>
-		<if test="orderNo != null">
-			,order_no=#{orderNo}
-		</if>
-		<if test="thirdOrderNo != null">
-			,third_order_no=#{thirdOrderNo}
-		</if>
-		<if test="thirdDetailUrl != null">
-			,third_detail_url=#{thirdDetailUrl}
-		</if>
-		<if test="status != null">
-			,status=#{status}
-		</if>
-		<if test="userCouponId != null">
-			,user_coupon_id=#{userCouponId}
-		</if>
-		<if test="orderType != null">
-			,order_type=#{orderType}
-		</if>
-		<if test="secType != null">
-			,sec_type=#{secType}
-		</if>
-		<if test="goodsId != null">
-			,goods_id=#{goodsId}
-		</if>
-		<if test="goodsPriceId != null">
-			,goods_price_id=#{goodsPriceId}
-		</if>
-		<if test="openId != null">
-			,open_id=#{openId}
-		</if>
-		<if test="goodsName != null">
-			,goods_name=#{goodsName}
-		</if>
-		<if test="goodsPriceName != null">
-			,goods_price_name=#{goodsPriceName}
-		</if>
-		<if test="goodsIcon != null">
-			,goods_icon=#{goodsIcon}
-		</if>
-		<if test="count != null">
-			,count=#{count}
-		</if>
-		<if test="priceAmount != null">
-			,price_amount=#{priceAmount}
-		</if>
-		<if test="saleAmount != null">
-			,sale_amount=#{saleAmount}
-		</if>
-		<if test="actualAmount != null">
-			,actual_amount=#{actualAmount}
-		</if>
-		<if test="shopName != null">
-			,shop_name=#{shopName}
-		</if>
-		<if test="payStatus != null">
-			,pay_status=#{payStatus}
-		</if>
-		<if test="payType != null">
-			,pay_type=#{payType}
-		</if>
-		<if test="payTradeNo != null">
-			,pay_trade_no=#{payTradeNo}
-		</if>
-		<if test="gmtPay != null">
-			,gmt_pay=#{gmtPay}
-		</if>
-		<if test="tradeNo != null">
-			,trade_no=#{tradeNo}
-		</if>
-		<if test="gmtRebated != null">
-			,gmt_rebated=#{gmtRebated}
-		</if>
-		<if test="mobile != null">
-			,mobile=#{mobile}
-		</if>
-		<if test="gmtFinished != null">
-			,gmt_finished=#{gmtFinished}
-		</if>
-		<if test="rebateAmount != null">
-			,rebate_amount=#{rebateAmount}
-		</if>
-		<if test="commissionAmount != null">
-			,commission_amount=#{commissionAmount}
-		</if>
-		<if test="bankId != null">
-			,bank_id=#{bankId}
-		</if>
-		<if test="gmtPayEnd != null">
-			,gmt_pay_end=#{gmtPayEnd}
-		</if>
-		<if test="nper != null">
-			,nper=#{nper}
-		</if>
-		<if test="riskOrderNo != null">
-			,risk_order_no=#{riskOrderNo}
-		</if>
-		<if test="borrowRate != null">
-			,borrow_rate=#{borrowRate}
-		</if>
-		<if test="couponAmount != null">
-			,coupon_amount=#{couponAmount}
-		</if>
-		<if test="interestFreeJson != null">
-			,interest_free_json=#{interestFreeJson}
-		</if>
-		<if test="preStatus != null">
-			,pre_status=#{preStatus}
-		</if>
+	
+	<update id="updateOrder" parameterType="AfOrderDo" >
+		UPDATE 
+			af_order 
+		SET 
+			gmt_modified = NOW()
+			<if test="userId != null">
+    			,user_id=#{userId}
+			</if>
+			<if test="orderNo != null">
+    			,order_no=#{orderNo}
+			</if>
+			<if test="thirdOrderNo != null">
+    			,third_order_no=#{thirdOrderNo}
+			</if>
+			<if test="thirdDetailUrl != null">
+    			,third_detail_url=#{thirdDetailUrl}
+			</if>
+			<if test="status != null">
+    			,status=#{status}
+			</if>
+			<if test="userCouponId != null">
+    			,user_coupon_id=#{userCouponId}
+			</if>
+			<if test="orderType != null">
+    			,order_type=#{orderType}
+			</if>
+			<if test="secType != null">
+    			,sec_type=#{secType}
+			</if>
+			<if test="goodsId != null">
+    			,goods_id=#{goodsId}
+			</if>
+			 <if test="goodsPriceId != null">
+	            ,goods_price_id=#{goodsPriceId}
+	        </if>
+			<if test="openId != null">
+    			,open_id=#{openId}
+			</if>
+			<if test="goodsName != null">
+    			,goods_name=#{goodsName}
+			</if>
+			<if test="goodsPriceName != null">
+	            ,goods_price_name=#{goodsPriceName}
+	        </if>
+			<if test="goodsIcon != null">
+    			,goods_icon=#{goodsIcon}
+			</if>
+			<if test="count != null">
+    			,count=#{count}
+			</if>
+			<if test="priceAmount != null">
+    			,price_amount=#{priceAmount}
+			</if>
+			<if test="saleAmount != null">
+    			,sale_amount=#{saleAmount}
+			</if>
+			<if test="actualAmount != null">
+    			,actual_amount=#{actualAmount}
+			</if>
+			<if test="shopName != null">
+    			,shop_name=#{shopName}
+			</if>
+			<if test="payStatus != null">
+    			,pay_status=#{payStatus}
+			</if>
+			<if test="payType != null">
+    			,pay_type=#{payType}
+			</if>
+			<if test="payTradeNo != null">
+    			,pay_trade_no=#{payTradeNo}
+			</if>
+			<if test="gmtPay != null">
+    			,gmt_pay=#{gmtPay}
+			</if>
+			<if test="tradeNo != null">
+    			,trade_no=#{tradeNo}
+			</if>
+			<if test="gmtRebated != null">
+    			,gmt_rebated=#{gmtRebated}
+			</if>
+			<if test="mobile != null">
+    			,mobile=#{mobile}
+			</if>
+			<if test="gmtFinished != null">
+    			,gmt_finished=#{gmtFinished}
+			</if>
+			<if test="rebateAmount != null">
+    			,rebate_amount=#{rebateAmount}
+			</if>
+			<if test="commissionAmount != null">
+    			,commission_amount=#{commissionAmount}
+			</if>
+			<if test="bankId != null">
+    			,bank_id=#{bankId}
+			</if>
+			<if test="gmtPayEnd != null">
+    			,gmt_pay_end=#{gmtPayEnd}
+			</if>
+			<if test="nper != null">
+    			,nper=#{nper}
+			</if>
+			<if test="riskOrderNo != null">
+    			,risk_order_no=#{riskOrderNo}
+			</if>
+			<if test="borrowRate != null">
+    			,borrow_rate=#{borrowRate}
+			</if>
+			<if test="couponAmount != null">
+    			,coupon_amount=#{couponAmount}
+			</if>
+			<if test="interestFreeJson != null">
+    			,interest_free_json=#{interestFreeJson}
+			</if>
+			<if test="gmtClosed != null">
+			    ,gmt_closed=#{gmtClosed}
+			</if>
+			<if test="preStatus != null">
+			    ,pre_status=#{preStatus}
+			</if>
+			<if test="cancelReason != null">
+			    ,cancel_reason=#{cancelReason}
+			</if>
+			<if test="cancelDetail != null">
+			    ,cancel_detail=#{cancelDetail}
+			</if>
+			<if test="closedReason != null">
+			    ,closed_reason=#{closedReason}
+			</if>
+			<if test="closedDetail != null">
+			    ,closed_detail=#{closedDetail}
+			</if>
+			<if test="statusRemark != null">
+			    ,status_remark=#{statusRemark}
+			</if>
 		WHERE id = #{rid}
 	</update>
-
+	
 	<select id="getOrderById" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryAllFields" />
+			<include refid="queryAllFields"/>
 		FROM
-		af_order
+			af_order 
 		WHERE
-		is_delete=0
+			is_delete=0 
 		AND
-		id = #{orderId}
+			id = #{orderId}
 	</select>
-
+	
 	<select id="getCurrentLastPayNo" resultType="java.lang.String">
-		select pay_trade_no
-		from af_order WHERE #{endDate} >= gmt_pay
-		AND gmt_pay >=#{startDate}
-		and gmt_pay is not null
-		and order_type IN('BOLUOME','AGENTBUY')
-		ORDER BY
-		gmt_pay DESC LIMIT 1;
+		select pay_trade_no from af_order WHERE #{endDate} >= gmt_pay 
+		AND gmt_pay >=#{startDate} 
+		and gmt_pay is not null 
+		and order_type IN('BOLUOME','AGENTBUY') 
+		ORDER BY gmt_pay DESC LIMIT 1;
 	</select>
-
+	
 	<select id="getNoBorrowOrder" resultType="AfOrderDo">
-		select a.id
-		rid,a.user_id,a.order_no,
+		select a.id rid,a.user_id,a.order_no,
 		a.goods_name,
 		a.price_amount,a.sale_amount,a.actual_amount,
 		a.shop_name,a.nper
-		from
-		af_order a
-		left join af_borrow b on a.id = b.`order_id`
-		where
-		a.order_type = 'BOLUOME'
-		and a.status in
-		('PAID','FINISHED','REBATED','WAITING_REFUND','DEAL_REFUNDING')
-		and
-		a.pay_type = 'AP' and b.id is null
+		from af_order a 
+		left join af_borrow b on a.id = b.`order_id`  
+		where a.order_type = 'BOLUOME' 
+		and a.status in ('PAID','FINISHED','REBATED','WAITING_REFUND','DEAL_REFUNDING') 
+		and a.pay_type = 'AP' and b.id is null
 	</select>
-
-	<update id="deleteOrder" parameterType="java.lang.Long">
-		UPDATE
-		af_order SET
-		gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
+	
+	<update id="deleteOrder" parameterType="java.lang.Long" >
+		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
 	</update>
-
+	
 </mapper>
