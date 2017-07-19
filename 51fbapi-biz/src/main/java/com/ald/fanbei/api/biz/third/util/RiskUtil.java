@@ -597,7 +597,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param virtualCode 虚拟值
 	 * @return
 	 */
-	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) {
+	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) throws FanbeiException {
 		String result = verifybo.getResult();
 		
 		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -642,8 +642,8 @@ public class RiskUtil extends AbstractThird {
 				}
 				jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 //			}
-			
-			return resultMap;
+				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			//return resultMap;
 		}
 //		resultMap.put("success", true);
 		
