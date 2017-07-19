@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- af_trade_order表:商圈商户提现记录表模块 -->
-<mapper namespace="com.ald.fanbei.admin.dal.dao.AfTradeOrderDao">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfTradeOrderDao">
 
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
@@ -29,7 +29,7 @@
     </sql>
 
 
-    <insert id="saveRecord" parameterType="com.ald.fanbei.admin.dal.domain.AfTradeOrderDo" keyProperty="id">
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo" keyProperty="id">
         <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
             SELECT LAST_INSERT_ID()
         </selectKey>
@@ -72,7 +72,7 @@
         </trim>
     </insert>
 
-    <update id="updateById"  parameterType="com.ald.fanbei.admin.dal.domain.AfTradeOrderDo">
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
         UPDATE af_trade_order
         <set>
             <if test="orderId != null and orderId != '' ">
@@ -94,7 +94,7 @@
         WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
     </update>
 
-    <select id="getById" resultType="com.ald.fanbei.admin.dal.domain.AfTradeOrderDo">
+    <select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
         SELECT
         <include refid="queryFields" />
         FROM af_trade_order
@@ -102,7 +102,7 @@
         LIMIT 0,1
     </select>
 
-    <select id="getByCommonCondition" resultType="com.ald.fanbei.admin.dal.domain.AfTradeOrderDo" parameterType="com.ald.fanbei.admin.dal.domain.AfTradeOrderDo">
+    <select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
         SELECT
         <include refid="queryFields" />
         FROM af_trade_order
@@ -110,7 +110,7 @@
         limit 0,1
     </select>
 
-    <select id="getListByCommonCondition" resultType="com.ald.fanbei.admin.dal.domain.AfTradeOrderDo" parameterType="com.ald.fanbei.admin.dal.domain.AfTradeOrderDo">
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
         SELECT
         <include refid="queryFields" />
         FROM af_trade_order
