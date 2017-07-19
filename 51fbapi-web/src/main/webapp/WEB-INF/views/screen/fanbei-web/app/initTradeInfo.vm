@@ -10,18 +10,18 @@
 </head>
 <body>
     <div id="businessCode" class="clearfix">
-        <input value="${isLogin}">
-        <input value="$!{name}">
-        <input value="$!{canUseAmount}">
-        <input value="${isLogin}">
-        <input type="text" id="canUseAmount" name="canUseAmount" value="$!{canUseAmount}">
+        <input class="isLogin" type="hidden" value="$!{isLogin}">
+        <input class="name" type="hidden" value="$!{name}">
+        <input class="canUseAmount" type="hidden" value="$!{canUseAmount}">
+        <input class="id" type="hidden" value="$!{id}">
+        <input class="isShowMention" type="hidden" value="$!{isShowMention}">
         <div class="businessName">
             <img class="shangjia" src="https://fs.51fanbei.com/h5/app/images/user/business.png" alt="">
             <span>$!{name}</span>
         </div>
         <div class="blank">
             <form action="#">
-                <input class="paymoney" type="text" placeHolder="￥200">
+                <input class="paymoney" type="text">
                 <span>付款金额</span>
             </form>
         </div>
@@ -30,10 +30,13 @@
                 <img src="https://fs.51fanbei.com/h5/app/images/user/slience.png" alt="">
                 <span class="xinyong">51信用分期</span>
             </div>
-            <p class="edu">剩余可用额度<span class="money">3000元$!{canUseAmount}</span></p>
-            <button class="btn" @click="buyNow">确认付款</button>
+            <p class="edu">剩余可用额度<span class="money">$!{canUseAmount}元</span></p>
+            <button class="btn" onclick="buyNow()">确认付款</button>
         </div>
     </div>
+    <div class="pro">
+        <a href="/fanbei-web/opennative?name=GO_PROMOTE_AMOUNT" class="pro-word">去提升额度</a>
+    </div>
 </body>
-<script src="/dist/js/user/initTradeInfo.js"></script>
+<script src="/dist/js/user/initTradeInfo.js?id=1"></script>
 </html>
