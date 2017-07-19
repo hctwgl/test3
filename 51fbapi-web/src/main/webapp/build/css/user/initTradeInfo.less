@@ -1,6 +1,10 @@
 body{
     background-color:#FAFAFA;
     position:relative;
+   
+}
+*{
+     box-sizing:border-box;
 }
 .clearfix:after{
     content:".";
@@ -31,22 +35,23 @@ body{
     width:6.8rem;
     height:1.08rem;
     line-height:1.08rem;
-    border:0.01px solid #979797;
+    border:0.02px solid #979797;
     margin-top:0.62rem;
     margin-left:0.38rem;
     border-radius:0.08rem;
-    // padding-left:0.3rem;
     text-align:center;
+    background:white;
     position:relative;
 }
 #businessCode .blank input{
-    display:block;
+    display:inline-block;
     font-size:0.56rem;
-    width:2rem;
+    padding: 0 0.1rem 0 0;
+    text-align:right;
     position:absolute;
-    right:0rem;
+    right:0;
     bottom: 0.16rem;
-    background-color:#FAFAFA;
+    width:75%;
 }
 #businessCode .blank input:-ms-input-placeholder {
 color: #000 !important;
@@ -55,11 +60,16 @@ color: #000 !important;
     position:absolute;
     font-size:0.32rem;
     left:0.4rem;
-
     color:#9B9B9B;
 }
 #businessCode .fukuan .fukuan-one{
     margin-top:0.46rem;
+}
+.pro-word{
+    display:none;
+    color:#79c0ff;
+    margin-right: .4rem;
+    float:right;
 }
 #businessCode .fukuan .fukuan-one img{
      width:0.48rem;
@@ -80,13 +90,13 @@ color: #000 !important;
 }
 #businessCode .fukuan .edu .money{
     color:#F0887F;
-   
 }
 #businessCode .fukuan .btn{
     width:6rem;
     height:0.96rem;
     border-radius: 4px;
-    background-color: #FE963B ;
+    background-color: gray;
+    display: none;
     font-size:0.36rem;
     color:white;
     position:absolute;

@@ -63,7 +63,35 @@ public class AfOrderVo extends AbstractSerial {
 	private String installmentInfo;//分期详情
 	private Long goodsId;
 	private String isCanDelOrder;
-	
+
+	private String refundTime; //退款时间
+	private BigDecimal refundActualAmount; //实际退款金额
+	private String refundContent; //退款原因
+
+	public String getRefundTime() {
+		return refundTime;
+	}
+
+	public void setRefundTime(String refundTime) {
+		this.refundTime = refundTime;
+	}
+
+	public BigDecimal getRefundActualAmount() {
+		return refundActualAmount;
+	}
+
+	public void setRefundActualAmount(BigDecimal refundActualAmount) {
+		this.refundActualAmount = refundActualAmount;
+	}
+
+	public String getRefundContent() {
+		return refundContent;
+	}
+
+	public void setRefundContent(String refundContent) {
+		this.refundContent = refundContent;
+	}
+
 	public String getBusinessIcon() {
 		return businessIcon;
 	}

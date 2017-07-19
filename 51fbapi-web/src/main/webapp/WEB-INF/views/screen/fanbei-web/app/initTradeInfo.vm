@@ -21,7 +21,7 @@
         </div>
         <div class="blank">
             <form action="#">
-                <input class="paymoney" type="text">
+                <input class="paymoney" type="number" onkeyup="btn()">
                 <span>付款金额</span>
             </form>
         </div>
@@ -29,14 +29,15 @@
             <div class="fukuan-one">
                 <img src="https://fs.51fanbei.com/h5/app/images/user/slience.png" alt="">
                 <span class="xinyong">51信用分期</span>
+                <a href="/fanbei-web/opennative?name=GO_PROMOTE_AMOUNT" class="pro-word">提升额度</a>
             </div>
             <p class="edu">剩余可用额度<span class="money">$!{canUseAmount}元</span></p>
-            <button class="btn" onclick="buyNow()">确认付款</button>
+            <button class="btn" onclick="buyNow()" disabled>确认付款</button>
         </div>
     </div>
     <div class="pro">
-        <a href="/fanbei-web/opennative?name=GO_PROMOTE_AMOUNT" class="pro-word">去提升额度</a>
+
     </div>
 </body>
-<script src="/dist/js/user/initTradeInfo.js?id=1"></script>
+<script src="/dist/js/user/initTradeInfo.js"></script>
 </html>
