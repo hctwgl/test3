@@ -18,7 +18,7 @@ function buyNow(){
 function btn() {
     $('.btn').show();
     var amount=$('.paymoney').val();
-    if(amount<canUseAmount){
+    if(amount>canUseAmount){
         $('.btn').css('background','gray');
         $('.btn').attr('disabled','true');
     }else{
