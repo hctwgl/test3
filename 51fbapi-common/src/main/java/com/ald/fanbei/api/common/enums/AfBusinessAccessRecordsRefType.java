@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.common.enums;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 
@@ -16,8 +14,6 @@ public enum AfBusinessAccessRecordsRefType {
     private String code;
     private String name;
 
-    private static Map<String,InterestType> codeRoleTypeMap = null;
-
     AfBusinessAccessRecordsRefType(String code, String name) {
         this.code = code;
         this.name = name;
@@ -30,17 +26,6 @@ public enum AfBusinessAccessRecordsRefType {
             }
         }
         return null;
-    }
-
-    public static Map<String,InterestType> getCodeRoleTypeMap(){
-        if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
-            return codeRoleTypeMap;
-        }
-        codeRoleTypeMap = new HashMap<String, InterestType>();
-        for(InterestType item:InterestType.values()){
-            codeRoleTypeMap.put(item.getCode(), item);
-        }
-        return codeRoleTypeMap;
     }
 
 	public String getCode() {
