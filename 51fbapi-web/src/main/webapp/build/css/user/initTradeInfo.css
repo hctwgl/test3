@@ -42,7 +42,7 @@ body {
   display: block;
   font-size: 0.56rem;
   /*width: 2rem;*/
-  margin-left:1rem;
+  padding-left:1rem;
   text-align:right;
   position: absolute;
   right: 0rem;
