@@ -23,8 +23,8 @@ public enum AfBusinessAccessRecordsRefType {
         this.name = name;
     }
 
-    public static InterestType findRoleTypeByCode(String code) {
-        for (InterestType roleType : InterestType.values()) {
+    public static AfBusinessAccessRecordsRefType findRoleTypeByCode(String code) {
+        for (AfBusinessAccessRecordsRefType roleType : AfBusinessAccessRecordsRefType.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
