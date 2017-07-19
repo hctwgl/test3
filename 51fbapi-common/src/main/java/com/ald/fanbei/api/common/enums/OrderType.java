@@ -1,9 +1,7 @@
 package com.ald.fanbei.api.common.enums;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 
@@ -27,7 +25,6 @@ public enum OrderType {
     private String name;
     private String shortName;
 
-    private static Map<String,InterestType> codeRoleTypeMap = null;
     private static List<String> needRecordPayFailCodes = null;
 
     OrderType(String code, String name,String shortName) {
@@ -36,8 +33,8 @@ public enum OrderType {
         this.shortName = shortName;
     }
 
-    public static InterestType findRoleTypeByCode(String code) {
-        for (InterestType roleType : InterestType.values()) {
+    public static OrderType findRoleTypeByCode(String code) {
+        for (OrderType roleType : OrderType.values()) {
             if (roleType.getCode().equals(code)) {
                 return roleType;
             }
@@ -50,23 +47,13 @@ public enum OrderType {
             return needRecordPayFailCodes;
         }
         needRecordPayFailCodes = new ArrayList<String>();
-        for(InterestType item:InterestType.values()){
-        	needRecordPayFailCodes.add(item.getCode());
-        }
+        needRecordPayFailCodes.add(OrderType.SELFSUPPORT.getCode());
+        needRecordPayFailCodes.add(OrderType.AGENTBUY.getCode());
+        needRecordPayFailCodes.add(OrderType.TRADE.getCode());
         return needRecordPayFailCodes;
     }
     
     
-    public static Map<String,InterestType> getCodeRoleTypeMap(){
-        if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
-            return codeRoleTypeMap;
-        }
-        codeRoleTypeMap = new HashMap<String, InterestType>();
-        for(InterestType item:InterestType.values()){
-            codeRoleTypeMap.put(item.getCode(), item);
-        }
-        return codeRoleTypeMap;
-    }
 
 	public String getCode() {
 		return code;
