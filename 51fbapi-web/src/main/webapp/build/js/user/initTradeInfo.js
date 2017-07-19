@@ -18,11 +18,10 @@ function buyNow(){
 function btn() {
     $('.btn').show();
     var amount=$('.paymoney').val();
-    if(amount>canUseAmount){
-        $('.btn').css('background','gray');
-        $('.btn').attr('disabled','true');
+    if(amount!=''&&Number(amount)<=Number(canUseAmount)){
+        $('.btn').css('background','#FE963B').removeAttr('disabled','false');
+
     }else{
-        $('.btn').css('background','#FE963B');
-        $('.btn').removeAttr('disabled','false');
+        $('.btn').css('background','gray').attr('disabled','true');
     }
 }
