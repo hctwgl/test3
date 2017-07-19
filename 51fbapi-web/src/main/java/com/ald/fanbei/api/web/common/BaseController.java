@@ -625,7 +625,7 @@ public abstract class BaseController {
 			throw new AssertionError(ex);
 		}
 	}
-
+	
 	/**
 	 * h5接口验证，验证基础参数、签名
 	 * @param request

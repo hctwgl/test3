@@ -1,2 +1,2 @@
-"use strict";var bid=getUrl("bid"),vm=new Vue({el:"#businessCode",data:{content:{}},created:function(){this.logData()},methods:{logData:function logData(){var self=this;$.ajax({type:"post",url:"/fanbei-web/initTradeInfo",data:{bid:"d0pmtf8U7Ml/D4DoHN7Brw=="},success:function success(data){console.log(data),self.content=eval("("+data+")"),self.content=self.content.data,console.log(self.content)},error:function(){requestMsg("请求失败")}})}}});
+"use strict";var bid=getUrl("bid"),isLogin=$("#isLogin").val(),vm=new Vue({el:"#businessCode",data:{content:{}},methods:{buyNow:function(){var e=$(".paymoney").text();window.location.href='/fanbei-web/opennative?name=APP_PAY&params={"amount":"'+e+'"}'}}});
 //# sourceMappingURL=../../_srcmap/js/user/initTradeInfo.js.map
