@@ -19,7 +19,7 @@ let vm = new Vue({
                 url: "/fanbei-web/couponCategoryInfo",
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
-                    console.log(self.content);
+                    //console.log(self.content);
                     var liLength=self.content.couponCategoryList.length;
                     self.$nextTick(function () {
                         $('.navList li').eq(0).addClass('border');
@@ -58,11 +58,22 @@ let vm = new Vue({
                         var couponCategory=self.content.couponCategoryList[i];
                         //console.log(couponCategory.couponInfoList)  
                         for(var j=0;j<couponCategory.couponInfoList.length;j++){
+                            //排序                            
+                             for(var k = j + 1;k<couponCategory.couponInfoList.length;k++){
+                                 if(couponCategory.couponInfoList[j].gmtEnd>couponCategory.couponInfoList[k].gmtEnd){
+                                     var tmp = couponCategory.couponInfoList[j];
+                                     couponCategory.couponInfoList[j] = couponCategory.couponInfoList[k];
+                                     couponCategory.couponInfoList[k] = tmp;
+                                 }
+                             }
+                             //排序 
                              var currentTime=couponCategory.couponInfoList[j].currentTime;
                              var startTime=couponCategory.couponInfoList[j].gmtStart;
                              var endTime=couponCategory.couponInfoList[j].gmtEnd;
+                             //console.log(endTime)
                              couponCategory.couponInfoList[j].start=format(startTime);
                              couponCategory.couponInfoList[j].end=format(endTime);
+                             console.log(couponCategory.couponInfoList[j].end)
                              diff=(endTime-currentTime)/1000;
                              var h=parseInt(diff/3600);
                              var state;
@@ -72,18 +83,12 @@ let vm = new Vue({
                                 state='noTimeOver';
                              }
                              couponCategory.couponInfoList[j].state=state;
-                             //排序                            
-                             for(var k = j + 1;k<couponCategory.couponInfoList.length;k++){
-                                 if(couponCategory.couponInfoList[j].gmtEnd>couponCategory.couponInfoList[k].gmtEnd){
-                                     var tmp = couponCategory.couponInfoList[j].gmtEnd;
-                                     couponCategory.couponInfoList[j].gmtEnd = couponCategory.couponInfoList[k].gmtEnd;
-                                     couponCategory.couponInfoList[k].gmtEnd = tmp;
-                                 }
-                             }
-                             //console.log(couponCategory.couponInfoList)
-                             //排序                           
+                                                       
                         }
+
                     }
+                    console.log(self.content.couponCategoryList);
+                    console.log(0)
                     function format(shijianchuo) { //shijianchuo是整数，否则要parseInt转换 
                         var time = new Date(shijianchuo); 
                         var y = time.getFullYear(); 
