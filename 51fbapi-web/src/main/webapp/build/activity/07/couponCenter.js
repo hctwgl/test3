@@ -54,6 +54,16 @@ let vm = new Vue({
                                 state='noTimeOver';
                              }
                              couponCategory.couponInfoList[j].state=state;
+                             //排序                            
+                             for(var k = j + 1;k<couponCategory.couponInfoList.length;k++){
+                                 if(couponCategory.couponInfoList[j].gmtEnd>couponCategory.couponInfoList[k].gmtEnd){
+                                     var tmp = couponCategory.couponInfoList[j].gmtEnd;
+                                     couponCategory.couponInfoList[j].gmtEnd = couponCategory.couponInfoList[k].gmtEnd;
+                                     couponCategory.couponInfoList[k].gmtEnd = tmp;
+                                 }
+                             }
+                             //console.log(couponCategory.couponInfoList)
+                             //排序                           
                         }
                     }
                     function format(shijianchuo) { //shijianchuo是整数，否则要parseInt转换 
@@ -71,7 +81,7 @@ let vm = new Vue({
                     requestMsg("请求失败");
                 }
             });
-        },
+        },       
         liClick:function(index){
             //console.log(index);
             $('.navList li').eq(index).find('span').addClass('border');
