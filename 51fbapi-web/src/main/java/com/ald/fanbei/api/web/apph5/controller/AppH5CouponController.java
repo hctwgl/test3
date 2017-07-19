@@ -57,7 +57,7 @@ public class AppH5CouponController extends BaseController {
     @Resource 
 	AfUserService afUserService;
     
-    @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String couponCategoryInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
@@ -112,8 +112,12 @@ public class AppH5CouponController extends BaseController {
         			// 判断优惠券是否领完
         			Long quota = afCouponDo.getQuota();
         			Integer quotaAlready = afCouponDo.getQuotaAlready();
-        			if(quota.intValue() == quotaAlready.intValue()){
-        				couponInfoMap.put("isOver", "Y");
+        			if(quota != 0 && quota != -1 && quota.intValue() <= quotaAlready.intValue()){
+        				if(context.isLogin() && "N".equals(couponInfoMap.get("isDraw"))) {
+        					couponInfoMap.put("isOver", "N");
+        				} else {
+        					couponInfoMap.put("isOver", "Y");
+        				}
         			} else {
         				couponInfoMap.put("isOver", "N");
         			}

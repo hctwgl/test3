@@ -61,6 +61,18 @@
 			id = #{id}
 	</select>
 	
+	<select id="getCouponCategorysByCouponId" parameterType="java.lang.String" resultType="AfCouponCategoryDo">
+		SELECT
+			<include refid="couponCategorySqlField"/>
+		FROM
+			af_coupon_category 
+		WHERE
+			is_delete=0
+		AND
+			coupons LIKE '%${couponId}%'
+	</select>
+	
+	
 	<update id="updateCouponCategory"  parameterType="AfCouponCategoryDo">
 		UPDATE 
 			af_coupon_category
