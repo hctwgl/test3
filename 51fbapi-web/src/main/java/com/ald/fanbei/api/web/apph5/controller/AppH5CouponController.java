@@ -99,10 +99,14 @@ public class AppH5CouponController extends BaseController {
         			Date gmtStart = afCouponDo.getGmtStart();
         			if( gmtStart != null){
         				couponInfoMap.put("gmtStart", gmtStart.getTime());
+        			} else {
+        				couponInfoMap.put("gmtStart", 0);
         			}
         			Date gmtEnd = afCouponDo.getGmtEnd();
         			if (gmtEnd != null) {
         				couponInfoMap.put("gmtEnd", gmtEnd.getTime());
+        			} else {
+        				couponInfoMap.put("gmtEnd", 0);
         			}
         			
         			couponInfoMap.put("currentTime", System.currentTimeMillis());
