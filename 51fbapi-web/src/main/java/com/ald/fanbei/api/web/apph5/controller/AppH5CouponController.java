@@ -57,7 +57,7 @@ public class AppH5CouponController extends BaseController {
     @Resource 
 	AfUserService afUserService;
     
-    @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String couponCategoryInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
@@ -129,6 +129,7 @@ public class AppH5CouponController extends BaseController {
     		jsonObj.put("couponCategoryList", couponCategoryList);
         	return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
     	} catch (Exception e){
+    		e.printStackTrace();
     		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
     	}
     	
