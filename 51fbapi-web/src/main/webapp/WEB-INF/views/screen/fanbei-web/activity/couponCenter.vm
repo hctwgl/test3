@@ -12,9 +12,8 @@
 <div id="couponCenter">
 <div id="tabNav">
     <ul class="navList">
-        <li v-for="(item,index) in content.couponCategoryList">
-            <span @click="liClick(index)">{{item.name}}</span>
-        </li>
+        <li v-for="(item,index) in content.couponCategoryList" @click="liClick(index)">{{item.name}}</li>
+        <div class="kong"></div>
     </ul>
 </div>
 <div id="content">

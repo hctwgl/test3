@@ -1,7 +1,6 @@
 var tabWidth=0;
 var liWidth=0;
 var ulWidth=0;
-
 //获取数据
 let vm = new Vue({
     el: '#couponCenter',
@@ -23,21 +22,34 @@ let vm = new Vue({
                     console.log(self.content);
                     var liLength=self.content.couponCategoryList.length;
                     self.$nextTick(function () {
-                        $('.navList li').eq(0).find('span').addClass('border');
+                        $('.navList li').eq(0).addClass('border');
                         $('.contList li').eq(0).addClass('active');                               //dom渲染完成后执行
                         
                         if(liLength<2){
                              $('#tabNav').hide();
                         }else if(liLength>=2&&liLength<=5){                      
                              tabWidth=$('#tabNav').width();
-                             liWidth=tabWidth/liLength;
-                             $('.navList').find('li').width(liWidth);                        
+                             for(var n=0;n<liLength;n++){
+                                liWidth+=$('.navList').find('li').eq(n).width();
+                             }
+                             var x=(tabWidth-liWidth)/(liLength+1);  //margin值
+                             //console.log(x)
+                             $('.navList').find('li').css('margin-left',x);                                              
                         }else{
                              tabWidth=$('#tabNav').width();
-                             liWidth=tabWidth/5;
-                             ulWidth=liWidth*liLength;
-                             $('.navList').find('li').width(liWidth);
-                             $('.navList').width(ulWidth); 
+                             var fiveLiWidth=0;
+                             for(var m=0;m<5;m++){
+                                fiveLiWidth+=$('.navList').find('li').eq(m).width();
+                             }
+                             for(var n=0;n<liLength;n++){
+                                liWidth+=$('.navList').find('li').eq(n).width();
+                             }
+                             var x=(tabWidth-fiveLiWidth)/6;  //margin值                           
+                             $('.navList').find('li').css('margin-left',x);
+                             $('.kong').css('width',x) 
+                             ulWidth=liWidth+(liLength+1)*x;
+                             $('.navList').width(ulWidth);
+                             //console.log(liWidth)
                         }
                     })
                     //计算有效期与是否过期
@@ -90,8 +102,8 @@ let vm = new Vue({
         },       
         liClick:function(index){
             //console.log(index);
-            $('.navList li').eq(index).find('span').addClass('border');
-            $('.navList li').eq(index).siblings().find('span').removeClass('border');
+            $('.navList li').eq(index).addClass('border');
+            $('.navList li').eq(index).siblings().removeClass('border');
             $('.contList').find('li').eq(index).show().siblings().hide();         
         },
         couponClick:function(e){
