@@ -1,6 +1,7 @@
 body{
     background-color:#FAFAFA;
     position:relative;
+    box-sizing:border-box;
 }
 .clearfix:after{
     content:".";
@@ -35,18 +36,19 @@ body{
     margin-top:0.62rem;
     margin-left:0.38rem;
     border-radius:0.08rem;
-    // padding-left:0.3rem;
     text-align:center;
+    background:white;
     position:relative;
+
 }
 #businessCode .blank input{
     display:block;
     font-size:0.56rem;
-    width:2rem;
+    padding:0 0.2rem 0 -2rem;
+    text-align:right;
     position:absolute;
-    right:0rem;
+    right:0;
     bottom: 0.16rem;
-    background-color:#FAFAFA;
 }
 #businessCode .blank input:-ms-input-placeholder {
 color: #000 !important;
@@ -60,12 +62,12 @@ color: #000 !important;
 }
 #businessCode .fukuan .fukuan-one{
     margin-top:0.46rem;
-    position:relative;
 }
 .pro-word{
     display:none;
-    position:absolute;
-    right:1rem;
+    color:#79c0ff;
+    margin-right: .4rem;
+    float:right;
 }
 #businessCode .fukuan .fukuan-one img{
      width:0.48rem;
