@@ -966,9 +966,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					if (orderInfo == null 
-   						 || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
-						return 0;
-					}
+	   						 || (!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode()) 
+	   								 &&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
+	   								 && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
+							return 0;
+						}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
