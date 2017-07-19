@@ -15,3 +15,14 @@ function buyNow(){
       var amount=$('.paymoney').val();
          window.location.href='/fanbei-web/opennative?name=APP_PAY&params={"tradeAmount":"'+amount+'"&tradeId":"'+id+'"&tradeName":"'+name+'"}';
 }
+function btn() {
+    $('.btn').show();
+    var amount=$('.paymoney').val();
+    if(amount<300){
+        $('.btn').css('background','gray');
+        $('.btn').attr('disabled','true');
+    }else{
+        $('.btn').css('background','#FE963B');
+        $('.btn').removeAttr('disabled','false');
+    }
+}

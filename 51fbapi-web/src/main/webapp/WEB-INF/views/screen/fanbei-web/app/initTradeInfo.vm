@@ -21,7 +21,7 @@
         </div>
         <div class="blank">
             <form action="#">
-                <input class="paymoney" type="text">
+                <input class="paymoney" type="number" onkeyup="btn()">
                 <span>付款金额</span>
             </form>
         </div>
