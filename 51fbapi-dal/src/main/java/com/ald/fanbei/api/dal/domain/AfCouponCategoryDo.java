@@ -21,6 +21,7 @@ public class AfCouponCategoryDo extends AbstractSerial{
 	private String isDelete;
 	private String name;
 	private String coupons;
+	private String url;
 	public Long getId() {
 		return id;
 	}
@@ -69,5 +70,10 @@ public class AfCouponCategoryDo extends AbstractSerial{
 	public void setModifier(String modifier) {
 		this.modifier = modifier;
 	}
-	
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
 }

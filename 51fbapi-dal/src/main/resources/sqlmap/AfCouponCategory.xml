@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfCouponCategoryDao">
 	
 	<sql id="couponCategorySqlField">
-		id,is_delete,gmt_create,gmt_modified,creator,modifier,name,coupons
+		id,is_delete,gmt_create,gmt_modified,creator,modifier,name,coupons,url
 	</sql>
 	
 	<insert id="addCouponCategory" parameterType="AfCouponCategoryDo" keyProperty="id" useGeneratedKeys="true" >
@@ -15,7 +15,8 @@
 				creator,
 				modifier,
 				name,
-				coupons
+				coupons,
+				url
 			)
 		VALUES
 		    (
@@ -24,7 +25,8 @@
 				#{creator},
 				#{modifier},
 				#{name},
-				#{coupons}
+				#{coupons},
+				#{url}
 			)
 	</insert>
 	
@@ -69,6 +71,9 @@
 			</if>
 			<if test="coupons != null">
 			    ,coupons=#{coupons}
+			</if>
+			<if test="url != null">
+			    ,coupons=#{url}
 			</if>
 		WHERE id = #{id}
 	</update>
