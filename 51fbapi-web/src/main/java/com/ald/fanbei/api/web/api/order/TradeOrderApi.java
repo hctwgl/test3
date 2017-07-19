@@ -96,7 +96,7 @@ public class TradeOrderApi implements ApiHandle {
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("orderId", afOrder.getRid());
+        data.put("orderId", String.valueOf(afOrder.getRid()));
         data.put("isEnoughAmount", isEnoughAmount);
         resp.setResponseData(data);
         return resp;

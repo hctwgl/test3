@@ -2,15 +2,19 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -42,6 +46,10 @@ public class AppH5TradeController extends BaseController {
     AfUserAccountService afUserAccountService;
     @Resource
     AfTradeBusinessInfoService afTradeBusinessInfoService;
+    @Resource
+    AfUserAuthService afUserAuthService;
+    @Resource
+    AfUserService afUserService;
 
     @RequestMapping(value = "initTradeInfo", method = RequestMethod.GET)
     public void initTradeInfo(HttpServletRequest request, ModelMap model) {
@@ -67,6 +75,20 @@ public class AppH5TradeController extends BaseController {
         if (!context.isLogin()) {
             return;
         }
+
+        //判断是否可以提额
+        AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
+        if(afUserDo == null) {
+            return;
+        }
+        String status = afUserAuthService.getConsumeStatus(afUserDo.getRid(), context.getAppVersion());
+        if(YesNoStatus.YES.getCode().equals(status)) {
+            model.put("isShowMention", "no");
+        }
+        else {
+            model.put("isShowMention", "yes");
+        }
+
         model.put("name", afTradeBusinessInfoDo.getName());
         model.put("id", afTradeBusinessInfoDo.getId());
         model.put("isLogin", "yes");
