@@ -25,7 +25,6 @@ var vm=new Vue({
             type: 'post',
             success:function (data) {
                 _this.goodsMobileListMap=data.data;
-                console.log(22222);
                 console.log(_this.goodsMobileListMap);
             },
             error: function(){
@@ -46,8 +45,12 @@ var vm=new Vue({
             let notifyUrl = "https://app.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO";
             this.url=notifyUrl+'&params={"privateGoodsId":"'+privateGoodsId[e-1]+'"}';  // a链接的url
         },
-        goGoodsDetail(id){
-            window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+id+'"}'
+        goGoodsDetail(item){
+            if ( item.source=="SELFSUPPORT" ) {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
+            } else {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
+            }
         }
     }
 });

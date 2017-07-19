@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017071902")
+    #set($version="2017071903")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
     <title>oppoR11 Plus 新品上市</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/07/oppoR11.css?version=$version">
@@ -18,7 +18,7 @@
         <p class="line"></p>
         <p class="title">R和A系列-自拍颜值满分King</p>
         <ul class="goodsList clearfix">
-            <li v-for="item in goodsMobileListMap.recommendGoodsList" @click="goGoodsDetail(item.goodsId)">
+            <li v-for="item in goodsMobileListMap.recommendGoodsList" @click="goGoodsDetail(item)">
                 <img :src="item.goodsIcon">
                 <div class="goodsListContent">
                     <p class="goodsListTitle">{{item.goodName}}</p>
