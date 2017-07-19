@@ -4,7 +4,7 @@
     #set($version="2017071904")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
     <title>oppoR11 Plus 新品上市</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/07/oppoR11.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/07/oppoR11Plus.css?version=$version">
 </head>
 <body>
     <div id="oppoR11">
@@ -31,6 +31,6 @@
             </li>
         </ul>
     </div>
-    <script type="text/javascript" src="/dist/activity/07/oppoR112.js?version=$version"></script>
+    <script type="text/javascript" src="/dist/activity/07/oppoR11Plus.js?version=$version"></script>
 </body>
 </html>
