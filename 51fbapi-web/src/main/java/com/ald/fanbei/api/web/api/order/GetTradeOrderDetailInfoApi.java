@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,6 +65,8 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
         vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
         vo.setActualAmount(order.getActualAmount());
         vo.setMobile(context.getUserName());
+        vo.setGmtPayStart(new Date());
+        vo.setGmtPayEnd(DateUtil.addHoures(order.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
         //订单状态
         vo.setOrderStatus(order.getStatus());
         if(OrderStatus.CLOSED.getCode().equals(order.getStatus())) {
@@ -83,7 +87,8 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
         AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(order.getRid());
         if(afBorrowDo != null){
             //分期信息设置 ¥300.00X12期
-            vo.setInstallmentInfo(NumberUtil.format2Str(afBorrowDo.getNperAmount())+"X"+afBorrowDo.getNper()+"期");
+            vo.setInstallmentInfo(NumberUtil.format2Str(afBorrowDo.getNperAmount())+"x"+afBorrowDo.getNper()+"期");
+            vo.setNper(afBorrowDo.getNper());
         }
         List<AfTradeBusinessInfoDto> list = afTradeBusinessInfoService.getByOrderId(order.getRid());
         if(list != null && list.size() > 0) {

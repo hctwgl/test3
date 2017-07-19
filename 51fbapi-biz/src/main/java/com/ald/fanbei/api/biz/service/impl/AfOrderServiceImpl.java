@@ -772,7 +772,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return resultMap;
 				} catch (FanbeiException exception) {
 					logger.error("payBrandOrder faied e = {}", exception);
-					//自营或代买记录支付失败信息，然后返回客户端提示
+					//自营,代买或商圈记录支付失败信息，然后返回客户端提示
 					if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
 						String payFailMsg = "";
 						if(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR.getCode().equals(exception.getErrorCode().getCode())){
