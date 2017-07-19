@@ -13,16 +13,15 @@ if(isLogin=='no'){
 }
 function buyNow(){
       var amount=$('.paymoney').val();
-         window.location.href='/fanbei-web/opennative?name=APP_TRADE_PAY&params={"tradeAmount":"'+amount+'"&tradeId":"'+id+'"&tradeName":"'+name+'"}';
+         window.location.href='/fanbei-web/opennative?name=APP_TRADE_PAY&params={"tradeAmount":"'+amount+'","tradeId":"'+id+'","tradeName":"'+name+'"}';
 }
 function btn() {
     $('.btn').show();
     var amount=$('.paymoney').val();
-    if(amount<canUseAmount){
-        $('.btn').css('background','gray');
-        $('.btn').attr('disabled','true');
+    if(amount!=''&&Number(amount)<=Number(canUseAmount)){
+        $('.btn').css('background','#FE963B').removeAttr('disabled','false');
+
     }else{
-        $('.btn').css('background','#FE963B');
-        $('.btn').removeAttr('disabled','false');
+        $('.btn').css('background','gray').attr('disabled','true');
     }
 }
