@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
  
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,9 @@ public class AppH5CouponController extends BaseController {
     			Map<String,Object> couponCategoryMap = new HashMap<String,Object>();
     			couponCategoryMap.put("name", afCouponCategoryDo.getName());
     			List <Map<String,Object>> couponInfoList = new ArrayList<Map<String,Object>>();
+    			HashMap allCouponMap = new HashMap();
+    			
+    			
     			String coupons = afCouponCategoryDo.getCoupons();
     			JSONArray array = (JSONArray) JSONArray.parse(coupons);
         		for(int i = 0; i < array.size(); i++){
@@ -92,8 +96,15 @@ public class AppH5CouponController extends BaseController {
         			couponInfoMap.put("type", afCouponDo.getType());
         			couponInfoMap.put("amount", afCouponDo.getAmount());
         			couponInfoMap.put("useRange", afCouponDo.getUseRange());
-        			couponInfoMap.put("gmtStart", afCouponDo.getGmtStart().getTime());
-        			couponInfoMap.put("gmtEnd", afCouponDo.getGmtEnd().getTime());
+        			Date gmtStart = afCouponDo.getGmtStart();
+        			if( gmtStart != null){
+        				couponInfoMap.put("gmtStart", gmtStart.getTime());
+        			}
+        			Date gmtEnd = afCouponDo.getGmtEnd();
+        			if (gmtEnd != null) {
+        				couponInfoMap.put("gmtEnd", gmtEnd.getTime());
+        			}
+        			
         			couponInfoMap.put("currentTime", System.currentTimeMillis());
         			if (!context.isLogin()) {
         				couponInfoMap.put("isDraw", "Y");
@@ -126,6 +137,8 @@ public class AppH5CouponController extends BaseController {
         		couponCategoryMap.put("couponInfoList", couponInfoList);
         		couponCategoryList.add(couponCategoryMap);
     		}
+    		
+    		
     		jsonObj.put("couponCategoryList", couponCategoryList);
         	return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
     	} catch (Exception e){
