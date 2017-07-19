@@ -44,7 +44,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Controller
 @RequestMapping("/fanbei-web")
-public class AppH5ConponController extends BaseController {
+public class AppH5CouponController extends BaseController {
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -85,6 +85,7 @@ public class AppH5ConponController extends BaseController {
         			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
         			String couponId = (String)array.getString(i);
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			couponInfoMap.put("shopUrl", afCouponCategoryDo.getUrl());
         			couponInfoMap.put("couponId", afCouponDo.getRid());
         			couponInfoMap.put("name", afCouponDo.getName());
         			couponInfoMap.put("useRule", afCouponDo.getUseRule());
@@ -116,8 +117,6 @@ public class AppH5ConponController extends BaseController {
         			} else {
         				couponInfoMap.put("isOver", "N");
         			}
-        			
-        			
         			couponInfoList.add(couponInfoMap);
         		}
         		couponCategoryMap.put("couponInfoList", couponInfoList);
