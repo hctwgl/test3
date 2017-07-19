@@ -399,7 +399,7 @@ public class TestController {
 //	
 	// TongdunUtil
 	
-	@RequestMapping(value = { "/wxRefundMobile" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+/*	@RequestMapping(value = { "/wxRefundMobile" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String wxRefundMobile(@RequestBody String body, HttpServletRequest request, HttpServletResponse response){
 		String message = "succ!";
@@ -424,7 +424,7 @@ public class TestController {
 			message = "There is no trade can refund!";
 		}
 		return message;
-	}
+	}*/
 
 	/**
 	 * app中微信支付回调接口
