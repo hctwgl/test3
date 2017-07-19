@@ -1,6 +1,8 @@
 body {
   background-color: #FAFAFA;
   position: relative;
+}
+* {
   box-sizing: border-box;
 }
 .clearfix:after {
@@ -36,17 +38,18 @@ body {
   margin-left: 0.38rem;
   border-radius: 0.08rem;
   text-align: center;
-  background: yellow;
+  background: white;
   position: relative;
 }
 #businessCode .blank input {
-  display: block;
+  display: inline-block;
   font-size: 0.56rem;
   padding: 0 0.1rem 0 0;
   text-align: right;
   position: absolute;
   right: 0;
   bottom: 0.16rem;
+  width: 75%;
 }
 #businessCode .blank input:-ms-input-placeholder {
   color: #000 !important;
