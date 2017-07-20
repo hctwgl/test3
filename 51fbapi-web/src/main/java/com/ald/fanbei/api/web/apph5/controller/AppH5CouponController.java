@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,13 +76,78 @@ public class AppH5CouponController extends BaseController {
     		}
     		// 查询所有优惠券分类
     		List<AfCouponCategoryDo> afCouponCategoryList = afCouponCategoryService.listAllCouponCategory();
-    		List <Map<String,Object>> couponCategoryList = new ArrayList<Map<String,Object>>();
+    		List <Map<String,Object>> couponCategoryList = new LinkedList<Map<String,Object>>();
+    		
+    		Map<String,Object> allCouponMap = new HashMap<String,Object>();
+    		List<HashMap<String,Object>> allCouponInfoList = new ArrayList<HashMap<String,Object>>();
+    		allCouponMap.put("couponInfoList",allCouponInfoList);
+    		couponCategoryList.add(allCouponMap);
+    		allCouponMap.put("name", "推荐");
+    		AfCouponCategoryDo couponCategoryAll = afCouponCategoryService.getCouponCategoryAll();
+    		if(couponCategoryAll != null ) {
+    			String couponsAll = couponCategoryAll.getCoupons();
+        		JSONArray arrayAll = (JSONArray) JSONArray.parse(couponsAll);
+        		for(int i = 0; i < arrayAll.size(); i++){
+        			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
+        			String couponId = (String)arrayAll.getString(i);
+        			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			couponInfoMap.put("shopUrl", couponCategoryAll.getUrl());
+        			couponInfoMap.put("couponId", afCouponDo.getRid());
+        			couponInfoMap.put("name", afCouponDo.getName());
+        			couponInfoMap.put("useRule", afCouponDo.getUseRule());
+        			couponInfoMap.put("type", afCouponDo.getType());
+        			couponInfoMap.put("amount", afCouponDo.getAmount());
+        			couponInfoMap.put("useRange", afCouponDo.getUseRange());
+        			Date gmtStart = afCouponDo.getGmtStart();
+        			if( gmtStart != null){
+        				couponInfoMap.put("gmtStart", gmtStart.getTime());
+        			} else {
+        				couponInfoMap.put("gmtStart", 0);
+        			}
+        			Date gmtEnd = afCouponDo.getGmtEnd();
+        			if (gmtEnd != null) {
+        				couponInfoMap.put("gmtEnd", gmtEnd.getTime());
+        			} else {
+        				couponInfoMap.put("gmtEnd", 0);
+        			}
+        			
+        			couponInfoMap.put("currentTime", System.currentTimeMillis());
+        			if (!context.isLogin()) {
+        				couponInfoMap.put("isDraw", "Y");
+        			} else {
+        				// 获取用户信息
+        				String userName = context.getUserName();
+            			AfUserDo user = afUserService.getUserByUserName(userName);
+            			// 判断是否领取优惠券
+            			int userCouponCount = afUserCouponService.getUserCouponByUserIdAndCouponId(user.getRid(), Long.parseLong(couponId));
+            			if(userCouponCount < afCouponDo.getLimitCount()){
+            				couponInfoMap.put("isDraw", "Y");
+            			} else {
+            				couponInfoMap.put("isDraw", "N");
+            			}
+        			}
+        			// 判断优惠券是否领完
+        			Long quota = afCouponDo.getQuota();
+        			Integer quotaAlready = afCouponDo.getQuotaAlready();
+        			if(quota != 0 && quota != -1 && quota.intValue() <= quotaAlready.intValue()){
+        				if(context.isLogin() && "N".equals(couponInfoMap.get("isDraw"))) {
+        					couponInfoMap.put("isOver", "N");
+        				} else {
+        					couponInfoMap.put("isOver", "Y");
+        				}
+        			} else {
+        				couponInfoMap.put("isOver", "N");
+        			}
+        			allCouponInfoList.add(couponInfoMap);
+        		}
+    		}
+    		
+    		
+    		
     		for(AfCouponCategoryDo afCouponCategoryDo: afCouponCategoryList) {
     			Map<String,Object> couponCategoryMap = new HashMap<String,Object>();
     			couponCategoryMap.put("name", afCouponCategoryDo.getName());
     			List <Map<String,Object>> couponInfoList = new ArrayList<Map<String,Object>>();
-    			HashMap allCouponMap = new HashMap();
-    			
     			
     			String coupons = afCouponCategoryDo.getCoupons();
     			JSONArray array = (JSONArray) JSONArray.parse(coupons);
@@ -137,12 +203,11 @@ public class AppH5CouponController extends BaseController {
         				couponInfoMap.put("isOver", "N");
         			}
         			couponInfoList.add(couponInfoMap);
+        			allCouponInfoList.add(couponInfoMap);
         		}
         		couponCategoryMap.put("couponInfoList", couponInfoList);
         		couponCategoryList.add(couponCategoryMap);
     		}
-    		
-    		
     		jsonObj.put("couponCategoryList", couponCategoryList);
         	return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
     	} catch (Exception e){

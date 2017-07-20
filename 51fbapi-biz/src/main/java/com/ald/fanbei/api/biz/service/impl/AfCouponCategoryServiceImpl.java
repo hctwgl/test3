@@ -46,6 +46,16 @@ public class AfCouponCategoryServiceImpl implements AfCouponCategoryService {
 	public int updateCouponCategory(AfCouponCategoryDo afCouponCategoryDo) {
 		return afCouponCategoryDao.updateCouponCategory(afCouponCategoryDo);
 	}
+
+	@Override
+	public List<AfCouponCategoryDo> getCouponCategoryByCouponId(Long rid) {
+		return afCouponCategoryDao.getCouponCategoryByCouponId(rid);
+	}
+
+	@Override
+	public AfCouponCategoryDo getCouponCategoryAll() {
+		return afCouponCategoryDao.getCouponCategoryAll();
+	}
 	
 	
 

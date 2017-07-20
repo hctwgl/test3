@@ -23,6 +23,10 @@ public interface AfCouponCategoryDao {
 	AfCouponCategoryDo getCouponCategoryById(@Param("id")String couponCategoryId);
 
 	int updateCouponCategory(AfCouponCategoryDo afCouponCategoryDo);
+
+	List<AfCouponCategoryDo> getCouponCategoryByCouponId(@Param("couponId") Long couponId);
+
+	AfCouponCategoryDo getCouponCategoryAll();
 	
 	
 }

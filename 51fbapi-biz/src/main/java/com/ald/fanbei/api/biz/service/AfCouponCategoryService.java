@@ -23,5 +23,9 @@ public interface AfCouponCategoryService {
 
 	int updateCouponCategory(AfCouponCategoryDo afCouponCategoryDo);
 
+	List<AfCouponCategoryDo> getCouponCategoryByCouponId(Long rid);
+
+	AfCouponCategoryDo getCouponCategoryAll();
+
 	
 }

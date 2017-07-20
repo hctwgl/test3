@@ -22,6 +22,7 @@ public class AfCouponCategoryDo extends AbstractSerial{
 	private String name;
 	private String coupons;
 	private String url;
+	private String tag;
 	public Long getId() {
 		return id;
 	}
@@ -76,4 +77,11 @@ public class AfCouponCategoryDo extends AbstractSerial{
 	public void setUrl(String url) {
 		this.url = url;
 	}
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	
 }
