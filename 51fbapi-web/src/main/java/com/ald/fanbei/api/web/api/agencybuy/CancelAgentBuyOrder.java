@@ -71,7 +71,9 @@ public class CancelAgentBuyOrder implements ApiHandle {
 			
 			if(afOrderService.updateOrder(afOrderDo) > 0){
 				//更新库存
-				afGoodsPriceService.updateStockAndSaleByPriceId(currAfOrderDo.getGoodsPriceId(), false);
+				if(currAfOrderDo.getGoodsPriceId() != null){
+					afGoodsPriceService.updateStockAndSaleByPriceId(currAfOrderDo.getGoodsPriceId(), false);
+				}
 				
 				//优惠券处理
 				if(currAfOrderDo.getUserCouponId()>0){
