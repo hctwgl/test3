@@ -43,8 +43,6 @@ import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.druid.sql.visitor.functions.If;
-import com.sun.tools.classfile.StackMapTable_attribute.append_frame;
 
 /**
  * @类描述：自营商品下单（oppr11） @author suweili 2017年6月16日下午3:44:12
