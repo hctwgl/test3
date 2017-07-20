@@ -223,7 +223,7 @@ public abstract class BaseController {
 		//如果是测试环境
 		if(Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)) && StringUtil.isBlank(appInfo)){
 			String testUser = getTestUser(request.getHeader("Referer"));
-			if(testUser != null){
+			if(testUser != null && !"".equals(testUser)){
 				if("no".equals(testUser)){
 					return webContext;
 				}else{
@@ -624,31 +624,5 @@ public abstract class BaseController {
 		} catch (UnsupportedEncodingException ex) {
 			throw new AssertionError(ex);
 		}
-	}
-	
-	/**
-	 * h5接口验证，验证基础参数、签名
-	 * @param request
-	 * @param needToken
-	 * @return
-	 */
-	protected FanbeiWebContext doWebCheckNoAjax(HttpServletRequest request,boolean needToken){
-		FanbeiWebContext webContext = new FanbeiWebContext();
-		String appInfo = request.getParameter("_appInfo");
-		webContext.setAppInfo(appInfo);
-		if(StringUtil.isBlank(appInfo)){
-			if(needToken){
-				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-			}else{
-				return webContext;
-			}
-		}
-		RequestDataVo requestDataVo = parseRequestData(appInfo, request);
-		requestDataVo.setParams(new HashMap<String, Object>());
-		FanbeiContext baseContext = this.doBaseParamCheck(requestDataVo);
-		webContext.setUserName(baseContext.getUserName());
-		webContext.setAppVersion(baseContext.getAppVersion());
-		checkWebSign(webContext,requestDataVo, needToken);
-		return webContext;
 	}
 }
