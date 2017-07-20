@@ -19,11 +19,11 @@ let vm = new Vue({
                 url: "/fanbei-web/couponCategoryInfo",
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
-                    //console.log(self.content);
+                    console.log(self.content);
                     var liLength=self.content.couponCategoryList.length;
-                    self.$nextTick(function () {
+                    self.$nextTick(function () {//tab计算样式
                         $('.navList li').eq(0).addClass('border');
-                        $('.contList li').eq(0).addClass('active');                               //dom渲染完成后执行
+                        $('.contList li').eq(0).addClass('active'); //dom渲染完成后执行
                         
                         if(liLength<2){
                              $('#tabNav').hide();
@@ -56,17 +56,9 @@ let vm = new Vue({
                     var diff=0;
                     for(var i=0;i<liLength;i++){
                         var couponCategory=self.content.couponCategoryList[i];
-                        //console.log(couponCategory.couponInfoList)  
-                        for(var j=0;j<couponCategory.couponInfoList.length;j++){
-                            //排序                            
-                             for(var k = j + 1;k<couponCategory.couponInfoList.length;k++){
-                                 if(couponCategory.couponInfoList[j].gmtEnd>couponCategory.couponInfoList[k].gmtEnd){
-                                     var tmp = couponCategory.couponInfoList[j];
-                                     couponCategory.couponInfoList[j] = couponCategory.couponInfoList[k];
-                                     couponCategory.couponInfoList[k] = tmp;
-                                 }
-                             }
-                             //即将到期
+                        //console.log(couponCategory.couponInfoList) 
+                        //即将到期 
+                        for(var j=0;j<couponCategory.couponInfoList.length;j++){                             
                              var currentTime=couponCategory.couponInfoList[j].currentTime;
                              var startTime=couponCategory.couponInfoList[j].gmtStart;
                              var endTime=couponCategory.couponInfoList[j].gmtEnd;
@@ -82,13 +74,21 @@ let vm = new Vue({
                              }else{
                                 state='noTimeOver';
                              }
-                             couponCategory.couponInfoList[j].state=state;                                                      
+                             couponCategory.couponInfoList[j].state=state;                                          
                         }
-
+                        //排序   
+                        for(var j=0;j<couponCategory.couponInfoList.length;j++){
+                            for(var k = 0;k<couponCategory.couponInfoList.length;k++){                    
+                                if(couponCategory.couponInfoList[j].gmtEnd<couponCategory.couponInfoList[k].gmtEnd){
+                                    var tmp = couponCategory.couponInfoList[k];
+                                    couponCategory.couponInfoList[k] = couponCategory.couponInfoList[j];
+                                    couponCategory.couponInfoList[j] = tmp;
+                                }
+                            }
+                        }
+                                                          
                     }
-                    //console.log(0)
-                    //console.log(self.content.couponCategoryList);
-                    
+                    //计算年月日                   
                     function format(stramp) { //stramp是整数，否则要parseInt转换 
                         var time = new Date(stramp); 
                         var y = time.getFullYear(); 
