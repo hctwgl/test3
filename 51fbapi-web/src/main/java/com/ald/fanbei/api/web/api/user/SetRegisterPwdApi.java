@@ -125,7 +125,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 		afUserService.updateUser(userDo);
 		
 		// 注册完成,给用户发送注册成功的短信
-		smsUtil.sendRegisterSuccessSms(userDo.getUserName());;
+//		smsUtil.sendRegisterSuccessSms(userDo.getUserName());
         
  
         return resp;
