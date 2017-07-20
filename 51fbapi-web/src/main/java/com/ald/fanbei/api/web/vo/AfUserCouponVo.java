@@ -31,6 +31,10 @@ public class AfUserCouponVo extends AbstractSerial{
 	
 	private String		status;//优惠券状态 EXPIRE:过期 ; NOUSE:未使用 ， USED:已使用
 	private String		type;
+	
+	private String      willExpireStatus;
+	
+	private String shopUrl;
 
 	public String getName() {
 		return name;
@@ -109,5 +113,23 @@ public class AfUserCouponVo extends AbstractSerial{
 	public void setRid(Long rid) {
 		this.rid = rid;
 	}
+
+	public String getWillExpireStatus() {
+		return willExpireStatus;
+	}
+
+	public void setWillExpireStatus(String isExpire) {
+		this.willExpireStatus = isExpire;
+	}
+
+	public String getShopUrl() {
+		return shopUrl;
+	}
+
+	public void setShopUrl(String shopUrl) {
+		this.shopUrl = shopUrl;
+	}
+	
+	
 	
 }
