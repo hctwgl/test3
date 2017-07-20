@@ -52,7 +52,7 @@ let vm = new Vue({
                              //console.log(liWidth)
                         }
                     })
-                    //计算有效期与是否过期
+                    //计算排序与即将到期
                     var diff=0;
                     for(var i=0;i<liLength;i++){
                         var couponCategory=self.content.couponCategoryList[i];
@@ -66,31 +66,31 @@ let vm = new Vue({
                                      couponCategory.couponInfoList[k] = tmp;
                                  }
                              }
-                             //排序 
+                             //即将到期
                              var currentTime=couponCategory.couponInfoList[j].currentTime;
                              var startTime=couponCategory.couponInfoList[j].gmtStart;
                              var endTime=couponCategory.couponInfoList[j].gmtEnd;
                              //console.log(endTime)
                              couponCategory.couponInfoList[j].start=format(startTime);
                              couponCategory.couponInfoList[j].end=format(endTime);
-                             console.log(couponCategory.couponInfoList[j].end)
+                             //console.log(couponCategory.couponInfoList[j].end)
                              diff=(endTime-currentTime)/1000;
-                             var h=parseInt(diff/3600);
+                             var h=parseInt(diff/3600);                            
                              var state;
-                             if(h<48){
+                             if(0<h&&h<48){
                                 state='timeOver';                                
                              }else{
                                 state='noTimeOver';
                              }
-                             couponCategory.couponInfoList[j].state=state;
-                                                       
+                             couponCategory.couponInfoList[j].state=state;                                                      
                         }
 
                     }
-                    console.log(self.content.couponCategoryList);
-                    console.log(0)
-                    function format(shijianchuo) { //shijianchuo是整数，否则要parseInt转换 
-                        var time = new Date(shijianchuo); 
+                    //console.log(0)
+                    //console.log(self.content.couponCategoryList);
+                    
+                    function format(stramp) { //stramp是整数，否则要parseInt转换 
+                        var time = new Date(stramp); 
                         var y = time.getFullYear(); 
                         var m = time.getMonth()+1; 
                         var d = time.getDate();
