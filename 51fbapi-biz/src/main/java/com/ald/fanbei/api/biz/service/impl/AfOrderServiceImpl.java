@@ -1271,10 +1271,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			AfOrderDo order = orderDao.getOrderById(orderId);
 			List<String> agentbuyStatus = new ArrayList<String>();
 			agentbuyStatus.add(OrderStatus.AGENCYCOMPLETED.getCode());
+			agentbuyStatus.add(OrderStatus.DELIVERED.getCode());
 			agentbuyStatus.add(OrderStatus.FINISHED.getCode());
 			agentbuyStatus.add(OrderStatus.REBATED.getCode());
 			List<String> otherbuyStatus = new ArrayList<String>();
 			otherbuyStatus.add(OrderStatus.PAID.getCode());
+			otherbuyStatus.add(OrderStatus.DELIVERED.getCode());
 			otherbuyStatus.add(OrderStatus.FINISHED.getCode());
 			otherbuyStatus.add(OrderStatus.REBATED.getCode());
 			//代买和自营及状态匹配才满足申请售后条件
@@ -1289,7 +1291,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				//发货时间不为空，以发货时间为准，因为此字段app3.7.0版本后添加
 				waitDelieveDate = order.getGmtDeliver();
 			}else{
-				//代表app3.7.0版本前数据，做兼容
+				//代表app3.7.1版本前数据，做兼容
 				if(OrderType.SELFSUPPORT.getCode().equals(order.getOrderType())){
 					waitDelieveDate = order.getGmtPay();
 				}else{

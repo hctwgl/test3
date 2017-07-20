@@ -110,6 +110,6 @@ public interface AfUserCouponDao {
 	AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo);
 
 	AfUserCouponDto getSubjectUserCouponByAmountAndCouponId(@Param("userId")Long userId, 
-			@Param("actualAmount")BigDecimal actualAmount, @Param("couponId")String couponId);
+			@Param("amount")BigDecimal actualAmount, @Param("couponId")String couponId);
 
 }

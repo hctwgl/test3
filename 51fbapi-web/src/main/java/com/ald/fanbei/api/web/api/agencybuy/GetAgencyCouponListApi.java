@@ -66,22 +66,25 @@ public class GetAgencyCouponListApi implements ApiHandle {
 			Long subjectId = subjectGood.getParentSubjectId();
 			// 获取会场信息
 			AfSubjectDo afSubjectDo = afSubjectService.getSubjectInfoById(subjectId + "");
-			Long couponCategoryId = afSubjectDo.getCouponId();
-			// 查询优惠券分类信息
-			AfCouponCategoryDo afCouponCategoryDo = afCouponCategoryService.getCouponCategoryById(couponCategoryId + "");
-			if (afCouponCategoryDo != null) {
-				String coupons = afCouponCategoryDo.getCoupons();
-				JSONArray array = (JSONArray) JSONArray.parse(coupons);
-        		for(int i = 0; i < array.size(); i++){
-        			String couponId = (String)array.getString(i);
-        			// 查询用户领券优惠券
-        			AfUserCouponDto afUserCouponDo = afUserCouponService.getSubjectUserCouponByAmountAndCouponId(userId,actualAmount,couponId);
-        			if (afUserCouponDo != null) {
-        				subjectUserCouponList.add(afUserCouponDo);
-        			}
-        		}
+			if(afSubjectDo != null) {
+				Long couponCategoryId = afSubjectDo.getCouponId();
+				// 查询优惠券分类信息
+				AfCouponCategoryDo afCouponCategoryDo = afCouponCategoryService.getCouponCategoryById(couponCategoryId + "");
+				if (afCouponCategoryDo != null) {
+					String coupons = afCouponCategoryDo.getCoupons();
+					JSONArray array = (JSONArray) JSONArray.parse(coupons);
+	        		for(int i = 0; i < array.size(); i++){
+	        			String couponId = (String)array.getString(i);
+	        			// 查询用户领券优惠券
+	        			AfUserCouponDto afUserCouponDo = afUserCouponService.getSubjectUserCouponByAmountAndCouponId(userId,actualAmount,couponId);
+	        			if (afUserCouponDo != null) {
+	        				subjectUserCouponList.add(afUserCouponDo);
+	        			}
+	        		}
+				}
 			}
 		}
+			
 		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
 		list.addAll(subjectUserCouponList);
 		Map<String, Object> data = new HashMap<String, Object>();

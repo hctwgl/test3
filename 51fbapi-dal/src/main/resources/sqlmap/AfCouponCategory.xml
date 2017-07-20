@@ -37,6 +37,8 @@
 			af_coupon_category 
 		WHERE
 			is_delete=0
+		AND
+			tag != 'ALL'
 	</select>
 	
 	<update id="deleteCouponCategory" parameterType="java.lang.String">
