@@ -129,10 +129,10 @@ public class AppH5CouponController extends BaseController {
         			Long quota = afCouponDo.getQuota();
         			Integer quotaAlready = afCouponDo.getQuotaAlready();
         			if(quota != 0 && quota != -1 && quota.intValue() <= quotaAlready.intValue()){
-        				if(context.isLogin() && "N".equals(couponInfoMap.get("isDraw"))) {
+        				if(!context.isLogin()) {
         					couponInfoMap.put("isOver", "N");
         				} else {
-        					couponInfoMap.put("isOver", "Y");
+        				 	couponInfoMap.put("isOver", "Y");
         				}
         			} else {
         				couponInfoMap.put("isOver", "N");
@@ -140,8 +140,6 @@ public class AppH5CouponController extends BaseController {
         			allCouponInfoList.add(new HashMap<String, Object>(couponInfoMap));
         		}
     		}
-    		
-    		
     		
     		for(AfCouponCategoryDo afCouponCategoryDo: afCouponCategoryList) {
     			Map<String,Object> couponCategoryMap = new HashMap<String,Object>();
@@ -193,10 +191,10 @@ public class AppH5CouponController extends BaseController {
         			Long quota = afCouponDo.getQuota();
         			Integer quotaAlready = afCouponDo.getQuotaAlready();
         			if(quota != 0 && quota != -1 && quota.intValue() <= quotaAlready.intValue()){
-        				if(context.isLogin() && "N".equals(couponInfoMap.get("isDraw"))) {
+        				if(!context.isLogin()) {
         					couponInfoMap.put("isOver", "N");
         				} else {
-        					couponInfoMap.put("isOver", "Y");
+        				 	couponInfoMap.put("isOver", "Y");
         				}
         			} else {
         				couponInfoMap.put("isOver", "N");

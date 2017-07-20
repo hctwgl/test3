@@ -51,7 +51,7 @@
 		<if test="status != null and status !=''">
 			and u.status = #{status}
 		</if>
-		ORDER BY u.gmt_create desc
+		ORDER BY u.gmt_end
 	</select>
 	
 	
