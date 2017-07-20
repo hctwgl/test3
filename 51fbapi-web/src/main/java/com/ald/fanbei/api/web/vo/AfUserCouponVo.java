@@ -35,6 +35,8 @@ public class AfUserCouponVo extends AbstractSerial{
 	private String      willExpireStatus;
 	
 	private String shopUrl;
+	
+	private String useRange;
 
 	public String getName() {
 		return name;
@@ -129,7 +131,12 @@ public class AfUserCouponVo extends AbstractSerial{
 	public void setShopUrl(String shopUrl) {
 		this.shopUrl = shopUrl;
 	}
-	
-	
-	
+
+	public String getUseRange() {
+		return useRange;
+	}
+
+	public void setUseRange(String useRange) {
+		this.useRange = useRange;
+	}
 }
