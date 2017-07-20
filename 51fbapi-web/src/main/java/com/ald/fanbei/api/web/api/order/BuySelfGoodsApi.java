@@ -120,6 +120,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setGoodsPriceId(goodsPriceId);
 		if(priceDo != null){
 			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
+			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
 		}
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
