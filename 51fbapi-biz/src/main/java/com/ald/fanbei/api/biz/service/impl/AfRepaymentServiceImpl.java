@@ -381,5 +381,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	    	bo.setOverdueTimes(overduetimes);
 	    	return bo;
 	    }
+
+	@Override
+	public int dealRepaymentFail(String tradeNo) {
+		
+		return afRepaymentDao.dealRepaymentFail(tradeNo);
+	}
 	
 }

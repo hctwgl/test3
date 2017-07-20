@@ -47,4 +47,11 @@ public interface AfRepaymentDao {
     
     
    int  updateRepaymentByAfRepaymentDo(AfRepaymentDo repaymentDo);
+   
+   /**
+    * 处理分期还款失败的订单
+    * @param tradeNo
+    * @return
+    */
+   int dealRepaymentFail(@Param("tradeNo")String tradeNo);
 }

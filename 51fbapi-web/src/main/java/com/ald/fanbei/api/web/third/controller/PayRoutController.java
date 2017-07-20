@@ -308,6 +308,8 @@ public class PayRoutController {
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
+				} else if(PayOrderSource.REPAYMENT.getCode().equals(merPriv)){
+					afRepaymentService.dealRepaymentFail(outTradeNo);
 				}
 			}
 			return "SUCCESS";
