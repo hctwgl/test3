@@ -481,7 +481,7 @@
         FROM af_trade_business_info i, af_trade_order o
         WHERE o.business_id = i.business_id AND o.is_delete = 0 AND i.is_delete = 0
         <if test="orderId != null">
-            o.order_id = #{orderId}
+            AND o.order_id = #{orderId}
         </if>
     </select>
 </mapper>

@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfSubjectDao">
 	
 	<sql id="subjectSqlField">
-		m.id,m.gmt_create,m.gmt_modified,m.name,m.level,m.tag,m.theme,m.parent_id
+		m.id,m.gmt_create,m.gmt_modified,m.name,m.level,m.tag,m.theme,m.parent_id,m.coupon_id
 	</sql>
 	
 	<insert id="addSubject" parameterType="AfSubjectDo" keyProperty="id" useGeneratedKeys="true" >

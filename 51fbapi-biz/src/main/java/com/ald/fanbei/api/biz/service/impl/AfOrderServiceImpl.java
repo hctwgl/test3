@@ -772,7 +772,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return resultMap;
 				} catch (FanbeiException exception) {
 					logger.error("payBrandOrder faied e = {}", exception);
-					//自营或代买记录支付失败信息，然后返回客户端提示
+					//自营,代买或商圈记录支付失败信息，然后返回客户端提示
 					if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
 						String payFailMsg = "";
 						if(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR.getCode().equals(exception.getErrorCode().getCode())){
@@ -997,10 +997,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					if (orderInfo == null 
-							|| (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
-									&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())
-									&& !orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()))) {
-						return 0;
+	   						 || 
+	   						 (	!orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()) 
+	   						    &&!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode()) 
+   								&&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
+   								&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
+							return 0;
 					}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
 					orderInfo.setPayTradeNo(payOrderNo);

@@ -5,6 +5,8 @@ package com.ald.fanbei.api.web.api.user;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,7 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 	
 	String UNKNOW = "未知";
 
+	private final static int EXPIRE_DAY = 2;
 	
 	@Resource
 	AfUserCouponService afUserCouponService;
@@ -80,30 +83,20 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 
 	public Map<String, Object> couponObjectWithAfUserCouponDtoList(List<AfUserCouponDto> couponList,AfMoblieChargeDo afMoblieChargeDo){
 		Map<String, Object> returnData = new HashMap<String, Object>();
-	
-
 		List<Object> list = new ArrayList<Object>();
-	
 		for (AfUserCouponDto afUserCouponDto : couponList) {
-		
 			list.add(couponObjectWithAfUserCouponDto(afUserCouponDto));
-			
 		}
-
 		returnData.put("couponList", list);
 	    if(afMoblieChargeDo==null)	{
 	    	JSONArray array = new JSONArray();
-	   		returnData.put("rechargeList", array);	
-
+	   		returnData.put("rechargeList", array);
 	    }else{
-	    	   String priceJson = afMoblieChargeDo.getPriceJson();		
+	    	String priceJson = afMoblieChargeDo.getPriceJson();		
 	   		JSONArray array = JSONArray.parseArray(priceJson);
-	   		
 	   		returnData.put("rechargeList", array);	
 	    }
-	 
 		return returnData;
-		
 	}
 	
 	public Map<String, Object> couponObjectWithAfUserCouponDto(AfUserCouponDto afUserCouponDto){
@@ -114,10 +107,24 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 		returnData.put("name", afUserCouponDto.getName());
 		returnData.put("gmtStart", afUserCouponDto.getGmtStart());
 		returnData.put("gmtEnd", afUserCouponDto.getGmtEnd());
+		returnData.put("type", afUserCouponDto.getType());
+		Date gmtEnd = afUserCouponDto.getGmtEnd();
+		// 如果当前时间离到期时间小于48小时,则显示即将过期
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_YEAR, EXPIRE_DAY);
+		Date twoDay = cal.getTime();
+		if(gmtEnd != null){
+			if(twoDay.after(gmtEnd)) {
+				afUserCouponDto.setWillExpireStatus("Y");
+			} else {
+				afUserCouponDto.setWillExpireStatus("N");
+			}
+		} else {
+			afUserCouponDto.setWillExpireStatus("N");
+		}
+		returnData.put("willExpireStatus", afUserCouponDto.getWillExpireStatus());
 		returnData.put("amount", afUserCouponDto.getAmount());
-
 		return returnData;
-
 	}
 
 }

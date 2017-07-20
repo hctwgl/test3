@@ -52,7 +52,10 @@ public enum AfOrderStatusMsgRemark {
             				|| OrderType.BOLUOME.getCode().equals(orderType)){
             			roleType.setStatusMsg("待收货");
             			roleType.setStatusRemark("请确认已签收商品/服务");
-            		}
+            		}else if(OrderType.TRADE.getCode().equals(orderType)) {
+						roleType.setStatusMsg("已支付");
+						roleType.setStatusRemark("订单已支付");
+					}
             	}
             	if(FINISHED.getCode().equals(roleType.getCode())){
             		if(isExistRebates){

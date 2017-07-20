@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 
+
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
@@ -117,5 +118,7 @@ public interface AfUserCouponService {
 	List<AfUserCouponDto> getUserCouponByUserIdAndSourceType(Long userId,String sourceType);
 
 	AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo);
+
+	AfUserCouponDto getSubjectUserCouponByAmountAndCouponId(Long userId, BigDecimal actualAmount, String couponId);
 
 }

@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.repayment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -34,6 +36,7 @@ import com.ald.fanbei.api.web.vo.AfUserCouponVo;
 @Component("getRepaymentConfirmInfoApi")
 public class GetRepaymentConfirmInfoApi implements ApiHandle{
 
+	private final static int EXPIRE_DAY = 2;
 	@Resource
 	private AfBorrowBillService afBorrowBillService;
 	
@@ -42,6 +45,7 @@ public class GetRepaymentConfirmInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfUserCouponService afUserCouponService;
+	
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -83,11 +87,26 @@ public class GetRepaymentConfirmInfoApi implements ApiHandle{
 				userCoupon.setRid(afUserCouponDto.getRid());
 				userCoupon.setAmount(afUserCouponDto.getAmount());
 				userCoupon.setGmtEnd(afUserCouponDto.getGmtEnd());
+				Date gmtEnd = userCoupon.getGmtEnd();
+				// 如果当前时间离到期时间小于48小时,则显示即将过期
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.DAY_OF_YEAR, EXPIRE_DAY);
+				Date twoDay = cal.getTime();
+				if(gmtEnd != null){
+					if(twoDay.after(gmtEnd)) {
+						userCoupon.setWillExpireStatus("Y");
+					} else {
+						userCoupon.setWillExpireStatus("N");
+					}
+				} else {
+					userCoupon.setWillExpireStatus("N");
+				}
 				userCoupon.setGmtStart(afUserCouponDto.getGmtStart());
 				userCoupon.setLimitAmount(afUserCouponDto.getLimitAmount());
 				userCoupon.setName(afUserCouponDto.getName());
 				userCoupon.setStatus(afUserCouponDto.getStatus());
 				userCoupon.setUseRule(afUserCouponDto.getUseRule());
+				userCoupon.setType(afUserCouponDto.getType());
 				couponList.add(userCoupon);
 			}
 			vo.setCouponList(couponList);

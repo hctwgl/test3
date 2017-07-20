@@ -189,16 +189,6 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 			vo.setNperAmount(BigDecimal.ZERO);
 		}
 			
-		//商圈订单
-		if(order.getOrderType().equals(OrderType.TRADE.getCode())) {
-			List<AfTradeBusinessInfoDto> list = afTradeBusinessInfoService.getByOrderId(order.getRid());
-			if(list != null && list.size() > 0) {
-				AfTradeBusinessInfoDto dto = list.get(0);
-				vo.setBusinessIcon(dto.getImageUrl());
-				vo.setBusinessName(dto.getName());
-			}
-
-		}
 		return vo;
 	}
 }

@@ -29,11 +29,7 @@
     </sql>
 
 
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo" keyProperty="id">
-        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
-            SELECT LAST_INSERT_ID()
-        </selectKey>
-
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
         INSERT INTO af_trade_order
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="orderId != null">
