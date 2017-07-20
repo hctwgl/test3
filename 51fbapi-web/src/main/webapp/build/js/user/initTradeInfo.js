@@ -18,9 +18,8 @@ function buyNow(){
 function btn() {
     $('.btn').show();
     var amount=$('.paymoney').val();
-    if(amount!=''&&Number(amount)<=Number(canUseAmount)){
+    if( 0<Number(amount) && Number(amount)<=Number(canUseAmount) ){
         $('.btn').css('background','#FE963B').removeAttr('disabled','false');
-
     }else{
         $('.btn').css('background','gray').attr('disabled','true');
     }
