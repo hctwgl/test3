@@ -43,6 +43,8 @@ import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.druid.sql.visitor.functions.If;
+import com.sun.tools.classfile.StackMapTable_attribute.append_frame;
 
 /**
  * @类描述：自营商品下单（oppr11） @author suweili 2017年6月16日下午3:44:12
@@ -84,6 +86,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 
+		Integer appversion = context.getAppVersion();
+		
 		Date currTime = new Date();
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
@@ -93,8 +97,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 		}
 		AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
-		if (goodsDo == null || priceDo == null) {
-			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+		if(appversion >= 371){
+			if ( goodsDo == null || priceDo == null) {
+				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+			}
+		}else
+		{
+			if ( goodsDo == null ) {
+				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+			}
 		}
 		if(!AfGoodsStatus.PUBLISH.getCode().equals(goodsDo.getStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_CANCEL);
