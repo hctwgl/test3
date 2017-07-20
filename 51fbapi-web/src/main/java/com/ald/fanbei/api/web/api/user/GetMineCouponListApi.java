@@ -45,7 +45,7 @@ public class GetMineCouponListApi implements ApiHandle{
 	@Resource
 	private AfCouponCategoryService afCouponCategoryService;
 	
-	private static int EXPIRE_DAY = 2;
+	private final static int EXPIRE_DAY = 2;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
