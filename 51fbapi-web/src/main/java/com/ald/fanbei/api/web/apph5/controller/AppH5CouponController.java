@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +75,7 @@ public class AppH5CouponController extends BaseController {
     		}
     		// 查询所有优惠券分类
     		List<AfCouponCategoryDo> afCouponCategoryList = afCouponCategoryService.listAllCouponCategory();
-    		List <Map<String,Object>> couponCategoryList = new LinkedList<Map<String,Object>>();
+    		List <Map<String,Object>> couponCategoryList = new ArrayList<Map<String,Object>>();
     		
     		Map<String,Object> allCouponMap = new HashMap<String,Object>();
     		List<HashMap<String,Object>> allCouponInfoList = new ArrayList<HashMap<String,Object>>();
@@ -138,7 +137,7 @@ public class AppH5CouponController extends BaseController {
         			} else {
         				couponInfoMap.put("isOver", "N");
         			}
-        			allCouponInfoList.add(couponInfoMap);
+        			allCouponInfoList.add(new HashMap<String, Object>(couponInfoMap));
         		}
     		}
     		
@@ -203,7 +202,7 @@ public class AppH5CouponController extends BaseController {
         				couponInfoMap.put("isOver", "N");
         			}
         			couponInfoList.add(couponInfoMap);
-        			allCouponInfoList.add(couponInfoMap);
+        			allCouponInfoList.add(new HashMap<String,Object>(couponInfoMap));
         		}
         		couponCategoryMap.put("couponInfoList", couponInfoList);
         		couponCategoryList.add(couponCategoryMap);
