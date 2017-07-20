@@ -316,11 +316,13 @@ public class AppH5FanBeiWebController extends BaseController {
 			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
 			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
 			JSONObject resultJson = JSONObject.parseObject(resultString);
-			if (!"0".equals(resultJson.getString("code"))) {
-				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
-			} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
+			String code = resultJson.getString("code");
+			//10222代表已经一天只能领取一张
+			if ("10222".equals(code)) {
 				return H5CommonResponse.getNewInstance(false, "今日已领取，请明日再来！", null, null).toString();
-			}
+			} else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+			} 
 			return H5CommonResponse.getNewInstance(true, "领券成功，有效期3天", "", null).toString();
 
 		} catch (Exception e) {
