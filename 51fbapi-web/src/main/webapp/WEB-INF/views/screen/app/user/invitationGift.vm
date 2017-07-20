@@ -69,7 +69,12 @@
     		<div class="invitationGift_footer_wrap">
 	    		<div class="invitationGift_footer">
 	    			<div class="invitationGift_content clearfix">
-	    				<img src="$!{avatar}">
+##	    				<img src="$!{avatar}">
+						#if($!{avatar}=='')
+							<img src="$commonUrl/app/images/user/icon120.png">
+						#else
+							<img src="$!{avatar}">
+						#end
                         <div class="invitationGift_text">
                             <p>亲，您的好友$!{userName}邀你来51返呗购物省钱，请注册的时候填写推荐人的<span>邀请码：$!{recommendCode}</span>，一起轻松开启省钱之旅吧～</p>
                         </div>
