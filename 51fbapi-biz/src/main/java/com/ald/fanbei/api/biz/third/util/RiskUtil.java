@@ -618,6 +618,7 @@ public class RiskUtil extends AbstractThird {
 //					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode())) {
 				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 				orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+				orderInfo.setGmtClosed(new Date());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
 				orderDao.updateOrder(orderInfo);
 				
@@ -1086,6 +1087,7 @@ public class RiskUtil extends AbstractThird {
 						if (!object.get("result").toString().equals("10")) {
 							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+							orderInfo.setGmtClosed(new Date());
 							logger.info("updateOrder orderInfo = {}", orderInfo);
 							int re = orderDao.updateOrder(orderInfo);
 							// 审批不通过时，让额度还原到以前
