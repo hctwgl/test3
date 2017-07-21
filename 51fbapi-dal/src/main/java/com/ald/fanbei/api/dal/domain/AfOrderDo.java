@@ -73,9 +73,6 @@ public class AfOrderDo extends AbstractSerial{
 	private String goodsPriceName;//商品规格名字
 	
 	public Long getGoodsPriceId() {
-		if (goodsPriceId.equals(0)) {
-			goodsPriceId = null;
-		}
 		return goodsPriceId;
 	}
 	public void setGoodsPriceId(Long goodsPriceId) {
