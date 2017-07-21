@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.vo;
 
+import java.math.BigDecimal;
+
 import com.ald.fanbei.api.common.AbstractSerial;
 
 public class AfGoodsPriceVo extends AbstractSerial {
@@ -39,19 +41,19 @@ public class AfGoodsPriceVo extends AbstractSerial {
 		this.propertyValueNames = propertyValueNames;
 	}
 
-	public Double getPriceAmount() {
+	public BigDecimal getPriceAmount() {
 		return priceAmount;
 	}
 
-	public void setPriceAmount(Double priceAmount) {
+	public void setPriceAmount(BigDecimal priceAmount) {
 		this.priceAmount = priceAmount;
 	}
 
-	public Double getActualAmount() {
+	public BigDecimal getActualAmount() {
 		return actualAmount;
 	}
 
-	public void setActualAmount(Double actualAmount) {
+	public void setActualAmount(BigDecimal actualAmount) {
 		this.actualAmount = actualAmount;
 	}
 
@@ -71,12 +73,12 @@ public class AfGoodsPriceVo extends AbstractSerial {
 	/**
 	 * 市场价格
 	 */
-	private Double priceAmount;
+	private BigDecimal priceAmount;
 
 	/**
 	 * 销售价格
 	 */
-	private Double actualAmount;
+	private BigDecimal actualAmount;
 	private String isSale;
 
 }

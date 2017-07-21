@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -70,12 +72,12 @@ import java.util.Date;
     /**
      * 市场价格
      */
-    private Double priceAmount;
+    private BigDecimal priceAmount;
 
     /**
      * 销售价格
      */
-    private Double actualAmount;
+    private BigDecimal actualAmount;
 
     /**
      * 销量
@@ -225,43 +227,25 @@ import java.util.Date;
       this.propertyValueNames = propertyValueNames;
     }
 
-    /**
-     * 获取市场价格
-     *
-     * @return 市场价格
-     */
-    public Double getPriceAmount(){
-      return priceAmount;
-    }
+    
 
-    /**
-     * 设置市场价格
-     * 
-     * @param priceAmount 要设置的市场价格
-     */
-    public void setPriceAmount(Double priceAmount){
-      this.priceAmount = priceAmount;
-    }
+    public BigDecimal getPriceAmount() {
+		return priceAmount;
+	}
 
-    /**
-     * 获取销售价格
-     *
-     * @return 销售价格
-     */
-    public Double getActualAmount(){
-      return actualAmount;
-    }
+	public void setPriceAmount(BigDecimal priceAmount) {
+		this.priceAmount = priceAmount;
+	}
 
-    /**
-     * 设置销售价格
-     * 
-     * @param actualAmount 要设置的销售价格
-     */
-    public void setActualAmount(Double actualAmount){
-      this.actualAmount = actualAmount;
-    }
+	public BigDecimal getActualAmount() {
+		return actualAmount;
+	}
 
-    /**
+	public void setActualAmount(BigDecimal actualAmount) {
+		this.actualAmount = actualAmount;
+	}
+
+	/**
      * 获取销量
      *
      * @return 销量

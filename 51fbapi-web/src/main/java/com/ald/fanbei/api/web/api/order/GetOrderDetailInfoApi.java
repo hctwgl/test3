@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
@@ -61,6 +62,8 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 	AfCouponService afCouponService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfGoodsPriceService afGoodsPriceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -116,6 +119,12 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
 		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
+		if (order.getGoodsPriceId() != null) {
+			AfGoodsPriceDo priceDo = afGoodsPriceService.getById(order.getGoodsPriceId());
+			if (priceDo != null) {
+				vo.setGoodsSaleAmount(priceDo.getActualAmount());
+			}
+		}
 		//售后相关设置
 		Boolean isExistAftersaleApply = false;
 		String afterSaleStatus = "";
