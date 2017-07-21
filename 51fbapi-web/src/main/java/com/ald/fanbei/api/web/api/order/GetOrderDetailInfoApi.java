@@ -104,7 +104,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setOrderStatus(order.getStatus());
 		vo.setRebateAmount(order.getRebateAmount());
 		vo.setType(order.getOrderType());
-		vo.setGmtClosed(order.getGmtModified());
+		vo.setGmtClosed(order.getGmtClosed());
 		vo.setMobile(order.getMobile());
 		vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
 		vo.setAddress(order.getAddress());
