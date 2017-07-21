@@ -19,7 +19,9 @@ function identification(){
     if(isShowMention==1||isShowMention==2){
         window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_FACE"}';
     }else if(isShowMention==3){
-        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_BIND_CARD","tradeAmount":"'+amount+'","tradeId":"'+id+'"}';
+        var idNumber=$('.idNumber').val();
+        var realName=$('.realName').val();
+        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_BIND_CARD","idNumber":"'+idNumber+'","realName":"'+realName+'"}';
     }else if(isShowMention==5){
         window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_PROMOTE_EXTRA"}';
     }else{
