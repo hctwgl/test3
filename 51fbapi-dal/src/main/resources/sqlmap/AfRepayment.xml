@@ -136,4 +136,15 @@
 			#{item}
 		</foreach>
 	</select>
+	
+	<update id="dealRepaymentFail">
+    UPDATE
+      af_repayment
+    SET
+      status = 'N'
+    WHERE
+        is_delete = 0
+    AND
+    repay_no = #{tradeNo}      
+  </update>
 </mapper>

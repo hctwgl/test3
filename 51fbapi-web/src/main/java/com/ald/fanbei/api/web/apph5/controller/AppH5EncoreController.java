@@ -3,7 +3,6 @@ package com.ald.fanbei.api.web.apph5.controller;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +32,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -120,6 +120,7 @@ public class AppH5EncoreController extends BaseController {
     			activityGoodsInfo.put("thumbnailIcon", activityGoodsDto.getThumbnailIcon());
     			activityGoodsInfo.put("goodsUrl", activityGoodsDto.getGoodsUrl());
     			activityGoodsInfo.put("source", activityGoodsDto.getSource());
+    			activityGoodsInfo.put("remark", StringUtil.null2Str(activityGoodsDto.getRemark()));
     			// 如果是分期免息商品，则计算分期
 				Long goodsId = activityGoodsDto.getRid();
 				AfSchemeGoodsDo schemeGoodsDo = null;
@@ -161,6 +162,7 @@ public class AppH5EncoreController extends BaseController {
     			recommendGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
     			recommendGoodsInfo.put("source", goodsDo.getSource());
     			recommendGoodsInfo.put("goodsType", "0");
+    			recommendGoodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
     			// 如果是分期免息商品，则计算分期
     			Long goodsId = goodsDo.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = null;

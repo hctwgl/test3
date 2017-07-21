@@ -4,67 +4,80 @@
     	#set($commonUrl="http://f.51fanbei.com/h5")
 		<title>邀请有奖</title>
 	    <style type="text/css">
-	    	.invitationGift_wrap{
-	    		width: 7.5rem;
-  				height: 12.18rem;
-  				background-image: url($commonUrl/app/images/user/invitationGift_bg.png);
-          -webkit-background-size: cover;
-          background-size: cover;
-	    	}
 	    	.invitationGift_footer_wrap{
 	    		position: fixed;
 	    		left: 0;
 	    		bottom: 0;
 	    		width: 100%;
-	    		background-color: rgba(0,0,0,.9);
-          -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+	    		background-color: rgba(0,0,0,.8);
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
 	    	}
 	    	.invitationGift_footer{
-	    		width: 7.0rem;
-	    		margin: 0.2rem auto;
+	    		margin: 0.1rem;
 	    	}
-	    	.invitationGift_text img{
-	    		width: 1.2rem;
-	    		height: 1.2rem;
-	    		margin-right: 0.24rem;
-          float: left;
-          -webkit-background-size: cover;
-          background-size: cover;
+            .invitationGift_content{
+                margin-top: 0.16rem;
+            }
+	    	.invitationGift_content img{
+	    		width: 1.34rem;
+	    		height: 1.34rem;
+                border-radius: 0.08rem;
+	    		margin-right: 0.2rem;
+                float: left;
+                -webkit-background-size: cover;
+                background-size: cover;
 	    	}
-	    	.invitationGift_text p{
-	    		width: 5.52rem;
-	    		text-align: Justify;
-				  text-justify: inter-ideograph;
-	    		color: #fff;
-          float: left;
-          font-size: 0.28rem;
-	    	}
+            .invitationGift_text{
+                position: relative;
+                float: left;
+                width: 5.7rem;
+                height: 1.34rem;
+                color: #fff;
+                font-size: 0.28rem;
+            }
+            .invitationGift_text p{
+                position: absolute;
+                top: 50%;
+                left: 0;
+                -webkit-transform: translateY(-50%);
+                transform: translateY(-50%);
+            }
+            .invitationGift_text span{
+                color: #FE963B;
+            }
+            .invitationGift_text p:nth-child(2){
+                margin-top: -0.05rem;
+            }
 	    	.invitationGift_btn{
 	    		width: 100%;
 	    		height: 0.8rem;
 	    		line-height: 0.8rem;
-          text-align: center;
-	    		margin-top: 0.2rem;
+                text-align: center;
+	    		margin-top: 0.16rem;
 	    		font-size: 0.32rem;
-          background-color: #FE963B;
-          border-radius: 0.08rem;
-          color: #fff;
+                background-color: #FE963B;
+                border-radius: 0.08rem;
+                color: #fff;
 	    	}
 	    </style>
     </head>
     <body>
     	<input type="hidden" id="recommendCode" name="recommendCode" value="$!{recommendCode}">
     	<div class="invitationGift_wrap">
+            <img src="$commonUrl/app/images/user/invitationGift1.png" align="absmiddle">
     		<div class="invitationGift_footer_wrap">
-	    		<div class="invitationGift_footer clearfix">
-	    			<div class="invitationGift_text clearfix">
-	    				#if($!{avatar}=='')
-							  <img src="$commonUrl/app/images/user/icon120.png">
-						  #else
-	    					<img src="$!{avatar}">
-	    				#end
-	    				<p>亲，您的好友<span>$!{userName}</span>邀你来51返呗购物省钱，请注册的时候填写推荐人的ID<span class="fsc_orange">$!{recommendCode}</span>，立即开启省钱之旅</p>
+	    		<div class="invitationGift_footer">
+	    			<div class="invitationGift_content clearfix">
+##	    				<img src="$!{avatar}">
+						#if($!{avatar}=='')
+							<img src="$commonUrl/app/images/user/icon120.png">
+						#else
+							<img src="$!{avatar}">
+						#end
+                        <div class="invitationGift_text">
+                            <p>亲，您的好友$!{userName}邀你来51返呗购物省钱，请注册的时候填写推荐人的<span>邀请码：$!{recommendCode}</span>，一起轻松开启省钱之旅吧～</p>
+                        </div>
 	    			</div>
 	    			<div class="invitationGift_btn">马上注册拿返利</div>
 	    		</div>

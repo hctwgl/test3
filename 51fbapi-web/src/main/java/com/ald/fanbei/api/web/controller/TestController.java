@@ -43,6 +43,8 @@ import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.RefundSource;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
@@ -51,6 +53,7 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -396,33 +399,33 @@ public class TestController {
 //	
 	// TongdunUtil
 	
-//	@RequestMapping(value = { "/wxRefundMobile" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
-//	@ResponseBody
-//	public String wxRefundMobile(@RequestBody String body, HttpServletRequest request, HttpServletResponse response){
-//		String message = "succ!";
-//		try {
-//			JSONObject json = JSONObject.parseObject(body);
-//			String orderId = json.getString("orderId");
-//			String scret = json.getString("scret");
-//			if(!"zsdERfds2123".equals(scret)){
-//				throw new RuntimeException("秘钥不对");
-//			}
-//			AfOrderDo order = afOrderDao.getOrderById(Long.valueOf(orderId));
-//			String refundNo = generatorClusterNo.getRefundNo(new Date());
-//			String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
-//			if(!"SUCCESS".equals(refundResult)){
-//				afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL,PayType.WECHAT,"",null,"充值失败微信退款",RefundSource.PLANT_FORM.getCode(),order.getPayTradeNo()));
-//				throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
-//			}else{
-//            	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH,PayType.WECHAT,"",null,"充值失败微信退款",RefundSource.PLANT_FORM.getCode(),order.getPayTradeNo()));
-//			}
-//		} catch (Exception e) {
-//			logger.info("wxRefund error:",e);
-//			message = "There is no trade can refund!";
-//		}
-//		return message;
-//	}
-	
+	@RequestMapping(value = { "/wxRefundMobile" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+	@ResponseBody
+	public String wxRefundMobile(@RequestBody String body, HttpServletRequest request, HttpServletResponse response){
+		String message = "succ!";
+		try {
+			JSONObject json = JSONObject.parseObject(body);
+			String orderId = json.getString("orderId");
+			String scret = json.getString("scret");
+			if(!"zsdERfds2123".equals(scret)){
+				throw new RuntimeException("秘钥不对");
+			}
+			AfOrderDo order = afOrderDao.getOrderById(Long.valueOf(orderId));
+			String refundNo = generatorClusterNo.getRefundNo(new Date());
+			String refundResult = UpsUtil.wxRefund(order.getOrderNo(), order.getPayTradeNo(), order.getActualAmount(), order.getActualAmount());
+			if(!"SUCCESS".equals(refundResult)){
+				afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL,PayType.WECHAT,"",null,"充值失败微信退款",RefundSource.PLANT_FORM.getCode(),order.getPayTradeNo()));
+				throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+			}else{
+            	afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, order.getActualAmount(),order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FINISH,PayType.WECHAT,"",null,"充值失败微信退款",RefundSource.PLANT_FORM.getCode(),order.getPayTradeNo()));
+			}
+		} catch (Exception e) {
+			logger.info("wxRefund error:",e);
+			message = "There is no trade can refund!";
+		}
+		return message;
+	}
+
 	/**
 	 * app中微信支付回调接口
 	 * 
