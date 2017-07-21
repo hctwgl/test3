@@ -22,6 +22,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,7 +90,7 @@ public class AppH5TradeController extends BaseController {
         model.put("isShowMention", status);
         if (status.equals(3)) {
             model.put("realName", account.getRealName());
-            model.put("idNumber", account.getIdNumber());
+            model.put("idNumber", Base64.encodeString(account.getIdNumber()));
         }
 
         model.put("name", afTradeBusinessInfoDo.getName());

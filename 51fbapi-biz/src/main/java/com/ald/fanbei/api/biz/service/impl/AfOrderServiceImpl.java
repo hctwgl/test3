@@ -702,10 +702,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 						String name = orderInfo.getGoodsName();
 						if(orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-							List<AfTradeBusinessInfoDto> dtoList = afTradeBusinessInfoDao.getByOrderId(orderId);
-							if(dtoList != null && dtoList.size() > 0) {
-								name = dtoList.get(0).getName();
-							}
+							name = orderInfo.getShopName();
 						}
 						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(),
 								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
