@@ -81,6 +81,9 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 						AfOrderDo orderT =new AfOrderDo();
 						orderT.setRid(orderInfo.getRid());
 						orderT.setStatus(OrderStatus.CLOSED.getCode());
+						orderInfo.setClosedDetail("系统关闭");
+						orderInfo.setClosedReason("退款完成");
+						orderInfo.setGmtClosed(new Date());
 						afOrderDao.updateOrder(orderT);
 
 						AfAftersaleApplyDo saleDo =new AfAftersaleApplyDo();
@@ -115,6 +118,9 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 				try {
 					orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
+					orderInfo.setClosedDetail("系统关闭");
+					orderInfo.setClosedReason("退款完成");
+					orderInfo.setGmtClosed(new Date());
 					updateOrderRefund(orderRefundInfo);
 					afOrderDao.updateOrder(orderInfo);
 					if(orderRefundInfo.getAftersaleApplyId()>0){
