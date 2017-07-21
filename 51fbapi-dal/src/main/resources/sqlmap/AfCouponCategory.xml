@@ -72,6 +72,7 @@
 			is_delete=0
 		AND
 			coupons LIKE '%${couponId}%'
+		AND tag != 'ALL'
 	</select>
 	
 	<select id="getCouponCategoryAll"  resultType="AfCouponCategoryDo">

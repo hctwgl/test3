@@ -90,8 +90,9 @@ public class GetMineCouponListApi implements ApiHandle{
         		couponVo.setWillExpireStatus("N");
         	}
         	// 查询优惠券所在分类
-        	List <AfCouponCategoryDo> couponCategoryList = afCouponCategoryService.getCouponCategoryByCouponId(couponVo.getRid());
+        	List <AfCouponCategoryDo> couponCategoryList = afCouponCategoryService.getCouponCategoryByCouponId(afUserCouponDto.getCouponId());
         	if(couponCategoryList != null && !couponCategoryList.isEmpty()) {
+        		logger.info("couponCategoryList info=>" + couponCategoryList.toString());
         		AfCouponCategoryDo afCouponCategoryDo = couponCategoryList.get(0);
         		String shopUrl = afCouponCategoryDo.getUrl();
         		couponVo.setShopUrl(shopUrl);
