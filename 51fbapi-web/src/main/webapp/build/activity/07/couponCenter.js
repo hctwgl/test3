@@ -20,6 +20,10 @@ let vm = new Vue({
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
+                    //判断banner图是否存在
+                    if(self.content.bannerImage=='' || self.content.bannerImage==undefined){
+                        $('.banner').css('display','none');
+                    }
                     var liLength=self.content.couponCategoryList.length;
                     self.$nextTick(function () {//tab计算样式
                         $('.navList li').eq(0).addClass('border');
@@ -27,6 +31,7 @@ let vm = new Vue({
                         
                         if(liLength<2){
                              $('#tabNav').hide();
+                             $('#content').css('padding-top',0);
                         }else if(liLength>=2&&liLength<=5){                      
                              tabWidth=$('#tabNav').width();
                              for(var n=0;n<liLength;n++){
