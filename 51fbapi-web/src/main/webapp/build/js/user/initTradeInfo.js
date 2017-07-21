@@ -12,7 +12,7 @@ if(isLogin=='no'){
     window.location.href='/fanbei-web/opennative?name=APP_LOGIN';
 }
 $(document).ready(function(){
-    $(".paymoney").trigger('focus');
+    $(".paymoney").trigger('click').focus();
 })
 function buyNow(){
       var amount=$('.paymoney').val();
