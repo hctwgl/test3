@@ -224,4 +224,15 @@
 	<select id="getCountByIdNumer" resultType="java.lang.Integer">
 		select count(1) from af_user_account a left join af_user_auth b on a.user_id = b.user_id where a.id_number=#{citizenId} and a.user_id != #{userId} and b.bankcard_status='Y'
 	</select>
+
+	<select id="getUserAccountInfoByUserName" resultType="AfUserAccountDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_user_account
+		WHERE
+		is_delete = 0
+		AND
+		user_name = #{userName}
+	</select>
 </mapper>

@@ -21,6 +21,7 @@ public class AfBrandCouponVo extends AbstractSerial {
 	private Date gmtEnd;//截止时间
 	private Integer type;//优惠券类型. 1金额满减 2.金额满折 3.数量满减 4.数量满折
 	private String status;//状态：EXPIRE:过期 ; NOUSE:未使用 ， USED:已使用
+	private String willExpireStatus;
 	/**
 	 * @return the name
 	 */
@@ -117,9 +118,10 @@ public class AfBrandCouponVo extends AbstractSerial {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-	
-	
-	
-
+	public String getWillExpireStatus() {
+		return willExpireStatus;
+	}
+	public void setWillExpireStatus(String isExpire) {
+		this.willExpireStatus = isExpire;
+	}
 }

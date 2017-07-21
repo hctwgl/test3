@@ -1,13 +1,13 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.util.List;
-
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfLimitDetailDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfLimitDetailQuery;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
+
+import java.util.List;
 
 /**
  * 
@@ -108,4 +108,11 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	int updateOriginalUserAccount(AfUserAccountDo afUserAccountDo);
+
+	/**
+	 * 获取账户信息
+	 * @param userName
+	 * @return
+	 */
+	AfUserAccountDo getUserAccountInfoByUserName(String userName);
 }

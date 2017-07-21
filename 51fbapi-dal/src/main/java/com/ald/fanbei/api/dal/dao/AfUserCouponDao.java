@@ -107,7 +107,9 @@ public interface AfUserCouponDao {
 	 */
 	List<AfUserCouponDto> getUserCouponByUserIdAndSourceType(@Param("userId")Long userId, @Param("sourceType")String sourceType);
 
-
 	AfUserCouponDo getUserCouponByDo(AfUserCouponDo afUserCouponDo);
+
+	AfUserCouponDto getSubjectUserCouponByAmountAndCouponId(@Param("userId")Long userId, 
+			@Param("amount")BigDecimal actualAmount, @Param("couponId")String couponId);
 
 }

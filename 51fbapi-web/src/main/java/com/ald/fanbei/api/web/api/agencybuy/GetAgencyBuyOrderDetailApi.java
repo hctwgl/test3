@@ -23,8 +23,11 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -150,7 +153,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			closedReason = afAgentOrderDo.getClosedReason(); 
 		}
 				
-		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtClosed()); // 用户取消订单时间
+		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtClosed()); // 用户取消订单时间
 		// 订单取消理由
 		String cancelReason = afAgentOrderDo.getCancelReason();
 		String numId = afOrderDo.getNumId();
@@ -164,6 +167,9 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		 */
 		
 //		优惠券类型【MOBILE：话费充值， REPAYMENT：还款, FULLVOUCHER:满减卷,CASH:现金奖励】
+		BigDecimal couponAmount = BigDecimal.ZERO;
+		// 如果有优惠劵,那么实际支付金额就是填写的订单金额
+		BigDecimal actualPayAmount = actualAmount;
 		AfUserCouponDo userCouponDo = afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
 		if (userCouponDo != null){
 			 AfCouponDo couponDo = afCouponService.getCouponById(userCouponDo.getCouponId());
@@ -187,17 +193,14 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 				 if(StringUtils.equals("ACTIVITY", couponDo.getType())){
 					 agentOrderDetailVo.setCouponName("会场劵");
 				 }
-				 agentOrderDetailVo.setCouponAmount(couponDo.getAmount());
-				 
-				 // 如果有优惠劵,那么实际支付金额就是填写的订单金额
-				 BigDecimal actualPayAmount = actualAmount;
-				 actualAmount = actualAmount.add(couponDo.getAmount());
-				 
-				 agentOrderDetailVo.setActualPayAmount(actualPayAmount);
-				
+				 couponAmount = couponDo.getAmount();
+				 actualAmount = actualAmount.add(couponAmount);
 			 }
 		}
+		agentOrderDetailVo.setActualPayAmount(actualPayAmount);
+		agentOrderDetailVo.setCouponAmount(couponAmount);
 		
+		agentOrderDetailVo.setOrderNo(afOrderDo.getOrderNo());
 		agentOrderDetailVo.setStatus(StringUtils.isBlank(status)?"":status);
 		agentOrderDetailVo.setPayStatus(StringUtils.isBlank(payStatus)?payStatus:"");
 		agentOrderDetailVo.setConsignee(StringUtils.isBlank(consignee)?"":consignee);
@@ -237,7 +240,6 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String afterSaleStatus = "";
 		AfAftersaleApplyDo afAftersaleApplyDo = afAftersaleApplyService.getByOrderId(afOrderDo.getRid());
 		if(afAftersaleApplyDo!=null){
-			isExistAftersaleApply = true;
 			afterSaleStatus = afAftersaleApplyDo.getStatus();
 			agentOrderDetailVo.setAfterSaleStatus(afAftersaleApplyDo.getStatus());
 			agentOrderDetailVo.setGmtRefundApply(afAftersaleApplyDo.getGmtApply());
@@ -248,18 +250,57 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		agentOrderDetailVo.setIsCanApplyAfterSale(afOrderService.isCanApplyAfterSale(afOrderDo.getRid()));
 		//状态备注及说明 
 		String closeReason = "";
-		closeReason = afAgentOrderDo.getCancelReason();
+		closeReason = afOrderDo.getCancelReason();
 		if(StringUtil.isBlank(closeReason)){
-			closeReason = afAgentOrderDo.getClosedReason();
+			closeReason = afOrderDo.getClosedReason();
 		}
+		if(afAftersaleApplyDo!=null && !AfAftersaleApplyStatus.CLOSE.getCode().equals(afAftersaleApplyDo.getStatus())){
+			//如果存在售后申请记录并且未被用户关闭，则标识记录，后续结合订单关闭状态，确认订单关闭是退款还是其它操作导致
+			isExistAftersaleApply = true;
+		}
+		
+		Boolean isExistRebates = afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0;
+		//代买类型订单，返利是一个范围，按最大返利来看是否存在返利,特殊处理
+		if(isExistRebates==false){
+			BigDecimal maxRate = NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO);
+			BigDecimal maxRebateAmount = afOrderDo.getSaleAmount().multiply(maxRate).setScale(2,BigDecimal.ROUND_HALF_UP);
+			if(maxRebateAmount.compareTo(BigDecimal.ZERO)>0){
+				isExistRebates = true;
+			}
+		}
+		
 		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
-				afOrderDo.getRebateAmount().compareTo(BigDecimal.ZERO)>0,afterSaleStatus, isExistAftersaleApply,closeReason);
+				isExistRebates,afterSaleStatus, isExistAftersaleApply,closeReason,afOrderDo.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
 			agentOrderDetailVo.setOrderStatusRemark(orderStatusMsgRemark.getStatusRemark());	
 		}else{
 			agentOrderDetailVo.setOrderStatusMsg("");
 			agentOrderDetailVo.setOrderStatusRemark("");
+		}
+		//订单是否满足删除条件设置 1、订单完成 （无返利-确认收货 有返利-返利完成）2、订单关闭
+		String isCanDelOrder = YesNoStatus.NO.getCode();
+		if(OrderStatus.CLOSED.getCode().equals(afOrderDo.getStatus()) 
+				|| OrderStatus.REBATED.getCode().equals(afOrderDo.getStatus())
+				||(OrderStatus.FINISHED.getCode().equals(afOrderDo.getStatus()) && isExistRebates==false)){
+			isCanDelOrder = YesNoStatus.YES.getCode();
+		}
+		agentOrderDetailVo.setIsCanDelOrder(isCanDelOrder);
+				
+		//发货物流信息及时间
+		agentOrderDetailVo.setLogisticsInfo(StringUtil.logisticsInfoDeal(afOrderDo.getLogisticsInfo()));
+		agentOrderDetailVo.setLogisticsCompany(afOrderDo.getLogisticsCompany());
+		agentOrderDetailVo.setLogisticsNo(afOrderDo.getLogisticsNo());
+		if(afOrderDo.getGmtDeliver()!=null){
+			agentOrderDetailVo.setGmtDeliver(afOrderDo.getGmtDeliver());
+		}else{
+			agentOrderDetailVo.setGmtDeliver(new Date(0));
+		}
+		//分期信息设置 ¥300.00X12期
+		if(borrowDo!=null){
+			agentOrderDetailVo.setInstallmentInfo(NumberUtil.format2Str(borrowDo.getNperAmount())+"X"+borrowDo.getNper()+"期");
+		}else{
+			agentOrderDetailVo.setInstallmentInfo("");
 		}
 		return agentOrderDetailVo;
 	}

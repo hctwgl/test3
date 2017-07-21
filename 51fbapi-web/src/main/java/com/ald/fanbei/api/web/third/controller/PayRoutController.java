@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
@@ -243,12 +244,13 @@ public class PayRoutController {
 			if (!StringUtil.equals(properties.getProperty("sign"), checkSign.toUpperCase())) {
 				return "succ";
 			}
-
+			
 			String resultCode = properties.getProperty("result_code");
+			String outTradeNo = properties.getProperty("out_trade_no");
+			String transactionId = properties.getProperty("transaction_id");
+			String attach = properties.getProperty("attach");
+			
 			if (StringUtil.equals(resultCode, WxTradeState.SUCCESS.getCode())) {
-				String outTradeNo = properties.getProperty("out_trade_no");
-				String transactionId = properties.getProperty("transaction_id");
-				String attach = properties.getProperty("attach");
 				if (PayOrderSource.ORDER.getCode().equals(attach)) {
 					afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
@@ -261,14 +263,13 @@ public class PayRoutController {
 					afRenewalDetailService.dealRenewalSucess(outTradeNo, transactionId);
 				}
 			} else {
-				String outTradeNo = properties.getProperty("out_trade_no");
-				String transactionId = properties.getProperty("transaction_id");
-				String attach = properties.getProperty("attach");
 				if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId);
-				}
+				}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+					afOrderService.dealBrandOrderFail(outTradeNo, transactionId, PayType.WECHAT.getCode());
+				} 
 			}
 		} catch (Exception e) {
 			logger.error("wxpayNotify", e);
@@ -295,7 +296,7 @@ public class PayRoutController {
 					afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
 					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
-				} else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {// 自营和菠萝蜜订单
+				} else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
 				} else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
 					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
@@ -304,15 +305,15 @@ public class PayRoutController {
 				}
 				
 			} else {// 代收失败
-				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) { // 还钱失败
+				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo);
-				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) { // 续期失败
+				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
-				} else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){  // 分期还款失败
-					afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
-				} else if(UserAccountLogType.SELFSUPPORT.getCode().equals(merPriv)||UserAccountLogType.BOLUOME.getCode().equals(merPriv)){ //自营和菠萝蜜订单失败
-					afRepaymentService.dealSelfSupportOrBoluomeFail(outTradeNo, tradeNo);
-				}
+				} else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){ // 分期还款失败	311	
+				    afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo); 
+				}else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+					afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+				} 
 			}
 			return "SUCCESS";
 		} catch (Exception e) {
@@ -321,3 +322,4 @@ public class PayRoutController {
 		}
 	}
 }
+

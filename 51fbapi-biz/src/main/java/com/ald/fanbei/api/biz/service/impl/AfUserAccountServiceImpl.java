@@ -208,4 +208,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		return afUserAccountDao.updateOriginalUserAccount(afUserAccountDo);
 	}
 
+	@Override
+	public AfUserAccountDo getUserAccountInfoByUserName(String userName) {
+		return afUserAccountDao.getUserAccountInfoByUserName(userName);
+	}
+
 }

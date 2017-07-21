@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,7 @@ public class GetBrandCouponListApi implements ApiHandle {
 	private static final String DATA = "data";
 	private static final String NEXT_PAGE_INDEX = "nextPageIndex";
 	private static final String COUPON_LIST = "couponList"; 
+	private static final int EXPIRE_DAY = 2;
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -143,6 +145,22 @@ public class GetBrandCouponListApi implements ApiHandle {
 			if (CollectionUtils.isNotEmpty(expiredCouponVoList)) {
 				voList.addAll(expiredCouponVoList);
 			}
+		}
+		// 增加是否即将到期字段
+		for(AfBrandCouponVo brandCoupon : voList) {
+			Date gmtEnd = brandCoupon.getGmtEnd();
+			Calendar cal = Calendar.getInstance();
+        	cal.add(Calendar.DAY_OF_YEAR, EXPIRE_DAY);
+        	Date twoDay = cal.getTime();
+        	if(gmtEnd != null){
+        		if(twoDay.after(gmtEnd)) {
+        			brandCoupon.setWillExpireStatus("Y");
+            	} else {
+            		brandCoupon.setWillExpireStatus("N");
+            	}
+        	} else {
+        		brandCoupon.setWillExpireStatus("N");
+        	}
 		}
 		result.put(COUPON_LIST, voList);
 		result.put(NEXT_PAGE_INDEX, nextPageNo);

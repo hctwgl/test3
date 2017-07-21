@@ -96,6 +96,12 @@ public class Constants {
 
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
+	//支付失败信息
+	public static final String PAY_ORDER_PASSWORD_ERROR = "支付密码输入有误";
+	public static final String PAY_ORDER_UPS_FAIL = "支付失败";
+	public static final String PAY_ORDER_UPS_FAIL_WX = "微信支付失败";
+	public static final String PAY_ORDER_UPS_FAIL_BANK = "银行卡支付失败";
+	public static final String PAY_ORDER_USE_AMOUNT_LESS = "可用额度不足";
 	// cache keys
 	public static final String CACHEKEY_GAME_LIMIT = "game_limit$";
 	public static final String CACHEKEY_USER_TOKEN = "user_token$";
@@ -267,5 +273,8 @@ public class Constants {
 	
 	public static final String VIRTUAL_CODE = "virtualCode";
 	public static final String VIRTUAL_AMOUNT = "virtualAmount";
+
+	//商品AES解密的password
+	public static final String TRADE_AES_DECRYPT_PASSWORD = "trade";
 
 }
