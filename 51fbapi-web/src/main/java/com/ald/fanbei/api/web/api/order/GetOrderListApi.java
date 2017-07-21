@@ -160,7 +160,7 @@ public class GetOrderListApi implements ApiHandle{
 			if(list != null && list.size() > 0) {
 				AfTradeBusinessInfoDto dto = list.get(0);
 				vo.setBusinessIcon(dto.getImageUrl());
-				vo.setBusinessName(dto.getName());
+				vo.setGoodsName(dto.getName());
 			}
 		}
 		return vo;
