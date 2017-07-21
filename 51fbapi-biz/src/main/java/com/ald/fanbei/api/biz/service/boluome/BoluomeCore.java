@@ -120,12 +120,13 @@ public class BoluomeCore extends AbstractThird{
     	String beforeSign = 
     			AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) 
     			+ concatParams(params)
-    			+ AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+    			+ AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_SECRET).toUpperCase(), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
     	thirdLog.info("beforeSignStr params = {}, beforeSign = {}", params, beforeSign);
-    	String sign = DigestUtil.MD5(beforeSign);
+    	String sign = DigestUtil.MD5(beforeSign).toUpperCase();
     	thirdLog.info("sign = {}", sign);
         return sign;
     }
+
     
     /**
      * 获取签名,先过滤，再签名
@@ -137,6 +138,5 @@ public class BoluomeCore extends AbstractThird{
         //获取待签名字符串
         return BoluomeCore.buildSignStr(sParaNew);
     }
-    
 
 }

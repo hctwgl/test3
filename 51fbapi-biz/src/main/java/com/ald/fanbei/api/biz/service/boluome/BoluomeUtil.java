@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.biz.service.boluome;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -45,8 +47,33 @@ public class BoluomeUtil extends AbstractThird{
 	private static String pushPayUrl = null;
 	private static String pushRefundUrl = null;
 	private static Long SUCCESS_CODE = 1000L;
-	
+
 	public BoluomePushPayResponseBo pushPayStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
+		BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
+		reqBo.setOrderId(thirdOrderNo);
+		reqBo.setStatus(pushStatus.getCode());
+		reqBo.setAmount(amount);
+		reqBo.setUserId(userId);
+		reqBo.setTimestamp(System.currentTimeMillis());
+		reqBo.setSign(BoluomeCore.builSign(reqBo));
+		logger.info("pushPayStatus begin, reqBo = {}", reqBo);
+		String reqResult = HttpUtil.doHttpPostJsonParam(getPushPayUrl(), JSONObject.toJSONString(reqBo));
+		logThird(reqResult, "pushPayStatus", reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
+		}
+		BoluomePushPayResponseBo responseBo = JSONObject.parseObject(reqResult,BoluomePushPayResponseBo.class);
+		logger.info("pushPayStatus result , responseBo = {}", responseBo);
+		if(responseBo != null && responseBo.getCode().equals(SUCCESS_CODE) ){
+			responseBo.setSuccess(true);
+			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, true, JSONObject.toJSONString(reqBo), reqResult));
+		}else{
+			responseBo.setSuccess(false);
+			afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, false, JSONObject.toJSONString(reqBo), reqResult));
+		}
+		return responseBo;
+	}
+	public BoluomePushPayResponseBo pushPayStatusForOrder(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
 		BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
 		reqBo.setOrderId(thirdOrderNo);
 		reqBo.setStatus(pushStatus.getCode());
@@ -161,5 +188,5 @@ public class BoluomeUtil extends AbstractThird{
 		pushLog.setType(pushStatus.getCode());
 		return pushLog;
 	}
-
+	
 } 
