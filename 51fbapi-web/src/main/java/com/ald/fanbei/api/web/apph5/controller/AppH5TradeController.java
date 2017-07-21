@@ -14,6 +14,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,17 +78,18 @@ public class AppH5TradeController extends BaseController {
             return;
         }
 
-        //判断是否可以提额
+        //认证状态
         AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
-        if(afUserDo == null) {
+        if (afUserDo == null) {
             return;
         }
-        String status = afUserAuthService.getConsumeStatus(afUserDo.getRid(), context.getAppVersion());
-        if(YesNoStatus.YES.getCode().equals(status)) {
-            model.put("isShowMention", "no");
-        }
-        else {
-            model.put("isShowMention", "yes");
+        AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
+        AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+        Integer status = getAuthStatus(auth, account, context.getAppVersion());
+        model.put("isShowMention", status);
+        if (status.equals(3)) {
+            model.put("realName", account.getRealName());
+            model.put("idNumber", account.getIdNumber());
         }
 
         model.put("name", afTradeBusinessInfoDo.getName());
@@ -105,18 +108,64 @@ public class AppH5TradeController extends BaseController {
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-    	RequestDataVo reqVo = new RequestDataVo();
-    	JSONObject jsonObj = JSON.parseObject(requestData);
+        RequestDataVo reqVo = new RequestDataVo();
+        JSONObject jsonObj = JSON.parseObject(requestData);
         reqVo.setId(jsonObj.getString("id"));
         reqVo.setMethod(request.getRequestURI());
         reqVo.setSystem(jsonObj);
-        
+
         return reqVo;
     }
 
     @Override
     public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         return null;
+    }
+
+    private Integer getAuthStatus(AfUserAuthDo auth, AfUserAccountDo account, Integer appVersion) {
+        Integer status = 0;
+        if (YesNoStatus.NO.getCode().equals(auth.getRealnameStatus())) { //判断实名认证
+            status = 1;
+        } else if (YesNoStatus.NO.getCode().equals(auth.getFacesStatus())) { //判断人脸识别
+            status = 2;
+        } else if (YesNoStatus.NO.getCode().equals(auth.getBankcardStatus())) { //判断绑卡状态
+            status = 3;
+        } else if (YesNoStatus.NO.getCode().equals(getConsumeStatus(auth, account, appVersion))) { //判断是否提额
+            status = 4;
+        } else if (!(YesNoStatus.YES.getCode().equals(auth.getJinpoStatus())
+                && YesNoStatus.YES.getCode().equals(auth.getFundStatus())
+                && YesNoStatus.YES.getCode().equals(auth.getCreditStatus()))) { //公积金，行用卡和社保认证状态
+            status = 5;
+        }
+
+        return status;
+    }
+
+    private String getConsumeStatus(AfUserAuthDo auth, AfUserAccountDo account, Integer appVersion) {
+        String status = YesNoStatus.NO.getCode();
+        if (account.getAuAmount().compareTo(BigDecimal.ZERO) > 0) {
+            if (appVersion >= 340) {
+                if (StringUtil.equals(YesNoStatus.YES.getCode(), auth.getIvsStatus())// 反欺诈分已验证
+                        && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())// 芝麻信用已验证
+                        && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())// 通讯录匹配状态
+                        && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getMobileStatus())// 手机运营商
+//						&& (null != auth.getGmtMobile() && DateUtil.beforeDay(auth.getGmtMobile(), DateUtil.addMonths(new Date(), 2)))// 手机运营商认证时间小于两个月
+//						&& StringUtil.equals(YesNoStatus.YES.getCode(), auth.getContactorStatus())// 紧急联系人
+//						&& StringUtil.equals(YesNoStatus.YES.getCode(), auth.getLocationStatus())// 定位
+                        && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getRiskStatus())) { // 强风控状态
+                    status = YesNoStatus.YES.getCode();
+                }
+            } else {
+                if (StringUtil.equals(YesNoStatus.YES.getCode(), auth.getIvsStatus())// 反欺诈分已验证
+                        && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())// 芝麻信用已验证
+                        && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())// 通讯录匹配状态
+                        ) {
+                    status = YesNoStatus.YES.getCode();
+                }
+            }
+
+        }
+        return status;
     }
 
 }

@@ -34,6 +34,15 @@ public class AfOrderListVo extends AbstractSerial {
 	private String goodsPriceName;
 	private String businessIcon;
 	private String isCanDelOrder;
+	private String businessName;
+
+	public String getBusinessName() {
+		return businessName;
+	}
+
+	public void setBusinessName(String businessName) {
+		this.businessName = businessName;
+	}
 
 	public String getBusinessIcon() {
 		return businessIcon;
