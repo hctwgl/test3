@@ -211,9 +211,8 @@ public class FanbeiController extends BaseController {
             String method = request.getRequestURI();
             reqVo.setMethod(method);
             
-            reqVo.setId("i_247849E9-69A3-4E50-BA82-38E0F55CBA6C_1499245951290_www");
             
-            //reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
+            reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
             
             String appVersion = request.getHeader(Constants.REQ_SYS_NODE_VERSION);
             String netType = request.getHeader(Constants.REQ_SYS_NODE_NETTYPE);
