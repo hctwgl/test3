@@ -153,7 +153,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			closedReason = afAgentOrderDo.getClosedReason(); 
 		}
 				
-		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afAgentOrderDo.getGmtClosed()); // 用户取消订单时间
+		String gmtClosed = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT, afOrderDo.getGmtClosed()); // 用户取消订单时间
 		// 订单取消理由
 		String cancelReason = afAgentOrderDo.getCancelReason();
 		String numId = afOrderDo.getNumId();
