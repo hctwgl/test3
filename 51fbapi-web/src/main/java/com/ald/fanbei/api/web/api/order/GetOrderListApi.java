@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
@@ -29,6 +30,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
@@ -58,6 +60,8 @@ public class GetOrderListApi implements ApiHandle{
 	AfTradeBusinessInfoService afTradeBusinessInfoService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfGoodsPriceService afGoodsPriceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -103,6 +107,12 @@ public class GetOrderListApi implements ApiHandle{
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
 		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
+		if (order.getGoodsPriceId() != null) {
+			AfGoodsPriceDo priceDo = afGoodsPriceService.getById(order.getGoodsPriceId());
+			if (priceDo != null) {
+				vo.setGoodsSaleAmount(priceDo.getActualAmount());
+			}
+		}
 		//售后相关设置
 		Boolean isExistAftersaleApply = false;
 		String afterSaleStatus = "";
