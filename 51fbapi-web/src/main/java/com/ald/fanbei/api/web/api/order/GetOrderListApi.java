@@ -107,12 +107,6 @@ public class GetOrderListApi implements ApiHandle{
 		//商品售价处理(订单价格除以商品数量)
 		BigDecimal saleCount = NumberUtil.objToBigDecimalZeroToDefault(BigDecimal.valueOf(order.getCount()), BigDecimal.ONE);
 		vo.setGoodsSaleAmount(order.getSaleAmount().divide(saleCount, 2));
-		if (order.getGoodsPriceId() != null) {
-			AfGoodsPriceDo priceDo = afGoodsPriceService.getById(order.getGoodsPriceId());
-			if (priceDo != null) {
-				vo.setGoodsSaleAmount(priceDo.getActualAmount());
-			}
-		}
 		//售后相关设置
 		Boolean isExistAftersaleApply = false;
 		String afterSaleStatus = "";
