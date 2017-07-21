@@ -3,11 +3,11 @@ var canUseAmount=$('.canUseAmount').val();
 var name=$('.name').val();
 var id=$('.id').val();
 var isShowMention=$('.isShowMention').val();
-// if(isShowMention=='0'){
-//     $('.pro-word').hide();
-// }else{
-//     $('.pro-word').show();
-// }
+if(isShowMention=='0'){
+    $('.pro-word').hide();
+}else{
+    $('.pro-word').show();
+}
 if(isLogin=='no'){
     window.location.href='/fanbei-web/opennative?name=APP_LOGIN';
 }
@@ -32,7 +32,7 @@ function identification(){
     }
 }
 function btn() {
-    $('.btn').show();
+    // $('.btn').show();
     var amount=$('.paymoney').val();
     if( 0<Number(amount) && Number(amount)<=Number(canUseAmount) ){
         $('.btn').css('background','#FE963B').removeAttr('disabled','false');
