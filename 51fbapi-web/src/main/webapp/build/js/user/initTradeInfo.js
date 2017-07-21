@@ -3,17 +3,17 @@ var canUseAmount=$('.canUseAmount').val();
 var name=$('.name').val();
 var id=$('.id').val();
 var isShowMention=$('.isShowMention').val();
-if(isShowMention=='0'){
-    $('.pro-word').hide();
-}else{
-    $('.pro-word').show();
-}
+// if(isShowMention=='0'){
+//     $('.pro-word').hide();
+// }else{
+//     $('.pro-word').show();
+// }
 if(isLogin=='no'){
     window.location.href='/fanbei-web/opennative?name=APP_LOGIN';
 }
-$(document).ready(function(){
-    $(".paymoney").trigger('click').focus();
-})
+// $(document).ready(function(){
+//     $(".paymoney").trigger('click').focus();
+// })
 function buyNow(){
       var amount=$('.paymoney').val();
          window.location.href='/fanbei-web/opennative?name=APP_TRADE_PAY&params={"tradeAmount":"'+amount+'","tradeId":"'+id+'","tradeName":"'+name+'"}';
