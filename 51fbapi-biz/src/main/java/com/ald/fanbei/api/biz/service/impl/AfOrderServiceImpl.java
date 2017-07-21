@@ -11,6 +11,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,16 +29,6 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -69,18 +62,6 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
-import com.ald.fanbei.api.dal.dao.AfGoodsDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
-import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
-import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
@@ -173,6 +154,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	RiskUtil riskUtil;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfTradeBusinessInfoDao afTradeBusinessInfoDao;
 	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
@@ -716,8 +699,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 						orderInfo.setRiskOrderNo(riskOrderNo);
 						orderDao.updateOrder(orderInfo);
-						
-						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), 
+
+						String name = orderInfo.getGoodsName();
+						if(orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+							List<AfTradeBusinessInfoDto> dtoList = afTradeBusinessInfoDao.getByOrderId(orderId);
+							if(dtoList != null && dtoList.size() > 0) {
+								name = dtoList.get(0).getName();
+							}
+						}
+						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(),
 								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
 						
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
