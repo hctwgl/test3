@@ -70,8 +70,11 @@ public class AppH5CouponController extends BaseController {
     			AfResourceDo bannerInfo = bannerInfoList.get(0);
     			String bannerImage = bannerInfo.getValue();
     			String bannerUrl = bannerInfo.getValue2();
-    			jsonObj.put("bannerImage", bannerImage);
-    			jsonObj.put("bannerUrl", bannerUrl);
+    			String isOpen = bannerInfo.getValue4();
+    			if("O".equals(isOpen)) {
+    				jsonObj.put("bannerImage", bannerImage);
+        			jsonObj.put("bannerUrl", bannerUrl);
+    			}
     		}
     		// 查询所有优惠券分类
     		List<AfCouponCategoryDo> afCouponCategoryList = afCouponCategoryService.listAllCouponCategory();
