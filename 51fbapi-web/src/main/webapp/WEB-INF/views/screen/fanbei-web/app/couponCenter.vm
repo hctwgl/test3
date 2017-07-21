@@ -57,7 +57,7 @@
                      <p class="couponType" v-if="item.type==='ACTIVITY'" style="background:#d8d8d8;color:#fff;">会场券</p>                     
                      <p class="useName" style="color:#d8d8d8;-webkit-box-orient: vertical;">{{item.name}}</p>
                      <p class="useRange" style="color:#d8d8d8;-webkit-box-orient: vertical;">{{item.useRange}}</p>
-                     <p class="validTime"style="color:#d8d8d8" v-if="item.gmtStart!='0'&&item.gmtEnd!='0'">{{item.start}}-{{item.end}}</p>
+                     <p class="validTime" style="color:#d8d8d8" v-if="item.gmtStart!='0'&&item.gmtEnd!='0'">{{item.start}}-{{item.end}}</p>
                      <p class="clickMe clickMe02">已领完</p>              
                  </div>
               </div> 
