@@ -295,7 +295,7 @@ public class PayRoutController {
 					afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
 					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
-				} else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+				} else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {// 自营和菠萝蜜订单
 					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
 				} else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
 					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
@@ -304,12 +304,14 @@ public class PayRoutController {
 				}
 				
 			} else {// 代收失败
-				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
+				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) { // 还钱失败
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo);
-				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
+				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) { // 续期失败
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
-				} else if(PayOrderSource.REPAYMENT.getCode().equals(merPriv)){
-//					afRepaymentService.dealRepaymentFail(outTradeNo);
+				} else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){  // 分期还款失败
+					afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
+				} else if(UserAccountLogType.SELFSUPPORT.getCode().equals(merPriv)||UserAccountLogType.BOLUOME.getCode().equals(merPriv)){ //自营和菠萝蜜订单失败
+					afRepaymentService.dealSelfSupportOrBoluomeFail(outTradeNo, tradeNo);
 				}
 			}
 			return "SUCCESS";
