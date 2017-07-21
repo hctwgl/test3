@@ -116,12 +116,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo);
 		afOrder.setUserId(userId);
 		afOrder.setGoodsPriceId(goodsPriceId);
-		if(priceDo != null){
-			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
-			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
-		}
+		
 		afOrder.setActualAmount(actualAmount);
-		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
+		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));//TODO:售价取规格的。
 
 //		afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
 		
@@ -131,6 +128,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setInvoiceHeader(invoiceHeader);
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
+		
 	    //通过商品查询免息规则配置
         AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
         if(null != afSchemeGoodsDo){
@@ -145,6 +143,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 			// 保存手续费信息
 			BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
 			afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+		}
+		if(priceDo != null){
+			
+			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
+			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
+			afOrder.setSaleAmount(priceDo.getActualAmount().multiply(new BigDecimal(count)));
+			afOrder.setPriceAmount(priceDo.getPriceAmount());
+			
 		}
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
@@ -169,7 +175,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		AfOrderDo afOrder = new AfOrderDo();
 		afOrder.setConsignee(addressDo.getConsignee());
 		afOrder.setConsigneeMobile(addressDo.getMobile());
-		afOrder.setSaleAmount(goodsDo.getSaleAmount());
+		afOrder.setSaleAmount(goodsDo.getSaleAmount());//TODO:售价改成从规格中取得。
+		
 		afOrder.setPriceAmount(goodsDo.getPriceAmount());
 		afOrder.setGoodsIcon(goodsDo.getGoodsIcon());
 		afOrder.setGoodsName(goodsDo.getName());

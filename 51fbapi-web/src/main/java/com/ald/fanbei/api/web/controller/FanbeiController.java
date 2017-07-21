@@ -211,9 +211,8 @@ public class FanbeiController extends BaseController {
             String method = request.getRequestURI();
             reqVo.setMethod(method);
             
-            reqVo.setId("i_247849E9-69A3-4E50-BA82-38E0F55CBA6C_1499245951290_www");
             
-            //reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
+            reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
             
             String appVersion = request.getHeader(Constants.REQ_SYS_NODE_VERSION);
             String netType = request.getHeader(Constants.REQ_SYS_NODE_NETTYPE);
@@ -223,21 +222,11 @@ public class FanbeiController extends BaseController {
 
             Map<String,Object> system = new HashMap<String,Object>();
             
-            
-            system.put(Constants.REQ_SYS_NODE_VERSION, "370");
-            system.put(Constants.REQ_SYS_NODE_NETTYPE, "Wifi");
-            system.put(Constants.REQ_SYS_NODE_USERNAME, "18268189043");
-            system.put(Constants.REQ_SYS_NODE_SIGN, "1a020532913fe40426951e7594829623d7042aa8d8249969a4bd96ce469b1d32");
-            system.put(Constants.REQ_SYS_NODE_TIME, "1499245951290");
-            
-            
-/*            system.put(Constants.REQ_SYS_NODE_VERSION, appVersion);
+            system.put(Constants.REQ_SYS_NODE_VERSION, appVersion);
             system.put(Constants.REQ_SYS_NODE_NETTYPE, netType);
             system.put(Constants.REQ_SYS_NODE_USERNAME, userName);
             system.put(Constants.REQ_SYS_NODE_SIGN, sign);
             system.put(Constants.REQ_SYS_NODE_TIME, time);
-            */
-            
             
             reqVo.setSystem(system);
             

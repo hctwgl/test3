@@ -11,6 +11,9 @@ if(isShowMention=='0'){
 if(isLogin=='no'){
     window.location.href='/fanbei-web/opennative?name=APP_LOGIN';
 }
+// $(document).ready(function(){
+//     $(".paymoney").trigger('click').focus();
+// })
 function buyNow(){
       var amount=$('.paymoney').val();
          window.location.href='/fanbei-web/opennative?name=APP_TRADE_PAY&params={"tradeAmount":"'+amount+'","tradeId":"'+id+'","tradeName":"'+name+'"}';
@@ -29,7 +32,7 @@ function identification(){
     }
 }
 function btn() {
-    $('.btn').show();
+    // $('.btn').show();
     var amount=$('.paymoney').val();
     if( 0<Number(amount) && Number(amount)<=Number(canUseAmount) ){
         $('.btn').css('background','#FE963B').removeAttr('disabled','false');
