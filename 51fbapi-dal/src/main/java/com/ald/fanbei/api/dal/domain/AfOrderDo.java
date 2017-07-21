@@ -64,8 +64,31 @@ public class AfOrderDo extends AbstractSerial{
 	private String consigneeMobile;//收件人电话
 	private String invoiceHeader;//发票抬头
 	private String logisticsInfo;//物流信息
+	private String logisticsCompany;//发货物流公司
+	private String logisticsNo;//发货物流单号
+	private Date gmtDeliver;//发货时间
+	private Date gmtClosed;//关闭时间
 	private String preStatus;//状态更新前状态
+	private Long goodsPriceId;//商品规格Id
+	private String goodsPriceName;//商品规格名字
 	
+	public Long getGoodsPriceId() {
+		return goodsPriceId;
+	}
+	public void setGoodsPriceId(Long goodsPriceId) {
+		this.goodsPriceId = goodsPriceId;
+	}
+	public String getGoodsPriceName() {
+		return goodsPriceName;
+	}
+	public void setGoodsPriceName(String goodsPriceName) {
+		this.goodsPriceName = goodsPriceName;
+	}
+	private String cancelReason; // 取消理由
+	private String cancelDetail; // 取消详情
+	private String closedReason; // 关闭理由
+	private String closedDetail; // 关闭详情
+	private String statusRemark; // 订单状态对应描述
 	
 	public Long getRid() {
 		return rid;
@@ -413,6 +436,60 @@ public class AfOrderDo extends AbstractSerial{
 	}
 	public void setPreStatus(String preStatus) {
 		this.preStatus = preStatus;
+	}
+	public String getCancelReason() {
+		return cancelReason;
+	}
+	public void setCancelReason(String cancelReason) {
+		this.cancelReason = cancelReason;
+	}
+	public String getCancelDetail() {
+		return cancelDetail;
+	}
+	public void setCancelDetail(String cancelDetail) {
+		this.cancelDetail = cancelDetail;
+	}
+	public String getClosedReason() {
+		return closedReason;
+	}
+	public void setClosedReason(String closedReason) {
+		this.closedReason = closedReason;
+	}
+	public String getClosedDetail() {
+		return closedDetail;
+	}
+	public void setClosedDetail(String closedDetail) {
+		this.closedDetail = closedDetail;
+	}
+	public String getLogisticsCompany() {
+		return logisticsCompany;
+	}
+	public void setLogisticsCompany(String logisticsCompany) {
+		this.logisticsCompany = logisticsCompany;
+	}
+	public String getLogisticsNo() {
+		return logisticsNo;
+	}
+	public void setLogisticsNo(String logisticsNo) {
+		this.logisticsNo = logisticsNo;
+	}
+	public Date getGmtDeliver() {
+		return gmtDeliver;
+	}
+	public void setGmtDeliver(Date gmtDeliver) {
+		this.gmtDeliver = gmtDeliver;
+	}
+	public Date getGmtClosed() {
+		return gmtClosed;
+	}
+	public void setGmtClosed(Date gmtClosed) {
+		this.gmtClosed = gmtClosed;
+	}
+	public String getStatusRemark() {
+		return statusRemark;
+	}
+	public void setStatusRemark(String statusRemark) {
+		this.statusRemark = statusRemark;
 	}
 	
 }

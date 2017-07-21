@@ -21,25 +21,21 @@ import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfAgentOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfAgentOrderDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.taobao.api.domain.XItem;
 
 /**
@@ -182,7 +178,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 					final String orderNo = generatorClusterNo.getOrderNo(OrderType.AGENTBUY);
 					afOrder.setOrderNo(orderNo);
 					afOrder.setOrderType(OrderType.AGENTBUY.getCode());
-					Date gmtPayEnd = DateUtil.addMins(new Date(), 15);
+					Date gmtPayEnd = DateUtil.addHoures(new Date(), Constants.ORDER_PAY_TIME_LIMIT);
 					afOrder.setSecType("TAOBAO");
 					afOrder.setShopName("");
 					afOrder.setGmtPayEnd(gmtPayEnd);

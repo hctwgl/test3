@@ -25,6 +25,8 @@ public class AfSubjectDo extends AbstractSerial{
 	private String is_show;
 	private String tag;
 	private String theme;
+	private Long couponId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -79,4 +81,11 @@ public class AfSubjectDo extends AbstractSerial{
 	public void setTheme(String theme) {
 		this.theme = theme;
 	}
+	public Long getCouponId() {
+		return couponId;
+	}
+	public void setCouponId(Long couponId) {
+		this.couponId = couponId;
+	}
+	
 }

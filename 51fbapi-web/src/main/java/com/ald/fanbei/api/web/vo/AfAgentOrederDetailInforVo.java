@@ -13,6 +13,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	
 	private static final long serialVersionUID = -5983291447985020112L;
 	
+	private String orderNo;
 	private String goodName; // 商品名称
 	private String goodsIcon; // 商品图片
 	private Long count; // 商品数量
@@ -53,6 +54,12 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private Date gmtPayStart;
 	private Date gmtPayEnd;
 	private String isCanApplyAfterSale;
+	private String logisticsInfo;
+	private String logisticsCompany;//发货物流公司
+	private String logisticsNo;//发货物流单号
+	private Date gmtDeliver;//发货时间
+	private String installmentInfo;//分期详情
+	private String isCanDelOrder;
 	
 	public String getCouponName() {
 		return couponName;
@@ -298,6 +305,48 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	}
 	public void setIsCanApplyAfterSale(String isCanApplyAfterSale) {
 		this.isCanApplyAfterSale = isCanApplyAfterSale;
+	}
+	public String getLogisticsCompany() {
+		return logisticsCompany;
+	}
+	public void setLogisticsCompany(String logisticsCompany) {
+		this.logisticsCompany = logisticsCompany;
+	}
+	public String getLogisticsNo() {
+		return logisticsNo;
+	}
+	public void setLogisticsNo(String logisticsNo) {
+		this.logisticsNo = logisticsNo;
+	}
+	public Date getGmtDeliver() {
+		return gmtDeliver;
+	}
+	public void setGmtDeliver(Date gmtDeliver) {
+		this.gmtDeliver = gmtDeliver;
+	}
+	public String getLogisticsInfo() {
+		return logisticsInfo;
+	}
+	public void setLogisticsInfo(String logisticsInfo) {
+		this.logisticsInfo = logisticsInfo;
+	}
+	public String getInstallmentInfo() {
+		return installmentInfo;
+	}
+	public void setInstallmentInfo(String installmentInfo) {
+		this.installmentInfo = installmentInfo;
+	}
+	public String getOrderNo() {
+		return orderNo;
+	}
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+	public String getIsCanDelOrder() {
+		return isCanDelOrder;
+	}
+	public void setIsCanDelOrder(String isCanDelOrder) {
+		this.isCanDelOrder = isCanDelOrder;
 	}
 	
 }

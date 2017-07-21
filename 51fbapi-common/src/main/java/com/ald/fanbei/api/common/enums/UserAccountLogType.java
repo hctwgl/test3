@@ -25,6 +25,8 @@ public enum UserAccountLogType {
 	REGIST("REGIST", "新注册"),
 	CONSUME("CONSUME", "分期"),
 	
+	BORROWAP("BORROWAP", "代买支付"),
+	
 	WX_REFUND("WX_REFUND","微信退款"),
 	AP_REFUND("AP_REFUND", "代付退款"),
 	BANK_REFUND("BANK_REFUND", "菠萝觅银行卡退款"),
@@ -36,7 +38,9 @@ public enum UserAccountLogType {
 
 	REBATE_CASH("REBATE_CASH", "返利现金"),
 	REBATE_JFB("REBATE_JFB", "返利集分宝"),
-    AUTHNAME("AUTHNAME", "实名认证");
+    AUTHNAME("AUTHNAME", "实名认证"),
+	SELFSUPPORT("SELFSUPPORT","自营商品"),
+	BOLUOME("BOLUOME", "菠萝觅");
 
     private String code;
     private String name;

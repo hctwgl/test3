@@ -177,6 +177,7 @@
 				<entry key="/good/getGoodsDetailInfo" value-ref="getGoodsDetailInfoApi" />
 				<entry key="/good/getPayTypeList" value-ref="getPayTypeListApi" />
 				<entry key="/goods/getGoodsInfoByNumId" value-ref="getGoodsInfoByNumIdApi" />
+				<entry key ="/goods/getGoodsSpec" value-ref="getGoodsSpecApi"></entry>
 
 
 				<!-- 订单Order -->
@@ -191,7 +192,8 @@
 				<entry key="/order/cancelAfterSaleApply" value-ref="cancelAfterSaleApplyApi" />
 				<entry key="/order/afterSaleLogisticSupply" value-ref="afterSaleLogisticSupplyApi" />
 				<entry key="/order/getOrderAfterSaleInfo" value-ref="getOrderAfterSaleInfoApi" />
-				<entry key="/order/orderCompensation" value-ref="orderCompensationApi" />
+				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
+
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
@@ -298,9 +300,9 @@
 				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
 				<entry key="/agencyBuy/getAgencyCouponList" value-ref="getAgencyCouponListApi" />
 				<entry key="/agencyBuy/payAgencyOrderV1" value-ref="payAgencyOrderV1Api" />
+				<entry key="/order/tradeOrder" value-ref="tradeOrderApi" />
 
-
-
+				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
 
 				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />

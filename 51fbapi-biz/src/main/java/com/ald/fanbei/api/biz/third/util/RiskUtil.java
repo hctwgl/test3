@@ -597,7 +597,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param virtualCode 虚拟值
 	 * @return
 	 */
-	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) throws FanbeiException {
+	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) throws FanbeiException{
 		String result = verifybo.getResult();
 		
 		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -618,6 +618,9 @@ public class RiskUtil extends AbstractThird {
 //					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode())) {
 				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 				orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+				orderInfo.setClosedDetail("系统关闭");
+				orderInfo.setClosedReason("风控审批不通过");
+				orderInfo.setGmtClosed(new Date());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
 				orderDao.updateOrder(orderInfo);
 				
@@ -1086,6 +1089,9 @@ public class RiskUtil extends AbstractThird {
 						if (!object.get("result").toString().equals("10")) {
 							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+							orderInfo.setClosedDetail("系统关闭");
+							orderInfo.setClosedReason("风控审批不通过");
+							orderInfo.setGmtClosed(new Date());
 							logger.info("updateOrder orderInfo = {}", orderInfo);
 							int re = orderDao.updateOrder(orderInfo);
 							// 审批不通过时，让额度还原到以前

@@ -15,6 +15,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -33,6 +34,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
@@ -59,10 +61,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserAddressService afUserAddressService;
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
-	@Resource
-	AfUserAccountService afUserAccountService;
+	@Resource 
+	AfGoodsPriceService afGoodsPriceService;
     @Resource
     AfSchemeGoodsService afSchemeGoodsService;
+    @Resource
+    AfUserAccountService afUserAccountService;
 
     @Resource
     AfInterestFreeRulesService afInterestFreeRulesService;
@@ -70,22 +74,36 @@ public class BuySelfGoodsApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"), ""), 0l);
-		Long addressId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
+		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"), ""),
+				0l);
+		Long goodsPriceId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsPriceId"), ""),
+				0l);
+		Long addressId = NumberUtil
+				.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
 		String invoiceHeader = ObjectUtils.toString(requestDataVo.getParams().get("invoiceHeader"));
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 
+		Integer appversion = context.getAppVersion();
+		
 		Date currTime = new Date();
-		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.SELFSUPPORT_PAY_TIMEOUT_HOUR);
+		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
 		if(actualAmount.compareTo(BigDecimal.ZERO)==0){
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 		}
+		AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
-		if (goodsDo == null) {
-			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+		if(appversion >= 371){
+			if ( goodsDo == null || priceDo == null) {
+				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+			}
+		}else
+		{
+			if ( goodsDo == null ) {
+				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+			}
 		}
 		if(!AfGoodsStatus.PUBLISH.getCode().equals(goodsDo.getStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_CANCEL);
@@ -97,8 +115,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 		}
 		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo);
 		afOrder.setUserId(userId);
+		afOrder.setGoodsPriceId(goodsPriceId);
+		
 		afOrder.setActualAmount(actualAmount);
-		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
+		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));//TODO:售价取规格的。
 
 //		afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
 		
@@ -108,6 +128,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setInvoiceHeader(invoiceHeader);
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
+		
 	    //通过商品查询免息规则配置
         AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
         if(null != afSchemeGoodsDo){
@@ -123,6 +144,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 			BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
 			afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		}
+		if(priceDo != null){
+			
+			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
+			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
+			afOrder.setSaleAmount(priceDo.getActualAmount().multiply(new BigDecimal(count)));
+			afOrder.setPriceAmount(priceDo.getPriceAmount());
+			
+		}
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		
@@ -136,6 +165,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("orderId", afOrder.getRid());
 		data.put("isEnoughAmount", isEnoughAmount);
+		
+
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -144,7 +175,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		AfOrderDo afOrder = new AfOrderDo();
 		afOrder.setConsignee(addressDo.getConsignee());
 		afOrder.setConsigneeMobile(addressDo.getMobile());
-		afOrder.setSaleAmount(goodsDo.getSaleAmount());
+		afOrder.setSaleAmount(goodsDo.getSaleAmount());//TODO:售价改成从规格中取得。
+		
 		afOrder.setPriceAmount(goodsDo.getPriceAmount());
 		afOrder.setGoodsIcon(goodsDo.getGoodsIcon());
 		afOrder.setGoodsName(goodsDo.getName());
