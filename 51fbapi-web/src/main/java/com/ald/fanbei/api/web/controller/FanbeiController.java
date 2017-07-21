@@ -223,21 +223,11 @@ public class FanbeiController extends BaseController {
 
             Map<String,Object> system = new HashMap<String,Object>();
             
-            
-            system.put(Constants.REQ_SYS_NODE_VERSION, "370");
-            system.put(Constants.REQ_SYS_NODE_NETTYPE, "Wifi");
-            system.put(Constants.REQ_SYS_NODE_USERNAME, "18268189043");
-            system.put(Constants.REQ_SYS_NODE_SIGN, "1a020532913fe40426951e7594829623d7042aa8d8249969a4bd96ce469b1d32");
-            system.put(Constants.REQ_SYS_NODE_TIME, "1499245951290");
-            
-            
-/*            system.put(Constants.REQ_SYS_NODE_VERSION, appVersion);
+            system.put(Constants.REQ_SYS_NODE_VERSION, appVersion);
             system.put(Constants.REQ_SYS_NODE_NETTYPE, netType);
             system.put(Constants.REQ_SYS_NODE_USERNAME, userName);
             system.put(Constants.REQ_SYS_NODE_SIGN, sign);
             system.put(Constants.REQ_SYS_NODE_TIME, time);
-            */
-            
             
             reqVo.setSystem(system);
             
