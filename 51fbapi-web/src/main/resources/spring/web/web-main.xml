@@ -117,6 +117,8 @@
 				<value>/system/getTabbarInfor</value>
 				<value>/user/submitShareAction</value>
 				<value>/user/getImageCode</value>
+				
+				<value>/goods/getGoodsSpec</value>
 			</list>
 		</constructor-arg>
 	</bean>
