@@ -73,7 +73,9 @@ public class CancelAfterSaleApplyApi implements ApiHandle{
 			//自营商品增加商品销量
 			if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
 				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), orderInfo.getCount());
-				afGoodsPriceService.updateStockAndSaleByPriceId(orderInfo.getGoodsPriceId(), true);
+				if(orderInfo.getGoodsPriceId() != null){
+					afGoodsPriceService.updateStockAndSaleByPriceId(orderInfo.getGoodsPriceId(), true);
+				}
 			}
 			logger.info("cancelAfterSaleApply success. orderId="+orderId+",userId="+userId);
 		}else{

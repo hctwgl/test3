@@ -84,6 +84,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 
+		Integer appversion = context.getAppVersion();
+		
 		Date currTime = new Date();
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
@@ -93,8 +95,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 		}
 		AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
-		if (goodsDo == null || priceDo == null) {
-			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+		if(appversion >= 371){
+			if ( goodsDo == null || priceDo == null) {
+				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+			}
+		}else
+		{
+			if ( goodsDo == null ) {
+				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+			}
 		}
 		if(!AfGoodsStatus.PUBLISH.getCode().equals(goodsDo.getStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_CANCEL);
@@ -107,7 +116,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo);
 		afOrder.setUserId(userId);
 		afOrder.setGoodsPriceId(goodsPriceId);
-		afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
+		if(priceDo != null){
+			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
+			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
+		}
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
 

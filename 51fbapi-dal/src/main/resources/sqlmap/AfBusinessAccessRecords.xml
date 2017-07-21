@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_business_access_records表:业务访问记录模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBusinessAccessRecordsDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id,gmt_create,user_id,source_ip,ref_type,ref_id,extra_info,remark 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="id !=null">
+            AND id  = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="sourceIp != null and sourceIp != ''">
+            AND source_ip = #{sourceIp,jdbcType=VARCHAR}
+        </if>
+        <if test="refType != null and refType != ''">
+            AND ref_type = #{refType,jdbcType=VARCHAR}
+        </if>
+        <if test="refId != null and refId != ''">
+            AND ref_id = #{refId,jdbcType=INTEGER}
+        </if>
+        <if test="extraInfo != null and extraInfo != ''">
+            AND extra_info = #{extraInfo,jdbcType=VARCHAR}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo" keyProperty="id">
+    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_business_access_records
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	            gmt_create,
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="sourceIp != null">        
+	            source_ip,
+	        </if>
+	        <if test="refType != null">        
+	            ref_type,
+	        </if>
+	        <if test="refId != null">        
+	            ref_id,
+	        </if>
+	        <if test="extraInfo != null">        
+	            extra_info,
+	        </if>
+	        <if test="remark != null">        
+	            remark,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    NOW(),
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="sourceIp != null" >
+		       #{sourceIp,jdbcType=VARCHAR},
+		    </if>
+		    <if test="refType != null" >
+		       #{refType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="refId != null" >
+		       #{refId,jdbcType=INTEGER},
+		    </if>
+		    <if test="extraInfo != null" >
+		       #{extraInfo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="remark != null" >
+		       #{remark,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo">
+        UPDATE af_business_access_records
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="sourceIp != null and sourceIp != '' ">        
+                source_ip = #{sourceIp,jdbcType=VARCHAR},                
+            </if>
+            <if test="refType != null and refType != '' ">        
+                ref_type = #{refType,jdbcType=VARCHAR},                
+            </if>
+            <if test="refId != null and refId != '' ">        
+                ref_id = #{refId,jdbcType=INTEGER},                
+            </if>
+            <if test="extraInfo != null and extraInfo != '' ">        
+                extra_info = #{extraInfo,jdbcType=VARCHAR},                
+            </if>
+            <if test="remark != null and remark != '' ">        
+                remark = #{remark,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_business_access_records
+        WHERE is_delete = 0 AND id=#{id ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_business_access_records
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_business_access_records
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

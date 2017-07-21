@@ -32,10 +32,9 @@
                      <p class="couponType" v-if="item.type==='FULLVOUCHER'" style="background: #5c99d7;">满减券</p>
                      <p class="couponType" v-if="item.type==='CASH'" style="background: #fab677;">现金券</p>
                      <p class="couponType" v-if="item.type==='ACTIVITY'" style="background: #fc8aa4;">会场券</p>                    
+                     <p class="useName" style="-webkit-box-orient: vertical;">{{item.name}}</p> 
                      <p class="useRange" style="-webkit-box-orient: vertical;">{{item.useRange}}</p>
-                     <p class="useName" style="-webkit-box-orient: vertical;">{{item.name}}</p>
-                     <p class="validTime" v-if="item.gmtStart!='0'&&item.gmtEnd!='0'">{{item.start}}-{{item.end}} </p>
-                     <!-- <p class="clickMe" v-if="item.isDraw==='Y'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">点我领取</p> -->
+                     <p class="validTime" v-if="item.gmtStart!='0'&&item.gmtEnd!='0'">{{item.start}}-{{item.end}}</p>
                      <p class="clickMe" v-if="item.isDraw==='Y'">点我领取</p>
                      <p class="clickMe clickMe01" v-if="item.isDraw==='N'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">去用券</p>
                      <p class="clickMe clickMe01" v-if="item.isDraw==='N'&&(item.type==='MOBILE' || item.type==='REPAYMENT')">已领券</p>             
@@ -54,8 +53,8 @@
                      <p class="couponType" v-if="item.type==='FULLVOUCHER'" style="background:#d8d8d8;color:#fff;">满减券</p>
                      <p class="couponType" v-if="item.type==='CASH'" style="background:#d8d8d8;color:#fff;">现金券</p>
                      <p class="couponType" v-if="item.type==='ACTIVITY'" style="background:#d8d8d8;color:#fff;">会场券</p>                     
-                     <p class="useRange" style="color:#d8d8d8;-webkit-box-orient: vertical;">{{item.useRange}}</p>
                      <p class="useName" style="color:#d8d8d8;-webkit-box-orient: vertical;">{{item.name}}</p>
+                     <p class="useRange" style="color:#d8d8d8;-webkit-box-orient: vertical;">{{item.useRange}}</p>
                      <p class="validTime"style="color:#d8d8d8" v-if="item.gmtStart!='0'&&item.gmtEnd!='0'">{{item.start}}-{{item.end}}</p>
                      <p class="clickMe clickMe02">已领完</p>              
                  </div>

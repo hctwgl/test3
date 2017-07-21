@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -48,9 +47,9 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-        Long orderId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("orderId"),""), 0l);
-        AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,userId);
-        if(orderInfo == null){
+        Long orderId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("orderId"), ""), 0l);
+        AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId, userId);
+        if (orderInfo == null) {
             throw new FanbeiException(FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
         }
         AfOrderVo orderVo = getOrderVo(orderInfo, context);
@@ -69,15 +68,14 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
         vo.setGmtPayEnd(DateUtil.addHoures(order.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
         //订单状态
         vo.setOrderStatus(order.getStatus());
-        if(OrderStatus.CLOSED.getCode().equals(order.getStatus())) {
+        if (OrderStatus.CLOSED.getCode().equals(order.getStatus())) {
             //查询退款表
             AfOrderRefundDo afOrderRefundDo = afOrderRefundService.getOrderRefundByOrderId(order.getRid());
             //订单状态为取消
-            if(afOrderRefundDo == null) {
+            if (afOrderRefundDo == null) {
                 vo.setOrderStatus("CANCEL");
                 vo.setGmtClosed(order.getGmtClosed());
-            }
-            else {
+            } else {
                 vo.setRefundTime(DateUtil.formatDateToYYYYMMddHHmmss(afOrderRefundDo.getGmtModified()));
                 vo.setRefundActualAmount(afOrderRefundDo.getActualAmount());
                 vo.setRefundContent(afOrderRefundDo.getContent());
@@ -85,17 +83,17 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
         }
         //查询分期信息
         AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(order.getRid());
-        if(afBorrowDo != null){
+        if (afBorrowDo != null) {
             //分期信息设置 ¥300.00X12期
-            vo.setInstallmentInfo(NumberUtil.format2Str(afBorrowDo.getNperAmount())+"x"+afBorrowDo.getNper()+"期");
+            vo.setInstallmentInfo(NumberUtil.format2Str(afBorrowDo.getNperAmount()) + "x" + afBorrowDo.getNper() + "期");
             vo.setNper(afBorrowDo.getNper());
         }
         List<AfTradeBusinessInfoDto> list = afTradeBusinessInfoService.getByOrderId(order.getRid());
-        if(list != null && list.size() > 0) {
+        if (list != null && list.size() > 0) {
             AfTradeBusinessInfoDto dto = list.get(0);
             vo.setBusinessIcon(dto.getImageUrl());
             vo.setBusinessName(dto.getName());
         }
-            return vo;
+        return vo;
     }
 }

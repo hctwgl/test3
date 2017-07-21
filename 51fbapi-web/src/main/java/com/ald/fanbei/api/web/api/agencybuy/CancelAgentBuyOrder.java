@@ -12,15 +12,21 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -38,6 +44,10 @@ public class CancelAgentBuyOrder implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfGoodsPriceService afGoodsPriceService;
+	@Resource
+	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -62,6 +72,7 @@ public class CancelAgentBuyOrder implements ApiHandle {
 		}
 		
 		try {
+			String originStatus = currAfOrderDo.getStatus();
 			AfOrderDo afOrderDo = new AfOrderDo();
 			afOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 			afOrderDo.setRid(orderId);
@@ -71,7 +82,9 @@ public class CancelAgentBuyOrder implements ApiHandle {
 			
 			if(afOrderService.updateOrder(afOrderDo) > 0){
 				//更新库存
-				afGoodsPriceService.updateStockAndSaleByPriceId(currAfOrderDo.getGoodsPriceId(), false);
+				if(currAfOrderDo.getGoodsPriceId() != null){
+					afGoodsPriceService.updateStockAndSaleByPriceId(currAfOrderDo.getGoodsPriceId(), false);
+				}
 				
 				//优惠券处理
 				if(currAfOrderDo.getUserCouponId()>0){
@@ -92,6 +105,23 @@ public class CancelAgentBuyOrder implements ApiHandle {
 					afAgentOrderDo.setCancelDetail(cancelDetail);
 					afAgentOrderDo.setGmtClosed(currDate);
 					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+				}
+				
+				//如果支付类型为代付，返回用户额度
+				if(PayType.AGENT_PAY.getCode().equals(currAfOrderDo.getPayType()) 
+						&& OrderStatus.PAID.getCode().equals(originStatus)){
+					AfUserAccountDo updateAccountDo = new AfUserAccountDo();
+					updateAccountDo.setUserId(currAfOrderDo.getUserId());
+					updateAccountDo.setUsedAmount(currAfOrderDo.getActualAmount().negate());
+					afUserAccountService.updateUserAccount(updateAccountDo);
+					
+					AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
+					afUserAccountLogDo.setRefId( currAfOrderDo.getRid()+"");
+					afUserAccountLogDo.setType(UserAccountLogType.BORROWAP.getCode());
+					afUserAccountLogDo.setUserId(currAfOrderDo.getUserId());
+					afUserAccountLogDo.setAmount(currAfOrderDo.getActualAmount());
+					afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+					
 				}
 				return resp;
 			}

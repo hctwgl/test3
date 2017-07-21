@@ -9,10 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -28,6 +32,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class AccessLoanSupermarketApi implements ApiHandle  {
 	@Resource
 	AfLoanSupermarketService afLoanSupermarketService;
+	@Resource
+	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -39,6 +45,14 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 			String accessUrl = afLoanSupermarket.getLinkUrl();
 			accessUrl = accessUrl.replaceAll("\\*", "\\&");
 			logger.info("贷款超市请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+userId);
+			try {
+				//访问记入数据库处理
+				String extraInfo = "sysModeId="+requestDataVo.getId()+",appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
+				AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo(userId, CommonUtil.getIpAddr(request), AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode(), afLoanSupermarket.getId(), extraInfo);
+				afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
+			} catch (Exception e) {
+				logger.error("贷款超市访问入库异常-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+userId);
+			}
 		}else{
 			logger.error("贷款超市请求发起异常-贷款超市不存在或跳转链接为空，lsmNo："+lsmNo+"-userId:"+userId);
 			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);

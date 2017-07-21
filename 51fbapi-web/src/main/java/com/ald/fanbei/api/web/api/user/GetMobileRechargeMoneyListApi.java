@@ -108,6 +108,7 @@ public class GetMobileRechargeMoneyListApi implements ApiHandle {
 		returnData.put("gmtStart", afUserCouponDto.getGmtStart());
 		returnData.put("gmtEnd", afUserCouponDto.getGmtEnd());
 		returnData.put("type", afUserCouponDto.getType());
+		returnData.put("useRange", afUserCouponDto.getUseRange());
 		Date gmtEnd = afUserCouponDto.getGmtEnd();
 		// 如果当前时间离到期时间小于48小时,则显示即将过期
 		Calendar cal = Calendar.getInstance();

@@ -19,9 +19,11 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
@@ -96,6 +98,15 @@ public class PayOrderV1Api implements ApiHandle {
 		if (payId >= 0) {
 			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+				//自营或代买订单记录支付失败原因
+				if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
+					AfOrderDo currUpdateOrder = new AfOrderDo();
+					currUpdateOrder.setRid(orderInfo.getRid());
+					currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
+					currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+					currUpdateOrder.setStatusRemark(Constants.PAY_ORDER_PASSWORD_ERROR);
+					afOrderService.updateOrder(currUpdateOrder);
+				}
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
 		}
