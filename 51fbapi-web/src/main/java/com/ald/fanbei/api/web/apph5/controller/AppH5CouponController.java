@@ -97,6 +97,7 @@ public class AppH5CouponController extends BaseController {
         			couponInfoMap.put("type", afCouponDo.getType());
         			couponInfoMap.put("amount", afCouponDo.getAmount());
         			couponInfoMap.put("useRange", afCouponDo.getUseRange());
+        			couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
         			Date gmtStart = afCouponDo.getGmtStart();
         			if( gmtStart != null){
         				couponInfoMap.put("gmtStart", gmtStart.getTime());
@@ -159,6 +160,7 @@ public class AppH5CouponController extends BaseController {
         			couponInfoMap.put("type", afCouponDo.getType());
         			couponInfoMap.put("amount", afCouponDo.getAmount());
         			couponInfoMap.put("useRange", afCouponDo.getUseRange());
+        			couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
         			Date gmtStart = afCouponDo.getGmtStart();
         			if( gmtStart != null){
         				couponInfoMap.put("gmtStart", gmtStart.getTime());
