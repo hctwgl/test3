@@ -14,9 +14,9 @@ import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
  */
 public interface AfActivityGoodsService {
 
-	List<AfActivityGoodsDto> listActivityGoodsByActivityId(Long activityId);
+	List<AfActivityGoodsDto> listActivityGoodsByActivityId(Long activityId, Integer appVersion);
 
-	List<AfGoodsDo> listRecommendGoodsByActivityId(Long activityId);
+	List<AfGoodsDo> listRecommendGoodsByActivityId(Long activityId, Integer appVersion);
 	
 	AfActivityGoodsDo getActivityGoodsByGoodsId(Long goodsId);
 
