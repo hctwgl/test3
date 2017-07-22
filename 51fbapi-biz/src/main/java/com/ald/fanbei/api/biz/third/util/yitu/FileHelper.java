@@ -145,4 +145,60 @@ public class FileHelper {
 		}
 		return Base64.encodeBase64String(in2b);
 	}
+	
+	/**
+	 * 获取文件二进制流字符串
+	 * @param filePath
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getImageByteArrayString(String filePath) throws Exception {
+		URL url = null;
+		url = new URL(filePath);
+		byte[] in2b = null;
+		InputStream is = null;
+		try {
+			is = url.openStream();
+			ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+			byte[] buff = new byte[100];
+			int rc = 0;
+			while ((rc = is.read(buff, 0, 100)) > 0) {
+				swapStream.write(buff, 0, rc);
+			}
+			in2b = swapStream.toByteArray();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			is.close();
+		}
+		return new String(in2b);
+	}
+	
+	/**
+	 * 获取文件二进制流字符串
+	 * @param filePath
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] getImageByteArray(String filePath) throws Exception {
+		URL url = null;
+		url = new URL(filePath);
+		byte[] in2b = null;
+		InputStream is = null;
+		try {
+			is = url.openStream();
+			ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+			byte[] buff = new byte[100];
+			int rc = 0;
+			while ((rc = is.read(buff, 0, 100)) > 0) {
+				swapStream.write(buff, 0, rc);
+			}
+			in2b = swapStream.toByteArray();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			is.close();
+		}
+		return in2b;
+	}
 }

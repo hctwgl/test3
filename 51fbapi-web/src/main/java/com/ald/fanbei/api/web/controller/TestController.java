@@ -2,8 +2,14 @@ package com.ald.fanbei.api.web.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +18,15 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.InputStreamBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,7 +39,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
@@ -36,11 +50,11 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.yitu.FileHelper;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -54,10 +68,7 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONArray;
@@ -529,4 +540,239 @@ public class TestController {
 		logger.info("dealWithSynchronizeOverduedOrder completed");
 		return "success";
 	}
+	
+	@RequestMapping(value = { "/testCard" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String testCard(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String api_key = "vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5";
+		String api_secret = "Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm";
+		String image = FileHelper.getImageByteArrayString("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/294bd573d8e95674.jpg");
+		JSONObject json = new JSONObject();
+		json.put("api_key", api_key);
+		json.put("api_secret", api_secret);
+		json.put("image", image);
+		String str = HttpUtil.doHttpPost("https://api.faceid.com/faceid/v1/ocridcard", json.toJSONString());
+		System.out.println(str);
+		return "success";
+	}
+	
+	@RequestMapping(value = { "/ttt" }, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String ttt(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		 request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+		 BufferedReader in = null;
+	     OutputStream out = null;
+	     String result = "";
+	     try {
+	         URL realUrl = new URL("https://api.faceid.com/faceid/v1/ocridcard");
+	         SslUtils.ignoreSsl();
+	         HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
+	         conn.setRequestMethod("POST");
+	         conn.setDoOutput(true);
+	         conn.setDoInput(true);
+	         conn.setUseCaches(false);  
+	         
+     		 String[] props = new String[]{"api_key","api_secret"}; // 字段名
+    		 String[] values = new String[]{"vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5","Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm"};// 字段值
+    		 byte[] file = FileHelper.getImageByteArray("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/294bd573d8e95674.jpg");
+    		 String BOUNDARY = "---------------------------7d4a6d158c9"; // 分隔符
+    		 StringBuffer sb = new StringBuffer();
+    		 // 发送每个字段:
+    		 for(int i=0; i < props.length ; i ++ ) {
+	    		 sb = sb.append("--");
+	    		 sb = sb.append(BOUNDARY);
+	    		 sb = sb.append("\r\n");
+	    		 sb = sb.append("Content-Disposition: form-data; name=\""+ props[i] + "\"\r\n\r\n");
+	    		 sb = sb.append(URLEncoder.encode(values[i]));
+	    		 sb = sb.append("\r\n");
+    		 }
+    		 // 发送文件:
+    		 sb = sb.append("--");
+    		 sb = sb.append(BOUNDARY);
+    		 sb = sb.append("\r\n");
+    		 sb = sb.append("Content-Disposition: form-data; name=\"image\"; filename=\"1.txt\"\r\n");
+    		 sb = sb.append("Content-Type: application/octet-stream\r\n\r\n");
+    		 byte[] data = sb.toString().getBytes();
+    		 byte[] end_data = ("\r\n--" + BOUNDARY + "--\r\n").getBytes();
+    		 
+    		 conn.setRequestProperty("Accept-Charset", "UTF-8");
+    		 conn.setRequestProperty("contentType", "UTF-8");
+    		 // 设置HTTP头:
+    		 conn.setRequestProperty("Content-Type", "multipart/form-data" + "; boundary=" + BOUNDARY);
+    		 conn.setRequestProperty("Content-Length", String.valueOf(data.length + file.length + end_data.length));
+    		 // 输出:
+//    		 out = new OutputStreamWriter(conn.getOutputStream());
+    		 out = conn.getOutputStream();
+    		 out.write(data);
+    		 out.write(file);
+    		 out.write(end_data);
+
+	         // 把数据写入请求的Body
+//	         out.write(param);
+	         out.flush();
+	         in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+	         String line;
+	         while ((line = in.readLine()) != null) {
+	             result += line;
+	         }
+	     } catch (Exception e) {
+	         logger.error("发送失败" + e);
+	         e.printStackTrace();
+	     } finally {
+	         try {
+	             if (out != null) {
+	                 out.close();
+	             }
+	             if (in != null) {
+	                 in.close();
+	             }
+	         } catch (IOException ex) {
+	             ex.printStackTrace();
+	         }
+	     }
+	    return result;
+	}
+	
+	
+	
+	@RequestMapping(value = { "/tttver" }, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String tttver(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		 request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+		 BufferedReader in = null;
+	     OutputStream out = null;
+	     String result = "";
+	     try {
+	         URL realUrl = new URL("https://api.megvii.com/faceid/v2/verify");
+	         SslUtils.ignoreSsl();
+	         HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
+	         conn.setRequestMethod("POST");
+	         conn.setDoOutput(true);
+	         conn.setDoInput(true);
+     		 String[] props = new String[]{"api_key","api_secret","comparison_type","face_image_type","idcard_name","idcard_number","delta"}; // 字段名
+    		 String[] values = new String[]{"vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5","Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm","1","meglive","余发军","420322198610102733","YWHDF-HHY"};// 字段值
+    		 byte[] file = FileHelper.getImageByteArray("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/3874227a17ed4fca.jpg");
+    		 String BOUNDARY = "---------------------------7d4a6d158c9"; // 分隔符
+    		 StringBuffer sb = new StringBuffer();
+    		 // 发送每个字段:
+    		 for(int i=0; i < props.length ; i ++ ) {
+	    		 sb = sb.append("--");
+	    		 sb = sb.append(BOUNDARY);
+	    		 sb = sb.append("\r\n");
+	    		 sb = sb.append("Content-Disposition: form-data; name=\""+ props[i] + "\"\r\n\r\n");
+	    		 sb = sb.append(URLEncoder.encode(values[i]));
+	    		 sb = sb.append("\r\n");
+    		 }
+    		 // 发送文件:
+    		 sb = sb.append("--");
+    		 sb = sb.append(BOUNDARY);
+    		 sb = sb.append("\r\n");
+    		 sb = sb.append("Content-Disposition: form-data; name=\"image_best\"; filename=\"1.txt\"\r\n");
+    		 sb = sb.append("Content-Type: application/octet-stream\r\n\r\n");
+    		 byte[] data = sb.toString().getBytes();
+    		 byte[] end_data = ("\r\n--" + BOUNDARY + "--\r\n").getBytes();
+    		 
+    		 conn.setRequestProperty("Accept-Charset", "UTF-8");
+    		 conn.setRequestProperty("contentType", "UTF-8");
+    		 // 设置HTTP头:
+    		 conn.setRequestProperty("Content-Type", "multipart/form-data" + "; boundary=" + BOUNDARY);
+    		 conn.setRequestProperty("Content-Length", String.valueOf(data.length + file.length + end_data.length));
+    		 // 输出:
+//    		 out = new OutputStreamWriter(conn.getOutputStream());
+    		 out = conn.getOutputStream();
+    		 out.write(data);
+    		 out.write(file);
+    		 out.write(end_data);
+
+	         // 把数据写入请求的Body
+//	         out.write(param);
+	         out.flush();
+	         in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+	         String line;
+	         while ((line = in.readLine()) != null) {
+	             result += line;
+	         }
+	     } catch (Exception e) {
+	         logger.error("发送失败" + e);
+	         e.printStackTrace();
+	     } finally {
+	         try {
+	             if (out != null) {
+	                 out.close();
+	             }
+	             if (in != null) {
+	                 in.close();
+	             }
+	         } catch (IOException ex) {
+	             ex.printStackTrace();
+	         }
+	     }
+	    return result;
+	}
+	
+	
+	@RequestMapping(value = { "/tttttt" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String tttttt(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+		response.setContentType("application/json;charset=utf-8");
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpPost httppost = new HttpPost("https://api.faceid.com/faceid/v1/ocridcard");
+		URL url = new URL("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/294bd573d8e95674.jpg");
+		InputStream is = url.openStream();
+		HttpEntity entity = MultipartEntityBuilder.create().addTextBody("api_key", "vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5")
+				.addTextBody("api_secret", "Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm")
+				.addPart("image", new InputStreamBody(is, "aa.txt"))
+				.build();
+		SslUtils.ignoreSsl();
+		httppost.setHeader("contentType", "UTF-8");  
+		httppost.setEntity(entity);
+		HttpResponse httpResponse = httpclient.execute(httppost);
+		httpResponse.getStatusLine().getStatusCode();
+//		  if(httpResponse.getStatusLine().getStatusCode() == 200)  
+              HttpEntity httpEntity = httpResponse.getEntity();  
+              String sresult = EntityUtils.toString(httpEntity,"UTF-8");//取出应答字符串  
+              System.out.println(sresult);
+          return sresult;
+	}
+
+	@RequestMapping(value = { "/tttttt111" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String tttttt111(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+		response.setContentType("application/json;charset=utf-8");
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpPost httppost = new HttpPost("http://api.megvii.com/faceid/v2/verify");
+//		SslUtils.ignoreSsl();
+		URL url = new URL("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/294bd573d8e95674.jpg");
+		InputStream is = url.openStream();
+		byte[] file = FileHelper.getImageByteArray("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/3874227a17ed4fca.jpg");
+		HttpEntity entity = MultipartEntityBuilder.create().addTextBody("api_key", "vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5")
+				.addTextBody("api_secret", "Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm")
+				.addTextBody("comparison_type", "1")
+				.addTextBody("face_image_type", "meglive")
+				.addTextBody("idcard_name", "余发军")
+				.addTextBody("idcard_number", "420322198610102733")
+				.addTextBody("delta", "YWHDF-HHY")
+				.addPart("image", new InputStreamBody(is, "aa.txt"))
+				.addPart("image_best", new InputStreamBody(is, "aa.txt"))
+				.build();
+		httppost.setHeader("contentType", "UTF-8");  
+		httppost.setEntity(entity);
+		HttpResponse httpResponse = httpclient.execute(httppost);
+		httpResponse.getStatusLine().getStatusCode();
+//		  if(httpResponse.getStatusLine().getStatusCode() == 200)  
+              HttpEntity httpEntity = httpResponse.getEntity();  
+              String sresult = EntityUtils.toString(httpEntity,"UTF-8");//取出应答字符串  
+              System.out.println(sresult);
+          return sresult;
+	}
+	
+	
+	
+	
+	
+	
 }
