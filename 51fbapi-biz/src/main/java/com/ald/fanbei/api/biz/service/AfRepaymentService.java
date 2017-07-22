@@ -45,4 +45,19 @@ public interface AfRepaymentService {
      * @return
      */
     AfRepaymentDo getRepaymentById(Long rid);
+    
+    /**
+     * 处理分期还款失败的
+     * @param tradeNo
+     * @return
+     */
+    int dealRepaymentFail(String outTradeNo,String tradeNo);
+    
+    /**
+     * 处理自营商品菠萝蜜订单失败
+     * @param outTradeNo
+     * @param tradeNo
+     * @return
+     */
+    int dealSelfSupportOrBoluomeFail(String outTradeNo,String tradeNo);
 }

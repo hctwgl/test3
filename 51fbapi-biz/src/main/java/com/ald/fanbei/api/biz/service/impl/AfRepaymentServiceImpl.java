@@ -31,13 +31,17 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -45,6 +49,7 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -100,6 +105,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	
 	@Resource
 	AfUserBankcardService afUserBankcardService;
+	
+	@Resource
+	AfOrderDao afOrderDao;
 	
 	@Resource
 	UpsUtil upsUtil;
@@ -381,5 +389,79 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	    	bo.setOverdueTimes(overduetimes);
 	    	return bo;
 	    }
+
+	@Override
+	public int dealRepaymentFail(final String outTradeNo,final String tradeNo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+					logger.info("dealRepaymentFail repayment  = {}",repayment);
+					if(repayment == null){
+						return 0;
+					}
+					if (YesNoStatus.YES.getCode().equals(repayment.getStatus()) || YesNoStatus.NO.getCode().equals(repayment.getStatus())) {
+						return 0;
+					}
+					
+					// 账单字符串转成账单集合
+					String billIds = repayment.getBillIds();
+					List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(billIds.split(","), new Converter<String, Long>() {
+						@Override
+						public Long convert(String source) {
+							return Long.parseLong(source);
+						}
+					});
+					// 变更账单状态
+					afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
+
+					// 变更还款记录未还款状态
+					afRepaymentDao.updateRepayment(RepaymentStatus.NEW.getCode(), tradeNo, repayment.getRid());
+					
+					
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("dealRepaymentFail error = {}", e);
+					return 0;
+				}
+			}
+		});
+		
+	}
+
+	@Override
+	public int dealSelfSupportOrBoluomeFail(final String outTradeNo, final String tradeNo) {
+		
+				try {
+					// 根据付款编号，找到订单
+					AfOrderDo orderDo =  afOrderDao.getOrderInfoByPayOrderNo(outTradeNo);
+					if(orderDo == null){
+						return 0;
+					}
+					
+					logger.info("dealSelfSupportOrBoluomeFail orderDo  = {}",orderDo);
+					if (YesNoStatus.YES.getCode().equals(orderDo.getPayStatus()) || YesNoStatus.NO.getCode().equals(orderDo.getPayStatus()) || OrderStatus.CLOSED.getCode().equals(orderDo.getStatus())||OrderStatus.FINISHED.getCode().equals(orderDo.getStatus())) {
+						return 0;
+					}
+					
+					orderDo.setGmtModified(new Date());
+					orderDo.setPayStatus(PayStatus.NOTPAY.getCode());
+					orderDo.setTradeNo(tradeNo);
+					orderDo.setStatus(OrderStatus.NEW.getCode()); 
+					// 变更还款记录未还款状态
+					afOrderDao.updateOrder(orderDo);
+					
+					return 1;
+				} catch (Exception e) {
+					
+					logger.info("dealRepaymentFail error = {}", e);
+					return 0;
+				}
+			
+		
+	}
 	
 }

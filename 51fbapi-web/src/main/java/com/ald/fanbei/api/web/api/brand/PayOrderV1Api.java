@@ -19,11 +19,13 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
@@ -100,6 +102,15 @@ public class PayOrderV1Api implements ApiHandle {
 		if (payId >= 0) {
 			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+				//自营或代买订单记录支付失败原因
+				if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
+					AfOrderDo currUpdateOrder = new AfOrderDo();
+					currUpdateOrder.setRid(orderInfo.getRid());
+					currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
+					currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+					currUpdateOrder.setStatusRemark(Constants.PAY_ORDER_PASSWORD_ERROR);
+					afOrderService.updateOrder(currUpdateOrder);
+				}
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
 		}
@@ -109,10 +120,10 @@ public class PayOrderV1Api implements ApiHandle {
 
 		try {
 			BigDecimal saleAmount = orderInfo.getSaleAmount();
-			if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode())) {
+			if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode())) {
 				saleAmount = orderInfo.getActualAmount();
 			}
-			if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || nper == null)) {
+			if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || nper == null)) {
 				nper = orderInfo.getNper();
 			}
 			
@@ -130,12 +141,20 @@ public class PayOrderV1Api implements ApiHandle {
 			Map<String, Object> result = afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 			
 			String success = result.get("success").toString();
-			if (StringUtils.isNotBlank(success) && Boolean.parseBoolean(success)) {
+			if (StringUtils.isNotBlank(success)) {
 //				dealWithPayOrderRiskFailed(result, resp);
-				if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
-					riskUtil.payOrderChangeAmount(orderInfo.getRid());
-				}
+				if (Boolean.parseBoolean(success)) {
+					if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
+						riskUtil.payOrderChangeAmount(orderInfo.getRid());
+					}
+				} else {
+					FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
+					ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
+					response.setResponseData(result);
+					return response;
+				}	
 			}
+				
 			resp.setResponseData(result);
 			
 		} catch (FanbeiException exception) {

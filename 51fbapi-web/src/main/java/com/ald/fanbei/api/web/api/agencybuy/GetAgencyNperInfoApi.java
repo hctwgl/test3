@@ -109,11 +109,12 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         
         JSONArray interestFreeArray = null;
         
-        String numId = params.get("numId") + "";
+        if(params.get("numId") != null) {
+            String numId = params.get("numId") + "";
+            String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.TAOBAO.getCode());
+            interestFreeArray = getInterestFreeArray(numId,type);
+        }
 
-		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.TAOBAO.getCode());
-        interestFreeArray = getInterestFreeArray(numId,type);
-        
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
         JSONArray array = JSON.parseArray(resource.getValue());

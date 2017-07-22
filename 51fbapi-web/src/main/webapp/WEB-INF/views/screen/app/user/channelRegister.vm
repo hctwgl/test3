@@ -12,12 +12,10 @@
     <input type="hidden" id="style" value="$!{style}">
 
     <div class="channelRegister_wrap">
-        #if( $!{style}==9 || $!{style}==11 || $!{style}==12 )
+        #if( $!{style}==9 || $!{style}==11 || $!{style}==12 || $!{style}==15 || $!{style}==16 )
         <img src="$commonUrl/channel$!{style}_01.png">
         #elseif( $!{style}==14 )
         <img src="$commonUrl/channel7_01.jpg">
-        #elseif( $!{style}==15 || $!{style}==16 )
-        <img src="$commonUrl/channel15_01.png">
         #else
         <img src="$commonUrl/channel$!{style}_01.jpg">
         #end

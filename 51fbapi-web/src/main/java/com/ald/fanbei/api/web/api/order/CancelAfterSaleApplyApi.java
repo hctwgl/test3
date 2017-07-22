@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -35,6 +36,8 @@ public class CancelAfterSaleApplyApi implements ApiHandle{
 	AfAftersaleApplyService afAftersaleApplyService;
 	@Resource
 	AfGoodsService afGoodsService;
+	@Resource
+	AfGoodsPriceService afGoodsPriceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -70,6 +73,9 @@ public class CancelAfterSaleApplyApi implements ApiHandle{
 			//自营商品增加商品销量
 			if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
 				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), orderInfo.getCount());
+				if(orderInfo.getGoodsPriceId() != null){
+					afGoodsPriceService.updateStockAndSaleByPriceId(orderInfo.getGoodsPriceId(), true);
+				}
 			}
 			logger.info("cancelAfterSaleApply success. orderId="+orderId+",userId="+userId);
 		}else{

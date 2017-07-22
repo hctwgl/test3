@@ -187,7 +187,6 @@ public class AppH5FanBeiWebController extends BaseController {
 		doMaidianLog(request,"");
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
-			
 			context = doWebCheck(request, false);
 			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
 			AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
@@ -200,9 +199,7 @@ public class AppH5FanBeiWebController extends BaseController {
 						.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), notifyUrl,returnData )
 						.toString();
 			}
-
 			AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
-
 			if (couponDo == null) {
 				returnData.put("status", CouponWebFailStatus.CouponNotExist.getCode());
 
@@ -212,7 +209,6 @@ public class AppH5FanBeiWebController extends BaseController {
 			}
 
 			Integer limitCount = couponDo.getLimitCount();
-
 			Integer myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUserDo.getRid(),
 					NumberUtil.objToLongDefault(couponId, 1l));
 			if (limitCount <= myCount) {
@@ -222,7 +218,7 @@ public class AppH5FanBeiWebController extends BaseController {
 						FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", returnData).toString();
 			}
 			Long totalCount = couponDo.getQuota();
-			if(totalCount!=0&&totalCount<=couponDo.getQuotaAlready()){
+			if(totalCount!=-1 && totalCount!=0 &&totalCount<=couponDo.getQuotaAlready()){
 				returnData.put("status", CouponWebFailStatus.MoreThanCoupon.getCode());
 
 				return H5CommonResponse.getNewInstance(false,
@@ -238,7 +234,6 @@ public class AppH5FanBeiWebController extends BaseController {
 				if(DateUtil.afterDay(new Date(), couponDo.getGmtEnd())){
 					userCoupon.setStatus(CouponStatus.EXPIRE.getCode());
 				}
-
 			}else{
 				userCoupon.setGmtStart(new Date());
 				if(couponDo.getValidDays()==-1){
@@ -247,9 +242,6 @@ public class AppH5FanBeiWebController extends BaseController {
 					userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
 				}
 			}
-			
-			
-			
 			userCoupon.setSourceType(CouponSenceRuleType.PICK.getCode());
 			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
 			userCoupon.setUserId(afUserDo.getRid());
@@ -260,15 +252,11 @@ public class AppH5FanBeiWebController extends BaseController {
 			afCouponService.updateCouponquotaAlreadyById(couponDoT);
 			logger.info("pick coupon success",couponDoT);
 			return H5CommonResponse.getNewInstance(true, "领券成功", "", null).toString();
-
 		} catch (Exception e) {
 			logger.error("pick coupon error",e);
 			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
 		}
-
 	}
-	
-	
 	
 	@ResponseBody
 	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -316,11 +304,13 @@ public class AppH5FanBeiWebController extends BaseController {
 			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
 			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
 			JSONObject resultJson = JSONObject.parseObject(resultString);
-			if (!"0".equals(resultJson.getString("code"))) {
-				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
-			} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
+			String code = resultJson.getString("code");
+			//10222代表已经一天只能领取一张
+			if ("10222".equals(code)) {
 				return H5CommonResponse.getNewInstance(false, "今日已领取，请明日再来！", null, null).toString();
-			}
+			} else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+			} 
 			return H5CommonResponse.getNewInstance(true, "领券成功，有效期3天", "", null).toString();
 
 		} catch (Exception e) {

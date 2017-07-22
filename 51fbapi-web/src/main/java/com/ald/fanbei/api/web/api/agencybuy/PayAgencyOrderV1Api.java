@@ -13,8 +13,11 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
@@ -76,14 +79,23 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+			//自营或代买订单记录支付失败原因
+			if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
+				AfOrderDo currUpdateOrder = new AfOrderDo();
+				currUpdateOrder.setRid(orderInfo.getRid());
+				currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
+				currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+				currUpdateOrder.setStatusRemark(Constants.PAY_ORDER_PASSWORD_ERROR);
+				afOrderService.updateOrder(currUpdateOrder);
+			}
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
-
+		
 		String payType = PayType.AGENT_PAY.getCode();
 		if (payId > 0) {// 有银行卡ID 表示组合支付
 			payType = PayType.COMBINATION_PAY.getCode();
 		}
-
+		
 		afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getActualAmount(), orderInfo.getNper(), appName, ipAddress);
 
 		// String success = result.get("success").toString();

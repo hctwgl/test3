@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170717")
+    #set($src="https://fs.51fanbei.com/h5/app/activity/07")
+    <meta charset="UTF-8">
+    <title>领券中心</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/07/couponCenter.css?version=$version">
+</head>
+
+<body>
+<div id="couponCenter">
+<div id="tabNav">
+    <ul class="navList">
+        <li v-for="(item,index) in content.couponCategoryList" @click="liClick(index)">{{item.name}}</li>
+        <div class="kong"></div>
+    </ul>
+</div>
+<div id="content">
+   <div class="banner"><img :src="content.bannerImage"></div>
+   <div id="tabCont">
+       <ul class="contList">
+           <li v-for="items in content.couponCategoryList">
+              <div v-if="item.isOver==='N'" class="everyCont" v-for="item in items.couponInfoList" @click="couponClick(item)">
+                 <div class="left">
+                     <p class="amount">￥<span>{{item.amount}}</span></p>
+                     <p class="useRule" v-if="item.limitAmount>0">满{{item.limitAmount}}元可用</p>
+                     <p class="useRule" v-else>无门槛使用</p>
+                 </div>
+                 <div class="right">
+                     <p class="couponType" v-if="item.type==='MOBILE'" style="background: #fab677;">充值券</p>
+                     <p class="couponType" v-if="item.type==='REPAYMENT'" style="background: #38d7c2;">还款券</p>
+                     <p class="couponType" v-if="item.type==='FULLVOUCHER'" style="background: #5c99d7;">满减券</p>
+                     <p class="couponType" v-if="item.type==='CASH'" style="background: #fab677;">现金券</p>
+                     <p class="couponType" v-if="item.type==='ACTIVITY'" style="background: #fc8aa4;">会场券</p>                    
+                     <p class="useName" style="-webkit-box-orient: vertical;">{{item.name}}</p> 
+                     <p class="useRange" style="-webkit-box-orient: vertical;">{{item.useRange}}</p>
+                     <p class="validTime" v-if="item.gmtStart!='0'&&item.gmtEnd!='0'">{{item.start}}-{{item.end}}</p>
+                     <p class="clickMe" v-if="item.isDraw==='Y'">点我领取</p>
+                     <p class="clickMe clickMe01" v-if="item.isDraw==='N'&&(item.type==='FULLVOUCHER' || item.type==='CASH' || item.type==='ACTIVITY')">去用券</p>
+                     <p class="clickMe clickMe01" v-if="item.isDraw==='N'&&(item.type==='MOBILE' || item.type==='REPAYMENT')">已领券</p>             
+                     <p class="timeOver" v-if="item.state==='timeOver'"></p>                     
+                 </div>
+              </div>
+              <!--已领完-->
+              <div v-if="item.isOver==='Y'" class="everyCont" v-for="item in items.couponInfoList">
+                 <div class="left">
+                     <p class="amount" style="color:#d8d8d8">￥<span>{{item.amount}}</span></p>
+                     <p class="useRule"  style="color:#d8d8d8" v-if="item.limitAmount>0">满{{item.limitAmount}}元可用</p>
+                     <p class="useRule"  style="color:#d8d8d8" v-else>无门槛使用</p>
+                 </div>
+                 <div class="right">
+                     <p class="couponType" v-if="item.type==='MOBILE'" style="background:#d8d8d8;color:#fff;">充值券</p>
+                     <p class="couponType" v-if="item.type==='REPAYMENT'" style="background:#d8d8d8;color:#fff;">还款券</p>
+                     <p class="couponType" v-if="item.type==='FULLVOUCHER'" style="background:#d8d8d8;color:#fff;">满减券</p>
+                     <p class="couponType" v-if="item.type==='CASH'" style="background:#d8d8d8;color:#fff;">现金券</p>
+                     <p class="couponType" v-if="item.type==='ACTIVITY'" style="background:#d8d8d8;color:#fff;">会场券</p>                     
+                     <p class="useName" style="color:#d8d8d8;-webkit-box-orient: vertical;">{{item.name}}</p>
+                     <p class="useRange" style="color:#d8d8d8;-webkit-box-orient: vertical;">{{item.useRange}}</p>
+                     <p class="validTime" style="color:#d8d8d8" v-if="item.gmtStart!='0'&&item.gmtEnd!='0'">{{item.start}}-{{item.end}}</p>
+                     <p class="clickMe clickMe02">已领完</p>              
+                 </div>
+              </div> 
+              <!--已领完-->   
+           </li>
+       </ul>
+   </div> 
+</div>
+</div>
+<script src="/dist/activity/07/couponCenter.js?version=$version"></script>
+</body>
+</html>

@@ -165,6 +165,14 @@ public class StringUtil extends StringUtils {
     public static String null2Str(Object str) {
         return (str != null) ? str.toString() : "";
     }
+    
+    public static String logisticsInfoDeal(String str) {
+    	if(str==null || "暂无".equals(str.trim())){
+    		return "";
+    	}
+    	return str.trim();
+    }
+    
     /** 
 	* @Title: UrlEncoder 
 	* @Description: 字符串编码

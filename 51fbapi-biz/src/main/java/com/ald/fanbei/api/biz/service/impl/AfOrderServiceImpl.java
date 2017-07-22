@@ -76,6 +76,7 @@ import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
 import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
@@ -173,6 +174,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	RiskUtil riskUtil;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfTradeBusinessInfoDao afTradeBusinessInfoDao;
+	
+	@Override
+	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
+		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
+	}
 	
 	@Override
 	public int createOrderTrade(final String content) {
@@ -668,11 +676,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
+				Date currentDate = new Date();
+				String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
+				Map<String, Object> resultMap = new HashMap<String, Object>();
+				AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
 				try {
-					Date currentDate = new Date();
-					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
-					Map<String, Object> resultMap = new HashMap<String, Object>();
-					AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId); // new AfOrderDo();
 					// 查卡号，用于调用风控接口
 					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
@@ -708,13 +716,26 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderInfo.setRiskOrderNo(riskOrderNo);
 						orderDao.updateOrder(orderInfo);
 
-						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
-
+						String name = orderInfo.getGoodsName();
+						if(orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+							name = orderInfo.getShopName();
+						}
+						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(),
+								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+						
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
 						// 最后调用风控控制
+						String str = orderInfo.getGoodsName();
+						if(OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+							str = OrderType.BOLUOME.getCode();
+						}
+						if(OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+							str = OrderType.TRADE.getCode();
+						}
 						logger.info("verify userId" + userId);
-						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap));
+						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
+						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, getVirtualCode(virtualMap));
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
@@ -802,6 +823,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return resultMap;
 				} catch (FanbeiException exception) {
 					logger.error("payBrandOrder faied e = {}", exception);
+					//自营,代买或商圈记录支付失败信息，然后返回客户端提示
+					if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
+						String payFailMsg = "";
+						if(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR.getCode().equals(exception.getErrorCode().getCode())){
+							payFailMsg = Constants.PAY_ORDER_USE_AMOUNT_LESS;
+						}else if(FanbeiExceptionCode.RISK_VERIFY_ERROR.getCode().equals(exception.getErrorCode().getCode())
+								|| FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR.getCode().equals(exception.getErrorCode().getCode())
+								|| FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode()) 
+								|| FanbeiExceptionCode.BANK_CARD_PAY_ERR.getCode().equals(exception.getErrorCode().getCode()) ){
+							payFailMsg = exception.getErrorCode().getDesc();
+						}else if(FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode())){
+							payFailMsg = FanbeiExceptionCode.BANK_CARD_PAY_ERR.getDesc();
+						}
+						AfOrderDo currUpdateOrder = new AfOrderDo();
+						currUpdateOrder.setRid(orderInfo.getRid());
+						currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
+						currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+						currUpdateOrder.setStatusRemark(payFailMsg);
+						orderDao.updateOrder(currUpdateOrder);
+						logger.info("ap pay order fail,reason is useamount is too less orderId="+orderInfo.getRid());
+					}
 					throw exception;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -1007,8 +1049,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					if (orderInfo == null || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
-						return 0;
+					//菠萝觅，临时增加CLOSED订单：因为额度支付可能会先关闭订单
+					if (orderInfo == null || 
+	   						 (	!orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()) 
+	   						    &&!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode()) 
+   								&&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
+   								&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
+							return 0;
 					}
 					if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
@@ -1071,6 +1118,47 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 		return result;
 	}	
+	
+	public int dealBrandOrderFail(final String payOrderNo, final String tradeNo, final String payType) {
+		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+		if (!OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())) {
+			return 0;
+		}
+		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					if (orderInfo == null || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()) && !orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()))) {
+						return 0;
+					}
+					logger.info("dealBrandOrder fail begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[] { payOrderNo, tradeNo, payType });
+					String failMsg = "";
+					if (PayType.BANK.getCode().equals(payType)) {
+						failMsg = Constants.PAY_ORDER_UPS_FAIL_BANK;
+					} else if (PayType.WECHAT.getCode().equals(payType)) {
+						failMsg = Constants.PAY_ORDER_UPS_FAIL_WX;
+					} else {
+						failMsg = Constants.PAY_ORDER_UPS_FAIL;
+					}
+					orderInfo.setPayTradeNo(payOrderNo);
+					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+					orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
+					orderInfo.setStatusRemark(failMsg);
+					orderInfo.setPayType(payType);
+					orderInfo.setGmtPay(new Date());
+					orderInfo.setTradeNo(tradeNo);
+					orderDao.updateOrder(orderInfo);
+					logger.info("dealBrandOrder fail comlete , orderInfo = {} ", orderInfo);
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealBrandOrder fail error:", e);
+					return 0;
+				}
+			}
+		});
+		return result;
+	}
 	
 	@Override
 	public int dealBrandOrderRefund(final Long orderId,final Long userId, final Long bankId, final String orderNo, final String thirdOrderNo,
@@ -1271,10 +1359,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			AfOrderDo order = orderDao.getOrderById(orderId);
 			List<String> agentbuyStatus = new ArrayList<String>();
 			agentbuyStatus.add(OrderStatus.AGENCYCOMPLETED.getCode());
+			agentbuyStatus.add(OrderStatus.DELIVERED.getCode());
 			agentbuyStatus.add(OrderStatus.FINISHED.getCode());
 			agentbuyStatus.add(OrderStatus.REBATED.getCode());
 			List<String> otherbuyStatus = new ArrayList<String>();
 			otherbuyStatus.add(OrderStatus.PAID.getCode());
+			otherbuyStatus.add(OrderStatus.DELIVERED.getCode());
 			otherbuyStatus.add(OrderStatus.FINISHED.getCode());
 			otherbuyStatus.add(OrderStatus.REBATED.getCode());
 			//代买和自营及状态匹配才满足申请售后条件
@@ -1285,20 +1375,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			
 			//符合订单类型及状态，继续时间校验，自订单状态为待收货开始30个自然日内
 			Date waitDelieveDate = null;
-			if(OrderType.SELFSUPPORT.getCode().equals(order.getOrderType())){
-				waitDelieveDate = order.getGmtPay();
+			if(order.getGmtDeliver()!=null){
+				//发货时间不为空，以发货时间为准，因为此字段app3.7.0版本后添加
+				waitDelieveDate = order.getGmtDeliver();
 			}else{
-				AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
-				AfOrderTempDo orderTemp = afOrderTempDao.getByOrderId(orderId);
-				waitDelieveDate = agentOrderDo.getGmtAgentBuy();
-				//涉及老的数据当初有问题，所有先取af_order_temp 如果没有，再取订单支付时间
-				if(waitDelieveDate==null && orderTemp!=null){
-					waitDelieveDate = orderTemp.getGmtCreate();
-				}
-				if(waitDelieveDate == null){
-					waitDelieveDate = order.getGmtCreate();
+				//代表app3.7.1版本前数据，做兼容
+				if(OrderType.SELFSUPPORT.getCode().equals(order.getOrderType())){
+					waitDelieveDate = order.getGmtPay();
+				}else{
+					AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
+					AfOrderTempDo orderTemp = afOrderTempDao.getByOrderId(orderId);
+					waitDelieveDate = agentOrderDo.getGmtAgentBuy();
+					//涉及老的数据当初有问题，所有先取af_order_temp 如果没有，再取订单支付时间
+					if(waitDelieveDate==null && orderTemp!=null){
+						waitDelieveDate = orderTemp.getGmtCreate();
+					}
+					if(waitDelieveDate == null){
+						waitDelieveDate = order.getGmtCreate();
+					}
 				}
 			}
+			
 			Date deadlineTime = DateUtil.addDays(waitDelieveDate,Constants.AFTER_SALE_DAYS);
 			if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(deadlineTime),DateUtil.getToday())<0){
 				isCanApply = YesNoStatus.YES.getCode();

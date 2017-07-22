@@ -25,6 +25,8 @@ public class AfGoodsQuery extends Page<AfGoodsDo>{
 
 	private String source;//商品来源
 	
+	private Integer appVersion;//版本号
+	
 	public Long getCategoryId() {
 		return categoryId;
 	}
@@ -63,6 +65,20 @@ public class AfGoodsQuery extends Page<AfGoodsDo>{
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+	/**
+	 * @return the appVersion
+	 */
+	public Integer getAppVersion() {
+		return appVersion;
+	}
+
+	/**
+	 * @param appVersion the appVersion to set
+	 */
+	public void setAppVersion(Integer appVersion) {
+		this.appVersion = appVersion;
 	}
 	
 }

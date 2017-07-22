@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
  
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -76,6 +77,11 @@ public class AppH5EncoreController extends BaseController {
     @RequestMapping(value = "encoreActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String encoreActivityInfo(HttpServletRequest request, ModelMap model) throws IOException {
+         String URL = URLDecoder.decode(request.getHeader("Referer"), "UTF-8");
+         String appInfoStr = URL.substring(URL.indexOf("{"));
+         JSONObject appInfo = JSONObject.parseObject(appInfoStr); 
+         Integer appVersion = Integer.parseInt(appInfo.get("appVersion").toString());
+    	
     	Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
     	if(activityId == 0) {
     		return H5CommonResponse.getNewInstance(false, "请上送活动id").toString();
@@ -102,7 +108,7 @@ public class AppH5EncoreController extends BaseController {
             }
             removeSecondNper(array);
             // 查询活动商品信息
-    		List<AfActivityGoodsDto> activityGoodsDtoList = afActivityGoodsService.listActivityGoodsByActivityId(activityId);
+    		List<AfActivityGoodsDto> activityGoodsDtoList = afActivityGoodsService.listActivityGoodsByActivityId(activityId, appVersion);
     		List activityGoodsList  = new ArrayList();
     		for(AfActivityGoodsDto activityGoodsDto : activityGoodsDtoList) {
     			Map<String,Object> activityGoodsInfo = new HashMap<String,Object>();
@@ -149,7 +155,7 @@ public class AppH5EncoreController extends BaseController {
     		}
     		jsonObj.put("activityGoodsList", activityGoodsList);
     		// 获取非活动商品
-    		List<AfGoodsDo> recommendGoodsDoList = afActivityGoodsService.listRecommendGoodsByActivityId(activityId);
+    		List<AfGoodsDo> recommendGoodsDoList = afActivityGoodsService.listRecommendGoodsByActivityId(activityId, appVersion);
     		List recommendGoodsList = new ArrayList();
     		for(AfGoodsDo goodsDo : recommendGoodsDoList) {
     			Map recommendGoodsInfo = new HashMap();

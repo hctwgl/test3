@@ -68,6 +68,14 @@
 			<if test="source != null and source !=''">
 				AND g.source = #{source}
 			</if>
+			<if test="appVersion != null and 371 > appVersion">
+				AND
+					id <![CDATA[  <=  ]]> 110552
+			</if>
+			<if test="appVersion != null and  appVersion >= 371">
+				AND
+					id <![CDATA[  >  ]]> 10552
+			</if>
 		order by g.gmt_modified desc
 	</select>
 	

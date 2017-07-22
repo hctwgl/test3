@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_goods_price表:'第三方-上树请求记录模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGoodsPriceDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,property_value_names,price_amount,actual_amount,sale_count,stock,sort,is_sale 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+    	And is_sale='Y'
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="creator != null and creator != ''">
+            AND creator = #{creator,jdbcType=VARCHAR}
+        </if>
+        <if test="modifier != null and modifier != ''">
+            AND modifier = #{modifier,jdbcType=VARCHAR}
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            AND goods_id = #{goodsId,jdbcType=INTEGER}
+        </if>
+        <if test="propertyValueIds != null and propertyValueIds != ''">
+            AND property_value_ids = #{propertyValueIds,jdbcType=VARCHAR}
+        </if>
+        <if test="propertyValueNames != null and propertyValueNames != ''">
+            AND property_value_names = #{propertyValueNames,jdbcType=VARCHAR}
+        </if>
+        <if test="priceAmount != null and priceAmount != ''">
+            AND price_amount = #{priceAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="actualAmount != null and actualAmount != ''">
+            AND actual_amount = #{actualAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="saleCount != null and saleCount != ''">
+            AND sale_count = #{saleCount,jdbcType=INTEGER}
+        </if>
+        <if test="stock != null and stock != ''">
+            AND stock = #{stock,jdbcType=INTEGER}
+        </if>
+        <if test="sort != null and sort != ''">
+            AND sort = #{sort,jdbcType=INTEGER}
+        </if>
+        <if test="isSale != null and isSale != ''">
+            AND is_sale = #{isSale,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" keyProperty="id">
+    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_goods_price
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="creator != null">        
+	            creator,
+	        </if>
+	        <if test="modifier != null">        
+	            modifier,
+	        </if>
+	        <if test="goodsId != null">        
+	            goods_id,
+	        </if>
+	        <if test="propertyValueIds != null">        
+	            property_value_ids,
+	        </if>
+	        <if test="propertyValueNames != null">        
+	            property_value_names,
+	        </if>
+	        <if test="priceAmount != null">        
+	            price_amount,
+	        </if>
+	        <if test="actualAmount != null">        
+	            actual_amount,
+	        </if>
+	        <if test="saleCount != null">        
+	            sale_count,
+	        </if>
+	        <if test="stock != null">        
+	            stock,
+	        </if>
+	        <if test="sort != null">        
+	            sort,
+	        </if>
+	        <if test="isSale != null">        
+	            is_sale,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="creator != null" >
+		       #{creator,jdbcType=VARCHAR},
+		    </if>
+		    <if test="modifier != null" >
+		       #{modifier,jdbcType=VARCHAR},
+		    </if>
+		    <if test="goodsId != null" >
+		       #{goodsId,jdbcType=INTEGER},
+		    </if>
+		    <if test="propertyValueIds != null" >
+		       #{propertyValueIds,jdbcType=VARCHAR},
+		    </if>
+		    <if test="propertyValueNames != null" >
+		       #{propertyValueNames,jdbcType=VARCHAR},
+		    </if>
+		    <if test="priceAmount != null" >
+		       #{priceAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="actualAmount != null" >
+		       #{actualAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="saleCount != null" >
+		       #{saleCount,jdbcType=INTEGER},
+		    </if>
+		    <if test="stock != null" >
+		       #{stock,jdbcType=INTEGER},
+		    </if>
+		    <if test="sort != null" >
+		       #{sort,jdbcType=INTEGER},
+		    </if>
+		    <if test="isSale != null" >
+		       #{isSale,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo">
+        UPDATE af_goods_price
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="creator != null and creator != '' ">        
+                creator = #{creator,jdbcType=VARCHAR},                
+            </if>
+            <if test="modifier != null and modifier != '' ">        
+                modifier = #{modifier,jdbcType=VARCHAR},                
+            </if>
+            <if test="goodsId != null and goodsId != '' ">        
+                goods_id = #{goodsId,jdbcType=INTEGER},                
+            </if>
+            <if test="propertyValueIds != null and propertyValueIds != '' ">        
+                property_value_ids = #{propertyValueIds,jdbcType=VARCHAR},                
+            </if>
+            <if test="propertyValueNames != null and propertyValueNames != '' ">        
+                property_value_names = #{propertyValueNames,jdbcType=VARCHAR},                
+            </if>
+            <if test="priceAmount != null and priceAmount != '' ">        
+                price_amount = #{priceAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="actualAmount != null and actualAmount != '' ">        
+                actual_amount = #{actualAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="saleCount != null and saleCount != '' ">        
+                sale_count = #{saleCount,jdbcType=INTEGER},                
+            </if>
+            <if test="stock != null and stock != '' ">        
+                stock = #{stock,jdbcType=INTEGER},                
+            </if>
+            <if test="sort != null and sort != '' ">        
+                sort = #{sort,jdbcType=INTEGER},                
+            </if>
+            <if test="isSale != null and isSale != '' ">        
+                is_sale = #{isSale,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_goods_price
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_goods_price
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_goods_price
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

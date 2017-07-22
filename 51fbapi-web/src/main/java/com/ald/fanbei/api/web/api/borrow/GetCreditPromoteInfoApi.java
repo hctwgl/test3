@@ -181,7 +181,7 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		}
 		
 		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())) {
-			data.put("url", "http://f.51fanbei.com/test/af8076f9f38a5315.png?currentTime=" + System.currentTimeMillis());
+//			data.put("url", "http://f.51fanbei.com/test/af8076f9f38a5315.png?currentTime=" + System.currentTimeMillis());
 		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
 			data.put("url", "http://f.51fanbei.com/test/b9435048dd27d50e.png?currentTime=" + System.currentTimeMillis());
 			isSkipH5 = "SC";

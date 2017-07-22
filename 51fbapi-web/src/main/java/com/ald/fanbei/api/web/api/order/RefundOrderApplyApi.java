@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -55,6 +56,8 @@ public class RefundOrderApplyApi implements ApiHandle{
 	AfAftersaleApplyService afAftersaleApplyService;
 	@Resource
 	AfGoodsService afGoodsService;
+	@Resource 
+	AfGoodsPriceService afGoodsPriceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -150,6 +153,9 @@ public class RefundOrderApplyApi implements ApiHandle{
 			//自营商品减少商品销量
 			if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
 				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
+				if (orderInfo.getGoodsPriceId() != null) {
+					afGoodsPriceService.updateStockAndSaleByPriceId(orderInfo.getGoodsPriceId(), false);//规格没有出售成功
+				}
 			}
 			//订单状态改为退款中
 			String preStatus = orderInfo.getStatus();
