@@ -38,6 +38,8 @@ public class AfOrderDo extends AbstractSerial{
 	private BigDecimal priceAmount;
 	private BigDecimal saleAmount;
 	private BigDecimal actualAmount;
+	private BigDecimal borrowAmount;//分期金额（额度支付金额）
+	private BigDecimal bankAmount;  //银行支付金额
 	private String shopName;
 	private String payStatus;
 	private String payType;
@@ -413,6 +415,18 @@ public class AfOrderDo extends AbstractSerial{
 	}
 	public void setPreStatus(String preStatus) {
 		this.preStatus = preStatus;
+	}
+	public BigDecimal getBorrowAmount() {
+		return borrowAmount;
+	}
+	public void setBorrowAmount(BigDecimal borrowAmount) {
+		this.borrowAmount = borrowAmount;
+	}
+	public BigDecimal getBankAmount() {
+		return bankAmount;
+	}
+	public void setBankAmount(BigDecimal bankAmount) {
+		this.bankAmount = bankAmount;
 	}
 	
 }

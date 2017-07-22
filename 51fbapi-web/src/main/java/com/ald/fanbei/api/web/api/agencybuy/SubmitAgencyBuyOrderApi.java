@@ -158,7 +158,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
 			data.put("isEnoughAmount", isEnoughAmount);
-			resp.setResponseData(data);;
+			resp.setResponseData(data);
 			return resp;
 
 		}

@@ -15,10 +15,12 @@ public enum OrderType {
 	TAOBAO("TAOBAO", "淘宝订单","TB"),
 	TMALL("TMALL", "天猫订单","TM"),
 	AGENTBUY("AGENTBUY", "代买订单","DM"),
+	AGENTCPBUY("AGENTCPBUY", "代买订单组合","DM_CP"),
 	SELFSUPPORT("SELFSUPPORT", "自营商品订单","SG"),
 
-	BOLUOME("BOLUOME", "菠萝觅","BL");
-    
+	BOLUOME("BOLUOME", "菠萝觅","BL"),
+	BOLUOMECP("BOLUOMECP", "菠萝觅组合","BL_CP");
+	
     private String code;
     private String name;
     private String shortName;

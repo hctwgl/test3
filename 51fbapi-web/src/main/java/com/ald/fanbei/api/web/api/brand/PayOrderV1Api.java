@@ -22,10 +22,13 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -71,7 +74,8 @@ public class PayOrderV1Api implements ApiHandle {
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
 
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
-
+		String isCombinationPay = ObjectUtils.toString(requestDataVo.getParams().get("isCombinationPay"), "").toString();
+		
 		if (orderId == null || payId == null) {
 			logger.error("orderId is empty or payId is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -111,7 +115,20 @@ public class PayOrderV1Api implements ApiHandle {
 			if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || nper == null)) {
 				nper = orderInfo.getNper();
 			}
-			Map<String, Object> result = afOrderService.payBrandOrder(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
+			
+			String payType = PayType.AGENT_PAY.getCode();
+			if (payId < 0) {
+				payType = PayType.WECHAT.getCode();
+			} else if (payId > 0) {
+				payType = PayType.BANK.getCode();
+			}
+			
+			if (StringUtil.equals(YesNoStatus.YES.getCode(), isCombinationPay)) {
+				payType = PayType.COMBINATION_PAY.getCode();
+			}
+			
+			Map<String, Object> result = afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
+			
 			String success = result.get("success").toString();
 			if (StringUtils.isNotBlank(success) && Boolean.parseBoolean(success)) {
 //				dealWithPayOrderRiskFailed(result, resp);
