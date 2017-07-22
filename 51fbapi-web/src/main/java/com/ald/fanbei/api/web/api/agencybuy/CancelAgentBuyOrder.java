@@ -18,15 +18,11 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -72,7 +68,7 @@ public class CancelAgentBuyOrder implements ApiHandle {
 		}
 		
 		try {
-			String originStatus = currAfOrderDo.getStatus();
+			//String originStatus = currAfOrderDo.getStatus();
 			AfOrderDo afOrderDo = new AfOrderDo();
 			afOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 			afOrderDo.setRid(orderId);
@@ -107,8 +103,8 @@ public class CancelAgentBuyOrder implements ApiHandle {
 					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
 				}
 				
-				//如果支付类型为代付，返回用户额度
-				if(PayType.AGENT_PAY.getCode().equals(currAfOrderDo.getPayType()) 
+				//如果支付类型为代付，返回用户额度 -- 只有在待审核状态下才可以--现在去除
+				/*if(PayType.AGENT_PAY.getCode().equals(currAfOrderDo.getPayType()) 
 						&& OrderStatus.PAID.getCode().equals(originStatus)){
 					AfUserAccountDo updateAccountDo = new AfUserAccountDo();
 					updateAccountDo.setUserId(currAfOrderDo.getUserId());
@@ -122,7 +118,7 @@ public class CancelAgentBuyOrder implements ApiHandle {
 					afUserAccountLogDo.setAmount(currAfOrderDo.getActualAmount());
 					afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
 					
-				}
+				}*/
 				return resp;
 			}
 		} catch (Exception e) {

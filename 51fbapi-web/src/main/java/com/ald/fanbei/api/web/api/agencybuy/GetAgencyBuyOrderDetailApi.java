@@ -6,12 +6,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
@@ -26,7 +24,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -138,6 +136,10 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		if (context.getAppVersion() < 364){
 			if (status.equals(OrderStatus.DEALING.getCode())) {
 				status =OrderStatus.PAID.getCode();
+			}
+		}else if(context.getAppVersion() == 371 && PayType.AGENT_PAY.getCode().equals(afOrderDo.getPayType())){
+			if (status.equals(OrderStatus.PAID.getCode())) {
+				status =OrderStatus.REVIEW.getCode();
 			}
 		}
 		
