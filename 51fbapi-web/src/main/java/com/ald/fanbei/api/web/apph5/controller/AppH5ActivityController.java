@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
  
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.URIDereferencer;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
@@ -49,6 +51,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfGoodsVo;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.xerces.internal.util.URI;
  
 /**
  * @类描述 h5活动-预约等
@@ -286,6 +289,10 @@ public class AppH5ActivityController extends BaseController {
     @RequestMapping(value = "/getSelfSupportGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getSelfSupportGoodsInfo(HttpServletRequest request, ModelMap model) throws IOException {
         Map<String, Object> returnData = new HashMap<String, Object>();
+        String URL = URLDecoder.decode(request.getHeader("Referer"), "UTF-8");
+        String appInfoStr = URL.substring(URL.indexOf("{"));
+        JSONObject appInfo = JSONObject.parseObject(appInfoStr); 
+        Integer appVersion = Integer.parseInt(appInfo.get("appVersion").toString());
         String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
         Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
         try {
@@ -293,6 +300,7 @@ public class AppH5ActivityController extends BaseController {
         	query.setPageSize(PAGE_SIZE);
         	query.setPageNo(pageNo);
         	query.setSource(AfGoodsSource.SELFSUPPORT.getCode());
+        	query.setAppVersion(appVersion);
         	//获取自营商品信息列表
         	List<AfGoodsDo> goodsDoList = afGoodsService.getCateGoodsList(query);
         	List<AfGoodsVo> goodsList = getGoodsList(goodsDoList);
