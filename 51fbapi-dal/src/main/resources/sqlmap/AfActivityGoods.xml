@@ -45,6 +45,41 @@
 		AND g.is_delete = 0
 		AND now() > ag.valid_start
 		AND ag.valid_end > now()
+		AND
+			((g.source = 'SELFSUPPORT' AND g.id > 110552) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
+		ORDER BY ag.gmt_create DESC
+	</select>
+	
+	<select id="listActivityGoodsByActivityIdLT371" resultType="AfActivityGoodsDto" parameterType="java.lang.Long">
+		SELECT 
+		<include refid="activityGoodsSqlField"></include>,
+		<include refid="goodsSqlField"></include>
+		FROM
+			af_activity_goods ag 
+		INNER JOIN 
+			af_goods g 
+		ON 
+			ag.goods_id = g.id
+		WHERE 
+		ag.goods_id 
+		IN (
+			SELECT 
+				goods_id 
+			FROM 
+				af_activity_model 
+			WHERE 
+				activity_id = #{activityId} 
+			AND 
+				goods_type = 1 
+			AND 
+				is_delete = 0
+		) 
+		AND  ag.is_delete = 0 
+		AND g.is_delete = 0
+		AND now() > ag.valid_start
+		AND ag.valid_end > now()
+		AND
+			((g.source = 'SELFSUPPORT' AND 110552 >= g.id) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
 		ORDER BY ag.gmt_create DESC
 	</select>
 	
@@ -63,6 +98,28 @@
 			g.is_delete = 0
 		AND
 			m.is_delete = 0
+		AND
+		((g.source = 'SELFSUPPORT' AND g.id > 110552) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
+		ORDER BY m.gmt_create DESC
+	</select>
+	
+	<select id="listRecommendGoodsByActivityIdLT371" resultType="AfGoodsDo" parameterType="java.lang.Long">
+		SELECT 
+		<include refid="goodsSqlField"></include>
+		FROM
+			af_goods g ,af_activity_model m
+		WHERE
+			m.activity_id = #{activityId}
+		AND
+			m.goods_id = g.id	
+		AND
+			m.goods_type = 2
+		AND 
+			g.is_delete = 0
+		AND
+			m.is_delete = 0
+		AND
+		((g.source = 'SELFSUPPORT' AND 110552 >= g.id) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
 		ORDER BY m.gmt_create DESC
 	</select>
 	
