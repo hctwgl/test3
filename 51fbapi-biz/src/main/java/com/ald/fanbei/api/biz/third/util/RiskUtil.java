@@ -1293,7 +1293,6 @@ public class RiskUtil extends AbstractThird {
 	}
 	
 	public void payOrderChangeAmount(Long rid) throws InterruptedException{
-		
 		AfOrderDo orderInfo = orderDao.getOrderById(rid);
 		logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
 		if (orderInfo!=null &&StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
@@ -1438,7 +1437,6 @@ public class RiskUtil extends AbstractThird {
 				auth.setFundStatus(YesNoStatus.NO.getCode());
 				jpushService.fundRiskFail(userAccountDo.getUserName());
 			}
-			auth.setGmtFund(new Date(System.currentTimeMillis()));
 			return afUserAuthService.updateUserAuth(auth);
 		}
 		return 0;
@@ -1493,7 +1491,6 @@ public class RiskUtil extends AbstractThird {
 				auth.setJinpoStatus(YesNoStatus.NO.getCode());
 				jpushService.socialSecurityRiskFail(userAccountDo.getUserName());
 			}
-			auth.setGmtJinpo(new Date(System.currentTimeMillis()));
 			return afUserAuthService.updateUserAuth(auth);
 		}
 		return 0;
@@ -1549,11 +1546,64 @@ public class RiskUtil extends AbstractThird {
 				auth.setCreditStatus(YesNoStatus.NO.getCode());
 				jpushService.creditCardRiskFail(userAccountDo.getUserName());
 			}
-			auth.setGmtCredit(new Date(System.currentTimeMillis()));
 			
 			return afUserAuthService.updateUserAuth(auth);
 		}
 		return 0;
 	}
-	
+
+	/**
+	 * 魔蝎支付宝第三方数据查询异步通知
+	 * 
+	 * @param consumerNo
+	 *            --用户唯一标识
+	 * @param userName
+	 *            --用户名
+	 * @return
+	 */
+	public int alipayNotify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logger.info(createLinkString(reqBo));
+		logThird(signInfo, "alipayNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if (StringUtil.equals("50", result)) {//不做任何更新
+				return 0;
+			}
+			String limitAmount = obj.getString("amount");
+			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+				limitAmount = "0";
+			BigDecimal au_amount = new BigDecimal(limitAmount);
+			
+			AfUserAuthDo auth = new AfUserAuthDo();
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtAlipay(new Date(System.currentTimeMillis()));
+			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			
+			if (StringUtil.equals("10", result)) {
+				auth.setAlipayStatus(YesNoStatus.YES.getCode());
+				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+				     如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+					auth.setRiskStatus(RiskStatus.YES.getCode());
+					AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+					accountDo.setAuAmount(au_amount);
+					afUserAccountService.updateUserAccount(accountDo);
+				}					
+				jpushService.creditCardRiskSuccess(userAccountDo.getUserName());
+			} else {
+				auth.setAlipayStatus(YesNoStatus.NO.getCode());
+				jpushService.creditCardRiskFail(userAccountDo.getUserName());
+			}
+			return afUserAuthService.updateUserAuth(auth);
+		}
+		return 0;
+	}
 }
