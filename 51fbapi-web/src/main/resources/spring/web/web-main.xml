@@ -237,6 +237,7 @@
 				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
 				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
 				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
+				<entry key="/auth/authAlipay" value-ref="authAlipayApi" />
 
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
