@@ -16,12 +16,15 @@ import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.common.enums.TradeOrderStatus;
 import com.ald.fanbei.api.dal.dao.AfAftersaleApplyDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
+import com.ald.fanbei.api.dal.dao.AfTradeOrderDao;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
 
 /**
  *@类描述：
@@ -41,6 +44,8 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 	TransactionTemplate transactionTemplate;
 	@Resource
 	AfAftersaleApplyDao afAftersaleApplyDao;
+	@Resource
+	AfTradeOrderDao afTradeOrderDao;
 	
 	@Override
 	public int addOrderRefund(AfOrderRefundDo orderRefundInfo) {
@@ -146,6 +151,61 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 					afOrderDao.updateOrder(orderInfo);
 				} catch (Exception e) {
 					logger.error("dealWithSelfGoodsOrderRefundFail  error: {}",e);
+					status.setRollbackOnly();
+					return 0;
+				}
+				return 1;
+			}
+		});
+	}
+
+	@Override
+	public int dealWithTradeOrderRefund(final AfOrderRefundDo orderRefundInfo, final AfOrderDo orderInfo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				logger.info("dealWithTradeOrderRefund begin: orderRefundInfo = {}, orderInfo = {}",orderRefundInfo, orderInfo);
+				try {
+					orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
+					updateOrderRefund(orderRefundInfo);
+					afOrderDao.updateOrder(orderInfo);
+					
+					AfTradeOrderDo tradeOrderDo = new AfTradeOrderDo();
+					tradeOrderDo.setOrderId(orderInfo.getRid());
+					tradeOrderDo.setStatus(TradeOrderStatus.REFUND.getCode());
+					tradeOrderDo.setGmtModified(new Date());
+					afTradeOrderDao.updateById(tradeOrderDo);
+				} catch (Exception e) {
+					logger.error("dealWithTradeOrderRefund  error: {}",e);
+					status.setRollbackOnly();
+					return 0;
+				}
+				return 1;
+			}
+		});
+	}
+
+	@Override
+	public int dealWithTradeRefundFail(final AfOrderRefundDo orderRefundInfo, final AfOrderDo orderInfo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				logger.info("dealWithTradeRefundFail begin: orderRefundInfo = {}, orderInfo = {}",orderRefundInfo, orderInfo);
+				try {
+					orderInfo.setStatus(OrderStatus.WAITING_REFUND.getCode());
+					orderRefundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
+					updateOrderRefund(orderRefundInfo);
+					afOrderDao.updateOrder(orderInfo);
+					
+					AfTradeOrderDo tradeOrderDo = new AfTradeOrderDo();
+					tradeOrderDo.setOrderId(orderInfo.getRid());
+					tradeOrderDo.setStatus(TradeOrderStatus.NEW.getCode());
+					tradeOrderDo.setGmtModified(new Date());
+					afTradeOrderDao.updateById(tradeOrderDo);
+					
+				} catch (Exception e) {
+					logger.error("dealWithTradeRefundFail  error: {}",e);
 					status.setRollbackOnly();
 					return 0;
 				}

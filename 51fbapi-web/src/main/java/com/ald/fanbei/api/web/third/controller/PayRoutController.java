@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
@@ -46,6 +47,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo;
 
 /**
  * @类现描述：
@@ -85,6 +87,8 @@ public class PayRoutController {
 	private AfOrderRefundService afOrderRefundService;
 	@Resource
 	private AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+	@Resource
+	private AfTradeWithdrawRecordService afTradeWithdrawRecordService;
 
 	private static String TRADE_STATUE_SUCC = "00";
 
@@ -175,6 +179,12 @@ public class PayRoutController {
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
         			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
         			afOrderRefundService.dealWithSelfGoodsOrderRefund(refundInfo, orderInfo);
+        		}else if (UserAccountLogType.TRADE_BANK_REFUND.getCode().equals(merPriv)) {
+        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+        			afOrderRefundService.dealWithTradeOrderRefund(refundInfo, orderInfo);
+        		}else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
+        			afTradeWithdrawRecordService.dealWithDrawSuccess(result);
         		}
     			return "SUCCESS";
 			}else{//代付失败
