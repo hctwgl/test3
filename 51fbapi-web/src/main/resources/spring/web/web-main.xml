@@ -314,6 +314,8 @@
 				<!-- face++人脸识别 -->
 				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />	
 				<entry key="/auth/submitIdNumberInfoForFacePlus" value-ref="submitIdNumberInfoForFacePlusApi" />
+				<entry key="/auth/updateIdCardForFacePlus" value-ref="updateIdCardForFacePlusApi" />
+				
 			</map>
 		</constructor-arg>
 	</bean>
