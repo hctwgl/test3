@@ -122,7 +122,13 @@
 			</if>
 			<if test="gmtCredit != null">
     			,gmt_credit=#{gmtCredit}
-			</if>									
+			</if>	
+			<if test="alipayStatus != null">
+    			,alipay_status=#{alipayStatus}
+			</if>
+			<if test="gmtAlipay != null">
+    			,gmt_alipay=#{gmtAlipay}
+			</if>												
 		WHERE user_id = #{userId}
 	</update>
 	
