@@ -6,7 +6,7 @@
 		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type,risk_status,gmt_risk,
 		fund_status,gmt_fund,jinpo_status,gmt_jinpo,credit_status,gmt_credit,alipay_status,gmt_alipay
 	</sql>
-
+ 
 
 	<insert id="addUserAuth" parameterType="AfUserAuthDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_user_auth(gmt_modified , user_id )
