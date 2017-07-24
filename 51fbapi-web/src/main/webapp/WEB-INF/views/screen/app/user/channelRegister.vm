@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017072401")
+    #set($version="2017072402")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -42,7 +42,7 @@
 		    ">
                 <li><input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
                 #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 )
-                    <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
+                    <li><input type="password" class=" register_password" id="register_password" placeholder="请输入密码" name="words" maxlength="18"></li>
                 #else
                 <li class="clearfix">
                     <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
