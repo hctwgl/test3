@@ -223,7 +223,7 @@
 			    CASE
 			        WHEN 48 > TIMESTAMPDIFF(HOUR, NOW(), uc.gmt_end)  THEN 'Y'  ELSE 'N' 
 			    END AS will_expire_status,
-			    uc.id rid, c.limit_amount, c.amount, c.name, c.use_rule, c.type, uc.status, uc.gmt_start, uc.gmt_end 
+			    uc.id rid, c.limit_amount, c.amount, c.name, c.use_rule, c.type, uc.status, uc.gmt_start, uc.gmt_end ,c.use_range
 			FROM
 			    af_user_coupon uc LEFT JOIN
 			    af_coupon c  ON uc.coupon_id = c.id
@@ -244,7 +244,7 @@
 			    CASE
 			        WHEN 48 > TIMESTAMPDIFF(HOUR, NOW(), uc.gmt_end)  THEN 'Y'  ELSE 'N' 
 			    END AS will_expire_status,
-			    uc.id rid, c.limit_amount, c.amount, c.name, c.use_rule, c.type, uc.status, uc.gmt_start, uc.gmt_end 
+			    uc.id rid, c.limit_amount, c.amount, c.name, c.use_rule, c.type, uc.status, uc.gmt_start, uc.gmt_end,c.use_range 
 			FROM
 			    af_user_coupon uc LEFT JOIN
 			    af_coupon c  ON uc.coupon_id = c.id

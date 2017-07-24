@@ -110,6 +110,11 @@
 		<property name="fbapi.yitu.key" defaultValue="0bab2c4fbbfb66d0694b16b6d86dc25b" description="秘钥"/>
 		<property name="fbapi.yitu.definedContent" defaultValue="abc" description="用户自定义字符串"/>
 		<property name="fbapi.yitu.pemPath" defaultValue="staging.public.pem" description="公钥位置"/>
+		<!-- face++ -->
+		<property name="fbapi.face.plus.id.card.url" defaultValue="https://api.faceid.com/faceid/v1/ocridcard" description="face++身份证验证地址"/>
+		<property name="fbapi.face.plus.face.living.url" defaultValue="https://api.megvii.com/faceid/v2/verify" description="face++活体验证地址"/>
+		<property name="fbapi.face.plus.appkey" defaultValue="FV5T+YXsSPiuLUmM/lIzdePOCaCnnK5GndzBqV1jT37QroYLtEIaqFC8Jmft4E4B" description="face++appKey"/>
+		<property name="fbapi.face.plus.secret" defaultValue="n0mySgkpAdgZStufuC6eLwCZsHQZxD37jOPbXEew3sLQroYLtEIaqFC8Jmft4E4B" description="face++ app_secret"/>
 	</group>
 
 	<script>

@@ -31,6 +31,9 @@
 				<value>fbapi.taobao.bcds.appid</value>
 				<value>fbapi.taobao.bcds.secret</value>
 				<value>third.offer.boluome.appSecret</value>
+				<!-- face++ -->
+				<value>fbapi.face.plus.appkey</value>
+				<value>fbapi.face.plus.secret</value>
 				
 			</list>
 		</property>

@@ -88,6 +88,7 @@ public class PayRoutController {
 	private AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 
 	private static String TRADE_STATUE_SUCC = "00";
+	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
 	@RequestMapping(value = { "/authSignReturn" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -178,7 +179,7 @@ public class PayRoutController {
         			afOrderRefundService.dealWithSelfGoodsOrderRefund(refundInfo, orderInfo);
         		}
     			return "SUCCESS";
-			}else{//代付失败
+			}else if(TRADE_STATUE_FAIL.equals(tradeState)){//只处理失败代付
 				if(afUserAccountService.dealUserDelegatePayError(merPriv, result)>0){
 					return "SUCCESS";
 				}
@@ -304,7 +305,7 @@ public class PayRoutController {
 					afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
 				}
 				
-			} else {// 代收失败
+			} else if(TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {

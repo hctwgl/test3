@@ -265,7 +265,13 @@ public class Constants {
 	public static final String CONFKEY_YITU_PEM_PATH = "fbapi.yitu.pemPath";
     public static final String CACHEKEY_YITU_FACE_SIMILARITY                   = "yitu_face_similarity$";
 
-	
+    //face++
+    public static final String CONFKEY_FACE_PLUS_ID_CARD_URL = "fbapi.face.plus.id.card.url";
+    public static final String CONFKEY_FACE_PLUS_FACE_LIVING_URL = "fbapi.face.plus.face.living.url";
+    public static final String CONFKEY_FACE_PLUS_APPKEY = "fbapi.face.plus.appkey";
+    public static final String CONFKEY_FACE_PLUS_SECRET = "fbapi.face.plus.secret";
+    
+    
 	// 三方接口调用限制
 	public static final String API_CALL_LIMIT = "API_CALL_LIMIT";
 
@@ -278,5 +284,8 @@ public class Constants {
 
 	//商品AES解密的password
 	public static final String TRADE_AES_DECRYPT_PASSWORD = "trade";
+	
+	//人脸识别类型
+	public static final String FACE_TYPE = "FACE_TYPE";
 
 }
