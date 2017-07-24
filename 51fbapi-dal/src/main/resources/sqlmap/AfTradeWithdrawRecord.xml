@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- af_trade_withdraw_record表:商圈商户提现记录表模块 -->
-<mapper namespace="com.ald.fanbei.admin.dal.dao.AfTradeWithdrawRecordDao">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfTradeWithdrawRecordDao">
 
 	<!--基本的sql查询字段 公共引用... -->
 	<sql id="queryFields">
@@ -45,7 +45,7 @@
 
 
 	<insert id="saveRecord"
-		parameterType="com.ald.fanbei.admin.dal.domain.AfTradeWithdrawRecordDo"
+		parameterType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo"
 		keyProperty="id">
 		<selectKey resultType="java.lang.Long" keyProperty="id"
 			order="AFTER">
@@ -115,7 +115,7 @@
 	</insert>
 
 	<update id="updateById"
-		parameterType="com.ald.fanbei.admin.dal.domain.AfTradeWithdrawRecordDo">
+		parameterType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
 		UPDATE af_trade_withdraw_record
 		<set>
 			<if test="gmtCreate != null and gmtCreate != '' ">
@@ -150,7 +150,7 @@
 	</update>
 
 	<select id="getById"
-		resultType="com.ald.fanbei.admin.dal.domain.AfTradeWithdrawRecordDo">
+		resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM af_trade_withdraw_record
@@ -160,8 +160,8 @@
 	</select>
 
 	<select id="getByCommonCondition"
-		resultType="com.ald.fanbei.admin.dal.domain.AfTradeWithdrawRecordDo"
-		parameterType="com.ald.fanbei.admin.dal.domain.AfTradeWithdrawRecordDo">
+		resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo"
+		parameterType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM af_trade_withdraw_record
@@ -170,8 +170,8 @@
 	</select>
 
 	<select id="getListByCommonCondition"
-		resultType="com.ald.fanbei.admin.dal.domain.AfTradeWithdrawRecordDo"
-		parameterType="com.ald.fanbei.admin.dal.domain.AfTradeWithdrawRecordDo">
+		resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo"
+		parameterType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM af_trade_withdraw_record
@@ -179,7 +179,7 @@
 	</select>
 
 	<select id="withdrawGrid"
-		resultType="com.ald.fanbei.admin.dal.domain.AfTradeWithdrawRecordDo">
+		resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
 		select
 		<include refid="queryFields" />
 		from af_trade_withdraw_record 
