@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.boluome;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ public class BoluomeCore extends AbstractThird{
 	public static final String APP_KEY = "appKey";
 	public static final String CHANNEL  = "channel";
 	public static final String REFUND_NO = "refundNo";
+	public static final String REASON = "reason";
 
     /** 
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
@@ -114,20 +117,43 @@ public class BoluomeCore extends AbstractThird{
      * MD5(APPKEY + CUSTOMER_USER_ID + CUSTOMER_USER_PHONE + CUSTOMER_USER_PHONE +APP_SECRET);
      * @param params
      * @return
+     * @throws UnsupportedEncodingException 
+     */
+  
+    /** 
+     * MD5(APPKEY + CUSTOMER_USER_ID + CUSTOMER_USER_PHONE + CUSTOMER_USER_PHONE +APP_SECRET);
+     * @param params
+     * @return
      */
     public static String buildSignStr(Map<String, String> params) {
     	thirdLog.info("buildSignStr params = {}", params);
     	String beforeSign = 
     			AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) 
     			+ concatParams(params)
-    			+ AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_SECRET).toUpperCase(), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+    			+ AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
     	thirdLog.info("beforeSignStr params = {}, beforeSign = {}", params, beforeSign);
-    	String sign = DigestUtil.MD5(beforeSign).toUpperCase();
+    	String sign = DigestUtil.MD5(beforeSign);
     	thirdLog.info("sign = {}", sign);
         return sign;
     }
-
+    public static String buildOrderSignStr(Map<String, String> params) throws UnsupportedEncodingException {
+    	thirdLog.info("buildSignStr params = {}", params);
+    	String beforeSign = 
+    			AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) 
+    			+ concatParams(params)
+    			+ AesUtil.decrypt((ConfigProperties.get(Constants.CONFKEY_BOLUOME_SECRET)), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+    	thirdLog.info("beforeSignStr params = {}, beforeSign = {}", params, beforeSign);
+    	String signURLEncoder = URLEncoder.encode(beforeSign,"UTF-8").toUpperCase();
+    	String sign = (DigestUtil.MD5(signURLEncoder.toUpperCase())).toUpperCase();
+    	thirdLog.info("sign = {}", sign);
+        return sign;
+    }
     
+    /**
+     * 获取签名,先过滤，再签名
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
     /**
      * 获取签名,先过滤，再签名
      * @return
@@ -138,5 +164,10 @@ public class BoluomeCore extends AbstractThird{
         //获取待签名字符串
         return BoluomeCore.buildSignStr(sParaNew);
     }
-
+    public static String builOrderSign(Map<String, String> params) throws UnsupportedEncodingException {
+    	//过滤空值、sign与sign_type参数
+    	Map<String, String> sParaNew = BoluomeCore.paraFilter(params);
+        //获取待签名字符串
+        return BoluomeCore.buildOrderSignStr(sParaNew);
+    }
 }
