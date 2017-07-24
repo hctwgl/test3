@@ -124,7 +124,7 @@ public class AppH5UserContorler extends BaseController {
 			String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
 			try {
-				tongdunUtil.getPromotionResult(token,channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
+				tongdunUtil.getPromotionSmsResult(token,channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
 			} catch (Exception e) {
 				resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
 				return resultStr;
