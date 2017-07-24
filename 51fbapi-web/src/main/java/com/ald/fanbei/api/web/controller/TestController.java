@@ -6,12 +6,15 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -33,6 +36,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -516,17 +520,25 @@ public class TestController {
 	@ResponseBody
 	public String bo(HttpServletRequest request, HttpServletResponse response) {
 		
-		String identity = System.currentTimeMillis() + StringUtil.EMPTY;
-		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
-		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
-		RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
-		bo.setBorrowNo("jk2017071020281800843");
-		bo.setOverdueDays(0);
-		bo.setOverdueTimes(1);
-		boList.add(bo);
-		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
-		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
-		logger.info("dealWithSynchronizeOverduedOrder completed");
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("orderId", "100000000123");
+		params.put("appKey", "2607839913");
+		params.put("timestamp", "1500628924755");
+		System.out.println(BoluomeCore.builSign(params));
+		
+//		String identity = System.currentTimeMillis() + StringUtil.EMPTY;
+//		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
+//		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
+//		RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
+//		bo.setBorrowNo("jk2017071020281800843");
+//		bo.setOverdueDays(0);
+//		bo.setOverdueTimes(1);
+//		boList.add(bo);
+//		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
+//		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+//		logger.info("dealWithSynchronizeOverduedOrder completed");
 		return "success";
 	}
+	
+	
 }

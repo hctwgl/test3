@@ -3,7 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.auth;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -17,13 +16,13 @@ import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -32,15 +31,16 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
- * @类描述：
  * 
- * @author suweili 2017年5月9日下午6:05:50
+ * @类描述：face++提交身份信息
+ * @author xiaotianjian 2017年7月24日上午11:15:40
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("submitIdNumberInfoV1Api")
-public class SubmitIdNumberInfoV1Api implements ApiHandle {
+@Component("submitIdNumberInfoForFacePlusApi")
+public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 	@Resource
 	AfUserService afUserService;
 	@Resource
@@ -49,8 +49,6 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfIdNumberService afIdNumberService;
-	@Resource
-	RiskUtil riskUtil;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 
@@ -64,7 +62,7 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 		if (ApiCallType.findRoleTypeByCode(type) == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		if (StringUtils.equals(type, ApiCallType.YITU_CARD.getCode())) {
+		if (StringUtils.equals(type, ApiCallType.FACE_PLUS_CARD.getCode())) {
 			String address = ObjectUtils.toString(params.get("address"), "");
 			String citizenId = ObjectUtils.toString(params.get("citizenId"), "");
 			String gender = ObjectUtils.toString(params.get("gender"), "");
@@ -128,29 +126,31 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 			}
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 
-		} else if (StringUtils.equals(type, ApiCallType.YITU_FACE.getCode())) {
-			String faceUrl = ObjectUtils.toString(params.get("faceUrl"), "");
+		} else if (StringUtils.equals(type, ApiCallType.FACE_PLUS_FACE.getCode())) {
+			String imageBestUrl = ObjectUtils.toString(params.get("imageBestUrl"), "");
+			Double confidence = NumberUtil.objToDoubleDefault(params.get("confidence"), null);
+			String thresholdsStr = ObjectUtils.toString(params.get("thresholds"), null);
 			AfIdNumberDo numberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 
 			AfIdNumberDo afIdNumberDo = new AfIdNumberDo();
-			afIdNumberDo.setFaceUrl(faceUrl);
+			afIdNumberDo.setFaceUrl(imageBestUrl);
 			afIdNumberDo.setRid(numberDo.getRid());
 			Integer count = 0;
 			count = afIdNumberService.updateIdNumber(afIdNumberDo);
 			logger.info("id number change" + count);
 			if (count > 0) {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
-				auth.setFacesStatus(YesNoStatus.YES.getCode());
-				auth.setYdStatus(YesNoStatus.YES.getCode());
-
-				Double similarity = (Double) bizCacheUtil.getObject(Constants.CACHEKEY_YITU_FACE_SIMILARITY+context.getUserName());
-				if (similarity != null) {
-					auth.setSimilarDegree(BigDecimal.valueOf(similarity/100).setScale(4,BigDecimal.ROUND_HALF_UP));
-					bizCacheUtil.delCache(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
+				JSONObject json = JSONObject.parseObject(thresholdsStr);
+				Double thresholds = json.getDouble("1e-3");
+				if (confidence.compareTo(thresholds) >= 0) {
+					auth.setFacesStatus(YesNoStatus.YES.getCode());
+					auth.setYdStatus(YesNoStatus.YES.getCode());
+					afUserAuthService.updateUserAuth(auth);
+				} else {
+					throw new FanbeiException(FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
 				}
 
 				afUserAuthService.updateUserAuth(auth);
-
 				AfUserDo afUserDo = new AfUserDo();
 				afUserDo.setRid(userId);
 				afUserDo.setRealName(numberDo.getName());
@@ -164,24 +164,6 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 				account.setUserId(userId);
 				account.setIdNumber(numberDo.getCitizenId());
 				afUserAccountService.updateUserAccount(account);
-				/* fmai_20170608去掉风控单独调用
-				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
-				try {
-					RiskRespBo riskResp = riskUtil.register(userId + "", numberDo.getName(), accountDo.getMobile(),
-							numberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
-							numberDo.getAddress());
-					if (!riskResp.isSuccess()) {
-						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
-					}
-				} catch (Exception e) {
-					RiskRespBo riskResp = riskUtil.modify(userId + "", numberDo.getName(), accountDo.getMobile(),
-							numberDo.getCitizenId(), accountDo.getEmail(), accountDo.getAlipayAccount(),
-							numberDo.getAddress(), accountDo.getOpenId());
-					if (!riskResp.isSuccess()) {
-						throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
-					}
-					logger.error("更新风控用户失败：" + accountDo.getUserId());
-				}*/
 
 				return resp;
 

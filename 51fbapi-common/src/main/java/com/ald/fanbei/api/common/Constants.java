@@ -254,6 +254,8 @@ public class Constants {
 	public static final String CONFKEY_BOLUOME_API_URL = "fbapi.boluome.api.url";
 	public static final String CONFKEY_BOLUOME_PUSH_PAY_URL = "fbapi.boluome.push.pay.url";
 	public static final String CONFKEY_BOLUOME_PUSH_REFUND_URL = "fbapi.boluome.push.refund.url";
+	public static final String CONFKEY_BOLUOME_ORDER_SEARCH_URL = "fbapi.boluome.order.search.url";
+	public static final String CONFKEY_BOLUOME_ORDER_CANCEL_URL = "fbapi.boluome.order.cancel.url";
 
 	// 依图
 	public static final String CONFKEY_YITU_URL = "fbapi.yitu.url";
@@ -263,7 +265,13 @@ public class Constants {
 	public static final String CONFKEY_YITU_PEM_PATH = "fbapi.yitu.pemPath";
     public static final String CACHEKEY_YITU_FACE_SIMILARITY                   = "yitu_face_similarity$";
 
-	
+    //face++
+    public static final String CONFKEY_FACE_PLUS_ID_CARD_URL = "fbapi.face.plus.id.card.url";
+    public static final String CONFKEY_FACE_PLUS_FACE_LIVING_URL = "fbapi.face.plus.face.living.url";
+    public static final String CONFKEY_FACE_PLUS_APPKEY = "fbapi.face.plus.appkey";
+    public static final String CONFKEY_FACE_PLUS_SECRET = "fbapi.face.plus.secret";
+    
+    
 	// 三方接口调用限制
 	public static final String API_CALL_LIMIT = "API_CALL_LIMIT";
 
@@ -276,5 +284,8 @@ public class Constants {
 
 	//商品AES解密的password
 	public static final String TRADE_AES_DECRYPT_PASSWORD = "trade";
+	
+	//人脸识别类型
+	public static final String FACE_TYPE = "FACE_TYPE";
 
 }

@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -622,6 +623,14 @@ public class RiskUtil extends AbstractThird {
 				orderInfo.setClosedReason("风控审批不通过");
 				orderInfo.setGmtClosed(new Date());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
+					if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+						try {
+							//菠萝觅风控拒绝的订单自动取消
+							boluomeUtil.cancelOrder(orderInfo.getThirdOrderNo(), orderInfo.getOrderType(), orderInfo.getClosedReason());
+						} catch (UnsupportedEncodingException e) {
+							logger.info("cancel Order error");
+						}
+					}
 				orderDao.updateOrder(orderInfo);
 				
 				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {

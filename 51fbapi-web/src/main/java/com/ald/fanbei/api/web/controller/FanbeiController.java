@@ -135,7 +135,8 @@ public class FanbeiController extends BaseController {
 			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi",
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
-			"/auth/authSupplyCertify","/auth/authFund","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/authSupplyCertify","/auth/authFund","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
+			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/updateIdCardForFacePlus"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

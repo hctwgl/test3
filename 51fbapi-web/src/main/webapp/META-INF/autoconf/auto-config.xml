@@ -95,6 +95,8 @@
 		<property name="fbapi.boluome.appkey" defaultValue="6aSsbSMMhKBe8+bH5wmhBw==" description="菠萝觅 key" />
 		<property name="fbapi.boluome.secret" defaultValue="OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B" description="菠萝觅 certpath" />
 		<property name="fbapi.boluome.api.url" defaultValue="http://91ala.test.otosaas.com" description="菠萝觅 certpath" />
+		<property name="fbapi.boluome.order.cancel.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/cancel" description="菠萝觅 订单取消订单" />
+		<property name="fbapi.boluome.order.search.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/info" description="菠萝觅 订单补偿查询" />
 		
 		<property name="fbapi.boluome.push.pay.url" defaultValue="http://91ala.test.otosaas.com/api/validation/v1" description="菠萝觅 支付推送消息" />
 		<property name="fbapi.boluome.push.refund.url" defaultValue="http://91ala.test.otosaas.com/api/refundment/v1" description="菠萝觅 certpath" />
@@ -108,6 +110,11 @@
 		<property name="fbapi.yitu.key" defaultValue="0bab2c4fbbfb66d0694b16b6d86dc25b" description="秘钥"/>
 		<property name="fbapi.yitu.definedContent" defaultValue="abc" description="用户自定义字符串"/>
 		<property name="fbapi.yitu.pemPath" defaultValue="staging.public.pem" description="公钥位置"/>
+		<!-- face++ -->
+		<property name="fbapi.face.plus.id.card.url" defaultValue="https://api.faceid.com/faceid/v1/ocridcard" description="face++身份证验证地址"/>
+		<property name="fbapi.face.plus.face.living.url" defaultValue="https://api.megvii.com/faceid/v2/verify" description="face++活体验证地址"/>
+		<property name="fbapi.face.plus.appkey" defaultValue="FV5T+YXsSPiuLUmM/lIzdePOCaCnnK5GndzBqV1jT37QroYLtEIaqFC8Jmft4E4B" description="face++appKey"/>
+		<property name="fbapi.face.plus.secret" defaultValue="n0mySgkpAdgZStufuC6eLwCZsHQZxD37jOPbXEew3sLQroYLtEIaqFC8Jmft4E4B" description="face++ app_secret"/>
 	</group>
 
 	<script>
