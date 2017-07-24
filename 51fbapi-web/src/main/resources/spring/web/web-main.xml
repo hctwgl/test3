@@ -311,7 +311,9 @@
 
 				<entry key="/operateApp/getAgencyBuyOrderList" value-ref="getAgencyBuyOrderListApi" />
 				<entry key="/operateApp/getAgencyBuyOrderInfo" value-ref="getAgencyBuyOrderInfoApi" />
-
+				<!-- face++人脸识别 -->
+				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />	
+				<entry key="/auth/submitIdNumberInfoForFacePlus" value-ref="submitIdNumberInfoForFacePlusApi" />
 			</map>
 		</constructor-arg>
 	</bean>
