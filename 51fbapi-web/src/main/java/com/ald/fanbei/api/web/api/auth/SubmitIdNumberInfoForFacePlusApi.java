@@ -128,8 +128,8 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 
 		} else if (StringUtils.equals(type, ApiCallType.FACE_PLUS_FACE.getCode())) {
 			String imageBestUrl = ObjectUtils.toString(params.get("imageBestUrl"), "");
-			Double confidence = NumberUtil.objToDoubleDefault("confidence", null);
-			String thresholdsStr = ObjectUtils.toString("thresholds", null);
+			Double confidence = NumberUtil.objToDoubleDefault(params.get("confidence"), null);
+			String thresholdsStr = ObjectUtils.toString(params.get("thresholds"), null);
 			AfIdNumberDo numberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 
 			AfIdNumberDo afIdNumberDo = new AfIdNumberDo();
