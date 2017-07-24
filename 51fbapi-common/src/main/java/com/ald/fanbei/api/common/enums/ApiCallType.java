@@ -9,8 +9,9 @@ package com.ald.fanbei.api.common.enums;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum ApiCallType {
-	TONGDUN("TONGDUN", "同盾实名认证"), YOUDUN("YOUDUN", "有盾实名认证"), YITU_CARD("YITU_CARD", "依图身份证认证"), YITU_FACE("YITU_FACE",
-			"依图人脸证认证");
+	TONGDUN("TONGDUN", "同盾实名认证"), YOUDUN("YOUDUN", "有盾实名认证"), 
+	YITU_CARD("YITU_CARD", "依图身份证认证"), YITU_FACE("YITU_FACE","依图人脸证认证"),
+	FACE_PLUS_CARD("FACE_PLUS_CARD", "Face++身份证认证"), FACE_PLUS_FACE("FACE_PLUS_FACE","face++人脸证认证");
 
 	private String code;
 	private String name;

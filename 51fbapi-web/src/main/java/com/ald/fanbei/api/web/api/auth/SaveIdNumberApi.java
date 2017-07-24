@@ -79,25 +79,4 @@ public class SaveIdNumberApi implements ApiHandle {
 		}
 
 	}
-
-	public AfIdNumberDo idNumberDoWithIdNumberInfo(String address, String citizenId, String gender, String nation, String name, String validDateBegin, String validDateEnd,
-			String birthday, String agency, String idFrontUrl, String idBehindUrl, AfIdNumberDo idNumberDo) {
-		if (idNumberDo == null) {
-			idNumberDo = new AfIdNumberDo();
-		}
-		idNumberDo.setAddress(address);
-		idNumberDo.setAgency(agency);
-		idNumberDo.setBirthday(birthday);
-		idNumberDo.setCitizenId(citizenId);
-		idNumberDo.setGender(gender);
-		idNumberDo.setIdBehindUrl(idBehindUrl);
-		idNumberDo.setIdFrontUrl(idFrontUrl);
-		idNumberDo.setName(name);
-		idNumberDo.setNation(nation);
-		idNumberDo.setValidDateBegin(validDateBegin);
-		idNumberDo.setValidDateEnd(validDateEnd);
-
-		return idNumberDo;
-	}
-
 }

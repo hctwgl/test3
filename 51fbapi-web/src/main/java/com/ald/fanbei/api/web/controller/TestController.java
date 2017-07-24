@@ -719,8 +719,8 @@ public class TestController {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httppost = new HttpPost("https://api.faceid.com/faceid/v1/ocridcard");
-		URL url = new URL("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/294bd573d8e95674.jpg");
+		HttpPost httppost = new HttpPost("http://api.faceid.com/faceid/v1/ocridcard");
+		URL url = new URL("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/de6fb62d42ef080c.jpg");
 		InputStream is = url.openStream();
 		HttpEntity entity = MultipartEntityBuilder.create().addTextBody("api_key", "vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5")
 				.addTextBody("api_secret", "Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm")

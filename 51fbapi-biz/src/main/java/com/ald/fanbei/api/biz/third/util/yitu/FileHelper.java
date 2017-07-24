@@ -201,4 +201,24 @@ public class FileHelper {
 		}
 		return in2b;
 	}
+	
+	/**
+	 * 获取文件二进制流
+	 * @param filePath
+	 * @return
+	 * @throws Exception
+	 */
+	public static InputStream getImageStream(String filePath) throws Exception {
+		URL url = null;
+		url = new URL(filePath);
+		InputStream is = null;
+		try {
+			is = url.openStream();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			is.close();
+		}
+		return is;
+	}
 }
