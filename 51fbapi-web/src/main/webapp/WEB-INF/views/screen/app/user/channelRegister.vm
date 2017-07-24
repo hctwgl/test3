@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017071704")
+    #set($version="2017072401")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -34,16 +34,14 @@
 				channelRegister78
                 #elseif( $!{style}==15 || $!{style}==16 )
                 channelRegister15
-			    #elseif( $!{style}==9 || $!{style}==12 || $!{style}==13 )
+			    #elseif( $!{style}==9 || $!{style}==12 || $!{style}==13 || $!{style}==17 )
 				channelRegister$!{style}
 			    #else
 				channelRegister
 			    #end
 		    ">
-                <li>
-                    <input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号">
-                </li>
-                #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 )
+                <li><input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
+                #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 )
                     <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
                 #else
                 <li class="clearfix">
@@ -51,7 +49,7 @@
                     <button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
                 </li>
                 #end
-                #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 )
+                #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 )
                 <li class="clearfix">
                     <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
                     <button class="register_codeBtn_right" id="register_codeBtn" style="
@@ -64,7 +62,7 @@
                 <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
                 #end
                 <li>
-                    #if( $!{style}==10 || $!{style}==12 || $!{style}==15 || $!{style}==16 )
+                    #if( $!{style}==10 || $!{style}==12 || $!{style}==15 || $!{style}==16 || $!{style}==17 )
                     <button class="register_submitBtn" id="register_submitBtn"></button>
                     #else
                     <button class="register_submitBtn" id="register_submitBtn">立即注册</button>
