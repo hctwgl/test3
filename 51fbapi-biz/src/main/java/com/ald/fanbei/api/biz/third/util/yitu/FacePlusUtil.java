@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.bo.FacePlusCardRespBo;
 import com.ald.fanbei.api.biz.bo.FacePlusFaceLivingRespBo;
 import com.ald.fanbei.api.biz.bo.YituFaceLivingRespBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.util.HttpsUtil;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -39,18 +40,19 @@ public class FacePlusUtil extends AbstractThird {
 	}
 	
 	private void checkCardImage(String imageUrl, FacePlusCardRespBo resBo) throws Exception {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httppost = new HttpPost("http://api.faceid.com/faceid/v1/ocridcard");
-		InputStream is = FileHelper.getImageStream(imageUrl);
+		//TODO 改善忽略证书
+		CloseableHttpClient httpclient = (CloseableHttpClient) HttpsUtil.getNoCertificateHttpClient("https://api.faceid.com/faceid/v1/ocridcard");
+		HttpPost httppost = new HttpPost("https://api.faceid.com/faceid/v1/ocridcard");
+		InputStream is = FileHelper.getImageStream(imageUrl); 
 		HttpEntity entity = MultipartEntityBuilder.create().addTextBody("api_key", "vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5")
 				.addTextBody("api_secret", "Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm")
-				.addPart("image", new InputStreamBody(is, System.currentTimeMillis() + ".txt"))
+				.addPart("image", new InputStreamBody(is, "aa.jpg"))
 				.build();
 		httppost.setHeader("contentType", "UTF-8");  
 		httppost.setEntity(entity);
 		HttpResponse httpResponse = httpclient.execute(httppost);
 		httpResponse.getStatusLine().getStatusCode();
-		  if(httpResponse.getStatusLine().getStatusCode() == 200) {
+//		  if(httpResponse.getStatusLine().getStatusCode() == 200) {
 			  HttpEntity httpEntity = httpResponse.getEntity();  
 			  String tempResult = EntityUtils.toString(httpEntity,"UTF-8");//取出应答字符串  
 			  if (StringUtils.isNotBlank(tempResult)) {
@@ -69,7 +71,7 @@ public class FacePlusUtil extends AbstractThird {
 					  resBo.setIssued_by(tempResp.getIssued_by());
 				  }
 			  }
-		  }
+//		  }
 	}
 
 	/**
@@ -82,8 +84,8 @@ public class FacePlusUtil extends AbstractThird {
 	 * @throws Exception
 	 */
 	public FacePlusFaceLivingRespBo checkLiving(String delta, String imageBest, String idCardNumber, String idCardName) throws Exception {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httppost = new HttpPost("http://api.megvii.com/faceid/v2/verify");
+		CloseableHttpClient httpclient = (CloseableHttpClient) HttpsUtil.getNoCertificateHttpClient("https://api.megvii.com/faceid/v2/verify");
+		HttpPost httppost = new HttpPost("https://api.megvii.com/faceid/v2/verify");
 		URL url = new URL(imageBest);
 		InputStream is = url.openStream();
 		HttpEntity entity = MultipartEntityBuilder.create().addTextBody("api_key", "vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5")
@@ -99,16 +101,10 @@ public class FacePlusUtil extends AbstractThird {
 		httppost.setEntity(entity);
 		HttpResponse httpResponse = httpclient.execute(httppost);
 		httpResponse.getStatusLine().getStatusCode();
-//		  if(httpResponse.getStatusLine().getStatusCode() == 200)  
-          HttpEntity httpEntity = httpResponse.getEntity();  
-          String sresult = EntityUtils.toString(httpEntity,"UTF-8");//取出应答字符串  
-          FacePlusFaceLivingRespBo result = JSONObject.parseObject(sresult, FacePlusFaceLivingRespBo.class);
+		HttpEntity httpEntity = httpResponse.getEntity();
+		String sresult = EntityUtils.toString(httpEntity, "UTF-8");// 取出应答字符串
+		FacePlusFaceLivingRespBo result = JSONObject.parseObject(sresult, FacePlusFaceLivingRespBo.class);
           return result;
-//		if (respBo.getRtn() == 0) {
-//			return respBo;
-//		} else {
-//			throw new FanbeiException(FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
-//		}
 	}
 
 //	public static String getIp() {

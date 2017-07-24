@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -36,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.FacePlusCardRespBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
@@ -50,6 +49,7 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.yitu.FacePlusUtil;
 import com.ald.fanbei.api.biz.third.util.yitu.FileHelper;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -115,6 +115,8 @@ public class TestController {
 	AfOrderDao afOrderDao;
 	@Resource
 	AfBorrowService afBorrowService;
+	@Resource
+	FacePlusUtil facePlusUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -769,6 +771,16 @@ public class TestController {
               System.out.println(sresult);
           return sresult;
 	}
+	
+	@RequestMapping(value = { "/aaa" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String aaaa(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+		response.setContentType("application/json;charset=utf-8");
+		FacePlusCardRespBo resp = facePlusUtil.checkCard("http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/3901abddd5614a55.jpg", "http://51fanbei.oss-cn-hangzhou.aliyuncs.com/test/de6fb62d42ef080c.jpg");
+        return resp.toString();
+	}
+	
 	
 	
 	

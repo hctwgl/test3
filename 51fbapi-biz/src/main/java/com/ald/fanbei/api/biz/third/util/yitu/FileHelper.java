@@ -216,8 +216,6 @@ public class FileHelper {
 			is = url.openStream();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			is.close();
 		}
 		return is;
 	}
