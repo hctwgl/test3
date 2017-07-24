@@ -20,22 +20,23 @@ let vue=new Vue({
                 url='pickCoupon';
                 postData={couponId:data};
             }
-            Vue.http.options.emulateJSON = true;
-            self.$http.post("/fanbei-web/"+url,postData).then(function(res){
-                res=eval('(' + res.data + ')');
-                console.log(res)
-                if(res.success==false){
-                    if(res.url&&res.url!==""){
-                        window.location.href=res.url
+            $.ajax({
+                url:"/fanbei-web/"+url,
+                type:'post',
+                data:postData,
+                success:function (res) {
+                    res=eval('(' + res+ ')');
+                    if(res.success==false){
+                        if(res.url&&res.url!==""){
+                            window.location.href=res.url
+                        }else{
+                            requestMsg(res.msg)
+                        }
                     }else{
                         requestMsg(res.msg)
                     }
-                }else{
-                    requestMsg(res.msg)
                 }
-            },function (response) {
-                console.log(response)
-            })
+            });
         },
         buyNow(item){
             let self=this;
@@ -73,15 +74,16 @@ let vue=new Vue({
                 success:function (data) {
                     self.tableContent = eval('(' + data + ')');
                     self.tableContent = self.tableContent.data;
-                    console.log(self.tableContent)
                 }
             });
-            self.$http.post("/fanbei-web/newUserGift").then(function(res){
-                self.content = eval('(' + res.data + ')');
-                self.content = self.content.data;
-            },function (response) {
-                requestMsg("请求失败");
-            })
+            $.ajax({
+                url:'/fanbei-web/newUserGift',
+                type:'post',
+                success:function (data) {
+                    self.content = eval('(' + data + ')');
+                    self.content = self.content.data;
+                }
+            });
         }
     }
 });
