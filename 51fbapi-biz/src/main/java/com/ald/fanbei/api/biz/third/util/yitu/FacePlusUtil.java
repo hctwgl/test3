@@ -10,14 +10,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.FacePlusCardRespBo;
 import com.ald.fanbei.api.biz.bo.FacePlusFaceLivingRespBo;
-import com.ald.fanbei.api.biz.bo.YituFaceLivingRespBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpsUtil;
 import com.alibaba.fastjson.JSONObject;
 
@@ -36,16 +37,17 @@ public class FacePlusUtil extends AbstractThird {
 		FacePlusCardRespBo resBo = new FacePlusCardRespBo();
 		checkCardImage(filePath1, resBo);
 		checkCardImage(filePath2, resBo);
-		return null;
+		return resBo;
 	}
 	
 	private void checkCardImage(String imageUrl, FacePlusCardRespBo resBo) throws Exception {
 		//TODO 改善忽略证书
-		CloseableHttpClient httpclient = (CloseableHttpClient) HttpsUtil.getNoCertificateHttpClient("https://api.faceid.com/faceid/v1/ocridcard");
-		HttpPost httppost = new HttpPost("https://api.faceid.com/faceid/v1/ocridcard");
+		CloseableHttpClient httpclient = (CloseableHttpClient) HttpsUtil.getNoCertificateHttpClient(ConfigProperties.get(Constants.CONFKEY_FACE_PLUS_ID_CARD_URL));
+		HttpPost httppost = new HttpPost(ConfigProperties.get(Constants.CONFKEY_FACE_PLUS_ID_CARD_URL));
 		InputStream is = FileHelper.getImageStream(imageUrl); 
-		HttpEntity entity = MultipartEntityBuilder.create().addTextBody("api_key", "vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5")
-				.addTextBody("api_secret", "Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm")
+		HttpEntity entity = MultipartEntityBuilder.create()
+				.addTextBody("api_key", AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_FACE_PLUS_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) )
+				.addTextBody("api_secret", AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_FACE_PLUS_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) )
 				.addPart("image", new InputStreamBody(is, "aa.jpg"))
 				.build();
 		httppost.setHeader("contentType", "UTF-8");  
@@ -84,12 +86,13 @@ public class FacePlusUtil extends AbstractThird {
 	 * @throws Exception
 	 */
 	public FacePlusFaceLivingRespBo checkLiving(String delta, String imageBest, String idCardNumber, String idCardName) throws Exception {
-		CloseableHttpClient httpclient = (CloseableHttpClient) HttpsUtil.getNoCertificateHttpClient("https://api.megvii.com/faceid/v2/verify");
-		HttpPost httppost = new HttpPost("https://api.megvii.com/faceid/v2/verify");
+		CloseableHttpClient httpclient = (CloseableHttpClient) HttpsUtil.getNoCertificateHttpClient(ConfigProperties.get(Constants.CONFKEY_FACE_PLUS_ID_CARD_URL));
+		HttpPost httppost = new HttpPost(ConfigProperties.get(Constants.CONFKEY_FACE_PLUS_ID_CARD_URL));
 		URL url = new URL(imageBest);
 		InputStream is = url.openStream();
-		HttpEntity entity = MultipartEntityBuilder.create().addTextBody("api_key", "vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5")
-				.addTextBody("api_secret", "Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm")
+		HttpEntity entity = MultipartEntityBuilder.create()
+				.addTextBody("api_key", AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_FACE_PLUS_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) )
+				.addTextBody("api_secret", AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_FACE_PLUS_SECRET), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) )
 				.addTextBody("comparison_type", "1")
 				.addTextBody("face_image_type", "meglive")
 				.addTextBody("idcard_name", idCardName)
@@ -106,16 +109,4 @@ public class FacePlusUtil extends AbstractThird {
 		FacePlusFaceLivingRespBo result = JSONObject.parseObject(sresult, FacePlusFaceLivingRespBo.class);
           return result;
 	}
-
-//	public static String getIp() {
-//		if (ip == null) {
-//			ip = ConfigProperties.get(Constants.CONFKEY_YITU_URL);
-//		}
-//		return ip;
-//	}
-//
-//	public static void setIp(String ip) {
-//		FacePlusUtil.ip = ip;
-//	}
-
 }

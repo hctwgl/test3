@@ -165,13 +165,15 @@ public class AesUtil {
     	for (int i = 0 ; i < 10; i ++) {
     		str = str + new Random().nextInt(10);
     	}
+//    	fbapi.face.plus.appkey               =vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5
+//    			fbapi.face.plus.secret        		 =Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm
     	
-        String encryptStr = new String(Base64.encodeBase64(encrypt("92e14df48e375e5f115b421d84305866", "testC1b6x@6aH$2dlw")));
+        String encryptStr = new String(Base64.encodeBase64(encrypt("Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm", "testC1b6x@6aH$2dlw")));
         System.out.println(encryptStr);
 //        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
-        String sec = decryptFromBase64("9doExCXdQPLPbA/yivYWxw==", "testC1b6x@6aH$2dlw");
+        String sec = decryptFromBase64("FV5T+YXsSPiuLUmM/lIzdePOCaCnnK5GndzBqV1jT37QroYLtEIaqFC8Jmft4E4B", "testC1b6x@6aH$2dlw");
         System.out.println(sec);
 //    	AesUtil.decryptFromBase64("", "testC1b6x");
-        System.out.println(new String(Base64.encodeBase64(encrypt("wpD1QcUHaXY0aydcRw4X", "testC1b6x@6aH$2dlw"))));
+//        System.out.println(new String(Base64.encodeBase64(encrypt("FV5T+YXsSPiuLUmM/lIzdePOCaCnnK5GndzBqV1jT37QroYLtEIaqFC8Jmft4E4B", "testC1b6x@6aH$2dlw"))));
     }
 }
