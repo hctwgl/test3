@@ -31,6 +31,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -128,7 +129,7 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 		} else if (StringUtils.equals(type, ApiCallType.FACE_PLUS_FACE.getCode())) {
 			String imageBestUrl = ObjectUtils.toString(params.get("imageBestUrl"), "");
 			Double confidence = NumberUtil.objToDoubleDefault("confidence", null);
-			Double thresholds = NumberUtil.objToDoubleDefault("thresholds", null);
+			String thresholdsStr = ObjectUtils.toString("thresholds", null);
 			AfIdNumberDo numberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 
 			AfIdNumberDo afIdNumberDo = new AfIdNumberDo();
@@ -139,6 +140,8 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 			logger.info("id number change" + count);
 			if (count > 0) {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
+				JSONObject json = JSONObject.parseObject(thresholdsStr);
+				Double thresholds = json.getDouble("1e-3");
 				if (confidence.compareTo(thresholds) >= 0) {
 					auth.setFacesStatus(YesNoStatus.YES.getCode());
 					auth.setYdStatus(YesNoStatus.YES.getCode());

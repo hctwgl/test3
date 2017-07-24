@@ -16,7 +16,7 @@ public class FacePlusFaceLivingRespBo {
 	
 	public class FacePlusResultFaceId{
 		private Double confidence;//比对结果的置信度，Float类型，取值［0，100］，数字越大表示两张照片越可能是同一个人。
-		private Double thresholds;//一组用于参考的置信度阈值，Object类型，包含三个字段，均为Float类型、取值［0，100］：
+		private String thresholds;//一组用于参考的置信度阈值，Object类型，包含三个字段，均为Float类型、取值［0，100］：
 		/**
 		 * @return the confidence
 		 */
@@ -29,24 +29,25 @@ public class FacePlusFaceLivingRespBo {
 		public void setConfidence(Double confidence) {
 			this.confidence = confidence;
 		}
-		/**
-		 * @return the thresholds
-		 */
-		public Double getThresholds() {
-			return thresholds;
-		}
-		/**
-		 * @param thresholds the thresholds to set
-		 */
-		public void setThresholds(Double thresholds) {
-			this.thresholds = thresholds;
-		}
+		
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
 		@Override
 		public String toString() {
 			return "{confidence=" + confidence + ", thresholds=" + thresholds + "}";
+		}
+		/**
+		 * @return the thresholds
+		 */
+		public String getThresholds() {
+			return thresholds;
+		}
+		/**
+		 * @param thresholds the thresholds to set
+		 */
+		public void setThresholds(String thresholds) {
+			this.thresholds = thresholds;
 		}
 		
 	}
