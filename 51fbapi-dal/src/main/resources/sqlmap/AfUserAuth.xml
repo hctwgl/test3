@@ -127,7 +127,7 @@
     			,alipay_status=#{alipayStatus}
 			</if>
 			<if test="gmtAlipay != null">
-    			,gmt_alipay=#{gmtAlipay}
+    			,gmt_alipay=#{gmtAlipay} 
 			</if>												
 		WHERE user_id = #{userId}
 	</update>
