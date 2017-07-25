@@ -2,33 +2,38 @@ package com.ald.fanbei.api.web.api.order;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StatusConvertUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
@@ -152,7 +157,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 				isExistRebates = true;
 			}
 		}
-		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
+		StatusConvertUtil orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
 				isExistRebates,afterSaleStatus, isExistAftersaleApply,closeReason,order.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());

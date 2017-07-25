@@ -29,6 +29,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StatusConvertUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
@@ -271,7 +272,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			}
 		}
 		
-		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
+		StatusConvertUtil orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
 				isExistRebates,afterSaleStatus, isExistAftersaleApply,closeReason,afOrderDo.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
