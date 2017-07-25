@@ -45,7 +45,7 @@ public enum AfOrderStatusMsgRemark {
             	StatusConvertUtil statusConvertUtil = new StatusConvertUtil(roleType.getCode(), roleType.getStatusMsg(), roleType.getStatusRemark());
             	//OrderType
             	if(PAID.getCode().equals(roleType.getCode())){
-            		if(OrderType.AGENTBUY.getCode().equals(orderType) && PayType.AGENT_PAY.getCode().equals(payType)){
+            		if(OrderType.AGENTBUY.getCode().equals(orderType) ){
             			statusConvertUtil.setStatusMsg("待审核");
             			statusConvertUtil.setStatusRemark("分期申请将尽快审核，请耐心等待");
             		}else if(OrderType.MOBILE.getCode().equals(orderType) 
