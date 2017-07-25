@@ -199,14 +199,13 @@ public class BoluomeUtil extends AbstractThird{
 		BoluomeOrderCancelRequestBo reqBo = new BoluomeOrderCancelRequestBo();
 		String appKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		reqBo.setOrderId(thirdOrderNo);
-		reqBo.setOrderType(orderType);
+		reqBo.setOrderType(orderType.toLowerCase());
 		reqBo.setReason(reason);
 		reqBo.setTimestamp(System.currentTimeMillis());
 		reqBo.setSign(BoluomeCore.builOrderSign(reqBo));
 		reqBo.setAppKey(appKey);
 		logger.info("OrderCancel begin, reqBo = {}", reqBo);
 		String reqResult = HttpUtil.doHttpPostJsonParam(getOrderCancelUrl(), JSONObject.toJSONString(reqBo));
-		System.out.println(reqResult);
 		BoluomeOrderCancelResponseBo responseBo = JSONObject.parseObject(reqResult,BoluomeOrderCancelResponseBo.class);
 		logger.info("OrderCancel result , responseBo = {}", responseBo);
 		if(responseBo != null && responseBo.getCode().equals(SUCCESS_CODE) ){
