@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_trade_withdraw_detail表:商圈商户提现记录表模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfTradeWithdrawDetailDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id,record_id,order_id 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="id !=null">
+            AND id  = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="recordId != null and recordId != ''">
+            AND record_id = #{recordId,jdbcType=INTEGER}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo" keyProperty="id">
+    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_trade_withdraw_detail
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="recordId != null">        
+	            record_id,
+	        </if>
+	        <if test="orderId != null">        
+	            order_id,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="recordId != null" >
+		       #{recordId,jdbcType=INTEGER},
+		    </if>
+		    <if test="orderId != null" >
+		       #{orderId,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo">
+        UPDATE af_trade_withdraw_detail
+          <set>
+            <if test="recordId != null and recordId != '' ">        
+                record_id = #{recordId,jdbcType=INTEGER},                
+            </if>
+            <if test="orderId != null and orderId != '' ">        
+                order_id = #{orderId,jdbcType=INTEGER}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_withdraw_detail
+        WHERE is_delete = 0 AND id=#{id ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_withdraw_detail
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_withdraw_detail
+        <include refid="commonCondition"/>
+    </select>
+    <select id="getByRecordId" resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo" >
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_withdraw_detail
+        where is_delete=0 and record_id=#{recordId}
+    </select>
+    
+</mapper>

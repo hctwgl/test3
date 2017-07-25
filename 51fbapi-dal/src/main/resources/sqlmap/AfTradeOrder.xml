@@ -3,114 +3,125 @@
 <!-- af_trade_order表:商圈商户提现记录表模块 -->
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfTradeOrderDao">
 
-    <!--基本的sql查询字段 公共引用...-->
-    <sql id="queryFields">
-        order_id,gmt_modified,business_id,refund_type,status
-    </sql>
+	<!--基本的sql查询字段 公共引用... -->
+	<sql id="queryFields">
+		order_id,gmt_modified,business_id,refund_type,status
+	</sql>
 
-    <!-- 基本的sql查询条件公共引用 -->
-    <sql id="commonCondition">
-        WHERE is_delete = 0
-        <if test="orderId != null and orderId != ''">
-            AND order_id = #{orderId,jdbcType=INTEGER}
-        </if>
-        <if test="gmtModified !=null">
-            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
-        </if>
-        <if test="businessId != null and businessId != ''">
-            AND business_id = #{businessId,jdbcType=INTEGER}
-        </if>
-        <if test="refundType != null and refundType != ''">
-            AND refund_type = #{refundType,jdbcType=VARCHAR}
-        </if>
-        <if test="status != null and status != ''">
-            AND status = #{status,jdbcType=VARCHAR}
-        </if>
-    </sql>
+	<!-- 基本的sql查询条件公共引用 -->
+	<sql id="commonCondition">
+		WHERE is_delete = 0
+		<if test="orderId != null and orderId != ''">
+			AND order_id = #{orderId,jdbcType=INTEGER}
+		</if>
+		<if test="gmtModified !=null">
+			AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+		</if>
+		<if test="businessId != null and businessId != ''">
+			AND business_id = #{businessId,jdbcType=INTEGER}
+		</if>
+		<if test="refundType != null and refundType != ''">
+			AND refund_type = #{refundType,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status,jdbcType=VARCHAR}
+		</if>
+	</sql>
 
 
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
-        INSERT INTO af_trade_order
-        <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="orderId != null">
-                order_id,
-            </if>
-            <if test="gmtModified != null">
-                gmt_modified,
-            </if>
-            <if test="businessId != null">
-                business_id,
-            </if>
-            <if test="refundType != null">
-                refund_type,
-            </if>
-            <if test="status != null">
-                status,
-            </if>
-        </trim>
+	<insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
+		INSERT INTO af_trade_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderId != null">
+				order_id,
+			</if>
+			<if test="gmtModified != null">
+				gmt_modified,
+			</if>
+			<if test="businessId != null">
+				business_id,
+			</if>
+			<if test="refundType != null">
+				refund_type,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+		</trim>
 
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="orderId != null" >
-                #{orderId,jdbcType=INTEGER},
-            </if>
-            <if test="gmtModified != null" >
-                #{gmtModified,jdbcType=TIMESTAMP},
-            </if>
-            <if test="businessId != null" >
-                #{businessId,jdbcType=INTEGER},
-            </if>
-            <if test="refundType != null" >
-                #{refundType,jdbcType=VARCHAR},
-            </if>
-            <if test="status != null" >
-                #{status,jdbcType=VARCHAR},
-            </if>
-        </trim>
-    </insert>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orderId != null">
+				#{orderId,jdbcType=INTEGER},
+			</if>
+			<if test="gmtModified != null">
+				#{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="businessId != null">
+				#{businessId,jdbcType=INTEGER},
+			</if>
+			<if test="refundType != null">
+				#{refundType,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
 
-    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
-        UPDATE af_trade_order
-        <set>
-            <if test="orderId != null and orderId != '' ">
-                order_id = #{orderId,jdbcType=INTEGER},
-            </if>
-            <if test="gmtModified != null and gmtModified != '' ">
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-            </if>
-            <if test="businessId != null and businessId != '' ">
-                business_id = #{businessId,jdbcType=INTEGER},
-            </if>
-            <if test="refundType != null and refundType != '' ">
-                refund_type = #{refundType,jdbcType=VARCHAR},
-            </if>
-            <if test="status != null and status != '' ">
-                status = #{status,jdbcType=VARCHAR}
-            </if>
-        </set>
-        WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
-    </update>
+	<update id="updateById" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
+		UPDATE af_trade_order
+		<set>
+			<if test="orderId != null and orderId != '' ">
+				order_id = #{orderId,jdbcType=INTEGER},
+			</if>
+			<if test="gmtModified != null and gmtModified != '' ">
+				gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="businessId != null and businessId != '' ">
+				business_id = #{businessId,jdbcType=INTEGER},
+			</if>
+			<if test="refundType != null and refundType != '' ">
+				refund_type = #{refundType,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null and status != '' ">
+				status = #{status,jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE is_delete = 0 AND order_id = #{orderId ,jdbcType=BIGINT}
+	</update>
 
-    <select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_trade_order
-        WHERE is_delete = 0 AND id=#{id ,jdbcType=BIGINT}
-        LIMIT 0,1
-    </select>
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM af_trade_order
+		WHERE is_delete = 0 AND order_id=#{id ,jdbcType=BIGINT}
+		LIMIT 0,1
+	</select>
 
-    <select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_trade_order
-        <include refid="commonCondition"/>
-        limit 0,1
-    </select>
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo"
+		parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM af_trade_order
+		<include refid="commonCondition" />
+		limit 0,1
+	</select>
 
-    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_trade_order
-        <include refid="commonCondition"/>
-    </select>
-
+	<select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo"
+		parameterType="com.ald.fanbei.api.dal.domain.AfTradeOrderDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM af_trade_order
+		<include refid="commonCondition" />
+	</select>
+	<update id="updateStatusByIds">
+		update
+		af_trade_order set status = #{status} , gmt_modified =now()
+		WHERE
+		order_id IN
+		<foreach collection="items" item="item" index="index"
+			separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
 </mapper>

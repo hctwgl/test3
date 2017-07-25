@@ -4,14 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -32,6 +33,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -56,7 +58,6 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
-import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -513,17 +514,25 @@ public class TestController {
 	@ResponseBody
 	public String bo(HttpServletRequest request, HttpServletResponse response) {
 		
-		String identity = System.currentTimeMillis() + StringUtil.EMPTY;
-		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
-		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
-		RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
-		bo.setBorrowNo("jk2017071020281800843");
-		bo.setOverdueDays(0);
-		bo.setOverdueTimes(1);
-		boList.add(bo);
-		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
-		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
-		logger.info("dealWithSynchronizeOverduedOrder completed");
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("orderId", "100000000123");
+		params.put("appKey", "2607839913");
+		params.put("timestamp", "1500628924755");
+		System.out.println(BoluomeCore.builSign(params));
+		
+//		String identity = System.currentTimeMillis() + StringUtil.EMPTY;
+//		String orderNo = riskUtil.getOrderNo("over", identity.substring(identity.length() - 4, identity.length()));
+//		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
+//		RiskOverdueBorrowBo bo = new RiskOverdueBorrowBo();
+//		bo.setBorrowNo("jk2017071020281800843");
+//		bo.setOverdueDays(0);
+//		bo.setOverdueTimes(1);
+//		boList.add(bo);
+//		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
+//		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+//		logger.info("dealWithSynchronizeOverduedOrder completed");
 		return "success";
 	}
+	
+	
 }

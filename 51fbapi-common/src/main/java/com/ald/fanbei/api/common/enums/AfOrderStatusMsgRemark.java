@@ -3,6 +3,7 @@ package com.ald.fanbei.api.common.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.util.StatusConvertUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 
 /**
@@ -38,53 +39,54 @@ public enum AfOrderStatusMsgRemark {
         this.statusRemark = statusRemark;
     }
 
-    public static AfOrderStatusMsgRemark findRoleTypeByCodeAndOrderType(String code,String orderType,String payType,Boolean isExistRebates,String afterSaleStatus,Boolean isExistAftersaleApply,String closeReason,String payFailReason) {
+    public static StatusConvertUtil findRoleTypeByCodeAndOrderType(String code,String orderType,String payType,Boolean isExistRebates,String afterSaleStatus,Boolean isExistAftersaleApply,String closeReason,String payFailReason) {
         for (AfOrderStatusMsgRemark roleType : AfOrderStatusMsgRemark.values()) {
             if (roleType.getCode().equals(code)) {
+            	StatusConvertUtil statusConvertUtil = new StatusConvertUtil(roleType.getCode(), roleType.getStatusMsg(), roleType.getStatusRemark());
             	//OrderType
             	if(PAID.getCode().equals(roleType.getCode())){
-            		if(OrderType.AGENTBUY.getCode().equals(orderType) && PayType.AGENT_PAY.getCode().equals(payType)){
-            			roleType.setStatusMsg("待审核");
-            			roleType.setStatusRemark("分期申请将尽快审核，请耐心等待");
+            		if(OrderType.AGENTBUY.getCode().equals(orderType) ){
+            			statusConvertUtil.setStatusMsg("待审核");
+            			statusConvertUtil.setStatusRemark("分期申请将尽快审核，请耐心等待");
             		}else if(OrderType.MOBILE.getCode().equals(orderType) 
             				|| OrderType.TAOBAO.getCode().equals(orderType)
             				|| OrderType.TMALL.getCode().equals(orderType)
             				|| OrderType.BOLUOME.getCode().equals(orderType)){
-            			roleType.setStatusMsg("待收货");
-            			roleType.setStatusRemark("请确认已签收商品/服务");
+            			statusConvertUtil.setStatusMsg("待收货");
+            			statusConvertUtil.setStatusRemark("请确认已签收商品/服务");
             		}else if(OrderType.TRADE.getCode().equals(orderType)) {
-						roleType.setStatusMsg("已支付");
-						roleType.setStatusRemark("订单已支付");
+            			statusConvertUtil.setStatusMsg("已支付");
+            			statusConvertUtil.setStatusRemark("订单已支付");
 					}
             	}
             	if(FINISHED.getCode().equals(roleType.getCode())){
             		if(isExistRebates){
-            			roleType.setStatusMsg("待返利");
-            			roleType.setStatusRemark("");
+            			statusConvertUtil.setStatusMsg("待返利");
+            			statusConvertUtil.setStatusRemark("");
             		}else{
-            			roleType.setStatusMsg("订单完成");
-            			roleType.setStatusRemark("");
+            			statusConvertUtil.setStatusMsg("订单完成");
+            			statusConvertUtil.setStatusRemark("");
             		}
             	}
             	if(CLOSED.getCode().equals(roleType.getCode())){
             		if(isExistAftersaleApply){
-            			roleType.setStatusMsg("订单关闭");
-            			roleType.setStatusRemark("已退款");
+            			statusConvertUtil.setStatusMsg("订单关闭");
+            			statusConvertUtil.setStatusRemark("已退款");
             		}else{
-            			roleType.setStatusMsg("订单关闭");
-            			roleType.setStatusRemark(StringUtil.null2Str(closeReason));
+            			statusConvertUtil.setStatusMsg("订单关闭");
+            			statusConvertUtil.setStatusRemark(StringUtil.null2Str(closeReason));
             		}
             	}
             	if(WAITING_REFUND.getCode().equals(roleType.getCode())){
             		if(AfAftersaleApplyStatus.WAIT_REFUND.getCode().equals(afterSaleStatus) || AfAftersaleApplyStatus.REFUNDING.getCode().equals(afterSaleStatus)){
-            			roleType.setStatusMsg("待退款");
-            			roleType.setStatusRemark("");
+            			statusConvertUtil.setStatusMsg("待退款");
+            			statusConvertUtil.setStatusRemark("");
             		}
             	}
             	if(PAYFAIL.getCode().equals(roleType.getCode())){
-            		roleType.setStatusRemark(StringUtil.null2Str(payFailReason));
+            		statusConvertUtil.setStatusRemark(StringUtil.null2Str(payFailReason));
             	}
-                return roleType;
+                return statusConvertUtil;
             }
         }
         return null;

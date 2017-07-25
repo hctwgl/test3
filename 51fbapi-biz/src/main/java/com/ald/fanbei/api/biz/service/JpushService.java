@@ -185,5 +185,15 @@ public interface JpushService {
 	/**
 	 *  信用卡认证失败推送
 	 */
-	public void creditCardRiskFail(String userName);			
+	public void creditCardRiskFail(String userName);		
+	
+	/**
+	 *  支付宝认证成功推送  
+	 */
+	public void alipayRiskSuccess(String userName);
+
+	/**
+	 *  支付宝认证失败推送
+	 */
+	public void alipayRiskFail(String userName);		
 }

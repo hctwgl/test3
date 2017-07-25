@@ -49,6 +49,8 @@ public class AfUserAuthDo extends AbstractSerial {
 	private Date gmtJinpo;
 	private String creditStatus;
 	private Date gmtCredit;
+	private String alipayStatus;
+	private Date gmtAlipay;
 	
 	public Long getRid() {
 		return rid;
@@ -266,6 +268,18 @@ public class AfUserAuthDo extends AbstractSerial {
 	}
 	public void setGmtCredit(Date gmtCredit) {
 		this.gmtCredit = gmtCredit;
+	}
+	public String getAlipayStatus() {
+		return alipayStatus;
+	}
+	public void setAlipayStatus(String alipayStatus) {
+		this.alipayStatus = alipayStatus;
+	}
+	public Date getGmtAlipay() {
+		return gmtAlipay;
+	}
+	public void setGmtAlipay(Date gmtAlipay) {
+		this.gmtAlipay = gmtAlipay;
 	}
 	
 }

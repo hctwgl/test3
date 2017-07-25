@@ -70,7 +70,7 @@ public class InsufficientBalanceApi implements ApiHandle {
 
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		String isSupplyCertify = "N";
-		if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
+		if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getAlipayStatus(), YesNoStatus.YES.getCode())) {
 			isSupplyCertify = "Y";
 		}
 		

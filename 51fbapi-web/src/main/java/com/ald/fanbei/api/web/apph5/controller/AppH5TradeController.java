@@ -135,7 +135,8 @@ public class AppH5TradeController extends BaseController {
             status = 4;
         } else if (!(YesNoStatus.YES.getCode().equals(auth.getJinpoStatus())
                 && YesNoStatus.YES.getCode().equals(auth.getFundStatus())
-                && YesNoStatus.YES.getCode().equals(auth.getCreditStatus()))) { //公积金，行用卡和社保认证状态
+                && YesNoStatus.YES.getCode().equals(auth.getCreditStatus())
+                && YesNoStatus.YES.getCode().equals(auth.getAlipayStatus()))) { //公积金，行用卡，社保和支付宝认证状态
             status = 5;
         }
 

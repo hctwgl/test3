@@ -235,7 +235,7 @@ public class GeneratorClusterNo {
 				channelNum = (Integer) TokenCacheUtil.getObject(cacheKey);
 				if (channelNum == null) {// 缓存中无数据,从库中获取
 					String payNo = afOrderService.getCurrentLastPayNo(currentDate);
-					channelNum = payNo == null ? 1 : (getOrderSeqInt(payNo
+					channelNum = StringUtils.isEmpty(payNo) ? 1 : (getOrderSeqInt(payNo
 							.substring(16, 20)) + 1);
 				} else {
 					channelNum = channelNum + 1;

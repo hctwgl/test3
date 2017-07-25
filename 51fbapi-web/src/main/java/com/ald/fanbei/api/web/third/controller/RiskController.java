@@ -173,5 +173,27 @@ public class RiskController {
 			return "ERROR";
 		}
 	}
+
+	/**
+	 * 支付宝异步回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/alipay" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String alipay(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal alipay begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.alipayNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
 	
 }

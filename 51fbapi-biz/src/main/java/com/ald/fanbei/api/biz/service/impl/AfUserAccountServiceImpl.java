@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
@@ -42,6 +43,7 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 /**
  * 
  * @类描述：
+ * 
  * @author Xiaotianjian 2017年1月19日下午4:05:08
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -50,37 +52,40 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 
 	@Resource
 	AfUserAccountDao afUserAccountDao;
-	
+
 	@Resource
 	private TransactionTemplate transactionTemplate;
-	
+
 	@Resource
 	AfBorrowDao afBorrowDao;
-	
+
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
-	
+
 	@Resource
 	private AfCashRecordDao afCashRecordDao;
-	
+
 	@Resource
 	AfOrderService afOrderService;
-	
+
 	@Resource
 	AfUserBankcardService afUserBankcardService;
-	
+
 	@Resource
 	AfOrderRefundService afOrderRefundService;
-	
+
 	@Resource
 	AfUpsLogDao afUpsLogDao;
-	
+
 	@Resource
 	BoluomeUtil boluomeUtil;
-	
+
 	@Resource
 	AfBorrowCashService afBorrowCashService;
-	
+
+	@Resource
+	AfTradeWithdrawRecordService afTradeWithdrawRecordService;
+
 	@Override
 	public AfUserAccountDo getUserAccountByUserId(Long userId) {
 		return afUserAccountDao.getUserAccountInfoByUserId(userId);
@@ -90,7 +95,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	public int addUserAccount(AfUserAccountDo accountDo) {
 		return afUserAccountDao.addUserAccount(accountDo);
 	}
-	
+
 	@Override
 	public int updateUserAccount(AfUserAccountDo afUserAccountDo) {
 		return afUserAccountDao.updateUserAccount(afUserAccountDo);
@@ -117,43 +122,42 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	}
 
 	@Override
-	public List<AfUserAccountDto> getUserAndAccountListWithHasRealName(
-			AfUserAccountQuery query) {
+	public List<AfUserAccountDto> getUserAndAccountListWithHasRealName(AfUserAccountQuery query) {
 		return afUserAccountDao.getUserAndAccountListWithHasRealName(query);
 	}
-	
+
 	@Override
 	public AfUserAccountDto getUserInfoByUserId(Long userId) {
 		return afUserAccountDao.getUserInfoByUserId(userId);
 	}
-	
+
 	@Override
-	public int dealUserDelegatePayError(final String merPriv,final Long result) {
+	public int dealUserDelegatePayError(final String merPriv, final Long result) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					if(UserAccountLogType.CASH.getCode().equals(merPriv)){//现金借款
-						//借款关闭
+					if (UserAccountLogType.CASH.getCode().equals(merPriv)) {// 现金借款
+						// 借款关闭
 						afBorrowDao.updateBorrowStatus(result, BorrowStatus.CLOSED.getCode());
-						//账户还原
+						// 账户还原
 						AfBorrowDo borrow = afBorrowDao.getBorrowById(result);
 						AfUserAccountDo account = new AfUserAccountDo();
 						account.setUcAmount(borrow.getAmount().multiply(new BigDecimal(-1)));
 						account.setUsedAmount(borrow.getAmount().multiply(new BigDecimal(-1)));
 						account.setUserId(borrow.getUserId());
 						afUserAccountDao.updateUserAccount(account);
-					}else if(UserAccountLogType.CONSUME.getCode().equals(merPriv)){//分期借款
-						//借款关闭
+					} else if (UserAccountLogType.CONSUME.getCode().equals(merPriv)) {// 分期借款
+						// 借款关闭
 						afBorrowDao.updateBorrowStatus(result, BorrowStatus.CLOSED.getCode());
-						//账户还原
+						// 账户还原
 						AfBorrowDo borrow = afBorrowDao.getBorrowById(result);
 						AfUserAccountDo account = new AfUserAccountDo();
 						account.setUsedAmount(borrow.getAmount().multiply(new BigDecimal(-1)));
 						account.setUserId(borrow.getUserId());
 						afUserAccountDao.updateUserAccount(account);
-					}else if(UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)){//提现
+					} else if (UserAccountLogType.REBATE_CASH.getCode().equals(merPriv)) {// 提现
 						AfCashRecordDo record = afCashRecordDao.getCashRecordById(result);
 						record.setStatus("REFUSE");
 						afCashRecordDao.updateCashRecord(record);
@@ -162,28 +166,35 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 						updateAccountDo.setRebateAmount(record.getAmount());
 						updateAccountDo.setUserId(record.getUserId());
 						afUserAccountDao.updateUserAccount(updateAccountDo);
-					} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
+					} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {// 菠萝觅银行卡退款
 						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
-	        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-	        			orderInfo.setStatus(OrderStatus.PAID.getCode());
-	        			afOrderService.updateOrder(orderInfo);
-	        			
-	        			//订单退款记录
-	    				refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
-	    				afOrderRefundService.updateOrderRefund(refundInfo);
-	        			boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), refundInfo.getAmount(),refundInfo.getRefundNo());
-	        		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){
-	        			//借钱
-	        			Long rid = NumberUtil.objToLong(result);
-	        			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
-	        			afBorrowCashDo.setStatus("TRANSEDFAIL");
-	        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
-	        			
-	        		} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
-	        			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
-	        			AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-	        			afOrderRefundService.dealWithSelfGoodsOrderRefundFail(refundInfo, orderInfo);
-	        		}
+						AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+						orderInfo.setStatus(OrderStatus.PAID.getCode());
+						afOrderService.updateOrder(orderInfo);
+
+						// 订单退款记录
+						refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
+						afOrderRefundService.updateOrderRefund(refundInfo);
+						boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(),
+								refundInfo.getAmount(), refundInfo.getRefundNo());
+					} else if (UserAccountLogType.BorrowCash.getCode().equals(merPriv)) {
+						// 借钱
+						Long rid = NumberUtil.objToLong(result);
+						AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
+						afBorrowCashDo.setStatus("TRANSEDFAIL");
+						afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+
+					} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
+						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+						AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+						afOrderRefundService.dealWithSelfGoodsOrderRefundFail(refundInfo, orderInfo);
+					} else if (UserAccountLogType.TRADE_BANK_REFUND.getCode().equals(merPriv)) {
+						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
+						AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
+						afOrderRefundService.dealWithTradeRefundFail(refundInfo, orderInfo);
+					} else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
+						afTradeWithdrawRecordService.dealWithDrawFail(result);
+					}
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
