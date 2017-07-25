@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017061505")
+    #set($version="2017072501")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
     <meta charset="UTF-8">
     <title>火热暑假 比价购机更优惠</title>
@@ -12,18 +12,31 @@
         <img src="$commonUrl/freeHome1.jpg">
         <img src="$commonUrl/freeHome2.jpg">
         <ul class="discount clearfix">
-            <li v-for="item in goodsMobileListMap.recommendGoodsList" @click="goGoodsDetail(item)">
-                <img :src="item.goodsIcon">
-                <div class="discountRight">
-                    <p>{{item.goodName}}</p>
-                    <p class="priceAmount">京东售价：<span>2233</span></p>
-                    <div class="priceWrap">
-                        <span class="saleAmount">¥{{item.saleAmount}}</span>
-                        <span class="rebateAmount"><i></i>{{item.rebateAmount}}</span>
+##            <li v-for="item in goodsListMap.recommendGoodsList" @click="goGoodsDetail(item)">
+##                <img :src="item.goodsIcon">
+##                <div class="discountRight">
+##                    <p class="discountRightTitle">{{item.goodName}}</p>
+##                    <p class="priceAmount">京东售价：<span>{{item.priceAmount}}</span></p>
+##                    <div class="priceWrap">
+##                        <span class="saleAmount">¥{{item.saleAmount}}</span>
+##                        <span class="rebateAmount"><i></i>{{item.rebateAmount}}</span>
+##                    </div>
+##                    <span class="goBuyBtn">立即抢购</span>
+##                </div>
+##            </li>
+                <li v-for="item in discountMap" @click="goGoodsDetail(item)">
+                    <img :src="item.goodsIcon">
+                    <div class="discountRight">
+                        <p class="discountRightTitle">{{item.goodName}}</p>
+                        <p class="priceAmount">京东售价：<span>{{item.priceAmount}}</span></p>
+                        <div class="priceWrap">
+                            <span class="saleAmount">¥{{item.saleAmount}}</span>
+                            <span class="rebateAmount"><i></i>{{item.rebateAmount}}</span>
+                        </div>
+                        <span class="goBuyBtn">立即抢购</span>
                     </div>
-                    <span class="goBuyBtn">立即抢购</span>
-                </div>
-            </li>
+                </li>
+
 ##            <li>
 ##                <img src="$commonUrl/oppo1.png">
 ##                <div class="discountRight">
@@ -37,8 +50,33 @@
 ##                </div>
 ##            </li>
         </ul>
-##        <img src="$commonUrl/freeHome3.jpg">
-##        <ul class="rebate clearfix">
+        <img src="$commonUrl/freeHome3.jpg">
+
+        <ul class="rebate clearfix">
+##            <li v-for="item in goodsListMap.qualityGoodsList" @click="goGoodsDetail(item)">
+##                <img :src="item.goodsIcon">
+##                <div class="rebateRight">
+##                    <p class="rebateRightTitle">{{item.goodName}}</p>
+##                    <p class="remark">{{item.remark}}</p>
+##                    <div class="priceWrap">
+##                        <span class="saleAmount">¥{{item.saleAmount}}</span>
+##                        <span class="rebateAmount"><i></i>{{item.rebateAmount}}</span>
+##                    </div>
+##                </div>
+##            </li>
+
+                <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
+                    <img :src="item.goodsIcon">
+                    <div class="rebateRight">
+                        <p class="rebateRightTitle">{{item.goodName}}</p>
+                        <p class="remark">{{item.remark}}</p>
+                        <div class="priceWrap">
+                            <span class="saleAmount">¥{{item.saleAmount}}</span>
+                            <span class="rebateAmount"><i></i>{{item.rebateAmount}}</span>
+                        </div>
+                    </div>
+                </li>
+
 ##            <li>
 ##                <img src="$commonUrl/oppo1.png">
 ##                <div class="rebateRight">
@@ -50,7 +88,7 @@
 ##                    </div>
 ##                </div>
 ##            </li>
-##        </ul>
+        </ul>
     </div>
 </body>
 <script type="text/javascript" src="/dist/activity/07/freeHome.js?version=$version"></script>

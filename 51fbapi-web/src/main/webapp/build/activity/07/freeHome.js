@@ -6,43 +6,36 @@
 
 
 let activityId = getUrl("activityId");
-
-// 获取网站的域名
-// let domainName = domainName();
+let modelId = getUrl("modelId");
 
 var vm=new Vue({
     el: '#freeHome',
     data: {
-        goodsMobileListMap: []
+        discountMap: [],
+        rebateMap: []
     },
     created:function(){
         let _this=this;
-        $.ajax({
-            url: '/fanbei-web/encoreActivityInfo',
-            dataType:'json',
-            data:{'activityId':activityId},
-            type: 'post',
-            success:function (data) {
-                _this.goodsMobileListMap=data.data;
-                console.log(_this.goodsMobileListMap);
-            },
-            error: function(){
-                requestMsg("请求失败");
-            }
-        });
+        _this.initial();
     },
     methods:{
-
-        oppoList(e){
-            for(let i=0;i<this.show.length;i++){
-                Vue.set(vm.show,i,false);
-            }
-            Vue.set(vm.show,e-1,true);
-
-            // 手机的privateGoodsId
-            let privateGoodsId=[121129,121130];
-            let notifyUrl = "https://app.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO";
-            this.url=notifyUrl+'&params={"privateGoodsId":"'+privateGoodsId[e-1]+'"}';  // a链接的url
+        initial(){
+            let _this=this;
+            $.ajax({
+                url: '/fanbei-web/encoreActivityInfo',
+                // url: '/fanbei-web/partActivityInfo',
+                dataType:'json',
+                data:{'activityId':activityId},
+                // data:{'modelId':modelId},
+                type: 'post',
+                success:function (data) {
+                    _this.discountMap=data.data.qualityGoodsList.slice(0,3);
+                    _this.rebateMap=data.data.qualityGoodsList.slice(4,-1);
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            });
         },
         goGoodsDetail(item){
             if ( item.source=="SELFSUPPORT" ) {
