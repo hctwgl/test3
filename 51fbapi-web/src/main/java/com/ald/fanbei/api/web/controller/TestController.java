@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -60,7 +58,6 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
-import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 

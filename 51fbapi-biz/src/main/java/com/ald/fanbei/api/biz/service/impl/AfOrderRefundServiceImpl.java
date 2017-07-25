@@ -17,6 +17,7 @@ import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.TradeOrderStatus;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfAftersaleApplyDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
@@ -86,8 +87,8 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 						AfOrderDo orderT =new AfOrderDo();
 						orderT.setRid(orderInfo.getRid());
 						orderT.setStatus(OrderStatus.CLOSED.getCode());
-						orderInfo.setClosedDetail("系统关闭");
-						orderInfo.setClosedReason("退款完成");
+						orderInfo.setClosedReason(StringUtil.isBlank(orderInfo.getClosedReason())?"系统关闭":orderInfo.getClosedReason());
+						orderInfo.setClosedDetail(StringUtil.isBlank(orderInfo.getClosedDetail())?"退款完成":orderInfo.getClosedDetail());
 						orderInfo.setGmtClosed(new Date());
 						afOrderDao.updateOrder(orderT);
 
@@ -123,8 +124,8 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 				try {
 					orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
-					orderInfo.setClosedDetail("系统关闭");
-					orderInfo.setClosedReason("退款完成");
+					orderInfo.setClosedReason(StringUtil.isBlank(orderInfo.getClosedReason())?"系统关闭":orderInfo.getClosedReason());
+					orderInfo.setClosedDetail(StringUtil.isBlank(orderInfo.getClosedDetail())?"退款完成":orderInfo.getClosedDetail());
 					orderInfo.setGmtClosed(new Date());
 					updateOrderRefund(orderRefundInfo);
 					afOrderDao.updateOrder(orderInfo);

@@ -29,6 +29,7 @@ import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StatusConvertUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -95,7 +96,7 @@ public class GetOrderListApi implements ApiHandle{
 			if (status.equals(OrderStatus.DEALING.getCode())) {
 				status =OrderStatus.PAID.getCode();
 			}
-		}else if(context.getAppVersion() == 371 && OrderType.AGENTBUY.getCode().equals(order.getOrderType()) 
+		}else if(context.getAppVersion() >= 371 && OrderType.AGENTBUY.getCode().equals(order.getOrderType()) 
 				&& PayType.AGENT_PAY.getCode().equals(order.getPayType())){
 			if (status.equals(OrderStatus.PAID.getCode())) {
 				status =OrderStatus.REVIEW.getCode();
@@ -144,7 +145,7 @@ public class GetOrderListApi implements ApiHandle{
 			}
 		}
 		
-		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
+		StatusConvertUtil orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(order.getStatus(), order.getOrderType(), order.getPayType(),
 				isExistRebates, afterSaleStatus,isExistAftersaleApply,closeReason,order.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			vo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());
