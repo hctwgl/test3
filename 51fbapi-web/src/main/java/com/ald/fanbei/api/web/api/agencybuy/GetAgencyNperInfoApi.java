@@ -126,23 +126,26 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
         BigDecimal useableAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), afUserAccountDo.getUsedAmount());
-		//是否是限额类目
+        
+        //是否是限额类目
 		String isQuotaGoods = "N";
-		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
-		String data = quotaBo.getData();
-		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
-			JSONObject json = JSONObject.parseObject(data);
-			isQuotaGoods = "Y";
-			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
-			String virtualCode = json.getString("virtualCode");
-			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
-			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
-			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
-			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
-				useableAmount = goodsUseableAmount;
-			}
-		}
+        if (!StringUtil.isBlank(goodsName)) {
+    		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
+    		String data = quotaBo.getData();
+    		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
+    			JSONObject json = JSONObject.parseObject(data);
+    			isQuotaGoods = "Y";
+    			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
+    			String virtualCode = json.getString("virtualCode");
+    			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+    			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
+    			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
+    			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
+    			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
+    				useableAmount = goodsUseableAmount;
+    			}
+    		}      	
+        }
 
         List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
         		useableAmount, resource.getValue1(), resource.getValue2());

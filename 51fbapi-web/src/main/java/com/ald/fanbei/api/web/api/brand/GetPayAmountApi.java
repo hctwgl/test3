@@ -15,6 +15,7 @@ import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -56,6 +58,8 @@ public class GetPayAmountApi implements ApiHandle {
 	AfOrderService afOrderService;
 	@Resource
 	AfUserService afUserService;
+	@Resource
+	AfUserBankcardService afUserBankcardService;
 	@Resource
 	RiskUtil riskUtil;
 	
@@ -131,7 +135,15 @@ public class GetPayAmountApi implements ApiHandle {
 		resp.addResponseData("realName", afUser.getRealName());
 		resp.addResponseData("isQuotaGoods", isQuotaGoods);
 		
-		
+		if (bankPayAmount.compareTo(BigDecimal.ZERO) > 0) {
+			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(orderInfo.getUserId());
+			resp.addResponseData("rId", afUserBankcardDo.getRid());
+			resp.addResponseData("bankCode", afUserBankcardDo.getBankCode());
+			resp.addResponseData("bankName", afUserBankcardDo.getBankName());
+			resp.addResponseData("bankIcon", afUserBankcardDo.getBankIcon());
+			resp.addResponseData("cardNumber", afUserBankcardDo.getCardNumber());
+			resp.addResponseData("isValid", afUserBankcardDo.getIsValid());			
+		}
 		
 		return resp;
 	}

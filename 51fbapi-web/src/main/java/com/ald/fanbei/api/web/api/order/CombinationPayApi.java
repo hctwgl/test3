@@ -2,7 +2,6 @@ package com.ald.fanbei.api.web.api.order;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,22 +12,23 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.VirtualGoodsCateogy;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -43,16 +43,14 @@ import com.alibaba.fastjson.JSONObject;
 public class CombinationPayApi implements ApiHandle {
 	@Resource
 	RiskUtil riskUtil;
-
+	@Resource
+	AfOrderService afOrderService;
 	@Resource
 	AfUserAuthService afUserAuthService;
-	
 	@Resource
 	AfUserAccountService afUserAccountService;
-	
 	@Resource
 	AfUserBankcardService afUserBankcardService;	
-
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
 
@@ -61,13 +59,21 @@ public class CombinationPayApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		Map<String, Object> params = requestDataVo.getParams();
-		BigDecimal amount = NumberUtil.objToBigDecimalDefault(params.get("amount"), BigDecimal.ZERO);
+		
+		Long orderId = NumberUtil.objToLongDefault(params.get("orderId"), null);
 		String goodsName = ObjectUtils.toString(params.get("goodsName"));
-		String numId = ObjectUtils.toString(params.get("numId"));
-		String type = ObjectUtils.toString(params.get("type"), OrderType.TAOBAO.getCode());
-		BigDecimal eachAmount = NumberUtil.objToBigDecimalDefault(params.get("eachAmount"), BigDecimal.ZERO);
-		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
+		
+		if (orderId == null) {
+			logger.error("orderId is empty");
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+		}
 
+		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
+		if (orderInfo == null) {
+			logger.error("orderId is invalid");
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+		}
+		
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 		BigDecimal useableAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), afUserAccountDo.getUsedAmount());
 		// 是否是限额类目
@@ -94,21 +100,24 @@ public class CombinationPayApi implements ApiHandle {
 			isSupplyCertify = "Y";
 		}
 
-		List<AfBankUserBankDto> userBankList = afUserBankcardService.getUserBankcardByUserId(userId);
-		
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("amount", amount);
-		data.put("numId", numId);
-		data.put("type", type);
 		data.put("quotaAmount", useableAmount);
-		data.put("bankAmount", BigDecimalUtil.subtract(amount, useableAmount));
 		data.put("isSupplyCertify", isSupplyCertify);
-		data.put("goodsName", goodsName);
-		data.put("eachAmount", eachAmount);
-		data.put("nper", nper);
 		
 		resp.setResponseData(data);
-		resp.addResponseData("bankList", userBankList);
+		
+		BigDecimal bankPayAmount = BigDecimalUtil.subtract(orderInfo.getActualAmount(), useableAmount);
+		data.put("bankPayAmount", bankPayAmount);
+		
+		if (bankPayAmount.compareTo(BigDecimal.ZERO) > 0) {
+			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(orderInfo.getUserId());
+			resp.addResponseData("rId", afUserBankcardDo.getRid());
+			resp.addResponseData("bankCode", afUserBankcardDo.getBankCode());
+			resp.addResponseData("bankName", afUserBankcardDo.getBankName());
+			resp.addResponseData("bankIcon", afUserBankcardDo.getBankIcon());
+			resp.addResponseData("cardNumber", afUserBankcardDo.getCardNumber());
+			resp.addResponseData("isValid", afUserBankcardDo.getIsValid());			
+		}
 		
 		return resp;
 	}
