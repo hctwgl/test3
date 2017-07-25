@@ -135,6 +135,7 @@ public class Constants {
 	public static final String RES_BORROW_RATE = "BORROW_RATE";
 	public static final String RES_BORROW_CASH_RANGE = "BORROW_CASH_RANGE";
 	public static final String RES_BORROW_CASH_LIMIT_AMOUNT = "BORROW_CASH_LIMIT_AMOUNT";
+	public static final String RES_BORROW_TRADE = "BORROW_TRADE";
 	
 	public static final String RES_BRAND_SHOP = "BRAND_SHOP";
 	public static final String RES_CREDIT_SCORE_AMOUNT = "CREDIT_SCORE_AMOUNT";
