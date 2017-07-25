@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -98,7 +99,10 @@ public class AppH5TradeController extends BaseController {
         model.put("isLogin", "yes");
         String userName = context.getUserName();
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountInfoByUserName(userName);
-        Double canUseAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), BigDecimalUtil.add(afUserAccountDo.getUsedAmount(), afUserAccountDo.getFreezeAmount())).doubleValue();
+        BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
+        BigDecimal usedAmount = afUserAccountDo.getUsedAmount()==null?BigDecimal.ZERO:afUserAccountDo.getUsedAmount();
+        BigDecimal freezeAmount = afUserAccountDo.getFreezeAmount()==null?BigDecimal.ZERO:afUserAccountDo.getFreezeAmount();
+        Double canUseAmount = BigDecimalUtil.subtract(auAmount, BigDecimalUtil.add(usedAmount, freezeAmount)).doubleValue();
         model.put("canUseAmount", canUseAmount);
     }
 
