@@ -48,10 +48,10 @@ public class GetAllowConsumeApi implements ApiHandle {
 			throw new FanbeiException("authDo id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-        String isSupplyCertify = "N";
-        if (StringUtil.equals(autDo.getFundStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(autDo.getJinpoStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(autDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
-        	isSupplyCertify = "Y";
-        }
+		String isSupplyCertify = "N";
+		if (StringUtil.equals(autDo.getFundStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(autDo.getJinpoStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(autDo.getCreditStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(autDo.getAlipayStatus(), YesNoStatus.YES.getCode())) {
+			isSupplyCertify = "Y";
+		}
         
 		if (StringUtil.equals(autDo.getRiskStatus(), RiskStatus.NO.getCode())&&StringUtil.equals(isSupplyCertify, YesNoStatus.YES.getCode())) {
 			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(autDo.getGmtRisk()), 10);
