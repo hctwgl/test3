@@ -3,10 +3,7 @@
  */
 
 
-
-
 let activityId = getUrl("activityId");
-let modelId = getUrl("modelId");
 
 var vm=new Vue({
     el: '#freeHome',
@@ -23,14 +20,12 @@ var vm=new Vue({
             let _this=this;
             $.ajax({
                 url: '/fanbei-web/encoreActivityInfo',
-                // url: '/fanbei-web/partActivityInfo',
                 dataType:'json',
                 data:{'activityId':activityId},
-                // data:{'modelId':modelId},
                 type: 'post',
                 success:function (data) {
-                    _this.discountMap=data.data.qualityGoodsList.slice(0,3);
-                    _this.rebateMap=data.data.qualityGoodsList.slice(4,-1);
+                    _this.discountMap=data.data.recommendGoodsList.slice(0,3);
+                    _this.rebateMap=data.data.recommendGoodsList.slice(3);
                 },
                 error: function(){
                     requestMsg("请求失败");
