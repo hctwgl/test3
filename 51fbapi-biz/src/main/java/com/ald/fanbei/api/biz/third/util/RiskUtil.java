@@ -1607,10 +1607,10 @@ public class RiskUtil extends AbstractThird {
 					accountDo.setAuAmount(au_amount);
 					afUserAccountService.updateUserAccount(accountDo);
 				}					
-				jpushService.creditCardRiskSuccess(userAccountDo.getUserName());
+				jpushService.alipayRiskSuccess(userAccountDo.getUserName());
 			} else {
 				auth.setAlipayStatus(YesNoStatus.NO.getCode());
-				jpushService.creditCardRiskFail(userAccountDo.getUserName());
+				jpushService.alipayRiskFail(userAccountDo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}
