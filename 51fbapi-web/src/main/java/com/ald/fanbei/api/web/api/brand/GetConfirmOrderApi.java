@@ -104,9 +104,7 @@ public class GetConfirmOrderApi implements ApiHandle {
 				orderInfo = boluomeUtil.orderSearch(orderId);
 				afOrderService.createOrder(orderInfo);
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				logger.info("order compensation query error");
+				logger.info("order compensation query error e = {}", e);
 			}
 		}
 		
