@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.bo.BoluomePushPayRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundResponseBo;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderPushLogService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -37,6 +38,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderPushLogDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -60,6 +62,8 @@ public class BoluomeUtil extends AbstractThird{
 	AfShopService afShopService;
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
+	@Resource
+	AfInterestFreeRulesService afInterestFreeRulesService;
 	
 	private static String pushPayUrl = null;
 	private static String pushRefundUrl = null;
@@ -113,10 +117,10 @@ public class BoluomeUtil extends AbstractThird{
 			String orderType = responseBo.getOrderType().toUpperCase();
 			String orderTitle = responseBo.getOrderTitle();
 			String userId = responseBo.getUserId();
-			long price = responseBo.getPrice();
-			int status = responseBo.getStatus();
-			long createdTime = responseBo.getCreatedTime();
-			long expiredTime = responseBo.getExpriedTime();
+			BigDecimal price = responseBo.getPrice();
+			Integer status = responseBo.getStatus();
+			Long createdTime = responseBo.getCreatedTime();
+			Long expiredTime = responseBo.getExpiredTime();
 			String detailUrl = responseBo.getDetailUrl();
 			String channel = responseBo.getChannel().toUpperCase();
 			AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);
@@ -127,12 +131,12 @@ public class BoluomeUtil extends AbstractThird{
 			orderInfo.setUserId(StringUtils.isNotEmpty(userId)  ? Long.parseLong(userId) : null);
 //		orderInfo.setMobile(userPhone);
 			//有可能没有价格
-			BigDecimal priceAmount = price != 0 ? new BigDecimal(price) : BigDecimal.ZERO;
+			BigDecimal priceAmount = price != null ? price : BigDecimal.ZERO;
 			orderInfo.setPriceAmount(priceAmount);
-			orderInfo.setGmtPayEnd(expiredTime != 0  ? new Date(System.currentTimeMillis() + expiredTime) : null);
+			orderInfo.setGmtPayEnd(expiredTime != null  ? new Date(System.currentTimeMillis() + expiredTime) : null);
 			orderInfo.setThirdDetailUrl(detailUrl);
-			orderInfo.setStatus(status == 0 ? BoluomeUtil.parseOrderType(status + StringUtils.EMPTY).getCode() : null);
-			orderInfo.setGmtCreate(createdTime != 0 ? new Date(createdTime) : null);
+			orderInfo.setStatus(status != null ? BoluomeUtil.parseOrderType(status + StringUtils.EMPTY).getCode() : null);
+			orderInfo.setGmtCreate(createdTime != null ? new Date(createdTime) : null);
 			orderInfo.setOrderNo(generatorClusterNo.getOrderNo(OrderType.BOLUOME));
 			orderInfo.setUserCouponId(0l);
 			orderInfo.setGoodsId(0l);
@@ -143,13 +147,17 @@ public class BoluomeUtil extends AbstractThird{
 			orderInfo.setSaleAmount(priceAmount);
 			orderInfo.setActualAmount(priceAmount);
 			orderInfo.setShopName(StringUtils.EMPTY);
-			orderInfo.setPayStatus(status != 0 ? BoluomeUtil.parsePayStatus(status + StringUtils.EMPTY).getCode() : null);
+			orderInfo.setPayStatus(status != null ? BoluomeUtil.parsePayStatus(status + StringUtils.EMPTY).getCode() : null);
 			orderInfo.setPayType(StringUtils.EMPTY);
 			orderInfo.setPayTradeNo(StringUtils.EMPTY);
 			orderInfo.setTradeNo(StringUtils.EMPTY);
 			orderInfo.setMobile(StringUtils.EMPTY);
 			orderInfo.setBankId(0l);
 			orderInfo.setServiceProvider(channel);
+			if (shopInfo.getInterestFreeId() != 0) {
+    			AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
+    			orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());
+    		}
 			calculateOrderRebateAmount(orderInfo, shopInfo);
 			
 		} else {
