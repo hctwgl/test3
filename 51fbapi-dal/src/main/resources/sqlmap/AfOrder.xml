@@ -807,6 +807,7 @@
 		and gmt_pay is not null 
 		and order_type IN('BOLUOME','AGENTBUY') 
 		and status in ('PAID','REVIEW','AGENCYCOMPLETED','DELIVERED','FINISHED','REBATED','WAITING_REFUND','DEAL_REFUNDING') 
+		and pay_trade_no !=''
 		ORDER BY gmt_pay DESC LIMIT 1;
 	</select>
 	
