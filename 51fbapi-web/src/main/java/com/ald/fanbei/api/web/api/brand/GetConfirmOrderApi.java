@@ -99,16 +99,15 @@ public class GetConfirmOrderApi implements ApiHandle {
 		}
 		AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
 		if (orderInfo ==  null) {
-			//**订单补偿
+			//订单补偿
 			try {
 				orderInfo = boluomeUtil.orderSearch(orderId);
 				afOrderService.createOrder(orderInfo);
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				logger.info("order compensation query error");
 			}
-			logger.error("orderId is invalid");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
 		Long userId = orderInfo.getUserId();
