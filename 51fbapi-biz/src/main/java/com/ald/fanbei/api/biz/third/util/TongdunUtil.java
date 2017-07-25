@@ -54,12 +54,10 @@ public class TongdunUtil extends AbstractThird {
 	 */
 	public static String applyPreloan(String idNumber, String realName, String mobile, String email) {
 		String urlPre = getPartnerHost() + "/preloan/apply/v5?";
-		String reqUrl = urlPre + "partner_code=" + getPatnerCode() + "&partner_key=" + getPartnerKey() + "&app_name="
-				+ getAppName();
+		String reqUrl = urlPre + "partner_code=" + getPatnerCode() + "&partner_key=" + getPartnerKey() + "&app_name=" + getAppName();
 		String query = "id_number=" + idNumber + "&name=" + realName + "&mobile=" + mobile + "&email=" + email;
 		String reqResult = HttpUtil.doHttpPost(reqUrl, query);
-		logger.info(StringUtil.appendStrs("applyPreloan params=|", idNumber, "|", realName, "|", mobile, "|", email,
-				"|,reqResult=", reqResult));
+		logger.info(StringUtil.appendStrs("applyPreloan params=|", idNumber, "|", realName, "|", mobile, "|", email, "|,reqResult=", reqResult));
 
 		if (StringUtil.isBlank(reqResult)) {
 			return "";
@@ -79,8 +77,7 @@ public class TongdunUtil extends AbstractThird {
 	 */
 	public static TongdunResultBo queryPreloan(String reportId) {
 		String urlPre = getPartnerHost() + "/preloan/report/v7?";
-		String reqUrl = urlPre + "partner_code=" + getPatnerCode() + "&partner_key=" + getPartnerKey() + "&app_name="
-				+ getAppName() + "&report_id=" + reportId;
+		String reqUrl = urlPre + "partner_code=" + getPatnerCode() + "&partner_key=" + getPartnerKey() + "&app_name=" + getAppName() + "&report_id=" + reportId;
 		String reqResult = HttpUtil.doGet(reqUrl, 1000);
 		logger.info(StringUtil.appendStrs("queryPreloan params=|", reportId, "|,reqResult=", reqResult));
 		if (StringUtil.isBlank(reqResult)) {
@@ -110,8 +107,7 @@ public class TongdunUtil extends AbstractThird {
 			for (Map.Entry<String, Object> entry : params.entrySet()) {
 				if (entry.getValue() == null)
 					continue;
-				postBody.append(entry.getKey()).append("=")
-						.append(URLEncoder.encode(entry.getValue().toString(), "utf-8")).append("&");
+				postBody.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue().toString(), "utf-8")).append("&");
 			}
 
 			if (!params.isEmpty()) {
@@ -171,10 +167,8 @@ public class TongdunUtil extends AbstractThird {
 	 * @param remCode
 	 *            推荐码
 	 */
-	public void getRegistResult(String requsetId, String blackBox, String ip, String accountLogin, String accountMobile,
-			String accountEmail, String remCode, String source) {
-		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.REGISTER_IOS
-				: TongdunEventEnmu.REGISTER_ANDROID;
+	public void getRegistResult(String requsetId, String blackBox, String ip, String accountLogin, String accountMobile, String accountEmail, String remCode, String source) {
+		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.REGISTER_IOS : TongdunEventEnmu.REGISTER_ANDROID;
 
 		accountLogin = accountMobile;
 
@@ -185,7 +179,8 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+			// this.addTdFraud(accountLogin, accountMobile,
+			// tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getLoginWebResult", e);
@@ -195,10 +190,8 @@ public class TongdunUtil extends AbstractThird {
 			return;
 		}
 		if (apiResp != null && apiResp.get("final_decision") != null
-				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > -1) {
-			logger.info(
-					"手机号码为：" + accountMobile + "的用户在app端注册的时候被拦截....同盾返回的code是...." + apiResp.get("final_decision"));
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
+			logger.info("手机号码为：" + accountMobile + "的用户在app端注册的时候被拦截....同盾返回的code是...." + apiResp.get("final_decision"));
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
 
 		}
@@ -221,17 +214,16 @@ public class TongdunUtil extends AbstractThird {
 	 * @param loginState
 	 *            登录成功状态 1：失败 0：成功
 	 */
-	public void getLoginResult(String requsetId, String blackBox, String ip, String accountMobile, String accountLogin,
-			String loginState, String source) {
-		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.LOGIN_IOS
-				: TongdunEventEnmu.LOGIN_ANDROID;
+	public void getLoginResult(String requsetId, String blackBox, String ip, String accountMobile, String accountLogin, String loginState, String source) {
+		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.LOGIN_IOS : TongdunEventEnmu.LOGIN_ANDROID;
 		accountLogin = accountMobile;
 		Map<String, Object> params = getCommonParam(tongdunEvent, blackBox, ip, accountLogin, accountMobile);
 		params.put("state", loginState);
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+			// this.addTdFraud(accountLogin, accountMobile,
+			// tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getLoginResult", e);
@@ -244,14 +236,12 @@ public class TongdunUtil extends AbstractThird {
 		}
 
 		if (apiResp != null && apiResp.get("final_decision") != null
-				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > -1) {
-			logger.info(
-					"手机号码为：" + accountMobile + "的用户在验证登录的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
+			logger.info("手机号码为：" + accountMobile + "的用户在验证登录的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
 		}
 	}
-	
+
 	/**
 	 * @方法说明：渠道推广验证
 	 * @author huyang
@@ -260,10 +250,9 @@ public class TongdunUtil extends AbstractThird {
 	 * @param pointCode
 	 * @param ip
 	 */
-	public void getPromotionResult(String sessionId,String channleCode,String pointCode,String ip,String accountMobile, String accountLogin, String source){
+	public void getPromotionResult(String sessionId, String channleCode, String pointCode, String ip, String accountMobile, String accountLogin, String source) {
 		TongdunEventEnmu tongdunEvent = TongdunEventEnmu.REGISTER_WEB;
-		
-		
+
 		accountLogin = accountMobile;
 		Map<String, Object> params = getCommonWebParam(tongdunEvent, sessionId, ip, accountLogin, accountMobile);
 		params.put("channleCode", channleCode);
@@ -271,7 +260,8 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+			// this.addTdFraud(accountLogin, accountMobile,
+			// tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getLoginResult", e);
@@ -282,10 +272,46 @@ public class TongdunUtil extends AbstractThird {
 			return;
 		}
 		if (apiResp != null && apiResp.get("final_decision") != null
-				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > -1) {
-			logger.info(
-					"手机号码为：" + accountMobile + "的用户在验证渠道推广注册的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
+			logger.info("手机号码为：【" + accountMobile + "】的用户在验证渠道【"+channleCode+"】位置【"+pointCode+"】推广注册的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
+			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
+		}
+	}
+
+	/**
+	 * 网页注册获取短信验证码
+	 * @param sessionId
+	 * @param channleCode
+	 * @param pointCode
+	 * @param ip
+	 * @param accountMobile
+	 * @param accountLogin
+	 * @param source
+	 */
+	public void getPromotionSmsResult(String sessionId, String channleCode, String pointCode, String ip, String accountMobile, String accountLogin, String source) {
+		TongdunEventEnmu tongdunEvent = TongdunEventEnmu.REGISTER_WEB;
+
+		accountLogin = accountMobile;
+		Map<String, Object> params = getCommonWebParam(tongdunEvent, sessionId, ip, accountLogin, accountMobile);
+		params.put("channleCode", channleCode);
+		params.put("pointCode", pointCode);
+		JSONObject apiResp = null;
+		try {
+			String respStr = invoke(params);
+			// this.addTdFraud(accountLogin, accountMobile,
+			// tongdunEvent.getClientOperate(), ip, respStr, source);
+			apiResp = JSONObject.parseObject(respStr);
+		} catch (Exception e) {
+			logger.error("getLoginResult", e);
+			return;
+		}
+		String promotionSwitch = resourceValueWhithType(AfResourceType.promotionTongdunSwitch.getCode());
+		if (StringUtil.isBlank(promotionSwitch) || "0".equals(promotionSwitch)) {// 验证开关关闭
+			return;
+		}
+		if (apiResp != null && apiResp.get("final_decision") != null
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
+			logger.info("手机号码为：【" + accountMobile + "】的用户在渠道【"+channleCode+"】位置【"+pointCode+"】网页注册获取验证码时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
 		}
 	}
@@ -308,12 +334,11 @@ public class TongdunUtil extends AbstractThird {
 	 * @param accountEmail
 	 *            账户邮箱
 	 * @param items
-	 *            订单项 
+	 *            订单项
 	 */
-	public void getTradeResult(String requsetId, String blackBox, String ip, String accountLogin,
-			String accountMobile, String idNumber, String realName, String accountEmail, String items, String source) {
-		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.TRADE_IOS
-				: TongdunEventEnmu.TRADE_ANDROID;
+	public void getTradeResult(String requsetId, String blackBox, String ip, String accountLogin, String accountMobile, String idNumber, String realName, String accountEmail,
+			String items, String source) {
+		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.TRADE_IOS : TongdunEventEnmu.TRADE_ANDROID;
 		accountLogin = accountMobile;
 		String registSwitch = resourceValueWhithType(AfResourceType.tradeTongdunSwitch.getCode());
 
@@ -325,7 +350,8 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+			// this.addTdFraud(accountLogin, accountMobile,
+			// tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getTradeResult", e);
@@ -335,10 +361,8 @@ public class TongdunUtil extends AbstractThird {
 			return;
 		}
 		if (apiResp != null && apiResp.get("final_decision") != null
-				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > -1) {
-			logger.info("手机号码为：" + accountMobile + ".....的用户在app端进行时候被拦截....同盾返回的code是...."
-					+ apiResp.get("final_decision"));
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
+			logger.info("手机号码为：" + accountMobile + ".....的用户在app端进行时候被拦截....同盾返回的code是...." + apiResp.get("final_decision"));
 			// throw new
 			// BussinessException("您投资手机号存在安全风险，如有疑问请联系客服:400-135-3388");
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_TRADE_ERROR);
@@ -364,12 +388,11 @@ public class TongdunUtil extends AbstractThird {
 	 * @param accountEmail
 	 *            账户邮箱
 	 * @param items
-	 *            订单项 
+	 *            订单项
 	 */
-	public void getBorrowCashResult(String requsetId, String blackBox, String ip, String accountLogin,
-			String accountMobile, String idNumber, String realName, String accountEmail, String items, String source) {
-		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.LOAN_IOS
-				: TongdunEventEnmu.LOAN_ANDROID;
+	public void getBorrowCashResult(String requsetId, String blackBox, String ip, String accountLogin, String accountMobile, String idNumber, String realName, String accountEmail,
+			String items, String source) {
+		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.LOAN_IOS : TongdunEventEnmu.LOAN_ANDROID;
 		accountLogin = accountMobile;
 		String registSwitch = resourceValueWhithType(AfResourceType.tradeTongdunSwitch.getCode());
 
@@ -381,7 +404,8 @@ public class TongdunUtil extends AbstractThird {
 		JSONObject apiResp = null;
 		try {
 			String respStr = invoke(params);
-//			this.addTdFraud(accountLogin, accountMobile, tongdunEvent.getClientOperate(), ip, respStr, source);
+			// this.addTdFraud(accountLogin, accountMobile,
+			// tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
 			logger.error("getTradeResult", e);
@@ -391,18 +415,14 @@ public class TongdunUtil extends AbstractThird {
 			return;
 		}
 		if (apiResp != null && apiResp.get("final_decision") != null
-				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode())
-						.indexOf(apiResp.get("final_decision") + "") > -1) {
-			logger.info("手机号码为：" + accountMobile + ".....的用户在app端进行时候被拦截....同盾返回的code是...."
-					+ apiResp.get("final_decision"));
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
+			logger.info("手机号码为：" + accountMobile + ".....的用户在app端进行时候被拦截....同盾返回的code是...." + apiResp.get("final_decision"));
 			// throw new
 			// BussinessException("您投资手机号存在安全风险，如有疑问请联系客服:400-135-3388");
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_TRADE_ERROR);
 
 		}
 	}
-	
-	
 
 	private String resourceValueWhithType(String type) {
 
@@ -415,8 +435,7 @@ public class TongdunUtil extends AbstractThird {
 
 	}
 
-	private Map<String, Object> getCommonParam(TongdunEventEnmu tongdunEvent, String blackBox, String ip,
-			String accountLogin, String accountMobile) {
+	private Map<String, Object> getCommonParam(TongdunEventEnmu tongdunEvent, String blackBox, String ip, String accountLogin, String accountMobile) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("partner_code", "alading");// 此处值填写您的合作方标识
 		params.put("secret_key", tongdunEvent.getSecretKey());// 此处填写对应app密钥
@@ -428,9 +447,8 @@ public class TongdunUtil extends AbstractThird {
 
 		return params;
 	}
-	
-	private Map<String, Object> getCommonWebParam(TongdunEventEnmu tongdunEvent, String tokenId, String ip,
-			String accountLogin, String accountMobile) {
+
+	private Map<String, Object> getCommonWebParam(TongdunEventEnmu tongdunEvent, String tokenId, String ip, String accountLogin, String accountMobile) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("partner_code", "alading");// 此处值填写您的合作方标识
 		params.put("secret_key", tongdunEvent.getSecretKey());// 此处填写对应app密钥
@@ -443,15 +461,16 @@ public class TongdunUtil extends AbstractThird {
 		return params;
 	}
 
-//	private void addTdFraud(String userName, String userPhone, String type, String ip, String result, String source) {
-//		AfTdFraudDo tdFraud = new AfTdFraudDo();
-//		tdFraud.setUserName(userName == null ? "" : userName + source);
-//		tdFraud.setResult(result == null ? "" : result);
-//		tdFraud.setType(type);
-//		tdFraud.setUserPhone(userPhone == null ? "" : userPhone);
-//		tdFraud.setIp(ip);
-//		afTdFraudSerVice.addTdFraud(tdFraud);
-//	}
+	// private void addTdFraud(String userName, String userPhone, String type,
+	// String ip, String result, String source) {
+	// AfTdFraudDo tdFraud = new AfTdFraudDo();
+	// tdFraud.setUserName(userName == null ? "" : userName + source);
+	// tdFraud.setResult(result == null ? "" : result);
+	// tdFraud.setType(type);
+	// tdFraud.setUserPhone(userPhone == null ? "" : userPhone);
+	// tdFraud.setIp(ip);
+	// afTdFraudSerVice.addTdFraud(tdFraud);
+	// }
 
 	private static String getPartnerHost() {
 		if (host == null) {
@@ -462,16 +481,14 @@ public class TongdunUtil extends AbstractThird {
 
 	private static String getPatnerCode() {
 		if (partnerCode == null) {
-			partnerCode = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TONGDUN_PARTNER_CODE),
-					ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			partnerCode = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TONGDUN_PARTNER_CODE), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		}
 		return partnerCode;
 	}
 
 	private static String getPartnerKey() {
 		if (partnerKey == null) {
-			partnerKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TONGDUN_PARTNER_KEY),
-					ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+			partnerKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TONGDUN_PARTNER_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		}
 		return partnerKey;
 	}
