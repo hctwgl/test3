@@ -303,6 +303,7 @@
 				<entry key="/agencyBuy/getAgencyCouponList" value-ref="getAgencyCouponListApi" />
 				<entry key="/agencyBuy/payAgencyOrderV1" value-ref="payAgencyOrderV1Api" />
 				<entry key="/order/tradeOrder" value-ref="tradeOrderApi" />
+				<entry key="/agencyBuy/getTradeNperInfo" value-ref="GetTradeNperInfoApi" />
 
 				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
 
@@ -311,9 +312,9 @@
 
 				<entry key="/operateApp/getAgencyBuyOrderList" value-ref="getAgencyBuyOrderListApi" />
 				<entry key="/operateApp/getAgencyBuyOrderInfo" value-ref="getAgencyBuyOrderInfoApi" />
-				
+
 				<!-- face++人脸识别 -->
-				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />	
+				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />
 				<entry key="/auth/submitIdNumberInfoForFacePlus" value-ref="submitIdNumberInfoForFacePlusApi" />
 				<entry key="/auth/updateIdCardForFacePlus" value-ref="updateIdCardForFacePlusApi" />
 			</map>
