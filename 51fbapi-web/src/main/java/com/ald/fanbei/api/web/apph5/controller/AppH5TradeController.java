@@ -88,9 +88,12 @@ public class AppH5TradeController extends BaseController {
         AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
         AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
         Integer status = getAuthStatus(auth, account, context.getAppVersion());
+        logger.info("status = {}", status);
         model.put("isShowMention", status);
         if (status.equals(3)) {
             model.put("realName", account.getRealName());
+            logger.info("idNumber = {}", account.getIdNumber());
+            logger.info("idNumber = {}", Base64.encodeString(account.getIdNumber()));
             model.put("idNumber", Base64.encodeString(account.getIdNumber()));
         }
 
@@ -103,7 +106,11 @@ public class AppH5TradeController extends BaseController {
         BigDecimal usedAmount = afUserAccountDo.getUsedAmount()==null?BigDecimal.ZERO:afUserAccountDo.getUsedAmount();
         BigDecimal freezeAmount = afUserAccountDo.getFreezeAmount()==null?BigDecimal.ZERO:afUserAccountDo.getFreezeAmount();
         Double canUseAmount = BigDecimalUtil.subtract(auAmount, BigDecimalUtil.add(usedAmount, freezeAmount)).doubleValue();
+        logger.info("auAmount = {}", auAmount);
+        logger.info("usedAmount = {}", usedAmount);
+        logger.info("freezeAmount = {}", freezeAmount);
         model.put("canUseAmount", canUseAmount);
+        logger.info("model = {}",model);
     }
 
     @Override
