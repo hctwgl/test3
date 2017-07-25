@@ -29,6 +29,23 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 	private Integer status;
 	private Integer isDelete;
 	private String marketPoint;
+	
+	public AfLoanSupermarketDo() {
+		super();
+	}
+
+	public AfLoanSupermarketDo(String lsmNo, String iconUrl, String lsmName,
+			String lsmIntro, String linkUrl, String label, String marketPoint) {
+		super();
+		this.lsmNo = lsmNo;
+		this.iconUrl = iconUrl;
+		this.lsmName = lsmName;
+		this.lsmIntro = lsmIntro;
+		this.linkUrl = linkUrl;
+		this.label = label;
+		this.marketPoint = marketPoint;
+	}
+
 
 	public String getMarketPoint() {
 		return marketPoint;

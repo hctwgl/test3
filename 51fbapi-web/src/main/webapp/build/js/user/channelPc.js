@@ -85,7 +85,9 @@ $(function(){
         dataType: "JSON",
         data: {
           mobile: mobileNum,
-          token: token
+          token: token,
+          channelCode: 'SEOPC',
+          pointCode: 'SEOPC'
         },
         success: function(returnData){
           if (returnData.success) {

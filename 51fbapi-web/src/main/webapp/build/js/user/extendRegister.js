@@ -36,7 +36,9 @@ $(function(){
                     dataType: "JSON",
                     data: {
                         mobile: mobileNum,
-                        token: token
+                        token: token,
+						channelCode: 'Xdt',
+						pointCode: 'Xdt1'
                     },
                     success: function(returnData){
                         if (returnData.success) {
