@@ -187,7 +187,7 @@ $(function(){
 											$(".registerMask").removeClass("hide");  // 显示遮罩
 											$("#downloadApp").click(function(){  // 点击下载app
 												if(os==1) {
-													window.location.href = 'http://sj.qq.com/myapp/detail.htm?apkName=com.alfl.www';
+													window.location.href = 'http://fusion.qq.com/cgi-bin/qzapps/unified_jump?appid=42318693&from=mqq&actionFlag=0&params=pname%3Dcom.alfl.www%26versioncode%3D373%26channelid%3D%26actionflag%3D0';
 												}else{
 													window.location.href = 'https://itunes.apple.com/WebObjects/MZStore.woa/wa/search?mt=8&submit=edit&term=%E5%88%86%E6%9C%9F%E8%B4%B7#software';
                                                     window.location.href = 'https://itunes.apple.com/us/app/51%E8%BF%94%E5%91%97/id1136587444?mt=8';
