@@ -710,7 +710,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
 						
 						orderInfo.setNper(nper);
-						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
+						BorrowRateBo bo = null;
+						if(OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+							bo = afResourceService.borrowRateWithResourceForTrade(nper);
+						}
+						else {
+							bo = afResourceService.borrowRateWithResource(nper);
+						}
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setBorrowRate(boStr);
 						logger.info("updateOrder orderInfo = {}", orderInfo);
