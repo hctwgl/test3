@@ -95,6 +95,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Long userId = context.getUserId();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		//TODO:另一个banner
+		List<Object> bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		//
@@ -202,6 +204,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 		data.put("bannerList", bannerList);
+		data.put("bannerListForShop", bannerListForShop);
 		data.put("lender", rate.get("lender"));
 		if (account != null) {
 			data.put("maxAmount", calculateMaxAmount(usableAmount));
