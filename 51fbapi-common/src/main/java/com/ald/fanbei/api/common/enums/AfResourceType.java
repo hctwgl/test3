@@ -59,6 +59,7 @@ public enum AfResourceType {
 
 
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
+	BorrowShopBanner("BORROW_SHOP_BANNER", "借贷超市轮播"),
 	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
 
 	
