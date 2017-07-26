@@ -2,9 +2,10 @@
 * @Date:   2017-04-12 10:53:28
 */
 
-var token = formatDateTime()+Math.random().toString(36).substr(2);
+var token=formatDateTime()+Math.random().toString(36).substr(2);
 
-var style = $("#style").val();
+var style=$("#style").val();
+var os=getBlatFrom();
 
 function formatDateTime() {
     var date = new Date();
@@ -176,12 +177,23 @@ $(function(){
                                             $(".registerSuss8").removeClass("hide");  // 显示样式8
                                             $(".registerSuss12").removeClass("hide");  // 显示样式10
 
-                                            $(".registerMask").removeClass("hide");  // 显示弹窗，样式10
+                                            $(".registerMask").removeClass("hide");  // 显示遮罩
 
                                             $("#downloadApp").click(function(){  // 点击下载app
                                                 window.location.href = returnData.url;
                                             });
-                                        } else {
+                                        } else if( style==20 ){
+											$(".registerSuss8").removeClass("hide");  // 显示样式8
+											$(".registerMask").removeClass("hide");  // 显示遮罩
+											$("#downloadApp").click(function(){  // 点击下载app
+												if(os==1) {
+													window.location.href = 'http://sj.qq.com/myapp/detail.htm?apkName=com.alfl.www';
+												}else{
+													window.location.href = 'https://itunes.apple.com/WebObjects/MZStore.woa/wa/search?mt=8&submit=edit&term=%E5%88%86%E6%9C%9F%E8%B4%B7#software';
+                                                    window.location.href = 'https://itunes.apple.com/us/app/51%E8%BF%94%E5%91%97/id1136587444?mt=8';
+												}
+											});
+										} else {
                                             $("#register_submitBtn").attr("disabled",true);
                                             window.location.href = returnData.url;
                                         }
