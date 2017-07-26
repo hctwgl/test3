@@ -31,8 +31,8 @@
                 <img :src="item.goodsIcon">
                 <div class="rebateRight">
                     <p class="rebateRightTitle">{{item.goodName}}</p>
-##                        <p class="remark">{{item.remark}}</p>
-                    <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
+                    <p class="remark">{{item.remark}}</p>
+##                    <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
                     <div class="priceWrap">
                         <span class="saleAmount">¥{{item.saleAmount}}</span>
                         <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
