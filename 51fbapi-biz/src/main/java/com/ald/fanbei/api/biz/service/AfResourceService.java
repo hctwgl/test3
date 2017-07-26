@@ -132,4 +132,10 @@ public interface AfResourceService {
 	 * @return: List<AfResourceDo>
 	 */
 	List<AfResourceDo> selectActivityConfig();
+
+	/*
+	 * 获取商圈借款手续费等信息
+	 */
+
+	BorrowRateBo borrowRateWithResourceForTrade(Integer realTotalNper);
 }
