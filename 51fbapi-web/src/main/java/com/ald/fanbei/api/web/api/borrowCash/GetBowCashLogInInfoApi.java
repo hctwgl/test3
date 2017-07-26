@@ -211,7 +211,6 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			bannerResultList = bannerList;
 		}
 		data.put("bannerList", bannerResultList);
-		data.put("bannerListForShop", bannerListForShop);
 		data.put("lender", rate.get("lender"));
 		if (account != null) {
 			data.put("maxAmount", calculateMaxAmount(usableAmount));
