@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -29,6 +30,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -43,6 +45,8 @@ import com.alibaba.fastjson.JSONObject;
 public class CombinationPayApi implements ApiHandle {
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfUserService afUserService;
 	@Resource
 	AfOrderService afOrderService;
 	@Resource
@@ -93,7 +97,9 @@ public class CombinationPayApi implements ApiHandle {
 				useableAmount = goodsUseableAmount;
 			}
 		}
-
+		
+		AfUserDo afUserDo = afUserService.getUserById(userId);
+		
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		String isSupplyCertify = "N";
 		if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
@@ -102,22 +108,26 @@ public class CombinationPayApi implements ApiHandle {
 
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("quotaAmount", useableAmount);
+		data.put("realName", afUserDo.getRealName());
 		data.put("isSupplyCertify", isSupplyCertify);
 		
-		resp.setResponseData(data);
-		
-		BigDecimal bankPayAmount = BigDecimalUtil.subtract(orderInfo.getActualAmount(), useableAmount);
+		BigDecimal bankPayAmount = BigDecimal.ZERO;
+		if (orderInfo.getActualAmount().compareTo(useableAmount) > 0) {
+			bankPayAmount =  BigDecimalUtil.subtract(orderInfo.getActualAmount(), useableAmount);
+		}
 		data.put("bankPayAmount", bankPayAmount);
 		
 		if (bankPayAmount.compareTo(BigDecimal.ZERO) > 0) {
 			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(orderInfo.getUserId());
-			resp.addResponseData("rId", afUserBankcardDo.getRid());
-			resp.addResponseData("bankCode", afUserBankcardDo.getBankCode());
-			resp.addResponseData("bankName", afUserBankcardDo.getBankName());
-			resp.addResponseData("bankIcon", afUserBankcardDo.getBankIcon());
-			resp.addResponseData("cardNumber", afUserBankcardDo.getCardNumber());
-			resp.addResponseData("isValid", afUserBankcardDo.getIsValid());			
+			data.put("rId", afUserBankcardDo.getRid());
+			data.put("bankCode", afUserBankcardDo.getBankCode());
+			data.put("bankName", afUserBankcardDo.getBankName());
+			data.put("bankIcon", afUserBankcardDo.getBankIcon());
+			data.put("cardNumber", afUserBankcardDo.getCardNumber());
+			data.put("isValid", afUserBankcardDo.getIsValid());			
 		}
+		
+		resp.setResponseData(data);
 		
 		return resp;
 	}

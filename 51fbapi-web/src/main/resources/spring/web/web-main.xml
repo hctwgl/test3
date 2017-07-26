@@ -195,7 +195,7 @@
 				<entry key="/order/afterSaleLogisticSupply" value-ref="afterSaleLogisticSupplyApi" />
 				<entry key="/order/getOrderAfterSaleInfo" value-ref="getOrderAfterSaleInfoApi" />
 				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
-
+				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />

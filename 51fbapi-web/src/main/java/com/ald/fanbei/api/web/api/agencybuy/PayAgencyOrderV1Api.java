@@ -19,9 +19,11 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -59,6 +61,7 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), 0l);
+		String isCombinationPay = ObjectUtils.toString(requestDataVo.getParams().get("isCombinationPay"), "").toString();
 //		Integer appVersion = context.getAppVersion();
 
 		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
@@ -91,10 +94,20 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
 		
+//		String payType = PayType.AGENT_PAY.getCode();
+//		if (payId > 0) {// 有银行卡ID 表示组合支付
+//			payType = PayType.COMBINATION_PAY.getCode();
+//		}
 		String payType = PayType.AGENT_PAY.getCode();
-		if (payId > 0) {// 有银行卡ID 表示组合支付
-			payType = PayType.COMBINATION_PAY.getCode();
+		if (payId < 0) {
+			payType = PayType.WECHAT.getCode();
+		} else if (payId > 0) {
+			payType = PayType.BANK.getCode();
 		}
+		
+		if (StringUtil.equals(YesNoStatus.YES.getCode(), isCombinationPay)) {
+			payType = PayType.COMBINATION_PAY.getCode();
+		}		
 		
 		afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getActualAmount(), orderInfo.getNper(), appName, ipAddress);
 
