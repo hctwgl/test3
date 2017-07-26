@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -95,8 +96,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Long userId = context.getUserId();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
-		//TODO:另一个banner
+		//另一个banner
 		List<Object> bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
+		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		//
@@ -203,7 +205,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("maxAmount", calculateMaxAmount(usableAmount));
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
-		data.put("bannerList", bannerList);
+		if (inRejectLoan.equals("Y")) {
+			bannerResultList = bannerListForShop;
+		}else{
+			bannerResultList = bannerList;
+		}
+		data.put("bannerList", bannerResultList);
 		data.put("bannerListForShop", bannerListForShop);
 		data.put("lender", rate.get("lender"));
 		if (account != null) {
