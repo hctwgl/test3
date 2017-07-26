@@ -1,22 +1,19 @@
 package com.ald.fanbei.api.biz.bo;
 
+import java.math.BigDecimal;
+
 import com.ald.fanbei.api.common.AbstractSerial;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
 
-public class BoluomeOrderSearchResponseBo {
-
-	/**
-	 * 
-	 */
+public class BoluomeOrderSearchResponseBo extends AbstractSerial  {
 	private static final long serialVersionUID = 5844694723452212426L;
 	private String orderId;
 	private String orderTitle;
-	private long price;
+	private BigDecimal price;
 	private int status;
 	private String orderType;
-	private long createdTime;
+	private Long createdTime;
 	private String userId;
-	private long expriedTime;
+	private Long expiredTime;
 	private String displayStatus;
 	private String detailUrl;
 	private String channel;
@@ -31,12 +28,11 @@ public class BoluomeOrderSearchResponseBo {
 	}
 	public void setOrderTitle(String orderTitle) {
 		this.orderTitle = orderTitle;
-		
 	}
-	public long getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
-	public void setPrice(long price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 	public int getStatus() {
@@ -51,10 +47,10 @@ public class BoluomeOrderSearchResponseBo {
 	public void setOrderType(String orderType) {
 		this.orderType = orderType;
 	}
-	public long getCreatedTime() {
+	public Long getCreatedTime() {
 		return createdTime;
 	}
-	public void setCreatedTime(long createdTime) {
+	public void setCreatedTime(Long createdTime) {
 		this.createdTime = createdTime;
 	}
 	public String getUserId() {
@@ -63,11 +59,11 @@ public class BoluomeOrderSearchResponseBo {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public long getExpriedTime() {
-		return expriedTime;
+	public Long getExpiredTime() {
+		return expiredTime;
 	}
-	public void setExpriedTime(long expriedTime) {
-		this.expriedTime = expriedTime;
+	public void setExpiredTime(Long expiredTime) {
+		this.expiredTime = expiredTime;
 	}
 	public String getDisplayStatus() {
 		return displayStatus;
@@ -87,6 +83,8 @@ public class BoluomeOrderSearchResponseBo {
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
+	
+	
 	
 	
 }

@@ -653,6 +653,9 @@ public class RiskUtil extends AbstractThird {
 							}
 							orderDao.updateOrder(orderInfo);
 						}
+						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
+							orderDao.updateOrder(orderInfo);
+						}
 					}
 				jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 //			}
