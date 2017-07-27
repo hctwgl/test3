@@ -57,6 +57,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfScrollbarVo;
 
 /**
  * @类描述：
@@ -98,6 +99,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
 		//另一个banner
 		List<Object> bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
+		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
@@ -207,11 +209,14 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 		if (inRejectLoan.equals("Y")) {
 			bannerResultList = bannerListForShop;
+			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
+			scrollbarVo = getAfScrollbarVo(resourceDo);
 		}else{
 			bannerResultList = bannerList;
 		}
 		data.put("bannerList", bannerResultList);
 		data.put("lender", rate.get("lender"));
+		data.put("scrollbar", scrollbarVo);
 		if (account != null) {
 			data.put("maxAmount", calculateMaxAmount(usableAmount));
 		}
@@ -360,6 +365,19 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Integer amount = usableAmount.intValue();
 		
 		return new BigDecimal(amount/100*100);
+		
+	}
+	
+	
+	public AfScrollbarVo getAfScrollbarVo(AfResourceDo resourceDo) {
+		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
+		if (resourceDo != null ) {
+			scrollbarVo.setContent(resourceDo.getDescription());
+			scrollbarVo.setType(resourceDo.getValue1());
+			scrollbarVo.setName(resourceDo.getName());
+			scrollbarVo.setWordUrl(resourceDo.getValue2());
+		}
+		return scrollbarVo;
 		
 	}
 }

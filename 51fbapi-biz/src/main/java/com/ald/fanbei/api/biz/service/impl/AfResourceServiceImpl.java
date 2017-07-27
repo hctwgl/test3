@@ -407,4 +407,16 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return borrowRate;
 	}
 
+	@Override
+	public AfResourceDo getScrollbarByType() {
+		AfResourceDo resourceDo = new AfResourceDo();
+		List<AfResourceDo> list = afResourceDao.getScrollbarByType();
+		if (list != null && list.size() > 0 ) {
+			resourceDo = list.get(0);
+		}
+		return resourceDo;
+		
+	}
+
+	
 }

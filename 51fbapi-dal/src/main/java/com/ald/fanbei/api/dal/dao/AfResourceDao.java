@@ -126,4 +126,6 @@ public interface AfResourceDao {
 	 */
 	List<AfResourceDo> selectActivityConfig();
 
+	List<AfResourceDo> getScrollbarByType();
+
 }
