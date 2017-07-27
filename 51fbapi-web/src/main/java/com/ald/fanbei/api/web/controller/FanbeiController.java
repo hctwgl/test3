@@ -85,7 +85,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage",
-    	"/system/getTabbarInfor","/resource/getResourceConfig"
+    	"/system/getTabbarInfor","/resource/getResourceConfig","/system/maidian"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
