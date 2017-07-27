@@ -479,7 +479,7 @@ public class UpsUtil extends AbstractThird {
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 //		String reqResult = "{\"respCode\":\"0000\",\"tradeState\":\"00\",\"respDesc\":\"验签未通过\"}";
 		logThird(reqResult, "collect", reqBo);
-		if(StringUtil.isBlank(reqResult)){
+		if(StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);

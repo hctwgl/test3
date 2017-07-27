@@ -73,35 +73,35 @@ public class GetAllowConsumeApi implements ApiHandle {
 		}
 
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
-
+		BigDecimal leftAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
+		String isNoneQuota = "N";// 可用额度是否为0
+		
 		if (numId != null) {
 			try {
 				List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
 				if (null != nTbkItemList && nTbkItemList.size() > 0) {
 					XItem item = nTbkItemList.get(0);
 					String title = item.getTitle();
-					BigDecimal useableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
-					String isNoneQuota = "N";// 可用额度是否为0
 					RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", title);
 					String quotaData = quotaBo.getData();
 					if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
 						JSONObject json = JSONObject.parseObject(quotaData);
 						String virtualCode = json.getString("virtualCode");
 						BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-						if (goodsUseableAmount.compareTo(useableAmount) < 0) {
-							useableAmount = goodsUseableAmount;
+						if (goodsUseableAmount.compareTo(leftAmount) < 0) {
+							leftAmount = goodsUseableAmount;
 						}
 					}
-					if (useableAmount.compareTo(BigDecimal.ZERO) == 0) {
-						isNoneQuota = "Y";
-					}
-					resp.addResponseData("isNoneQuota", isNoneQuota);
 				}
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
 		}
-
+		
+		if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
+			isNoneQuota = "Y";
+		}
+		resp.addResponseData("isNoneQuota", isNoneQuota);
 //		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
 //		if (StringUtil.equals(autDo.getRiskStatus(), RiskStatus.YES.getCode()) && usableAmount.compareTo(BigDecimal.ZERO) <= 0) {
 //			throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
