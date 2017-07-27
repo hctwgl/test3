@@ -40,7 +40,7 @@ public class H5Controller extends BaseController {
 	 * @throws IOException
 	 */
 
-	@RequestMapping(value = { "app/*", "app/goods/*", "app/user/*", "app/sys/*", "activity/*", "activity/04/*", "activity/05/*", "activity/06/*", "fanbei-web/*", "fanbei-web/app/*", "fanbei-web/activity/*"}, method = RequestMethod.GET)
+	@RequestMapping(value = { "app/*","borrow/loanShop", "app/goods/*", "app/user/*", "app/sys/*", "activity/*", "activity/04/*", "activity/05/*", "activity/06/*", "fanbei-web/*", "fanbei-web/app/*", "fanbei-web/activity/*"}, method = RequestMethod.GET)
 	public String newVmPage(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String returnUrl = request.getRequestURI();
 		doMaidianLog(request,"");
