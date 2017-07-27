@@ -96,8 +96,7 @@ public class GetOrderListApi implements ApiHandle{
 			if (status.equals(OrderStatus.DEALING.getCode())) {
 				status =OrderStatus.PAID.getCode();
 			}
-		}else if(context.getAppVersion() >= 371 && OrderType.AGENTBUY.getCode().equals(order.getOrderType()) 
-				&& PayType.AGENT_PAY.getCode().equals(order.getPayType())){
+		}else if(context.getAppVersion() >= 371 && OrderType.AGENTBUY.getCode().equals(order.getOrderType())){
 			if (status.equals(OrderStatus.PAID.getCode())) {
 				status =OrderStatus.REVIEW.getCode();
 			}

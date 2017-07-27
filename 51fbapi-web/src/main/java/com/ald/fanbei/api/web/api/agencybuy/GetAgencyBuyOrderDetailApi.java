@@ -138,7 +138,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			if (status.equals(OrderStatus.DEALING.getCode())) {
 				status =OrderStatus.PAID.getCode();
 			}
-		}else if(context.getAppVersion() >= 371 && PayType.AGENT_PAY.getCode().equals(afOrderDo.getPayType())){
+		}else if(context.getAppVersion() >= 371){
 			if (status.equals(OrderStatus.PAID.getCode())) {
 				status =OrderStatus.REVIEW.getCode();
 			}
