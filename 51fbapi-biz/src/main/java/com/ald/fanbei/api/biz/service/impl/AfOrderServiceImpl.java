@@ -1507,6 +1507,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			if (response != null) {
 				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
 			}
+		} else if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+			return null;
 		} else {
 			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, StringUtils.EMPTY, orderInfo.getGoodsName());
 			if (response != null) {
