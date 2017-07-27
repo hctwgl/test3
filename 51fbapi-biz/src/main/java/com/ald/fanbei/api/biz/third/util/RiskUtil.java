@@ -692,12 +692,10 @@ public class RiskUtil extends AbstractThird {
 	 * @param cardInfo
 	 * @return
 	 */
-	public Map<String, Object> combinationPay(final Long userId, final String orderNo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, String virtualCode, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
+	public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, String virtualCode, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
 		String result = verybo.getResult();
 		
 		logger.info("combinationPay:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
-		// 添加一个根据风控号查找记录的方法
-		AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
 		// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		if (!result.equals("10")) {
@@ -759,7 +757,7 @@ public class RiskUtil extends AbstractThird {
 		
 		// 修改用户账户信息
 		AfUserAccountDo account = new AfUserAccountDo();
-		account.setUsedAmount(orderInfo.getActualAmount());
+		account.setUsedAmount(orderInfo.getBorrowAmount());
 		account.setUserId(userAccountInfo.getUserId());
 		afUserAccountDao.updateUserAccount(account);
 		

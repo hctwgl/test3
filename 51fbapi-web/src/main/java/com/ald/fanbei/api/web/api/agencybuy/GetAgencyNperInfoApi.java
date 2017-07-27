@@ -106,12 +106,12 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         Map<String, Object> params = requestDataVo.getParams();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(params.get("amount"), BigDecimal.ZERO);
         String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
+        String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.TAOBAO.getCode());
         
         JSONArray interestFreeArray = null;
         
         if(params.get("numId") != null) {
             String numId = params.get("numId") + "";
-            String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.TAOBAO.getCode());
             interestFreeArray = getInterestFreeArray(numId,type);
         }
 
@@ -146,9 +146,12 @@ public class GetAgencyNperInfoApi implements ApiHandle {
     			}
     		}      	
         }
-
+        BigDecimal calculateAmount = amount;
+        if (amount.compareTo(useableAmount) > 0) {
+        	calculateAmount = useableAmount;
+        }
         List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-        		useableAmount, resource.getValue1(), resource.getValue2());
+        		calculateAmount, resource.getValue1(), resource.getValue2());
 
         resp.addResponseData("instalmentAmount", amount);
         resp.addResponseData("useableAmount", useableAmount);

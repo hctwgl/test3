@@ -477,6 +477,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+//		String reqResult = "{\"respCode\":\"0000\",\"tradeState\":\"00\",\"respDesc\":\"验签未通过\"}";
 		logThird(reqResult, "collect", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);

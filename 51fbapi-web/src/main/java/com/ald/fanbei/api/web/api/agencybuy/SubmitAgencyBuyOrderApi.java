@@ -132,17 +132,18 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
 		}
+		
 		String isEnoughAmount = "Y";
+		BigDecimal leftAmount = BigDecimal.ZERO; 
 		if(nper>0){
 			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 			BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+			leftAmount = useableAmount;
 			if (useableAmount.compareTo(actualAmount) < 0) {
-//				logger.error("borrow consume money error");
-//				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 				isEnoughAmount = "N";
 			}
 		}
-			
+		
 		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
 		String quotaData = quotaBo.getData();
 		if (StringUtils.isNotBlank(quotaData)&&!StringUtil.equals(quotaData, "{}")) {
@@ -152,6 +153,8 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			if (goodsUseableAmount.compareTo(actualAmount) < 0) {
 				isEnoughAmount = "N";
 			}
+			if (goodsUseableAmount.compareTo(leftAmount) < 0)
+				leftAmount = goodsUseableAmount;
 		}
 		
 		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder, nper)>0){
@@ -160,8 +163,13 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			data.put("isEnoughAmount", isEnoughAmount);
 			resp.setResponseData(data);
 			return resp;
-
 		}
+		String isNoneQuota = "N";
+		if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
+			isNoneQuota = "Y";
+		}
+		resp.addResponseData("isNoneQuota", isNoneQuota);
+		
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 	}
 	

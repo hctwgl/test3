@@ -1,29 +1,38 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONObject;
+import com.taobao.api.ApiException;
+import com.taobao.api.domain.XItem;
 
 /**
  * 
@@ -35,58 +44,69 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class GetAllowConsumeApi implements ApiHandle {
 
 	@Resource
+	RiskUtil riskUtil;
+	@Resource
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	TaobaoApiUtil taobaoApiUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		
+		Map<String, Object> params = requestDataVo.getParams();
+		Long userId = context.getUserId();
+		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"), null);
+		params.put("numIid", numId);
+
 		AfUserAuthDo autDo = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if (autDo == null) {
 			throw new FanbeiException("authDo id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
-		
-        String isSupplyCertify = "N";
-        if (StringUtil.equals(autDo.getFundStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(autDo.getJinpoStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(autDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
-        	isSupplyCertify = "Y";
-        }
-        
-		if (StringUtil.equals(autDo.getRiskStatus(), RiskStatus.NO.getCode())&&StringUtil.equals(isSupplyCertify, YesNoStatus.YES.getCode())) {
-			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(autDo.getGmtRisk()), 10);
-			long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
-			if (between == 1) {
-				throw new FanbeiException("available credit not enough one", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_ONE);
-			} else if (between == 2) {
-				throw new FanbeiException("available credit not enough two", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_TWO);
-			} else if (between == 3) {
-				throw new FanbeiException("available credit not enough three", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_THREE);
-			} else if (between == 4) {
-				throw new FanbeiException("available credit not enough four", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_FOUR);
-			} else if (between == 5) {
-				throw new FanbeiException("available credit not enough five", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_FIVE);
-			} else if (between == 6) {
-				throw new FanbeiException("available credit not enough six", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_SIX);
-			} else if (between == 7) {
-				throw new FanbeiException("available credit not enough seven", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_SEVEN);
-			} else if (between == 8) {
-				throw new FanbeiException("available credit not enough eight", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_EIGHT);
-			} else if (between == 9) {
-				throw new FanbeiException("available credit not enough nine", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_NINE);
-			} else if (between == 10) {
-				throw new FanbeiException("available credit not enough ten", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH_TEN);
-			} else {
-				throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
+
+		String isSupplyCertify = "N";
+		if (StringUtil.equals(autDo.getFundStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(autDo.getJinpoStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(autDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
+			isSupplyCertify = "Y";
+		}
+
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+
+		if (numId != null) {
+			try {
+				List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+				if (null != nTbkItemList && nTbkItemList.size() > 0) {
+					XItem item = nTbkItemList.get(0);
+					String title = item.getTitle();
+					BigDecimal useableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
+					String isNoneQuota = "N";// 可用额度是否为0
+					RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", title);
+					String quotaData = quotaBo.getData();
+					if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
+						JSONObject json = JSONObject.parseObject(quotaData);
+						String virtualCode = json.getString("virtualCode");
+						BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+						if (goodsUseableAmount.compareTo(useableAmount) < 0) {
+							useableAmount = goodsUseableAmount;
+						}
+					}
+					if (useableAmount.compareTo(BigDecimal.ZERO) == 0) {
+						isNoneQuota = "Y";
+					}
+					resp.addResponseData("isNoneQuota", isNoneQuota);
+				}
+			} catch (ApiException e) {
+				e.printStackTrace();
 			}
 		}
-		
-		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(context.getUserId());
+
 //		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
 //		if (StringUtil.equals(autDo.getRiskStatus(), RiskStatus.YES.getCode()) && usableAmount.compareTo(BigDecimal.ZERO) <= 0) {
 //			throw new FanbeiException("available credit not enough", FanbeiExceptionCode.AVAILABLE_CREDIT_NOT_ENOUGH);
 //		}
-		
+
 		resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId(), context.getAppVersion()));
 		resp.addResponseData("bindCardStatus", autDo.getBankcardStatus());
 		resp.addResponseData("realNameStatus", autDo.getRealnameStatus());
@@ -100,7 +120,7 @@ public class GetAllowConsumeApi implements ApiHandle {
 		resp.addResponseData("idNumber", Base64.encodeString(accountDo.getIdNumber()));
 		resp.addResponseData("realName", accountDo.getRealName());
 		resp.addResponseData("isSupplyCertify", isSupplyCertify);
-		
+
 		return resp;
 	}
 }

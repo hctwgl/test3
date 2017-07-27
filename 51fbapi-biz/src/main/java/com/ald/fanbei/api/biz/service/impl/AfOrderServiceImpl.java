@@ -747,11 +747,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						
 						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 						
-						BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(resultMap);
-						String virtualCode = afOrderService.getVirtualCode(resultMap);
-						BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
-						//虚拟剩余额度大于信用可用额度 则为可用额度 （获取剩余额度）
-						leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
+						BigDecimal leftAmount = useableAmount;
+						BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(virtualMap);
+						String virtualCode = "";
+						if (virtualTotalAmount!=null) {
+							virtualCode = afOrderService.getVirtualCode(resultMap);
+							leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
+							//虚拟剩余额度大于信用可用额度 则为可用额度 （获取剩余额度）
+							leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
+						}
 						
 						//银行卡需要支付的金额
 						BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
@@ -777,7 +781,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap));
 						if (verybo.isSuccess()) {
 							logger.info("combination_pay result is true");
-							orderInfo.setPayType(PayType.BANK.getCode());
+							orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
 							orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 							orderInfo.setStatus(OrderStatus.DEALING.getCode());
 
@@ -790,7 +794,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
 							
-							return riskUtil.combinationPay(userId, orderNo, tradeNo, resultMap, isSelf, virtualCode, bankAmount, borrow, verybo, cardInfo);
+							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualCode, bankAmount, borrow, verybo, cardInfo);
 						}
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());

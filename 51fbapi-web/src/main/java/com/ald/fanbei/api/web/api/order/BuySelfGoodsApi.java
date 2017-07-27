@@ -156,16 +156,20 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		
 		String isEnoughAmount = "Y";
+		String isNoneQuota = "N";
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 		if (useableAmount.compareTo(actualAmount) < 0) {
 			isEnoughAmount = "N";
 		}
+		if (useableAmount.compareTo(BigDecimal.ZERO) == 0) {
+			isNoneQuota = "Y";
+		}
 		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("orderId", afOrder.getRid());
 		data.put("isEnoughAmount", isEnoughAmount);
-		
+		data.put("isNoneQuota", isNoneQuota);
 
 		resp.setResponseData(data);
 		return resp;
