@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +27,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -80,6 +82,8 @@ public class GetConfirmOrderApi implements ApiHandle {
 	AfBorrowBillService afBorrowBillService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
+	@Resource
+	BoluomeUtil boluomeUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -95,8 +99,13 @@ public class GetConfirmOrderApi implements ApiHandle {
 		}
 		AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
 		if (orderInfo ==  null) {
-			logger.error("orderId is invalid");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+			//订单补偿
+			try {
+				orderInfo = boluomeUtil.orderSearch(orderId);
+				afOrderService.createOrder(orderInfo);
+			} catch (UnsupportedEncodingException e) {
+				logger.info("order compensation query error e = {}", e);
+			}
 		}
 		
 		Long userId = orderInfo.getUserId();
@@ -185,7 +194,7 @@ public class GetConfirmOrderApi implements ApiHandle {
         	vo.setIsValid(bankInfo.getIsValid());
         }
         String isSupplyCertify = "N";
-        if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
+        if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getAlipayStatus(), YesNoStatus.YES.getCode())) {
         	isSupplyCertify = "Y";
         }
         vo.setIsSupplyCertify(isSupplyCertify);

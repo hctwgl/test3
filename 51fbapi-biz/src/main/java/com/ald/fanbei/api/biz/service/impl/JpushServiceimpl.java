@@ -461,7 +461,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "222");
+			extras.put(PUSH_JUMP_TYPE, "224");
 			extras.put(DATA, "");
 			jpushUtil.pushNotifyByAlias("社保认证成功", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
@@ -478,7 +478,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "223");
+			extras.put(PUSH_JUMP_TYPE, "225");
 			extras.put(DATA, "");
 			jpushUtil.pushNotifyByAlias("社保认证失败", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
@@ -495,7 +495,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "222");
+			extras.put(PUSH_JUMP_TYPE, "226");
 			extras.put(DATA, "");
 			jpushUtil.pushNotifyByAlias("信用卡认证成功", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
@@ -512,12 +512,46 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "223");
+			extras.put(PUSH_JUMP_TYPE, "227");
 			extras.put(DATA, "");
 			jpushUtil.pushNotifyByAlias("信用卡认证失败", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("creditCardRiskFail error", e);
 		}		
+	}
+
+	@Override
+	public void alipayRiskSuccess(String userName) {
+		try {
+			String msgContext = "恭喜，您已通过支付宝认证！";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("alipayRiskSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "228");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("支付宝认证成功", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("alipayRiskSuccess error", e);
+		}	
+	}
+
+	@Override
+	public void alipayRiskFail(String userName) {
+		try {
+			String msgContext = "您好，您本次支付宝认证未通过！请您核对身份信息后,重新尝试认证。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("alipayRiskFail,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "229");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("支付宝认证失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("alipayRiskFail error", e);
+		}	
 	}
 	
 	

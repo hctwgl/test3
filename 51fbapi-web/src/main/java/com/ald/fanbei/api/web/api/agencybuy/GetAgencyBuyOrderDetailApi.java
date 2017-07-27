@@ -6,12 +6,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
@@ -26,11 +24,12 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StatusConvertUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
@@ -138,6 +137,10 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		if (context.getAppVersion() < 364){
 			if (status.equals(OrderStatus.DEALING.getCode())) {
 				status =OrderStatus.PAID.getCode();
+			}
+		}else if(context.getAppVersion() >= 371){
+			if (status.equals(OrderStatus.PAID.getCode())) {
+				status =OrderStatus.REVIEW.getCode();
 			}
 		}
 		
@@ -269,7 +272,7 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			}
 		}
 		
-		AfOrderStatusMsgRemark orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
+		StatusConvertUtil orderStatusMsgRemark = AfOrderStatusMsgRemark.findRoleTypeByCodeAndOrderType(afOrderDo.getStatus(), afOrderDo.getOrderType(), afOrderDo.getPayType(),
 				isExistRebates,afterSaleStatus, isExistAftersaleApply,closeReason,afOrderDo.getStatusRemark());
 		if(orderStatusMsgRemark!=null){
 			agentOrderDetailVo.setOrderStatusMsg(orderStatusMsgRemark.getStatusMsg());

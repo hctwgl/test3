@@ -2,9 +2,10 @@
 * @Date:   2017-04-12 10:53:28
 */
 
-var token = formatDateTime()+Math.random().toString(36).substr(2);
+var token=formatDateTime()+Math.random().toString(36).substr(2);
 
-var style = $("#style").val();
+var style=$("#style").val();
+var os=getBlatFrom();
 
 function formatDateTime() {
     var date = new Date();
@@ -87,6 +88,8 @@ $(function(){
 	$("#register_codeBtn").click(function(){
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
+		var channelCode = $("#channelCode").val();
+		var pointCode = $("#pointCode").val();
 		if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
 			$("#register_codeBtn").attr("disabled",true);
 			$.ajax({
@@ -95,7 +98,9 @@ $(function(){
       			dataType: "JSON",
       			data: {
       				mobile: mobileNum,
-      				token: token
+      				token: token,
+					channelCode: channelCode,
+					pointCode: pointCode
       			},
       			success: function(returnData){
       				if (returnData.success) {
@@ -172,12 +177,23 @@ $(function(){
                                             $(".registerSuss8").removeClass("hide");  // 显示样式8
                                             $(".registerSuss12").removeClass("hide");  // 显示样式10
 
-                                            $(".registerMask").removeClass("hide");  // 显示弹窗，样式10
+                                            $(".registerMask").removeClass("hide");  // 显示遮罩
 
                                             $("#downloadApp").click(function(){  // 点击下载app
                                                 window.location.href = returnData.url;
                                             });
-                                        } else {
+                                        } else if( style==20 ){
+											$(".registerSuss8").removeClass("hide");  // 显示样式8
+											$(".registerMask").removeClass("hide");  // 显示遮罩
+											$("#downloadApp").click(function(){  // 点击下载app
+												if(os==1) {
+													window.location.href = 'http://fusion.qq.com/cgi-bin/qzapps/unified_jump?appid=42318693&from=mqq&actionFlag=0&params=pname%3Dcom.alfl.www%26versioncode%3D373%26channelid%3D%26actionflag%3D0';
+												}else{
+													window.location.href = 'https://itunes.apple.com/WebObjects/MZStore.woa/wa/search?mt=8&submit=edit&term=%E5%88%86%E6%9C%9F%E8%B4%B7#software';
+                                                    window.location.href = 'https://itunes.apple.com/us/app/51%E8%BF%94%E5%91%97/id1136587444?mt=8';
+												}
+											});
+										} else {
                                             $("#register_submitBtn").attr("disabled",true);
                                             window.location.href = returnData.url;
                                         }

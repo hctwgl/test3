@@ -40,38 +40,39 @@ public enum UserAccountLogType {
 	REBATE_JFB("REBATE_JFB", "返利集分宝"),
     AUTHNAME("AUTHNAME", "实名认证"),
 	SELFSUPPORT("SELFSUPPORT","自营商品"),
-	BOLUOME("BOLUOME", "菠萝觅");
+	BOLUOME("BOLUOME", "菠萝觅"),
+    TRADE_BANK_REFUND("TRADE_BANK_REFUND","商圈商户退款"), 
+    TRADE_WITHDRAW("TRADE_WITHDRAW", "商圈商户取现");
 
-    private String code;
-    private String name;
+	private String code;
+	private String name;
 
-    private static Map<String,UserAccountLogType> codeRoleTypeMap = null;
+	private static Map<String, UserAccountLogType> codeRoleTypeMap = null;
 
-    UserAccountLogType(String code, String name) {
-        this.code = code;
-        this.name = name;
-    }
+	UserAccountLogType(String code, String name) {
+		this.code = code;
+		this.name = name;
+	}
 
-    public static UserAccountLogType findRoleTypeByCode(String code) {
-        for (UserAccountLogType roleType : UserAccountLogType.values()) {
-            if (roleType.getCode().equals(code)) {
-                return roleType;
-            }
-        }
-        return null;
-    }
+	public static UserAccountLogType findRoleTypeByCode(String code) {
+		for (UserAccountLogType roleType : UserAccountLogType.values()) {
+			if (roleType.getCode().equals(code)) {
+				return roleType;
+			}
+		}
+		return null;
+	}
 
-    
-    public static Map<String,UserAccountLogType> getCodeRoleTypeMap(){
-        if(codeRoleTypeMap != null && codeRoleTypeMap.size() > 0){
-            return codeRoleTypeMap;
-        }
-        codeRoleTypeMap = new HashMap<String, UserAccountLogType>();
-        for(UserAccountLogType item:UserAccountLogType.values()){
-            codeRoleTypeMap.put(item.getCode(), item);
-        }
-        return codeRoleTypeMap;
-    }
+	public static Map<String, UserAccountLogType> getCodeRoleTypeMap() {
+		if (codeRoleTypeMap != null && codeRoleTypeMap.size() > 0) {
+			return codeRoleTypeMap;
+		}
+		codeRoleTypeMap = new HashMap<String, UserAccountLogType>();
+		for (UserAccountLogType item : UserAccountLogType.values()) {
+			codeRoleTypeMap.put(item.getCode(), item);
+		}
+		return codeRoleTypeMap;
+	}
 
 	public String getCode() {
 		return code;

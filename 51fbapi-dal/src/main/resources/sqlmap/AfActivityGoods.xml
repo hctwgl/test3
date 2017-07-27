@@ -46,8 +46,7 @@
 		AND now() > ag.valid_start
 		AND ag.valid_end > now()
 		AND
-			(g.source = 'SELFSUPPORT' AND g.id > 110552 ) 
-		OR (g.source <![CDATA[<>]]> 'SELFSUPPORT' )
+			((g.source = 'SELFSUPPORT' AND g.id > 121461) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
 		ORDER BY ag.gmt_create DESC
 	</select>
 	
@@ -80,8 +79,7 @@
 		AND now() > ag.valid_start
 		AND ag.valid_end > now()
 		AND
-			(g.source = 'SELFSUPPORT' AND 110552 >= g.id) 
-		OR  (g.source <![CDATA[<>]]> 'SELFSUPPORT' )
+			((g.source = 'SELFSUPPORT' AND 121461 >= g.id) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
 		ORDER BY ag.gmt_create DESC
 	</select>
 	
@@ -101,8 +99,7 @@
 		AND
 			m.is_delete = 0
 		AND
-			(g.source = 'SELFSUPPORT' AND g.id >= 110552) 
-		OR  (g.source <![CDATA[<>]]> 'SELFSUPPORT' )
+		((g.source = 'SELFSUPPORT' AND g.id > 121461) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
 		ORDER BY m.gmt_create DESC
 	</select>
 	
@@ -122,7 +119,7 @@
 		AND
 			m.is_delete = 0
 		AND
-			108 >= m.id 
+		((g.source = 'SELFSUPPORT' AND 121461 >= g.id) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
 		ORDER BY m.gmt_create DESC
 	</select>
 	

@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -96,10 +97,13 @@ public class AppH5TradeController extends BaseController {
         model.put("name", afTradeBusinessInfoDo.getName());
         model.put("id", afTradeBusinessInfoDo.getId());
         model.put("isLogin", "yes");
-        String userName = context.getUserName();
-        AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountInfoByUserName(userName);
-        Double canUseAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), BigDecimalUtil.add(afUserAccountDo.getUsedAmount(), afUserAccountDo.getFreezeAmount())).doubleValue();
+        AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+        BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
+        BigDecimal usedAmount = afUserAccountDo.getUsedAmount()==null?BigDecimal.ZERO:afUserAccountDo.getUsedAmount();
+        BigDecimal freezeAmount = afUserAccountDo.getFreezeAmount()==null?BigDecimal.ZERO:afUserAccountDo.getFreezeAmount();
+        Double canUseAmount = BigDecimalUtil.subtract(auAmount, BigDecimalUtil.add(usedAmount, freezeAmount)).doubleValue();
         model.put("canUseAmount", canUseAmount);
+
     }
 
     @Override
@@ -135,7 +139,8 @@ public class AppH5TradeController extends BaseController {
             status = 4;
         } else if (!(YesNoStatus.YES.getCode().equals(auth.getJinpoStatus())
                 && YesNoStatus.YES.getCode().equals(auth.getFundStatus())
-                && YesNoStatus.YES.getCode().equals(auth.getCreditStatus()))) { //公积金，行用卡和社保认证状态
+                && YesNoStatus.YES.getCode().equals(auth.getCreditStatus())
+                && YesNoStatus.YES.getCode().equals(auth.getAlipayStatus()))) { //公积金，行用卡，社保和支付宝认证状态
             status = 5;
         }
 

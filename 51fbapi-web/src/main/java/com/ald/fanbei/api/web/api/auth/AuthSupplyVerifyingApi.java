@@ -38,25 +38,31 @@ public class AuthSupplyVerifyingApi implements ApiHandle {
 		String authType = ObjectUtils.toString(requestDataVo.getParams().get("authType"));
 
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-				
+
 		AfUserAuthDo authDo = new AfUserAuthDo();
 		authDo.setUserId(context.getUserId());
 		if (StringUtil.equals("FUND", authType)) {
-			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getFundStatus())&&!StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getFundStatus())) {
+			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getFundStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getFundStatus())) {
 				authDo.setGmtFund(new Date(System.currentTimeMillis()));
 				authDo.setFundStatus(SupplyCertifyStatus.WAIT.getCode());
 			}
 		} else if (StringUtil.equals("SOCIAL_SECURITY", authType)) {
-			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getJinpoStatus())&&!StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getJinpoStatus())) {
+			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getJinpoStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getJinpoStatus())) {
 				authDo.setGmtJinpo(new Date(System.currentTimeMillis()));
-				authDo.setJinpoStatus(SupplyCertifyStatus.WAIT.getCode());				
+				authDo.setJinpoStatus(SupplyCertifyStatus.WAIT.getCode());
 			}
 		} else if (StringUtil.equals("CREDIT", authType)) {
-			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getCreditStatus())&&!StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getCreditStatus())) {
+			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getCreditStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getCreditStatus())) {
 				authDo.setGmtCredit(new Date(System.currentTimeMillis()));
 				authDo.setCreditStatus(SupplyCertifyStatus.WAIT.getCode());
 			}
+		} else if (StringUtil.equals("ALIPAY", authType)) {
+			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getAlipayStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getAlipayStatus())) {
+				authDo.setGmtAlipay(new Date(System.currentTimeMillis()));
+				authDo.setAlipayStatus(SupplyCertifyStatus.WAIT.getCode());
+			}
 		}
+
 		if (afUserAuthService.updateUserAuth(authDo) > 0) {
 			return resp;
 		}

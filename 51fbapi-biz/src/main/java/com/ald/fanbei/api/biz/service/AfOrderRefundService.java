@@ -54,6 +54,22 @@ public interface AfOrderRefundService {
 	 * @return
 	 */
 	int dealWithSelfGoodsOrderRefundFail(AfOrderRefundDo orderRefundInfo, AfOrderDo orderInfo);
+
+	/**
+	 * 处理商户退款
+	 * @param refundInfo
+	 * @param orderInfo
+	 * @return
+	 */
+	int dealWithTradeOrderRefund(AfOrderRefundDo refundInfo, AfOrderDo orderInfo);
+
+	/**
+	 * 处理商户退款失败
+	 * @param refundInfo
+	 * @param orderInfo
+	 * @return
+	 */
+	int dealWithTradeRefundFail(AfOrderRefundDo refundInfo, AfOrderDo orderInfo);
 	
 	
 }

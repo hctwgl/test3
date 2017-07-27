@@ -116,6 +116,7 @@ public class AppH5EncoreController extends BaseController {
     			activityGoodsInfo.put("specialAmount", activityGoodsDto.getSpecialPrice());
     			activityGoodsInfo.put("rebateAmount", activityGoodsDto.getRebateAmount());
     			activityGoodsInfo.put("saleAmount", activityGoodsDto.getSaleAmount());
+    			activityGoodsInfo.put("priceAmount", activityGoodsDto.getPriceAmount());
     			activityGoodsInfo.put("repertoryCount", activityGoodsDto.getGoodsCount());
     			activityGoodsInfo.put("startTime", DateUtil.stringToDate(activityGoodsDto.getStartTime()).getTime());
     			activityGoodsInfo.put("validStartTime", DateUtil.stringToDate(activityGoodsDto.getValidStart()).getTime());
@@ -162,6 +163,7 @@ public class AppH5EncoreController extends BaseController {
     			recommendGoodsInfo.put("goodName",goodsDo.getName());
     			recommendGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
     			recommendGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+    			recommendGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
     			recommendGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
     			recommendGoodsInfo.put("goodsId", goodsDo.getRid());
     			recommendGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
