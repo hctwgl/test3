@@ -80,23 +80,35 @@ public class CombinationPayApi implements ApiHandle {
 		
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 		BigDecimal useableAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), afUserAccountDo.getUsedAmount());
-		// 是否是限额类目
-		String isQuotaGoods = "N";
-		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
-		String quotaData = quotaBo.getData();
-		if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
-			JSONObject json = JSONObject.parseObject(quotaData);
-			isQuotaGoods = "Y";
-			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
-			String virtualCode = json.getString("virtualCode");
-			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+		//是否是限额类目
+        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+		if (afOrderService.isVirtualGoods(virtualMap)) {
+			String virtualCode = afOrderService.getVirtualCode(virtualMap);
+			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
+			resp.addResponseData("goodsTotalAmount", totalVirtualAmount);
+			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
 			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
 			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
 			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
-			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
-				useableAmount = goodsUseableAmount;
-			}
+			useableAmount = goodsUseableAmount.compareTo(useableAmount) < 0 ? goodsUseableAmount : useableAmount;
 		}
+//		// 是否是限额类目
+//		String isQuotaGoods = "N";
+//		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
+//		String quotaData = quotaBo.getData();
+//		if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
+//			JSONObject json = JSONObject.parseObject(quotaData);
+//			isQuotaGoods = "Y";
+//			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
+//			String virtualCode = json.getString("virtualCode");
+//			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+//			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
+//			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
+//			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
+//			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
+//				useableAmount = goodsUseableAmount;
+//			}
+//		}
 		
 		AfUserDo afUserDo = afUserService.getUserById(userId);
 		

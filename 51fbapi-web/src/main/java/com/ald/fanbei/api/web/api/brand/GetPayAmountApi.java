@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -27,7 +26,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -110,21 +108,19 @@ public class GetPayAmountApi implements ApiHandle {
         BigDecimal useableAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), afUserAccountDo.getUsedAmount());
 		//是否是限额类目
 		String isQuotaGoods = "N";
-		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(orderInfo.getUserId().toString(), "", orderInfo.getGoodsName());
-		String data = quotaBo.getData();
-		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
-			JSONObject json = JSONObject.parseObject(data);
+        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+		if (afOrderService.isVirtualGoods(virtualMap)) {
 			isQuotaGoods = "Y";
-			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
-			String virtualCode = json.getString("virtualCode");
-			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, json.getBigDecimal("amount"));
+			String virtualCode = afOrderService.getVirtualCode(virtualMap);
+			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
+			resp.addResponseData("goodsTotalAmount", totalVirtualAmount);
+			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
 			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
 			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
 			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
-			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
-				useableAmount = goodsUseableAmount;
-			}
+			useableAmount = goodsUseableAmount.compareTo(useableAmount) < 0 ? goodsUseableAmount : useableAmount;
 		}
+		
 		BigDecimal bankPayAmount = BigDecimal.ZERO;
 		if (amount.compareTo(useableAmount) > 0) {
 			bankPayAmount = BigDecimalUtil.subtract(amount, useableAmount);

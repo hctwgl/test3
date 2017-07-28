@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.order;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.VirtualGoodsCateogy;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -64,18 +66,15 @@ public class GetBeforePayTypeApi implements ApiHandle {
 		BigDecimal actualAmount = orderInfo.getActualAmount();
 		BigDecimal leftAmount = BigDecimalUtil.subtract(userAccountInfo.getAuAmount(), userAccountInfo.getUsedAmount());
 
-		// 是否是限额类目
-		if (goodsName != null) {
-			RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
-			String quotaData = quotaBo.getData();
-			if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
-				JSONObject json = JSONObject.parseObject(quotaData);
-				String virtualCode = json.getString("virtualCode");
-				BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-				leftAmount = (goodsUseableAmount.compareTo(leftAmount) < 0) ? goodsUseableAmount : leftAmount;
-			}
+		//是否是限额类目
+        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+		if (afOrderService.isVirtualGoods(virtualMap)) {
+			String virtualCode = afOrderService.getVirtualCode(virtualMap);
+			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
+			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
+			leftAmount = goodsUseableAmount.compareTo(leftAmount) < 0 ? goodsUseableAmount : leftAmount;
 		}
-
+		
 		HashMap<String, Object> responseMap = new HashMap<String, Object>();
 		if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
 			responseMap.put("payType", PayType.OTHER.getCode());
