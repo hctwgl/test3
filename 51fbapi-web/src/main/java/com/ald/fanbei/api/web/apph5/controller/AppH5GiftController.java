@@ -170,6 +170,8 @@ public class AppH5GiftController extends BaseController {
     			}
     			String name = afCouponDo.getName(); 
     			couponInfoMap.put("name", name);
+    			couponInfoMap.put("amount", afCouponDo.getAmount());
+    			couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
     			couponInfoMap.put("couponId", couponId);
     			couponInfoMap.put("type", "1");
     			couponInfoMap.put("desc", afCouponDo.getUseRule());
