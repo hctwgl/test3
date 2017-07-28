@@ -10,95 +10,47 @@
 <div id="huiLi">
   <div class="banner"><img :src="content.bannerImage"></div>
   <div class="couponList">
-  	 <div class="coupon">
-  	 	<p class="money">￥<span>20</span></p>
+  	 <div class="coupon" v-for="item in couponCont.couponInfoList" @click="couponClick(item)">
+  	 	<p class="money">￥<span>{{item.couponId}}</span></p>
   	 	<p class="name">优惠券</p>
-  	 	<p class="useRule">(无门槛券)</p>
-  	 	<p class="get">立即领取</p>
-  	 </div>
-  	 <div class="coupon coupon01">
-  	 	<p class="money">￥<span>20</span></p>
-  	 	<p class="name">优惠券</p>
-  	 	<p class="useRule">(无门槛券)</p>
+  	 	<p class="useRule">{{item.couponId}}</p>
   	 	<p class="get">立即领取</p>
   	 </div>
   </div>  
   <div class="content">
   	 <div class="contFirst clearfix">
   	 	 <div class="img01"><img src="$src/huiLi02.jpg"></div>
-  	 	 <div class="img02"><img src="$src/huiLi03.jpg"></div>
-  	 	 <div class="product">
-  	 	 	<p class="productImg"></p>
-  	 	 	<p class="productdes">nike跑鞋</p>
-  	 	 	<p class="line"></p>
-  	 	 	<p class="productprice">￥728.22</p>
-  	 	 	<p class="month">月供￥121.12 X 6</p>
-  	 	 </div>
-         <div class="product">
-  	 	 	<p class="productImg"></p>
-  	 	 	<p class="productdes">nike跑鞋</p>
-  	 	 	<p class="line"></p>
-  	 	 	<p class="productprice">￥728.22</p>
-  	 	 	<p class="month">月供￥121.12 X 6</p>
-  	 	 </div>
-  	 	 <div class="product">
-  	 	 	<p class="productImg"></p>
-  	 	 	<p class="productdes">nike跑鞋</p>
-  	 	 	<p class="line"></p>
-  	 	 	<p class="productprice">￥728.22</p>
-  	 	 	<p class="month">月供￥121.12 X 6</p>
-  	 	 </div>
-  	 	 <div class="product">
-  	 	 	<p class="productImg"></p>
-  	 	 	<p class="productdes">nike跑鞋</p>
-  	 	 	<p class="line"></p>
-  	 	 	<p class="productprice">￥728.22</p>
-  	 	 	<p class="month">月供￥121.12 X 6</p>
-  	 	 </div>
+  	 	 <div class="img02" @click="productClick(firstId)"><img src="$src/huiLi03.jpg"></div>
+  	 	 <div class="product" v-for="item in list01" @click="productClick(item.goodsId)">
+  	 	    <p class="productImg"><img :src="item.goodsIcon"></p>
+  	 	    <p class="productdes">{{txtFix02(item.goodName)}}</p>
+  	 	    <p class="line"></p>
+  	 	    <p class="productprice">￥{{(item.saleAmount).toFixed(1)}}</p>
+  	 	    <p class="month" v-if="item.goodsType==='1'"><span>￥{{item.nperMap.amount}} x {{item.nperMap.nper}}<span></p> 
+  	 	 </div>         
   	 </div>
      <div class="contFirst contSecond clearfix">
   	 	 <div class="img01"><img src="$src/huiLi04.jpg"></div>
-  	 	 <div class="img02"><img src="$src/huiLi05.jpg"></div>
-  	 	 <div class="product">
-  	 	 	<p class="productImg"></p>
-  	 	 	<p class="productdes">nike跑鞋</p>
-  	 	 	<p class="line"></p>
-  	 	 	<p class="productprice">￥728.22</p>
-  	 	 	<p class="month">月供￥121.12 X 6</p>
-  	 	 </div>
-         <div class="product">
-  	 	 	<p class="productImg"></p>
-  	 	 	<p class="productdes">nike跑鞋</p>
-  	 	 	<p class="line"></p>
-  	 	 	<p class="productprice">￥728.22</p>
-  	 	 	<p class="month">月供￥121.12 X 6</p>
-  	 	 </div>
-  	 	 <div class="product">
-  	 	 	<p class="productImg"></p>
-  	 	 	<p class="productdes">nike跑鞋</p>
-  	 	 	<p class="line"></p>
-  	 	 	<p class="productprice">￥728.22</p>
-  	 	 	<p class="month">月供￥121.12 X 6</p>
-  	 	 </div>
-  	 	 <div class="product">
-  	 	 	<p class="productImg"></p>
-  	 	 	<p class="productdes">nike跑鞋</p>
-  	 	 	<p class="line"></p>
-  	 	 	<p class="productprice">￥728.22</p>
-  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 <div class="img02" @click="productClick(secondId)"><img src="$src/huiLi05.jpg"></div>
+  	 	 <div class="product" v-for="item in list02" @click="productClick(item.goodsId)">
+  	 	 	  <p class="productImg"><img :src="item.goodsIcon"></p>
+  	 	 	  <p class="productdes">{{txtFix02(item.goodName)}}</p>
+  	 	 	  <p class="line"></p>
+  	 	 	  <p class="productprice">￥{{(item.saleAmount).toFixed(1)}}</p>
+  	 	 	  <p class="month" v-if="item.goodsType==='1'"><span>￥{{item.nperMap.amount}} x {{item.nperMap.nper}}<span></p>
   	 	 </div>
   	 </div> 	 
   </div>
   <div class="moreContent">
   	 	<div class="img01"><img src="$src/huiLi06.jpg"></div>
-  	 	<div class="product">
-  	 		<div class="productImg"></div>
+  	 	<div class="product" v-for="item in list03" @click="productClick(item.goodsId)">
+  	 		<div class="productImg"><img :src="item.goodsIcon"></div>
   	 		<div class="right">
-  	 			<p class="productDes">nike跑鞋nike跑鞋nike跑鞋nike跑鞋</p>
-                <p class="originPrice change">￥3360</p>
-                <p class="fan change"></p>
-                <p class="fanMoney change">￥33.6</p>
-                <p class="monthMoney"><span>￥338.8起<span></p>
+  	 			<p class="productDes">{{txtFix01(item.goodName)}}</p>
+              <p class="originPrice change">￥{{(item.saleAmount).toFixed(1)}}</p>
+              <p class="fan change"></p>
+              <p class="fanMoney change">￥{{item.rebateAmount}}</p>
+              <p class="monthMoney" v-if="item.goodsType==='1'"><span>￥{{item.nperMap.amount}}起<span></p>              
   	 		</div>
   	 		
   	 	</div>
