@@ -20,8 +20,8 @@
   <div class="content">
   	 <div class="contFirst clearfix">
   	 	 <div class="img01"><img src="$src/huiLi02.jpg"></div>
-  	 	 <div class="img02" @click="productClick(firstId)"><img src="$src/huiLi03.jpg"></div>
-  	 	 <div class="product" v-for="item in list01" @click="productClick(item.goodsId)">
+  	 	 <div class="img02" @click="productClick(first)"><img src="$src/huiLi03.jpg"></div>
+  	 	 <div class="product" v-for="item in list01" @click="productClick(item)">
   	 	    <p class="productImg"><img :src="item.goodsIcon"></p>
   	 	    <p class="productdes">{{txtFix02(item.goodName)}}</p>
   	 	    <p class="line"></p>
@@ -31,8 +31,8 @@
   	 </div>
      <div class="contFirst contSecond clearfix">
   	 	 <div class="img01"><img src="$src/huiLi04.jpg"></div>
-  	 	 <div class="img02" @click="productClick(secondId)"><img src="$src/huiLi05.jpg"></div>
-  	 	 <div class="product" v-for="item in list02" @click="productClick(item.goodsId)">
+  	 	 <div class="img02" @click="productClick(second)"><img src="$src/huiLi05.jpg"></div>
+  	 	 <div class="product" v-for="item in list02" @click="productClick(item)">
   	 	 	  <p class="productImg"><img :src="item.goodsIcon"></p>
   	 	 	  <p class="productdes">{{txtFix02(item.goodName)}}</p>
   	 	 	  <p class="line"></p>
@@ -43,7 +43,7 @@
   </div>
   <div class="moreContent">
   	 	<div class="img01"><img src="$src/huiLi06.jpg"></div>
-  	 	<div class="product" v-for="item in list03" @click="productClick(item.goodsId)">
+  	 	<div class="product" v-for="item in list03" @click="productClick(item)">
   	 		<div class="productImg"><img :src="item.goodsIcon"></div>
   	 		<div class="right">
   	 			<p class="productDes">{{txtFix01(item.goodName)}}</p>

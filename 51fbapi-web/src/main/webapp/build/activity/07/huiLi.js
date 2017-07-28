@@ -9,8 +9,8 @@ let vm = new Vue({
         list01:{},
         list02:{},
         list03:{},
-        firstId:{},
-        secondId:{}
+        first:{},
+        second:{}
     },
     created: function () {
         this.logCoupon();
@@ -79,18 +79,27 @@ let vm = new Vue({
                     self.list01=self.content.activityList[0].activityGoodsList;
                     self.list02=self.content.activityList[1].activityGoodsList;
                     self.list03=self.content.activityList[2].activityGoodsList;
-                    self.firstId=self.list01[0].goodsId;
-                    self.secondId=self.list02[0].goodsId;
+                    self.first.goodsId=self.list01[0].goodsId;
+                    self.first.source=self.list01[0].source;                    
+                    self.second.goodsId=self.list02[0].goodsId;
+                    self.second.source=self.list02[0].source;
                     self.list01=self.list01.slice(1);
-                    self.list02=self.list02.slice(1);             
+                    self.list02=self.list02.slice(1);
+                    console.log(self.first)  
+                    console.log(self.second)            
                 },
                 error: function () {
                     requestMsg("请求失败");
                 }
             });
         },
-        productClick(id){
-            console.log(id)
+        productClick(item){
+            console.log(item);
+            if ( item.source=="SELFSUPPORT" ) {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
+            } else {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
+            }
         },
         txtFix01(i){
             function get_length(s){
