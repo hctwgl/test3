@@ -27,7 +27,7 @@
   	 	    <p class="productdes">{{txtFix(item.goodName,8)}}</p>
   	 	    <p class="line"></p>
   	 	    <p class="productprice">￥{{(item.saleAmount).toFixed(1)}}</p>
-  	 	    <p class="month" v-if="item.goodsType==='1'"><span>￥{{item.nperMap.amount}} x {{item.nperMap.nper}}<span></p> 
+  	 	    <p class="month" v-if="item.goodsType==='1'"><span>月供￥{{item.nperMap.amount}} x {{item.nperMap.nper}}<span></p> 
   	 	 </div>         
   	 </div>
      <div class="contFirst contSecond clearfix">
@@ -38,7 +38,7 @@
   	 	 	  <p class="productdes">{{txtFix(item.goodName,8)}}</p>
   	 	 	  <p class="line"></p>
   	 	 	  <p class="productprice">￥{{(item.saleAmount).toFixed(1)}}</p>
-  	 	 	  <p class="month" v-if="item.goodsType==='1'"><span>￥{{item.nperMap.amount}} x {{item.nperMap.nper}}<span></p>
+  	 	 	  <p class="month" v-if="item.goodsType==='1'"><span>月供￥{{item.nperMap.amount}} x {{item.nperMap.nper}}<span></p>
   	 	 </div>
   	 </div> 	 
   </div>
