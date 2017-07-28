@@ -84,7 +84,11 @@ public class GetBeforePayTypeApi implements ApiHandle {
 		} else if (leftAmount.compareTo(actualAmount) < 0) {
 			responseMap.put("payType", PayType.COMBINATION_PAY.getCode());
 		}
-
+		
+		if (StringUtil.equals(orderInfo.getPayType(), PayType.WECHAT.getCode()) || StringUtil.equals(orderInfo.getPayType(), PayType.BANK.getCode())) {
+			responseMap.put("payType", PayType.OTHER.getCode());
+		}
+		
 		resp.setResponseData(responseMap);
 		return resp;
 	}
