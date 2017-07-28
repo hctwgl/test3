@@ -1,7 +1,15 @@
 package com.ald.fanbei.api.web.vo;
 
 import com.ald.fanbei.api.common.AbstractSerial;
-
+/**
+ * 
+ * <p>Title:AfLoanShopVo <p>
+ * <p>Description: <p>
+ * @Copyright (c)  浙江阿拉丁电子商务股份有限公司 All Rights Reserved. 
+ * @author qiao
+ * @date 2017年7月28日下午3:25:01
+ *
+ */
 public class AfLoanShopVo extends AbstractSerial {
 
 	/**
@@ -14,6 +22,15 @@ public class AfLoanShopVo extends AbstractSerial {
 	private String linkUrl;
 	private String label;
 	private String iconUrl;
+	private String marketPoint;
+	
+	public String getMarketPoint() {
+		return marketPoint;
+	}
+
+	public void setMarketPoint(String marketPoint) {
+		this.marketPoint = marketPoint;
+	}
 
 	public String getLsmNo() {
 		return lsmNo;
