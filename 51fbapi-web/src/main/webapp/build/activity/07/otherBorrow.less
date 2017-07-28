@@ -7,6 +7,7 @@
   line-height: .24rem;
   font-size: .2rem;
   color:#fd6200;
+  width: 6rem;
 }
 .bar>img{
   height:.24rem;
@@ -29,8 +30,9 @@
 .banner{
   overflow: hidden;
   height: 3rem;
+  position: relative;
 }
-.swiper-pagination-bullet{
+.bullet{
   width:1.4rem;
   height:.8rem;
   text-align:center;
@@ -41,7 +43,15 @@
   background: white;
   opacity: 1;
 }
-.swiper-pagination-bullet-active{
+.img-pagination{
+  position: absolute;
+  left:50% !important;
+  z-index: 3;
+  .swiper-pagination-bullet-active{
+    background: #fe963b;
+  }
+}
+#navWrap .swiper-pagination-bullet-active{
   color:#fe963b;
   border-bottom:2px solid #fe963b;
   background: white;
@@ -76,6 +86,8 @@
       position: absolute;
       left:1.3rem;
       top:.73rem;
+      max-width: 3rem;
+      overflow: hidden;
     }
   }
   .right{

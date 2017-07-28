@@ -7,28 +7,34 @@ let vue=new Vue({
     data:{
         content:{
             imgUrl:'https://fs.51fanbei.com/h5/app/activity/05/mayMovie_01_2.jpg'
-        }
+        },
+        barShow:true
     },
     created:function () {
         this.logData();
 
     },
     methods: {
+        sp(a,b){
+            let data=a.split(',');
+            return data[b]
+        },
         imgSwiper(){
             let mySwiper = new Swiper ('.banner', {
                 loop: true,
+                pagination: '.img-pagination',
 
             });
         },
         swiper(){
-            let title=['热门','低息','最新','极速'];
+            let title=[this.content.tabList[0].name,this.content.tabList[1].name,this.content.tabList[2].name,this.content.tabList[3].name];
             let mySwiper = new Swiper ('.swiper-container', {
                 loop: true,
                 // 如果需要分页器
                 pagination: '.swiper-pagination',
                 paginationClickable :true,
                 paginationBulletRender: function (swiper, index, className) {
-                    return '<span class="' + className + '">' + title[index] + '</span>';
+                    return '<span class="' + className + ' bullet">' + title[index] + '</span>';
                 }
             });
         },

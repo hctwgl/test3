@@ -3,16 +3,16 @@
 <head>
     #set($version="2017052302")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/07")
-<title>otherBorrow</title>
+<title>借贷超市</title>
 <link rel="stylesheet" type="text/css" href="http://f.51fanbei.com/h5/common/css/swiper-3.4.2.min.css">
 <link rel="stylesheet" type="text/css" href="/dist/activity/07/otherBorrow.css">
 </head>
 <body>
 <div id="vueCon">
-    <div class="bar">
+    <div class="bar" v-if="barShow">
         <img class="fl" src="$commonUrl/lb.png">
-        <a class="fl" :href="content.scrollbar.wordUrl">{{content.scrollbar.content}}</a>
-        <img class="fr" src="$commonUrl/x.png">
+        <a class="fl" :href="content.scrollbar.wordUrl"><marquee scrollamount="3" direction="right">{{content.scrollbar.content}}</marquee></a>
+        <img class="fr" src="$commonUrl/x.png" @click="barShow=false">
     </div>
     <div class="banner">
         <div class="swiper-wrapper">
@@ -22,6 +22,7 @@
                 </a>
             </div>
         </div>
+        <div class="img-pagination"></div>
     </div>
     <div class="swiper-container">
         <!-- 如果需要分页器 -->
@@ -36,9 +37,9 @@
                         <div class="name">{{item.lsmName}}</div>
                         <div class="text">{{item.lsmIntro}}</div>
                     </div>
-                    <div class="right">
-                        <div class="num">{{item.lsmNo}}</div>
-                        <div class="text">本月放贷人数</div>
+                    <div class="right" v-if="item.marketPoint">
+                        <div class="num">{{sp(item.marketPoint,0)}}</div>
+                        <div class="text">{{sp(item.marketPoint,1)}}</div>
                     </div>
                 </a>
             </div>
