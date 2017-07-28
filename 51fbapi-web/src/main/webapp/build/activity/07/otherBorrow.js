@@ -22,6 +22,7 @@ let vue=new Vue({
         imgSwiper(){
             let mySwiper = new Swiper ('.banner', {
                 loop: true,
+                autoplay : 4000,
                 pagination: '.img-pagination',
 
             });
