@@ -289,4 +289,9 @@ public class Constants {
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
 
+	//商圈商户登录密码加密
+	public static final String DEFAULT_SALT = "51fb";
+	public static final int DEFAULT_DIGEST_TIMES = 1024;
+	public static final String SHA1 = "SHA-1";
+
 }

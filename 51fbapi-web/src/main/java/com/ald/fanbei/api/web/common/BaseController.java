@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -68,6 +69,8 @@ public abstract class BaseController {
 
 	@Resource
 	AfAppUpgradeService afAppUpgradeService;
+	@Resource
+	private BizCacheUtil bizCacheUtil;
 
 	/**
 	 * 解析request
@@ -650,5 +653,50 @@ public abstract class BaseController {
 		webContext.setAppVersion(baseContext.getAppVersion());
 		checkWebSign(webContext,requestDataVo, needToken);
 		return webContext;
+	}
+
+	/**
+	 * 解析request
+	 *
+	 * @param reqData
+	 * @param httpServletRequest
+	 * @return
+	 */
+	protected String processTradeWeiXinRequest(String reqData, HttpServletRequest request, boolean isForQQ) {
+		String resultStr = StringUtils.EMPTY;
+		BaseResponse exceptionresponse = null;
+		RequestDataVo requestDataVo = null;
+		try {
+			// 检查参数是否为空
+			reqData = checkCommonParam(reqData, request, isForQQ);
+
+			// 解析参数（包括请求头中的参数和报文体中的参数）
+			requestDataVo = parseRequestData(reqData, request);
+
+			// 验证参数
+			boolean beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
+			if (!beforeLogin) { //需要登录的接口
+				String token = request.getHeader("token");
+				if(StringUtil.isBlank(token)) {
+					throw new FanbeiException("business don't exist", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+				}
+				Object value = bizCacheUtil.getObject(token);
+				if(value == null) {
+					throw new FanbeiException("business is timeout", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT);
+				}
+			}
+
+			// 处理业务
+			resultStr = doProcess(requestDataVo, null, request);
+		} catch (FanbeiException e) {
+			exceptionresponse = buildErrorResult(e.getErrorCode(), request);
+			resultStr = JSON.toJSONString(exceptionresponse);
+			logger.error("trade weixin exception {}", e);
+		} catch (Exception e) {
+			exceptionresponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
+			resultStr = JSON.toJSONString(exceptionresponse);
+			logger.error("system exception {}", e);
+		}
+		return resultStr;
 	}
 }
