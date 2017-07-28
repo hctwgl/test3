@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfLoanSupermarketTabService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -59,6 +60,7 @@ public class AppBorrowLoanShopController extends BaseController {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/loanShop", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String getInfoForBorrowLaonShop(HttpServletRequest request, HttpServletResponse response) {
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = " ";
