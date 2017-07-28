@@ -15,15 +15,26 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'post',
-                url: "/fanbei-web/partActivityInfo?modelId="+modelId,
+                url: "/fanbei-web/activityCouponList",
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
-                    console.log(data);
+                    console.log(self.content);
                 },
                 error: function () {
                     requestMsg("请求失败");
                 }
             });
+            /*$.ajax({
+                type: 'post',
+                url: "/fanbei-web/partActivityInfo?modelId="+modelId,
+                success: function (data) {
+                    self.content = eval('(' + data + ')').data;
+                    console.log(self.content);
+                },
+                error: function () {
+                    requestMsg("请求失败");
+                }
+            });*/
         }
     }
 })

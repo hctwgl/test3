@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="huiLi">
-  <div class="banner"></div>
+  <div class="banner"><img :src="content.bannerImage"></div>
   <div class="couponList">
   	 <div class="coupon">
   	 	<p class="money">￥<span>20</span></p>
