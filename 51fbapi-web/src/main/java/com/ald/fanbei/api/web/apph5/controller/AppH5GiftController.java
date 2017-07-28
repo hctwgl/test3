@@ -143,7 +143,7 @@ public class AppH5GiftController extends BaseController {
     	}
     }
     
-    @RequestMapping(value = "activityCouponList", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "activityCouponList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String activityCouponList(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
