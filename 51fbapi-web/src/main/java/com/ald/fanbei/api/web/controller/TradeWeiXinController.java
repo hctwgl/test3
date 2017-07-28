@@ -77,7 +77,7 @@ public class TradeWeiXinController extends BaseController {
             }
             return JSON.toJSONString(handelResult);
         } catch (FanbeiException e) {
-            logger.error("app exception", e);
+            logger.error("trade weixin exception", e);
             throw e;
         } catch (Exception e) {
             logger.error("sys exception", e);
