@@ -196,7 +196,8 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 			vo.setNper(order.getNper());
 			vo.setNperAmount(BigDecimal.ZERO);
 		}
-			
+		vo.setQuotaAmount(order.getBorrowAmount());
+		vo.setBankPayAmount(order.getBankAmount());
 		return vo;
 	}
 }
