@@ -37,7 +37,7 @@ let vm = new Vue({
             let self=this;
             var couponId=e.couponId;
             //点击领券
-            console.log(1)
+            console.log(couponId)
             $.ajax({
                 url: "/fanbei-web/pickCoupon",
                 type: "POST",
@@ -49,6 +49,7 @@ let vm = new Vue({
                     if(returnData.success){
                        requestMsg("优惠劵领取成功");                          
                     }else{
+                        console.log(returnData)
                         var status = returnData.data["status"];
                         if (status == "USER_NOT_EXIST") { // 用户不存在                                
                             window.location.href = returnData.url;
@@ -59,7 +60,10 @@ let vm = new Vue({
                         }
                         if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
                             requestMsg(returnData.msg);
-                        } 
+                        }
+                        if (status == "MORE_THAN") { // 优惠券已领取完
+                            requestMsg(returnData.msg);
+                        }  
                     }
                 },
                 error: function(){
