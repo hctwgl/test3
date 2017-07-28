@@ -101,7 +101,7 @@ let vm = new Vue({
                 window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
             }
         },
-        txtFix01(i){
+        txtFix01(i,l){
             function get_length(s){
                 var char_length = 0;
                 for (var i = 0; i < s.length; i++){
@@ -122,8 +122,8 @@ let vm = new Vue({
                     }
                 }
             }
-            return cut_str(i, 20)
-        },
+            return cut_str(i, l)
+        }/*,
         txtFix02(i){
             function get_length(s){
                 var char_length = 0;
@@ -146,6 +146,6 @@ let vm = new Vue({
                 }
             }
             return cut_str(i, 8)
-        }
+        }*/
     }
 })

@@ -23,7 +23,7 @@
   	 	 <div class="img02" @click="productClick(first)"><img src="$src/huiLi03.jpg"></div>
   	 	 <div class="product" v-for="item in list01" @click="productClick(item)">
   	 	    <p class="productImg"><img :src="item.goodsIcon"></p>
-  	 	    <p class="productdes">{{txtFix02(item.goodName)}}</p>
+  	 	    <p class="productdes">{{txtFix01(item.goodName,8)}}</p>
   	 	    <p class="line"></p>
   	 	    <p class="productprice">￥{{(item.saleAmount).toFixed(1)}}</p>
   	 	    <p class="month" v-if="item.goodsType==='1'"><span>￥{{item.nperMap.amount}} x {{item.nperMap.nper}}<span></p> 
@@ -34,7 +34,7 @@
   	 	 <div class="img02" @click="productClick(second)"><img src="$src/huiLi05.jpg"></div>
   	 	 <div class="product" v-for="item in list02" @click="productClick(item)">
   	 	 	  <p class="productImg"><img :src="item.goodsIcon"></p>
-  	 	 	  <p class="productdes">{{txtFix02(item.goodName)}}</p>
+  	 	 	  <p class="productdes">{{txtFix01(item.goodName,8)}}</p>
   	 	 	  <p class="line"></p>
   	 	 	  <p class="productprice">￥{{(item.saleAmount).toFixed(1)}}</p>
   	 	 	  <p class="month" v-if="item.goodsType==='1'"><span>￥{{item.nperMap.amount}} x {{item.nperMap.nper}}<span></p>
@@ -46,7 +46,7 @@
   	 	<div class="product" v-for="item in list03" @click="productClick(item)">
   	 		<div class="productImg"><img :src="item.goodsIcon"></div>
   	 		<div class="right">
-  	 			<p class="productDes">{{txtFix01(item.goodName)}}</p>
+  	 			<p class="productDes">{{txtFix01(item.goodName,20)}}</p>
               <p class="originPrice change">￥{{(item.saleAmount).toFixed(1)}}</p>
               <p class="fan change"></p>
               <p class="fanMoney change">￥{{item.rebateAmount}}</p>
