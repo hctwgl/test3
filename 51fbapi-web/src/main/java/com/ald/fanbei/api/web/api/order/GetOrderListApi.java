@@ -25,7 +25,6 @@ import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -72,7 +71,7 @@ public class GetOrderListApi implements ApiHandle{
         Integer pageNo = NumberUtil.objToPageIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
         String orderStatus = ObjectUtils.toString(requestDataVo.getParams().get("orderStatus"),"");
         List<AfOrderDo> orderList = afOrderService.getOrderListByStatus(pageNo, orderStatus, userId);
-        List<AfOrderListVo> orderVoList = new ArrayList<AfOrderListVo>();
+        List<AfOrderListVo> orderVoList = new ArrayList<AfOrderListVo>(); 
         for (AfOrderDo afOrderDo : orderList) {
         	orderVoList.add(getOrderListVo(afOrderDo, context));
 		}
@@ -91,6 +90,9 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setGoodsPriceName(order.getGoodsPriceName());
 		vo.setOrderId(order.getRid());
 		vo.setOrderNo(order.getOrderNo());
+		vo.setNper(order.getNper());
+		vo.setNumId(order.getNumId());
+		
 		String status =  order.getStatus();
 		if (context.getAppVersion() < 364){
 			if (status.equals(OrderStatus.DEALING.getCode())) {
