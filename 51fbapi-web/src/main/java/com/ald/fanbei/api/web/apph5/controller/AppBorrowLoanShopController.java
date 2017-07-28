@@ -118,6 +118,7 @@ public class AppBorrowLoanShopController extends BaseController {
 						newShop.setLsmIntro(oldShop.getLsmIntro());
 						newShop.setLsmName(oldShop.getLsmName());
 						newShop.setLsmNo(oldShop.getLsmNo());
+						newShop.setMarketPoint(oldShop.getMarketPoint());
 						
 						shopList.add(newShop);
 					}
