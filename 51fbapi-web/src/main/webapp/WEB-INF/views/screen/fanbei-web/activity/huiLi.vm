@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+#set($version="20170728")
+#set($src="https://fs.51fanbei.com/h5/app/activity/07")
+<title>青春活力</title>
+<link rel="stylesheet" type="text/css" href="/dist/activity/07/huiLi.css">
+</head>
+<body>
+<div id="huiLi">
+  <div class="banner"></div>
+  <div class="couponList">
+  	 <div class="coupon">
+  	 	<p class="money">￥<span>20</span></p>
+  	 	<p class="name">优惠券</p>
+  	 	<p class="useRule">(无门槛券)</p>
+  	 	<p class="get">立即领取</p>
+  	 </div>
+  	 <div class="coupon coupon01">
+  	 	<p class="money">￥<span>20</span></p>
+  	 	<p class="name">优惠券</p>
+  	 	<p class="useRule">(无门槛券)</p>
+  	 	<p class="get">立即领取</p>
+  	 </div>
+  </div>  
+  <div class="content">
+  	 <div class="contFirst clearfix">
+  	 	 <div class="img01"><img src="$src/huiLi02.jpg"></div>
+  	 	 <div class="img02"><img src="$src/huiLi03.jpg"></div>
+  	 	 <div class="product">
+  	 	 	<p class="productImg"></p>
+  	 	 	<p class="productdes">nike跑鞋</p>
+  	 	 	<p class="line"></p>
+  	 	 	<p class="productprice">￥728.22</p>
+  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 </div>
+         <div class="product">
+  	 	 	<p class="productImg"></p>
+  	 	 	<p class="productdes">nike跑鞋</p>
+  	 	 	<p class="line"></p>
+  	 	 	<p class="productprice">￥728.22</p>
+  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 </div>
+  	 	 <div class="product">
+  	 	 	<p class="productImg"></p>
+  	 	 	<p class="productdes">nike跑鞋</p>
+  	 	 	<p class="line"></p>
+  	 	 	<p class="productprice">￥728.22</p>
+  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 </div>
+  	 	 <div class="product">
+  	 	 	<p class="productImg"></p>
+  	 	 	<p class="productdes">nike跑鞋</p>
+  	 	 	<p class="line"></p>
+  	 	 	<p class="productprice">￥728.22</p>
+  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 </div>
+  	 </div>
+     <div class="contFirst contSecond clearfix">
+  	 	 <div class="img01"><img src="$src/huiLi04.jpg"></div>
+  	 	 <div class="img02"><img src="$src/huiLi05.jpg"></div>
+  	 	 <div class="product">
+  	 	 	<p class="productImg"></p>
+  	 	 	<p class="productdes">nike跑鞋</p>
+  	 	 	<p class="line"></p>
+  	 	 	<p class="productprice">￥728.22</p>
+  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 </div>
+         <div class="product">
+  	 	 	<p class="productImg"></p>
+  	 	 	<p class="productdes">nike跑鞋</p>
+  	 	 	<p class="line"></p>
+  	 	 	<p class="productprice">￥728.22</p>
+  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 </div>
+  	 	 <div class="product">
+  	 	 	<p class="productImg"></p>
+  	 	 	<p class="productdes">nike跑鞋</p>
+  	 	 	<p class="line"></p>
+  	 	 	<p class="productprice">￥728.22</p>
+  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 </div>
+  	 	 <div class="product">
+  	 	 	<p class="productImg"></p>
+  	 	 	<p class="productdes">nike跑鞋</p>
+  	 	 	<p class="line"></p>
+  	 	 	<p class="productprice">￥728.22</p>
+  	 	 	<p class="month">月供￥121.12 X 6</p>
+  	 	 </div>
+  	 </div> 	 
+  </div>
+  <div class="moreContent">
+  	 	<div class="img01"><img src="$src/huiLi06.jpg"></div>
+  	 	<div class="product">
+  	 		<div class="productImg"></div>
+  	 		<div class="right">
+  	 			<p class="productDes">nike跑鞋nike跑鞋nike跑鞋nike跑鞋</p>
+                <p class="originPrice change">￥3360</p>
+                <p class="fan change"></p>
+                <p class="fanMoney change">￥33.6</p>
+                <p class="monthMoney"><span>￥338.8起<span></p>
+  	 		</div>
+  	 		
+  	 	</div>
+  	 </div>
+</div>
+
+<script type="text/javascript" src="/dist/activity/07/huiLi.js?version=$version"></script>
+</body>
+</html>
