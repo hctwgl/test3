@@ -13,7 +13,6 @@ let vue=new Vue({
     },
     methods: {
         getCoupon:function (data,type) {
-            alert(111);
             let self=this;
             let url='pickBoluomeCoupon';
             let postData={"sceneId":data,"userName":self.content.userName};
