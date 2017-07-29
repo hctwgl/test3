@@ -462,7 +462,6 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setBankCode(bankCode);
 		reqBo.setCardNo(cardNo);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
-		reqBo.setCertNo(certNo);
 		reqBo.setPurpose(purpose);
 		reqBo.setRemark(remark);
 		reqBo.setReturnUrl("");
@@ -476,11 +475,11 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertNo("320301198502169142");*/
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
-//		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+//		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 		
 		/*--------临时跳过UPS---------*/
-		String tradeNo = getOrderNo("jk", realName.substring(realName.length()-4,realName.length()));
-		String reqResult = "{\"respCode\":\"0000\",\"tradeState\":\"00\",\"cardNo\":\"6228480322828314011\",\"respDesc\":\"验签通过\",\"orderNo\":"+orderNo+",\"tradeNo\":"+tradeNo+"}";
+		String tradeNo = getOrderNo("csjk", cardNo.substring(cardNo.length()-4,cardNo.length()));
+		String reqResult = "{\"respCode\":\"0000\",\"tradeState\":\"00\",\"cardNo\":\"6228480322828314011\",\"respDesc\":\"验签通过\",\"orderNo\":\""+orderNo+"\",\"tradeNo\":\""+tradeNo+"\"}";
 		
 		logThird(reqResult, "collect", reqBo);
 		if(StringUtil.isBlank(reqResult)) {
