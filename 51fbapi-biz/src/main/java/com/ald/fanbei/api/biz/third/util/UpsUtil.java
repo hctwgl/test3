@@ -462,12 +462,13 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setBankCode(bankCode);
 		reqBo.setCardNo(cardNo);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
+		reqBo.setCertNo(certNo);
 		reqBo.setPurpose(purpose);
 		reqBo.setRemark(remark);
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
 		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");
-		/*reqBo.setRealName("王宝");
+/*		reqBo.setRealName("王宝");宝付测试
 		reqBo.setPhone("18066542211");
 		reqBo.setBankCode("ABC");
 		reqBo.setCardNo("6228480444455553333");
@@ -475,14 +476,9 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertNo("320301198502169142");*/
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
-		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-		
-		/*--------临时跳过UPS---------*/
-//		String tradeNo = getOrderNo("csjk", cardNo.substring(cardNo.length()-4,cardNo.length()));
-//		String reqResult = "{\"respCode\":\"0000\",\"tradeState\":\"00\",\"cardNo\":\"6228480322828314011\",\"respDesc\":\"验签通过\",\"orderNo\":\""+orderNo+"\",\"tradeNo\":\""+tradeNo+"\"}";
-		
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "collect", reqBo);
-		if(StringUtil.isBlank(reqResult)) {
+		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
@@ -493,7 +489,6 @@ public class UpsUtil extends AbstractThird {
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
-		
 	}
 	
 	/**
