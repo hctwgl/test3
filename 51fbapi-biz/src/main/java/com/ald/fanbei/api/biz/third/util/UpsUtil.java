@@ -468,16 +468,19 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
 		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");
-		reqBo.setRealName("王宝");
+		/*reqBo.setRealName("王宝");
 		reqBo.setPhone("18066542211");
 		reqBo.setBankCode("ABC");
 		reqBo.setCardNo("6228480444455553333");
 		reqBo.setUserNo("test88888");
-		reqBo.setCertNo("320301198502169142");
+		reqBo.setCertNo("320301198502169142");*/
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
-		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
-//		String reqResult = "{\"respCode\":\"0000\",\"tradeState\":\"00\",\"cardNo\":\"6228480322828314011\",\"respDesc\":\"验签通过\",\"orderNo\":\"262465646357653745\",\"tradeNo\":\"cs37468779675976\"}";
+//		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		
+		/*--------临时跳过UPS---------*/
+		String tradeNo = getOrderNo("jk", realName.substring(realName.length()-4,realName.length()));
+		String reqResult = "{\"respCode\":\"0000\",\"tradeState\":\"00\",\"cardNo\":\"6228480322828314011\",\"respDesc\":\"验签通过\",\"orderNo\":"+orderNo+",\"tradeNo\":"+tradeNo+"}";
 		
 		logThird(reqResult, "collect", reqBo);
 		if(StringUtil.isBlank(reqResult)) {
