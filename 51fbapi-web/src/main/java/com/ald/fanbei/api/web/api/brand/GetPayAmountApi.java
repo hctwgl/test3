@@ -102,8 +102,6 @@ public class GetPayAmountApi implements ApiHandle {
 			interestFreeArray = JSON.parseArray(interestFreeJson);
 		}
 
-		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(), amount, resource.getValue1(), resource.getValue2());
-
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
         BigDecimal useableAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), afUserAccountDo.getUsedAmount());
 		//是否是限额类目
@@ -129,6 +127,8 @@ public class GetPayAmountApi implements ApiHandle {
 		if (amount.compareTo(useableAmount) < 0) {
 			useableAmount = amount;
 		}
+		
+		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(), useableAmount, resource.getValue1(), resource.getValue2());
 		
 		resp.addResponseData("nperList", nperList);
 		resp.addResponseData("instalmentAmount", amount);
