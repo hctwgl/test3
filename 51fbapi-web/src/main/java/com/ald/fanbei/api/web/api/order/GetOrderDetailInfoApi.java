@@ -24,6 +24,7 @@ import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -111,7 +112,9 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setType(order.getOrderType());
 		vo.setGmtClosed(order.getGmtClosed());
 		vo.setMobile(order.getMobile());
-		vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
+		if (StringUtil.equals(order.getPayStatus(), PayStatus.PAYED.getCode())) {
+			vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
+		}
 		vo.setAddress(order.getAddress());
 		vo.setConsignee(order.getConsignee());
 		vo.setConsigneeMobile(order.getConsigneeMobile());

@@ -126,6 +126,10 @@ public class GetPayAmountApi implements ApiHandle {
 			bankPayAmount = BigDecimalUtil.subtract(amount, useableAmount);
 		}
 		
+		if (amount.compareTo(useableAmount) < 0) {
+			useableAmount = amount;
+		}
+		
 		resp.addResponseData("nperList", nperList);
 		resp.addResponseData("instalmentAmount", amount);
 		resp.addResponseData("useableAmount", useableAmount);

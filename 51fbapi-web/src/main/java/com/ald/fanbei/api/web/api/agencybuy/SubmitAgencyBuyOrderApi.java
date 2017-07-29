@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.web.api.agencybuy;
 
 import java.math.BigDecimal;
@@ -70,10 +67,10 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		
+
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
@@ -81,25 +78,25 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		String openId = ObjectUtils.toString(requestDataVo.getParams().get("openId"));
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
 		String goodsIcon = ObjectUtils.toString(requestDataVo.getParams().get("goodsIcon"));
-		BigDecimal priceAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("priceAmount"),BigDecimal.ZERO); // 原价
+		BigDecimal priceAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("priceAmount"), BigDecimal.ZERO); // 原价
 		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("saleAmount"), BigDecimal.ZERO);
-		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
-        Integer nper  = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"), BigDecimal.ZERO);
+		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
 		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("addressId"), 0);
 		String capture = ObjectUtils.toString(requestDataVo.getParams().get("capture"));
 		String remark = ObjectUtils.toString(requestDataVo.getParams().get("remark"));
-		if (  StringUtils.isBlank(numId) ) {
+		if (StringUtils.isBlank(numId)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);
-       
-		if(actualAmount.compareTo( BigDecimal.ZERO)<0){
-        	actualAmount = BigDecimal.ZERO;
-        }
-		
+
+		if (actualAmount.compareTo(BigDecimal.ZERO) < 0) {
+			actualAmount = BigDecimal.ZERO;
+		}
+
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		AfOrderDo afOrder = new AfOrderDo();
-	
+
 		afOrder.setUserId(userId);
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(saleAmount);
@@ -111,7 +108,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setUserCouponId(couponId);
 		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
-		if(addressDo==null){
+		if (addressDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		afAgentOrderDo.setAddress(addressDo.getAddress());
@@ -124,29 +121,28 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afAgentOrderDo.setCapture(capture);
 		afAgentOrderDo.setRemark(remark);
 		afAgentOrderDo.setCouponId(couponId);
-		if(couponId>0){
-			AfUserCouponDto couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
-			if(couponDo.getGmtEnd().before(new Date())||StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode()) ){
+		if (couponId > 0) {
+			AfUserCouponDto couponDo = afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+			if (couponDo.getGmtEnd().before(new Date()) || StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode())) {
 				logger.error("coupon end less now");
 				throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
 		}
-		
+
 		String isEnoughAmount = "Y";
-		BigDecimal leftAmount = BigDecimal.ZERO; 
-		if(nper>0){
-			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-			BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-			leftAmount = useableAmount;
-			if (useableAmount.compareTo(actualAmount) < 0) {
-				isEnoughAmount = "N";
-			}
-		}
+		BigDecimal leftAmount = BigDecimal.ZERO;
 		
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+		leftAmount = useableAmount;
+		if (useableAmount.compareTo(actualAmount) < 0) {
+			isEnoughAmount = "N";
+		}
+
 		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
 		String quotaData = quotaBo.getData();
-		if (StringUtils.isNotBlank(quotaData)&&!StringUtil.equals(quotaData, "{}")) {
+		if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
 			JSONObject json = JSONObject.parseObject(quotaData);
 			String virtualCode = json.getString("virtualCode");
 			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
@@ -156,25 +152,26 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			if (goodsUseableAmount.compareTo(leftAmount) < 0)
 				leftAmount = goodsUseableAmount;
 		}
-		
-		if(afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder, nper)>0){
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("orderId", afOrder.getRid());
-			data.put("isEnoughAmount", isEnoughAmount);
-			resp.setResponseData(data);
-			return resp;
-		}
+
 		String isNoneQuota = "N";
 		if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
 			isNoneQuota = "Y";
 		}
-		resp.addResponseData("isNoneQuota", isNoneQuota);
-		
+
+		if (afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder, nper) > 0) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("orderId", afOrder.getRid());
+			data.put("isEnoughAmount", isEnoughAmount);
+			data.put("isNoneQuota", isNoneQuota);
+			resp.setResponseData(data);
+			return resp;
+		}
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 	}
-	
+
 	/**
 	 * 获取免息规则
+	 * 
 	 * @param numId
 	 * @return
 	 */

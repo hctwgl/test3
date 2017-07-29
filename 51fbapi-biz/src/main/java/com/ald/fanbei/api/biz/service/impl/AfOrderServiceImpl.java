@@ -827,7 +827,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						newMap.put("outTradeNo", respBo.getOrderNo());
 						newMap.put("tradeNo", respBo.getTradeNo());
 						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
-						resultMap.put("resp", respBo);
+						resultMap.put("resp", newMap);
 						resultMap.put("success", true);
 					}
 					return resultMap;
