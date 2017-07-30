@@ -27,6 +27,7 @@ public class AfUserAuthDo extends AbstractSerial {
 	private Integer realnameScore;
 	private String facesStatus;
 	private BigDecimal similarDegree;
+	private BigDecimal thresholds;
 	private String mobileStatus;
 	private Date gmtMobile;
 	private String bankcardStatus;
@@ -280,6 +281,18 @@ public class AfUserAuthDo extends AbstractSerial {
 	}
 	public void setGmtAlipay(Date gmtAlipay) {
 		this.gmtAlipay = gmtAlipay;
+	}
+	/**
+	 * @return the thresholds
+	 */
+	public BigDecimal getThresholds() {
+		return thresholds;
+	}
+	/**
+	 * @param thresholds the thresholds to set
+	 */
+	public void setThresholds(BigDecimal thresholds) {
+		this.thresholds = thresholds;
 	}
 	
 }

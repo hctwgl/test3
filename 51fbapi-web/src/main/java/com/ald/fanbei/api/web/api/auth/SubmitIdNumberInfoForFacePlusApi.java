@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.auth;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -19,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
+import com.ald.fanbei.api.common.enums.FaceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -96,6 +98,7 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 			afIdNumberDo.setNation(nation);
 			afIdNumberDo.setValidDateBegin(validDateBegin);
 			afIdNumberDo.setValidDateEnd(validDateEnd);
+			afIdNumberDo.setFaceType(FaceType.FACE_PLUS.getCode());
 			AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 			if (StringUtils.equals(auth.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
@@ -142,11 +145,14 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				JSONObject json = JSONObject.parseObject(thresholdsStr);
 				Double thresholds = json.getDouble("1e-3");
+				auth.setSimilarDegree(BigDecimal.valueOf(confidence).setScale(4,BigDecimal.ROUND_HALF_UP));
+				auth.setThresholds(BigDecimal.valueOf(thresholds).setScale(4,BigDecimal.ROUND_HALF_UP));
 				if (confidence.compareTo(thresholds) >= 0) {
 					auth.setFacesStatus(YesNoStatus.YES.getCode());
 					auth.setYdStatus(YesNoStatus.YES.getCode());
 					afUserAuthService.updateUserAuth(auth);
 				} else {
+					afUserAuthService.updateUserAuth(auth);
 					throw new FanbeiException(FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
 				}
 
@@ -175,6 +181,12 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 
 		}
 
+	}
+	
+	public static void main(String[] args) {
+		Double d = 123.53d;
+		System.out.println(BigDecimal.valueOf(d).setScale(2,BigDecimal.ROUND_HALF_UP));
+		System.out.println(new BigDecimal(d));
 	}
 
 }

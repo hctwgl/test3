@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
+import com.ald.fanbei.api.common.enums.FaceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
@@ -98,6 +99,7 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 			afIdNumberDo.setNation(nation);
 			afIdNumberDo.setValidDateBegin(validDateBegin);
 			afIdNumberDo.setValidDateEnd(validDateEnd);
+			afIdNumberDo.setFaceType(FaceType.YITU.getCode());
 			AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 			if (StringUtils.equals(auth.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
