@@ -6,7 +6,14 @@ id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,val
 	</sql>
 	
 	<insert id="addIdNumber" parameterType="AfIdNumberDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_id_number(gmt_create , gmt_modified , user_id , address , citizen_id , gender , nation , name , valid_date_begin , valid_date_end , birthday , agency , id_front_url , id_behind_url,face_type)
+		INSERT INTO af_id_number
+		(gmt_create , gmt_modified , user_id , address , citizen_id , 
+		gender , nation , name , valid_date_begin , valid_date_end , 
+		birthday , agency , id_front_url , id_behind_url
+		<if test="faceType != null">
+			,face_type
+		</if>
+		)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -21,8 +28,10 @@ id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,val
     		#{birthday},
     		#{agency},
     		#{idFrontUrl},
-    		#{idBehindUrl},
-    		#{faceType}
+    		#{idBehindUrl}
+    		<if test="faceType != null">
+			,#{faceType}
+			</if>
 		)
 	</insert>
 	
