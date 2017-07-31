@@ -79,15 +79,12 @@ public class TradeLoginApi implements ApiHandle {
 
     private String checkSessionId(String sessionId, Long businessId) {
         String loginKey = Constants.TRADE_LOGIN_BUSINESSID + businessId;
-        String sessionKey = Constants.TRADE_SESSIONID + sessionId;
         Object value = bizCacheUtil.getObject(loginKey);
         if (value != null) {
             bizCacheUtil.delCache(loginKey);
-            bizCacheUtil.delCache((String) value);
         }
-        bizCacheUtil.saveObject(loginKey, sessionKey, Constants.SECOND_OF_HALF_HOUR);
         String token = UUID.randomUUID().toString().replace("-", "");
-        bizCacheUtil.saveObject(sessionKey, token, Constants.SECOND_OF_HALF_HOUR);
+        bizCacheUtil.saveObject(loginKey, token, Constants.SECOND_OF_HALF_HOUR);
         return token;
     }
 
