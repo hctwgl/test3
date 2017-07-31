@@ -372,7 +372,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	public static AfScrollbarVo getAfScrollbarVo(AfResourceDo resourceDo) {
 		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		if (resourceDo != null ) {
-			scrollbarVo.setContent(resourceDo.getTypeDesc());
+			scrollbarVo.setContent(resourceDo.getDescription());
 			scrollbarVo.setType(resourceDo.getValue1());
 			scrollbarVo.setName(resourceDo.getName());
 			scrollbarVo.setWordUrl(resourceDo.getValue2());
