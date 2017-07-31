@@ -11,7 +11,10 @@
 <div id="vueCon">
     <div class="bar" v-if="barShow">
         <img class="fl" src="$commonUrl/lb.png">
-        <a class="fl" :href="content.scrollbar.wordUrl"><marquee scrollamount="3" direction="right">{{content.scrollbar.content}}</marquee></a>
+        <a class="fl" :href="content.scrollbar.wordUrl">
+            <span v-if="content.scrollbar.content.length<20">{{content.scrollbar.content}}</span>
+            <marquee scrollamount="3" v-else>{{content.scrollbar.content}}</marquee>
+        </a>
         <img class="fr" src="$commonUrl/x.png" @click="barShow=false">
     </div>
     <div class="banner">
