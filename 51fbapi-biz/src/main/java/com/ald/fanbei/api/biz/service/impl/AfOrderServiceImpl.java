@@ -757,7 +757,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(virtualMap);
 						String virtualCode = "";
 						if (virtualTotalAmount!=null) {
-							virtualCode = afOrderService.getVirtualCode(resultMap);
+							virtualCode = afOrderService.getVirtualCode(virtualMap);
 							leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
 							//虚拟剩余额度大于信用可用额度 则为可用额度 （获取剩余额度）
 							leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
