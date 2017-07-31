@@ -669,7 +669,7 @@ public class RiskUtil extends AbstractThird {
 		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
 		//是虚拟商品
 		if (StringUtils.isNotBlank(virtualCode)) {
-			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSaleAmount(), 
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), 
 					orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
 			//增加虚拟商品记录
 			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
