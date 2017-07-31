@@ -294,6 +294,5 @@ public class Constants {
 	public static final int DEFAULT_DIGEST_TIMES = 1024;
 	public static final String SHA1 = "SHA-1";
 	public static final String TRADE_LOGIN_BUSINESSID = "trade_login_businessId_";
-	public static final String TRADE_SESSIONID = "trade_sessionId_";
 
 }

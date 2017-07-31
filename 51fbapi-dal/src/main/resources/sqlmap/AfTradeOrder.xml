@@ -159,4 +159,54 @@
 			#{endOfDate}
 		</if>
 	</select>
+	<select id="orderGrid" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
+		select
+		a.id,a.order_no,a.gmt_create,a.actual_amount,b.user_name,a.status
+		orderStatus,c.status withDrawStatus from
+		af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		where c.business_id =
+		#{businessId}
+		<if test="startOfDate != null and startOfDate != '' ">
+			and a.gmt_create <![CDATA[   >=  ]]>
+			#{startOfDate}
+		</if>
+		<if test="endOfDate != null and endOfDate != '' ">
+			and a.gmt_create <![CDATA[   <=  ]]>
+			#{endOfDate}
+		</if>
+		<if test="orderStatus != null and orderStatus != '' ">
+			and a.status = #{orderStatus}
+		</if>
+		<if test="withDrawStatus != null and withDrawStatus != '' ">
+			and c.status = #{withDrawStatus}
+		</if>
+		limit #{offset} , #{limit}
+	</select>
+
+	<select id="orderGridTotal" resultType="java.lang.Long">
+		select
+		count(a.id)
+		from
+		af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		where c.business_id =
+		#{businessId}
+		<if test="startOfDate != null and startOfDate != '' ">
+			and a.gmt_create <![CDATA[   >=  ]]>
+			#{startOfDate}
+		</if>
+		<if test="endOfDate != null and endOfDate != '' ">
+			and a.gmt_create <![CDATA[   <=  ]]>
+			#{endOfDate}
+		</if>
+		<if test="orderStatus != null and orderStatus != '' ">
+			and a.status = #{orderStatus}
+		</if>
+		<if test="withDrawStatus != null and withDrawStatus != '' ">
+			and c.status = #{withDrawStatus}
+		</if>
+	</select>
 </mapper>

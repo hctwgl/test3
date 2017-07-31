@@ -44,4 +44,9 @@ public class AfTradeBusinessInfoServiceImpl extends ParentServiceImpl<AfTradeBus
 		}
 		return reslut;
 	}
+
+	@Override
+	public AfTradeBusinessInfoDo getByBusinessId(Long businessId) {
+		return afTradeBusinessInfoDao.getByBusinessId(businessId);
+	}
 }

@@ -683,11 +683,11 @@ public abstract class BaseController {
             // 处理业务
             resultStr = doProcess(requestDataVo, null, request);
         } catch (FanbeiException e) {
-            exceptionresponse = new ApiHandleResponse(null, e.getErrorCode());
+            exceptionresponse = new ApiHandleResponse("trade_weixin_error", e.getErrorCode());
             resultStr = JSON.toJSONString(exceptionresponse);
             logger.error("trade weixin exception {}", e);
         } catch (Exception e) {
-            exceptionresponse = new ApiHandleResponse(null, FanbeiExceptionCode.SYSTEM_ERROR);
+            exceptionresponse = new ApiHandleResponse("trade_weixin_error", FanbeiExceptionCode.SYSTEM_ERROR);
             resultStr = JSON.toJSONString(exceptionresponse);
             logger.error("system exception {}", e);
         }

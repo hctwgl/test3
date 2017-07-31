@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -44,10 +45,38 @@ public interface AfTradeOrderDao extends BaseDao<AfTradeOrderDo, Long> {
 	/**
 	 * 查询一段时间的订单合计
 	 *
-	 * @param userId
+	 * @param businessId
 	 * @param startDate
 	 * @param endDate
 	 * @return
 	 */
 	AfTradeOrderStatisticsDto payOrderInfo(@Param("businessId") Long businessId, @Param("startOfDate") Date startDate, @Param("endOfDate") Date endDate);
+
+	/**
+	 * 分页查询商圈订单
+	 *
+	 * @param businessId
+	 * @param offset
+	 * @param limit
+	 * @param startOfDate
+	 * @param endOfDate
+	 * @param orderStatus
+	 * @param withDrawStatus
+	 * @return
+	 */
+	List<AfTradeOrderDto> orderGrid(@Param("businessId") Long businessId, @Param("offset") Integer offset, @Param("limit") Integer limit, @Param("startOfDate") Date startOfDate,
+									@Param("endOfDate") Date endOfDate, @Param("orderStatus") String orderStatus, @Param("withDrawStatus") String withDrawStatus);
+
+	/**
+	 * 分页查询商圈订单总条数
+	 *
+	 * @param businessId
+	 * @param startOfDate
+	 * @param endOfDate
+	 * @param orderStatus
+	 * @param withDrawStatus
+	 * @return
+	 */
+	Long orderGridTotal(@Param("businessId") Long businessId, @Param("startOfDate") Date startOfDate, @Param("endOfDate") Date endOfDate, @Param("orderStatus") String orderStatus,
+						@Param("withDrawStatus") String withDrawStatus);
 }

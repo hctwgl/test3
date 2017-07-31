@@ -1,10 +1,12 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 商圈订单扩展表Service
@@ -41,4 +43,30 @@ public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>
      * @return
      */
     AfTradeOrderStatisticsDto payOrderInfo(Long businessId, Date startDate, Date endDate);
+
+    /**
+     * 分页查询商圈订单
+     *
+     * @param businessId
+     * @param offset
+     * @param limit
+     * @param startOfDate
+     * @param endOfDate
+     * @param withDrawStatus
+     * @param orderStatus
+     * @return
+     */
+    List<AfTradeOrderDto> orderGrid(Long businessId, Integer offset, Integer limit, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus);
+
+    /**
+     * 分页查询商圈订单总条数
+     *
+     * @param businessId
+     * @param startOfDate
+     * @param endOfDate
+     * @param orderStatus
+     * @param withDrawStatus
+     * @return
+     */
+    Long orderGridTotal(Long businessId, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus);
 }

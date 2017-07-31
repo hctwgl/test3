@@ -323,6 +323,9 @@
 				<!-- 商圈微信端 -->
 				<entry key="/trade/login" value-ref="tradeLoginApi" />
 				<entry key="/trade/logout" value-ref="tradeLogoutApi" />
+				<entry key="/trade/businessInfo" value-ref="tradeBusinessInfoApi" />
+				<entry key="/trade/twoBarCode" value-ref="twoBarCodeApi" />
+				<entry key="/trade/getPayList" value-ref="getPayListApi" />
 			</map>
 		</constructor-arg>
 	</bean>

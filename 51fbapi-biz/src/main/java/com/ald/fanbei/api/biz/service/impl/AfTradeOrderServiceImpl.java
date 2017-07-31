@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -65,5 +67,15 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
 	@Override
 	public AfTradeOrderStatisticsDto payOrderInfo(Long businessId, Date startDate, Date endDate) {
 		return afTradeOrderDao.payOrderInfo(businessId, startDate, endDate);
+	}
+
+	@Override
+	public List<AfTradeOrderDto> orderGrid(Long businessId, Integer offset, Integer limit, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus) {
+		return afTradeOrderDao.orderGrid(businessId, offset, limit, startOfDate, endOfDate, orderStatus, withDrawStatus);
+	}
+
+	@Override
+	public Long orderGridTotal(Long businessId, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus) {
+		return afTradeOrderDao.orderGridTotal(businessId, startOfDate, endOfDate, orderStatus, withDrawStatus);
 	}
 }
