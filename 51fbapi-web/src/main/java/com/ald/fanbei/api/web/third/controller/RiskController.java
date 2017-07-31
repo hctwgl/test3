@@ -32,6 +32,7 @@ public class RiskController {
 
 	@RequestMapping(value = { "/verify" }, method = RequestMethod.POST)
 	@ResponseBody
+	@Deprecated
 	public String verify(HttpServletRequest request, HttpServletResponse response) {
 		String code = ObjectUtils.toString(request.getParameter("code"));
 		String data = ObjectUtils.toString(request.getParameter("data"));

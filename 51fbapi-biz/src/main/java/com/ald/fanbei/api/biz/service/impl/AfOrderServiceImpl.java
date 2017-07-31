@@ -1065,7 +1065,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	   						    &&!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode()) 
    								&&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
    								&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
-							return 0;
+//							return 0;
 					}
 					if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
@@ -1326,6 +1326,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH, PayType.AGENT_PAY, StringUtils.EMPTY, null, "菠萝觅代付退款", refundSource, StringUtils.EMPTY));
 						}
 						// 如果成功推送退款成功状态给菠萝觅
+						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount, refundNo);
 						break;						
 					case BANK:
 						//银行卡退款
