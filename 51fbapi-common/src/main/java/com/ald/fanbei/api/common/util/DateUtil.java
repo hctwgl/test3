@@ -44,6 +44,10 @@ public class DateUtil {
      * yyyy-MM
      */
     public static final String MONTH_PATTERN               = "yyyy-MM";
+    /**
+     * yyyyMM
+     */
+    public static final String MONTH_SHOT_PATTERN               = "yyyyMM";
 
     /**
      * yyyyMMdd

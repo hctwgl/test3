@@ -57,6 +57,7 @@ import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.druid.util.StringUtils;
@@ -107,12 +108,12 @@ public class AppH5FanBeiWebController extends BaseController {
 	public void homepagePop(HttpServletRequest request, ModelMap model) throws IOException {
 		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.RES_APP_POP_IMAGE);
 		model.put("redirectUrl", resourceDo.getName());
-		doMaidianLog(request,"");
+		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
 	}
 
 	@RequestMapping(value = { "receiveCoupons" }, method = RequestMethod.GET)
 	public void receiveCoupons(HttpServletRequest request, ModelMap model) throws IOException {
-		doMaidianLog(request,"");
+		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
 		
 		AfResourceDo resourceDo = afResourceDao.getSingleResourceBytype(AfResourceType.PickedCoupon.getCode());
 		String appInfotext = ObjectUtils.toString(request.getParameter("_appInfo"), "").toString();
@@ -184,7 +185,7 @@ public class AppH5FanBeiWebController extends BaseController {
 	@RequestMapping(value = "/pickCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
 		
-		doMaidianLog(request,"");
+		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
@@ -420,7 +421,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			processResult = false;
 			model.put("processResult", processResult);
 		}finally{
-			doMaidianLog(request, processResult+"");
+			doMaidianLog(request,H5CommonResponse.getNewInstance(true, processResult+""));
 		}
 
 	}
@@ -464,7 +465,7 @@ public class AppH5FanBeiWebController extends BaseController {
 	 * javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -53,11 +53,7 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	AfUserAuthService afUserAuthService;
 	@Resource
-	AfGameChanceService afGameChanceService;
-	@Resource
 	TongdunUtil tongdunUtil;
-	@Resource
-	JpushService jpushService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -126,12 +122,6 @@ public class LoginApi implements ApiHandle {
 			afUserLoginLogService.addUserLoginLog(loginDo);
 			FanbeiExceptionCode errorCode = getErrorCountCode(errorCount + 1);
 			return new ApiHandleResponse(requestDataVo.getId(), errorCode);
-		}
-		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
-			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
-			//向推荐人推送消息
-			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
-			jpushService.gameShareSuccess(user.getUserName());
 		}
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
