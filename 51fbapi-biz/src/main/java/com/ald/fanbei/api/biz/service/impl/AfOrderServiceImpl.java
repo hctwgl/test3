@@ -672,9 +672,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public Map<String, Object> payBrandOrder(final Long payId, final Long orderId, final Long userId,
-			final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount,
-			final Integer nper, final String appName, final String ipAddress) {
+	public Map<String, Object> payBrandOrder(final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress) {
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
@@ -692,25 +690,29 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setGmtPay(currentDate);
 					orderInfo.setActualAmount(saleAmount);
 					orderInfo.setBankId(payId);
-					if (payId < 0) {
+					if (payType.equals(PayType.WECHAT.getCode())) {
 						orderInfo.setPayType(PayType.WECHAT.getCode());
 						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						// 微信支付
-						resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount,
-								isSelf?PayOrderSource.SELFSUPPORT_ORDER.getCode():PayOrderSource.BRAND_ORDER.getCode());
+						resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount, isSelf ? PayOrderSource.SELFSUPPORT_ORDER.getCode() : PayOrderSource.BRAND_ORDER.getCode());
 						resultMap.put("success", true);
 						return resultMap;
-					} else if (payId == 0) {
-						//代付
-						//先做判断
+					} else if (payType.equals(PayType.AGENT_PAY.getCode())) {
+						// 先做判断
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 						Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-						//判断使用额度
+						// 判断使用额度
 						checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
 						
 						orderInfo.setNper(nper);
-						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
+						BorrowRateBo bo = null;
+						if(OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+							bo = afResourceService.borrowRateWithResourceForTrade(nper);
+						}
+						else {
+							bo = afResourceService.borrowRateWithResource(nper);
+						}
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setBorrowRate(boStr);
 						logger.info("updateOrder orderInfo = {}", orderInfo);
@@ -743,7 +745,62 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
-							return riskUtil.payOrder(resultMap,borrow, verybo.getOrderNo(), verybo, getVirtualCode(virtualMap));
+							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, getVirtualCode(virtualMap));
+						}
+					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {//组合支付
+						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+						Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+						
+						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+						
+						BigDecimal leftAmount = useableAmount;
+						BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(virtualMap);
+						String virtualCode = "";
+						if (virtualTotalAmount!=null) {
+							virtualCode = afOrderService.getVirtualCode(virtualMap);
+							leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
+							//虚拟剩余额度大于信用可用额度 则为可用额度 （获取剩余额度）
+							leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
+						}
+						
+						//银行卡需要支付的金额
+						BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
+						
+						orderInfo.setNper(nper);
+						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
+						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
+						orderInfo.setBorrowRate(boStr);
+						
+						String cardNo = card.getCardNumber();
+						String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+						orderInfo.setRiskOrderNo(riskOrderNo);
+						orderInfo.setBorrowAmount(leftAmount);
+						orderInfo.setBankAmount(bankAmount);
+						orderDao.updateOrder(orderInfo);
+						
+						//用额度进行分期
+						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String borrowTime = sdf.format(borrow.getGmtCreate());
+						// 通过弱风控后才进行后续操作
+						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap));
+						if (verybo.isSuccess()) {
+							logger.info("combination_pay result is true");
+							orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
+							orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+							orderInfo.setStatus(OrderStatus.DEALING.getCode());
+
+							AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+
+							resultMap = new HashMap<String, Object>();
+
+							if (null == cardInfo) {
+								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+							}
+							logger.info("combination_pay orderInfo = {}", orderInfo);
+							
+							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualCode, bankAmount, borrow, verybo, cardInfo);
 						}
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
@@ -762,10 +819,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						// 银行卡支付 代收
-						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
-								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
-								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
-								isSelf?"自营商品订单支付":"品牌订单支付", "02",  isSelf?OrderType.SELFSUPPORT.getCode():OrderType.BOLUOME.getCode());
+						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
 						if (!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
@@ -773,7 +827,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						newMap.put("outTradeNo", respBo.getOrderNo());
 						newMap.put("tradeNo", respBo.getTradeNo());
 						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
-						resultMap.put("resp", respBo);
+						resultMap.put("resp", newMap);
 						resultMap.put("success", true);
 					}
 					return resultMap;
@@ -807,9 +861,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					throw e;
 				}
 			}
+
+			
 		});
 	}
-
+	
 	public JSONObject borrowRateWithOrder(Long orderId,Integer nper){
 		AfOrderDo order = afOrderService.getOrderById(orderId);
 
@@ -1004,13 +1060,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					//菠萝觅，临时增加CLOSED订单：因为额度支付可能会先关闭订单
-					if (orderInfo == null 
-	   						 || 
+					if (orderInfo == null || 
 	   						 (	!orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()) 
 	   						    &&!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode()) 
    								&&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
    								&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
-							return 0;
+//							return 0;
+					}
+					if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
+						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
+						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
 					}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
 					orderInfo.setPayTradeNo(payOrderNo);
@@ -1036,29 +1096,59 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 	
 	@Override
+	public int dealAgentCpOrderSucc(final String payOrderNo, final String tradeNo, final String payType) {
+		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					if (orderInfo == null || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
+						return 0;
+					}
+					AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
+					afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
+					afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
+					
+					logger.info("dealAgentCpOrderSucc begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
+					orderInfo.setPayTradeNo(payOrderNo);
+					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+					orderInfo.setStatus(OrderStatus.PAID.getCode());
+					orderInfo.setPayType(payType);
+					orderInfo.setGmtPay(new Date());
+					orderInfo.setTradeNo(tradeNo);
+					orderDao.updateOrder(orderInfo);
+					logger.info("dealAgentCpOrderSucc comlete , orderInfo = {} ", orderInfo);
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealAgentCpOrderSucc error:",e);
+					return 0;
+				}
+			}
+		});
+		return result;
+	}	
+	
 	public int dealBrandOrderFail(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
-		if(!OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())){
+		if (!OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())) {
 			return 0;
 		}
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					if (orderInfo == null 
-							|| (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
-									&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())
-									&& !orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()))) {
+					if (orderInfo == null || (!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()) && !orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()))) {
 						return 0;
 					}
-					logger.info("dealBrandOrder fail begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
+					logger.info("dealBrandOrder fail begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[] { payOrderNo, tradeNo, payType });
 					String failMsg = "";
-					if(PayType.BANK.getCode().equals(payType)){
-						failMsg =  Constants.PAY_ORDER_UPS_FAIL_BANK;
-					}else if(PayType.WECHAT.getCode().equals(payType)){
-						failMsg =  Constants.PAY_ORDER_UPS_FAIL_WX;
-					}else{
-						failMsg =  Constants.PAY_ORDER_UPS_FAIL;
+					if (PayType.BANK.getCode().equals(payType)) {
+						failMsg = Constants.PAY_ORDER_UPS_FAIL_BANK;
+					} else if (PayType.WECHAT.getCode().equals(payType)) {
+						failMsg = Constants.PAY_ORDER_UPS_FAIL_WX;
+					} else {
+						failMsg = Constants.PAY_ORDER_UPS_FAIL;
 					}
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
@@ -1072,14 +1162,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.error("dealBrandOrder fail error:",e);
+					logger.error("dealBrandOrder fail error:", e);
 					return 0;
 				}
 			}
 		});
 		return result;
 	}
-
+	
 	@Override
 	public int dealBrandOrderRefund(final Long orderId,final Long userId, final Long bankId, final String orderNo, final String thirdOrderNo,
 			final BigDecimal refundAmount, final BigDecimal totalAmount, final String payType, final String payTradeNo, final String refundNo, final String refundSource) {
@@ -1178,6 +1268,66 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//如果成功推送退款成功状态给菠萝觅
 						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount, refundNo);
 						break;
+					case COMBINATION_PAY:
+						// 组合支付退款
+						logger.info("agent pay refund begin");
+						orderInfo = orderDao.getOrderById(orderId);
+
+						AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+
+						AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderIdAndStatus(orderInfo.getRid(), BorrowStatus.TRANSED.getCode());
+
+						// 重新需要生成账单的金额
+						BigDecimal newBorrowAmount = afBorrowService.calculateBorrowAmount(afBorrowDo.getRid(), refundAmount, refundSource.equals(RefundSource.USER.getCode()));
+						BigDecimal backAmount = BigDecimalUtil.subtract(orderInfo.getBankAmount(), newBorrowAmount);
+
+						logger.info("dealBrandOrderRefund newBorrowAmount = {} backAmount = {}", new Object[] { newBorrowAmount, backAmount });
+
+						// 更新账户金额
+						BigDecimal newUsedAmount = BigDecimalUtil.subtract(afUserAccountDo.getUsedAmount(), calculateUsedAmount(afBorrowDo));
+						afUserAccountDo.setUsedAmount(newUsedAmount);
+						afUserAccountDao.updateOriginalUserAccount(afUserAccountDo);
+						// 增加Account记录
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.AP_REFUND, afBorrowDo.getAmount(), userId, afBorrowDo.getRid()));
+						// 修改借款状态
+						afBorrowService.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.FINISH.getCode());
+						// 修改账单状态
+						afBorrowBillDao.updateNotRepayedBillStatus(afBorrowDo.getRid(), BorrowBillStatus.CLOSE.getCode());
+						// 修改订单状态
+						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+						orderDao.updateOrder(orderInfo);
+
+						AfUserBankcardDo afUserBankcardDo = afUserBankcardDao.getUserMainBankcardByUserId(userId);
+						if (backAmount.compareTo(BigDecimal.ZERO) > 0) {
+							// 退款最后放置，因为如果其他过程抛异常就不需要退款操作
+							AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, backAmount.abs(), userId, orderId, orderNo, OrderRefundStatus.REFUNDING, PayType.BANK, afUserBankcardDo.getCardNumber(), afUserBankcardDo.getBankName(), "菠萝觅代付多余还款退款" + backAmount.abs(), refundSource, StringUtils.EMPTY);
+							afOrderRefundDao.addOrderRefund(refundInfo);
+							UpsDelegatePayRespBo tempUpsResult = upsUtil.delegatePay(backAmount.abs(), afUserAccountDo.getRealName(), afUserBankcardDo.getCardNumber(), userId + "", afUserBankcardDo.getMobile(), afUserBankcardDo.getBankName(), afUserBankcardDo.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02", UserAccountLogType.BANK_REFUND.getCode(), refundInfo.getRid() + StringUtils.EMPTY);
+							logger.info("agent bank refund upsResult = {}", tempUpsResult);
+							if (!tempUpsResult.isSuccess()) {
+								refundInfo.setStatus(OrderRefundStatus.FAIL.getCode());
+								refundInfo.setPayTradeNo(tempUpsResult.getOrderNo());
+								afOrderRefundDao.updateOrderRefund(refundInfo);
+								throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
+							} else {
+								refundInfo.setPayTradeNo(tempUpsResult.getOrderNo());
+								afOrderRefundDao.updateOrderRefund(refundInfo);
+							}
+						} else if (backAmount.compareTo(BigDecimal.ZERO) > 0) {
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH, PayType.AGENT_PAY, StringUtils.EMPTY, null, "菠萝觅代付退款生成新账单" + backAmount.abs(), refundSource, StringUtils.EMPTY));
+							// 修改用户账户信息
+							AfUserAccountDo account = new AfUserAccountDo();
+							account.setUsedAmount(backAmount.abs());
+							account.setUserId(afUserAccountDo.getUserId());
+							afUserAccountDao.updateUserAccount(account);
+
+							afBorrowService.dealAgentPayBorrowAndBill(afUserAccountDo.getUserId(), afUserAccountDo.getUserName(), backAmount.abs(), afBorrowDo.getName(), afBorrowDo.getNper() - afBorrowDo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+						} else {
+							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH, PayType.AGENT_PAY, StringUtils.EMPTY, null, "菠萝觅代付退款", refundSource, StringUtils.EMPTY));
+						}
+						// 如果成功推送退款成功状态给菠萝觅
+						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount, refundNo);
+						break;						
 					case BANK:
 						//银行卡退款
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
@@ -1345,7 +1495,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		if (orderInfo == null) {
 			return resultMap;
 		}
-		//目前只有菠萝觅的值
+		// 菠萝觅传code，其他的传goodsName
 		if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 			VirtualGoodsCateogy type =  VirtualGoodsCateogy.findRoleTypeByCategory(orderInfo.getSecType());
 			if (type == null) {
@@ -1357,6 +1507,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
 			if (response != null) {
 				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
+			}
+		} else if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+			return null;
+		} else {
+			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, StringUtils.EMPTY, orderInfo.getGoodsName());
+			if (response != null) {
+				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
+				resultMap.put(Constants.VIRTUAL_CODE, response.getVirtualCode());
 			}
 		}
 		return resultMap;

@@ -78,7 +78,7 @@ public class TradeOrderApi implements ApiHandle {
         afOrder.setNper(nper);
         if (nper.intValue() > 0) {
             // 保存手续费信息
-            BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
+            BorrowRateBo borrowRate = afResourceService.borrowRateWithResourceForTrade(nper);
             afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
         }
         afOrderService.createOrder(afOrder);
