@@ -2,6 +2,10 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
+import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,6 +14,8 @@ import com.ald.fanbei.api.dal.dao.AfTradeOrderDao;
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 
+import java.math.BigDecimal;
+import java.util.Date;
 
 
 /**
@@ -28,9 +34,36 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
    
     @Resource
     private AfTradeOrderDao afTradeOrderDao;
+	@Resource
+	private AfTradeBusinessInfoDao afTradeBusinessInfoDao;
 
-		@Override
+	@Override
 	public BaseDao<AfTradeOrderDo, Long> getDao() {
 		return afTradeOrderDao;
+	}
+
+	@Override
+	public BigDecimal getCanWithDrawMoney(Long businessId) {
+		AfTradeBusinessInfoDo infoDo = afTradeBusinessInfoDao.getByBusinessId(businessId);
+		Date canWithDrawDate = DateUtil.addDays(DateUtil.getEndOfDate(new Date()), 0 - infoDo.getWithdrawCycle());
+		return afTradeOrderDao.getCanWithDrawMoney(businessId, canWithDrawDate);
+	}
+
+	@Override
+	public BigDecimal getCannotWithDrawMoney(Long businessId) {
+		AfTradeBusinessInfoDo infoDo = afTradeBusinessInfoDao.getByBusinessId(businessId);
+		Date now = new Date();
+		Date cannotWithDrawDate;
+		if (now.compareTo(DateUtil.getWithDrawOfDate(now)) > 0) {
+			cannotWithDrawDate = DateUtil.addDays(DateUtil.getEndOfDate(now), 0 - infoDo.getWithdrawCycle());
+		} else {
+			cannotWithDrawDate = DateUtil.addDays(DateUtil.getEndOfDate(now), 0 - infoDo.getWithdrawCycle() - 1);
+		}
+
+		return afTradeOrderDao.getCannotWithDrawMoney(businessId, cannotWithDrawDate);
+	}
+	@Override
+	public AfTradeOrderStatisticsDto payOrderInfo(Long businessId, Date startDate, Date endDate) {
+		return afTradeOrderDao.payOrderInfo(businessId, startDate, endDate);
 	}
 }

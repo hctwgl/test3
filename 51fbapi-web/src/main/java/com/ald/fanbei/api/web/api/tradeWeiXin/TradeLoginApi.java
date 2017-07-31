@@ -1,12 +1,15 @@
 package com.ald.fanbei.api.web.api.tradeWeiXin;
 
 import com.ald.fanbei.api.biz.service.AfTradeBusinessService;
+import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -28,6 +33,8 @@ public class TradeLoginApi implements ApiHandle {
     private AfTradeBusinessService tradeBusinessService;
     @Resource
     private BizCacheUtil bizCacheUtil;
+    @Resource
+    private AfTradeOrderService afTradeOrderService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -45,12 +52,17 @@ public class TradeLoginApi implements ApiHandle {
                 resp.addResponseData("businessId", businessDo.getId());
                 resp.addResponseData("token", createLoginToke());
                 //可提现金额
-
+                BigDecimal canWithDraw = afTradeOrderService.getCanWithDrawMoney(businessDo.getId());
+                resp.addResponseData("canWithDraw", canWithDraw == null ? BigDecimal.ZERO : canWithDraw);
                 //不可提现金额
-
-                //今日交易金额
-
-                //今日付款单数
+                BigDecimal cannotWithDraw = afTradeOrderService.getCannotWithDrawMoney(businessDo.getId());
+                resp.addResponseData("cannotWithDraw", cannotWithDraw == null ? BigDecimal.ZERO : cannotWithDraw);
+                //今日交易金额,今日付款单数
+                Date startDate = DateUtil.getStartOfDate(new Date());
+                Date endDate = DateUtil.getEndOfDate(new Date());
+                AfTradeOrderStatisticsDto dto = afTradeOrderService.payOrderInfo(businessDo.getId(), startDate, endDate);
+                resp.addResponseData("money", dto.getMoney());
+                resp.addResponseData("count", dto.getCount());
 
                 return resp;
             } else {

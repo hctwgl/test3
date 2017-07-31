@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 商圈订单扩展表Service
@@ -12,4 +16,29 @@ import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
  */
 public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>{
 
+    /**
+     * 获取可提现金额
+     *
+     * @param businessId
+     * @return
+     */
+    BigDecimal getCanWithDrawMoney(Long businessId);
+
+    /**
+     * 不可提现金额
+     *
+     * @param businessId
+     * @return
+     */
+    BigDecimal getCannotWithDrawMoney(Long businessId);
+
+    /**
+     * 统计一段时间内的支付订单
+     *
+     * @param businessId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    AfTradeOrderStatisticsDto payOrderInfo(Long businessId, Date startDate, Date endDate);
 }
