@@ -40,4 +40,14 @@
 		FROM af_code_record WHERE is_delete = 0 AND send_account=#{mobile} AND verify_code=#{verifyCode} ORDER BY ID DESC LIMIT 1;
 	</select>
 	
+	<select id="countMobileCodeToday" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM af_code_record 
+		WHERE is_delete = 0 
+		AND send_account=#{mobile} 
+		AND type=#{type}
+	    AND gmt_create <![CDATA[  >=  ]]> CAST(CAST(SYSDATE()AS DATE)AS DATETIME);
+	</select>
+	
 </mapper>

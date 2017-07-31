@@ -735,6 +735,7 @@ public class RiskUtil extends AbstractThird {
 						afUserAccountService.updateUserAccount(accountDo);
 					}
 	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
+	      			smsUtil.sendRiskSuccess(userAccountDo.getUserName());
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
@@ -757,6 +758,7 @@ public class RiskUtil extends AbstractThird {
 						afUserAccountService.updateUserAccount(accountDo);
 	      			}
 	      			jpushService.strongRiskFail(userAccountDo.getUserName());
+	      			smsUtil.sendRiskFail(userAccountDo.getUserName());
 				}
 			}
 		}

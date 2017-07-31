@@ -114,6 +114,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     SMS_MOBILE_NO_ERROR("SMS_MOBILE_NO_ERROR",1530,"invalid mobile","无效手机号"),
     SMS_MOBILE_COUNT_TOO_MANAY("SMS_MOBILE_COUNT_TOO_MANAY",1531,"too manay mobiles","手机号太多"),
     SMS_MOBILE_ERROR("SMS_MOBILE_ERROR",1532,"too manay mobiles","手机号有误"),
+    SMS_REGIST_EXCEED_TIME("SMS_REGIST_EXCEED_TIME",1141,"user regist exceed time","发送注册验证码超过每日限制次数"),
+    SMS_FORGET_PASSWORD_EXCEED_TIME("SMS_FORGET_PASSWORD_EXCEED_TIME",1142,"user forget password exceed time","发送找回密码验证码超过每日限制次数"),
+    SMS_MOBILE_BIND_EXCEED_TIME("SMS_MOBILE_BIND_EXCEED_TIME",1143,"user bind mobile exceed time","发送绑定手机号短信超过每日限制次数"),
+    SMS_SET_PAY_PASSWORD_EXCEED_TIME("SMS_SET_PAY_PASSWORD_EXCEED_TIME",1144,"user set pay password exceed time","发送设置支付密码短信超过每日限制次数"),
 
 
     AUTH_REALNAME_ERROR("AUTH_REALNAME_ERROR",1540,"auth realname error","实名认证失败"),

@@ -351,6 +351,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			if (!upsResult.isSuccess()) {
 				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
+				smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
 			} else {
 				//减少额度
 				accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));

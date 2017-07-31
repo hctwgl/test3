@@ -45,7 +45,19 @@ public enum AfResourceSecType {
 		RejectPageBannerUrl("REJECT_PAGE_BANNER_URL","拒绝借款期后不通过页面内图对应地址"),
 		SelfSupportGoodsPaytypes("SELFSUPPORT_GOODS_PAYTYPES","自营商品支付方式相关配置"),
 
-		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度");
+		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度"),
+		//短信
+		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
+		SMS_RISK_FAIL("SMS_RISK_FAIL","强风控未通过短信"),
+		SMS_BORROW_RISK_QUALIFIED("SMS_BORROW_RISK_QUALIFIED","用户借钱风控审核中状态被技术干预后用户符合借钱条件"),
+		SMS_BORROW_RISK_NOT_QUALIFIED("SMS_BORROW_RISK_NOT_QUALIFIED","用户借钱风控审核中状态被技术干预后用户不符合借钱条件"),
+		SMS_BORROW_PAY_MONEY_FAIL("SMS_BORROW_PAY_MONEY_FAIL","借钱审核通过但是打款失败"),
+		SMS_REPAYMENT_CONFIRM_FAIL("SMS_REPAYMENT_CONFIRM_FAIL","还款处理后确认用户还款失败"),
+		SMS_REPAYMENT_CONFIRM_SUCCESS("SMS_REPAYMENT_CONFIRM_SUCCESS","还款处理后确认用户还款成功"),
+		SMS_BORROW_AUDIT("SMS_BORROW_AUDIT","借款审核通过"),
+		SMS_REPAYMENT_SUCCESS("SMS_REPAYMENT_SUCCESS","还款成功"),
+		SMS_REPAYMENT_SUCCESS_REMAIN("SMS_REPAYMENT_SUCCESS_REMAIN","部分还款成功"),
+		SMS_LIMIT("SMS_LIMIT","短信限制");
 		
 	 	private String    code;
 		private String name;
