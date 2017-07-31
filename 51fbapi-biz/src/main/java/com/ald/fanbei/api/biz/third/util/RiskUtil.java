@@ -766,7 +766,10 @@ public class RiskUtil extends AbstractThird {
 			orderType = OrderType.AGENTCPBUY.getCode();
 		} else if (StringUtil.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 			orderType = OrderType.BOLUOMECP.getCode();
+		} else if (StringUtil.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())) {
+			orderType = OrderType.SELFSUPPORTCP.getCode();
 		}
+		
 		// 银行卡支付 代收
 		UpsCollectRespBo respBo = upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType);
 		if (!respBo.isSuccess()) {

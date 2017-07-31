@@ -790,7 +790,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
 							orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 							orderInfo.setStatus(OrderStatus.DEALING.getCode());
-
+							orderDao.updateOrder(orderInfo);
 							AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
 
 							resultMap = new HashMap<String, Object>();
@@ -1065,7 +1065,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	   						    &&!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode()) 
    								&&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
    								&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
-//							return 0;
+							return 0;
 					}
 					if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
