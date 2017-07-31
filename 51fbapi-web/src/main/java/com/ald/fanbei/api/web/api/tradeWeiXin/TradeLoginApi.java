@@ -38,6 +38,7 @@ public class TradeLoginApi implements ApiHandle {
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+        String sessionId = request.getHeader("sessionId");
         try {
             String username = ObjectUtils.toString(requestDataVo.getParams().get("username"), null);
             String password = ObjectUtils.toString(requestDataVo.getParams().get("password"), null);
@@ -49,8 +50,11 @@ public class TradeLoginApi implements ApiHandle {
             String curPwd = DigestUtil.encodeHex(curPwdBytes);
             if (curPwd.equals(businessDo.getPassword())) {
                 ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+
+                //判断商户是否已经登录(一个账户只能一台设备登录)
+                String token = checkSessionId(sessionId, businessDo.getId());
                 resp.addResponseData("businessId", businessDo.getId());
-                resp.addResponseData("token", createLoginToke());
+                resp.addResponseData("token", token);
                 //可提现金额
                 BigDecimal canWithDraw = afTradeOrderService.getCanWithDrawMoney(businessDo.getId());
                 resp.addResponseData("canWithDraw", canWithDraw == null ? BigDecimal.ZERO : canWithDraw);
@@ -66,17 +70,25 @@ public class TradeLoginApi implements ApiHandle {
 
                 return resp;
             } else {
-                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PASSWORD_ERROR);
+                return new ApiHandleResponse(sessionId, FanbeiExceptionCode.USER_PASSWORD_ERROR);
             }
         } catch (Exception e) {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
+            return new ApiHandleResponse(sessionId, FanbeiExceptionCode.FAILED);
         }
     }
 
-    private String createLoginToke() {
+    private String checkSessionId(String sessionId, Long businessId) {
+        String loginKey = Constants.TRADE_LOGIN_BUSINESSID + businessId;
+        String sessionKey = Constants.TRADE_SESSIONID + sessionId;
+        Object value = bizCacheUtil.getObject(loginKey);
+        if (value != null) {
+            bizCacheUtil.delCache(loginKey);
+            bizCacheUtil.delCache((String) value);
+        }
+        bizCacheUtil.saveObject(loginKey, sessionKey, Constants.SECOND_OF_HALF_HOUR);
         String token = UUID.randomUUID().toString().replace("-", "");
-        //将token放入redis
-        bizCacheUtil.saveObject(token, token, Constants.SECOND_OF_HALF_HOUR);
+        bizCacheUtil.saveObject(sessionKey, token, Constants.SECOND_OF_HALF_HOUR);
         return token;
     }
+
 }

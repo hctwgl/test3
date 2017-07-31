@@ -666,6 +666,7 @@ public abstract class BaseController {
 		String resultStr = StringUtils.EMPTY;
 		BaseResponse exceptionresponse = null;
 		RequestDataVo requestDataVo = null;
+		String sessionId = request.getHeader("sessionId");
 		try {
 			// 检查参数是否为空
 			reqData = checkCommonParam(reqData, request, isForQQ);
@@ -676,24 +677,29 @@ public abstract class BaseController {
 			// 验证参数
 			boolean beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
 			if (!beforeLogin) { //需要登录的接口
+				String sessionKey = Constants.TRADE_SESSIONID + sessionId;
 				String token = request.getHeader("token");
-				if(StringUtil.isBlank(token)) {
+				if(StringUtil.isBlank(token) || StringUtil.isBlank(sessionKey)) {
 					throw new FanbeiException("business don't exist", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
 				}
-				Object value = bizCacheUtil.getObject(token);
-				if(value == null) {
+				Object value = bizCacheUtil.getObject(sessionKey);
+				if(value == null || !token.equals(value)) {
 					throw new FanbeiException("business is timeout", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT);
 				}
+				//更新有效时间
+				String loginKey = Constants.TRADE_LOGIN_BUSINESSID + request.getHeader("businessId");
+				bizCacheUtil.saveObject(loginKey, sessionKey, Constants.SECOND_OF_HALF_HOUR);
+				bizCacheUtil.saveObject(sessionKey, token, Constants.SECOND_OF_HALF_HOUR);
 			}
 
 			// 处理业务
 			resultStr = doProcess(requestDataVo, null, request);
 		} catch (FanbeiException e) {
-			exceptionresponse = buildErrorResult(e.getErrorCode(), request);
+			exceptionresponse = new ApiHandleResponse(sessionId, e.getErrorCode());
 			resultStr = JSON.toJSONString(exceptionresponse);
 			logger.error("trade weixin exception {}", e);
 		} catch (Exception e) {
-			exceptionresponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
+			exceptionresponse = new ApiHandleResponse(sessionId, FanbeiExceptionCode.SYSTEM_ERROR);
 			resultStr = JSON.toJSONString(exceptionresponse);
 			logger.error("system exception {}", e);
 		}

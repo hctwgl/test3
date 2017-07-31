@@ -322,6 +322,7 @@
 
 				<!-- 商圈微信端 -->
 				<entry key="/trade/login" value-ref="tradeLoginApi" />
+				<entry key="/trade/logout" value-ref="tradeLogoutApi" />
 			</map>
 		</constructor-arg>
 	</bean>
