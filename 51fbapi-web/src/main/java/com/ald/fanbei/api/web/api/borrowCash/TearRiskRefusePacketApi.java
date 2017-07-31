@@ -199,6 +199,8 @@ public class TearRiskRefusePacketApi  implements ApiHandle {
 			}
 		} catch (Exception e) {
 			logger.error("TearPacketApi=>" + e.toString());
+			// 发送备用优惠券
+			
 		}
 		resp.setResponseData(data);
 		return resp;
