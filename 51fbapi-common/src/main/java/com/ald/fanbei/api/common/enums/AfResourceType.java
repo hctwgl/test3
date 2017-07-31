@@ -72,6 +72,8 @@ public enum AfResourceType {
 	
 	SuperCouponGift("SUPER_COUPON_GIFT", "神券礼包"),
 	
+	ActivityCouponGift("ACTIVITY_COUPON_GIFT", "活动优惠券"),
+	
 	CANCEL_ORDER_REASON("CANCEL_ORDER_REASON","用户取消订单原因"),
 	ORDER_SEARCH_CONDITION("ORDER_SEARCH_CONDITION","订单筛选条件"),
 	

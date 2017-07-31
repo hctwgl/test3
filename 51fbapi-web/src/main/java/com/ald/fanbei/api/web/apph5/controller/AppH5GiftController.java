@@ -141,8 +141,50 @@ public class AppH5GiftController extends BaseController {
     	} catch (Exception e){
     		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
     	}
-    	
     }
+    
+    @RequestMapping(value = "activityCouponList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+    public String activityCouponList(HttpServletRequest request, ModelMap model) throws IOException {
+    	try{
+    		FanbeiWebContext context = doWebCheck(request, false);
+    		String userName = context.getUserName();
+    		JSONObject jsonObj = new JSONObject();
+    		if(userName != null) {
+    			jsonObj.put("userName", userName);
+    		}
+    		List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes(AfResourceType.ActivityCouponGift.getCode());
+    		if(afResourceList == null || afResourceList.isEmpty()) {
+    			return H5CommonResponse.getNewInstance(false, "").toString();
+    		}
+    		AfResourceDo afResourceDo = afResourceList.get(0);
+    		String couponIdValue = afResourceDo.getValue();
+    		String[] couponIds = couponIdValue.split(",");
+    		List<HashMap<String,Object>> couponInfoList = new ArrayList<HashMap<String,Object>>();
+    		for(String couponId : couponIds) {
+    			HashMap<String,Object> couponInfoMap = new HashMap<String,Object>();
+    			// 查询优惠券信息
+    			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+    			if(afCouponDo == null){
+    				return H5CommonResponse.getNewInstance(false, "优惠券信息不存在:id=>" + couponId).toString();
+    			}
+    			String name = afCouponDo.getName(); 
+    			couponInfoMap.put("name", name);
+    			couponInfoMap.put("amount", afCouponDo.getAmount());
+    			couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
+    			couponInfoMap.put("couponId", couponId);
+    			couponInfoMap.put("type", "1");
+    			couponInfoMap.put("desc", afCouponDo.getUseRule());
+    			couponInfoMap.put("remark", "全场通用");
+    			couponInfoList.add(couponInfoMap);
+    		}
+    		jsonObj.put("couponInfoList", couponInfoList);
+        	return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
+    	} catch (Exception e){
+    		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+    	}
+    }
+    
     
     
     @Override

@@ -278,6 +278,7 @@ public class AppH5SubjectController  extends BaseController{
 					activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
 					activityGoodsInfo.put("goodsId", goodsDo.getRid());
 					activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+					activityGoodsInfo.put("source", goodsDo.getSource());
 					activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
 					activityGoodsInfo.put("activityName", activityName);
 					String tags = goodsDo.getTags();
@@ -327,6 +328,7 @@ public class AppH5SubjectController  extends BaseController{
 				qualityGoodsInfo.put("goodsIcon", qualityGoods.getGoodsIcon());
 				qualityGoodsInfo.put("goodsId", qualityGoods.getRid());
 				qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
+				qualityGoodsInfo.put("source", qualityGoods.getSource());
 				qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
 				qualityGoodsInfo.put("goodsType", "0");
 				String tags = qualityGoods.getTags();
