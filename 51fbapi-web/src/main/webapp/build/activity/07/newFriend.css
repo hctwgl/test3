@@ -29,6 +29,7 @@
   background-color: #b0b0b0;
   text-align: center;
   line-height: 0.86rem;
+  margin: 0.32rem 0.16rem;
 }
 .coupon {
   margin: 0 0 .16rem .16rem;
@@ -63,6 +64,12 @@
   line-height: 1.61rem;
   float: right;
   position: relative;
+}
+.coupon .right .right-one {
+  font-size: 0.36rem;
+}
+.coupon .right .right-two {
+  font-size: 0.16rem;
 }
 .coupon .right p {
   display: inline-block;

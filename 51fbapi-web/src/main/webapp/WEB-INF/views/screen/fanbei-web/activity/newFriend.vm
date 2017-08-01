@@ -13,8 +13,8 @@
         <div v-for="(data,index) in content.couponInfoList" @click="getCoupon(data.couponId,data.type)" class="coupon">
             <div class="left"><p>￥<span>{{data.name}}</span></p></div>
             <div class="right">
-                <p>{{data.remark}}</p>
-                <p>{{data.desc}}</p>
+                <p class="right-one">{{data.remark}}</p>
+                <p class="right-two">{{data.desc}}</p>
                 <!--<p>立即领券</p>!-->
             </div>
         </div>
