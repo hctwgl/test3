@@ -163,29 +163,40 @@ public interface JpushService {
 	public void fundRiskSuccess(String userName);
 
 	/**
-	 *  公积金认证失败推送
+	 *  公积金认证未通过推送
 	 */
 	public void fundRiskFail(String userName);	
-	
+	/**
+	 *  公积金认证失败推送
+	 */
+	public void fundRiskFault(String userName);		
 	/**
 	 *  社保认证推送  
 	 */
 	public void socialSecurityRiskSuccess(String userName);
 
 	/**
-	 *  社保认证失败推送
+	 *  社保认证未通过推送
 	 */
 	public void socialSecurityRiskFail(String userName);		
-	
+	/**
+	 *  社保认证失败推送
+	 */
+	public void socialSecurityRiskFault(String userName);		
 	/**
 	 *  信用卡认证推送  
 	 */
 	public void creditCardRiskSuccess(String userName);
 
 	/**
+	 *  信用卡认证未通过推送
+	 */
+	public void creditCardRiskFail(String userName);
+	
+	/**
 	 *  信用卡认证失败推送
 	 */
-	public void creditCardRiskFail(String userName);		
+	public void creditCardRiskFault(String userName);	
 	
 	/**
 	 *  支付宝认证成功推送  
@@ -193,7 +204,11 @@ public interface JpushService {
 	public void alipayRiskSuccess(String userName);
 
 	/**
+	 *  支付宝认证未通过推送
+	 */
+	public void alipayRiskFail(String userName);	
+	/**
 	 *  支付宝认证失败推送
 	 */
-	public void alipayRiskFail(String userName);		
+	public void alipayRiskFault(String userName);		
 }
