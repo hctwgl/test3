@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/07/rankingList.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggrankingList.css>
 </head>
 <body>
     <div id="rankingList">
@@ -99,5 +99,6 @@
                 <span class="list-center">25.22</span>
                 <span class="list-right">8.55</span>
             </li>
+        </ul>
 </body>
 </html>
