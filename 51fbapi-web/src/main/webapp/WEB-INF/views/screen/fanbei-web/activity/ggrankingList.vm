@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggrankingList.css>
+</head>
+<body>
+    <div id="rankingList">
+        <div class="rebate">
+            <span class="rebate-left">消费返利榜</span>
+            <span class="rebate-right">共有<i>xxxx</i>人获得高额返利</span>
+        </div>
+        <div class="phoneNumber">
+            <span class="phone-left">手机号</span>
+            <span class="phone-center">总返利</span>
+            <span class="phone-right">邀请好友返利</span>
+        </div>
+        <ul class="numberList">
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+            <li class="list">
+                <span class="list-left">15555553333</span>
+                <span class="list-center">25.22</span>
+                <span class="list-right">8.55</span>
+            </li>
+        </ul>
+</body>
+</html>
