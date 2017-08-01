@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017052302")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/07")
+<title>借贷超市</title>
+<link rel="stylesheet" type="text/css" href="/common/css/swiper-3.4.2.min.css">
+<link rel="stylesheet" type="text/css" href="/dist/activity/07/otherBorrow.css">
+</head>
+<body>
+<div id="vueCon">
+    <div class="bar" v-if="barShow">
+        <img class="fl" src="$commonUrl/lb.png">
+        <a class="fl" :href="content.scrollbar.wordUrl">
+            <span v-if="content.scrollbar.content.length<20">{{content.scrollbar.content}}</span>
+            <marquee scrollamount="3" v-else>{{content.scrollbar.content}}</marquee>
+        </a>
+        <img class="fr" src="$commonUrl/x.png" @click="barShow=false">
+    </div>
+    <div class="banner">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="item of content.bannerList">
+                <a :href="item.content">
+                    <img :src="item.imageUrl">
+                </a>
+            </div>
+        </div>
+        <div class="img-pagination"></div>
+    </div>
+    <div class="swiper-container">
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination" id="navWrap"></div>
+        <div class="hei"></div>
+
+        <div class="swiper-wrapper" id="wrapper">
+            <div class="swiper-slide" v-for="data of content.tabList">
+                <a :href="item.linkUrl" class="app" v-for="item of data.loanShopList">
+                    <div class="left">
+                        <img class="img" :src="item.iconUrl">
+                        <div class="name">{{item.lsmName}}</div>
+                        <div class="text">{{txtFix(item.lsmIntro,14)}}</div>
+                    </div>
+                    <div class="right" v-if="item.marketPoint">
+                        <div class="num">{{sp(item.marketPoint,0)}}</div>
+                        <div class="text">{{sp(item.marketPoint,1)}}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/common/js/swiper-3.4.2.jquery.min.js"></script>
+<script src="/dist/activity/07/otherBorrow.js"></script>
+</html>

@@ -107,7 +107,6 @@
 				<value>/good/getGoodsTkRate</value>
 				<value>/goods/getGoodsInfoByNumId</value>
 
-
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				<value>/brand/getBrandList</value>
@@ -118,7 +117,6 @@
 				<value>/user/submitShareAction</value>
 				<value>/user/getImageCode</value>
 				<value>/goods/getGoodsSpec</value>
-
 				<value>/trade/login</value>
 			</list>
 		</constructor-arg>
@@ -196,7 +194,8 @@
 				<entry key="/order/afterSaleLogisticSupply" value-ref="afterSaleLogisticSupplyApi" />
 				<entry key="/order/getOrderAfterSaleInfo" value-ref="getOrderAfterSaleInfoApi" />
 				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
-
+				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
+				<entry key="/order/getBeforePayType" value-ref="getBeforePayTypeApi" />
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
@@ -205,6 +204,7 @@
 				<entry key="/system/AppLaunchImage" value-ref="AppLaunchImageApi" />
 				<entry key="/system/appPopImage" value-ref="appPopImageApi" />
 				<entry key="/system/getTabbarInfor" value-ref="getTabbarInforApi" />
+				<entry key="/system/maidian" value-ref="maiDianApi" />
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
@@ -319,7 +319,7 @@
 				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />
 				<entry key="/auth/submitIdNumberInfoForFacePlus" value-ref="submitIdNumberInfoForFacePlusApi" />
 				<entry key="/auth/updateIdCardForFacePlus" value-ref="updateIdCardForFacePlusApi" />
-
+				
 				<!-- 商圈微信端 -->
 				<entry key="/trade/login" value-ref="tradeLoginApi" />
 				<entry key="/trade/logout" value-ref="tradeLogoutApi" />

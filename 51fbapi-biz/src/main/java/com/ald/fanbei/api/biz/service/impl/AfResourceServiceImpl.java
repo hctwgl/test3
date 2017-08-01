@@ -362,4 +362,61 @@ public class AfResourceServiceImpl implements AfResourceService {
 	public List<AfResourceDo> selectActivityConfig() {
 		return afResourceDao.selectActivityConfig();
 	}
+
+	@Override
+	public BorrowRateBo borrowRateWithResourceForTrade(Integer realTotalNper) {
+		BorrowRateBo borrowRate = new BorrowRateBo();
+		JSONObject borrowRateJson = getBorrowRateResourceForTrade(realTotalNper);
+		JSONObject borrowRateOverdueJson = getBorrowOverdueRateResource(realTotalNper);
+		borrowRate.setNper(borrowRateJson.getInteger("nper"));
+		borrowRate.setRate(borrowRateJson.getBigDecimal("rate"));
+		borrowRate.setPoundageRate(borrowRateJson.getBigDecimal("poundageRate"));
+		borrowRate.setRangeBegin(borrowRateJson.getBigDecimal("rangeBegin"));
+		borrowRate.setRangeEnd(borrowRateJson.getBigDecimal("rangeEnd"));
+
+		borrowRate.setOverdueRate(borrowRateOverdueJson.getBigDecimal("overdueRate"));
+		borrowRate.setOverduePoundageRate(borrowRateOverdueJson.getBigDecimal("overduePoundageRate"));
+		borrowRate.setOverdueRangeBegin(borrowRateOverdueJson.getBigDecimal("overdueRangeBegin"));
+		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
+		return borrowRate;
+	}
+
+	private JSONObject getBorrowRateResourceForTrade(Integer realTotalNper) {
+		// 获取商圈借款分期配置信息
+		AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_TRADE);
+		BigDecimal rangeBegin = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MIN, BigDecimal.ZERO);
+		BigDecimal rangeEnd = NumberUtil.objToBigDecimalDefault(Constants.DEFAULT_CHARGE_MAX, BigDecimal.ZERO);
+		String[] range = StringUtil.split(resource.getValue2(), ",");
+		if (null != range && range.length == 2) {
+			rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
+			rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
+		}
+		JSONArray array = JSON.parseArray(resource.getValue());
+		JSONObject borrowRate = new JSONObject();
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject obj = array.getJSONObject(i);
+			if (obj.getInteger(Constants.DEFAULT_NPER).equals(realTotalNper)) {
+				borrowRate.put("nper", realTotalNper);
+				borrowRate.put("rate", obj.get(Constants.DEFAULT_RATE));
+				borrowRate.put("rangeBegin", rangeBegin);
+				borrowRate.put("rangeEnd", rangeEnd);
+				borrowRate.put("poundageRate", new BigDecimal(resource.getValue1()));
+				break;
+			}
+		}
+		return borrowRate;
+	}
+
+	@Override
+	public AfResourceDo getScrollbarByType() {
+		AfResourceDo resourceDo = new AfResourceDo();
+		List<AfResourceDo> list = afResourceDao.getScrollbarByType();
+		if (list != null && list.size() > 0 ) {
+			resourceDo = list.get(0);
+		}
+		return resourceDo;
+		
+	}
+
+	
 }

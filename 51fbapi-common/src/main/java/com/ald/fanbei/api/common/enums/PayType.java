@@ -14,13 +14,11 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum PayType {
 	
-    ALIPAY("ALI", "支付宝"), WECHAT("WX", "微信"), AGENT_PAY("AP","代付"), BANK("BANK","银行卡");
+    ALIPAY("ALI", "支付宝"), WECHAT("WX", "微信"), AGENT_PAY("AP","代付"), BANK("BANK","银行卡"), COMBINATION_PAY("CP","组合支付"), OTHER("OTHER","其他支付");
 
     private String    code;
 
     private String name;
-
-
     
     private static Map<String,PayType> codeRoleTypeMap = null;
 

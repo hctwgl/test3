@@ -38,6 +38,7 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaReqBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
@@ -668,7 +669,7 @@ public class RiskUtil extends AbstractThird {
 		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
 		//是虚拟商品
 		if (StringUtils.isNotBlank(virtualCode)) {
-			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSaleAmount(), 
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), 
 					orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
 			//增加虚拟商品记录
 			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
@@ -677,7 +678,7 @@ public class RiskUtil extends AbstractThird {
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);
 		// 在风控审批通过后额度不变生成账单
-		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount());
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode());
 		
 		// 修改用户账户信息
 		AfUserAccountDo account = new AfUserAccountDo();
@@ -690,7 +691,115 @@ public class RiskUtil extends AbstractThird {
 		resultMap.put("success", true);
 		return resultMap;
 	}
-
+	/**
+	 * 风控通过后组合支付
+	 * @param userId
+	 * @param orderNo
+	 * @param tradeNo
+	 * @param resultMap
+	 * @param isSelf
+	 * @param virtualCode
+	 * @param bankAmount
+	 * @param borrow
+	 * @param verybo
+	 * @param cardInfo
+	 * @return
+	 */
+	public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, String virtualCode, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
+		String result = verybo.getResult();
+		
+		logger.info("combinationPay:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
+		// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+		
+		if (!result.equals("10")) {
+			resultMap.put("success", false);
+			resultMap.put("verifybo", JSONObject.toJSONString(verybo));
+			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			
+			orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+			orderInfo.setClosedDetail("系统关闭");
+			orderInfo.setClosedReason("风控审批不通过");
+			orderInfo.setGmtClosed(new Date());
+			logger.info("updateOrder orderInfo = {}", orderInfo);
+			if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+				try {
+					//菠萝觅风控拒绝的订单自动取消
+					boluomeUtil.cancelOrder(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), orderInfo.getClosedReason());
+					orderDao.updateOrder(orderInfo);
+				} catch (UnsupportedEncodingException e) {
+					logger.info("cancel Order error");
+				}
+			} else {
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
+					AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+					afAgentOrderDo.setClosedReason("风控审批失败");
+					afAgentOrderDo.setGmtClosed(new Date());
+					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+					
+					//添加关闭订单释放优惠券
+					if(afAgentOrderDo.getCouponId()>0){
+						AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+						
+						if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+							couponDo.setStatus(CouponStatus.NOUSE.getCode());
+							afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
+						}
+						else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+							couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+							afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
+						}
+					}
+					orderDao.updateOrder(orderInfo);
+				}
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
+					orderDao.updateOrder(orderInfo);
+				}
+			}
+			jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
+			return resultMap;
+		}
+		
+		String orderType = OrderType.SELFSUPPORT.getCode();
+		if (StringUtil.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
+			orderType = OrderType.AGENTCPBUY.getCode();
+		} else if (StringUtil.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
+			orderType = OrderType.BOLUOMECP.getCode();
+		} else if (StringUtil.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())) {
+			orderType = OrderType.SELFSUPPORTCP.getCode();
+		}
+		
+		// 银行卡支付 代收
+		UpsCollectRespBo respBo = upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType);
+		if (!respBo.isSuccess()) {
+			throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+		}
+		
+		//是虚拟商品
+		if (StringUtils.isNotBlank(virtualCode)) {
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getBorrowAmount(), orderInfo.getActualAmount(), orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
+			//增加虚拟商品记录
+			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
+		}
+		
+		// 新增借款信息
+		afBorrowDao.addBorrow(borrow);        //冻结状态
+		// 在风控审批通过后额度不变生成账单
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode());
+		
+		// 修改用户账户信息
+		AfUserAccountDo account = new AfUserAccountDo();
+		account.setUsedAmount(orderInfo.getBorrowAmount());
+		account.setUserId(userAccountInfo.getUserId());
+		afUserAccountDao.updateUserAccount(account);
+		
+		logger.info("updateOrder orderInfo = {}", orderInfo);
+		orderDao.updateOrder(orderInfo);
+		resultMap.put("success", true);
+		return resultMap;
+	}
+	
 	/**
 	 * @方法描述：实名认证时风控异步审核
 	 * 

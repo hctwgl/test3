@@ -132,4 +132,19 @@ public interface AfResourceService {
 	 * @return: List<AfResourceDo>
 	 */
 	List<AfResourceDo> selectActivityConfig();
+
+	/*
+	 * 获取商圈借款手续费等信息
+	 */
+
+	BorrowRateBo borrowRateWithResourceForTrade(Integer realTotalNper);
+	
+	/**
+	 * 
+	 * @说明：借贷超市的滚动条显示
+	 * @param: @param code
+	 * @param: @return
+	 * @return: AfResourceDo
+	 */
+	AfResourceDo getScrollbarByType();
 }
