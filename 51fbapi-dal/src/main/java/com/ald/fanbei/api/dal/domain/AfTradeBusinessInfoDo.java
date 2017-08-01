@@ -98,6 +98,11 @@ public class AfTradeBusinessInfoDo extends AbstractSerial {
    private String protocolUrl;
 
    /**
+    * 授权协议图片
+    */
+   private String authorUrl;
+
+   /**
     * 提现周期 多少天内不能提现 1表示当天内不能提现
     */
    private Integer withdrawCycle;
@@ -859,4 +864,11 @@ public class AfTradeBusinessInfoDo extends AbstractSerial {
       this.cardIdnumber = cardIdnumber;
    }
 
+   public String getAuthorUrl() {
+      return authorUrl;
+   }
+
+   public void setAuthorUrl(String authorUrl) {
+      this.authorUrl = authorUrl;
+   }
 }
