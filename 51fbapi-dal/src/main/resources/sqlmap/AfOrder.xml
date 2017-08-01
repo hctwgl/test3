@@ -841,6 +841,18 @@
 		and a.pay_type = 'AP' and b.id is null
 	</select>
 	
+	<select id="get20170801ExceptionOrder" resultType="AfOrderDo">
+		SELECT 
+			ao.id rid,ao.gmt_create,ao.gmt_modified,ao.user_id,ao.order_no,ao.third_order_no,ao.third_detail_url,ao.
+		status,ao.user_coupon_id,ao.order_type,ao.sec_type,ao.goods_id,ao.open_id,ao.num_id,ao.goods_name,ao.goods_icon,ao.count,ao.
+		price_amount,ao.sale_amount,ao.actual_amount,ao.shop_name,ao.pay_status,ao.pay_type,ao.pay_trade_no,ao.gmt_pay,ao.trade_no,ao.
+		gmt_rebated,ao.mobile,ao.gmt_finished,ao.rebate_amount,ao.commission_amount,ao.bank_id,ao.gmt_pay_end,ao.service_provider,ao.nper,ao.risk_order_no,ao.
+		borrow_rate,ao.coupon_amount,ao.interest_free_json,ao.consignee,ao.address,ao.consignee_mobile,ao.invoice_header,ao.logistics_info,ao.pre_status,ao.
+		goods_price_id,ao.goods_price_name,ao.logistics_company,ao.logistics_no,ao.gmt_deliver,ao.gmt_closed,ao.cancel_reason,ao.cancel_detail,ao.closed_reason,ao.closed_detail,ao.status_remark,ao.bank_amount,ao.borrow_amount			
+			 from af_order ao inner join `af_order_push_log` opl on ao.id = opl.`order_id`  where ao.order_type = 'BOLUOME' 
+		and ao.status in  ('FINISHED','REBATED') and pay_type = '' and ao.`gmt_create` BETWEEN  '2017-08-01' and '2017-08-02' and opl.`type` = 'PAY_SUC' order by ao.`gmt_create` asc
+	</select>
+	
 	<update id="deleteOrder" parameterType="java.lang.Long" >
 		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
 	</update>

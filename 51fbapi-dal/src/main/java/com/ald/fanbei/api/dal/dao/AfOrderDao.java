@@ -137,4 +137,7 @@ public interface AfOrderDao {
 	
 	List<AfOrderDo> getNoBorrowOrder();
 	
+	
+	List<AfOrderDo> get20170801ExceptionOrder();
+	
 }
