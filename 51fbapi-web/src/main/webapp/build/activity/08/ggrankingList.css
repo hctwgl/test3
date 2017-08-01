@@ -1,0 +1,71 @@
+body {
+    background-color: #fff;
+}
+
+#rankingList .rebate {
+    padding: 0.3rem 0.3rem;
+}
+
+#rankingList .rebate .rebate-left {
+    font-size: 0.15rem;
+    font-weight: 700;
+    float: left;
+}
+
+#rankingList .rebate .rebate-right {
+    font-size: 0.15rem;
+    font-weight: 700;
+    float: right;
+}
+
+#rankingList .rebate .rebate-right i {
+    color: red;
+}
+
+#rankingList .phoneNumber {
+    padding: 0.3rem 0.3rem;
+    margin-bottom: 0.2rem;
+}
+
+#rankingList .phoneNumber span {
+    font-size: 0.12rem;
+}
+
+#rankingList .phoneNumber .phone-left {
+    float: left;
+    margin-right: 30%;
+}
+
+#rankingList .phoneNumber .phone-center {
+    float: left;
+}
+
+#rankingList .phoneNumber .phone-right {
+    float: right;
+}
+
+#rankingList .numberList {
+    padding-left: 0.2rem;
+    font-size: 0.18rem;
+    height: 3.5rem;
+    overflow: hidden;
+}
+
+#rankingList .numberList .list {
+    height: 0.6rem;
+    line-height: 0.6rem;
+}
+
+#rankingList .numberList .list .list-left {
+    float: left;
+    margin-right: 20%;
+}
+
+#rankingList .numberList .list .list-center {
+    float: left;
+    margin-right: 30%;
+}
+
+#rankingList .numberList .list .list-right {
+    float: left;
+}
