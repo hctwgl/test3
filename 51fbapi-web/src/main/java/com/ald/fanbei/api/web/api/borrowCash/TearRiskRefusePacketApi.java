@@ -73,25 +73,20 @@ public class TearRiskRefusePacketApi  implements ApiHandle {
 		Long userId = context.getUserId();
 		Map<String, Object> data = new HashMap<String, Object>();
 		try {
-			/*
-			// 首先判断用户是否有资格参与拆红包活动
-		
-			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid());
-			String status  = afLastBorrowCashDo.getStatus();
-			int takePartTime = 0;
-			if(gameResultList != null){
-				takePartTime = gameResultList.size();
-			}
-			if("FINSH".equals(status) && takePartTime > 1) {
-				throw new FanbeiException("不符合抽奖条件");
-			} 
-			*/
+			
 			// 获取拆红包游戏信息
 			AfGameDo gameDo = afGameService.getByCode("risk_packet");
 			if(gameDo == null){
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.NOT_CONFIG_GAME_INFO_ERROR);
 			}
+			// 查询活动时间内是否有风控拒绝记录 FIXME
+			Date gameStart = gameDo.getGmtStart();
+			Date gameEnd = gameDo.getGmtEnd();	
+			List<AfBorrowCashDo> riskRefuseResultList =  afBorrowCashService.getRiskRefuseBorrowCash(userId, gameStart, gameEnd);
+			if(riskRefuseResultList == null || riskRefuseResultList.size() != 1) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.NOT_CHANCE_TEAR_PACKET_ERROR);
+			}
+			
 			// 获取游戏配置信息
 			List<AfGameConfDo> afGameConfList = afGameConfService.getByGameId(gameDo.getRid());
 			if(afGameConfList == null || afGameConfList.size() == 0) {
@@ -99,6 +94,8 @@ public class TearRiskRefusePacketApi  implements ApiHandle {
 			}
 			AfGameConfDo afGameConfDo = afGameConfList.get(0);
 			String rules = afGameConfDo.getRule();
+			
+			
 			// 按照概率抽奖
 			JSONArray array = JSON.parseArray(rules);
 			JSONObject item1 = array.getJSONObject(0);

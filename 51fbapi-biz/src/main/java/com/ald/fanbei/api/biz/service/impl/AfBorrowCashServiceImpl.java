@@ -130,4 +130,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return afBorrowCashDao.getBorrowCashInfoByBorrowNo(borrowNo);
 	}
 
+	@Override
+	public List<AfBorrowCashDo> getRiskRefuseBorrowCash(Long userId, Date gmtStart, Date gmtEnd) {
+		return afBorrowCashDao.getRiskRefuseBorrowCash(userId, gmtStart, gmtEnd);
+	}
+
 }

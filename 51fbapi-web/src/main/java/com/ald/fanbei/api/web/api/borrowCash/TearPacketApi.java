@@ -10,6 +10,7 @@ import java.util.Random;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
@@ -71,10 +72,16 @@ public class TearPacketApi  implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
+		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), null);
 		Map<String, Object> data = new HashMap<String, Object>();
 		try {
+			if(type == null || "LOAN_PACKET".equals(type)) {
+				return tearloanPacket(requestDataVo, context, request);
+			} else if ("RISK_PACKET".equals(type)){
+				return tearRiskPacket(requestDataVo, context, request);
+			}
+			
 			// 首先判断用户是否有资格参与拆红包活动
-		
 			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid());
 			String status  = afLastBorrowCashDo.getStatus();
@@ -200,5 +207,17 @@ public class TearPacketApi  implements ApiHandle {
 		}
 		resp.setResponseData(data);
 		return resp;
+	}
+
+	private ApiHandleResponse tearRiskPacket(RequestDataVo requestDataVo, FanbeiContext context,
+			HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ApiHandleResponse tearloanPacket(RequestDataVo requestDataVo, FanbeiContext context,
+			HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
