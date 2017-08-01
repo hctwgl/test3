@@ -92,10 +92,12 @@ public class SmsUtil extends AbstractThird {
 		if (!CommonUtil.isMobile(mobile)) {
 			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
-		int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.REGIST.getCode());
+		
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
-		if(resourceDo!=null&&countRegist>Integer.valueOf(resourceDo.getValue())){
-			throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
+		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue())){
+			int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.REGIST.getCode());
+			if(countRegist>Integer.valueOf(resourceDo.getValue()))
+				throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
@@ -237,10 +239,12 @@ public class SmsUtil extends AbstractThird {
 		if (!CommonUtil.isMobile(mobile)) {
 			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
-		int countForgetPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.FORGET_PASS.getCode());
+		
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
-		if(resourceDo!=null&&countForgetPwd>Integer.valueOf(resourceDo.getValue1())){
-			throw new FanbeiException("发送找回密码验证码超过每日限制次数", FanbeiExceptionCode.SMS_FORGET_PASSWORD_EXCEED_TIME);
+		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue1())){
+			int countForgetPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.FORGET_PASS.getCode());
+			if(countForgetPwd>Integer.valueOf(resourceDo.getValue1()))
+				throw new FanbeiException("发送找回密码验证码超过每日限制次数", FanbeiExceptionCode.SMS_FORGET_PASSWORD_EXCEED_TIME);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = FORGET_TEMPLATE.replace("&param1", verifyCode);
@@ -262,10 +266,12 @@ public class SmsUtil extends AbstractThird {
 		if (!CommonUtil.isMobile(mobile)) {
 			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
-		int countBind = afSmsRecordService.countMobileCodeToday(mobile, SmsType.MOBILE_BIND.getCode());
+		
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
-		if(resourceDo!=null&&countBind>Integer.valueOf(resourceDo.getValue2())){
-			throw new FanbeiException("发送绑定手机号短信超过每日限制次数", FanbeiExceptionCode.SMS_MOBILE_BIND_EXCEED_TIME);
+		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue2())){
+			int countBind = afSmsRecordService.countMobileCodeToday(mobile, SmsType.MOBILE_BIND.getCode());
+			if(countBind>Integer.valueOf(resourceDo.getValue2()))
+				throw new FanbeiException("发送绑定手机号短信超过每日限制次数", FanbeiExceptionCode.SMS_MOBILE_BIND_EXCEED_TIME);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = BIND_TEMPLATE.replace("&param1", verifyCode);
@@ -287,10 +293,11 @@ public class SmsUtil extends AbstractThird {
 		if (!CommonUtil.isMobile(mobile)) {
 			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
-		int countSetPayPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.SET_PAY_PWD.getCode());
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
-		if(resourceDo!=null&&countSetPayPwd>Integer.valueOf(resourceDo.getValue2())){
-			throw new FanbeiException("发送设置支付密码短信超过每日限制次数", FanbeiExceptionCode.SMS_SET_PAY_PASSWORD_EXCEED_TIME);
+		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue2())){
+			int countSetPayPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.SET_PAY_PWD.getCode());
+			if(countSetPayPwd>=Integer.valueOf(resourceDo.getValue2()))
+				throw new FanbeiException("发送设置支付密码短信超过每日限制次数", FanbeiExceptionCode.SMS_SET_PAY_PASSWORD_EXCEED_TIME);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
 		String content = SETPAY_TEMPLATE.replace("&param1", verifyCode);
