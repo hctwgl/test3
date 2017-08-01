@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_boluome_activity_coupon表:'第三方-上树请求记录模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBoluomeActivityCouponDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id,gmt_create,gmt_modified,creator,modifier,boluome_activity_id,coupon_id,resource_id 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="id !=null">
+            AND id  = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="creator != null and creator != ''">
+            AND creator = #{creator,jdbcType=VARCHAR}
+        </if>
+        <if test="modifier != null and modifier != ''">
+            AND modifier = #{modifier,jdbcType=VARCHAR}
+        </if>
+        <if test="boluomeActivityId != null and boluomeActivityId != ''">
+            AND boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER}
+        </if>
+        <if test="couponId != null and couponId != ''">
+            AND coupon_id = #{couponId,jdbcType=INTEGER}
+        </if>
+        <if test="resourceId != null and resourceId != ''">
+            AND resource_id = #{resourceId,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo" keyProperty="id">
+    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_boluome_activity_coupon
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="creator != null">        
+	            creator,
+	        </if>
+	        <if test="modifier != null">        
+	            modifier,
+	        </if>
+	        <if test="boluomeActivityId != null">        
+	            boluome_activity_id,
+	        </if>
+	        <if test="couponId != null">        
+	            coupon_id,
+	        </if>
+	        <if test="resourceId != null">        
+	            resource_id,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="creator != null" >
+		       #{creator,jdbcType=VARCHAR},
+		    </if>
+		    <if test="modifier != null" >
+		       #{modifier,jdbcType=VARCHAR},
+		    </if>
+		    <if test="boluomeActivityId != null" >
+		       #{boluomeActivityId,jdbcType=INTEGER},
+		    </if>
+		    <if test="couponId != null" >
+		       #{couponId,jdbcType=INTEGER},
+		    </if>
+		    <if test="resourceId != null" >
+		       #{resourceId,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo">
+        UPDATE af_boluome_activity_coupon
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="creator != null and creator != '' ">        
+                creator = #{creator,jdbcType=VARCHAR},                
+            </if>
+            <if test="modifier != null and modifier != '' ">        
+                modifier = #{modifier,jdbcType=VARCHAR},                
+            </if>
+            <if test="boluomeActivityId != null and boluomeActivityId != '' ">        
+                boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER},                
+            </if>
+            <if test="couponId != null and couponId != '' ">        
+                coupon_id = #{couponId,jdbcType=INTEGER},                
+            </if>
+            <if test="resourceId != null and resourceId != '' ">        
+                resource_id = #{resourceId,jdbcType=INTEGER}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_coupon
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_coupon
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_coupon
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
