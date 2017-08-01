@@ -294,9 +294,9 @@ public class SmsUtil extends AbstractThird {
 			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
 		}
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
-		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue2())){
+		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue3())){
 			int countSetPayPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.SET_PAY_PWD.getCode());
-			if(countSetPayPwd>=Integer.valueOf(resourceDo.getValue2()))
+			if(countSetPayPwd>=Integer.valueOf(resourceDo.getValue3()))
 				throw new FanbeiException("发送设置支付密码短信超过每日限制次数", FanbeiExceptionCode.SMS_SET_PAY_PASSWORD_EXCEED_TIME);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
