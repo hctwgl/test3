@@ -14,6 +14,15 @@ public class AfTradeOrderDto {
 	private String username;
 	private String orderStatus;
 	private String withDrawStatus;
+	private String icon;
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
 
 	public Long getId() {
 		return id;

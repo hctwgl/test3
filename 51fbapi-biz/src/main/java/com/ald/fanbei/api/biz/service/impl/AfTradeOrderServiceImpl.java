@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -51,6 +52,8 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
     private AfTradeWithdrawDetailDao afTradeWithdrawDetailDao;
     @Resource
     private UpsUtil upsUtil;
+    @Resource
+    private AfTradeBusinessInfoService afTradeBusinessInfoService;
 
     @Override
     public BaseDao<AfTradeOrderDo, Long> getDao() {
@@ -85,7 +88,12 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
 
     @Override
     public List<AfTradeOrderDto> orderGrid(Long businessId, Integer offset, Integer limit, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus) {
-        return afTradeOrderDao.orderGrid(businessId, offset, limit, startOfDate, endOfDate, orderStatus, withDrawStatus);
+        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(businessId);
+        List<AfTradeOrderDto> list = afTradeOrderDao.orderGrid(businessId, offset, limit, startOfDate, endOfDate, orderStatus, withDrawStatus);
+        for(AfTradeOrderDto dto : list) {
+            dto.setIcon(afTradeBusinessInfoDo.getImageUrl());
+        }
+        return list;
     }
 
     @Override
