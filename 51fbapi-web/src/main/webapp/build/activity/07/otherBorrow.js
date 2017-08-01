@@ -56,6 +56,9 @@ let vue=new Vue({
                     self.content = eval('(' + data + ')');
                     self.content = self.content.data;
                     console.log(self.content);
+                    if(self.content.scrollbar.content==''){
+                        self.barShow=false
+                    }
                     self.$nextTick(function(){
                         self.imgSwiper();
                         self.swiper();

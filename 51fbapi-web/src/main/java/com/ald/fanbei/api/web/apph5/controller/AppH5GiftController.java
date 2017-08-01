@@ -75,7 +75,8 @@ public class AppH5GiftController extends BaseController {
         				return H5CommonResponse.getNewInstance(false, "优惠券信息不存在:id=>" + couponId).toString();
         			}
         			String name = afCouponDo.getName(); 
-        			couponInfoMap.put("name", name);
+        			String[] couponInfos = name.split("元");
+        			couponInfoMap.put("name", couponInfos[0]);
         			couponInfoMap.put("couponId", couponId);
         			couponInfoMap.put("type", "1");
         			couponInfoMap.put("desc", afCouponDo.getUseRule());
@@ -86,7 +87,8 @@ public class AppH5GiftController extends BaseController {
         			AfResourceDo resourceDo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
         			String name = resourceDo.getName();
         			couponInfoMap.put("couponId", couponId);
-        			couponInfoMap.put("name", name);
+        			String[] couponInfos = name.split("元");
+        			couponInfoMap.put("name", couponInfos[0]);
         			couponInfoMap.put("type", "2");
         			couponInfoMap.put("desc", afResourceDo.getValue1());
         			couponInfoMap.put("remark", afResourceDo.getValue2());
