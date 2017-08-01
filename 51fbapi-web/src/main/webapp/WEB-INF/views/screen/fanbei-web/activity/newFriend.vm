@@ -8,21 +8,21 @@
 <link rel="stylesheet" href="/dist/activity/07/newFriend.css">
 <body>
 <div id="vueCon">
-    <ul class="couple-top">
-        <li class="hundred">
-            <p class="hundred-left">
-                <sapn class="money">￥</sapn>
-                <span class="number">100</span>
-            </p>
-            <p class="hundred-right">
-                <sapn class="all">全场劵</sapn><br/>
-                <span class="enough">满499元使用</span>
-            </p>
-        </li>
-    </ul>
     <img :src="tableContent.bannerUrl">
     <div class="wrap">
         <div v-for="(data,index) in content.couponInfoList" @click="getCoupon(data.couponId,data.type)" class="coupon">
+            <ul class="couple-top">
+                <li class="hundred">
+                    <p class="hundred-left">
+                        <sapn class="money">￥</sapn>
+                        <span class="number">100</span>
+                    </p>
+                    <p class="hundred-right">
+                        <sapn class="all">全场劵</sapn><br/>
+                        <span class="enough">满499元使用</span>
+                    </p>
+                </li>
+            </ul>
             <div class="left"><p>￥<span>{{data.name}}</span></p></div>
             <div class="right">
                 <p>{{data.remark}}</p>
