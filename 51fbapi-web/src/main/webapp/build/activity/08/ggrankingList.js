@@ -7,7 +7,7 @@ $uList.hover(function() {
 }, function() { //离开启动定时器
     timer = setInterval(function() {
         scrollList($uList);
-    }, 1100);
+    }, 1101);
 }).trigger("mouseleave"); //自动触发触摸事件
 //滚动动画
 function scrollList(obj) {
