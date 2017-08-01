@@ -194,7 +194,8 @@
 				<entry key="/order/afterSaleLogisticSupply" value-ref="afterSaleLogisticSupplyApi" />
 				<entry key="/order/getOrderAfterSaleInfo" value-ref="getOrderAfterSaleInfoApi" />
 				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
-
+				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
+				<entry key="/order/getBeforePayType" value-ref="getBeforePayTypeApi" />
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
@@ -203,6 +204,7 @@
 				<entry key="/system/AppLaunchImage" value-ref="AppLaunchImageApi" />
 				<entry key="/system/appPopImage" value-ref="appPopImageApi" />
 				<entry key="/system/getTabbarInfor" value-ref="getTabbarInforApi" />
+				<entry key="/system/maidian" value-ref="maiDianApi" />
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
@@ -287,7 +289,6 @@
 				<entry key="/borrowCash/getLoanSupermarketTabList" value-ref="getLoanSupermarketTabListApi" />
 				<entry key="/borrowCash/getLoanSupermarketListByTab" value-ref="getLoanSupermarketListByTabApi" />
 				<entry key="/borrowCash/tearPacket" value-ref="tearPacketApi" />
-				<entry key="/borrowCash/tearRiskRefusePacket" value-ref="tearRiskRefusePacketApi" />
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />

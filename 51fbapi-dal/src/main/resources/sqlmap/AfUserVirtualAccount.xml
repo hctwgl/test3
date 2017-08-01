@@ -187,6 +187,8 @@ id,gmt_create,gmt_modified,user_id,order_id,order_no,code,year,month,amount,tota
        		af_user_virtual_account
         WHERE
         	is_delete = 0
+        and 
+        	status='Y'
         AND	
         	year = #{year}
         AND

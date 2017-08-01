@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfAppUpgradeService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -39,6 +40,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
@@ -68,7 +70,8 @@ public abstract class BaseController {
 
 	@Resource
 	AfAppUpgradeService afAppUpgradeService;
-
+	@Resource
+	AfShopService afShopService;
 	/**
 	 * 解析request
 	 * 
@@ -98,8 +101,7 @@ public abstract class BaseController {
 			FanbeiContext contex = doCheck(requestDataVo);
 
 			// 处理业务
-			exceptionresponse = doProcess(requestDataVo, contex, request);
-			resultStr = JSON.toJSONString(exceptionresponse);
+			resultStr = doProcess(requestDataVo, contex, request);
 		} catch (FanbeiException e) {
 			exceptionresponse = buildErrorResult(e.getErrorCode(), request);
 			resultStr = JSON.toJSONString(exceptionresponse);
@@ -110,6 +112,7 @@ public abstract class BaseController {
 			logger.error("system exception id=" + (requestDataVo == null ? reqData : requestDataVo.getId()), e);
 		} finally {
 			try{
+				String url = browsingAndCertification(request,reqData);
 				Calendar calEnd = Calendar.getInstance();
 				if (StringUtils.isNotBlank(reqData)) {
 					reqData = reqData.replace("\r", "").replace("\n", "").replace(" ", "");
@@ -127,35 +130,43 @@ public abstract class BaseController {
 							req = requestDataVo.toString();
 						}
 					}
-					String clientType="o";
-					if(requestDataVo != null && requestDataVo.getId() != null && requestDataVo.getId().startsWith("i_")){
-						clientType="i";
-					}else if(requestDataVo != null && requestDataVo.getId() != null && requestDataVo.getId().startsWith("a_")){
-						clientType="a";
-					}
 					biLogger.info(StringUtil.appendStrs(
-							"	", DateUtil.formatDate(calStart.getTime(), DateUtil.DATE_TIME_SHORT),
-							"	", clientType,
-							"	rmtIP=", CommonUtil.getIpAddr(request), 
-							"	userName=", userName, 
-							"	", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), 
-							"	", request.getRequestURI(),
-							"	result=",exceptionresponse == null?9999:((ApiHandleResponse)exceptionresponse).getResult().getCode(), 
-							"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
-							"	", "", 
-							"	", "",
-							"	", "",
-							"	", "",
-							"	", "",
-							"	reqD=", req, 
-							"	resD=",requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod()))? resultStr.length() + "" : resultStr));
-				}				
+							"rmtIP=", CommonUtil.getIpAddr(request), 
+							";userName=", userName, 
+							";exeT=", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), 
+							";intefN=", url,
+							";reqD=", req, 
+							";resD=",requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod()))? resultStr.length() + "" : resultStr));
+				}
 			}catch(Exception e){
 				logger.error("app bi exception",e);
 			}
 		}
 		return resultStr;
 	}
+	/**
+	 *逛逛和实名认证埋点
+	 * 
+	 * @param reqData
+	 * @param request
+	 * @return
+	 */
+		private String browsingAndCertification(HttpServletRequest request,
+				String reqData) {
+			// TODO Auto-generated method stub
+			String url = request.getRequestURI();
+			JSONObject result = JSONObject.parseObject(reqData);
+			if("/brand/getBrandUrl".equals(url)){
+				Long shopId = NumberUtil.objToLongDefault(result.get("shopId"), null);
+				AfShopDo afShopDo = afShopService.getShopById(shopId);
+				String type = afShopDo.getType();
+				url = url+"_"+type.toLowerCase();
+			}else if("/system/maidian".equals(url)){
+				String maidianEvent = ObjectUtils.toString(result.get("maidianEvent"), null);
+				url =  maidianEvent;
+			}
+			return url;
+		}
 
 	/**
 	 * 验证参数
@@ -193,7 +204,7 @@ public abstract class BaseController {
 	 * @param httpServletRequest
 	 * @return
 	 */
-	public abstract BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest);
+	public abstract String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest);
 
 	/**
 	 * 验证基础参数、签名
@@ -499,7 +510,7 @@ public abstract class BaseController {
 	 * @param respData
 	 * @param exeT
 	 */
-	protected void doMaidianLog(HttpServletRequest request,H5CommonResponse respData){
+	protected void doMaidianLog(HttpServletRequest request,String respData){
 		try{
 			JSONObject param = new JSONObject();
 			Enumeration<String> enu=request.getParameterNames();  
@@ -512,21 +523,11 @@ public abstract class BaseController {
 				userName = (String)JSONObject.parseObject(param.getString("_appInfo")).get("userName");
 			}
 			maidianLog.info(StringUtil.appendStrs(
-					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
-					"	", "h",
-					"	rmtIP=", CommonUtil.getIpAddr(request), 
-					"	userName=", userName, 
-					"	", 0, 
-					"	", request.getRequestURI(),
-					"	result=",respData == null?false:respData.getSuccess(), 
-					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
-					"	", "md", 
-					"	", "",
-					"	", "",
-					"	", "",
-					"	", "",
-					"	reqD=", param.toString(), 
-					"	resD=",respData==null?"null":respData.toString()));
+					"ip=",CommonUtil.getIpAddr(request),
+					";userName=",userName,
+					";inte=",request.getRequestURI(),
+					";param=",param.toString(),
+					";resp=",respData));
 		}catch(Exception e){
 			logger.error("maidian logger error",e);
 		}
@@ -539,7 +540,7 @@ public abstract class BaseController {
 	 * @param appInfo
 	 * @param exeT
 	 */
-	protected void doLog(HttpServletRequest request,H5CommonResponse respData,String appInfo,long exeT,String userName){
+	protected void doLog(HttpServletRequest request,String respData,String appInfo,long exeT,String userName){
 		try{
 			JSONObject param = new JSONObject();
 //			String userName = "no user";
@@ -557,53 +558,30 @@ public abstract class BaseController {
 				String paraName=(String)enu.nextElement();  
 				param.put(paraName, request.getParameter(paraName));
 			}
-			this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI(),userName,"","","","","");
+			this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI(),userName);
 		}catch(Exception e){
 			logger.error("do log exception",e);
 		}
 	}
-//
-//	/**
-//	 * 记录日志
-//	 * @param reqData 请求参数
-//	 * @param resD 响应结果
-//	 * @param httpMethod 请求方法 GET或POST
-//	 * @param rmtIp 远程id
-//	 * @param exeT 执行时间
-//	 * @param inter 接口
-//	 */
+
 	/**
-	 * 
-	 * @param reqData  请求参数
-	 * @param respData 响应结果
+	 * 记录日志
+	 * @param reqData 请求参数
+	 * @param resD 响应结果
 	 * @param httpMethod 请求方法 GET或POST
 	 * @param rmtIp 远程id
 	 * @param exeT 执行时间
 	 * @param inter 接口
-	 * @param userName用户名
-	 * @param ext1 扩展参数1
-	 * @param ext2  扩展参数2
-	 * @param ext3 扩展参数3
-	 * @param ext4 扩展参数4
-	 * @param ext5 扩展参数5
 	 */
-	private void doLog(String reqData,H5CommonResponse respData,String httpMethod,String rmtIp,String exeT,String inter,String userName,String ext1,String ext2,String ext3,String ext4,String ext5){
+	protected void doLog(String reqData,String resD,String httpMethod,String rmtIp,String exeT,String inter,String userName){
 		webbiLog.info(StringUtil.appendStrs(
-				"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
-				"	", "h",
-				"	rmtIP=", rmtIp, 
-				"	userName=", userName, 
-				"	", exeT, 
-				"	", inter,
-				"	result=",respData == null?false:respData.getSuccess(), 
-				"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
-				"	", ext1, 
-				"	", ext2,
-				"	", ext3,
-				"	", ext4,
-				"	", ext5,
-				"	reqD=", reqData, 
-				"	resD=",respData==null?"null":respData.toString()));
+				"rmtIp=",rmtIp,
+				";userName=",userName,
+				";exeT=",exeT,
+				";inter=",inter,
+				";reqD=",reqData,
+				";resD=",resD,
+				";methd=",httpMethod));
 	}
 	
 	private static String getAppInfo(String url) {

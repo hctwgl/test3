@@ -9,11 +9,9 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +74,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/order/confirmReceipt","/order/buySelfGoods","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo","/order/cancelAfterSaleApply","/order/afterSaleLogisticSupply","/order/getOrderAfterSaleInfo","/order/insufficientBalance"
-        ,"/order/tradeOrder","/order/getTradeOrderDetailInfo"
+        ,"/order/tradeOrder","/order/getTradeOrderDetailInfo","/order/combinationPay","/order/getBeforePayType"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String orderRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -88,7 +85,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage",
-    	"/system/getTabbarInfor","/resource/getResourceConfig"
+    	"/system/getTabbarInfor","/resource/getResourceConfig","/system/maidian"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -246,7 +243,7 @@ public class FanbeiController extends BaseController {
 	}
 
 	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
         ApiHandleResponse handelResult;
         try {
@@ -255,8 +252,7 @@ public class FanbeiController extends BaseController {
             if(resultCode != 1000){
                 logger.info(requestDataVo.getId() + " err,Code=" + resultCode);
             }
-            return handelResult;
-//            return JSON.toJSONString(handelResult);
+            return JSON.toJSONString(handelResult);
         }catch(FanbeiException e){
         	logger.error("app exception",e);
         	throw e;
