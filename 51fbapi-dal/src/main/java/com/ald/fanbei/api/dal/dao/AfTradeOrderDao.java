@@ -79,4 +79,37 @@ public interface AfTradeOrderDao extends BaseDao<AfTradeOrderDo, Long> {
 	 */
 	Long orderGridTotal(@Param("businessId") Long businessId, @Param("startOfDate") Date startOfDate, @Param("endOfDate") Date endOfDate, @Param("orderStatus") String orderStatus,
 						@Param("withDrawStatus") String withDrawStatus);
+
+	/**
+	 * 分页查询商圈退款明细订单
+	 *
+	 * @param businessId
+	 * @param offset
+	 * @param limit
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	List<AfTradeOrderDto> refundGrid(@Param("businessId") Long businessId, @Param("offset") Integer offset, @Param("limit") Integer limit, @Param("startDate") Date startDate,
+									 @Param("endDate") Date endDate);
+
+	/**
+	 * 分页查询商圈退款明细订单总条数
+	 *
+	 * @param businessId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	Long refundGridTotal(@Param("businessId") Long businessId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+	/**
+	 * 获取所有可提现商户订单
+	 *
+	 * @param businessId
+	 * @param canWithDrawDate
+	 * @return
+	 */
+	List<AfTradeOrderDto> getCanWithDrawList(@Param("businessId") Long businessId, @Param("canWithDrawDate") Date canWithDrawDate);
+
 }

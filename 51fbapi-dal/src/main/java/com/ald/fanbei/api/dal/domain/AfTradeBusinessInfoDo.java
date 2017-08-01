@@ -127,6 +127,8 @@ public class AfTradeBusinessInfoDo extends AbstractSerial {
     */
    private String cardBank;
 
+   private String cardPhone;
+   private String cardIdnumber;
    /**
     * 联系人姓名
     */
@@ -838,6 +840,23 @@ public class AfTradeBusinessInfoDo extends AbstractSerial {
 
    public void setWorkdays(String workdays) {
       this.workdays = workdays;
+   }
+
+   public String getCardPhone() {
+      return cardPhone;
+   }
+
+   public void setCardPhone(String cardPhone) {
+      this.cardPhone = cardPhone;
+   }
+
+
+   public String getCardIdnumber() {
+      return cardIdnumber;
+   }
+
+   public void setCardIdnumber(String cardIdnumber) {
+      this.cardIdnumber = cardIdnumber;
    }
 
 }

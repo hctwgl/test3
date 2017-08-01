@@ -326,6 +326,9 @@
 				<entry key="/trade/businessInfo" value-ref="tradeBusinessInfoApi" />
 				<entry key="/trade/twoBarCode" value-ref="twoBarCodeApi" />
 				<entry key="/trade/getPayList" value-ref="getPayListApi" />
+				<entry key="/trade/getWithdrawList" value-ref="getWithdrawListApi" />
+				<entry key="/trade/getRefundList" value-ref="getRefundListApi" />
+				<entry key="/trade/withdraw" value-ref="tradeWithdrawApi" />
 			</map>
 		</constructor-arg>
 	</bean>
