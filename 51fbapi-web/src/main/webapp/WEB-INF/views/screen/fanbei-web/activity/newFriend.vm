@@ -9,15 +9,16 @@
 <body>
 <div id="vueCon">
     <img :src="tableContent.bannerUrl">
-    <div class="wrap">
+    <div class="wrap clearfix">
         <div v-for="(data,index) in content.couponInfoList" @click="getCoupon(data.couponId,data.type)" class="coupon">
             <div class="left"><p>￥<span>{{data.name}}</span></p></div>
             <div class="right">
                 <p>{{data.remark}}</p>
                 <p>{{data.desc}}</p>
-                <p>立即领券</p>
+                <!--<p>立即领券</p>!-->
             </div>
-        </div>
+        </div> 
+        <button class="btn">已领取</button>
     </div>
     <p class="recommend">热门推荐</p>
     <ul class="productList">
