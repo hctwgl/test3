@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/07/newCouple.less">
+</head>
+</head>
+<body>
+    <div id="newCouple">
+        <div class="couple">
+            <ul class="couple-top">
+                <li class="hundred">
+                    <p class="hundred-left">
+                        <sapn class="money">￥</sapn>
+                        <span class="number">100</span>
+                    </p>
+                    <p class="hundred-right">
+                        <sapn class="all">全场劵</sapn>
+                        <span class="enough">满499元使用</span>
+                    </p>
+                </li>
+            </ul>
+            <button class="couple-btn">已领取</button>
+        </div>
+        <div class="shareCouple">
+            <div class="share-head">新朋友福利&nbsp;领劵享优惠</div>
+            <ul class="share-detail">
+                <li>
+                    <div class="share-left"><img src="" alt=""></div>
+                    <div class="share-right">
+                        <p>Apple MacBook Air 13.3英寸</p>
+                        <p>笔记本电脑2017年新款</p>
+                        <p>￥6288 <span class="back">返</span><span class="money">￥10.00</span></p>
+                        <p class="monthpay">月供￥299.73起</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/dist/activity/07/newCouple.js"></script>
+</html>
