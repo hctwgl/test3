@@ -476,6 +476,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertNo("320301198502169142");*/
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
+//		String reqResult = HttpUtil.post("http://192.168.96.93:8080/ups/main.html", reqBo);
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "collect", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -489,7 +490,6 @@ public class UpsUtil extends AbstractThird {
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
-		
 	}
 	
 	/**

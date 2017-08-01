@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfAppUpgradeService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -39,6 +40,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
@@ -68,7 +70,8 @@ public abstract class BaseController {
 
 	@Resource
 	AfAppUpgradeService afAppUpgradeService;
-
+	@Resource
+	AfShopService afShopService;
 	/**
 	 * 解析request
 	 * 
@@ -109,6 +112,7 @@ public abstract class BaseController {
 			logger.error("system exception id=" + (requestDataVo == null ? reqData : requestDataVo.getId()), e);
 		} finally {
 			try{
+				String url = browsingAndCertification(request,reqData);
 				Calendar calEnd = Calendar.getInstance();
 				if (StringUtils.isNotBlank(reqData)) {
 					reqData = reqData.replace("\r", "").replace("\n", "").replace(" ", "");
@@ -130,7 +134,7 @@ public abstract class BaseController {
 							"rmtIP=", CommonUtil.getIpAddr(request), 
 							";userName=", userName, 
 							";exeT=", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), 
-							";intefN=", request.getRequestURI(),
+							";intefN=", url,
 							";reqD=", req, 
 							";resD=",requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod()))? resultStr.length() + "" : resultStr));
 				}
@@ -140,6 +144,29 @@ public abstract class BaseController {
 		}
 		return resultStr;
 	}
+	/**
+	 *逛逛和实名认证埋点
+	 * 
+	 * @param reqData
+	 * @param request
+	 * @return
+	 */
+		private String browsingAndCertification(HttpServletRequest request,
+				String reqData) {
+			// TODO Auto-generated method stub
+			String url = request.getRequestURI();
+			JSONObject result = JSONObject.parseObject(reqData);
+			if("/brand/getBrandUrl".equals(url)){
+				Long shopId = NumberUtil.objToLongDefault(result.get("shopId"), null);
+				AfShopDo afShopDo = afShopService.getShopById(shopId);
+				String type = afShopDo.getType();
+				url = url+"_"+type.toLowerCase();
+			}else if("/system/maidian".equals(url)){
+				String maidianEvent = ObjectUtils.toString(result.get("maidianEvent"), null);
+				url =  maidianEvent;
+			}
+			return url;
+		}
 
 	/**
 	 * 验证参数

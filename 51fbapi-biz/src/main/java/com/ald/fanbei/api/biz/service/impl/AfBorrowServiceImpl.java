@@ -38,6 +38,7 @@ import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -576,11 +577,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					bill.setBillAmount(totalAmount);
 				}
 				totalAmount = totalAmount.subtract(billAmount);
-				bill.setPrincipleAmount(bill.getBillAmount().subtract(perInterest).subtract(perPoundageAmount));// 本金
-																												// =
-																												// 账单金额
-																												// -本月利息
-																												// -手续费
+				bill.setPrincipleAmount(bill.getBillAmount().subtract(perInterest).subtract(perPoundageAmount));// 本金  = 账单金额 -本月利息 -手续费
 				money = money.subtract(bill.getPrincipleAmount());// 期初余额-本金
 				bill.setStatus(billStatus.getCode());
 				bill.setType(BorrowType.CONSUME.getCode());
@@ -596,7 +593,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	 * @param borrow 借款信息
 	 * @return
 	 */
-	private List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow) {
+	private List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow, String payType) {
 		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
 		Date now = new Date();// 当前时间
 		Integer nper = borrow.getNper();
@@ -644,7 +641,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
  				bill.setPrincipleAmount(principleAmount);
  			}
 			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
-			bill.setStatus(BorrowBillStatus.NO.getCode());
+			if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
+			} else {
+				bill.setStatus(BorrowBillStatus.NO.getCode());
+			}
 			bill.setType(BorrowType.CONSUME.getCode());
 			list.add(bill);
 			now = DateUtil.addMonths(now, 1);
@@ -922,19 +923,21 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	}
 
 	@Override
-	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount) {
+	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount,final String payType) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
-					
+					if (!StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+						afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
+					}
 					// 直接打款
 					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId, borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
-					// 新增借款日志
-					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userId, borrow.getRid()));
 					
-					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow);
+					// 新增借款日志
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
+					
+					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
 					
 					afBorrowDao.addBorrowBill(billList);
 
@@ -961,12 +964,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					// 新增借款信息
 					afBorrowDao.addBorrow(borrow);
 					// 直接打款
-					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId,
-							borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
+					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId, borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
 					// 新增借款日志
-					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME,amount, userId, borrow.getRid()));
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
 					
-					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow);
+					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, PayType.AGENT_PAY.getCode());
 					
 					afBorrowDao.addBorrowBill(billList);
 

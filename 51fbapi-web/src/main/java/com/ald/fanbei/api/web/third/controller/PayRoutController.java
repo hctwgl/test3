@@ -1,4 +1,3 @@
-
 package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
@@ -48,7 +47,6 @@ import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo;
 
 /**
  * @类现描述：
@@ -309,6 +307,10 @@ public class PayRoutController {
 					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+				} else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
+					afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+				} else if (OrderType.BOLUOMECP.getCode().equals(merPriv)) {
+					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
 				} else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
 					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
@@ -333,4 +335,3 @@ public class PayRoutController {
 		}
 	}
 }
-

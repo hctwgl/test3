@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_boluome_activity_user_items表:'第三方-上树请求记录模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserItemsDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id,gmt_create,gmt_modified,boluome_activity_id,user_id,status,source_id,source_user_id,gmt_sended,items_id
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="id !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="boluomeActivityId != null and boluomeActivityId != ''">
+            AND boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="sourceId != null and sourceId != ''">
+            AND source_id = #{sourceId,jdbcType=INTEGER}
+        </if>
+        <if test="sourceUserId != null and sourceUserId != ''">
+            AND source_user_id = #{sourceUserId,jdbcType=INTEGER}
+        </if>
+        <if test="gmtSended !=null">
+            AND gmt_sended = #{gmtSended,jdbcType=TIMESTAMP}
+        </if>
+       <if test="itemsId !=null">
+            AND items_id = #{itemsId,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo" keyProperty="id">
+    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_boluome_activity_user_items
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="boluomeActivityId != null">        
+	            boluome_activity_id,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="sourceId != null">        
+	            source_id,
+	        </if>
+	        <if test="sourceUserId != null">        
+	            source_user_id,
+	        </if>
+	        <if test="gmtSended != null">        
+	            gmt_sended,
+	        </if>
+	        <if test="itemsId !=null">
+            	items_id = #{itemsId,jdbcType=INTEGER}
+        	</if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="boluomeActivityId != null" >
+		       #{boluomeActivityId,jdbcType=INTEGER},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		    </if>
+		    <if test="sourceId != null" >
+		       #{sourceId,jdbcType=INTEGER},
+		    </if>
+		    <if test="sourceUserId != null" >
+		       #{sourceUserId,jdbcType=INTEGER},
+		    </if>
+		    <if test="gmtSended != null" >
+		       #{gmtSended,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="itemsId !=null">
+               #{itemsId,jdbcType=INTEGER}
+        	</if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo">
+        UPDATE af_boluome_activity_user_items
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="boluomeActivityId != null and boluomeActivityId != '' ">        
+                boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
+            <if test="sourceId != null and sourceId != '' ">        
+                source_id = #{sourceId,jdbcType=INTEGER},                
+            </if>
+            <if test="sourceUserId != null and sourceUserId != '' ">        
+                source_user_id = #{sourceUserId,jdbcType=INTEGER},                
+            </if>
+            <if test="gmtSended != null and gmtSended != '' ">        
+                gmt_sended = #{gmtSended,jdbcType=TIMESTAMP}                
+            </if>
+            <if test="itemsId !=null">
+                items_id = #{itemsId,jdbcType=INTEGER}
+        </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_items
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_items
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_items
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

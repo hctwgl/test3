@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
-
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -24,7 +22,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
 import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -305,6 +302,8 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		}else{
 			agentOrderDetailVo.setInstallmentInfo("");
 		}
+		agentOrderDetailVo.setQuotaAmount(afOrderDo.getBorrowAmount());
+		agentOrderDetailVo.setBankPayAmount(afOrderDo.getBankAmount());
 		return agentOrderDetailVo;
 	}
 	
