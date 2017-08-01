@@ -10,11 +10,41 @@
 <div id="ggIndex">
     <div class="personAmount"><p>已有<span>1000</span>人点亮所有场景</p></div>
     <div class="header">
-        <div class="logo"><img src=""></div>
+        <div class="logo"><img src="$src/gg01.png"></div>
         <p class="joinAmount"><span>12345</span>人参与</p>
     </div>
-    <div class="banner"></div>
-
+    <div class="money">
+        <p>消费有返利</p>
+        <p>还可以领取<span>88.88</span>元现金红包</p>
+    </div>
+    <div class="banner">轮播图</div>
+    <div class="couponList clearFix">
+        <div class="coupon">
+            <p class="name">易果生鲜</p>
+            <p class="amount">￥<span>3.0</span></p>
+            <p class="limitAmount white">满<span>10</span>元可用</p>
+            <p class="validTime white">有效期<span>3</span>天</p>
+        </div>
+        <div class="coupon">
+            <p class="name">饿了么</p>
+            <p class="amount">￥<span>3.0</span></p>
+            <p class="limitAmount white">满<span>10</span>元可用</p>
+            <p class="validTime white">有效期<span>3</span>天</p>
+        </div>
+    </div>
+    <div class="cardList clearFix">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+    </div>
+    <div class="finalPrize">
+        <p><span>88.88</span>元红包</p>
+    </div>
 </div>
 <script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
 </body>
