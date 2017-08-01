@@ -1,2 +1,2 @@
-"use strict";function scrollList(i){var t=$("#rankingList ul li:first").height();$uList.stop(200).animate({marginTop:-t},1100,function(){$uList.css({marginTop:0}).find("li:first").appendTo($uList)})}var $uList=$("#rankingList ul"),timer=null;$uList.hover(function(){clearInterval(timer)},function(){timer=setInterval(function(){scrollList($uList)},1500)}).trigger("mouseleave");
+"use strict";function play(){var e=ul.offsetTop;e>-50?(e+=-3,ul.style.top=e+"px"):ul.style.top=0}var roll=document.getElementById("roll"),ul=roll.children[0],lis=ul.children,timer=null;timer=setInterval(play,15),screen.onmouseover=function(){clearInterval(timer)},screen.onmouseout=function(){timer=setInterval(play,15)};
 //# sourceMappingURL=../../_srcmap/activity/07/rankingList.js.map

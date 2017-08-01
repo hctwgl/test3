@@ -18,98 +18,100 @@
             <span class="phone-center">总返利</span>
             <span class="phone-right">邀请好友返利</span>
         </div>
-        <ul class="numberList">
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-            <li class="list">
-                <span class="list-left">15555553333</span>
-                <span class="list-center">25.22</span>
-                <span class="list-right">8.55</span>
-            </li>
-        </ul>
+        <div id="roll">
+            <ul class="numberList">
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+                <li class="list">
+                    <span class="list-left">15555553333</span>
+                    <span class="list-center">25.22</span>
+                    <span class="list-right">8.55</span>
+                </li>
+            </ul>
+        </div> 
     </div>
 </body>
 <script src="/dist/activity/07/rankingList.js?version=$version"></script>
