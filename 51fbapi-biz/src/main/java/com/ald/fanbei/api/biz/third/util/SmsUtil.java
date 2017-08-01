@@ -96,7 +96,7 @@ public class SmsUtil extends AbstractThird {
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
 		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue())){
 			int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.REGIST.getCode());
-			if(countRegist>Integer.valueOf(resourceDo.getValue()))
+			if(countRegist>=Integer.valueOf(resourceDo.getValue()))
 				throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
@@ -243,7 +243,7 @@ public class SmsUtil extends AbstractThird {
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
 		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue1())){
 			int countForgetPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.FORGET_PASS.getCode());
-			if(countForgetPwd>Integer.valueOf(resourceDo.getValue1()))
+			if(countForgetPwd>=Integer.valueOf(resourceDo.getValue1()))
 				throw new FanbeiException("发送找回密码验证码超过每日限制次数", FanbeiExceptionCode.SMS_FORGET_PASSWORD_EXCEED_TIME);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
@@ -270,7 +270,7 @@ public class SmsUtil extends AbstractThird {
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
 		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue2())){
 			int countBind = afSmsRecordService.countMobileCodeToday(mobile, SmsType.MOBILE_BIND.getCode());
-			if(countBind>Integer.valueOf(resourceDo.getValue2()))
+			if(countBind>=Integer.valueOf(resourceDo.getValue2()))
 				throw new FanbeiException("发送绑定手机号短信超过每日限制次数", FanbeiExceptionCode.SMS_MOBILE_BIND_EXCEED_TIME);
 		}
 		String verifyCode = CommonUtil.getRandomNumber(6);
