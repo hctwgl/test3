@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170801")
+    #set($src="https://fs.51fanbei.com/h5/app/activity/08")
+    <title>场景点亮首页</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
+</head>
+<body>
+<div id="ggIndex">
+    <div class="personAmount"><p>已有<span>1000</span>人点亮所有场景</p></div>
+    <div class="header">
+        <div class="logo"><img src=""></div>
+        <p class="joinAmount"><span>12345</span>人参与</p>
+    </div>
+    <div class="banner"></div>
+
+</div>
+<script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
+</body>
+</html>
