@@ -1,6 +1,6 @@
 body {
-    /*background-color: #fff;*/
-    background-color: yellow;
+    background-color: #fff;
+    /*background-color: yellow;*/
 }
 
 #rankingList .rebate {
@@ -45,7 +45,7 @@ body {
     float: right;
 }
 
-#rankingList .numberList {
+#rankingList .container {
     padding-left: 0.2rem;
     font-size: 0.18rem;
     height: 3.5rem;
