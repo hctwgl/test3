@@ -26,6 +26,7 @@ let vue=new Vue({
                 data:postData,
                 success:function (res) {
                     res=eval('(' + res+ ')');
+
                     if(res.success==false){
                         if(res.url&&res.url!==""){
                             window.location.href=res.url
@@ -82,6 +83,24 @@ let vue=new Vue({
                 success:function (data) {
                     self.content = eval('(' + data + ')');
                     self.content = self.content.data;
+                    console.log(self.content);
+                }
+            });
+        },
+        oneKeyReceive(){
+            $.ajax({
+                url:'/fanbei-web/pickSysAndBoluomeCoupon',
+                type:'post',
+                success:function (data) {
+                    console.log(data);
+                    if(data.success){
+                        requestMsg("领劵成功");
+                    }else{
+                        requestMsg(data.msg);
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
                 }
             });
         }
