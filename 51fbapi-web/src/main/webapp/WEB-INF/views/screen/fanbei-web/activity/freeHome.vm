@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="freeHome">
-        <img src="$commonUrl/freeHome1.jpg">
+        <img :src="returnData.bannerUrl">
         <img src="$commonUrl/freeHome2.jpg">
         <ul class="discount clearfix">
             <li v-for="item in discountMap" @click="goGoodsDetail(item)">
