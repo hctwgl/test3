@@ -347,14 +347,7 @@ public class AppH5FanBeiWebController extends BaseController {
     		AfResourceDo afResourceDo = afResourceList.get(0);
     		String couponIdValue = afResourceDo.getValue();
     		String[] couponIdAndTypes = couponIdValue.split(",");
-    		String couponNotExist = "";//用户优惠券不存在
-    		String couponPickOver = "";//优惠券已领取完
-    		String couponMoreThanLimitCount = "";//优惠券个数超过最大领券个数
     		String success = "";//成功
-    		String pickBrandCouponNotStart = "";//领取活动还未开始,敬请期待
-    		String pickBrandCouponDateEnd = "";//活动已经结束,请期待下一次活动
-    		String haveAlreadyReceived = "";//今日已领取，请明日再来
-    		String msg = "";//原因：resultJson.getString("msg") 
     		for(String couponIdAndType : couponIdAndTypes) {//本地系统的红包领取
     			String[] coupontInfos = couponIdAndType.split(":");
     			if(coupontInfos.length == 1){
@@ -369,11 +362,6 @@ public class AppH5FanBeiWebController extends BaseController {
         			AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
         			if (couponDo == null) {
         				//优惠券不存在
-        				if(StringUtils.isEmpty(couponNotExist)){
-        					couponNotExist = name + "优惠券不存在;";
-        				}else{
-        					couponNotExist = name + "," + couponNotExist;
-        				}
         				break;
         			}
         			//判断优惠券个数是否超过最大领券个数
@@ -382,22 +370,12 @@ public class AppH5FanBeiWebController extends BaseController {
         					NumberUtil.objToLongDefault(couponId, 1l));
         			if (limitCount <= myCount) {
         				//优惠券个数超过最大领券个数
-        				if(StringUtils.isEmpty(couponMoreThanLimitCount)){
-        					couponMoreThanLimitCount = name + "优惠券个数超过最大领券个数;";
-        				}else{
-        					couponMoreThanLimitCount = name + "," + couponMoreThanLimitCount;
-        				}
         				break;
         			}
         			//判断优惠券是否已领取完
         			Long totalCount = couponDo.getQuota();
         			if(totalCount!=-1 && totalCount!=0 &&totalCount<=couponDo.getQuotaAlready()){
         				//优惠券已领取完
-        				if(StringUtils.isEmpty(couponPickOver)){
-        					couponPickOver = name + "优惠券已领取完;";
-        				}else{
-        					couponPickOver = name + "," + couponPickOver;
-        				}
         				break;
         			}
         			
@@ -437,7 +415,6 @@ public class AppH5FanBeiWebController extends BaseController {
     				String couponId = coupontInfos[0];
         			AfResourceDo resourceDo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
         			if (resourceDo == null) {//请求参数错误
-        				logger.error("couponSceneId is invalid");
         				break;
         			}
         			String name = resourceDo.getName();
@@ -448,19 +425,9 @@ public class AppH5FanBeiWebController extends BaseController {
         			Date gmtEnd = DateUtil.parseDate(resourceDo.getValue2(), DateUtil.DATE_TIME_SHORT);//活动结束时间
         			
         			if (DateUtil.beforeDay(new Date(), gmtStart)) {//领取活动还未开始,敬请期待
-        				if(StringUtils.isEmpty(pickBrandCouponNotStart)){
-        					pickBrandCouponNotStart = name + "领取活动还未开始,敬请期待;";
-        				}else{
-        					pickBrandCouponNotStart = name + "," + pickBrandCouponNotStart;
-        				}
         				break;
         			}
         			if (DateUtil.afterDay(new Date(), gmtEnd)) {//活动已经结束,请期待下一次活动
-        				if(StringUtils.isEmpty(pickBrandCouponDateEnd)){
-        					pickBrandCouponDateEnd = name + "活动已经结束,请期待下一次活动;";
-        				}else{
-        					pickBrandCouponDateEnd = name + "," + pickBrandCouponDateEnd;
-        				}
         				break;
         			}
         			
@@ -470,18 +437,8 @@ public class AppH5FanBeiWebController extends BaseController {
         			String code = resultJson.getString("code");
         			//10222代表已经一天只能领取一张
         			if ("10222".equals(code)) {//今日已领取，请明日再来
-        				if(StringUtils.isEmpty(haveAlreadyReceived)){
-        					haveAlreadyReceived = name + "优惠券今日已领取，请明日再来;";
-        				}else{
-        					haveAlreadyReceived = name + "," + haveAlreadyReceived;
-        				}
         				break;
         			} else if (!"0".equals(code)) {//原因：resultJson.getString("msg") 
-        				if(StringUtils.isEmpty(msg)){
-        					msg = name + "优惠券领取失败;";
-        				}else{
-        					msg = name + "," + msg;
-        				}
         				break;
         			}else if ("0".equals(code)) {
         				if(StringUtils.isEmpty(success)){
@@ -489,12 +446,14 @@ public class AppH5FanBeiWebController extends BaseController {
         				}else{
         					success = name + "," + success;
         				}
-        				break;
         			}
     			}
     		}
-    		String result = couponPickOver+couponMoreThanLimitCount+pickBrandCouponNotStart+pickBrandCouponDateEnd+haveAlreadyReceived+msg+success;
-    		return H5CommonResponse.getNewInstance(true, result, "", null).toString();
+    		if(success == ""){
+    			return H5CommonResponse.getNewInstance(false, "领取优惠券失败", "", null).toString();
+    		}else{
+    			return H5CommonResponse.getNewInstance(true, "领取优惠券成功", "", null).toString();
+    		}
 		}catch(Exception e){
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
