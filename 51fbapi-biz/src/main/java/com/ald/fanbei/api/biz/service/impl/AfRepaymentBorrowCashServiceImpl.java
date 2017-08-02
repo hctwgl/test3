@@ -354,6 +354,10 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					}
 					//add by chengkang 待添加还款成功短信 end
 					
+					//TODO 会对逾期的借款还款，向催收平台同步还款信息 add by chengkang begin
+					
+					
+					
 					afBorrowCashService.updateBorrowCash(bcashDo);
 					return 1l;
 				} catch (Exception e) {

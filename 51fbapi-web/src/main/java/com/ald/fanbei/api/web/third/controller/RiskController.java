@@ -197,4 +197,24 @@ public class RiskController {
 		}
 	}
 	
+	/**
+	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/offlineRepayment" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String offlineRepayment (HttpServletRequest request, HttpServletResponse response) {
+		String code = ObjectUtils.toString(request.getParameter("code"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String msg = ObjectUtils.toString(request.getParameter("msg"));
+		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
+
+		//TODO
+		
+		logger.info("asyRegisterStrongRisk begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		return "SUCCESS";
+	}
+	
 }

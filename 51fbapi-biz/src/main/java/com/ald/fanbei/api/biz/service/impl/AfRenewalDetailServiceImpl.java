@@ -201,6 +201,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					//当续期成功时,同步逾期天数为0
 					dealWithSynchronizeOverduedOrder(afBorrowCashDo);
 					
+					//TODO 返呗续期通知接口，向催收平台同步续期信息 add by chengkang begin
+					
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
