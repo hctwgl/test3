@@ -427,6 +427,8 @@ public class AppH5GameController  extends BaseController{
 						}
 					}
 				}
+			} else {
+				H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(),"",jsonObj).toString();
 			}
 			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString();
 		} catch (Exception e) {
