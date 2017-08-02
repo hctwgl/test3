@@ -1,4 +1,4 @@
-
+@url: "https://fs.51fanbei.com/h5/app/activity/07";
 #vueCon{
   moz-user-select: -moz-none;
   -moz-user-select: none;
@@ -10,6 +10,7 @@
 }
 .wrap{
   padding:.18rem 0;
+  padding-bottom:1.5rem;
   background: white;
   margin-top: .01rem;
   width: 7.5rem;
@@ -22,6 +23,18 @@
   -ms-user-select: none;
   user-select: none;
 }
+.wrap .btn{
+  width: 95%;
+  height:0.86rem;
+  color:white;
+  background-color: #b0b0b0;
+  text-align:center;
+  line-height:0.86rem;
+  margin-top:1.2%;
+  margin-left:2%;
+  border-radius:0.1rem;
+  font-size:0.32rem;
+}
 .coupon{
   margin:0 0 .16rem .16rem;
   border-radius:.08rem;
@@ -30,7 +43,7 @@
   //height:1.61rem;
   width:3.51rem;
   height:1.61rem;
-  background: url("http://f.51fanbei.com/h5/app/activity/07/robcoupon03.png") no-repeat;
+  background-image:url("@{url}/newCouple_3.png");
   background-size: cover;
   position: relative;
 }
@@ -55,6 +68,8 @@
 .coupon .right{
   width:1.32rem;
   height:1.61rem;
+  text-align:center;
+  line-height:1.61rem;
   float:right;
   position: relative;
 }
@@ -65,9 +80,9 @@
   text-align:center;
 }
 .coupon .right p:nth-child(1){
-  font-size:.36rem;
-  padding-top:.13rem;
-  overflow:hidden;
+  font-size:.0.36rem;
+  // padding-top:.13rem;
+  // overflow:hidden;
   height:.5rem;
   line-height:.5rem;
 }
