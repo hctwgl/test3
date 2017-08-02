@@ -37,10 +37,12 @@ public interface AfGameResultService {
      */
     AfGameResultDo addGameResult(Long gameId,AfUserDo user,Long borrowId,Long couponId,String lotteryResult);
 
-	List<AfGameResultDo> getTearPacketResultByUserId(Long userId, Long borrowId);
+	List<AfGameResultDo> getTearPacketResultByUserId(Long userId, Long borrowId, String gameCode);
 
 	List<AfGameResultDo> getTearPacketLatestRecord();
 
 	AfGameResultDo addGameResult(Long gameId, AfUserDo user,String type, long couponId, String lotteryResult);
+
+	List<AfGameResultDo> getTearRiskPacketResultByUserId(Long userId, String string);
 
 }
