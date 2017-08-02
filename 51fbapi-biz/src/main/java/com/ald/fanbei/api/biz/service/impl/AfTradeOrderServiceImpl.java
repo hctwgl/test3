@@ -126,6 +126,7 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
             recordDo.setCardNumber(infoDo.getCardNo());
             recordDo.setStatus(TradeWithdrawRecordStatus.TRANSEDING.getCode());
             recordDo.setType("CASH");
+            recordDo.setCardUserName(infoDo.getCardName());
             afTradeWithdrawRecordDao.saveRecord(recordDo);
 
             for (AfTradeOrderDto order : orderList) {
