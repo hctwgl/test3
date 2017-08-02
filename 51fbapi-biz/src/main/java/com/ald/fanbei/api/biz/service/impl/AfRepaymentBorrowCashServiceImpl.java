@@ -34,6 +34,7 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
@@ -445,9 +446,21 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			@Override
 			public String doInTransaction(TransactionStatus status) {
 				try {
+					Date currDate = new Date();
+					Date gmtCreate = DateUtil.parseDateTimeShortExpDefault(repayTime,currDate);
+					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+					
+					AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, "线下还款", repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
+							0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", repayType, BigDecimal.ZERO);
+					Map<String, Object> map = new HashMap<String, Object>();
+					afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+					
 					if(YesNoStatus.YES.getCode().equals(isBalance)){
 						//平账处理
-						
+						AfBorrowCashDo bcashDo = new AfBorrowCashDo();
+						bcashDo.setRid(afBorrowCashDo.getRid());
+						bcashDo.setRepayAmount(repayAmount);
+						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						
 					}else{
 						//按实际还款金额处理

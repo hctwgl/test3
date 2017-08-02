@@ -1071,6 +1071,22 @@ public class DateUtil {
     }
     
     /**
+     * 返回yyyy-MM-dd HH:mm:ss格式日期
+     * @return
+     */
+    public static Date parseDateTimeShortExpDefault(String dateStr,Date defaultDate) {
+    	if(dateStr == null || dateStr.length()==0){
+    		return defaultDate;
+    	}
+    	SimpleDateFormat parser = new SimpleDateFormat(DATE_TIME_SHORT);
+    	try {
+    		return parser.parse(dateStr);
+    	} catch (ParseException e) {
+    		return defaultDate;
+    	}
+    }
+    
+    /**
      * @Title: compareDate
      * @Description: (日期比较，如果s>=e 返回true 否则返回false)
      * @param s

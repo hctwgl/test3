@@ -38,6 +38,38 @@ public class AfRepaymentBorrowCashDo extends AbstractSerial {
 	private String cardName;
 	private BigDecimal jfbAmount;
 
+	
+	public AfRepaymentBorrowCashDo() {
+		super();
+	}
+	
+	public AfRepaymentBorrowCashDo(Date gmtCreate, Date gmtModified,
+			String name, String repayNo, BigDecimal repaymentAmount,
+			BigDecimal actualAmount, Long borrowId, String payTradeNo,
+			String tradeNo, Long userCouponId, BigDecimal couponAmount,
+			BigDecimal rebateAmount, String status, Long userId,
+			String cardNumber, String cardName, BigDecimal jfbAmount) {
+		super();
+		this.gmtCreate = gmtCreate;
+		this.gmtModified = gmtModified;
+		this.name = name;
+		this.repayNo = repayNo;
+		this.repaymentAmount = repaymentAmount;
+		this.actualAmount = actualAmount;
+		this.borrowId = borrowId;
+		this.payTradeNo = payTradeNo;
+		this.tradeNo = tradeNo;
+		this.userCouponId = userCouponId;
+		this.couponAmount = couponAmount;
+		this.rebateAmount = rebateAmount;
+		this.status = status;
+		this.userId = userId;
+		this.cardNumber = cardNumber;
+		this.cardName = cardName;
+		this.jfbAmount = jfbAmount;
+	}
+
+
 	/**
 	 * @return the gmtCreate
 	 */
