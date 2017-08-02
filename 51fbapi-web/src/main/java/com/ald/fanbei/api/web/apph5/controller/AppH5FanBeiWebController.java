@@ -449,6 +449,10 @@ public class AppH5FanBeiWebController extends BaseController {
     				String couponId = coupontInfos[0];
         			String couponType = coupontInfos[1];
         			AfResourceDo resourceDo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
+        			if (resourceDo == null) {//请求参数错误
+        				logger.error("couponSceneId is invalid");
+        				break;
+        			}
         			String name = resourceDo.getName();
         			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
         			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
