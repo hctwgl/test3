@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>排行榜单</title>
     <link rel="stylesheet" href="/dist/activity/08/ggrankingList.css">
 </head>
 <body>
      <div id="rankingList">
+        <div class="header"><span class="point left"></span>排行榜单<span class="point right"></span></div>
         <div class="rebate">
             <span class="rebate-left">消费返利榜</span>
             <span class="rebate-right">共有<i>xxxx</i>人获得高额返利</span>
