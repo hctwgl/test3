@@ -266,14 +266,4 @@
 		a.order_type='TRADE' and a.gmt_create <![CDATA[   <=  ]]>
 		#{canWithDrawDate} and c.business_id =#{businessId} and c.status='NEW'
 	</select>
-	<update id="updateStatusByIds">
-		update
-		af_trade_order set status = #{status} , gmt_modified =now()
-		WHERE
-		order_id IN
-		<foreach collection="items" item="item" index="index"
-				 separator="," open="(" close=")">
-			#{item}
-		</foreach>
-	</update>
 </mapper>
