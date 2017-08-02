@@ -356,6 +356,7 @@ public class AppH5FanBeiWebController extends BaseController {
     		String haveAlreadyReceived = "";//今日已领取，请明日再来
     		String msg = "";//原因：resultJson.getString("msg") 
     		String result = "";
+    		boolean flag = true ;
     		for(String couponIdAndType : couponIdAndTypes) {//本地系统的红包领取
     			String[] coupontInfos = couponIdAndType.split(":");
     			if(coupontInfos.length == 1){
@@ -496,19 +497,25 @@ public class AppH5FanBeiWebController extends BaseController {
     		}
     		
     		if(success != ""){
-    			 result = "领取优惠券成功";
+    			 result = FanbeiExceptionCode.SUCCESS.getDesc();
+    			 
     		}else if(couponPickOver != ""){
-    			 result = "优惠券已领完";
+    			 result = FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc();
+    			 flag = false;
     		}else if(pickBrandCouponDateEnd != ""){
-    			 result = "活动已经结束,请期待下一次活动";
+    			 result = FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc();
+    			 flag = false;
     		}else if(pickBrandCouponNotStart != ""){
-    			 result = "领取活动还未开始,敬请期待";
+    			 result = FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc();
+    			 flag = false;
     		}else if(couponMoreThanLimitCount != ""){
-    			 result = "优惠券个数超过最大领券个数";
+    			 result = FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc();
+    			 flag = false;
     		}else if(couponNotExist != ""){
-    			 result = "优惠券已失效";
+    			 result = FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc();
+    			 flag = false;
     		}
-    		return H5CommonResponse.getNewInstance(true, result, "", null).toString();
+    		return H5CommonResponse.getNewInstance(flag, result, "", null).toString();
 		}catch(Exception e){
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
