@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <title>拒就赔</title>
+    <style>
+        .exclusionsBtnWrap{
+            position: relative;
+        }
+        .exclusionsBtn{
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            width: 5.89rem;
+            height: 0.85rem;
+            margin: 0 auto;
+            -webkit-background-size: cover;
+            background-size: cover;
+        }
+        .rule{
+            background-color: #21d991;
+        }
+        .rule img{
+            width: 2.61rem;
+            height: 0.32rem;
+            margin: 0 auto;
+            -webkit-background-size: cover;
+            background-size: cover;
+        }
+        .rule p{
+            padding: 0.3rem;
+            color: #fff;
+            line-height: 1.6;
+            font-family: PingFangSC;
+        }
+    </style>
+</head>
+<body>
+    <div id="exclusions">
+        <img src="$commonUrl/exclusions1.jpg">
+        <div class="exclusionsBtnWrap">
+            <img src="$commonUrl/exclusions2.jpg">
+            <img src="$commonUrl/exclusions3.gif" class="exclusionsBtn" @click="goBorrowMoney()">
+        </div>
+        <div class="rule">
+            <img src="$commonUrl/exclusions4.png">
+            <p>
+                1. 活动时间2017年8月3日-31日<br>
+                2. 活动期间，用户在51返呗首次申请借钱被拒，且所填信息真实有效，即可抽奖，每位用户仅限1次；<br>
+                3. 红包金额发放至“我的-返现金额”，其他抵扣券发放至“我的-抵用券”；<br>
+                4. 若用户所填信息为虚假信息，51返呗有权拒绝该用户的奖励发放；<br>
+                5. 如有疑问，请拨打客服热线400-002-5151或关注官方微信公众号“51返呗”留言；<br>
+                6. 本活动最终解释权归51返呗所有。<br>
+            </p>
+        </div>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: '#exclusions',
+        methods:{
+            goBorrowMoney(){
+
+                window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_BASIC}';  // 去提升信用基础认证
+                //window.location.href='/fanbei-web/opennative?name=name=BORROW_MONEY}';  // 去借钱
+                //window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_EXTRA}';  // 去提升信用补充认证
+                //window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_EXTRA}';  // 补充认证全部完成，进入借贷超市页面
+
+                //window.location.href='/fanbei-web/opennative?name=name=DO_SCAN_ID}';  // 去扫描身份证
+                //window.location.href='/fanbei-web/opennative?name=name=DO_FACE}';  // 去人脸识别活体认
+                //window.location.href='/fanbei-web/opennative?name=name=DO_BIND_CARD}';  // 去绑定银行卡
+
+
+
+
+
+
+
+//                $.ajax({
+//                    url: '/fanbei-web/encoreActivityInfo',
+//                    dataType:'json',
+//                    data:{'activityId':activityId},
+//                    type: 'post',
+//                    success:function (data) {
+//                        _this.discountMap=data.data.recommendGoodsList.slice(0,3);
+//                        _this.rebateMap=data.data.recommendGoodsList.slice(3);
+//                    },
+//                    error: function(){
+//                        requestMsg("请求失败");
+//                    }
+//                });
+            }
+        }
+    });
+
+</script>
+</html>
