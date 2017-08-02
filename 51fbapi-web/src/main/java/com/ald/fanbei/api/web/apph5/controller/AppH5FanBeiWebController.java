@@ -339,18 +339,18 @@ public class AppH5FanBeiWebController extends BaseController {
 						.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), notifyUrl,returnData )
 						.toString();
 			}
-    		//参数
+/*    		//参数
     		Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
     		//请求参数缺失
     		if (sceneId == null) {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
 			}
-    		
+   		
 			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
 			if (resourceInfo == null) {//请求参数错误
 				logger.error("couponSceneId is invalid");
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
-			}
+			}*/ 
     		// 获取优惠券配置信息
     		List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes(AfResourceType.NewUserCouponGift.getCode());
     		if(afResourceList == null || afResourceList.isEmpty()) {
@@ -453,8 +453,8 @@ public class AppH5FanBeiWebController extends BaseController {
         			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
         			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
         			
-        			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);//活动开始时间
-        			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);//活动结束时间
+        			Date gmtStart = DateUtil.parseDate(resourceDo.getValue1(), DateUtil.DATE_TIME_SHORT);//活动开始时间
+        			Date gmtEnd = DateUtil.parseDate(resourceDo.getValue2(), DateUtil.DATE_TIME_SHORT);//活动结束时间
         			
         			if (DateUtil.beforeDay(new Date(), gmtStart)) {//领取活动还未开始,敬请期待
         				if(StringUtils.isEmpty(pickBrandCouponNotStart)){
@@ -473,7 +473,7 @@ public class AppH5FanBeiWebController extends BaseController {
         				break;
         			}
         			
-        			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+        			String resultString = HttpUtil.doHttpPostJsonParam(resourceDo.getValue(), JSONObject.toJSONString(bo));
         			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
         			JSONObject resultJson = JSONObject.parseObject(resultString);
         			String code = resultJson.getString("code");
