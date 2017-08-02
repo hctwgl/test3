@@ -20,10 +20,13 @@ var vm = new Vue({
             var self=this;
             i++;
             move=3.13*i+'rem';
-            $('.imgList').css('left','-'+move);
+            $('.imgList').animate({'left':'-'+move},1000);
             console.log(i)
-            $('.imgList').find('li').eq(i).removeClass('change');
-            $('.imgList').find('li').eq(i+1).addClass('change');
+            $('.imgList').find('li').eq(i).removeClass('change01');
+            $('.imgList').find('li').eq(i).addClass('change02');
+            $('.imgList').find('li').eq(i+1).addClass('change03');
+            /*$('.imgList').find('li').eq(i+1).addClass('change');
+            $('.imgList').find('li').eq(i+1).css('transform','scale(1.2)');*/
             if(i>=liLength-2){
                 self.unbind=true;
             }

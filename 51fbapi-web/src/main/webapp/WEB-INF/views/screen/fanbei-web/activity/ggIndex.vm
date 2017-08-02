@@ -64,7 +64,7 @@
         <div class="imgCont">
             <p class="bg"></p>
             <ul class="imgList">
-                <li>1</li><li class="change">2</li><li>3</li><li>4</li>
+                <li>1</li><li class="change01">2</li><li>3</li><li>4</li>
             </ul>
         </div>
         <p class="previous" @click="imgClick" v-if="!unbind"></p>
