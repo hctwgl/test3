@@ -159,4 +159,111 @@
 			#{endOfDate}
 		</if>
 	</select>
+	<select id="orderGrid" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
+		select
+		a.id,a.order_no,a.gmt_create,a.actual_amount,b.user_name,a.status
+		orderStatus,c.status withDrawStatus from
+		af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		where c.business_id =
+		#{businessId}
+		<if test="startOfDate != null and startOfDate != '' ">
+			and a.gmt_create <![CDATA[   >=  ]]>
+			#{startOfDate}
+		</if>
+		<if test="endOfDate != null and endOfDate != '' ">
+			and a.gmt_create <![CDATA[   <=  ]]>
+			#{endOfDate}
+		</if>
+		<if test="orderStatus != null and orderStatus != '' ">
+			and a.status = #{orderStatus}
+		</if>
+		<if test="withDrawStatus != null and withDrawStatus != '' ">
+			and c.status = #{withDrawStatus}
+		</if>
+		limit #{offset} , #{limit}
+	</select>
+
+	<select id="orderGridTotal" resultType="java.lang.Long">
+		select
+		count(a.id)
+		from
+		af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		where c.business_id =
+		#{businessId}
+		<if test="startOfDate != null and startOfDate != '' ">
+			and a.gmt_create <![CDATA[   >=  ]]>
+			#{startOfDate}
+		</if>
+		<if test="endOfDate != null and endOfDate != '' ">
+			and a.gmt_create <![CDATA[   <=  ]]>
+			#{endOfDate}
+		</if>
+		<if test="orderStatus != null and orderStatus != '' ">
+			and a.status = #{orderStatus}
+		</if>
+		<if test="withDrawStatus != null and withDrawStatus != '' ">
+			and c.status = #{withDrawStatus}
+		</if>
+	</select>
+
+	<select id="refundGrid" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
+		select
+		a.id,a.order_no,d.gmt_create,d.amount actualAmount,b.user_name,c.status
+		withDrawStatus from
+		af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		left join
+		af_order_refund d on d.order_id = a.id
+		where c.business_id =
+		#{businessId}
+		and c.status in ('REFUND','REFUNDING')
+		<if test="startDate != null and startDate != '' ">
+			and d.gmt_create <![CDATA[   >=  ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != '' ">
+			and d.gmt_create <![CDATA[   <=  ]]>
+			#{endDate}
+		</if>
+		limit #{offset} , #{limit}
+	</select>
+
+	<select id="refundGridTotal" resultType="java.lang.Long">
+		select
+		count(a.id)
+		from
+		af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		left join
+		af_order_refund d on d.order_id = a.id
+		where c.business_id =
+		#{businessId}
+		and c.status in ('REFUND','REFUNDING')
+		<if test="startDate != null and startDate != '' ">
+			and d.gmt_create <![CDATA[   >=  ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != '' ">
+			and d.gmt_create <![CDATA[   <=  ]]>
+			#{endDate}
+		</if>
+	</select>
+	<select id="getCanWithDrawList" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
+		select
+		a.id,a.order_no,a.gmt_create,a.actual_amount,a.status
+		orderStatus,c.status withDrawStatus from
+		af_order a left join
+		af_trade_order c on a.id = c.order_id
+		where
+		a.status='PAID' and
+		a.pay_status='P' and
+		a.order_type='TRADE' and a.gmt_create <![CDATA[   <=  ]]>
+		#{canWithDrawDate} and c.business_id =#{businessId} and c.status='NEW'
+	</select>
 </mapper>

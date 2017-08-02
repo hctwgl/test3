@@ -67,7 +67,10 @@ public class AfOrderVo extends AbstractSerial {
 	private String refundTime; //退款时间
 	private BigDecimal refundActualAmount; //实际退款金额
 	private String refundContent; //退款原因
-
+	
+	private BigDecimal quotaAmount;
+	private BigDecimal bankPayAmount;
+	
 	public String getRefundTime() {
 		return refundTime;
 	}
@@ -346,6 +349,17 @@ public class AfOrderVo extends AbstractSerial {
 	public void setIsCanDelOrder(String isCanDelOrder) {
 		this.isCanDelOrder = isCanDelOrder;
 	}
-
+	public BigDecimal getQuotaAmount() {
+		return quotaAmount;
+	}
+	public void setQuotaAmount(BigDecimal quotaAmount) {
+		this.quotaAmount = quotaAmount;
+	}
+	public BigDecimal getBankPayAmount() {
+		return bankPayAmount;
+	}
+	public void setBankPayAmount(BigDecimal bankPayAmount) {
+		this.bankPayAmount = bankPayAmount;
+	}
 	
 }

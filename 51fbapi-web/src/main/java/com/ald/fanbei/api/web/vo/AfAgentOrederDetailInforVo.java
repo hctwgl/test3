@@ -60,6 +60,8 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private Date gmtDeliver;//发货时间
 	private String installmentInfo;//分期详情
 	private String isCanDelOrder;
+	private BigDecimal quotaAmount;
+	private BigDecimal bankPayAmount;
 	
 	public String getCouponName() {
 		return couponName;
@@ -347,6 +349,18 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	}
 	public void setIsCanDelOrder(String isCanDelOrder) {
 		this.isCanDelOrder = isCanDelOrder;
+	}
+	public BigDecimal getQuotaAmount() {
+		return quotaAmount;
+	}
+	public void setQuotaAmount(BigDecimal quotaAmount) {
+		this.quotaAmount = quotaAmount;
+	}
+	public BigDecimal getBankPayAmount() {
+		return bankPayAmount;
+	}
+	public void setBankPayAmount(BigDecimal bankPayAmount) {
+		this.bankPayAmount = bankPayAmount;
 	}
 	
 }

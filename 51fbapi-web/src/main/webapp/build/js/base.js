@@ -116,7 +116,7 @@ function domainName(){
 	return domainName;
 }
 //限制文字数量
-function txtFix(){
+function txtFix(i,len){
     function cut_str(str,len){
         var char_length = 0;
         if(str.length<=len){
@@ -133,5 +133,5 @@ function txtFix(){
             }
         }
     }
-    return cut_str(i, 20)
+    return cut_str(i, len)
 }

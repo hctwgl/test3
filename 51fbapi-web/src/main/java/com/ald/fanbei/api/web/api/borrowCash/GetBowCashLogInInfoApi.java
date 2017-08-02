@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfScrollbarVo;
 
 /**
  * @类描述：
@@ -95,6 +97,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Long userId = context.getUserId();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		//另一个banner
+		List<Object> bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
+		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
+		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 		//
@@ -201,8 +207,16 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("maxAmount", calculateMaxAmount(usableAmount));
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
-		data.put("bannerList", bannerList);
+		if (inRejectLoan.equals("Y")) {
+			bannerResultList = bannerListForShop;
+			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
+			scrollbarVo = getAfScrollbarVo(resourceDo);
+		}else{
+			bannerResultList = bannerList;
+		}
+		data.put("bannerList", bannerResultList);
 		data.put("lender", rate.get("lender"));
+		data.put("scrollbar", scrollbarVo);
 		if (account != null) {
 			data.put("maxAmount", calculateMaxAmount(usableAmount));
 		}
@@ -303,7 +317,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		try {
 			// 首先判断用户是否参与过拆红包活动
 			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid());
+			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid(),"tear_packet");
 			String status  = afLastBorrowCashDo.getStatus();
 			int takePartTime = 0;
 			if(gameResultList != null){
@@ -337,6 +351,32 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} catch (Exception e){
 			logger.error(e.getMessage());
 		}
+		
+		try{
+			// 风控拒绝红包
+			AfGameDo riskPacketGameDo = afGameService.getByCode("risk_packet");
+			if(riskPacketGameDo != null){
+				// 查询活动时间内是否有风控拒绝记录 FIXME
+				Date gameStart = riskPacketGameDo.getGmtStart();
+				Date gameEnd = riskPacketGameDo.getGmtEnd();	
+				List<AfBorrowCashDo> riskRefuseResultList =  afBorrowCashService.getRiskRefuseBorrowCash(userId, gameStart, gameEnd);
+				List<AfGameResultDo> gameResultList =  afGameResultService.getTearRiskPacketResultByUserId(userId,"risk_packet");
+				int takePartTime = 0;
+				if(gameResultList != null){
+					takePartTime = gameResultList.size();
+				}
+				if(riskRefuseResultList == null || riskRefuseResultList.size() != 1 || takePartTime >= 1) {
+					data.put("showRiskPacket","N");
+				} else {
+					data.put("showRiskPacket","Y");
+				}
+			} else {
+				data.put("showRiskPacket","N");
+			}
+		} catch (Exception e){
+			logger.error(e.getMessage());
+		}
+		
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -351,6 +391,19 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Integer amount = usableAmount.intValue();
 		
 		return new BigDecimal(amount/100*100);
+		
+	}
+	
+	
+	public static AfScrollbarVo getAfScrollbarVo(AfResourceDo resourceDo) {
+		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
+		if (resourceDo != null ) {
+			scrollbarVo.setContent(resourceDo.getDescription());
+			scrollbarVo.setType(resourceDo.getValue1());
+			scrollbarVo.setName(resourceDo.getName());
+			scrollbarVo.setWordUrl(resourceDo.getValue2());
+		}
+		return scrollbarVo;
 		
 	}
 }

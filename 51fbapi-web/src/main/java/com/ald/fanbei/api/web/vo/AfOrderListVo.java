@@ -35,7 +35,9 @@ public class AfOrderListVo extends AbstractSerial {
 	private String businessIcon;
 	private String isCanDelOrder;
 	private String businessName;
-
+	private Integer  nper;//分期数
+	private String numId;
+	
 	public String getBusinessName() {
 		return businessName;
 	}
@@ -167,6 +169,22 @@ public class AfOrderListVo extends AbstractSerial {
 
 	public void setIsCanDelOrder(String isCanDelOrder) {
 		this.isCanDelOrder = isCanDelOrder;
+	}
+
+	public Integer getNper() {
+		return nper;
+	}
+
+	public void setNper(Integer nper) {
+		this.nper = nper;
+	}
+
+	public String getNumId() {
+		return numId;
+	}
+
+	public void setNumId(String numId) {
+		this.numId = numId;
 	}
 	
 }

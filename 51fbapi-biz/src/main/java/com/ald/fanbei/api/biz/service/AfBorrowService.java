@@ -198,7 +198,7 @@ public interface AfBorrowService {
 	 *            --借款名称
 	 * @return
 	 */
-	Long dealAgentPayBorrowAndBill(AfBorrowDo borrow, Long userId, String userName, BigDecimal amount);
+	Long dealAgentPayBorrowAndBill(AfBorrowDo borrow, Long userId, String userName, BigDecimal amount, String payType);
 
 	/**
 	 * 生成代付借款以及账单

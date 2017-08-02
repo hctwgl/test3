@@ -4,6 +4,8 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -24,11 +26,10 @@ public class TradeLogoutApi implements ApiHandle {
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        String loginKey = Constants.TRADE_LOGIN_BUSINESSID + request.getHeader("businessId");
-        String sessionKey = Constants.TRADE_SESSIONID + request.getHeader("sessionId");
+        String requestDataVoId = StringUtil.isNotBlank(requestDataVo.getId()) ? requestDataVo.getId() : "trade weixin";
+        ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
+        String loginKey = Constants.TRADE_LOGIN_BUSINESSID + NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
         bizCacheUtil.delCache(loginKey);
-        bizCacheUtil.delCache(sessionKey);
 
         return resp;
     }

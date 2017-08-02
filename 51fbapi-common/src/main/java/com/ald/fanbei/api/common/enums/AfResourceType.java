@@ -47,6 +47,7 @@ public enum AfResourceType {
 	BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
 	borrowRate("BORROW_RATE", "疯分期设置"),
 	RiskManagementBorrowcashLimit("RISK_MANAGEMENT_BORROWCASH_LIMIT", "风控对用户现金借款限制相关配置"),
+	BorrowTopScrollbar("BORROW_TOP_SCROLLBAR","借贷超市顶部滚动条"),
 	
 	
 	registTongdunSwitch("REGIST_TONGDUN_SWITCH", "注册同盾风控"),
@@ -59,6 +60,7 @@ public enum AfResourceType {
 
 
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
+	BorrowShopBanner("BORROW_SHOP_BANNER", "借贷超市轮播"),
 	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
 
 	

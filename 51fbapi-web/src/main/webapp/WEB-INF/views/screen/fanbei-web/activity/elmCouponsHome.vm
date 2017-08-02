@@ -19,38 +19,23 @@
 		.couponsList p{
 			width: 100%;
 			height: 1.45rem;
-			margin-bottom: 0.2rem;
-		}
-		.couponsList p:first-child{
-			padding-top: 0.62rem;
-		}
-		.couponsRule{
-			position: relative;
-		}
-		.couponsRule span{
-			position: absolute;
-			top: 10px;
-			left: 0;
-			width: 100%;
-			height: 0.8rem;
+			margin-bottom: 0.3rem;
 		}
 	</style>
 </head>
 <body>
 	<div class="elmCouponsHome" id="elmCouponsHome">
-		<img src="$commonUrl/elmCouponsHome1.png">
+		<img src="$commonUrl/elmCouponsHome7.jpg">
 		<div class="couponsListWrap">
-			<img src="$commonUrl/elmCouponsHome2.png">
+			<img src="$commonUrl/elmCouponsHome8.jpg">
 			<div class="couponsList">
 				<p @click="boluomiCoupons(8486)"></p>
 				<p @click="boluomiCoupons(8487)"></p>
 				<p @click="boluomiCoupons(8488)"></p>
 			</div>
 		</div>
-		<div class="couponsRule">
-			<img src="$commonUrl/elmCouponsHome3.png">
-			<span @click="boluomiHome(10)"></span>
-		</div>
+        <img @click="boluomiHome(10)" src="$commonUrl/elmCouponsHome9.jpg">
+        <img src="$commonUrl/elmCouponsHome10.jpg">
 	</div>
 	<script type="text/javascript" src="/dist/activity/07/elmCouponsHome.js?version=$version"></script>
 </body>

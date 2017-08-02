@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessDo;
+import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -13,5 +14,7 @@ import org.apache.ibatis.annotations.Param;
 public interface AfTradeBusinessDao extends BaseDao<AfTradeBusinessDo, Long> {
 
 	AfTradeBusinessDo getByName(@Param("name") String username);
+
+	AfTradeBusinessInfoDo getByBusinessId(@Param(("businessId"))Long businessId);
 
 }
