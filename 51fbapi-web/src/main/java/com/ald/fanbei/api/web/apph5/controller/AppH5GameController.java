@@ -392,43 +392,39 @@ public class AppH5GameController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			context = doWebCheck(request, false);
-			if(context.isLogin()) {
-				String userName = context.getUserName();
-				AfUserDo userDo = afUserService.getUserByUserName(userName);
-				Long userId = userDo.getRid();
-				AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-				if(userAuthDo != null) {
-					String riskStatus = userAuthDo.getRiskStatus();
-					if("A".equals(riskStatus) || "P".equals(riskStatus)) {
-						jsonObj.put("status", "A");
-					} else if("N".equals(riskStatus) || "Y".equals(riskStatus)){
-						// 查询账户信息
-						AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
-						if(userAccount != null) {
-							BigDecimal auAmount = userAccount.getAuAmount();
-							BigDecimal usedAmount = userAccount.getUsedAmount();
-							BigDecimal remainAmount = auAmount.subtract(usedAmount);
-							if(remainAmount.compareTo(new BigDecimal(500)) >= 0) {
-								jsonObj.put("status", "B");
+			String userName = context.getUserName();
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			Long userId = userDo.getRid();
+			AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+			if(userAuthDo != null) {
+				String riskStatus = userAuthDo.getRiskStatus();
+				if("A".equals(riskStatus) || "P".equals(riskStatus)) {
+					jsonObj.put("status", "A");
+				} else if("N".equals(riskStatus) || "Y".equals(riskStatus)){
+					// 查询账户信息
+					AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
+					if(userAccount != null) {
+						BigDecimal auAmount = userAccount.getAuAmount();
+						BigDecimal usedAmount = userAccount.getUsedAmount();
+						BigDecimal remainAmount = auAmount.subtract(usedAmount);
+						if(remainAmount.compareTo(new BigDecimal(500)) >= 0) {
+							jsonObj.put("status", "B");
+						} else {
+							// 补充认证信息
+							String alipayStatus = userAuthDo.getAlipayStatus();
+							String creditStatus = userAuthDo.getCreditStatus();
+							String jinpoStatus = userAuthDo.getJinpoStatus();
+							String fundStatus = userAuthDo.getFundStatus();
+							if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
+									&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
+								jsonObj.put("status", "C");
 							} else {
-								// 补充认证信息
-								String alipayStatus = userAuthDo.getAlipayStatus();
-								String creditStatus = userAuthDo.getCreditStatus();
-								String jinpoStatus = userAuthDo.getJinpoStatus();
-								String fundStatus = userAuthDo.getFundStatus();
-								if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
-										&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
-									jsonObj.put("status", "C");
-								} else {
-									jsonObj.put("status", "D");
-								}
-								
+								jsonObj.put("status", "D");
 							}
+							
 						}
 					}
 				}
-			} else {
-				H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(),"",jsonObj).toString();
 			}
 			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString();
 		} catch (Exception e) {
