@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -22,6 +23,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
+import com.ald.fanbei.api.biz.bo.RiskDataBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
@@ -279,6 +281,141 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 
+	/**
+	 * 51返呗通过调用此接口传入催收数据
+	 * 
+	 * @param dataType		数据类型
+	 * 
+	 * @param userId		借款人编号
+	 * 
+	 * @param borrowNo		借款单编号
+	 *  
+	 * @param cardName		绑定银行卡
+	 *  
+	 * @param cardNumber	银行卡号
+	 * 
+	 * @param gmtArrival	打款时间
+	 * 
+	 * @param amount		借款金额
+	 * 
+	 * @param type			借款类型
+	 * 
+	 * @param rateAmount	利息
+	 * 
+	 * @param overdueDay	逾期天数
+	 * 
+	 * @param repayAmount	理论应还款金额
+	 * 
+	 * @param restAmount	未还金额
+	 * 
+	 * @param overdueAmount	逾期手续费
+	 * 
+	 * @param repayAmountSum 已还总额	
+	 * 
+	 * @param gmtPlanRepayment 到期时间
+	 * 
+	 * @param renewalNum	续期次数
+	 * 
+	 * 
+	 * @return
+	 * **/
+	
+/*	public RiskRespBo introductionCollectionData(AfBorrowCashDo borrowCash) {
+		
+		return null;
+	}*/
+	
+	/**
+	 * 51返呗主动还款通知催收平台
+	 * 
+	 * @param repayNo
+	 *            --还款编号
+	 * @param borrowNo
+	 *            --借款单号
+	 * @param cardNumber
+	 *            --卡号
+	 * @param cardName
+	 *  	      --银行卡名称（支付方式）
+	 * @param amount
+	 *  	      --还款金额
+	 * @param restAmount
+	 *  	      --剩余未还金额
+	 * @param repayAmount
+	 *  	      --理论应还款金额
+	 * @param overdueAmount
+	 *  	      --逾期手续费
+	 * @param repayAmountSum
+	 *  	      --已还总额
+	 * @param rateAmount
+	 *  	      --利息
+	 * @return
+	 */
+	public RiskRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,BigDecimal amount,
+			BigDecimal restAmount,BigDecimal repayAmount,BigDecimal overdueAmount,BigDecimal repayAmountSum,
+			BigDecimal rateAmount) {
+		Map<String,String> reqBo=new HashMap<String,String>();
+		reqBo.put("repayNo", repayNo);
+		reqBo.put("borrowNo", borrowNo);
+		reqBo.put("cardNumber", cardNumber);
+		reqBo.put("cardName", cardName);
+		Date d = new Date();
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+		String time=format.format(d);
+		reqBo.put("time", time);
+		reqBo.put("amount", amount.toString());
+		reqBo.put("restAmount", restAmount.toString());
+		reqBo.put("repayAmount", repayAmount.toString());
+		reqBo.put("overdueAmount", overdueAmount.toString());
+		reqBo.put("repayAmountSum", repayAmountSum.toString());
+		reqBo.put("rateAmount", rateAmount.toString());
+		
+		
+		RiskDataBo data=new RiskDataBo(reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve.htm", data);
+		
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
+		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
+	}
+
+
+	/**
+	 * 51返呗续期通知接口
+	 * 
+	 * @param borrow_no  	借款单号
+	 * @param renewal_no  	续期编号
+	 * @param renewal_num	续借期数
+	 * @return 
+	 * 
+	 * **/
+	public RiskRespBo Renewal(String borrowNo, String renewalNo, Integer renewalNum){
+		Map<String,String> reqBo=new HashMap<String,String>();
+		reqBo.put("borrowNo", borrowNo);
+		reqBo.put("renewalNo", renewalNo);
+		reqBo.put("renewalNum", renewalNum.toString());
+	
+		RiskDataBo data=new RiskDataBo(reqBo);
+		String reqResult = HttpUtil.post(getUrl() + "/api/getway/renewalAchieve.htm", data);
+		
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
+		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
+	}
+	
 	/**
 	 * 用户信息修改
 	 * 
