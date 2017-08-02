@@ -364,7 +364,7 @@ public class AppH5FanBeiWebController extends BaseController {
         			// 查询优惠券信息
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
         			if(afCouponDo == null){
-        				break;
+        				continue;
         			}
         			String name = afCouponDo.getName(); 
         			//优惠券是否存在
@@ -376,7 +376,7 @@ public class AppH5FanBeiWebController extends BaseController {
         				}else{
         					couponNotExist = name + "," + couponNotExist;
         				}
-        				break;
+        				continue;
         			}
         			//判断优惠券个数是否超过最大领券个数
         			Integer limitCount = couponDo.getLimitCount();
@@ -389,7 +389,7 @@ public class AppH5FanBeiWebController extends BaseController {
         				}else{
         					couponMoreThanLimitCount = name + "," + couponMoreThanLimitCount;
         				}
-        				break;
+        				continue;
         			}
         			//判断优惠券是否已领取完
         			Long totalCount = couponDo.getQuota();
@@ -400,7 +400,7 @@ public class AppH5FanBeiWebController extends BaseController {
         				}else{
         					couponPickOver = name + "," + couponPickOver;
         				}
-        				break;
+        				continue;
         			}
         			
         			AfUserCouponDo userCoupon = new AfUserCouponDo();
@@ -440,7 +440,7 @@ public class AppH5FanBeiWebController extends BaseController {
         			AfResourceDo resourceDo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
         			if (resourceDo == null) {//请求参数错误
         				logger.error("couponSceneId is invalid");
-        				break;
+        				continue;
         			}
         			String name = resourceDo.getName();
         			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
@@ -455,7 +455,7 @@ public class AppH5FanBeiWebController extends BaseController {
         				}else{
         					pickBrandCouponNotStart = name + "," + pickBrandCouponNotStart;
         				}
-        				break;
+        				continue;
         			}
         			if (DateUtil.afterDay(new Date(), gmtEnd)) {//活动已经结束,请期待下一次活动
         				if(StringUtils.isEmpty(pickBrandCouponDateEnd)){
@@ -463,7 +463,7 @@ public class AppH5FanBeiWebController extends BaseController {
         				}else{
         					pickBrandCouponDateEnd = name + "," + pickBrandCouponDateEnd;
         				}
-        				break;
+        				continue;
         			}
         			
         			String resultString = HttpUtil.doHttpPostJsonParam(resourceDo.getValue(), JSONObject.toJSONString(bo));
@@ -477,21 +477,21 @@ public class AppH5FanBeiWebController extends BaseController {
         				}else{
         					haveAlreadyReceived = name + "," + haveAlreadyReceived;
         				}
-        				break;
+        				continue;
         			} else if (!"0".equals(code)) {//原因：resultJson.getString("msg") 
         				if(StringUtils.isEmpty(msg)){
         					msg = name + "优惠券领取失败;";
         				}else{
         					msg = name + "," + msg;
         				}
-        				break;
+        				continue;
         			}else if ("0".equals(code)) {
         				if(StringUtils.isEmpty(success)){
         					success = name + "优惠券领取成功！";
         				}else{
         					success = name + "," + success;
         				}
-        				break;
+        				continue;
         			}
     			}
     		}
