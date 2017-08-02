@@ -235,4 +235,15 @@
 		AND
 		user_name = #{userName}
 	</select>
+
+	<update id="changeAmount">
+		UPDATE af_user_account
+		<set>
+			<if test="amount != null and amount != '' ">
+				used_amount = used_amount - #{amount},
+			</if>
+			gmt_modified = now(),
+		</set>
+		WHERE is_delete = 0 AND user_id = #{userId}
+	</update>
 </mapper>
