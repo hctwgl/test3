@@ -14,7 +14,11 @@ public enum FanbeiThirdRespCode {
     // PARAM_CODE 100-199
     REQUEST_PARAM_NOT_EXIST("101", "request param is invalid", "请求参数缺失"),
     REQUEST_INVALID_SIGN_ERROR( "102", "sign is invalid", "非法请求"),
-    CALCULATE_SHA_256_ERROR("103","system error","系统错误");
+    SYSTEM_ERROR("103","system error","系统错误"),
+	
+	// BORROW_CASH_CODE 201-299
+    BORROW_CASH_HAVE_FINISHED("201", "borrowcash have finished", "借款已还款完成"),
+	BORROW_CASH_NOT_EXISTS("202", "borrowcash not exists", "借款记录不存在");
 
     /**
      * 错误码
