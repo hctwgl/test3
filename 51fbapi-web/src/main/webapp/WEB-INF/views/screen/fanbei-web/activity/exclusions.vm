@@ -64,34 +64,18 @@
         methods:{
             goBorrowMoney(){
 
-                window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_BASIC}';  // 去提升信用基础认证
-                //window.location.href='/fanbei-web/opennative?name=name=BORROW_MONEY}';  // 去借钱
+                // 商圈
+                //window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_BASIC}';  // 去提升信用基础认证
                 //window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_EXTRA}';  // 去提升信用补充认证
+                //window.location.href='/fanbei-web/opennative?name=name=DO_SCAN_ID}';  // 去扫描身份证
+                window.location.href='/fanbei-web/opennative?name=name=DO_BIND_CARD&params={"idNumber":"33","realName":"1234"}';  // 去绑定银行卡
+
+                // 本次
+                //window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 去借钱
                 //window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_EXTRA}';  // 补充认证全部完成，进入借贷超市页面
 
-                //window.location.href='/fanbei-web/opennative?name=name=DO_SCAN_ID}';  // 去扫描身份证
-                //window.location.href='/fanbei-web/opennative?name=name=DO_FACE}';  // 去人脸识别活体认
-                //window.location.href='/fanbei-web/opennative?name=name=DO_BIND_CARD}';  // 去绑定银行卡
+                //window.location.href='/fanbei-web/opennative?name=name=DO_FACE}';  // 去人脸识别活体认（和人脸识别同一个）
 
-
-
-
-
-
-
-//                $.ajax({
-//                    url: '/fanbei-web/encoreActivityInfo',
-//                    dataType:'json',
-//                    data:{'activityId':activityId},
-//                    type: 'post',
-//                    success:function (data) {
-//                        _this.discountMap=data.data.recommendGoodsList.slice(0,3);
-//                        _this.rebateMap=data.data.recommendGoodsList.slice(3);
-//                    },
-//                    error: function(){
-//                        requestMsg("请求失败");
-//                    }
-//                });
             }
         }
     });

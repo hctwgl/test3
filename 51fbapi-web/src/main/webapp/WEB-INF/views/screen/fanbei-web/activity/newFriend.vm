@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017080201")
+    #set($version="2017080203")
     #set($src="http://f.51fanbei.com/h5/app/activity/07")
     <title>新朋友见面礼</title>
 </head>

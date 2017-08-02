@@ -91,12 +91,17 @@ let vue=new Vue({
             $.ajax({
                 url:'/fanbei-web/pickSysAndBoluomeCoupon',
                 type:'post',
-                success:function (data) {
-                    console.log(data);
-                    if(data.success){
+                success:function (returnData) {
+                    console.log(returnData);
+                    if(returnData.success){
                         requestMsg("领劵成功");
                     }else{
-                        requestMsg(data.msg);
+                        requestMsg(returnData.msg);
+                        // if(returnData.url){
+                        //     location.href=returnData.url;
+                        // }else{
+                        //     requestMsg(returnData.msg);
+                        // }
                     }
                 },
                 error: function(){
