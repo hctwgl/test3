@@ -491,7 +491,6 @@ public class AppH5FanBeiWebController extends BaseController {
         				}else{
         					success = name + "," + success;
         				}
-        				continue;
         			}
     			}
     		}
