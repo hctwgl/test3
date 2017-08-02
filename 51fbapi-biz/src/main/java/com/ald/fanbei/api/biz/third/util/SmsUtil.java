@@ -459,12 +459,12 @@ public class SmsUtil extends AbstractThird {
 	 */
 	private static SmsResult sendSmsToDhst(String mobiles, String content) {
 		SmsResult result = new SmsResult();
-		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-				Constants.INVELOMENT_TYPE_TEST)) {
-			result.setSucc(true);
-			result.setResultStr("test");
-			return result;
-		}
+//		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+//				Constants.INVELOMENT_TYPE_TEST)) {
+//			result.setSucc(true);
+//			result.setResultStr("test");
+//			return result;
+//		}
 		Map<String, String> paramsMap = new HashMap<String, String>();
 		paramsMap.put("account", ACCOUNT);
 		paramsMap.put("password", DigestUtil.MD5(getPassword()).toLowerCase());
