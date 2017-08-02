@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameAwardService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
@@ -26,6 +28,8 @@ import com.ald.fanbei.api.biz.service.AfGameFivebabyService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -46,11 +50,12 @@ import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfGameFivebabyDo;
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.h5.controller.H5Controller;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -83,6 +88,12 @@ public class AppH5GameController  extends BaseController{
 	AfUserService afUserService;
 	@Resource
 	AfCouponService afCouponService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfUserAuthService afUserAuthService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 	
 	@RequestMapping(value = "initGame", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -364,6 +375,58 @@ public class AppH5GameController  extends BaseController{
 					awordList.add(tmpMap);
 				}
 				jsonObj.put("awordList", awordList);
+			}
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+		}
+	}
+	
+	
+	
+	@RequestMapping(value = "tearRiskPacketActivity", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String tearRiskPacketActivity(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject jsonObj = new JSONObject();
+		FanbeiWebContext context = new FanbeiWebContext();
+		try{
+			context = doWebCheck(request, false);
+			if(context.isLogin()) {
+				String userName = context.getUserName();
+				AfUserDo userDo = afUserService.getUserByUserName(userName);
+				Long userId = userDo.getRid();
+				AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+				if(userAuthDo != null) {
+					String riskStatus = userAuthDo.getRiskStatus();
+					if("A".equals(riskStatus) || "P".equals(riskStatus)) {
+						jsonObj.put("status", "A");
+					} else if("N".equals(riskStatus) || "Y".equals(riskStatus)){
+						// 查询账户信息
+						AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
+						if(userAccount != null) {
+							BigDecimal auAmount = userAccount.getAuAmount();
+							BigDecimal usedAmount = userAccount.getUsedAmount();
+							BigDecimal remainAmount = auAmount.subtract(usedAmount);
+							if(remainAmount.compareTo(new BigDecimal(500)) >= 0) {
+								jsonObj.put("status", "B");
+							} else {
+								// 补充认证信息
+								String alipayStatus = userAuthDo.getAlipayStatus();
+								String creditStatus = userAuthDo.getCreditStatus();
+								String jinpoStatus = userAuthDo.getJinpoStatus();
+								String fundStatus = userAuthDo.getFundStatus();
+								if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
+										&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
+									jsonObj.put("status", "C");
+								} else {
+									jsonObj.put("status", "D");
+								}
+								
+							}
+						}
+					}
+				}
 			}
 			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString();
 		} catch (Exception e) {

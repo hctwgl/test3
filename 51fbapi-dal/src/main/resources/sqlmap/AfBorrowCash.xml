@@ -297,7 +297,7 @@
 		AND 
 			review_status = 'REFUSE'
 		AND
-			gmt_create between #{gameStart} AND #{gameEnd}
+			gmt_create between #{gmtStart} AND #{gmtEnd}
 		AND
 			user_id = #{userId}
 	</select>
