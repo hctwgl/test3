@@ -80,7 +80,7 @@ public class AppH5GiftController extends BaseController {
         			couponInfoMap.put("couponId", couponId);
         			couponInfoMap.put("type", "1");
         			couponInfoMap.put("desc", afCouponDo.getUseRule());
-        			couponInfoMap.put("remark", "全场通用");
+        			couponInfoMap.put("remark", "全场券");
     			} else {
     				String couponId = coupontInfos[0];
         			String couponType = coupontInfos[1];
