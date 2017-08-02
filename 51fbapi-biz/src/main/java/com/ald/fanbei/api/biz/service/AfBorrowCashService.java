@@ -124,6 +124,8 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	AfBorrowCashDo getBorrowCashInfoByBorrowNo(String borrowNo);
+
+	List<AfBorrowCashDo> getRiskRefuseBorrowCash(Long userId, Date gmtStart, Date gmtEnd);
 	
 	
 }

@@ -287,5 +287,19 @@
 		LIMIT 1
 	</select>
 	
+	<select id ="getRiskRefuseBorrowCash" resultType="AfBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+			af_borrow_cash
+		WHERE
+			is_delete = 0
+		AND 
+			review_status = 'REFUSE'
+		AND
+			gmt_create between #{gameStart} AND #{gameEnd}
+		AND
+			user_id = #{userId}
+	</select>
 	
 </mapper>
