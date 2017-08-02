@@ -5,27 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggpresents.css?version=$version">
+    <title>索要</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggdemand.css?version=$version">
 </head>
 <body>
     <div id="presents">
         <div class="presents-top">
-            <div class="personAmount"><p>已有<span>1000</span>人点亮所有场景</p></div>
+            <div class="personAmount"><p>已有<span>2889</span>人点亮所有场景</p></div>
             <div class="header">
                 <div class="logo"><img src="$src/gg01.png"></div>
                 <p class="joinAmount"><span>12345</span>人参与</p>
             </div>
             <div class="money">
                 <p>你的好友在51返呗点亮场景</p>
-                <p><span>e顿健康餐</span>送给你</p>
+                <p>向你索要<span>e顿健康餐</span></p>
             </div>
             <div class="banner">
                 <img src="" alt="">
             </div>
             <div class="send">
-                <div class="presentCard ask">我要赠送卡片</div>
-                <div class="demandCard ask">我要索要卡片</div>
+                <div class="presentCard ask">赠送好友</div>
+                <div class="demandCard ask">我也要点亮</div>
             </div>
         </div>
         <div class="presents-bottom clearFix">
@@ -52,5 +52,5 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/dist/activity/08/ggpresents.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/ggdemand.js?version=$version"></script>
 </html>
