@@ -331,14 +331,14 @@ public class AppH5FanBeiWebController extends BaseController {
     		Map<String, Object> returnData = new HashMap<String, Object>();
     		//获取用户信息
     		AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
-    		/*//用户是否存在
+    		//用户是否存在
     		if (afUserDo == null) {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
 				returnData.put("status", CouponWebFailStatus.UserNotexist.getCode());
 				return H5CommonResponse
 						.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), notifyUrl,returnData )
 						.toString();
-			}*/
+			}
     		// 获取优惠券配置信息
     		List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes(AfResourceType.NewUserCouponGift.getCode());
     		if(afResourceList == null || afResourceList.isEmpty()) {
