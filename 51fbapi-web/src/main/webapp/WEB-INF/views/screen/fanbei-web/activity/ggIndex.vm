@@ -60,7 +60,15 @@
         <p class="ruleCont"></p>
     </div>
     <div class="alertPresent">
-
+        <p class="title">请选择你要索要的卡片</p>
+        <div class="imgCont">
+            <p class="bg"></p>
+            <ul class="imgList">
+                <li>1</li><li class="change">2</li><li>3</li><li>4</li>
+            </ul>
+        </div>
+        <p class="previous" @click="imgClick" v-if="!unbind"></p>
+        <p class="next"></p>
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>

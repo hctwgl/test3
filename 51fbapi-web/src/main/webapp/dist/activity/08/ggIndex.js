@@ -1,2 +1,2 @@
-"use strict";
+"use strict";var liLength=$(".imgList li").length,liWidth="2.73rem",move,i=0,ulWidth=3.13*liLength-.4+"rem";$(".imgList li").width(liWidth),$(".imgList").width(ulWidth);var vm=new Vue({el:"#ggIndex",data:{content:{},unbind:!1},created:function(){},methods:{imgClick:function(){var e=this;i++,move=3.13*i+"rem",$(".imgList").css("left","-"+move),console.log(i),$(".imgList").find("li").eq(i).removeClass("change"),$(".imgList").find("li").eq(i+1).addClass("change"),i>=liLength-2&&(e.unbind=!0)}}});
 //# sourceMappingURL=../../_srcmap/activity/08/ggIndex.js.map
