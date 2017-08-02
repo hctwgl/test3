@@ -327,7 +327,7 @@ public class AppH5FanBeiWebController extends BaseController {
 	public String pickSysAndBoluomeCoupon(HttpServletRequest request, ModelMap model) throws IOException {
 		try{
 			//检查是否登录
-			FanbeiWebContext context = doWebCheck(request, true);
+			FanbeiWebContext context = doWebCheck(request, false);
     		Map<String, Object> returnData = new HashMap<String, Object>();
     		//获取用户信息
     		AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
