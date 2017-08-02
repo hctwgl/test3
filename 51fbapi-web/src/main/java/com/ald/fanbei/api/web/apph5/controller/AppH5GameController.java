@@ -35,10 +35,12 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -94,6 +96,8 @@ public class AppH5GameController  extends BaseController{
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	
+	String  opennative = "/fanbei-web/opennative?name=";
 	
 	@RequestMapping(value = "initGame", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -392,40 +396,47 @@ public class AppH5GameController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			context = doWebCheck(request, false);
-			String userName = context.getUserName();
-			AfUserDo userDo = afUserService.getUserByUserName(userName);
-			Long userId = userDo.getRid();
-			AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-			if(userAuthDo != null) {
-				String riskStatus = userAuthDo.getRiskStatus();
-				if("A".equals(riskStatus) || "P".equals(riskStatus)) {
-					jsonObj.put("status", "A");
-				} else if("N".equals(riskStatus) || "Y".equals(riskStatus)){
-					// 查询账户信息
-					AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
-					if(userAccount != null) {
-						BigDecimal auAmount = userAccount.getAuAmount();
-						BigDecimal usedAmount = userAccount.getUsedAmount();
-						BigDecimal remainAmount = auAmount.subtract(usedAmount);
-						if(remainAmount.compareTo(new BigDecimal(500)) >= 0) {
-							jsonObj.put("status", "B");
-						} else {
-							// 补充认证信息
-							String alipayStatus = userAuthDo.getAlipayStatus();
-							String creditStatus = userAuthDo.getCreditStatus();
-							String jinpoStatus = userAuthDo.getJinpoStatus();
-							String fundStatus = userAuthDo.getFundStatus();
-							if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
-									&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
-								jsonObj.put("status", "C");
+			
+			if(context.isLogin()) {
+				String userName = context.getUserName();
+				AfUserDo userDo = afUserService.getUserByUserName(userName);
+				Long userId = userDo.getRid();
+				AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+				if(userAuthDo != null) {
+					String riskStatus = userAuthDo.getRiskStatus();
+					if("A".equals(riskStatus) || "P".equals(riskStatus)) {
+						jsonObj.put("status", "A");
+					} else if("N".equals(riskStatus) || "Y".equals(riskStatus)){
+						// 查询账户信息
+						AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
+						if(userAccount != null) {
+							BigDecimal auAmount = userAccount.getAuAmount();
+							BigDecimal usedAmount = userAccount.getUsedAmount();
+							BigDecimal remainAmount = auAmount.subtract(usedAmount);
+							if(remainAmount.compareTo(new BigDecimal(500)) >= 0) {
+								jsonObj.put("status", "B");
 							} else {
-								jsonObj.put("status", "D");
+								// 补充认证信息
+								String alipayStatus = userAuthDo.getAlipayStatus();
+								String creditStatus = userAuthDo.getCreditStatus();
+								String jinpoStatus = userAuthDo.getJinpoStatus();
+								String fundStatus = userAuthDo.getFundStatus();
+								if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
+										&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
+									jsonObj.put("status", "C");
+								} else {
+									jsonObj.put("status", "D");
+								}
+								
 							}
-							
 						}
 					}
 				}
+			} else {
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				jsonObj.put("loginUrl", loginUrl);
 			}
+			
 			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
