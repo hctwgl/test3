@@ -97,6 +97,7 @@
 		<property name="fbapi.boluome.api.url" defaultValue="http://91ala.test.otosaas.com" description="菠萝觅 certpath" />
 		<property name="fbapi.boluome.order.cancel.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/cancel" description="菠萝觅 订单取消订单" />
 		<property name="fbapi.boluome.order.search.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/info" description="菠萝觅 订单补偿查询" />
+		<property name="fbapi.boluome.coupon.url" defaultValue="https://dev-api.otosaas.com/bss/v1/apps/campaigns/coupons" description="菠萝觅 用户优惠券获取"/>
 		
 		<property name="fbapi.boluome.push.pay.url" defaultValue="http://91ala.test.otosaas.com/api/validation/v1" description="菠萝觅 支付推送消息" />
 		<property name="fbapi.boluome.push.refund.url" defaultValue="http://91ala.test.otosaas.com/api/refundment/v1" description="菠萝觅 certpath" />
