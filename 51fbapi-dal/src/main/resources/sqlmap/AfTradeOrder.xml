@@ -219,9 +219,10 @@
 		left join af_trade_order c on a.id = c.order_id
 		left join
 		af_order_refund d on d.order_id = a.id
-		where c.business_id =
-		#{businessId}
-		and c.status in ('REFUND','REFUNDING')
+		where c.business_id = #{businessId}
+		<if test="refundStatus != null and refundStatus != '' ">
+			and c.status = #{refundStatus}
+		</if>
 		<if test="startDate != null and startDate != '' ">
 			and d.gmt_create <![CDATA[   >=  ]]>
 			#{startDate}
@@ -242,9 +243,10 @@
 		left join af_trade_order c on a.id = c.order_id
 		left join
 		af_order_refund d on d.order_id = a.id
-		where c.business_id =
-		#{businessId}
-		and c.status in ('REFUND','REFUNDING')
+		where c.business_id = #{businessId}
+		<if test="refundStatus != null and refundStatus != '' ">
+			and c.status = #{refundStatus}
+		</if>
 		<if test="startDate != null and startDate != '' ">
 			and d.gmt_create <![CDATA[   >=  ]]>
 			#{startDate}

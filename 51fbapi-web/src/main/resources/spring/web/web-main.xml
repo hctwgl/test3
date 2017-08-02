@@ -329,6 +329,7 @@
 				<entry key="/trade/getWithdrawList" value-ref="getWithdrawListApi" />
 				<entry key="/trade/getRefundList" value-ref="getRefundListApi" />
 				<entry key="/trade/withdraw" value-ref="tradeWithdrawApi" />
+				<entry key="/trade/refund" value-ref="tradeRefundApi" />
 			</map>
 		</constructor-arg>
 	</bean>

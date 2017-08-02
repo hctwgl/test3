@@ -91,7 +91,7 @@ public interface AfTradeOrderDao extends BaseDao<AfTradeOrderDo, Long> {
 	 * @return
 	 */
 	List<AfTradeOrderDto> refundGrid(@Param("businessId") Long businessId, @Param("offset") Integer offset, @Param("limit") Integer limit, @Param("startDate") Date startDate,
-									 @Param("endDate") Date endDate);
+									 @Param("endDate") Date endDate, @Param("refundStatus")String refundStatus);
 
 	/**
 	 * 分页查询商圈退款明细订单总条数
@@ -101,7 +101,7 @@ public interface AfTradeOrderDao extends BaseDao<AfTradeOrderDo, Long> {
 	 * @param endDate
 	 * @return
 	 */
-	Long refundGridTotal(@Param("businessId") Long businessId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+	Long refundGridTotal(@Param("businessId") Long businessId, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("refundStatus")String refundStatus);
 
 	/**
 	 * 获取所有可提现商户订单

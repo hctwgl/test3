@@ -80,7 +80,7 @@ public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>
      * @param endDate
      * @return
      */
-    List<AfTradeOrderDto> refundGrid(Long businessId, Integer offset, Integer limit, Date startDate, Date endDate);
+    List<AfTradeOrderDto> refundGrid(Long businessId, Integer offset, Integer limit, Date startDate, Date endDate, String refundStatus);
 
     /**
      * 分页查询商圈退款明细总条数
@@ -90,7 +90,7 @@ public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>
      * @param endDate
      * @return
      */
-    Long refundGridTotal(Long businessId, Date startDate, Date endDate);
+    Long refundGridTotal(Long businessId, Date startDate, Date endDate, String refundStatus);
 
     /**
      * 商户提现
@@ -99,4 +99,12 @@ public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>
      * @return
      */
     boolean withdraw(Long businessId);
+
+    /**
+     * 商户退款
+     * @param businessId
+     * @param orderId
+     * @return
+     */
+    boolean refund(Long businessId, Long orderId);
 }
