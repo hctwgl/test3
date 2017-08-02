@@ -1,0 +1,103 @@
+body {
+    background-color: #fff;
+    /*background-color: yellow;*/
+}
+
+#rankingList .header {
+    font-size: 0.4rem;
+    text-align: center;
+    margin-top: 0.6rem;
+    color: #fe8744;
+    font-weight: 700;
+}
+
+#rankingList .header .point {
+    width: 0.1rem;
+    height: 0.1rem;
+    background-color: #fe8744;
+    border-radius: 50%;
+    text-align: middle;
+}
+
+.left {
+    margin-right: 0.27rem;
+}
+
+.right {
+    margin-left: 0.27rem;
+}
+
+#rankingList .rebate {
+    padding: 0.3rem 0.3rem;
+}
+
+#rankingList .rebate .rebate-left {
+    font-size: 0.3rem;
+    color: #fe8744;
+    font-weight: 700;
+    float: left;
+}
+
+#rankingList .rebate .rebate-right {
+    font-size: 0.24rem;
+    color: #9b9b9b;
+    font-weight: 700;
+    float: right;
+    /*margin-right: 0.38rem;*/
+}
+
+
+/*#rankingList .rebate .rebate-right i {
+    color: red;
+}*/
+
+#rankingList .phoneNumber {
+    padding: 0.3rem 0.3rem;
+    margin-bottom: 0.2rem;
+}
+
+#rankingList .phoneNumber span {
+    font-size: 0.12rem;
+    color: #fe8744;
+    font-size: 0.28rem;
+    font-weight: 700;
+}
+
+#rankingList .phoneNumber .phone-left {
+    float: left;
+    margin-right: 30%;
+}
+
+#rankingList .phoneNumber .phone-center {
+    float: left;
+}
+
+#rankingList .phoneNumber .phone-right {
+    float: right;
+}
+
+#rankingList .container {
+    padding-left: 0.2rem;
+    font-size: 0.28rem;
+    height: 8.22rem;
+    overflow: hidden;
+}
+
+#rankingList .numberList .list {
+    height: 0.6rem;
+    line-height: 0.6rem;
+}
+
+#rankingList .numberList .list .list-left {
+    float: left;
+    margin-right: 20%;
+}
+
+#rankingList .numberList .list .list-center {
+    float: left;
+    margin-right: 30%;
+}
+
+#rankingList .numberList .list .list-right {
+    float: left;
+}

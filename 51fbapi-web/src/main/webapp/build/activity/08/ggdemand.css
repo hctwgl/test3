@@ -1,0 +1,159 @@
+@url: "https://fs.51fanbei.com/h5/app/activity/08";
+.clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
+.clearFix{zoom:1;}
+body{
+    background-color:white;
+    padding: 0;
+    margin: 0;
+}
+ .personAmount{
+  width:100%;
+  height:.6rem;
+  background:#4c4c4c;
+  position:relative;
+}
+.personAmount p{
+  font-size:.26rem;
+  line-height:.6rem;
+  color:#fff;
+  position:absolute;
+  right:0; 
+}
+.header .logo{
+  width:1.12rem;
+  height:.32rem;
+  margin:.4rem 0 0 .34rem;
+}
+ .header .joinAmount{
+  width:2.49rem;
+  height:.43rem;
+  border-radius: 1rem;
+  background:#fe963b;
+  color:#fff;
+  line-height: .43rem;
+  text-align:center;
+  position:absolute;
+  top:.94rem;
+  right:-.2rem;
+}
+ .money{
+  width:6.81rem;
+  height:.83rem;
+  background:url("@{url}/present-bg.png") no-repeat;
+  background-size: contain;
+  margin:.72rem auto .45rem auto;
+  text-align:center;
+  color:#000000;
+  position:relative;
+}
+.money p:nth-child(1){
+  font-size:.4rem;
+  position:absolute;
+  top:-.25rem;
+  left:13.5%;
+  
+}
+.money p:nth-child(2){
+  font-size:.5rem;
+  padding-top: .4rem;
+  margin-left:0.1rem;
+}
+.money p:nth-child(2) span{
+  color:#fe963b;
+  margin-left:0.1rem;
+}
+.banner img{
+    width:6.25rem;
+    height:5rem;
+    background-color:pink;
+    margin-left:9%;
+}
+.ask{
+  width:2.86rem;
+  height:.88rem;
+  background:#fb9659;
+  box-shadow:0 .06rem .13rem 0 rgba(212,195,185,0.87);
+  border-radius:1rem;
+  margin-top:.5rem;
+  margin-bottom: .64rem;
+  display: inline-block;
+  color:#fff;
+  line-height:.88rem;
+  text-align: center;
+  font-size:.3rem;
+}
+.presentCard{
+  margin-left:7.8%;
+  margin-right:7%;
+}
+
+#presents .presents-top {
+    /*width: 100%;*/
+    /* height: 6rem; */
+    /* background-color: yellow; */
+    margin-bottom: 0.84rem;
+}
+#presents .presents-bottom {
+    margin-bottom:30%;
+}
+#presents .presents-bottom .presents-bottom-right {
+    float: left;
+    margin-left: 10%;
+}
+
+#presents .presents-bottom .presents-bottom-right .line {
+    background-color: #fe8541;
+    height: 3.7rem;
+    width: 0.07rem;
+    position: relative;
+    text-align:middle;
+    margin-top:0.63rem;
+}
+
+#presents .presents-bottom .presents-bottom-right span {
+    width: 0.85rem;
+    height: 0.85rem;
+    background-color: #f99f66;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 0.85rem;
+    color: white;
+    font-size: 0.62rem;
+}
+
+#presents .presents-bottom .presents-bottom-right .number-one {
+    position: absolute;
+    top: -0.8rem;
+    left:-0.4rem;
+}
+#presents .presents-bottom .presents-bottom-right .number-two {
+    position: absolute;
+    top: 1.4rem;
+    left:-0.4rem;
+}
+#presents .presents-bottom .presents-bottom-right .number-three {
+    position: absolute;
+    top: 3.5rem;
+    left:-0.4rem;
+}
+
+#presents .presents-bottom .presents-bottom-left {
+    float: right;
+    margin-right: 15%;
+}
+#presents .presents-bottom .presents-bottom-left p{
+    margin-bottom:0.58rem;
+    font-size:0.3rem;
+    position:relative;
+}
+#presents .presents-bottom .presents-bottom-left .rules{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:0.28rem;
+    
+}
+#presents .presents-bottom .presents-bottom-left .rules a{
+    color:#5cb4e2;
+    text-decoration: underline;
+}

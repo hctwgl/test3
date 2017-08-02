@@ -1,0 +1,2 @@
+"use strict";function scrollList(i){var t=$(".container ul li:first").height();$uList.animate({marginTop:-t},1100,function(){$uList.css({marginTop:0}).find("li:first").appendTo($uList)})}var $uList=$(".container ul"),timer=null;$uList.hover(function(){clearInterval(timer)},function(){timer=setInterval(function(){scrollList($uList)},1101)}).trigger("mouseleave");
+//# sourceMappingURL=../../_srcmap/activity/08/ggrankingList.js.map

@@ -464,7 +464,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(certNo);
 		reqBo.setPurpose(purpose);
-		reqBo.setRemark(remark);
+		reqBo.setRemark(remark.trim());
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
 		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");

@@ -134,7 +134,6 @@ public class GetAgencyNperInfoApi implements ApiHandle {
     		String data = quotaBo.getData();
     		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
     			JSONObject json = JSONObject.parseObject(data);
-    			isQuotaGoods = "Y";
     			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
     			String virtualCode = json.getString("virtualCode");
     			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
@@ -143,6 +142,7 @@ public class GetAgencyNperInfoApi implements ApiHandle {
     			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
     			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
     				useableAmount = goodsUseableAmount;
+    				isQuotaGoods = "Y";
     			}
     		}      	
         }

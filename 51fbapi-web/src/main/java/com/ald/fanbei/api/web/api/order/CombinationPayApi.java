@@ -113,10 +113,10 @@ public class CombinationPayApi implements ApiHandle {
 		AfUserDo afUserDo = afUserService.getUserById(userId);
 		
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		String isSupplyCertify = "N";
-		if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode())) {
-			isSupplyCertify = "Y";
-		}
+        String isSupplyCertify = "N";
+        if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode())&&StringUtil.equals(authDo.getAlipayStatus(), YesNoStatus.YES.getCode())) {
+        	isSupplyCertify = "Y";
+        }
 
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("quotaAmount", useableAmount);

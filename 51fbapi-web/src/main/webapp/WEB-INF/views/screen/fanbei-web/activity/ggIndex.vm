@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170801")
+    #set($src="https://fs.51fanbei.com/h5/app/activity/08")
+    <title>场景点亮首页</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
+</head>
+<body>
+<div id="ggIndex">
+    <div class="personAmount"><p>已有<span>1000</span>人点亮所有场景</p></div>
+    <div class="header">
+        <div class="logo"><img src="$src/gg01.png"></div>
+        <p class="joinAmount"><span>12345</span>人参与</p>
+    </div>
+    <div class="money">
+        <p>消费有返利</p>
+        <p>还可以领取<span>88.88</span>元现金红包</p>
+    </div>
+    <div class="banner">轮播图</div>
+    <div class="couponList clearFix">
+        <div class="coupon">
+            <p class="name">易果生鲜</p>
+            <p class="amount">￥<span>3.0</span></p>
+            <p class="limitAmount white">满<span>10</span>元可用</p>
+            <p class="validTime white">有效期<span>3</span>天</p>
+        </div>
+        <div class="coupon">
+            <p class="name">饿了么</p>
+            <p class="amount">￥<span>3.0</span></p>
+            <p class="limitAmount white">满<span>10</span>元可用</p>
+            <p class="validTime white">有效期<span>3</span>天</p>
+        </div>
+    </div>
+    <div class="cardList clearFix">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+    </div>
+    <div class="finalPrize">
+        <p><span>88.88</span>元红包</p>
+    </div>
+    <div class="presentCard ask">我要赠送卡片</div>
+    <div class="demandCard ask">我要索要卡片</div>
+    <div class="progress">
+       <div class="left"></div>
+        <p class="p01">完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利</p>
+        <p class="p02">向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你</p>
+        <p>集齐全部专属卡片，即可兑换<span>88.88</span>元现金红包</p>
+    </div>
+    <p class="ruleInfo">活动规则详情</p>
+    <div class="mask"></div>
+    <div class="alertRule">
+        <p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
+        <p class="ruleCont"></p>
+    </div>
+    <div class="alertPresent">
+        <p class="title">请选择你要索要的卡片</p>
+        <div class="imgCont">
+            <p class="bg"></p>
+            <ul class="imgList">
+                <li>1</li><li class="change01">2</li><li>3</li><li>4</li>
+            </ul>
+        </div>
+        <p class="previous" @click="imgClick" v-if="!unbind"></p>
+        <p class="next"></p>
+    </div>
+</div>
+<script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
+</body>
+</html>

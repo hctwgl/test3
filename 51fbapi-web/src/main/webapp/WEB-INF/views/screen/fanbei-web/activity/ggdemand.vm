@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($src="https://fs.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>索要</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggdemand.css?version=$version">
+</head>
+<body>
+    <div id="presents">
+        <div class="presents-top">
+            <div class="personAmount"><p>已有<span>2889</span>人点亮所有场景</p></div>
+            <div class="header">
+                <div class="logo"><img src="$src/gg01.png"></div>
+                <p class="joinAmount"><span>12345</span>人参与</p>
+            </div>
+            <div class="money">
+                <p>你的好友在51返呗点亮场景</p>
+                <p>向你索要<span>e顿健康餐</span></p>
+            </div>
+            <div class="banner">
+                <img src="" alt="">
+            </div>
+            <div class="send">
+                <div class="presentCard ask">赠送好友</div>
+                <div class="demandCard ask">我也要点亮</div>
+            </div>
+        </div>
+        <div class="presents-bottom clearFix">
+            <div class="presents-bottom-right">
+                <div class="line">
+                    <span class="number-one">1</span>
+                    <span class="number-two">2</span>
+                    <span class="number-three">3</span>
+                </div>
+                
+            </div>
+            <div class="presents-bottom-left">
+                <p class="word-one">
+                    <span>完成1笔消费订单且满足消费规<br/>则时,即可获得1张场景专属卡片<br/>更有高额返利</span>
+                </p>
+                <p class="word-two">
+                    <span>向好友索要、与好友互换,即可<br/>获取不同种类的专属卡片;分享<br/>后,好友消费后更有同等返利给<br/>到你</span>
+                </p>
+                <p class="word-three">
+                    <span>集齐全部专属卡片,即可兑换<br/>88.88元现金红包</span>
+                </p>
+                <div class="rules"><a href="#">活动规则详情</a></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/dist/activity/08/ggdemand.js?version=$version"></script>
+</html>
