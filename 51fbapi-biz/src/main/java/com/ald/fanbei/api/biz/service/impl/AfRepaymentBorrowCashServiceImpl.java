@@ -437,4 +437,169 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	public String getCurrentLastRepayNo(String orderNoPre) {
 		return afRepaymentBorrowCashDao.getCurrentLastRepayNo(orderNoPre);
 	}
+	
+	@Override
+	public String dealOfflineRepaymentSucess(final String repayNo,final String borrowNo,final String repayType,final String repayTime,final BigDecimal repayAmount,final BigDecimal restAmount,final String tradeNo,final String isBalance) {
+
+		return transactionTemplate.execute(new TransactionCallback<String>() {
+			@Override
+			public String doInTransaction(TransactionStatus status) {
+				try {
+					if(YesNoStatus.YES.getCode().equals(isBalance)){
+						//平账处理
+						
+						
+					}else{
+						//按实际还款金额处理
+						
+						
+					}
+					
+					return 0+"";
+					/*
+					AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(outTradeNo);
+					logger.info("repayment=" + repayment);
+					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
+						return 0+"";
+					}
+
+					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
+					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+					
+					AfBorrowCashDo bcashDo = new AfBorrowCashDo();
+					bcashDo.setRid(afBorrowCashDo.getRid());
+					bcashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
+					bcashDo.setRenewalNum(afBorrowCashDo.getRenewalNum());
+					BigDecimal nowRepayAmount = repayment.getRepaymentAmount();
+					BigDecimal repayAmount = nowRepayAmount.add(afBorrowCashDo.getRepayAmount());
+					logger.info("repayAmount=" + repayAmount);
+					
+					String nowRepayAmountStr = NumberUtil.format2Str(nowRepayAmount);
+					String notRepayMoneyStr = "";
+					
+					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(afBorrowCashDo.getUserId());
+					String cardNo = StringUtils.EMPTY;
+					if (card != null) {
+						cardNo = card.getCardNumber();
+					} else {
+						cardNo = System.currentTimeMillis() + StringUtils.EMPTY;
+					}
+					
+					BigDecimal interest = BigDecimal.ZERO;
+					
+					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 start
+					BigDecimal tempRepayAmount = BigDecimal.ZERO;
+					tempRepayAmount = repayment.getRepaymentAmount();
+					if (tempRepayAmount.compareTo(afBorrowCashDo.getRateAmount()) > 0) {
+						bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), afBorrowCashDo.getRateAmount()));
+						bcashDo.setRateAmount(BigDecimal.ZERO);
+						interest = afBorrowCashDo.getRateAmount();
+						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getRateAmount());
+					} else {
+						bcashDo.setSumRate(BigDecimalUtil.add(bcashDo.getSumRate(), tempRepayAmount));
+						bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
+						interest = tempRepayAmount;
+						tempRepayAmount = BigDecimal.ZERO;
+					}
+					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 end
+
+					// 累计集分宝
+					bcashDo.setSumJfb(BigDecimalUtil.add(afBorrowCashDo.getSumJfb(), repayment.getJfbAmount()));
+					
+					BigDecimal overdueAmount = BigDecimal.ZERO;
+
+					// 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 start
+					if (tempRepayAmount.compareTo(afBorrowCashDo.getOverdueAmount()) > 0) {
+						bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount()));
+						bcashDo.setOverdueAmount(BigDecimal.ZERO);
+						overdueAmount = afBorrowCashDo.getOverdueAmount();
+						tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getOverdueAmount());
+					} else {
+						bcashDo.setSumOverdue(BigDecimalUtil.add(bcashDo.getSumOverdue(), tempRepayAmount));
+						bcashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(tempRepayAmount));
+						overdueAmount = tempRepayAmount;
+						tempRepayAmount = BigDecimal.ZERO;
+					}
+					// 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 end
+
+					// 累计使用余额
+					bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
+					bcashDo.setRepayAmount(repayAmount);
+					
+					// 优惠券设置已使用
+					afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
+
+					// 授权账户可用金额变更
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUserId(repayment.getUserId());
+					account.setJfbAmount(repayment.getJfbAmount().multiply(new BigDecimal(-1)));
+
+					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
+					afUserAccountDao.updateUserAccount(account);
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
+					
+					AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
+					temRepayMent.setStatus(AfBorrowCashRepmentStatus.YES.getCode());
+					temRepayMent.setTradeNo(tradeNo);
+					temRepayMent.setRid(repayment.getRid());
+					// 变更还款记录为已还款
+					afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
+					
+					try {
+						String riskOrderNo = riskUtil.getOrderNo("tran", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+						JSONArray details = new JSONArray();
+						JSONObject obj = new JSONObject();
+						obj.put("borrowNo", afBorrowCashDo.getBorrowNo());
+						obj.put("amount", afBorrowCashDo.getAmount());
+						obj.put("repayment", repayment.getRepaymentAmount());
+						obj.put("income", BigDecimal.ZERO);
+						obj.put("interest", interest);
+						obj.put("overdueAmount", overdueAmount);
+						obj.put("overdueDay", afBorrowCashDo.getOverdueDay());
+						details.add(obj);
+						riskUtil.transferBorrowInfo(afBorrowCashDo.getUserId().toString(), "50", riskOrderNo, details);
+					} catch (Exception e) {
+						logger.error("还款时给风控传输数据出错", e);
+					}
+					
+					if (allAmount.compareTo(repayAmount) == 0) {
+						Long userId = afBorrowCashDo.getUserId();
+						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+						//减少使用额度
+						accountInfo.setUsedAmount(BigDecimalUtil.subtract(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+						afUserAccountDao.updateOriginalUserAccount(accountInfo);
+						//增加日志
+						AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, 
+								afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
+						afUserAccountLogDao.addUserAccountLog(accountLog);
+						
+						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+						*//**------------------------------------fmai风控提额begin------------------------------------------------*//*
+						try {
+							String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+							BigDecimal income = BigDecimalUtil.add(afBorrowCashDo.getPoundage(), afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+							int overdueCount = 0;
+							if (StringUtil.equals("Y", afBorrowCashDo.getOverdueStatus())) {
+								overdueCount = 1;
+							}
+							riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "50", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
+						} catch (Exception e) {
+							logger.error("风控提额提额失败", e);
+						}
+						*//**------------------------------------fmai风控提额end--------------------------------------------------*//*
+					} else {
+						notRepayMoneyStr = NumberUtil.format2Str(allAmount.subtract(repayAmount));
+					}
+					afBorrowCashService.updateBorrowCash(bcashDo);
+					return 1+"";*/
+					
+					
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("dealRepaymentSucess error", e);
+					return 0+"";
+				}
+			}
+		});
+	}
 }

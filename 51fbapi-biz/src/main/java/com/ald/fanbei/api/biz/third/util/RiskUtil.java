@@ -23,6 +23,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
+import com.ald.fanbei.api.biz.bo.RiskCollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskDataBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
@@ -50,6 +51,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -79,6 +81,7 @@ import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
@@ -177,6 +180,8 @@ public class RiskUtil extends AbstractThird {
 	AfOrderService afOrderService;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
 	private static String getUrl() {
 		if (url == null) {
@@ -1861,5 +1866,39 @@ public class RiskUtil extends AbstractThird {
 			return afUserAuthService.updateUserAuth(auth);
 		}
 		return 0;
+	}
+	
+	public RiskCollectionOperatorNotifyRespBo offlineRepaymentNotify(String code, String data, String msg, String signInfo) {
+		//响应数据,默认成功
+		RiskCollectionOperatorNotifyRespBo notifyRespBo = new RiskCollectionOperatorNotifyRespBo(FanbeiThirdRespCode.SUCCESS); 
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logThird(signInfo, "offlineRepaymentNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String repayNo = obj.getString("repay_no");
+			String borrowNo = obj.getString("borrow_no");
+			String repayType = obj.getString("repay_type");
+			String repayTime = obj.getString("repay_time");
+			String repayAmount = obj.getString("repay_amount");
+			String restAmount = obj.getString("rest_amount");
+			String tradeNo = obj.getString("trade_no");
+			String isBalance = obj.getString("is_balance");
+			
+			//参数校验
+			if(StringUtil.isAllNotEmpty(repayNo,borrowNo,repayType,repayTime,repayAmount,restAmount,tradeNo,isBalance)){
+				//业务处理
+				String respCode = afRepaymentBorrowCashService.dealOfflineRepaymentSucess(repayNo, borrowNo, repayType, repayTime, NumberUtil.objToBigDecimalDefault(repayAmount, BigDecimal.ZERO), NumberUtil.objToBigDecimalDefault(restAmount, BigDecimal.ZERO), tradeNo, isBalance);
+				FanbeiThirdRespCode respInfo = FanbeiThirdRespCode.findByCode(respCode);
+				notifyRespBo.resetMsgInfo(respInfo);
+			}else{
+				notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
+			}
+		}
+		notifyRespBo.setSign(SignUtil.sign(createLinkString(notifyRespBo), PRIVATE_KEY));
+		return notifyRespBo;
 	}
 }

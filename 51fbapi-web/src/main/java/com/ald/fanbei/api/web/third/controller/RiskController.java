@@ -210,11 +210,13 @@ public class RiskController {
 		String data = ObjectUtils.toString(request.getParameter("data"));
 		String msg = ObjectUtils.toString(request.getParameter("msg"));
 		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
-
-		//TODO
-		
-		logger.info("asyRegisterStrongRisk begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
-		return "SUCCESS";
+		logger.info("deal offlineRepayment begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.offlineRepaymentNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
 	}
 	
 }
