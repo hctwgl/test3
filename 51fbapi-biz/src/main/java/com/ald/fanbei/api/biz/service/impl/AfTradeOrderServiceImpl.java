@@ -256,11 +256,11 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
                 dealBorrowAndBill(orderDo.getUserId(), accountInfo.getUserName(), borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderDo.getRid(),
                         orderDo.getOrderNo(), orderDo.getBorrowRate(), orderDo.getInterestFreeJson());
 
-                orderDo = new AfOrderDo();
-                orderDo.setRid(orderId);
-                orderDo.setStatus(OrderStatus.CLOSED.getCode());
-                orderDo.setGmtModified(new Date());
-                afOrderDao.updateOrder(orderDo);
+                AfOrderDo updateOrder = new AfOrderDo();
+                updateOrder.setRid(orderId);
+                updateOrder.setStatus(OrderStatus.CLOSED.getCode());
+                updateOrder.setGmtModified(new Date());
+                afOrderDao.updateOrder(updateOrder);
 
                 tradeOrderDo.setStatus(TradeOrderStatus.REFUND.getCode());
                 tradeOrderDo.setGmtModified(new Date());
