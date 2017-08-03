@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017080301")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <title>OPPO分期免息0首付 仅限5天</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/selfHome.css?version=$version">
+</head>
+<body>
+    <div id="selfHome">
+        <img :src="returnData.bannerUrl">
+        <div class="discountWrap" style="background-color: #2d836a;">
+            <img src="$commonUrl/oppoHome1.png">
+            <ul class="discount clearfix" style="background-color: #2d836a;">
+                <li v-for="item in discountMap" @click="goGoodsDetail(item)">
+                    <img :src="item.goodsIcon">
+                    <div class="discountRight">
+                        <p class="discountRightTitle">{{item.goodName}}</p>
+                        <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
+                        <div class="priceWrap">
+                            <span class="saleAmount">¥{{item.saleAmount}}</span>
+                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
+                        </div>
+                        <span class="goBuyBtn">立即抢购</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="rebateWrap" style="background-color: #2d836a;">
+            <img src="$commonUrl/oppoHome2.png">
+            <ul class="rebate clearfix" style="background-color: #2d836a;">
+                <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
+                    <img :src="item.goodsIcon">
+                    <div class="rebateRight">
+                        <p class="rebateRightTitle">{{item.goodName}}</p>
+                        <p class="remark">{{item.remark}}</p>
+                        <div class="priceWrap">
+                            <span class="saleAmount">¥{{item.saleAmount}}</span>
+                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/dist/activity/08/selfHome.js?version=$version"></script>
+</html>
