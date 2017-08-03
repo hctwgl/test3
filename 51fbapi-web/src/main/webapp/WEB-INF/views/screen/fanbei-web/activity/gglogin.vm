@@ -31,10 +31,10 @@
         <div class="lspdiv clearFix">
             <span class="spl">我要注册</span>
             <span class="spr">忘记密码</span>
-        </div>
-        <div class="botimg">
-
-        </div>
+        </div>   
+    </div>
+    <div class="botimg">
+            <img src="$src/pic-2.png" alt="">
     </div>       
 </body>
 </body>
