@@ -53,9 +53,18 @@ import java.util.Date;
      * @return id
      */
 
+    private Long boluomeActivityId;
     
 
-    /**
+    public Long getBoluomeActivityId() {
+		return boluomeActivityId;
+	}
+
+	public void setBoluomeActivityId(Long boluomeActivityId) {
+		this.boluomeActivityId = boluomeActivityId;
+	}
+
+	/**
      * 获取创建时间
      *
      * @return 创建时间

@@ -62,6 +62,7 @@ public enum AfResourceType {
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
 	BorrowShopBanner("BORROW_SHOP_BANNER", "借贷超市轮播"),
 	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
+	GGTopBanner("GG_TOP_BANNER","逛逛活动点亮顶部轮播"),
 
 	
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置"),
