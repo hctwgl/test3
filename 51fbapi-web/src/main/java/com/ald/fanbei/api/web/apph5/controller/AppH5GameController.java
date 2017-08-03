@@ -392,7 +392,7 @@ public class AppH5GameController  extends BaseController{
 	@RequestMapping(value = "tearRiskPacketActivity", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String tearRiskPacketActivity(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		JSONObject jsonObj = new JSONObject();
+		HashMap<String, Object> data = new HashMap<String, Object>();
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			context = doWebCheck(request, false);
@@ -401,32 +401,36 @@ public class AppH5GameController  extends BaseController{
 			if(userDo != null) {
 				Long userId = userDo.getRid();
 				AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+				AfUserAccountDo userAccount =  afUserAccountService.getUserAccountByUserId(userId);
+				String idNumber = userAccount.getIdNumber();
+				String realName = userAccount.getRealName();
+				data.put("idNumber", idNumber);
+				data.put("realName", realName);
 				if(userAuthDo != null) {
 					String riskStatus = userAuthDo.getRiskStatus();
 					if("A".equals(riskStatus)){
 						String realnameStatus = userAuthDo.getRealnameStatus();
 						String bankcardStatus = userAuthDo.getBankcardStatus();
 						if(realnameStatus == null || "".equals(realnameStatus)) {
-							jsonObj.put("status", "A1");
+							data.put("status", "A1");
 						}
 						if("N".equals(bankcardStatus)) {
-							jsonObj.put("status", "A2");
+							data.put("status", "A2");
 						}
 						if(!(realnameStatus == null || "".equals(realnameStatus))
 								&& "Y".equals(bankcardStatus)) {
-							jsonObj.put("status", "A3");
+							data.put("status", "A3");
 						}
 					} else if("P".equals(riskStatus)) {
-						jsonObj.put("status", "A4");
+						data.put("status", "A4");
 					} else if("N".equals(riskStatus) || "Y".equals(riskStatus)){
-						// 查询账户信息      
-						AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
+						
 						if(userAccount != null) {
 							BigDecimal auAmount = userAccount.getAuAmount();
 							BigDecimal usedAmount = userAccount.getUsedAmount();
 							BigDecimal remainAmount = auAmount.subtract(usedAmount);
 							if(remainAmount.compareTo(new BigDecimal(500)) >= 0) {
-								jsonObj.put("status", "B");
+								data.put("status", "B");
 							} else {
 								// 补充认证信息
 								String alipayStatus = userAuthDo.getAlipayStatus();
@@ -435,21 +439,20 @@ public class AppH5GameController  extends BaseController{
 								String fundStatus = userAuthDo.getFundStatus();
 								if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
 										&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
-									jsonObj.put("status", "C");
+									data.put("status", "C");
 								} else {
-									jsonObj.put("status", "D");
+									data.put("status", "D");
 								}
-								
 							}
 						}
 					}
 				}
 			} else {
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
-				jsonObj.put("loginUrl", loginUrl);
+				data.put("loginUrl", loginUrl);
 			}
 			
-			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString();
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
