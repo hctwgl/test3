@@ -99,7 +99,8 @@ public abstract class BaseController {
             FanbeiContext contex = doCheck(requestDataVo);
 
             // 处理业务
-            resultStr = doProcess(requestDataVo, contex, request);
+            exceptionresponse = doProcess(requestDataVo, contex, request);
+			resultStr = JSON.toJSONString(exceptionresponse);
         } catch (FanbeiException e) {
             exceptionresponse = buildErrorResult(e.getErrorCode(), request);
             resultStr = JSON.toJSONString(exceptionresponse);
@@ -127,13 +128,28 @@ public abstract class BaseController {
                             req = requestDataVo.toString();
                         }
                     }
-                    biLogger.info(StringUtil.appendStrs(
-                            "rmtIP=", CommonUtil.getIpAddr(request),
-                            ";userName=", userName,
-                            ";exeT=", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()),
-                            ";intefN=", request.getRequestURI(),
-                            ";reqD=", req,
-                            ";resD=", requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod())) ? resultStr.length() + "" : resultStr));
+					String clientType="o";
+					if(requestDataVo != null && requestDataVo.getId() != null && requestDataVo.getId().startsWith("i_")){
+						clientType="i";
+					}else if(requestDataVo != null && requestDataVo.getId() != null && requestDataVo.getId().startsWith("a_")){
+						clientType="a";
+					}
+					biLogger.info(StringUtil.appendStrs(
+							"	", DateUtil.formatDate(calStart.getTime(), DateUtil.DATE_TIME_SHORT),
+							"	", clientType,
+							"	rmtIP=", CommonUtil.getIpAddr(request), 
+							"	userName=", userName, 
+							"	", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), 
+							"	", request.getRequestURI(),
+							"	result=",exceptionresponse == null?9999:((ApiHandleResponse)exceptionresponse).getResult().getCode(), 
+							"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
+							"	", "", 
+							"	", "",
+							"	", "",
+							"	", "",
+							"	", "",
+							"	reqD=", req, 
+							"	resD=",requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod()))? resultStr.length() + "" : resultStr));
                 }
             } catch (Exception e) {
                 logger.error("app bi exception", e);
@@ -178,7 +194,7 @@ public abstract class BaseController {
      * @param httpServletRequest
      * @return
      */
-    public abstract String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest);
+    public abstract BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest);
 
     /**
      * 验证基础参数、签名
@@ -474,7 +490,7 @@ public abstract class BaseController {
      * @param respData
      * @param exeT
      */
-    protected void doMaidianLog(HttpServletRequest request, String respData) {
+    protected void doMaidianLog(HttpServletRequest request, H5CommonResponse respData) {
         try {
             JSONObject param = new JSONObject();
             Enumeration<String> enu = request.getParameterNames();
@@ -487,11 +503,21 @@ public abstract class BaseController {
                 userName = (String) JSONObject.parseObject(param.getString("_appInfo")).get("userName");
             }
             maidianLog.info(StringUtil.appendStrs(
-                    "ip=", CommonUtil.getIpAddr(request),
-                    ";userName=", userName,
-                    ";inte=", request.getRequestURI(),
-                    ";param=", param.toString(),
-                    ";resp=", respData));
+					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
+					"	", "h",
+					"	rmtIP=", CommonUtil.getIpAddr(request), 
+					"	userName=", userName, 
+					"	", 0, 
+					"	", request.getRequestURI(),
+					"	result=",respData == null?false:respData.getSuccess(), 
+					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
+					"	", "md", 
+					"	", "",
+					"	", "",
+					"	", "",
+					"	", "",
+					"	reqD=", param.toString(), 
+					"	resD=",respData==null?"null":respData.toString()));
         } catch (Exception e) {
             logger.error("maidian logger error", e);
         }
@@ -505,7 +531,7 @@ public abstract class BaseController {
      * @param appInfo
      * @param exeT
      */
-    protected void doLog(HttpServletRequest request, String respData, String appInfo, long exeT, String userName) {
+    protected void doLog(HttpServletRequest request, H5CommonResponse respData, String appInfo, long exeT, String userName) {
         try {
             JSONObject param = new JSONObject();
 //			String userName = "no user";
@@ -523,32 +549,45 @@ public abstract class BaseController {
                 String paraName = (String) enu.nextElement();
                 param.put(paraName, request.getParameter(paraName));
             }
-            this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT + "", request.getRequestURI(), userName);
+			this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI(),userName,"","","","","");
         } catch (Exception e) {
             logger.error("do log exception", e);
         }
     }
 
-    /**
-     * 记录日志
-     *
-     * @param reqData    请求参数
-     * @param resD       响应结果
-     * @param httpMethod 请求方法 GET或POST
-     * @param rmtIp      远程id
-     * @param exeT       执行时间
-     * @param inter      接口
-     */
-    protected void doLog(String reqData, String resD, String httpMethod, String rmtIp, String exeT, String inter, String userName) {
-        webbiLog.info(StringUtil.appendStrs(
-                "rmtIp=", rmtIp,
-                ";userName=", userName,
-                ";exeT=", exeT,
-                ";inter=", inter,
-                ";reqD=", reqData,
-                ";resD=", resD,
-                ";methd=", httpMethod));
-    }
+	/**
+	 * 
+	 * @param reqData  请求参数
+	 * @param respData 响应结果
+	 * @param httpMethod 请求方法 GET或POST
+	 * @param rmtIp 远程id
+	 * @param exeT 执行时间
+	 * @param inter 接口
+	 * @param userName用户名
+	 * @param ext1 扩展参数1
+	 * @param ext2  扩展参数2
+	 * @param ext3 扩展参数3
+	 * @param ext4 扩展参数4
+	 * @param ext5 扩展参数5
+	 */
+	private void doLog(String reqData,H5CommonResponse respData,String httpMethod,String rmtIp,String exeT,String inter,String userName,String ext1,String ext2,String ext3,String ext4,String ext5){
+		webbiLog.info(StringUtil.appendStrs(
+				"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
+				"	", "h",
+				"	rmtIP=", rmtIp, 
+				"	userName=", userName, 
+				"	", exeT, 
+				"	", inter,
+				"	result=",respData == null?false:respData.getSuccess(), 
+				"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
+				"	", ext1, 
+				"	", ext2,
+				"	", ext3,
+				"	", ext4,
+				"	", ext5,
+				"	reqD=", reqData, 
+				"	resD=",respData==null?"null":respData.toString()));
+	}
 
     private static String getAppInfo(String url) {
         if (StringUtil.isBlank(url)) {
@@ -654,7 +693,7 @@ public abstract class BaseController {
      * @return
      */
     protected String processTradeWeiXinRequest(String reqData, HttpServletRequest request, boolean isForQQ) {
-        String resultStr = StringUtils.EMPTY;
+//        String resultStr = StringUtils.EMPTY;
         BaseResponse exceptionresponse = null;
         RequestDataVo requestDataVo = null;
         try {
@@ -681,16 +720,14 @@ public abstract class BaseController {
             }
 
             // 处理业务
-            resultStr = doProcess(requestDataVo, null, request);
+            exceptionresponse = doProcess(requestDataVo, null, request);
         } catch (FanbeiException e) {
             exceptionresponse = new ApiHandleResponse("trade_weixin_error", e.getErrorCode());
-            resultStr = JSON.toJSONString(exceptionresponse);
             logger.error("trade weixin exception {}", e);
         } catch (Exception e) {
             exceptionresponse = new ApiHandleResponse("trade_weixin_error", FanbeiExceptionCode.SYSTEM_ERROR);
-            resultStr = JSON.toJSONString(exceptionresponse);
             logger.error("system exception {}", e);
         }
-        return resultStr;
+        return JSON.toJSONString(exceptionresponse);
     }
 }
