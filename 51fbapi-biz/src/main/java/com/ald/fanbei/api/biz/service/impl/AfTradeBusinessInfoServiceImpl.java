@@ -2,9 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.dao.AfBusinessTypeDao;
+import com.ald.fanbei.api.dal.domain.AfBusinessTypeDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
@@ -30,6 +33,8 @@ public class AfTradeBusinessInfoServiceImpl extends ParentServiceImpl<AfTradeBus
    
     @Resource
     private AfTradeBusinessInfoDao afTradeBusinessInfoDao;
+    @Resource
+	private AfBusinessTypeDao afBusinessTypeDao;
 
 	@Override
 	public BaseDao<AfTradeBusinessInfoDo, Long> getDao() {
@@ -48,5 +53,20 @@ public class AfTradeBusinessInfoServiceImpl extends ParentServiceImpl<AfTradeBus
 	@Override
 	public AfTradeBusinessInfoDo getByBusinessId(Long businessId) {
 		return afTradeBusinessInfoDao.getByBusinessId(businessId);
+	}
+
+	@Override
+	public AfTradeBusinessInfoDto getBusinessInfoById(Long businessId) {
+		AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoDao.getByBusinessId(businessId);
+		AfTradeBusinessInfoDto afTradeBusinessInfoDto = new AfTradeBusinessInfoDto();
+		BeanUtils.copyProperties(afTradeBusinessInfoDo, afTradeBusinessInfoDto);
+		AfBusinessTypeDo afBusinessTypeDo = afBusinessTypeDao.getById(Long.valueOf(String.valueOf(afTradeBusinessInfoDto.getType())));
+		String typeName = afBusinessTypeDo.getName();
+		if(afBusinessTypeDo.getLevel().equals(2)) {
+			AfBusinessTypeDo parent = afBusinessTypeDao.getById(afBusinessTypeDo.getParentId());
+			typeName = parent.getName() + "-" + typeName;
+		}
+		afTradeBusinessInfoDto.setTypeName(typeName);
+		return afTradeBusinessInfoDto;
 	}
 }
