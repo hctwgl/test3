@@ -24,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -80,6 +81,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	AfUserAccountLogDao afUserAccountLogDao;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	CollectionSystemUtil collectionSystemUtil;
 
 	@Override
 	public Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo) {
@@ -201,9 +204,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					//当续期成功时,同步逾期天数为0
 					dealWithSynchronizeOverduedOrder(afBorrowCashDo);
 					
-					//TODO 返呗续期通知接口，向催收平台同步续期信息 add by chengkang begin
+					//返呗续期通知接口，向催收平台同步续期信息
 					try {
-						riskUtil.Renewal(afBorrowCashDo.getBorrowNo(), temRenewalDetail.getPayTradeNo(), temRenewalDetail.getRenewalDay());
+						collectionSystemUtil.renewalNotify(afBorrowCashDo.getBorrowNo(), temRenewalDetail.getPayTradeNo(), temRenewalDetail.getRenewalDay());
 					}catch(Exception e){
 						logger.error("向催收平台同步续期信息",e);
 					}

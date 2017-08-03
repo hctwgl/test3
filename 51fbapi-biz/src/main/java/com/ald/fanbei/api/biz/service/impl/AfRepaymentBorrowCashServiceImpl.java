@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -101,6 +102,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	RiskUtil riskUtil;
 	@Resource
 	SmsUtil smsUtil;
+	@Resource
+	CollectionSystemUtil collectionSystemUtil;
 	
 	@Override
 	public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
@@ -348,6 +351,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					} else {
 						notRepayMoneyStr = NumberUtil.format2Str(allAmount.subtract(repayAmount));
 					}
+					afBorrowCashService.updateBorrowCash(bcashDo);
 					
 					//add by chengkang 待添加还款成功短信 start
 					try {
@@ -358,13 +362,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					}
 					//add by chengkang 待添加还款成功短信 end
 					
-					//TODO 会对逾期的借款还款，向催收平台同步还款信息 add by chengkang begin
+					//会对逾期的借款还款，向催收平台同步还款信息
 					try {
-						riskUtil.consumerRepayment(repayment.getRepayNo(), afBorrowCashDo.getBorrowNo(), repayment.getCardNumber(), repayment.getCardName(),repayment.getRepaymentAmount(), (afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))).subtract(afBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)), (afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRepayAmount(),afBorrowCashDo.getRateAmount());
+						collectionSystemUtil.consumerRepayment(repayment.getRepayNo(), afBorrowCashDo.getBorrowNo(), repayment.getCardNumber(), repayment.getCardName(),repayment.getRepaymentAmount(), (afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))).subtract(afBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)), (afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRepayAmount(),afBorrowCashDo.getRateAmount());
 					}catch(Exception e){
 						logger.error("向催收平台同步还款信息失败",e);
 					}
-					afBorrowCashService.updateBorrowCash(bcashDo);
+					
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
