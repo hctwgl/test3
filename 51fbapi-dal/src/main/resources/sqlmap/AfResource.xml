@@ -195,6 +195,16 @@
 		AND type = 'BORROW_TOP_SCROLLBAR'
 		AND value_4 = 'O'
 	</select>
+	<select id = "getFakePersonByActivityId" resultType = "AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0
+		AND type = 'GG_FAKE_PERSON'
+		AND value = #{activityId}
+	</select>
 	
 
 </mapper>

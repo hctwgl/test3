@@ -55,6 +55,7 @@ import java.util.Date;
 
     private Long boluomeActivityId;
 
+
     public Long getBoluomeActivityId() {
 		return boluomeActivityId;
 	}

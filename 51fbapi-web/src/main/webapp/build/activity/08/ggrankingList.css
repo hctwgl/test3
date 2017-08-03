@@ -90,14 +90,15 @@ body {
 
 #rankingList .numberList .list .list-left {
     float: left;
-    margin-right: 20%;
+    margin-right: 17%;
 }
 
 #rankingList .numberList .list .list-center {
     float: left;
-    margin-right: 30%;
+    margin-right: 22%;
 }
 
 #rankingList .numberList .list .list-right {
-    float: left;
+    float: right;
+    margin-right:7%;
 }

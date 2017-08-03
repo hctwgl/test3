@@ -295,6 +295,9 @@ public class Constants {
 	public static final String H5_USER_NAME_COOKIES_KEY = "H5_USER_NAME_COOKIES_KEY";
 	public static final String H5_USER_TOKEN_COOKIES_KEY = "H5_USER_TOKEN_COOKIES_KEY";
 	
+	public static final String TIRPLE_DES_KEY             = "DO3Rz7we8IW5zb2m";
+	public static final String DEFAULT_CODE               = "UTF-8";
+	
 	
 
 }
