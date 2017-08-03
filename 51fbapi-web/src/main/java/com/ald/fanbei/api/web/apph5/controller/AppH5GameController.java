@@ -35,10 +35,12 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -94,6 +96,8 @@ public class AppH5GameController  extends BaseController{
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	
+	String  opennative = "/fanbei-web/opennative?name=";
 	
 	@RequestMapping(value = "initGame", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -392,6 +396,7 @@ public class AppH5GameController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			context = doWebCheck(request, false);
+			
 			if(context.isLogin()) {
 				String userName = context.getUserName();
 				AfUserDo userDo = afUserService.getUserByUserName(userName);
@@ -428,8 +433,10 @@ public class AppH5GameController  extends BaseController{
 					}
 				}
 			} else {
-				H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(),"",jsonObj).toString();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				jsonObj.put("loginUrl", loginUrl);
 			}
+			
 			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
