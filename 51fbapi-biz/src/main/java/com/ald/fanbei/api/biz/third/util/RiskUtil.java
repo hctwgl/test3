@@ -609,7 +609,7 @@ public class RiskUtil extends AbstractThird {
 		logger.info("risk_result =" + result);
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		if (!result.equals("10")) {
-			resultMap.put("success", true);
+			resultMap.put("success", false);
 			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
 			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			
@@ -713,7 +713,7 @@ public class RiskUtil extends AbstractThird {
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		
 		if (!result.equals("10")) {
-			resultMap.put("success", true);
+			resultMap.put("success", false);
 			resultMap.put("verifybo", JSONObject.toJSONString(verybo));
 			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			

@@ -207,16 +207,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("maxAmount", calculateMaxAmount(usableAmount));
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
-		if (inRejectLoan.equals("Y")) {
-			bannerResultList = bannerListForShop;
-			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
-			scrollbarVo = getAfScrollbarVo(resourceDo);
-		}else{
-			bannerResultList = bannerList;
-		}
-		data.put("bannerList", bannerResultList);
+
 		data.put("lender", rate.get("lender"));
-		data.put("scrollbar", scrollbarVo);
+		
 		if (account != null) {
 			data.put("maxAmount", calculateMaxAmount(usableAmount));
 		}
@@ -296,7 +289,15 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				jumpPageBannerUrl = bannerResourceDo.getValue1();
 			}
 		}
-		
+		if (inRejectLoan.equals("Y")) {
+			bannerResultList = bannerListForShop;
+			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
+			scrollbarVo = getAfScrollbarVo(resourceDo);
+		}else{
+			bannerResultList = bannerList;
+		}
+		data.put("scrollbar", scrollbarVo);
+		data.put("bannerList", bannerResultList);
 		data.put("inRejectLoan", inRejectLoan);
 		data.put("jumpToRejectPage", jumpToRejectPage);
 		data.put("jumpPageBannerUrl", jumpPageBannerUrl);
