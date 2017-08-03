@@ -22,7 +22,12 @@
         <div class="container">
                  <ul class="numberList">
                     <li class="list">
-                        <span class="list-left">15555553333</span>
+                        <span class="list-left">15555553331</span>
+                        <span class="list-center">25.22</span>
+                        <span class="list-right">8.55</span>
+                    </li>
+                    <li class="list">
+                        <span class="list-left">15555553332</span>
                         <span class="list-center">25.22</span>
                         <span class="list-right">8.55</span>
                     </li>
@@ -32,37 +37,32 @@
                         <span class="list-right">8.55</span>
                     </li>
                     <li class="list">
-                        <span class="list-left">15555553333</span>
+                        <span class="list-left">15555553334</span>
                         <span class="list-center">25.22</span>
                         <span class="list-right">8.55</span>
                     </li>
                     <li class="list">
-                        <span class="list-left">15555553333</span>
+                        <span class="list-left">15555553335</span>
                         <span class="list-center">25.22</span>
                         <span class="list-right">8.55</span>
                     </li>
                     <li class="list">
-                        <span class="list-left">15555553333</span>
+                        <span class="list-left">15555553336</span>
                         <span class="list-center">25.22</span>
                         <span class="list-right">8.55</span>
                     </li>
                     <li class="list">
-                        <span class="list-left">15555553333</span>
+                        <span class="list-left">15555553337</span>
                         <span class="list-center">25.22</span>
                         <span class="list-right">8.55</span>
                     </li>
                     <li class="list">
-                        <span class="list-left">15555553333</span>
+                        <span class="list-left">15555553338</span>
                         <span class="list-center">25.22</span>
                         <span class="list-right">8.55</span>
                     </li>
                     <li class="list">
-                        <span class="list-left">15555553333</span>
-                        <span class="list-center">25.22</span>
-                        <span class="list-right">8.55</span>
-                    </li>
-                    <li class="list">
-                        <span class="list-left">15555553333</span>
+                        <span class="list-left">15555553339</span>
                         <span class="list-center">25.22</span>
                         <span class="list-right">8.55</span>
                     </li>
@@ -102,9 +102,8 @@
                         <span class="list-right">8.55</span>
                     </li>
                  </ul>
-                 <ul class="con2"></ul>
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/dist/activity/08/ggrankingList.js"></script>
+<script type="text/javascript" src="/dist/activity/08/ggrankingList.js?"></script>
 </html>
