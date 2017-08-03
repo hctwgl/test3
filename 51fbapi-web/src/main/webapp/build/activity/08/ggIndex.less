@@ -220,7 +220,7 @@ body{
   top: 0;
   left:0;
   background:black;
-  opacity:.5;
+  opacity:0.5;
   z-index: 10;
 }
 #ggIndex .alertPresent{
@@ -229,7 +229,7 @@ body{
   background:#ffffff;
   border-radius:.33rem;
   position:fixed;
-  top:2rem;
+  top:1.7rem;
   left: 50%;
   transform: translateX(-3.4rem);
   z-index:100;
@@ -246,18 +246,21 @@ body{
   font-size: .4rem;
 }
 #ggIndex .alertPresent .imgCont{
-  width:5.84rem;
-  height:5.32rem;
+  max-width:5.84rem;
+  height: 5.32rem;
   border:1px solid red;
   margin:.5rem auto .47rem;
-  position:relative;
+  position: relative;
 }
 #ggIndex .alertPresent .imgCont .bg{
   width:5.32rem;
   height:5.32rem;
   border-radius: 50%;
   background:#fb9659;
-  margin:0 auto;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-2.66rem);
 }
 #ggIndex .alertPresent .previous{
   width:.13rem;
@@ -280,43 +283,84 @@ body{
   z-index:200;
 }
 #ggIndex .alertPresent .imgList{
-  position:absolute;
-  top:.86rem;
-  left:0;
+  width: 100%;
+  min-height: 3.96rem;
+  overflow: hidden;
+  position: relative;
+  height: 5.32rem;
 }
-#ggIndex .alertPresent .imgList{
-/*  width:12.12rem;*/
-  z-index:100;
+#ggIndex .alertPresent .imgList .img{
+  overflow: hidden;
+  position: absolute;
+  transition: width 0.4s,height 0.4s,top 0.4s,left 0.4s,z-index 0.4s,opacity 0.4s;
+  background:green;
 }
-#ggIndex .alertPresent .imgList li{
-/*  width:2.73rem;*/
-  height:3.96rem;
-  color:black;
-  float:left;
-  background:red;
-  margin-right:.4rem;
-  opacity: 0.6;
-  z-index:100;
+#ggIndex .alertPresent .imgList .img1{
+  width: 40%;
+  height: 40%;
+  top: 30%;
+  left: -50%;
+  z-index: 1;
+  opacity: .5;
 }
-#ggIndex .alertPresent .imgList li:last-child{
-  margin:0;
+#ggIndex .alertPresent .imgList .img2{
+  width: 2.73rem;
+  height: 3.96rem;
+  top: .68rem;
+  left: 0;
+  z-index: 2;
+  opacity: .5;
 }
-#ggIndex .alertPresent .imgList li.change01{
-  position: fixed;
-  top: 2.8rem;
-  left: 30%;
-  transform: scale(1.2);
-  opacity:1;
+#ggIndex .alertPresent .imgList .img3{
+  width: 3.22rem;
+  height: 4.79rem;
+  top: 0.265rem;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-1.61rem);
 }
-#ggIndex .alertPresent .imgList li.change02{
-  transform: scale(1);
-  transition: all 0.3s linear;
+#ggIndex .alertPresent .imgList .img4{
+  width: 2.73rem;
+  height: 3.96rem;
+  top: .68rem;
+  left: 54%;
+  z-index: 2;
+  opacity: .5;
 }
-
-
-
-
-
+#ggIndex .alertPresent .imgList .img5{
+  width: 40%;
+  height: 40%;
+  top: 30%;
+  left: 110%;
+  z-index: 1;
+  opacity: .5;
+}
+#ggIndex .alertPresent .close{
+  width:.56rem;
+  height:.56rem;
+  text-align: center;
+  line-height: .56rem;
+  color:#e3e3e3;
+  font-size:0.34rem;
+  border-radius: 50%;
+  border:2px solid #e3e3e3;
+  position: absolute;
+  bottom:-1.07rem;
+  left: 50%;
+  transform: translateX(-.28rem);
+}
+#ggIndex .alertPresent .sure{
+  width:2.86rem;
+  height:.88rem;
+  background:#fb9659;
+  box-shadow:0 .06rem .13rem 0 rgba(212,195,185,0.87);
+  border-radius:1rem;
+  font-size:.3rem;
+  color:#ffffff;
+  line-height:.88rem;
+  text-align: center;
+  margin:0 auto;
+}
 
 
 
