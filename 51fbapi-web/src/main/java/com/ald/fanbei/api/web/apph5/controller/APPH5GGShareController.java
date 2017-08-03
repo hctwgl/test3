@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -41,6 +42,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -60,8 +62,6 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 @RequestMapping("/webGGShare")
 public class APPH5GGShareController extends BaseController{
-
-	
 
 	@Resource
 	AfBoluomeActivityItemsService afBoluomeActivityItemsService;
@@ -92,9 +92,8 @@ public class APPH5GGShareController extends BaseController{
 	@ResponseBody
 	@RequestMapping(value = "/initHomePage",method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	public String initHomepage(HttpServletRequest request , HttpServletResponse response ){
-		Calendar calStart = Calendar.getInstance();
 		String resultStr = " ";
-		FanbeiH5Context context = new FanbeiH5Context();
+		FanbeiWebContext context = new FanbeiWebContext();
 		//TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
 		try{
@@ -192,10 +191,15 @@ public class APPH5GGShareController extends BaseController{
 			Map<String, Object> data = new HashMap<String, Object>();
 			//TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			context = doH5Check(request, true);
+			context = doWebCheck(request, true);
 			if (context.isLogin()) {
 				//TODO:获取登录着的userName或者id
-				Long userId = context.getUserId();
+				AfUserDo afUser = null;
+				afUser = afUserService.getUserByUserName(context.getUserName());
+				Long userId = null;
+				if (afUser != null) {
+					userId = afUser.getRid();
+				}
 				useritemsDo.setUserId(userId);
 				useritemsDo.setBoluomeActivityId(activityId);
 				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService.getListByCommonCondition(useritemsDo);
