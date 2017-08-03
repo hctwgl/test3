@@ -35,8 +35,8 @@ public class GetPayListApi implements ApiHandle {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
         String date = ObjectUtils.toString(requestDataVo.getParams().get("date"));
-        Date startDate = DateUtil.parseDate(date + "00:00:00", "yyyy-MM-dd HH:mm:ss");
-        Date endDate = DateUtil.parseDate(date + "23:59:59", "yyyy-MM-dd HH:mm:ss");
+        Date startDate = DateUtil.parseDate(date + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+        Date endDate = DateUtil.parseDate(date + " 23:59:59", "yyyy-MM-dd HH:mm:ss");
         String orderStatus = ObjectUtils.toString(requestDataVo.getParams().get("orderStatus"), null);
         List<AfTradeOrderDto> list = afTradeOrderService.orderGrid(businessId, startDate, endDate, orderStatus);
         resp.addResponseData("payList", list);
