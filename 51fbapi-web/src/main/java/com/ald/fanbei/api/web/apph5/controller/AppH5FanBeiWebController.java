@@ -497,7 +497,7 @@ public class AppH5FanBeiWebController extends BaseController {
     		
     		if(success != ""){
     			 result = FanbeiExceptionCode.SUCCESS.getDesc();
-    		}else if(couponPickOver != ""){
+    		}else if(couponPickOver != "" || haveAlreadyReceived != "" || couponMoreThanLimitCount != ""){
     			 result = FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc();
     			 flag = false;
     		}else if(pickBrandCouponDateEnd != ""){
@@ -505,9 +505,6 @@ public class AppH5FanBeiWebController extends BaseController {
     			 flag = false;
     		}else if(pickBrandCouponNotStart != ""){
     			 result = FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc();
-    			 flag = false;
-    		}else if(couponMoreThanLimitCount != ""){
-    			 result = FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc();
     			 flag = false;
     		}else if(couponNotExist != ""){
     			 result = FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc();
