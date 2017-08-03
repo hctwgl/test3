@@ -403,10 +403,23 @@ public class AppH5GameController  extends BaseController{
 				AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 				if(userAuthDo != null) {
 					String riskStatus = userAuthDo.getRiskStatus();
-					if("A".equals(riskStatus) || "P".equals(riskStatus)) {
-						jsonObj.put("status", "A");
+					if("A".equals(riskStatus)){
+						String realnameStatus = userAuthDo.getRealnameStatus();
+						String bankcardStatus = userAuthDo.getBankcardStatus();
+						if(realnameStatus == null || "".equals(realnameStatus)) {
+							jsonObj.put("status", "A1");
+						}
+						if("N".equals(bankcardStatus)) {
+							jsonObj.put("status", "A2");
+						}
+						if(!(realnameStatus == null || "".equals(realnameStatus))
+								&& "Y".equals(bankcardStatus)) {
+							jsonObj.put("status", "A3");
+						}
+					} else if("P".equals(riskStatus)) {
+						jsonObj.put("status", "A4");
 					} else if("N".equals(riskStatus) || "Y".equals(riskStatus)){
-						// 查询账户信息
+						// 查询账户信息      
 						AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
 						if(userAccount != null) {
 							BigDecimal auAmount = userAccount.getAuAmount();
