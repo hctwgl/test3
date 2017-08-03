@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-id,gmt_create,user_id,user_name,ref_user_id,ref_user_name 
+id,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluomeActivityId
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -28,6 +28,9 @@ id,gmt_create,user_id,user_name,ref_user_id,ref_user_name
         </if>
         <if test="refUserName != null and refUserName != ''">
             AND ref_user_name = #{refUserName,jdbcType=VARCHAR}
+        </if>
+        <if test="boluomeActivityId != null and boluomeActivityId != ''">
+            AND boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER}
         </if>
     </sql>
 
@@ -54,6 +57,9 @@ id,gmt_create,user_id,user_name,ref_user_id,ref_user_name
 	        <if test="refUserName != null">        
 	            ref_user_name,
 	        </if>
+	        <if test="boluomeActivityId != null">
+            boluome_activity_id,
+        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -72,6 +78,9 @@ id,gmt_create,user_id,user_name,ref_user_id,ref_user_name
 		    <if test="refUserName != null" >
 		       #{refUserName,jdbcType=VARCHAR},
 		    </if>
+		    <if test="boluomeActivityId != null">
+            #{boluomeActivityId,jdbcType=INTEGER}
+        </if>
         </trim>
     </insert>
     
@@ -93,6 +102,9 @@ id,gmt_create,user_id,user_name,ref_user_id,ref_user_name
             <if test="refUserName != null and refUserName != '' ">        
                 ref_user_name = #{refUserName,jdbcType=VARCHAR}                
             </if>
+            <if test="boluomeActivityId != null and boluomeActivityId != ''">
+                boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER}
+        </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>

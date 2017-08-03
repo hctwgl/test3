@@ -128,4 +128,6 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getScrollbarByType();
 
+	List<AfResourceDo> getFakePersonByActivityId(@Param("activityId")String activityId);
+
 }

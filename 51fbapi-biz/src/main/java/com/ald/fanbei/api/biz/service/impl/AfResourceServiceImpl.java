@@ -418,5 +418,16 @@ public class AfResourceServiceImpl implements AfResourceService {
 		
 	}
 
+	@Override
+	public AfResourceDo getFakePersonByActivityId(String string) {
+		AfResourceDo resourceDo = new AfResourceDo();
+		List<AfResourceDo> list = afResourceDao.getFakePersonByActivityId(string);
+		if (list != null && list.size() > 0 ) {
+			resourceDo = list.get(0);
+		}
+		return resourceDo;
+		
+	}
+
 	
 }
