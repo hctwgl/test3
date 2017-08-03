@@ -439,9 +439,9 @@ public class AppH5GameController  extends BaseController{
 								String fundStatus = userAuthDo.getFundStatus();
 								if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
 										&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
-									data.put("status", "C");
-								} else {
 									data.put("status", "D");
+								} else {
+									data.put("status", "C");
 								}
 							}
 						}
