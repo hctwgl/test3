@@ -34,14 +34,12 @@ public class GetRefundListApi implements ApiHandle {
         String requestDataVoId = StringUtil.isNotBlank(requestDataVo.getId()) ? requestDataVo.getId() : "trade weixin";
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
-        Date startDate = requestDataVo.getParams().get("startDate") != null ? DateUtil.parseDate((String) requestDataVo.getParams().get("startDate")) : null;
-        Date endDate = requestDataVo.getParams().get("endDate") != null ? DateUtil.parseDate((String) requestDataVo.getParams().get("endDate")) : null;
-        Integer page = NumberUtil.objToPageIntDefault(requestDataVo.getParams().get("page"), 0);
+        String date = ObjectUtils.toString(requestDataVo.getParams().get("date"));
+        Date startDate = DateUtil.parseDate(date + "00:00:00", "yyyy-MM-dd HH:mm:ss");
+        Date endDate = DateUtil.parseDate(date + "23:59:59", "yyyy-MM-dd HH:mm:ss");
         String refundStatus = ObjectUtils.toString(requestDataVo.getParams().get("refundStatus"), null);
-        List<AfTradeOrderDto> refundList = afTradeOrderService.refundGrid(businessId, (page-1)* 20, 20, startDate, endDate, refundStatus);
-        Long total = afTradeOrderService.refundGridTotal(businessId, startDate, endDate, refundStatus);
+        List<AfTradeOrderDto> refundList = afTradeOrderService.refundGrid(businessId, startDate, endDate, refundStatus);
         resp.addResponseData("refundList", refundList);
-        resp.addResponseData("count", total);
         return resp;
     }
 }

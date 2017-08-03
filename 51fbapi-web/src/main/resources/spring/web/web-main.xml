@@ -327,7 +327,9 @@
 				<entry key="/trade/twoBarCode" value-ref="twoBarCodeApi" />
 				<entry key="/trade/getPayListDate" value-ref="getPayListDateApi" />
 				<entry key="/trade/getPayList" value-ref="getPayListApi" />
+				<entry key="/trade/getWithdrawListDate" value-ref="getWithdrawListDateApi" />
 				<entry key="/trade/getWithdrawList" value-ref="getWithdrawListApi" />
+				<entry key="/trade/getRefundListDate" value-ref="getRefundListDateApi" />
 				<entry key="/trade/getRefundList" value-ref="getRefundListApi" />
 				<entry key="/trade/withdraw" value-ref="tradeWithdrawApi" />
 				<entry key="/trade/refund" value-ref="tradeRefundApi" />

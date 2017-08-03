@@ -201,6 +201,25 @@
 		order by a.gmt_create desc
 	</select>
 
+	<select id="refundGridDate" resultType="java.lang.String">
+		select distinct date_format(d.gmt_create, '%Y-%m-%d')
+		from af_order a left join af_user b on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		left join af_order_refund d on d.order_id = a.id
+		where c.business_id = #{businessId}
+		<if test="refundStatus != null and refundStatus != '' ">
+			and c.status = #{refundStatus}
+		</if>
+		<if test="startDate != null and startDate != '' ">
+			and d.gmt_create <![CDATA[   >=  ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != '' ">
+			and d.gmt_create <![CDATA[   <=  ]]>
+			#{endDate}
+		</if>
+		order by d.gmt_create desc
+	</select>
 	<select id="refundGrid" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
 		select
 		a.id,a.order_no,d.gmt_create,d.amount actualAmount,b.user_name,c.status
@@ -222,31 +241,9 @@
 			and d.gmt_create <![CDATA[   <=  ]]>
 			#{endDate}
 		</if>
-		limit #{offset} , #{limit}
+		order by d.gmt_create desc
 	</select>
 
-	<select id="refundGridTotal" resultType="java.lang.Long">
-		select
-		count(a.id)
-		from
-		af_order a left join af_user b
-		on a.user_id =b.id
-		left join af_trade_order c on a.id = c.order_id
-		left join
-		af_order_refund d on d.order_id = a.id
-		where c.business_id = #{businessId}
-		<if test="refundStatus != null and refundStatus != '' ">
-			and c.status = #{refundStatus}
-		</if>
-		<if test="startDate != null and startDate != '' ">
-			and d.gmt_create <![CDATA[   >=  ]]>
-			#{startDate}
-		</if>
-		<if test="endDate != null and endDate != '' ">
-			and d.gmt_create <![CDATA[   <=  ]]>
-			#{endDate}
-		</if>
-	</select>
 	<select id="getCanWithDrawList" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
 		select
 		a.id,a.order_no,a.gmt_create,a.actual_amount,a.status

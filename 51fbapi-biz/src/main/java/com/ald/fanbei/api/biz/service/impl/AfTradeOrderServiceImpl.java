@@ -115,13 +115,13 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
     }
 
     @Override
-    public List<AfTradeOrderDto> refundGrid(Long businessId, Integer offset, Integer limit, Date startDate, Date endDate, String refundStatus) {
-        return afTradeOrderDao.refundGrid(businessId, offset, limit, startDate, endDate, refundStatus);
+    public List<String> refundGridDate(Long businessId, Date startOfDate, Date endOfDate, String refundStatus) {
+        return afTradeOrderDao.refundGridDate(businessId, startOfDate, endOfDate, refundStatus);
     }
 
     @Override
-    public Long refundGridTotal(Long businessId, Date startDate, Date endDate, String refundStatus) {
-        return afTradeOrderDao.refundGridTotal(businessId, startDate, endDate, refundStatus);
+    public List<AfTradeOrderDto> refundGrid(Long businessId, Date startDate, Date endDate, String refundStatus) {
+        return afTradeOrderDao.refundGrid(businessId, startDate, endDate, refundStatus);
     }
 
     @Override
