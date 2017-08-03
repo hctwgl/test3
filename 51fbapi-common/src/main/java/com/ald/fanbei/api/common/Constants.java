@@ -289,5 +289,11 @@ public class Constants {
 	
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
+	
+	//H5用户以及token cookie
+	public static final String H5_USER_NAME_COOKIES_KEY = "H5_USER_NAME_COOKIES_KEY";
+	public static final String H5_USER_TOKEN_COOKIES_KEY = "H5_USER_TOKEN_COOKIES_KEY";
+	
+	
 
 }
