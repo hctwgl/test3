@@ -24,7 +24,7 @@ public class RiskDataBo extends HashMap<String,String>{
 	private String timestamp;
 	private String dataType;//数据类型
 	private String data;//数据集合
-	public RiskDataBo(){}
+	/*public RiskDataBo(){}
 	
 	public RiskDataBo(Map data){
 		this.sign=SignUtil.sign(createLinkString(data), PRIVATE_KEY);//MD5签名
@@ -44,13 +44,13 @@ public class RiskDataBo extends HashMap<String,String>{
 		this.dataType=dataType;//数据类型
 		this.data=JsonUtil.toJSONString(data);//数据集合
 	}
-	/**
+	*//**
 	 * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
 	 * 
 	 * @param params
 	 *            需要排序并参与字符拼接的参数组
 	 * @return 拼接后字符串
-	 */
+	 *//*
 	public static String createLinkString(Map<String, String> params) {
 
 		List<String> keys = new ArrayList<String>(params.keySet());
@@ -61,15 +61,15 @@ public class RiskDataBo extends HashMap<String,String>{
 			String key = keys.get(i);
 			String value = params.get(key);
 			prestr = prestr + value;
-			/*
+			
 			 * if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符 prestr = prestr + key
 			 * + "=" + value; } else { prestr = prestr + key + "=" + value +
 			 * "&"; }
-			 */
+			 
 		}
 
 		return prestr;
-	}
+	}*/
 	
 	public String getSign() {
 		return sign;
