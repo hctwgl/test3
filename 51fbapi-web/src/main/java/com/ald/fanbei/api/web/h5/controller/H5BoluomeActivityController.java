@@ -24,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -63,12 +64,13 @@ AfUserAuthService afUserAuthService;
 @Resource 
 BizCacheUtil bizCacheUtil;
 @Resource
+
+
 AfH5BoluomeActivityService afH5BoluomeActivityService;
 
-	
 	@RequestMapping(value = "boluomeActivityLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String boluomeActivityLogin(HttpServletRequest request, ModelMap model){
+    public String boluomeActivityLogin(HttpServletRequest request,HttpServletResponse response ,ModelMap model){
 		
 		
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
@@ -77,6 +79,11 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		String refUseraName = ObjectUtils.toString(request.getParameter("refUseraName"),"").toString();
 		AfUserDo UserDo = afUserService.getUserByUserName(userName);
 		AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
+		
+		String cacheKey = Constants.BOLUOME_LOGIN_ERROR_TIMES + userName;
+		int errorCount =  NumberUtil.objToIntDefault((bizCacheUtil.getObject(cacheKey)), 0);
+		if(errorCount<5){
+		
 		//被邀请者登录验证
 		if (userName == null || userName.isEmpty()) {
 			return H5CommonResponse.getNewInstance(false, "请输入账号", "", "").toString();
@@ -92,32 +99,23 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			return H5CommonResponse.getNewInstance(false, "用户账号冻结", "", "").toString();
 		}
 		// check password
-			String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
+		String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
+		
+		
 		if (!StringUtils.equals(inputPassword, UserDo.getPassword())) {
 			// fail count add 1
-			Integer errorCount =  NumberUtil.objToInteger(bizCacheUtil.getObject(Constants.BOLUOME_LOGIN_ERROR_TIMES));
-			if(errorCount!= null ){
 				errorCount = errorCount+1; 
-				bizCacheUtil.saveObject(Constants.BOLUOME_LOGIN_ERROR_TIMES, errorCount, Constants.SECOND_OF_HALF_HOUR);
-				String  errorTimes =  ObjectUtils.toString(getErrorCountCode(errorCount));
-				return H5CommonResponse.getNewInstance(false, errorTimes, "", "").toString();
-			}
+				bizCacheUtil.saveObject(cacheKey, errorCount, Constants.SECOND_OF_HALF_HOUR);
+				FanbeiExceptionCode code =  getErrorCountCode(errorCount);
+				return H5CommonResponse.getNewInstance(false, code.getErrorMsg(), "", "").toString();
 		}	
+		
+		        bizCacheUtil.delCache(cacheKey);
 				// save token to cache
 				String token = UserUtil.generateToken(userName);
-				TokenBo tokenBo = new TokenBo();
-				tokenBo.setLastAccess(System.currentTimeMillis() + "");
-				tokenBo.setToken(token);
-				tokenBo.setUserId(userName);
-				
-				
-				
-				tokenCacheUtil.saveToken(userName, tokenBo);
-				// set return user info and generate token
-				AfUserVo userVo = parseUserVo(UserDo);
-				JSONObject jo = new JSONObject();
-				jo.put("user", userVo);
-				jo.put("token", token);
+			   				
+				CookieUtil.writeCookie(response, "userName", userName, Constants.MINITS_OF_HALF_HOUR);
+				CookieUtil.writeCookie(response, "token", token, Constants.MINITS_OF_HALF_HOUR);
 				
 				//绑定关系refUserDo
 				AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin  = new AfBoluomeActivityUserLoginDo(); 
@@ -126,20 +124,15 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
 				afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
 				afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
-				
-			     int saveInfo = afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
-		        return H5CommonResponse.getNewInstance(true, "登录成功", "", jo).toString();
+			    int saveInfo = afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+		        
+		}else{
+			return H5CommonResponse.getNewInstance(false, "账号已经锁定", "", "").toString();
+		}
+		return H5CommonResponse.getNewInstance(true, "登录成功", "", "").toString();
 	}
-	private AfUserVo parseUserVo(AfUserDo afUserDo) {
-		AfUserVo vo = new AfUserVo();
-		vo.setUserId(afUserDo.getRid());
-		vo.setUserName(afUserDo.getUserName());
-		vo.setNick(afUserDo.getNick());
-		vo.setAvatar(afUserDo.getAvatar());
-		vo.setMobile(afUserDo.getMobile());
-		vo.setFailCount(afUserDo.getFailCount());
-		return vo;
-	}
+	
+	
 	public FanbeiExceptionCode getErrorCountCode(Integer errorCount) {
 		if (errorCount == 0) {
 			return FanbeiExceptionCode.USER_PASSWORD_ERROR_ZERO;
@@ -185,8 +178,5 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
     public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         return null;
     }
- 
-
-	
 
 }
