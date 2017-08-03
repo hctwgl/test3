@@ -116,6 +116,7 @@ public class Constants {
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
+	public static final String BOLUOME_LOGIN_ERROR_TIMES  = "boluome_login_error_times$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";

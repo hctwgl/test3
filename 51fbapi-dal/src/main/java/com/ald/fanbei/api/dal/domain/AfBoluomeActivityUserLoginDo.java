@@ -48,14 +48,22 @@ import java.util.Date;
 
 
     /**
-     * 获取主键Id
+     * 菠萝觅活动id
      *
-     * @return id
+     * 
      */
 
-    
+    private Long boluomeActivityId;
 
-    /**
+    public Long getBoluomeActivityId() {
+		return boluomeActivityId;
+	}
+
+	public void setBoluomeActivityId(Long boluomeActivityId) {
+		this.boluomeActivityId = boluomeActivityId;
+	}
+
+	/**
      * 获取创建时间
      *
      * @return 创建时间
