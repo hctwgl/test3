@@ -53,32 +53,26 @@ public interface AfTradeOrderDao extends BaseDao<AfTradeOrderDo, Long> {
 	AfTradeOrderStatisticsDto payOrderInfo(@Param("businessId") Long businessId, @Param("startOfDate") Date startDate, @Param("endOfDate") Date endDate);
 
 	/**
+	 * 收款明细时间列表
+	 * @param businessId
+	 * @param startOfDate
+	 * @param endOfDate
+	 * @param orderStatus
+	 * @return
+	 */
+	List<String> orderGridDate(@Param("businessId") Long businessId,@Param("startOfDate") Date startOfDate,@Param("endOfDate") Date endOfDate,@Param("orderStatus") String orderStatus);
+
+	/**
 	 * 分页查询商圈订单
 	 *
 	 * @param businessId
-	 * @param offset
-	 * @param limit
 	 * @param startOfDate
 	 * @param endOfDate
 	 * @param orderStatus
-	 * @param withDrawStatus
 	 * @return
 	 */
-	List<AfTradeOrderDto> orderGrid(@Param("businessId") Long businessId, @Param("offset") Integer offset, @Param("limit") Integer limit, @Param("startOfDate") Date startOfDate,
-									@Param("endOfDate") Date endOfDate, @Param("orderStatus") String orderStatus, @Param("withDrawStatus") String withDrawStatus);
-
-	/**
-	 * 分页查询商圈订单总条数
-	 *
-	 * @param businessId
-	 * @param startOfDate
-	 * @param endOfDate
-	 * @param orderStatus
-	 * @param withDrawStatus
-	 * @return
-	 */
-	Long orderGridTotal(@Param("businessId") Long businessId, @Param("startOfDate") Date startOfDate, @Param("endOfDate") Date endOfDate, @Param("orderStatus") String orderStatus,
-						@Param("withDrawStatus") String withDrawStatus);
+	List<AfTradeOrderDto> orderGrid(@Param("businessId") Long businessId,  @Param("startOfDate") Date startOfDate,
+									@Param("endOfDate") Date endOfDate, @Param("orderStatus") String orderStatus);
 
 	/**
 	 * 分页查询商圈退款明细订单

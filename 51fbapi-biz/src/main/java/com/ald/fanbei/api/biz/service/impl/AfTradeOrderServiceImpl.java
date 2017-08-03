@@ -105,13 +105,13 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
     }
 
     @Override
-    public List<AfTradeOrderDto> orderGrid(Long businessId, Integer offset, Integer limit, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus) {
-        return afTradeOrderDao.orderGrid(businessId, offset, limit, startOfDate, endOfDate, orderStatus, withDrawStatus);
+    public List<String> orderGridDate(Long businessId, Date startOfDate, Date endOfDate, String orderStatus) {
+        return afTradeOrderDao.orderGridDate(businessId, startOfDate, endOfDate, orderStatus);
     }
 
     @Override
-    public Long orderGridTotal(Long businessId, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus) {
-        return afTradeOrderDao.orderGridTotal(businessId, startOfDate, endOfDate, orderStatus, withDrawStatus);
+    public List<AfTradeOrderDto> orderGrid(Long businessId, Date startOfDate, Date endOfDate, String orderStatus) {
+        return afTradeOrderDao.orderGrid(businessId, startOfDate, endOfDate, orderStatus);
     }
 
     @Override

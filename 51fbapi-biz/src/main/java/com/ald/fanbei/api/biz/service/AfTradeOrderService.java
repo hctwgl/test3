@@ -45,30 +45,25 @@ public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>
     AfTradeOrderStatisticsDto payOrderInfo(Long businessId, Date startDate, Date endDate);
 
     /**
+     * 收款明细时间列表
+     * @param businessId
+     * @param startOfDate
+     * @param endOfDate
+     * @param orderStatus
+     * @return
+     */
+    List<String> orderGridDate(Long businessId, Date startOfDate, Date endOfDate, String orderStatus);
+
+    /**
      * 分页查询商圈订单
      *
      * @param businessId
-     * @param offset
-     * @param limit
-     * @param startOfDate
-     * @param endOfDate
-     * @param withDrawStatus
-     * @param orderStatus
-     * @return
-     */
-    List<AfTradeOrderDto> orderGrid(Long businessId, Integer offset, Integer limit, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus);
-
-    /**
-     * 分页查询商圈订单总条数
-     *
-     * @param businessId
      * @param startOfDate
      * @param endOfDate
      * @param orderStatus
-     * @param withDrawStatus
      * @return
      */
-    Long orderGridTotal(Long businessId, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus);
+    List<AfTradeOrderDto> orderGrid(Long businessId, Date startOfDate, Date endOfDate, String orderStatus);
 
     /**
      * 分页查询商圈退款明细
