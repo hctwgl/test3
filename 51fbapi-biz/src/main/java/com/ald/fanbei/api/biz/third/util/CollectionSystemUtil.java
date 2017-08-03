@@ -97,6 +97,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			logger.error("offlineRepaymentNotify error",e);
 			notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SYSTEM_ERROR);
 		}
+		notifyRespBo.setMsg(StringUtil.UrlEncoder(notifyRespBo.getMsg()));
 		notifyRespBo.setSign(DigestUtil.MD5(createLinkString(notifyRespBo)));
 		return notifyRespBo;
 	}
