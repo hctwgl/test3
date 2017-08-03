@@ -71,6 +71,7 @@ public class RiskCollectionOperatorNotifyRespBo extends HashMap<String, String>{
 	}
 	public void setSign(String sign) {
 		this.sign = sign;
+		this.put("sign", sign);
 	}
 	
 }

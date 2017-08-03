@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.RiskCollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 
 /**
@@ -205,18 +206,13 @@ public class RiskController {
 	 */
 	@RequestMapping(value = { "/offlineRepayment" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String offlineRepayment (HttpServletRequest request, HttpServletResponse response) {
-		String code = ObjectUtils.toString(request.getParameter("code"));
+	public RiskCollectionOperatorNotifyRespBo offlineRepayment (HttpServletRequest request, HttpServletResponse response) {
 		String data = ObjectUtils.toString(request.getParameter("data"));
-		String msg = ObjectUtils.toString(request.getParameter("msg"));
-		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
-		logger.info("deal offlineRepayment begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
-		if (TRADE_STATUE_SUCC.equals(code)) {
-			riskUtil.offlineRepaymentNotify(code, data, msg, signInfo);
-			return "SUCCESS";
-		} else {
-			return "ERROR";
-		}
+		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+		String sign = ObjectUtils.toString(request.getParameter("sign"));
+		logger.info("deal offlineRepayment begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
+		RiskCollectionOperatorNotifyRespBo notifyRespBo = riskUtil.offlineRepaymentNotify(timestamp, data, sign);
+		return notifyRespBo;
 	}
 	
 }
