@@ -379,14 +379,14 @@ public class RiskUtil extends AbstractThird {
 		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve.htm", data);
 		
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			throw new FanbeiException("主动还款通知失败");
 		}
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
 			return riskResp;
 		} else {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			throw new FanbeiException("主动还款通知失败");
 		}
 	}
 
@@ -410,14 +410,14 @@ public class RiskUtil extends AbstractThird {
 		String reqResult = HttpUtil.post(getUrl() + "/api/getway/renewalAchieve.htm", data);
 		
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			throw new FanbeiException("续期通知失败");
 		}
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
 			return riskResp;
 		} else {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			throw new FanbeiException("续期通知失败");
 		}
 	}
 	

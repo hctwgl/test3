@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -358,9 +359,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					//add by chengkang 待添加还款成功短信 end
 					
 					//TODO 会对逾期的借款还款，向催收平台同步还款信息 add by chengkang begin
-					
-					
-					
+					try {
+						riskUtil.consumerRepayment(repayment.getRepayNo(), afBorrowCashDo.getBorrowNo(), repayment.getCardNumber(), repayment.getCardName(),repayment.getRepaymentAmount(), (afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))).subtract(afBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)), (afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRepayAmount(),afBorrowCashDo.getRateAmount());
+					}catch(Exception e){
+						logger.error("向催收平台同步还款信息失败",e);
+					}
 					afBorrowCashService.updateBorrowCash(bcashDo);
 					return 1l;
 				} catch (Exception e) {
