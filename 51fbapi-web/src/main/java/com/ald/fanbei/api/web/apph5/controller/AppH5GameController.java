@@ -396,10 +396,9 @@ public class AppH5GameController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			context = doWebCheck(request, false);
-			
-			if(context.isLogin()) {
-				String userName = context.getUserName();
-				AfUserDo userDo = afUserService.getUserByUserName(userName);
+			String userName = context.getUserName();
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			if(userDo != null) {
 				Long userId = userDo.getRid();
 				AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 				if(userAuthDo != null) {
