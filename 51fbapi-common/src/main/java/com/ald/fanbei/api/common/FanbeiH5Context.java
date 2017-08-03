@@ -15,6 +15,7 @@ public class FanbeiH5Context extends AbstractSerial{
 	 * 
 	 */
 	private static final long serialVersionUID = 7059746589359185270L;
+	private Long userId;
 	private String userName;
     private boolean isLogin;
 	/**
@@ -40,6 +41,18 @@ public class FanbeiH5Context extends AbstractSerial{
 	 */
 	public void setLogin(boolean isLogin) {
 		this.isLogin = isLogin;
+	}
+	/**
+	 * @return the userId
+	 */
+	public Long getUserId() {
+		return userId;
+	}
+	/**
+	 * @param userId the userId to set
+	 */
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
     
     

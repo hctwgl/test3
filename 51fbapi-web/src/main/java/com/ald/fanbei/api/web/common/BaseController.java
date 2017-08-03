@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -287,21 +288,39 @@ public abstract class BaseController {
 	 */
 	protected FanbeiH5Context doH5Check(HttpServletRequest request,boolean needToken){
 		FanbeiH5Context webContext = new FanbeiH5Context();
-		String appInfo = getAppInfo(request.getHeader("Referer"));
-		if(StringUtil.isBlank(appInfo)){
-			if(needToken){
-				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-			}else{
-				return webContext;
-			}
-		}
-		RequestDataVo requestDataVo = parseRequestData(appInfo, request);
-		requestDataVo.setParams(new HashMap<String, Object>());
-		FanbeiContext baseContext = this.doBaseParamCheck(requestDataVo);
-		webContext.setUserName(baseContext.getUserName());
-		checkH5Sign(webContext,requestDataVo, needToken);
+		
+		RequestDataVo requestDataVo = parseRequestData(StringUtils.EMPTY, request);
+		
+		checkH5Sign(request,webContext,requestDataVo, needToken);
+		
 		return webContext;
 	}
+	
+	private Map<String,String> getOpenidToken(HttpServletRequest request){
+    	Map<String,String> openidAndToken = new HashMap<>();
+		openidAndToken.put("openid", "");
+		openidAndToken.put("token", "");
+    	Cookie[] cookies = request.getCookies();
+    	String openid = "";
+    	String token  = "";
+    	
+    	if(cookies != null && cookies.length > 0){
+    		for(Cookie item:cookies){
+    			if(StringUtils.equals(item.getName(), Constants.H5_USER_NAME_COOKIES_KEY)){
+    				openid = item.getValue();
+    				openidAndToken.put("openid", openid);
+    				continue;
+    			}
+    			if(StringUtils.equals(item.getName(), Constants.H5_USER_TOKEN_COOKIES_KEY)){
+    				token = item.getValue();
+    				openidAndToken.put("token", token);
+    			}
+    		}
+    	}
+    	return openidAndToken;
+    }
+	
+	
 
 	/**
 	 * 验证系统参数，验证签名
@@ -493,21 +512,25 @@ public abstract class BaseController {
 	 * @param needToken
 	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要
 	 */
-	private void checkH5Sign(FanbeiH5Context h5Context,RequestDataVo requestDataVo, boolean needToken) {
-
-		Map<String, Object> systemMap = requestDataVo.getSystem();
-		String userName = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_USERNAME));
-		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+	private void checkH5Sign(HttpServletRequest request, FanbeiH5Context h5Context,RequestDataVo requestDataVo, boolean needToken) {
+		//从cookie中取openid和token
+		Map<String,String> openidToken = getOpenidToken(request);
+    	String username = openidToken.get("username");
+    	String token  = openidToken.get("token");
+		
 		if(logger.isDebugEnabled()){
-			logger.debug(userName + " token= " + token);
+			logger.debug(" username = " + username + " token= " + token);
 		}
 		if (needToken) {//需要登录的接口必须加token
 			if (token == null) {
-				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+				throw new FanbeiException("no login", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
 			}
 			h5Context.setLogin(true);
 		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
 			if(token != null){
+				AfUserDo userInfo = afUserService.getUserByUserName(username);
+				h5Context.setUserName(username);
+				h5Context.setUserId(userInfo.getRid());
 				h5Context.setLogin(true);
 			}
 		}
