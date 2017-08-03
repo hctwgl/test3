@@ -60,12 +60,9 @@ public class SmsUtil extends AbstractThird {
 	private static String BIND_TEMPLATE = "验证码为:&param1;您正在51返呗绑定手机号，请在30分钟内完成";
 	private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
 	private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
-	private static String BORROWCASH_TEMPLATE = "您的借款审核通过，请留意您尾号&param1的银行卡资金变动，还款请使用51返呗app【任何索要银行卡号、要求存入现金的行为都是诈骗】";
 	private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前0元预约购机享12期免息更有超级返利300元，有！ 且只在51返呗。回复td退订";
 	private static String REGIST_SUCCESS_TEMPLATE = "认证送10元现金，借/还成功再抽现金，100%中奖，最高1888元，最低50元 http://t.cn/RI7CSL2 退订回T";
 
-	private static String REPAY_BORROWCASH_SUCCESS_REMAINNOTREPAY = "成功还款&param1元，剩余待还金额&param2元。";
-	private static String REPAY_BORROWCASH_SUCCESS_FINISH = "成功还款&param1元，该笔借钱已还完。";
 
 	private static String TEST_VERIFY_CODE = "888888";
 
