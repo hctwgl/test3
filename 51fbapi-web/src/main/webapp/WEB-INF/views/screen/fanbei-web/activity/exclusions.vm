@@ -72,13 +72,12 @@
                     location.href=data.data.loginUrl;
                 }else{
                     let status=data.data.status;
-                    alert(status);
                     if( status=='A' ){
                         window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_BASIC';  // 去提升信用基础认证
                     }else if( status=='B' ){
                         window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 去借钱
                     }else if( status=='C' ){
-                        window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_EXTRA';  // 去借钱
+                        window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_EXTRA';  // 去提升信用补充认证
                     }else if( status=='D' ){
                         window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 去借钱
                     }
