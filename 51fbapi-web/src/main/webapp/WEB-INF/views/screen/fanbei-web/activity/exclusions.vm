@@ -68,7 +68,7 @@
 
                 console.log(data);
                 console.log(data.data.status);
-                alert(data.data.status);
+//                alert(data.data.status);
                 if(data.data.loginUrl){
                     location.href=data.data.loginUrl;
                 }else{
