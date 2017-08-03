@@ -223,7 +223,7 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
                 refundDo.setType(PayType.AGENT_PAY.getCode());
                 refundDo.setRefundNo(refundNo);
                 refundDo.setContent("商户点击退款");
-                afOrderRefundDao.addOrderRefund(refundDo);
+                afOrderRefundDao.saveRecord(refundDo);
 
                 UpsDelegatePayRespBo tempUpsResult = upsUtil.delegatePay(borrowAmount.abs(), accountInfo.getRealName(), cardInfo.getCardNumber(), String.valueOf(accountInfo.getUserId()), cardInfo.getMobile(),
                         cardInfo.getBankName(), cardInfo.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02", UserAccountLogType.TRADE_BANK_REFUND.getCode(),
