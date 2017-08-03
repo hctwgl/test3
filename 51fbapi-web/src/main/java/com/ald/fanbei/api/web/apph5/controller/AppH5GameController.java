@@ -411,13 +411,11 @@ public class AppH5GameController  extends BaseController{
 					if("A".equals(riskStatus)){
 						String realnameStatus = userAuthDo.getRealnameStatus();
 						String bankcardStatus = userAuthDo.getBankcardStatus();
-						if(realnameStatus == null || "".equals(realnameStatus)) {
+						if(!"Y".equals(realnameStatus)) {
 							data.put("status", "A1");
-						}
-						if("N".equals(bankcardStatus)) {
+						}else if("N".equals(bankcardStatus)) {
 							data.put("status", "A2");
-						}
-						if(!(realnameStatus == null || "".equals(realnameStatus))
+						} else if("Y".equals(realnameStatus)
 								&& "Y".equals(bankcardStatus)) {
 							data.put("status", "A3");
 						}
