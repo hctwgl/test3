@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/08")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>拒就赔</title>
     <style>
@@ -43,7 +43,7 @@
         <img src="$commonUrl/exclusions1.jpg">
         <div class="exclusionsBtnWrap">
             <img src="$commonUrl/exclusions2.jpg">
-            <img src="$commonUrl/exclusions3.gif" class="exclusionsBtn" @click="goBorrowMoney()">
+            <img src="$commonUrl/exclusions3.gif" class="exclusionsBtn" onclick="goBorrowMoney()">
         </div>
         <div class="rule">
             <img src="$commonUrl/exclusions4.png">
@@ -59,26 +59,40 @@
     </div>
 </body>
 <script>
-    new Vue({
-        el: '#exclusions',
-        methods:{
-            goBorrowMoney(){
+    function goBorrowMoney() {
 
-                // 商圈
-                //window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_BASIC}';  // 去提升信用基础认证
-                //window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_EXTRA}';  // 去提升信用补充认证
-                //window.location.href='/fanbei-web/opennative?name=name=DO_SCAN_ID}';  // 去扫描身份证
-                window.location.href='/fanbei-web/opennative?name=name=DO_BIND_CARD&params={"idNumber":"33","realName":"1234"}';  // 去绑定银行卡
-
-                // 本次
-                //window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 去借钱
-                //window.location.href='/fanbei-web/opennative?name=name=DO_PROMOTE_EXTRA}';  // 补充认证全部完成，进入借贷超市页面
-
-                //window.location.href='/fanbei-web/opennative?name=name=DO_FACE}';  // 去人脸识别活体认（和人脸识别同一个）
-
+        jQuery.ajax({
+            url: '/fanbei-web/tearRiskPacketActivity',
+            dataType:'json',
+            type: 'post',
+            success:function (data) {
+                console.log(data);
+                console.log(data.data.status);
+                if(data.data.loginUrl){
+                    location.href=data.data.loginUrl;
+                }else{
+                    let status=data.data.status;
+                    alert(status);
+                    if( status=='A' ){
+                        window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_BASIC';  // 去提升信用基础认证
+                    }else if( status=='B' ){
+                        window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 去借钱
+                    }else if( status=='C' ){
+                        window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_EXTRA';  // 去借钱
+                    }else if( status=='D' ){
+                        window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 去借钱
+                    }
+                }
+            },
+            error: function(){
+                requestMsg("请求失败");
             }
-        }
-    });
+        });
+    }
+
+
+
+
 
 </script>
 </html>
