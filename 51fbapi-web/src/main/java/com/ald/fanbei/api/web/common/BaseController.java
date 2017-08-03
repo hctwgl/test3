@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -276,6 +277,31 @@ public abstract class BaseController {
 		checkWebSign(webContext,requestDataVo, needToken);
 		return webContext;
 	}
+	
+	
+	/**
+	 * h5接口验证，验证基础参数、签名
+	 * @param request
+	 * @param needToken
+	 * @return
+	 */
+	protected FanbeiH5Context doH5Check(HttpServletRequest request,boolean needToken){
+		FanbeiH5Context webContext = new FanbeiH5Context();
+		String appInfo = getAppInfo(request.getHeader("Referer"));
+		if(StringUtil.isBlank(appInfo)){
+			if(needToken){
+				throw new FanbeiException("no login",FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}else{
+				return webContext;
+			}
+		}
+		RequestDataVo requestDataVo = parseRequestData(appInfo, request);
+		requestDataVo.setParams(new HashMap<String, Object>());
+		FanbeiContext baseContext = this.doBaseParamCheck(requestDataVo);
+		webContext.setUserName(baseContext.getUserName());
+		checkH5Sign(webContext,requestDataVo, needToken);
+		return webContext;
+	}
 
 	/**
 	 * 验证系统参数，验证签名
@@ -453,6 +479,39 @@ public abstract class BaseController {
 		}
 		this.compareSign(signStrBefore, sign);
 
+	}
+	
+	/**
+	 * 验证 token
+	 * 
+	 * @param userName
+	 *            用户名
+	 * @param time
+	 *            时间戳
+	 * @param params
+	 *            所有请求参数
+	 * @param needToken
+	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要
+	 */
+	private void checkH5Sign(FanbeiH5Context h5Context,RequestDataVo requestDataVo, boolean needToken) {
+
+		Map<String, Object> systemMap = requestDataVo.getSystem();
+		String userName = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_USERNAME));
+		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+		if(logger.isDebugEnabled()){
+			logger.debug(userName + " token= " + token);
+		}
+		if (needToken) {//需要登录的接口必须加token
+			if (token == null) {
+				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+			}
+			h5Context.setLogin(true);
+		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+			if(token != null){
+				h5Context.setLogin(true);
+			}
+		}
+		return;
 	}
 
 	/**

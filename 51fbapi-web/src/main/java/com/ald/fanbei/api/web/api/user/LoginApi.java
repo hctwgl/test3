@@ -121,6 +121,7 @@ public class LoginApi implements ApiHandle {
 			Integer errorCount = afUserDo.getFailCount();
 			temp.setRid(afUserDo.getRid());
 			temp.setFailCount(errorCount + 1);
+			temp.setUserName(userName);
 			afUserService.updateUser(temp);
 			loginDo.setResult("false:password error");
 			afUserLoginLogService.addUserLoginLog(loginDo);
@@ -139,6 +140,7 @@ public class LoginApi implements ApiHandle {
 		AfUserDo temp = new AfUserDo();
 		temp.setFailCount(0);
 		temp.setRid(afUserDo.getRid());
+		temp.setUserName(userName);
 		afUserService.updateUser(temp);
 
 		// save token to cache

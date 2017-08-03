@@ -51,10 +51,8 @@ import java.util.Date;
      */
     private Long couponId;
 
-    /**
-     * 菠萝觅优惠券id
-     */
-    private Long resourceId;
+    private String status;
+    private String type;
 
 
     /**
@@ -64,7 +62,23 @@ import java.util.Date;
      */
 
 
-    /**
+    public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	/**
      * 获取创建时间
      *
      * @return 创建时间
@@ -180,22 +194,6 @@ import java.util.Date;
       this.couponId = couponId;
     }
 
-    /**
-     * 获取菠萝觅优惠券id
-     *
-     * @return 菠萝觅优惠券id
-     */
-    public Long getResourceId(){
-      return resourceId;
-    }
 
-    /**
-     * 设置菠萝觅优惠券id
-     * 
-     * @param resourceId 要设置的菠萝觅优惠券id
-     */
-    public void setResourceId(Long resourceId){
-      this.resourceId = resourceId;
-    }
 
 }
