@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.RiskCollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 
 /**
@@ -196,23 +195,6 @@ public class RiskController {
 		} else {
 			return "ERROR";
 		}
-	}
-	
-	/**
-	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping(value = { "/offlineRepayment" }, method = RequestMethod.POST)
-	@ResponseBody
-	public RiskCollectionOperatorNotifyRespBo offlineRepayment (HttpServletRequest request, HttpServletResponse response) {
-		String data = ObjectUtils.toString(request.getParameter("data"));
-		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
-		String sign = ObjectUtils.toString(request.getParameter("sign"));
-		logger.info("deal offlineRepayment begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
-		RiskCollectionOperatorNotifyRespBo notifyRespBo = riskUtil.offlineRepaymentNotify(timestamp, data, sign);
-		return notifyRespBo;
 	}
 	
 }
