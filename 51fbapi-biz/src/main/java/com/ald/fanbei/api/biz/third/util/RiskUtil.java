@@ -23,7 +23,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
-import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskDataBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
@@ -81,12 +80,10 @@ import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
@@ -1869,42 +1866,4 @@ public class RiskUtil extends AbstractThird {
 		return 0;
 	}
 	
-	public CollectionOperatorNotifyRespBo offlineRepaymentNotify(String timestamp, String data, String sign) {
-		//响应数据,默认成功
-		CollectionOperatorNotifyRespBo notifyRespBo = new CollectionOperatorNotifyRespBo(FanbeiThirdRespCode.SUCCESS); 
-		try {
-			RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
-			reqBo.setData(data);
-			reqBo.setSignInfo(DigestUtil.MD5(createLinkString(reqBo)));
-			logThird(sign, "offlineRepaymentNotify", reqBo);
-			if (StringUtil.equals(sign, reqBo.getSignInfo())) {// 验签成功
-				JSONObject obj = JSON.parseObject(data);
-				String repayNo = obj.getString("repay_no");
-				String borrowNo = obj.getString("borrow_no");
-				String repayType = obj.getString("repay_type");
-				String repayTime = obj.getString("repay_time");
-				String repayAmount = obj.getString("repay_amount");
-				String restAmount = obj.getString("rest_amount");
-				String tradeNo = obj.getString("trade_no");
-				String isBalance = obj.getString("is_balance");
-				
-				//参数校验
-				if(StringUtil.isAllNotEmpty(repayNo,borrowNo,repayType,repayTime,repayAmount,restAmount,tradeNo,isBalance)){
-					//业务处理
-					String respCode = afRepaymentBorrowCashService.dealOfflineRepaymentSucess(repayNo, borrowNo, repayType, repayTime, NumberUtil.objToBigDecimalDefault(repayAmount, BigDecimal.ZERO), NumberUtil.objToBigDecimalDefault(restAmount, BigDecimal.ZERO), tradeNo, isBalance);
-					FanbeiThirdRespCode respInfo = FanbeiThirdRespCode.findByCode(respCode);
-					notifyRespBo.resetMsgInfo(respInfo);
-				}else{
-					notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
-				}
-			}else{
-				notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
-			}
-		} catch (Exception e) {
-			logger.error("offlineRepaymentNotify error",e);
-			notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SYSTEM_ERROR);
-		}
-		notifyRespBo.setSign(DigestUtil.MD5(createLinkString(notifyRespBo)));
-		return notifyRespBo;
-	}
 }
