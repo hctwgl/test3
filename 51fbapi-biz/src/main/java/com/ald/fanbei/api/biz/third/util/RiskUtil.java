@@ -86,6 +86,7 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
@@ -1874,7 +1875,7 @@ public class RiskUtil extends AbstractThird {
 		try {
 			RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
 			reqBo.setData(data);
-			reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+			reqBo.setSignInfo(DigestUtil.MD5(createLinkString(reqBo)));
 			logThird(sign, "offlineRepaymentNotify", reqBo);
 			if (StringUtil.equals(sign, reqBo.getSignInfo())) {// 验签成功
 				JSONObject obj = JSON.parseObject(data);
@@ -1903,7 +1904,7 @@ public class RiskUtil extends AbstractThird {
 			logger.error("offlineRepaymentNotify error",e);
 			notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SYSTEM_ERROR);
 		}
-		notifyRespBo.setSign(SignUtil.sign(createLinkString(notifyRespBo), PRIVATE_KEY));
+		notifyRespBo.setSign(DigestUtil.MD5(createLinkString(notifyRespBo)));
 		return notifyRespBo;
 	}
 }
