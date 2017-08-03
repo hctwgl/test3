@@ -266,7 +266,8 @@ body{
   background-size: contain;
   position:absolute;
   top:4.35rem;
-  left:.24rem;
+  left:0.24rem;
+  z-index:200;
 }
 #ggIndex .alertPresent .next{
   width:.13rem;
@@ -275,7 +276,8 @@ body{
   background-size: contain;
   position:absolute;
   top:4.35rem;
-  right:.24rem;
+  right:0.24rem;
+  z-index:200;
 }
 #ggIndex .alertPresent .imgList{
   position:absolute;
@@ -284,6 +286,7 @@ body{
 }
 #ggIndex .alertPresent .imgList{
 /*  width:12.12rem;*/
+  z-index:100;
 }
 #ggIndex .alertPresent .imgList li{
 /*  width:2.73rem;*/
@@ -292,6 +295,8 @@ body{
   float:left;
   background:red;
   margin-right:.4rem;
+  opacity: 0.6;
+  z-index:100;
 }
 #ggIndex .alertPresent .imgList li:last-child{
   margin:0;
@@ -301,18 +306,13 @@ body{
   top: 2.8rem;
   left: 30%;
   transform: scale(1.2);
+  opacity:1;
 }
 #ggIndex .alertPresent .imgList li.change02{
   transform: scale(1);
-  transition: all 1s linear;
+  transition: all 0.3s linear;
 }
-#ggIndex .alertPresent .imgList li.change03{
-  position: fixed;
-  top: 2.8rem;
-  left: 30%;
-  transform: scale(1.2);
-  transition: all 1s linear;
-}
+
 
 
 

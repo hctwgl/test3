@@ -68,6 +68,7 @@
             </ul>
         </div>
         <p class="previous" @click="imgClick" v-if="!unbind"></p>
+        <p class="previous" v-else></p>
         <p class="next"></p>
     </div>
 </div>
