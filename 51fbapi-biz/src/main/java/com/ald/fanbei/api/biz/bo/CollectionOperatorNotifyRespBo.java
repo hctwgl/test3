@@ -12,7 +12,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class RiskCollectionOperatorNotifyRespBo extends HashMap<String, String>{
+public class CollectionOperatorNotifyRespBo extends HashMap<String, String>{
 
 	private static final long serialVersionUID = 6478938143376881332L;
 	
@@ -21,18 +21,18 @@ public class RiskCollectionOperatorNotifyRespBo extends HashMap<String, String>{
 	private String msg;
 	private String sign;
 	
-	public RiskCollectionOperatorNotifyRespBo() {
+	public CollectionOperatorNotifyRespBo() {
 		super();
 	}
 	
-	public RiskCollectionOperatorNotifyRespBo(FanbeiThirdRespCode respInfo) {
+	public CollectionOperatorNotifyRespBo(FanbeiThirdRespCode respInfo) {
 		super();
 		this.setCode(respInfo.getCode());
 		this.setMsg(respInfo.getMsg());
 		this.setTimestamp(DateUtil.getDateTimeFull(new Date()));
 	}
 	
-	public RiskCollectionOperatorNotifyRespBo(String code, String timestamp,
+	public CollectionOperatorNotifyRespBo(String code, String timestamp,
 			String msg, String sign) {
 		super();
 		this.code = code;

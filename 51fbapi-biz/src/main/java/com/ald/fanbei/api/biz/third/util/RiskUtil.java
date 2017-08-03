@@ -23,7 +23,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
-import com.ald.fanbei.api.biz.bo.RiskCollectionOperatorNotifyRespBo;
+import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskDataBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
@@ -1869,9 +1869,9 @@ public class RiskUtil extends AbstractThird {
 		return 0;
 	}
 	
-	public RiskCollectionOperatorNotifyRespBo offlineRepaymentNotify(String timestamp, String data, String sign) {
+	public CollectionOperatorNotifyRespBo offlineRepaymentNotify(String timestamp, String data, String sign) {
 		//响应数据,默认成功
-		RiskCollectionOperatorNotifyRespBo notifyRespBo = new RiskCollectionOperatorNotifyRespBo(FanbeiThirdRespCode.SUCCESS); 
+		CollectionOperatorNotifyRespBo notifyRespBo = new CollectionOperatorNotifyRespBo(FanbeiThirdRespCode.SUCCESS); 
 		try {
 			RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
 			reqBo.setData(data);

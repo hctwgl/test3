@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.RiskCollectionOperatorNotifyRespBo;
+import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 
 /**
@@ -206,12 +206,12 @@ public class RiskController {
 	 */
 	@RequestMapping(value = { "/offlineRepayment" }, method = RequestMethod.POST)
 	@ResponseBody
-	public RiskCollectionOperatorNotifyRespBo offlineRepayment (HttpServletRequest request, HttpServletResponse response) {
+	public CollectionOperatorNotifyRespBo offlineRepayment (HttpServletRequest request, HttpServletResponse response) {
 		String data = ObjectUtils.toString(request.getParameter("data"));
 		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
 		String sign = ObjectUtils.toString(request.getParameter("sign"));
 		logger.info("deal offlineRepayment begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
-		RiskCollectionOperatorNotifyRespBo notifyRespBo = riskUtil.offlineRepaymentNotify(timestamp, data, sign);
+		CollectionOperatorNotifyRespBo notifyRespBo = riskUtil.offlineRepaymentNotify(timestamp, data, sign);
 		return notifyRespBo;
 	}
 	
