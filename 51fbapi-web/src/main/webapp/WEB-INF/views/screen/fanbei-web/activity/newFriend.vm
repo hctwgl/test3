@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017080203")
+    #set($version="2017080301")
     #set($src="http://f.51fanbei.com/h5/app/activity/07")
     <title>新朋友见面礼</title>
 </head>
@@ -19,7 +19,7 @@
         </div> 
         <button class="btn" @click="oneKeyReceive()">立即领取</button>
     </div>
-    <p class="recommend">热门推荐</p>
+    <p class="recommend">新朋友福利 领券享福利</p>
     <ul class="productList">
         <li v-for="item in tableContent.recommendGoodsList" @click="buyNow(item)">
             <div class="productImg"><img :src='item.goodsIcon'></div>
