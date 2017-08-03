@@ -251,7 +251,7 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
                 refundDo.setType(PayType.AGENT_PAY.getCode());
                 refundDo.setRefundNo(refundNo);
                 refundDo.setContent("代买代付退款生成新账单");
-                afOrderRefundDao.addOrderRefund(refundDo);
+                afOrderRefundDao.saveRecord(refundDo);
 
                 dealBorrowAndBill(orderDo.getUserId(), accountInfo.getUserName(), borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderDo.getRid(),
                         orderDo.getOrderNo(), orderDo.getBorrowRate(), orderDo.getInterestFreeJson());
