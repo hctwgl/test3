@@ -413,7 +413,8 @@ public class AppH5GameController  extends BaseController{
 					if("A".equals(riskStatus)){
 						String realnameStatus = userAuthDo.getRealnameStatus();
 						String bankcardStatus = userAuthDo.getBankcardStatus();
-						if(!"Y".equals(realnameStatus)) {
+						String facesStatus = userAuthDo.getFacesStatus();
+						if("N".equals(facesStatus)) {
 							data.put("status", "A1");
 						}else if("N".equals(bankcardStatus)) {
 							data.put("status", "A2");
