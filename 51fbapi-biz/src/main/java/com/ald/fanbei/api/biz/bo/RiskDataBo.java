@@ -22,7 +22,7 @@ public class RiskDataBo extends HashMap<String,String>{
 	
 	private String sign;//MD5签名,对data的json串签名
 	private String timestamp;
-	private String dataType;//数据类型
+	//private String dataType;//数据类型
 	private String data;//数据集合
 	/*public RiskDataBo(){}
 	
@@ -85,13 +85,13 @@ public class RiskDataBo extends HashMap<String,String>{
 		this.timestamp = timestamp;
 		this.put("timestamp",timestamp);
 	}
-	public String getDataType() {
+	/*public String getDataType() {
 		return dataType;
 	}
 	public void setDataType(String dataType) {
 		this.dataType = dataType;
 		this.put("dataType",dataType);
-	}
+	}*/
 	public String getData() {
 		return data;
 	}
@@ -103,7 +103,7 @@ public class RiskDataBo extends HashMap<String,String>{
 	@Override
 	public String toString() {
 		return "RiskDataBo [sign=" + sign + ", timestamp=" + timestamp
-				+ ", dataType=" + dataType + ", data=" + data + "]";
+				+ ", dataType=" + ", data=" + data + "]";
 	}
 	
 	

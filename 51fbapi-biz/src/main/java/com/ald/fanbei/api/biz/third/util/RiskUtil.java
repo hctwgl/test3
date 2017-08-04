@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,7 +22,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
-import com.ald.fanbei.api.biz.bo.RiskDataBo;
 import com.ald.fanbei.api.biz.bo.RiskModifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.RiskOperatorRespBo;
@@ -84,9 +82,7 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -286,106 +282,6 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 
-	
-	/**
-	 * 51返呗主动还款通知催收平台
-	 * 
-	 * @param repayNo
-	 *            --还款编号
-	 * @param borrowNo
-	 *            --借款单号
-	 * @param cardNumber
-	 *            --卡号
-	 * @param cardName
-	 *  	      --银行卡名称（支付方式）
-	 * @param amount
-	 *  	      --还款金额
-	 * @param restAmount
-	 *  	      --剩余未还金额
-	 * @param repayAmount
-	 *  	      --理论应还款金额
-	 * @param overdueAmount
-	 *  	      --逾期手续费
-	 * @param repayAmountSum
-	 *  	      --已还总额
-	 * @param rateAmount
-	 *  	      --利息
-	 * @return
-	 */
-	public RiskRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,BigDecimal amount,
-			BigDecimal restAmount,BigDecimal repayAmount,BigDecimal overdueAmount,BigDecimal repayAmountSum,
-			BigDecimal rateAmount) {
-		Map<String,String> reqBo=new HashMap<String,String>();
-		reqBo.put("repay_no", repayNo);
-		reqBo.put("borrow_no", borrowNo);
-		reqBo.put("card_number", cardNumber);
-		reqBo.put("card_name", cardName);
-		Date d = new Date();
-		String time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(d); 
-		reqBo.put("time", time);
-		reqBo.put("amount", amount.toString());
-		reqBo.put("rest_amount", restAmount.toString());
-		reqBo.put("repay_amount", repayAmount.toString());
-		reqBo.put("overdue_amount", overdueAmount.toString());
-		reqBo.put("repay_amount_sum", repayAmountSum.toString());
-		reqBo.put("rate_amount", rateAmount.toString());
-		
-		String json = JsonUtil.toJSONString(reqBo);
-		RiskDataBo data=new RiskDataBo();
-		String times = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(d);
-		data.setTimestamp(times);
-		data.setSign(DigestUtil.MD5(json));
-		data.setData(json);//数据集合
-		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
-		
-		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException("主动还款通知失败");
-		}
-		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
-		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
-			riskResp.setSuccess(true);
-			return riskResp;
-		} else {
-			throw new FanbeiException("主动还款通知失败");
-		}
-	}
-
-
-	/**
-	 * 51返呗续期通知接口
-	 * 
-	 * @param borrow_no  	借款单号
-	 * @param renewal_no  	续期编号
-	 * @param renewal_num	续借期数
-	 * @return 
-	 * 
-	 * **/
-	public RiskRespBo Renewal(String borrowNo, String renewalNo, Integer renewalNum){
-		Map<String,String> reqBo=new HashMap<String,String>();
-		reqBo.put("borrow_no", borrowNo);
-		reqBo.put("renewal_no", renewalNo);
-		reqBo.put("renewal_num", renewalNum.toString());
-	
-		String json = JsonUtil.toJSONString(reqBo);
-		RiskDataBo data=new RiskDataBo();
-		Date da=new Date();
-		String times = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(da);
-		data.setDataType(times);
-		data.setSign(DigestUtil.MD5(json));
-		data.setData(json);//数据集合
-		String reqResult = HttpUtil.post(getUrl() + "/api/getway/renewalAchieve", data);
-		
-		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException("续期通知失败");
-		}
-		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
-		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
-			riskResp.setSuccess(true);
-			return riskResp;
-		} else {
-			throw new FanbeiException("续期通知失败");
-		}
-	}
 	
 	/**
 	 * 用户信息修改

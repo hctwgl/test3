@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,12 +15,17 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
+import com.ald.fanbei.api.biz.bo.RiskDataBo;
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -31,18 +39,119 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Component("collectionSystemUtil")
 public class CollectionSystemUtil extends AbstractThird {
+	
 	private static String url = null;
 
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
-	@SuppressWarnings("unused")
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
 			return url;
 		}
 		return url;
+	}
+	
+	/**
+	 * 51返呗主动还款通知催收平台
+	 * 
+	 * @param repayNo
+	 *            --还款编号
+	 * @param borrowNo
+	 *            --借款单号
+	 * @param cardNumber
+	 *            --卡号
+	 * @param cardName
+	 *  	      --银行卡名称（支付方式）
+	 * @param amount
+	 *  	      --还款金额
+	 * @param restAmount
+	 *  	      --剩余未还金额
+	 * @param repayAmount
+	 *  	      --理论应还款金额
+	 * @param overdueAmount
+	 *  	      --逾期手续费
+	 * @param repayAmountSum
+	 *  	      --已还总额
+	 * @param rateAmount
+	 *  	      --利息
+	 * @return
+	 */
+	public RiskRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,BigDecimal amount,
+			BigDecimal restAmount,BigDecimal repayAmount,BigDecimal overdueAmount,BigDecimal repayAmountSum,
+			BigDecimal rateAmount) {
+		Map<String,String> reqBo=new HashMap<String,String>();
+		reqBo.put("repay_no", repayNo);
+		reqBo.put("borrow_no", borrowNo);
+		reqBo.put("card_number", cardNumber);
+		reqBo.put("card_name", cardName);
+		Date d = new Date();
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+		String time=format.format(d);
+		reqBo.put("time", time);
+		reqBo.put("amount", amount.toString());
+		reqBo.put("rest_amount", restAmount.toString());
+		reqBo.put("repay_amount", repayAmount.toString());
+		reqBo.put("overdue_amount", overdueAmount.toString());
+		reqBo.put("repay_amount_sum", repayAmountSum.toString());
+		reqBo.put("rate_amount", rateAmount.toString());
+		
+		String json = JsonUtil.toJSONString(reqBo);
+		RiskDataBo data=new RiskDataBo();
+		Date da=new Date();
+		String times = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(da);
+		data.setTimestamp(times);
+		data.setSign(DigestUtil.MD5(json));
+		data.setData(json);//数据集合
+		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
+		
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException("主动还款通知失败");
+		}
+		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		if (riskResp != null && FanbeiThirdRespCode.SUCCESS.getCode().equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			return riskResp;
+		} else {
+			throw new FanbeiException("主动还款通知失败");
+		}
+	}
+
+
+	/**
+	 * 51返呗续期通知接口
+	 * @param borrow_no  	借款单号
+	 * @param renewal_no  	续期编号
+	 * @param renewal_num	续借期数
+	 * @return 
+	 * 
+	 * **/
+	public RiskRespBo renewalNotify(String borrowNo, String renewalNo, Integer renewalNum){
+		Map<String,String> reqBo=new HashMap<String,String>();
+		reqBo.put("borrow_no", borrowNo);
+		reqBo.put("renewal_no", renewalNo);
+		reqBo.put("renewal_num", renewalNum.toString());
+	
+		String json = JsonUtil.toJSONString(reqBo);
+		RiskDataBo data=new RiskDataBo();
+		Date da=new Date();
+		String times = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(da);
+		data.setTimestamp(times);
+		data.setSign(DigestUtil.MD5(json));
+		data.setData(json);//数据集合
+		String reqResult = HttpUtil.post(getUrl() + "/api/getway/renewalAchieve", data);
+		
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException("续期通知失败");
+		}
+		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		if (riskResp != null && FanbeiThirdRespCode.SUCCESS.getCode().equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			return riskResp;
+		} else {
+			throw new FanbeiException("续期通知失败");
+		}
 	}
 	
 	/**
@@ -68,7 +177,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		try {
 			CollectionOperatorNotifyReqBo reqBo = new CollectionOperatorNotifyReqBo();
 			reqBo.setData(data);
-			reqBo.setSign(DigestUtil.MD5(createLinkString(reqBo)));
+			reqBo.setSign(DigestUtil.MD5(data));
 			logThird(sign, "offlineRepaymentNotify", reqBo);
 			if (StringUtil.equals(sign, reqBo.getSign())) {// 验签成功
 				JSONObject obj = JSON.parseObject(data);
@@ -98,7 +207,8 @@ public class CollectionSystemUtil extends AbstractThird {
 			notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SYSTEM_ERROR);
 		}
 		notifyRespBo.setMsg(StringUtil.UrlEncoder(notifyRespBo.getMsg()));
-		notifyRespBo.setSign(DigestUtil.MD5(createLinkString(notifyRespBo)));
+		String resDataJson = JsonUtil.toJSONString(notifyRespBo);
+		notifyRespBo.setSign(DigestUtil.MD5(resDataJson));
 		return notifyRespBo;
 	}
 }

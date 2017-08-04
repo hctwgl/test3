@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 
 /**
@@ -47,4 +50,31 @@ public class CollectionController {
 		return notifyRespBo;
 	}
 	
+	@RequestMapping(value = { "/consumerRepayment" }, method = RequestMethod.GET)
+	@ResponseBody
+	public RiskRespBo consumerRepayment (HttpServletRequest request, HttpServletResponse response) {
+		String repayNo = "";
+		String borrowNo = "";
+		String cardNumber = "";
+		String cardName = "";
+		BigDecimal amount = BigDecimal.valueOf(0);
+		BigDecimal restAmount = BigDecimal.valueOf(0);
+		BigDecimal repayAmount = BigDecimal.valueOf(0);
+		BigDecimal overdueAmount = BigDecimal.valueOf(0);
+		BigDecimal repayAmountSum = BigDecimal.valueOf(0);
+		BigDecimal rateAmount = BigDecimal.valueOf(0);
+		
+		RiskRespBo notifyRespBo = collectionSystemUtil.consumerRepayment(repayNo, borrowNo, cardNumber, cardName, amount, restAmount, repayAmount, overdueAmount, repayAmountSum, rateAmount);
+		return notifyRespBo;
+	}
+	
+	@RequestMapping(value = { "/renewalNotify" }, method = RequestMethod.GET)
+	@ResponseBody
+	public RiskRespBo renewalNotify (HttpServletRequest request, HttpServletResponse response) {
+		String borrowNo = "";
+		String renewalNo = "";
+		Integer renewalNum = 1;
+		RiskRespBo notifyRespBo = collectionSystemUtil.renewalNotify(borrowNo, renewalNo, renewalNum);
+		return notifyRespBo;
+	}
 }
