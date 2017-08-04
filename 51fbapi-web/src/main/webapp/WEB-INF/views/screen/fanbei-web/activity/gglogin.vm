@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/gglogin.css?version=$version">
 </head>
 <body>
-    <div class="login">
+    <div id="login" class="login">
         <div class="topdiv">
             <div class="topimg">
                 <img src="$src/51icon.png" alt="">
@@ -37,5 +37,7 @@
             <img src="$src/pic-2.png" alt="">
     </div>       
 </body>
+<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<script type="text/javascript" src="/dist/activity/08/gglogin.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
-let userItemsId = getUrl("1234");
+// let userItemsId = getUrl("1234");
 let vue=new Vue({
-    el:'#presents',
+    el:'#login',
     data:{
         content:[],
         tableContent:[]
@@ -12,12 +12,11 @@ let vue=new Vue({
         logData:function(){
             let self=this;
             $.ajax({
-                url:'/H5GGShare/initHomePage',
-                type:'get',
-                data:{'userItemsId':userItemsId},
+                url:'/app/user/commitRegister',
+                type:'post',
                 success:function (data) {
                     console.log(data);
-                    self.tableContent = eval('(' + data + ')');
+                    // self.tableContent = eval('(' + data + ')');
                     // self.tableContent = self.tableContent.data;
                 }
             });
