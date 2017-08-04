@@ -81,7 +81,13 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
     @Override
     public BigDecimal getCanWithDrawMoney(Long businessId) {
         AfTradeBusinessInfoDo infoDo = afTradeBusinessInfoDao.getByBusinessId(businessId);
-        Date canWithDrawDate = DateUtil.addDays(DateUtil.getEndOfDate(new Date()), 0 - infoDo.getWithdrawCycle());
+        Date now = new Date();
+        Date canWithDrawDate;
+        if (now.compareTo(DateUtil.getWithDrawOfDate(now)) > 0) {
+            canWithDrawDate = DateUtil.addDays(DateUtil.getWithDrawOfDate(now), 0 - infoDo.getWithdrawCycle());
+        } else {
+            canWithDrawDate = DateUtil.addDays(DateUtil.getWithDrawOfDate(now), 0 - infoDo.getWithdrawCycle() - 1);
+        }
         return afTradeOrderDao.getCanWithDrawMoney(businessId, canWithDrawDate);
     }
 
