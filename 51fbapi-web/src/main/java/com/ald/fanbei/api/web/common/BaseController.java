@@ -298,11 +298,9 @@ public abstract class BaseController {
 	
 	private Map<String,String> getOpenidToken(HttpServletRequest request){
     	Map<String,String> openidAndToken = new HashMap<>();
-		openidAndToken.put("openid", "");
-		openidAndToken.put("token", "");
     	Cookie[] cookies = request.getCookies();
-    	String openid = "";
-    	String token  = "";
+    	String openid = null;
+    	String token  = null;
     	
     	if(cookies != null && cookies.length > 0){
     		for(Cookie item:cookies){
