@@ -321,8 +321,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.put("card_number", cardNumber);
 		reqBo.put("card_name", cardName);
 		Date d = new Date();
-		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
-		String time=format.format(d);
+		String time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(d); 
 		reqBo.put("time", time);
 		reqBo.put("amount", amount.toString());
 		reqBo.put("rest_amount", restAmount.toString());
@@ -333,8 +332,7 @@ public class RiskUtil extends AbstractThird {
 		
 		String json = JsonUtil.toJSONString(reqBo);
 		RiskDataBo data=new RiskDataBo();
-		Date da=new Date();
-		String times = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(da);
+		String times = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(d);
 		data.setTimestamp(times);
 		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合
