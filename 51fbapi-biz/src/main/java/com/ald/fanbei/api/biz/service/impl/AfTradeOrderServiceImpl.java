@@ -178,6 +178,8 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
                 recordDo.setStatus(TradeWithdrawRecordStatus.CLOSED.getCode());
                 afTradeWithdrawRecordDao.updateById(recordDo);
                 afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.NEW.getCode());
+                logger.info("trade withdraw upsResult is false");
+                return false;
             }
 
             return true;

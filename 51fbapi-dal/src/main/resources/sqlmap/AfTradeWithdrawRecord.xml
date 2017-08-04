@@ -149,7 +149,7 @@
 				card_name = #{cardName,jdbcType=VARCHAR},
 			</if>
 			<if test="cardCode != null and cardCode != '' ">
-				card_code = #{cardCode,jdbcType=VARCHAR}
+				card_code = #{cardCode,jdbcType=VARCHAR},
 			</if>
 			<if test="cardUserName != null and cardUserName != '' ">
 				card_user_name = #{cardUserName,jdbcType=VARCHAR}
