@@ -64,8 +64,8 @@ public class AppH5TradeController extends BaseController {
         }
 
         bid = AesUtil.decryptFromBase64(bid, Constants.TRADE_AES_DECRYPT_PASSWORD);
-        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getById(Long.parseLong(bid));
-        if (afTradeBusinessInfoDo == null) {
+        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(Long.parseLong(bid));
+        if (afTradeBusinessInfoDo == null || afTradeBusinessInfoDo.getStatus().equals(2)) {
             return;
         }
 
@@ -95,7 +95,7 @@ public class AppH5TradeController extends BaseController {
         }
 
         model.put("name", afTradeBusinessInfoDo.getName());
-        model.put("id", afTradeBusinessInfoDo.getId());
+        model.put("id", afTradeBusinessInfoDo.getBusinessId());
         model.put("isLogin", "yes");
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
         BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
