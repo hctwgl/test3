@@ -177,7 +177,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		try {
 			CollectionOperatorNotifyReqBo reqBo = new CollectionOperatorNotifyReqBo();
 			reqBo.setData(data);
-			reqBo.setSign(DigestUtil.MD5(createLinkString(reqBo)));
+			reqBo.setSign(DigestUtil.MD5(data));
 			logThird(sign, "offlineRepaymentNotify", reqBo);
 			if (StringUtil.equals(sign, reqBo.getSign())) {// 验签成功
 				JSONObject obj = JSON.parseObject(data);
@@ -207,7 +207,8 @@ public class CollectionSystemUtil extends AbstractThird {
 			notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SYSTEM_ERROR);
 		}
 		notifyRespBo.setMsg(StringUtil.UrlEncoder(notifyRespBo.getMsg()));
-		notifyRespBo.setSign(DigestUtil.MD5(createLinkString(notifyRespBo)));
+		String resDataJson = JsonUtil.toJSONString(notifyRespBo);
+		notifyRespBo.setSign(DigestUtil.MD5(resDataJson));
 		return notifyRespBo;
 	}
 }
