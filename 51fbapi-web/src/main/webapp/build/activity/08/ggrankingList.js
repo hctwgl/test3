@@ -24,7 +24,7 @@
 //     });
 // };
 
-(function ($) {
+/* (function ($) {
     $.fn.scrollTop = function (options) {
         var defaults = {
             speed: 30
@@ -54,6 +54,6 @@
 
 $(function () {
     $(".container").scrollTop({
-        speed: 300 //数值越大 速度越慢
+        speed: 100 //数值越大 速度越慢
     });
-})
+}) */

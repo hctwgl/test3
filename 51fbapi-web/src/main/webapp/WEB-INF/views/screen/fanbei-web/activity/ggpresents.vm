@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($src="https://fs.51fanbei.com/h5/app/activity/08")
+    #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
