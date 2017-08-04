@@ -19,10 +19,9 @@ import com.ald.fanbei.api.biz.bo.RiskDataBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
@@ -40,16 +39,16 @@ import com.alibaba.fastjson.JSONObject;
 @Component("collectionSystemUtil")
 public class CollectionSystemUtil extends AbstractThird {
 	
-	private static String url = null;
+	private static String url ="http://192.168.110.64";
 
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
 	private static String getUrl() {
-		if (url == null) {
+		/*if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
 			return url;
-		}
+		}*/
 		return url;
 	}
 	
@@ -78,7 +77,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	 *  	      --利息
 	 * @return
 	 */
-	public RiskRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,BigDecimal amount,
+	public RiskRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,String repayTime,String tradeNo,BigDecimal amount,
 			BigDecimal restAmount,BigDecimal repayAmount,BigDecimal overdueAmount,BigDecimal repayAmountSum,
 			BigDecimal rateAmount) {
 		Map<String,String> reqBo=new HashMap<String,String>();
@@ -86,16 +85,15 @@ public class CollectionSystemUtil extends AbstractThird {
 		reqBo.put("borrow_no", borrowNo);
 		reqBo.put("card_number", cardNumber);
 		reqBo.put("card_name", cardName);
-		Date d = new Date();
-		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
-		String time=format.format(d);
-		reqBo.put("time", time);
-		reqBo.put("amount", amount.toString());
-		reqBo.put("rest_amount", restAmount.toString());
-		reqBo.put("repay_amount", repayAmount.toString());
-		reqBo.put("overdue_amount", overdueAmount.toString());
-		reqBo.put("repay_amount_sum", repayAmountSum.toString());
-		reqBo.put("rate_amount", rateAmount.toString());
+		
+		reqBo.put("repay_time", repayTime);
+		reqBo.put("trade_no", tradeNo);
+		reqBo.put("amount", amount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
+		reqBo.put("rest_amount", restAmount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
+		reqBo.put("repay_amount", repayAmount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
+		reqBo.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
+		reqBo.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
+		reqBo.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
 		
 		String json = JsonUtil.toJSONString(reqBo);
 		RiskDataBo data=new RiskDataBo();
@@ -105,7 +103,6 @@ public class CollectionSystemUtil extends AbstractThird {
 		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合
 		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
-		
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException("主动还款通知失败");
 		}
@@ -127,11 +124,13 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * @return 
 	 * 
 	 * **/
-	public RiskRespBo renewalNotify(String borrowNo, String renewalNo, Integer renewalNum){
+	public static RiskRespBo renewalNotify(String borrowNo, String renewalNo, Integer renewalNum,String renewalAmount){
+		
 		Map<String,String> reqBo=new HashMap<String,String>();
 		reqBo.put("borrow_no", borrowNo);
 		reqBo.put("renewal_no", renewalNo);
 		reqBo.put("renewal_num", renewalNum.toString());
+		reqBo.put("renewal_amount", renewalAmount);
 	
 		String json = JsonUtil.toJSONString(reqBo);
 		RiskDataBo data=new RiskDataBo();
@@ -140,7 +139,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		data.setTimestamp(times);
 		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合
-		String reqResult = HttpUtil.post(getUrl() + "/api/getway/renewalAchieve", data);
+		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/renewalAchieve", data);
 		
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException("续期通知失败");

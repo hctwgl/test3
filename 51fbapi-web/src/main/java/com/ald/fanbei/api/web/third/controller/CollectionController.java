@@ -53,28 +53,31 @@ public class CollectionController {
 	@RequestMapping(value = { "/consumerRepayment" }, method = RequestMethod.GET)
 	@ResponseBody
 	public RiskRespBo consumerRepayment (HttpServletRequest request, HttpServletResponse response) {
-		String repayNo = "";
-		String borrowNo = "";
-		String cardNumber = "";
-		String cardName = "";
-		BigDecimal amount = BigDecimal.valueOf(0);
-		BigDecimal restAmount = BigDecimal.valueOf(0);
-		BigDecimal repayAmount = BigDecimal.valueOf(0);
-		BigDecimal overdueAmount = BigDecimal.valueOf(0);
-		BigDecimal repayAmountSum = BigDecimal.valueOf(0);
-		BigDecimal rateAmount = BigDecimal.valueOf(0);
+		String repayNo = "hq20170804164757197803";
+		String borrowNo = "jq2017071711190300535";
+		String cardNumber = "6212261202021718508";
+		String cardName = "工商银行";
+		String tradeNO="4004842001201708044450536351";
+		String repayTime="2017-08-04 16:48:00";
+		BigDecimal amount = BigDecimal.valueOf(123);
+		BigDecimal restAmount = BigDecimal.valueOf(2314);
+		BigDecimal repayAmount = BigDecimal.valueOf(12);
+		BigDecimal overdueAmount = BigDecimal.valueOf(32);
+		BigDecimal repayAmountSum = BigDecimal.valueOf(23);
+		BigDecimal rateAmount = BigDecimal.valueOf(213);
 		
-		RiskRespBo notifyRespBo = collectionSystemUtil.consumerRepayment(repayNo, borrowNo, cardNumber, cardName, amount, restAmount, repayAmount, overdueAmount, repayAmountSum, rateAmount);
+		RiskRespBo notifyRespBo = collectionSystemUtil.consumerRepayment(repayNo, borrowNo, cardNumber, cardName,repayTime,tradeNO, amount, restAmount, repayAmount, overdueAmount, repayAmountSum, rateAmount);
 		return notifyRespBo;
 	}
 	
 	@RequestMapping(value = { "/renewalNotify" }, method = RequestMethod.GET)
 	@ResponseBody
 	public RiskRespBo renewalNotify (HttpServletRequest request, HttpServletResponse response) {
-		String borrowNo = "";
-		String renewalNo = "";
+		String borrowNo = "jq2017071711190300535";
+		String renewalNo = "hq20170804164757197803";
+		String renewalAmount="321";
 		Integer renewalNum = 1;
-		RiskRespBo notifyRespBo = collectionSystemUtil.renewalNotify(borrowNo, renewalNo, renewalNum);
+		RiskRespBo notifyRespBo = collectionSystemUtil.renewalNotify(borrowNo, renewalNo, renewalNum,renewalAmount);
 		return notifyRespBo;
 	}
 }
