@@ -176,6 +176,9 @@
 		<if test="orderStatus != null and orderStatus != '' ">
 			and a.status = #{orderStatus}
 		</if>
+		<if test="orderStatus == null" >
+			and a.status in ('NEW', 'PAID')
+		</if>
 		order by a.gmt_create desc
 
 	</select>
@@ -198,6 +201,9 @@
 		<if test="orderStatus != null and orderStatus != '' ">
 			and a.status = #{orderStatus}
 		</if>
+		<if test="orderStatus == null" >
+			and a.status in ('NEW', 'PAID')
+		</if>
 		order by a.gmt_create desc
 	</select>
 
@@ -209,6 +215,9 @@
 		where c.business_id = #{businessId} and d.id is not null
 		<if test="refundStatus != null and refundStatus != '' ">
 			and c.status = #{refundStatus}
+		</if>
+		<if test="refundStatus == null">
+			and c.status in ('REFUNDING', 'REFUND')
 		</if>
 		<if test="startDate != null and startDate != '' ">
 			and d.gmt_create <![CDATA[   >=  ]]>
@@ -231,6 +240,9 @@
 		where c.business_id = #{businessId} and d.id is not null
 		<if test="refundStatus != null and refundStatus != '' ">
 			and c.status = #{refundStatus}
+		</if>
+		<if test="refundStatus == null">
+			and c.status in ('REFUNDING', 'REFUND')
 		</if>
 		<if test="startDate != null and startDate != '' ">
 			and d.gmt_create <![CDATA[   >=  ]]>
