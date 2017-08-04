@@ -128,7 +128,14 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
     public boolean withdraw(Long businessId) {
         try {
             AfTradeBusinessInfoDo infoDo = afTradeBusinessInfoDao.getByBusinessId(businessId);
-            Date canWithDrawDate = DateUtil.addDays(DateUtil.getEndOfDate(new Date()), 0 - infoDo.getWithdrawCycle());
+            Date now = new Date();
+            //改为13点可以提现，前一天13点之前的
+            Date canWithDrawDate;
+            if (now.compareTo(DateUtil.getWithDrawOfDate(now)) > 0) {
+                canWithDrawDate = DateUtil.addDays(DateUtil.getWithDrawOfDate(now), 0 - infoDo.getWithdrawCycle());
+            } else {
+                canWithDrawDate = DateUtil.addDays(DateUtil.getWithDrawOfDate(now), 0 - infoDo.getWithdrawCycle() - 1);
+            }
             List<AfTradeOrderDto> orderList = afTradeOrderDao.getCanWithDrawList(businessId, canWithDrawDate);
             List<Long> ids = new ArrayList<>();
             BigDecimal withDrawMoney = BigDecimal.ZERO;
