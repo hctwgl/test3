@@ -226,7 +226,7 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
 
             AfUserBankcardDo cardInfo = afUserBankcardDao.getUserMainBankcardByUserId(orderDo.getUserId());
             AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderDo.getUserId());
-            if (borrowAmount.compareTo(BigDecimal.ZERO) < 0) {
+            if (borrowAmount.compareTo(BigDecimal.ZERO) <= 0) {
 
                 AfOrderRefundDo refundDo = new AfOrderRefundDo();
                 refundDo.setOrderId(orderId);
