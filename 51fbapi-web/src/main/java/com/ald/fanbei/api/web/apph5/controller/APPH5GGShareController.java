@@ -191,7 +191,7 @@ public class APPH5GGShareController extends BaseController{
 			Map<String, Object> data = new HashMap<String, Object>();
 			//TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			context = doWebCheck(request, true);
+			context = doWebCheck(request, false);
 			if (context.isLogin()) {
 				//TODO:获取登录着的userName或者id
 				AfUserDo afUser = null;

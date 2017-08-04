@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +176,7 @@ public class H5GGShareController extends H5Controller{
 			Map<String, Object> data = new HashMap<String, Object>();
 			//TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			context = doH5Check(request, true);
+			context = doH5Check(request, false);
 			if (context.isLogin()) {
 				//TODO:获取登录着的userName或者id
 				Long userId = context.getUserId();
@@ -226,5 +227,114 @@ public class H5GGShareController extends H5Controller{
 			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 		}
 	}
+	
+	/**
+	 * 
+	 * @说明：赠送卡片(页面初始化)
+	 * @param: @param request
+	 * @param: @param response
+	 * @param: @return
+	 * @return: String
+	 */
+	@RequestMapping(value="sendItems",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+	public String sendItems(HttpServletRequest request,HttpServletResponse response){
+		String resultStr = "";
+		FanbeiH5Context context = new FanbeiH5Context();
+		try{
+			
+			
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("赠送卡片失败" + context, e);
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getMessage()).toString();
+			logger.error("赠送卡片失败" + context, e);
+		} 
+		
+		return resultStr;
+	}
+	/**
+	 * 
+	 * @说明：赠送卡片
+	 * @param: @param request
+	 * @param: @param response
+	 * @param: @return
+	 * @return: String
+	 */
+	@RequestMapping(value="doSendItems",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+	public String doSendItems(HttpServletRequest request,HttpServletResponse response){
+		String resultStr = "";
+		FanbeiH5Context context = new FanbeiH5Context();
+		try{
+			
+			
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("赠送卡片失败" + context, e);
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getMessage()).toString();
+			logger.error("赠送卡片失败" + context, e);
+		} 
+		
+		return resultStr;
+	}
+	
+	/**
+	 * 
+	 * @说明：领走卡片
+	 * @param: @param request
+	 * @param: @param response
+	 * @param: @return
+	 * @return: String
+	 */
+	@RequestMapping(value="pickUpItems",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+	public String pickUpItems(HttpServletRequest request,HttpServletResponse response){
+		String resultStr = "";
+		FanbeiH5Context context = new FanbeiH5Context();
+		try{
+			
+			
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("赠送卡片失败" + context, e);
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getMessage()).toString();
+			logger.error("赠送卡片失败" + context, e);
+		} 
+		
+		return resultStr;
+	}
+	/**
+	 * 
+	 * @说明：我也要点亮
+	 * @param: @param request
+	 * @param: @param response
+	 * @param: @return
+	 * @return: String
+	 */
+	@RequestMapping(value="lightItems",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+	public String lightItems(HttpServletRequest request,HttpServletResponse response){
+		String resultStr = "";
+		FanbeiH5Context context = new FanbeiH5Context();
+		try{
+			
+			
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("赠送卡片失败" + context, e);
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getMessage()).toString();
+			logger.error("赠送卡片失败" + context, e);
+		} 
+		
+		return resultStr;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 }

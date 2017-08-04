@@ -1,2 +1,2 @@
-"use strict";!function(n){n.fn.scrollTop=function(e){var t={speed:30},i=n.extend(t,e);this.each(function(){var e,t=0,o=n(this),c=o.find("ul").height();o.find("ul").clone().appendTo(o),o.hover(function(){clearInterval(e)},function(){e=setInterval(function(){t++,t>c&&(t=0),o.find("ul").first().css("margin-top",-t)},i.speed)}).trigger("mouseleave")})}}(jQuery),$(function(){$(".container").scrollTop({speed:300})});
+"use strict";
 //# sourceMappingURL=../../_srcmap/activity/08/ggrankingList.js.map
