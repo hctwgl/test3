@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="20170801")
-    #set($src="https://fs.51fanbei.com/h5/app/activity/08")
+    #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <title>场景点亮首页</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
 </head>
@@ -77,5 +77,6 @@
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/08/alertCard.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
 </body>
 </html>
