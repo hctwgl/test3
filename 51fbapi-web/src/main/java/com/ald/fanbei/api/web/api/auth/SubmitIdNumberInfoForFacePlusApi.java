@@ -145,8 +145,8 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				JSONObject json = JSONObject.parseObject(thresholdsStr);
 				Double thresholds = json.getDouble("1e-3");
-				auth.setSimilarDegree(BigDecimal.valueOf(confidence).setScale(4,BigDecimal.ROUND_HALF_UP));
-				auth.setThresholds(BigDecimal.valueOf(thresholds).setScale(4,BigDecimal.ROUND_HALF_UP));
+				auth.setSimilarDegree(BigDecimal.valueOf(confidence/100).setScale(4,BigDecimal.ROUND_HALF_UP));
+				auth.setThresholds(BigDecimal.valueOf(thresholds/100).setScale(4,BigDecimal.ROUND_HALF_UP));
 				if (confidence.compareTo(thresholds) >= 0) {
 					auth.setFacesStatus(YesNoStatus.YES.getCode());
 					auth.setYdStatus(YesNoStatus.YES.getCode());
