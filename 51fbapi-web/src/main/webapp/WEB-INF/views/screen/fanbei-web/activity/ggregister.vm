@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>注册</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggregister.css?version=$version">
+    <title>Document</title>
+    <link rel="stylesheet" href="/dist/activity/08/ggregister.css">
 </head>
 <body>
-     <div class="login">
+    <div class="login">
         <div class="topdiv">
             <div class="topimg">
                 <img src="$src/51icon.png" alt="">
@@ -35,6 +35,7 @@
     </div>
     <div class="botimg">
             <img src="$src/pic-2.png" alt="">
-    </div>       
+    </div>
 </body>
+<script type="text/javascript" src="/dist/activity/08/ggregister.js?"></script>
 </html>

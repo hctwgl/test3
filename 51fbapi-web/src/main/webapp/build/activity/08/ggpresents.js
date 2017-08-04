@@ -1,26 +1,26 @@
-let userItemsId = getUrl("1234");
-let vue=new Vue({
-    el:'#presents',
-    data:{
-        content:[],
-        tableContent:[]
+
+//获取数据
+let vm = new Vue({
+    el: '#presents',
+    data: {
+        content: {}
     },
-    created:function () {
+    created: function () {
         this.logData();
     },
     methods: {
-        logData:function(){
-            let self=this;
+        logData() {
+            //获取页面初始化信息
+            let self = this;
             $.ajax({
-                url:'/H5GGShare/initHomePage',
-                type:'get',
-                data:{'userItemsId':userItemsId},
-                success:function (data) {
-                    console.log(data);
-                    self.tableContent = eval('(' + data + ')');
-                    // self.tableContent = self.tableContent.data;
+                type: 'get',
+                url: "/H5GGShare/initHomePage",
+                data:{ userItemsId:1},
+                success: function (data) {
+                    self.content = eval('(' + data + ')').data;
+                    console.log(self.content);
                 }
-            });
+            })
         }
     }
-});
+})

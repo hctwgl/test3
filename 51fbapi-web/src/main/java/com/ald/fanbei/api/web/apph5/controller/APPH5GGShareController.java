@@ -52,16 +52,21 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
- * <p>Title:APPH5GGShareController <p>
- * <p>Description: <p>
- * @Copyright (c)  浙江阿拉丁电子商务股份有限公司 All Rights Reserved. 
+ * <p>
+ * Title:APPH5GGShareController
+ * <p>
+ * <p>
+ * Description:
+ * <p>
+ * 
+ * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @author qiao
  * @date 2017年8月1日下午3:25:58
  *
  */
 @Controller
 @RequestMapping("/webGGShare")
-public class APPH5GGShareController extends BaseController{
+public class APPH5GGShareController extends BaseController {
 
 	@Resource
 	AfBoluomeActivityItemsService afBoluomeActivityItemsService;
@@ -71,129 +76,136 @@ public class APPH5GGShareController extends BaseController{
 	AfUserService afUserService;
 	@Resource
 	AfCouponService afCouponService;
-	@Resource 
+	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
-	@Resource 
+	@Resource
 	AfBoluomeActivityUserItemsService afBoluomeActivityUserItemsService;
 	@Resource
 	AfBoluomeActivityCouponService afBoluomeActivityCouponService;
 	@Resource
 	AfBoluomeActivityResultService afBoluomeActivityResultService;
 	private static String couponUrl = null;
-	
+
 	/**
 	 * 
 	 * @说明：活动点亮初始化
-	 * @param: @param request
-	 * @param: @param response
+	 * @param: @param
+	 *             request
+	 * @param: @param
+	 *             response
 	 * @param: @return
 	 * @return: String
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/initHomePage",method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-	public String initHomepage(HttpServletRequest request , HttpServletResponse response ){
+	@RequestMapping(value = "/initHomePage", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = " ";
 		FanbeiWebContext context = new FanbeiWebContext();
-		//TODO:获取活动的id
+		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
-		try{
-			
-			//TODO:banner轮播图后台增加一个类型，和配置。GG_TOP_BANNER.根据类型和活动id去取。
+		try {
+
+			// TODO:banner轮播图后台增加一个类型，和配置。GG_TOP_BANNER.根据类型和活动id去取。
 			List<Object> bannerList = new ArrayList<>();
-			List<AfResourceDo> bannerResclist = afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.GGTopBanner.getCode());
-			if (bannerResclist != null && bannerResclist.size() >0) {
+			List<AfResourceDo> bannerResclist = afResourceService
+					.getResourceHomeListByTypeOrderBy(AfResourceType.GGTopBanner.getCode());
+			if (bannerResclist != null && bannerResclist.size() > 0) {
 				GetBorrowCashBase base = new GetBorrowCashBase();
-				bannerList = base.getBannerObjectWithResourceDolist(bannerResclist) ;
+				bannerList = base.getBannerObjectWithResourceDolist(bannerResclist);
 			}
-			
-			//TODO:resource+终极大奖的人数.初始化数据,根据类型和活动id去取。GG_FAKE_PERSON
+
+			// TODO:resource+终极大奖的人数.初始化数据,根据类型和活动id去取。GG_FAKE_PERSON
 			AfResourceDo fakeResourceDo = afResourceService.getFakePersonByActivityId(activityId.toString());
-			//TODO:取得对应条件的实体.
+			// TODO:取得对应条件的实体.
 			if (fakeResourceDo == null) {
 				throw new Exception();
 			}
 			String fakeFinalStr = fakeResourceDo.getValue2();
 			Integer fakeFinal = new Integer(fakeFinalStr);
-			
+
 			AfBoluomeActivityResultDo t = new AfBoluomeActivityResultDo();
 			t.setBoluomeActivityId(activityId);
 			List<AfBoluomeActivityResultDo> listResult = afBoluomeActivityResultService.getListByCommonCondition(t);
-			if (listResult != null && listResult.size() >0) {
-				fakeFinal += listResult.size() ;
+			if (listResult != null && listResult.size() > 0) {
+				fakeFinal += listResult.size();
 			}
-			
-			//TOOD:resource +表中获取参与人数（user_items）
+
+			// TOOD:resource +表中获取参与人数（user_items）
 			String fakeJoinStr = fakeResourceDo.getValue1();
 			Integer fakeJoin = new Integer(fakeJoinStr);
 			AfBoluomeActivityUserItemsDo itemsDo = new AfBoluomeActivityUserItemsDo();
 			itemsDo.setBoluomeActivityId(activityId);
-			List<AfBoluomeActivityUserItemsDo> listItems = afBoluomeActivityUserItemsService.getListByCommonCondition(itemsDo);
+			List<AfBoluomeActivityUserItemsDo> listItems = afBoluomeActivityUserItemsService
+					.getListByCommonCondition(itemsDo);
 			if (listItems != null && listItems.size() > 0) {
 				fakeJoin += listItems.size();
 			}
-			//TOOD:活动表和resource表中获取优惠券,信息
+			// TOOD:活动表和resource表中获取优惠券,信息
 			AfBoluomeActivityCouponDo bDo = new AfBoluomeActivityCouponDo();
 			bDo.setBoluomeActivityId(activityId);
 			bDo.setStatus("O");
 			bDo.setType("B");
 			List<AfBoluomeActivityCouponDo> bList = afBoluomeActivityCouponService.getListByCommonCondition(bDo);
 			List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
-			if (bList != null && bList.size()>0) {
-				for(AfBoluomeActivityCouponDo bCouponDo : bList){
+			if (bList != null && bList.size() > 0) {
+				for (AfBoluomeActivityCouponDo bCouponDo : bList) {
 					Long resourceId = bCouponDo.getCouponId();
 					AfResourceDo couponResourceDo = afResourceService.getResourceByResourceId(resourceId);
-					if (couponResourceDo != null ) {
+					if (couponResourceDo != null) {
 						String uri = couponResourceDo.getValue();
 						String[] pieces = uri.split("/");
-						String app_id = pieces[6];
-						String campaign_id = pieces[8];
-						String user_id = "0";
-						//获取boluome的券的内容
-						String url = getCouponUrl()+"?"+"app_id"+app_id+"&user_id="+user_id+"&campaign_id="+campaign_id;
-						String reqResult = HttpUtil.doGet(url, 10);
-						JSONObject result = JSONObject.parseObject(reqResult);
-						
-						if ("1000".equals(result.getString("code"))) {
-							BoluomeCouponResponseParentBo responseBo = JSONObject.parseObject(result.getString("data"),BoluomeCouponResponseParentBo.class);
-							logger.info("getCoupon result, responseBo={}",responseBo);
-							boluomeCouponList = responseBo.getListCoupon();
+						if (pieces.length > 9) {
+
+							String app_id = pieces[6];
+							String campaign_id = pieces[8];
+							String user_id = "0";
+							// 获取boluome的券的内容
+							String url = getCouponUrl() + "?" + "app_id" + app_id + "&user_id=" + user_id
+									+ "&campaign_id=" + campaign_id;
+							String reqResult = HttpUtil.doGet(url, 10);
+							JSONObject result = JSONObject.parseObject(reqResult);
+
+							if ("1000".equals(result.getString("code"))) {
+								BoluomeCouponResponseParentBo responseBo = JSONObject
+										.parseObject(result.getString("data"), BoluomeCouponResponseParentBo.class);
+								logger.info("getCoupon result, responseBo={}", responseBo);
+								boluomeCouponList = responseBo.getListCoupon();
+							}
 						}
 					}
 				}
 			}
-			//TODO:活动和coupon表获取终极大奖的信息
+			// TODO:活动和coupon表获取终极大奖的信息
 			AfBoluomeActivityCouponDo nDo = new AfBoluomeActivityCouponDo();
 			nDo.setBoluomeActivityId(activityId);
 			nDo.setStatus("O");
 			nDo.setType("N");
 			List<AfBoluomeActivityCouponDo> listnCoupon = afBoluomeActivityCouponService.getListByCommonCondition(nDo);
 			List<AfCouponDo> normalCouponList = new ArrayList<>();
-			if (listnCoupon != null && listnCoupon.size()>0) {
-				for(AfBoluomeActivityCouponDo ncoupon:listnCoupon){
+			if (listnCoupon != null && listnCoupon.size() > 0) {
+				for (AfBoluomeActivityCouponDo ncoupon : listnCoupon) {
 					AfCouponDo afCouponDo = afCouponService.getCouponById(ncoupon.getCouponId());
 					if (afCouponDo != null) {
 						normalCouponList.add(afCouponDo);
 					}
 				}
 			}
-			//TODO:活动的卡片
+			// TODO:活动的卡片
 			AfBoluomeActivityItemsDo iDo = new AfBoluomeActivityItemsDo();
 			iDo.setBoluomeActivityId(activityId);
 			iDo.setType("CARD");
 			List<AfBoluomeActivityItemsDo> itemsList = afBoluomeActivityItemsService.getListByCommonCondition(iDo);
-			
-			
 
-			//TODO:活动表活动规则
+			// TODO:活动表活动规则
 			AfBoluomeActivityDo activityDo = afBoluomeActivityService.getById(activityId);
 			String despcription = activityDo.getDescription();
-			
+
 			Map<String, Object> data = new HashMap<String, Object>();
-			//TODO:用户如果登录，则用户的该活动获得的卡片list
+			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
 			context = doWebCheck(request, false);
 			if (context.isLogin()) {
-				//TODO:获取登录着的userName或者id
+				// TODO:获取登录着的userName或者id
 				AfUserDo afUser = null;
 				afUser = afUserService.getUserByUserName(context.getUserName());
 				Long userId = null;
@@ -202,7 +214,8 @@ public class APPH5GGShareController extends BaseController{
 				}
 				useritemsDo.setUserId(userId);
 				useritemsDo.setBoluomeActivityId(activityId);
-				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService.getListByCommonCondition(useritemsDo);
+				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+						.getListByCommonCondition(useritemsDo);
 				data.put("userItemsList", userItemsList);
 			}
 			data.put("bannerList", bannerList);
@@ -213,25 +226,25 @@ public class APPH5GGShareController extends BaseController{
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-		}catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败","",e.getErrorCode().getDesc()).toString();
-			logger.error("活动点亮初始化数据失败",e);
-		}catch(Exception exception){
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("活动点亮初始化数据失败", e);
+		} catch (Exception exception) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
-			logger.error("活动点亮初始化数据失败",exception);
+			logger.error("活动点亮初始化数据失败", exception);
 		}
-		
+
 		return resultStr;
 	}
-	
-	private static String getCouponUrl(){
-		if(couponUrl==null){
+
+	private static String getCouponUrl() {
+		if (couponUrl == null) {
 			couponUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_COUPON_URL);
 			return couponUrl;
 		}
 		return couponUrl;
 	}
-	
+
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub
@@ -240,18 +253,8 @@ public class APPH5GGShareController extends BaseController{
 
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		try {
-			RequestDataVo reqVo = new RequestDataVo();
-
-			JSONObject jsonObj = JSON.parseObject(requestData);
-			reqVo.setId(jsonObj.getString("id"));
-			reqVo.setMethod(request.getRequestURI());
-			reqVo.setSystem(jsonObj);
-
-			return reqVo;
-		} catch (Exception e) {
-			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-		}
+		RequestDataVo reqVo = new RequestDataVo();
+		return reqVo;
 	}
 
 	@Override
