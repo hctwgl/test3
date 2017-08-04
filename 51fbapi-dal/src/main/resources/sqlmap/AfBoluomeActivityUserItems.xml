@@ -176,5 +176,22 @@ id,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,source_i
         FROM af_boluome_activity_user_items
         <include refid="commonCondition"/>
     </select>
+    <select id="getItemsByActivityIdUserId" >
+    	SELECT
+		items_id
+		FROM
+			(
+				SELECT
+					items_id,
+					COUNT(items_id) AS num
+				FROM
+					af_boluome_activity_user_items
+				WHERE
+					boluome_activity_id = #{activityId} 
+				AND user_id = #{userId} GROUP BY items_id
+			) AS t
+		WHERE
+			num > 2
+    </select>
     
 </mapper>

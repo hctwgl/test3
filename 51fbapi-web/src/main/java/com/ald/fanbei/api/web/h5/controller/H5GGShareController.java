@@ -235,14 +235,28 @@ public class H5GGShareController extends H5Controller{
 	 * @param: @param response
 	 * @param: @return
 	 * @return: String
+	 * 
 	 */
-	@RequestMapping(value="sendItems",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+	@RequestMapping(value="sendItems",method = RequestMethod.GET,produces="text/html;charset=UTF-8")
 	public String sendItems(HttpServletRequest request,HttpServletResponse response){
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try{
+			context = doH5Check(request, true);
+			Long userId = context.getUserId();
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			//选出itemsId
+			List<Long> itemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId,userId);
 			
 			
+			AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
+			t.setSourceUserId(userId);
+			t.setBoluomeActivityId(activityId);
+			List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService.getListByCommonCondition(t);
+			
+			if (userItemsList != null && userItemsList.size()>0) {
+				
+			}
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("赠送卡片失败" + context, e);
@@ -266,7 +280,7 @@ public class H5GGShareController extends H5Controller{
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try{
-			
+			context = doH5Check(request, true);
 			
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
@@ -292,7 +306,7 @@ public class H5GGShareController extends H5Controller{
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try{
-			
+			context = doH5Check(request, true);
 			
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
@@ -317,7 +331,7 @@ public class H5GGShareController extends H5Controller{
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try{
-			
+			context = doH5Check(request, true);
 			
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();

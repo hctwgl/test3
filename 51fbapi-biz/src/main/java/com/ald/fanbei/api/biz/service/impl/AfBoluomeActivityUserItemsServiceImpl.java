@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -33,4 +35,10 @@ public class AfBoluomeActivityUserItemsServiceImpl extends ParentServiceImpl<AfB
 	public BaseDao<AfBoluomeActivityUserItemsDo, Long> getDao() {
 		return afBoluomeActivityUserItemsDao;
 	}
+
+		@Override
+		public List<Long> getItemsByActivityIdUserId(Long activityId, Long userId) {
+			return afBoluomeActivityUserItemsDao.getItemsByActivityIdUserId(activityId,userId);
+			
+		}
 }
