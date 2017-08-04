@@ -526,7 +526,7 @@ public abstract class BaseController {
 				throw new FanbeiException("no login", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
 			}
 			h5Context.setLogin(true);
-		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期
 			if(token != null){
 				AfUserDo userInfo = afUserService.getUserByUserName(username);
 				h5Context.setUserName(username);
