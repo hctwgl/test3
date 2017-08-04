@@ -38,6 +38,7 @@ import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -405,6 +406,10 @@ public class AppH5GameController  extends BaseController{
 				AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 				AfUserAccountDo userAccount =  afUserAccountService.getUserAccountByUserId(userId);
 				String idNumber = userAccount.getIdNumber();
+				// 身份证Base64加密
+				if(idNumber != null) {
+					idNumber = Base64.encode(idNumber.getBytes());
+				}
 				String realName = userAccount.getRealName();
 				data.put("idNumber", idNumber);
 				data.put("realName", realName);
