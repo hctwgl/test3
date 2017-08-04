@@ -7,9 +7,11 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -66,7 +69,7 @@ public class TradeWeiXinController extends BaseController {
     }
 
     @Override
-    public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
         ApiHandleResponse handelResult;
         try {
@@ -75,7 +78,7 @@ public class TradeWeiXinController extends BaseController {
             if (resultCode != 1000) {
                 logger.info("request error,Code=" + resultCode);
             }
-            return JSON.toJSONString(handelResult);
+            return handelResult;
         } catch (FanbeiException e) {
             logger.error("trade weixin exception", e);
             throw e;

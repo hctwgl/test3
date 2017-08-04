@@ -198,34 +198,36 @@ public class TearPacketApi  implements ApiHandle {
 			JSONObject prize =  prizeArray.getJSONObject(0);
 			String prizeType = prize.getString("prize_type");
 			String couponId = prize.getString("prize_id");
-			if("BOLUOMI".equals(prizeType)) {
-				// 发送菠萝蜜优惠券
-				Long sceneId = Long.parseLong(couponId);
-				grantBoluomiCoupon(sceneId, data, userId);
-				
-			} else{
-				// 获取优惠券信息
-				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
-				data.put("prizeName", afCouponDo.getName());
-				data.put("prizeType", afCouponDo.getType());
-				
-				AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-				Long borrowId = 0l;
-				if(afBorrowCashDo != null){
-					borrowId = afBorrowCashDo.getRid();
-				}
-				// 抽奖后将抽奖结果记录到数据库中 FIXME
-				
-				// 添加抽奖结果信息
-				AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, borrowId, Long.parseLong(couponId), "Y");
-				
-				// 发送本地平台优惠券
-				afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "RISK_PACKET", afGameResultDo.getRid() + "");
-				// 更新优惠券已领取数量
-				AfCouponDo couponDoT = new AfCouponDo();
-				couponDoT.setRid(Long.parseLong(couponId));
-				couponDoT.setQuotaAlready(1);
-				afCouponService.updateCouponquotaAlreadyById(couponDoT);
+			if(couponId != null && !"".equals(couponId)) {
+				if("BOLUOMI".equals(prizeType)) {
+					// 发送菠萝蜜优惠券
+					Long sceneId = Long.parseLong(couponId);
+					grantBoluomiCoupon(sceneId, data, userId);
+					
+				} else{
+					// 获取优惠券信息
+					AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+					data.put("prizeName", afCouponDo.getName());
+					data.put("prizeType", afCouponDo.getType());
+					
+					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+					Long borrowId = 0l;
+					if(afBorrowCashDo != null){
+						borrowId = afBorrowCashDo.getRid();
+					}
+					// 抽奖后将抽奖结果记录到数据库中 FIXME
+					
+					// 添加抽奖结果信息
+					AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, borrowId, Long.parseLong(couponId), "Y");
+					
+					// 发送本地平台优惠券
+					afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "RISK_PACKET", afGameResultDo.getRid() + "");
+					// 更新优惠券已领取数量
+					AfCouponDo couponDoT = new AfCouponDo();
+					couponDoT.setRid(Long.parseLong(couponId));
+					couponDoT.setQuotaAlready(1);
+					afCouponService.updateCouponquotaAlreadyById(couponDoT);
+			}
 			}
 		}
 		resp.setResponseData(data);

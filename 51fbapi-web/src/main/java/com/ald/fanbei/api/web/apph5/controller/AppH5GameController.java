@@ -56,6 +56,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
@@ -103,7 +104,8 @@ public class AppH5GameController  extends BaseController{
 	@ResponseBody
 	public String initGame(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			Long userId = -1l;
@@ -136,25 +138,25 @@ public class AppH5GameController  extends BaseController{
 				awardDo = afGameAwardService.getByUserId(userId);
 			}
 			AfGameInitVo initResult = this.buildGameInitVo(gameDo, gameConfDo, latestResultList, latestAwardList, gameChanceList, fivebabyDo, awardDo, afUser);
-			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", initResult).toString();
+			resp = H5CommonResponse.getNewInstance(true, "初始化成功", "", initResult);
 		}catch(FanbeiException e){
-			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
+			resp = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc());
 			logger.error("fb初始化失败" + context,e);
 		}catch(Exception e){
-			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", "").toString();
+			resp = H5CommonResponse.getNewInstance(false, "初始化失败", "", "");
 			logger.error("fb初始化失败" + context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
-		return resultStr;
+		return resp.toString();
 	}
 	
 	@RequestMapping(value = "submitGameResult", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String submitGameResult(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 
 		FanbeiWebContext context = new FanbeiWebContext();
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
@@ -189,25 +191,25 @@ public class AppH5GameController  extends BaseController{
 				
 			}
 			
-			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", resultData).toString();
-		}catch(FanbeiException e){
-			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("fb抽奖失败"+context,e);
-		}catch(Exception e){
-			resultStr = H5CommonResponse.getNewInstance(false, "抽奖失败", "", "").toString();
-			logger.error("抽奖失败"+context,e);
-		}finally{
-			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
-		}
-		return resultStr;
+			resp = H5CommonResponse.getNewInstance(true, "成功", "", resultData);
+			}catch(FanbeiException e){
+				resp = H5CommonResponse.getNewInstance(false, "抽奖失败", "", e.getErrorCode().getDesc());
+				logger.error("fb抽奖失败"+context,e);
+			}catch(Exception e){
+				resp = H5CommonResponse.getNewInstance(false, "抽奖失败", "", "");
+				logger.error("抽奖失败"+context,e);
+			}finally{
+				Calendar calEnd = Calendar.getInstance();
+				doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			}
+			return resp.toString();
 	}
 	
 	@RequestMapping(value = "submitContract", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String submitContract(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
@@ -216,8 +218,8 @@ public class AppH5GameController  extends BaseController{
 			String mobilePhone = request.getParameter("mobilePhone");
 			String address = request.getParameter("address");
 			if(StringUtil.isEmpty(context.getAppInfo()) || StringUtil.isEmpty(name) || StringUtil.isEmpty(mobilePhone) || StringUtil.isEmpty(address)){
-				resultStr = H5CommonResponse.getNewInstance(false, "参数异常", "", "").toString();
-				return resultStr;
+				resp = H5CommonResponse.getNewInstance(false, "参数异常", "", "");
+				return resp.toString();
 			}
 			
 			JSONObject contractsObj = new JSONObject();
@@ -227,18 +229,18 @@ public class AppH5GameController  extends BaseController{
 			
 			AfUserDo userInfo = afUserService.getUserByUserName(context.getUserName());
 			afGameAwardService.updateContact(userInfo.getRid(), contractsObj.toString());
-			resultStr = H5CommonResponse.getNewInstance(true, "提交成功", "", resultData).toString();
+			resp = H5CommonResponse.getNewInstance(true, "提交成功", "", resultData);
 		}catch(FanbeiException e){
-			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", e.getErrorCode().getDesc()).toString();
+			resp =  H5CommonResponse.getNewInstance(false, "提交失败", "", e.getErrorCode().getDesc());
 			logger.error("提交失败"+context,e);
 		}catch(Exception e){
-			resultStr =  H5CommonResponse.getNewInstance(false, "提交失败", "", "").toString();
+			resp =  H5CommonResponse.getNewInstance(false, "提交失败", "", "");
 			logger.error("提交失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
-		return resultStr;
+		return resp.toString();
 	}
 	
 	
@@ -411,13 +413,12 @@ public class AppH5GameController  extends BaseController{
 					if("A".equals(riskStatus)){
 						String realnameStatus = userAuthDo.getRealnameStatus();
 						String bankcardStatus = userAuthDo.getBankcardStatus();
-						if(realnameStatus == null || "".equals(realnameStatus)) {
+						String facesStatus = userAuthDo.getFacesStatus();
+						if("N".equals(facesStatus)) {
 							data.put("status", "A1");
-						}
-						if("N".equals(bankcardStatus)) {
+						}else if("N".equals(bankcardStatus)) {
 							data.put("status", "A2");
-						}
-						if(!(realnameStatus == null || "".equals(realnameStatus))
+						} else if("Y".equals(realnameStatus)
 								&& "Y".equals(bankcardStatus)) {
 							data.put("status", "A3");
 						}
@@ -439,9 +440,9 @@ public class AppH5GameController  extends BaseController{
 								String fundStatus = userAuthDo.getFundStatus();
 								if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
 										&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
-									data.put("status", "C");
-								} else {
 									data.put("status", "D");
+								} else {
+									data.put("status", "C");
 								}
 							}
 						}
@@ -482,7 +483,7 @@ public class AppH5GameController  extends BaseController{
 	}
 
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context,
+	public  BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
 			HttpServletRequest httpServletRequest) {
 		return null;
 	}
