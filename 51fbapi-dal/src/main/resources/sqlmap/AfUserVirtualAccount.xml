@@ -141,6 +141,9 @@ id,gmt_create,gmt_modified,user_id,order_id,status,order_no,code,year,month,amou
             <if test="orderNo != null and orderNo != '' ">        
                 order_no = #{orderNo,jdbcType=VARCHAR},                
             </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
             <if test="code != null and code != '' ">        
                 code = #{code,jdbcType=VARCHAR},                
             </if>
