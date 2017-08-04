@@ -24,13 +24,15 @@ $(function(){
 		var mobileNum = $(".check").val();
 		if (isState==0 || !isState){
 			if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)){
+                console.log(isState);
+                console.log(mobileNum);
                 $.ajax({
                     url: "/app/user/commitRegister",
                     type: "POST",
                     dataType: "JSON",
                     data: {
                         registerMoblie: isState,
-						smsCode: 'mobileNum'
+						smsCode: mobileNum
 					
                     },
                     success: function(returnData){
