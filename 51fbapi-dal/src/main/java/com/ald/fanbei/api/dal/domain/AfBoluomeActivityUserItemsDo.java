@@ -41,7 +41,17 @@ import java.util.Date;
      */
     private Long userId;
 
-    /**
+    private String userName;
+    
+    public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	/**
      * 状态【NORMAL:正常状态 FROZEN:赠送中 SENDED:已经赠送】
      */
     private String status;
