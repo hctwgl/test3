@@ -46,4 +46,9 @@ public class AfSmsRecordServiceImpl implements AfSmsRecordService{
 		return afSmsRecordDao.getLatestByMobileCode(mobile, verifyCode);
 	}
 
+	@Override
+	public int countMobileCodeToday(String mobile, String type) {
+		return afSmsRecordDao.countMobileCodeToday(mobile, type);
+	}
+
 }

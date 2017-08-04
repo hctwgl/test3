@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 #set($version="20170728")
-#set($src="https://fs.51fanbei.com/h5/app/activity/07")
+#set($src="http://f.51fanbei.com/h5/app/activity/07")
 <title>青春活力</title>
 <link rel="stylesheet" type="text/css" href="/dist/activity/07/huiLi.css">
 </head>

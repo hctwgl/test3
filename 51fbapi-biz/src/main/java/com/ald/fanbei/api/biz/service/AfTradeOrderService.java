@@ -1,6 +1,12 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 商圈订单扩展表Service
@@ -12,4 +18,85 @@ import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
  */
 public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>{
 
+    /**
+     * 获取可提现金额
+     *
+     * @param businessId
+     * @return
+     */
+    BigDecimal getCanWithDrawMoney(Long businessId);
+
+    /**
+     * 不可提现金额
+     *
+     * @param businessId
+     * @return
+     */
+    BigDecimal getCannotWithDrawMoney(Long businessId);
+
+    /**
+     * 统计一段时间内的支付订单
+     *
+     * @param businessId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    AfTradeOrderStatisticsDto payOrderInfo(Long businessId, Date startDate, Date endDate);
+
+    /**
+     * 分页查询商圈订单
+     *
+     * @param businessId
+     * @param offset
+     * @param limit
+     * @param startOfDate
+     * @param endOfDate
+     * @param withDrawStatus
+     * @param orderStatus
+     * @return
+     */
+    List<AfTradeOrderDto> orderGrid(Long businessId, Integer offset, Integer limit, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus);
+
+    /**
+     * 分页查询商圈订单总条数
+     *
+     * @param businessId
+     * @param startOfDate
+     * @param endOfDate
+     * @param orderStatus
+     * @param withDrawStatus
+     * @return
+     */
+    Long orderGridTotal(Long businessId, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus);
+
+    /**
+     * 分页查询商圈退款明细
+     *
+     * @param businessId
+     * @param offset
+     * @param limit
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    List<AfTradeOrderDto> refundGrid(Long businessId, Integer offset, Integer limit, Date startDate, Date endDate);
+
+    /**
+     * 分页查询商圈退款明细总条数
+     *
+     * @param businessId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    Long refundGridTotal(Long businessId, Date startDate, Date endDate);
+
+    /**
+     * 商户提现
+     *
+     * @param businessId
+     * @return
+     */
+    boolean withdraw(Long businessId);
 }

@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -54,6 +55,32 @@ public class AuthSupplyCertifyApi implements ApiHandle {
 		map.put("alipayStatus", afUserAuthDo.getAlipayStatus());
 		map.put("currentAmount", accountDo.getAuAmount());
 		map.put("highestAmount", afResourceDo.getValue());
+		
+		//添加是否已发起过公积金认证，来区分对应状态是初始化还是之前认证失败
+		if (afUserAuthDo.getGmtFund() != null) {
+			map.put("gmtFundExist", YesNoStatus.YES.getCode());
+		} else {
+			map.put("gmtFundExist", YesNoStatus.NO.getCode());
+		}
+		//添加是否已发起过社保认证，来区分对应状态是初始化还是之前认证失败
+		if (afUserAuthDo.getGmtJinpo() != null) {
+			map.put("gmtSocialSecurityExist", YesNoStatus.YES.getCode());
+		} else {
+			map.put("gmtSocialSecurityExist", YesNoStatus.NO.getCode());
+		}
+		//添加是否已发起过信用卡认证，来区分对应状态是初始化还是之前认证失败
+		if (afUserAuthDo.getGmtCredit() != null) {
+			map.put("gmtCreditExist", YesNoStatus.YES.getCode());
+		} else {
+			map.put("gmtCreditExist", YesNoStatus.NO.getCode());
+		}
+		//添加是否已发起过支付宝认证，来区分对应状态是初始化还是之前认证失败
+		if (afUserAuthDo.getGmtAlipay() != null) {
+			map.put("gmtAlipayExist", YesNoStatus.YES.getCode());
+		} else {
+			map.put("gmtAlipayExist", YesNoStatus.NO.getCode());
+		}
+		
 		resp.setResponseData(map);
 		
 		return resp;
