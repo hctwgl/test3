@@ -333,6 +333,7 @@
 				<entry key="/trade/getRefundList" value-ref="getRefundListApi" />
 				<entry key="/trade/withdraw" value-ref="tradeWithdrawApi" />
 				<entry key="/trade/refund" value-ref="tradeRefundApi" />
+				<entry key="/trade/getIndexData" value-ref="getIndexDataApi" />
 			</map>
 		</constructor-arg>
 	</bean>

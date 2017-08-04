@@ -31,7 +31,7 @@ import java.util.HashMap;
 @RequestMapping("/trade")
 public class TradeWeiXinController extends BaseController {
 
-    @RequestMapping(value = {"/login","/logout","/businessInfo","/twoBarCode","/getPayListDate", "/getPayList", "/getWithdrawListDate", "/getWithdrawList", "/getRefundListDate", "/getRefundList", "/withdraw", "/refund"},
+    @RequestMapping(value = {"/login","/logout","/getIndexData", "/businessInfo","/twoBarCode","/getPayListDate", "/getPayList", "/getWithdrawListDate", "/getWithdrawList", "/getRefundListDate", "/getRefundList", "/withdraw", "/refund"},
             method = RequestMethod.POST,
             produces = "application/json;charset=utf-8")
     @ResponseBody
