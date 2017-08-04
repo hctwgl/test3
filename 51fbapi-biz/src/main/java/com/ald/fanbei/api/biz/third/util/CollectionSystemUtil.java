@@ -19,9 +19,11 @@ import com.ald.fanbei.api.biz.bo.RiskDataBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -40,16 +42,16 @@ import com.alibaba.fastjson.JSONObject;
 @Component("collectionSystemUtil")
 public class CollectionSystemUtil extends AbstractThird {
 	
-	private static String url ="http://192.168.110.64";
+	private static String url = null;
 
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
 	private static String getUrl() {
-		/*if (url == null) {
+		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
 			return url;
-		}*/
+		}
 		return url;
 	}
 	
@@ -206,7 +208,6 @@ public class CollectionSystemUtil extends AbstractThird {
 			logger.error("offlineRepaymentNotify error",e);
 			notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SYSTEM_ERROR);
 		}
-		notifyRespBo.setMsg(StringUtil.UrlEncoder(notifyRespBo.getMsg()));
 		String resDataJson = JsonUtil.toJSONString(notifyRespBo);
 		notifyRespBo.setSign(DigestUtil.MD5(resDataJson));
 		return notifyRespBo;

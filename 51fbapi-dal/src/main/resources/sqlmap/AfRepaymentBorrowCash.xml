@@ -35,13 +35,13 @@
 			NOW(),
 		</if>
 		<if test="gmtCreate !=null ">
-			gmtCreate,
+			#{gmtCreate},
 		</if>
 		<if test="gmtModified ==null ">
 			NOW(),
 		</if>
 		<if test="gmtModified !=null ">
-			gmtModified,
+			#{gmtModified},
 		</if>
 		#{name},
 		#{repayNo},

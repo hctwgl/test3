@@ -472,7 +472,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					//还款方式解析
 					OfflinePayType offlinePayType = OfflinePayType.findPayTypeByCode(repayType);
 					//线下还款记录添加
-					AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, "线下还款", repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
+					AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, "催收平台线下还款", repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
 							0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", offlinePayType==null?repayType:offlinePayType.getName(), BigDecimal.ZERO);
 					afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 					
@@ -523,8 +523,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
-						afBorrowCashService.updateBorrowCash(bcashDo);
 					}
+					afBorrowCashService.updateBorrowCash(bcashDo);
 					return FanbeiThirdRespCode.SUCCESS.getCode();
 				}catch (Exception e) {
 					status.setRollbackOnly();
