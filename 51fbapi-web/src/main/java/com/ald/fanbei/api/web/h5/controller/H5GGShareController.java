@@ -255,17 +255,23 @@ public class H5GGShareController extends H5Controller {
 			Long userId = context.getUserId();
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			// 选出itemsId
+			List<AfBoluomeActivityUserItemsDo> resultList = new ArrayList<>();
 			List<Long> itemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId, userId);
-
-			AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
-			t.setSourceUserId(userId);
-			t.setBoluomeActivityId(activityId);
-			List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
-					.getListByCommonCondition(t);
-
-			if (userItemsList != null && userItemsList.size() > 0) {
-
+			if (itemsList != null && itemsList.size() > 0) {
+				for (Long itemsId : itemsList) {
+					AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
+					t.setSourceUserId(userId);
+					t.setBoluomeActivityId(activityId);
+					t.setItemsId(itemsId);
+					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService.getListByCommonCondition(t);
+					if (userItemsList != null && userItemsList.size() > 0) {
+						resultList.addAll(userItemsList);
+					}
+				}
 			}
+			Map<String,Object> data = new HashMap<>();
+			data.put( "resultList", resultList);	
+			resultStr = H5CommonResponse.getNewInstance(true,"赠送卡片成功", "", data).toString();
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("赠送卡片失败" + context, e);
