@@ -55,5 +55,13 @@ public interface AfSmsRecordDao {
 	 *@param type
 	 *@return
 	 */
-	AfSmsRecordDo getLatestByMobileCode(@Param("mobile")String mobile,@Param("verifyCode")String verifyCode);	
+	AfSmsRecordDo getLatestByMobileCode(@Param("mobile")String mobile,@Param("verifyCode")String verifyCode);
+	
+	/**
+	 * 获取用户当天验证码数量
+	 * @param mobile
+	 * @param type
+	 * @return
+	 */
+	int countMobileCodeToday(@Param("mobile")String mobile,@Param("type")String type);
 }

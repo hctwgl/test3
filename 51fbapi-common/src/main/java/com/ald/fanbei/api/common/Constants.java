@@ -248,8 +248,7 @@ public class Constants {
 	public static final String CONFKEY_NOTIFY_HOST = "fbapi.notify.host";
 	public static final String CONFKEY_RISK_URL = "fbapi.risk.url";
 	public static final String CONFKEY_UPS_URL = "fbapi.ups.url";
-	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
-	
+
 	// 菠萝觅
 	public static final String CONFKEY_BOLUOME_APPKEY = "fbapi.boluome.appkey";
 	public static final String CONFKEY_BOLUOME_SECRET = "fbapi.boluome.secret";
@@ -290,4 +289,12 @@ public class Constants {
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
 
+	//商圈
+	public static final String DEFAULT_SALT = "51fb";
+	public static final int DEFAULT_DIGEST_TIMES = 1024;
+	public static final String SHA1 = "SHA-1";
+	public static final String TRADE_LOGIN_BUSINESSID = "trade_login_businessId_";
+	//催收系统
+	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
+	
 }

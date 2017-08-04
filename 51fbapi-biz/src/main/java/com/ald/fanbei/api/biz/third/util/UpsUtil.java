@@ -174,6 +174,66 @@ public class UpsUtil extends AbstractThird {
 			return authSignResp;
 		}
 	}
+
+	/**
+	 * 单笔代付
+	 *
+	 * @param amount 金额
+	 * @param realName 真实姓名
+	 * @param cardNo 银行卡号
+	 * @param userNo 用户在商户的唯一标识
+	 * @param phone 用户在商户的唯一标识
+	 * @param bankName 银行名称
+	 * @param bankCode 银行编号
+	 * @param purpose 用途
+	 * @param notifyUrl 异步通知url
+	 * @param clientType 客户端类型
+	 */
+	public UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String userNo,
+											String phone,String bankName,String bankCode,String purpose,String clientType,String merPriv,String reqExt,String idNumber){
+		amount = setActualAmount(amount);
+		String orderNo = getOrderNo("dpay", cardNo.substring(cardNo.length()-4,cardNo.length()));
+		UpsDelegatePayReqBo reqBo = new UpsDelegatePayReqBo();
+		setPubParam(reqBo,"delegatePay",orderNo,clientType);
+		reqBo.setMerPriv(merPriv);
+		reqBo.setReqExt(reqExt);
+		reqBo.setAmount(amount.toString());
+		reqBo.setRealName(realName);
+		reqBo.setCardNo(cardNo);
+		reqBo.setUserNo(userNo);
+		reqBo.setCertNo(idNumber);
+		reqBo.setPhone(phone);
+		reqBo.setBankName(bankName);
+		reqBo.setBankCode(bankCode);
+		reqBo.setPurpose(purpose);
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		try {
+			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
+			String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+			logThird(reqResult, "delegatePay", reqBo);
+			if(StringUtil.isBlank(reqResult)){
+				UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
+				authSignResp.setSuccess(false);
+				return authSignResp;
+			}
+			UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
+			if(authSignResp != null && authSignResp.getRespCode()!=null && TRADE_RESP_SUCC.equals(authSignResp.getRespCode())){
+				authSignResp.setSuccess(true);
+				return authSignResp;
+			}else{
+				UpsDelegatePayRespBo authSignResp1 = new UpsDelegatePayRespBo();
+				authSignResp1.setSuccess(false);
+				return authSignResp1;
+			}
+		} catch (Exception e) {
+			UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
+			authSignResp.setSuccess(false);
+			return authSignResp;
+		}
+
+	}
 	
 	/**
 	 * 认证支付
@@ -464,7 +524,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(certNo);
 		reqBo.setPurpose(purpose);
-		reqBo.setRemark(remark);
+		reqBo.setRemark(remark.trim());
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
 		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");

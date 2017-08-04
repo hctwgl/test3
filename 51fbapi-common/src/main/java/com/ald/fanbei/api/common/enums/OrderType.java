@@ -20,6 +20,7 @@ public enum OrderType {
 
 	BOLUOME("BOLUOME", "菠萝觅","BL"),
 	BOLUOMECP("BOLUOMECP", "菠萝觅组合","BL_CP"),
+	SELFSUPPORTCP("SELFSUPPORTCP", "自营商品订单组合","SG_CP"),
 
     TRADE("TRADE", "商圈订单", "TR");
     

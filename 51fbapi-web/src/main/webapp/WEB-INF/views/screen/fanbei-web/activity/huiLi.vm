@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 #set($version="20170728")
-#set($src="https://fs.51fanbei.com/h5/app/activity/07")
+#set($src="http://f.51fanbei.com/h5/app/activity/07")
 <title>青春活力</title>
 <link rel="stylesheet" type="text/css" href="/dist/activity/07/huiLi.css">
 </head>
@@ -31,7 +31,7 @@
   	 	 </div>         
   	 </div>
      <div class="contFirst contSecond clearfix">
-  	 	 <div class="img01"><img src="$src/huiLi04.jpg"></div>
+  	 	 <div class="img01"><img src="$src/huiLi10.jpg"></div>
   	 	 <div class="img02" @click="productClick(second)"><img src="$src/huiLi05.jpg"></div>
   	 	 <div class="product" v-for="item in list02" @click="productClick(item)">
   	 	 	  <p class="productImg"><img :src="item.goodsIcon"></p>
@@ -43,10 +43,10 @@
   	 </div> 	 
   </div>
   <div class="moreContent">
-  	 	<div class="img01"><img src="$src/huiLi06.jpg"></div>
+  	 	<div class="img01"><img src="$src/huiLi11.jpg"></div>
   	 	<div class="product" v-for="item in list03" @click="productClick(item)">
   	 		<div class="productImg"><img :src="item.goodsIcon"></div>
-  	 		<div class="right">
+  	 		<div class="right ">
   	 			<p class="productDes">{{txtFix(item.goodName,20)}}</p>
               <p class="originPrice change">￥{{(item.saleAmount).toFixed(1)}}</p>
               <p class="fan change"></p>

@@ -17,4 +17,6 @@ import java.util.List;
 public interface AfTradeBusinessInfoService extends ParentService<AfTradeBusinessInfoDo, Long>{
 
     List<AfTradeBusinessInfoDto> getByOrderId(@Param("orderId")Long orderId);
+
+    AfTradeBusinessInfoDo getByBusinessId(@Param(("businessId"))Long businessId);
 }

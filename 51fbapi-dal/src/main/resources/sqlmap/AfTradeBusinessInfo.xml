@@ -5,7 +5,7 @@
 
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_name,corporation_mobile,corporation_email,licence_url,front_url,inverse_url,protocol_url,withdraw_cycle,card_name,card_no,card_id,card_code,card_bank,link_name,link_mobile,link_qq,link_wx,link_email,status,can_withdraw,cannot_withdraw,creator,gmt_create,modifier,gmt_modified,workdays
+        id,business_id,name,type,image_url,address,open_time,end_time,phone,corporation_name,corporation_mobile,corporation_email,licence_url,front_url,inverse_url,protocol_url,author_url,withdraw_cycle,card_name,card_no,card_id,card_code,card_bank,link_name,link_mobile,link_qq,link_wx,link_email,status,can_withdraw,cannot_withdraw,creator,gmt_create,modifier,gmt_modified,workdays
     </sql>
 
     <!-- 基本的sql查询条件公共引用 -->

@@ -183,6 +183,18 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 						AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 						afBorrowCashDo.setStatus("TRANSEDFAIL");
 						afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+						
+						
+						// 如果已经使用的额度大于要恢复的额度 才会给用户增加额度，防止重复回调造成重复给我用户增加额度问题
+						AfUserAccountDo userAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afBorrowCashDo.getUserId());
+						if(userAccountDo.getUsedAmount().intValue() >= afBorrowCashDo.getAmount().intValue()){
+							// 恢复账户额度
+							AfUserAccountDo account = new AfUserAccountDo();
+							account.setUsedAmount(afBorrowCashDo.getAmount().multiply(new BigDecimal(-1)));
+							account.setUserId(afBorrowCashDo.getUserId());
+							afUserAccountDao.updateUserAccount(account);
+						}
+						
 
 					} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
 						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);

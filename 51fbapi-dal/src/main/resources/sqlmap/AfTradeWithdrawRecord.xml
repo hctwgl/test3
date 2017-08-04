@@ -179,11 +179,11 @@
 	</select>
 
 	<select id="withdrawGrid"
-		resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
+			resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
 		select
 		<include refid="queryFields" />
-		from af_trade_withdraw_record 
-		where business_id = #{userId}
+		from af_trade_withdraw_record
+		where business_id = #{businessId}
 		<if test="startDate != null and startDate != '' ">
 			and gmt_create <![CDATA[   >=  ]]>
 			#{startDate}
@@ -196,9 +196,9 @@
 	</select>
 	<select id="withdrawGridTotal" resultType="java.lang.Long">
 		select
-		count(1)
-		from af_trade_withdraw_record 
-		where business_id = #{userId}
+		count(id)
+		from af_trade_withdraw_record
+		where business_id = #{businessId}
 		<if test="startDate != null and startDate != '' ">
 			and gmt_create <![CDATA[   >=  ]]>
 			#{startDate}

@@ -263,11 +263,13 @@ public class HttpUtil {
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestProperty("content-type", "application/json");
+            conn.setRequestProperty("Accept-Charset", "utf-8");
+            conn.setRequestProperty("contentType", "utf-8");
             out = new OutputStreamWriter(conn.getOutputStream());
             // 把数据写入请求的Body
             out.write(param);
             out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"utf-8"));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;

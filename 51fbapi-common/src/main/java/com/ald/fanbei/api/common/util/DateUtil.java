@@ -10,8 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ald.fanbei.api.common.Constants;
-
 /**
  * 
  *@类描述：日期相关工具类
@@ -44,6 +42,12 @@ public class DateUtil {
      * yyyy-MM
      */
     public static final String MONTH_PATTERN               = "yyyy-MM";
+    
+    /**
+     * yyyyMM
+     */
+    public static final String MONTH_SHOT_PATTERN               = "yyyyMM";
+
 
     /**
      * yyyyMMdd
@@ -1071,22 +1075,6 @@ public class DateUtil {
     }
     
     /**
-     * 返回yyyy-MM-dd HH:mm:ss格式日期
-     * @return
-     */
-    public static Date parseDateTimeShortExpDefault(String dateStr,Date defaultDate) {
-    	if(dateStr == null || dateStr.length()==0){
-    		return defaultDate;
-    	}
-    	SimpleDateFormat parser = new SimpleDateFormat(DATE_TIME_SHORT);
-    	try {
-    		return parser.parse(dateStr);
-    	} catch (ParseException e) {
-    		return defaultDate;
-    	}
-    }
-    
-    /**
      * @Title: compareDate
      * @Description: (日期比较，如果s>=e 返回true 否则返回false)
      * @param s
@@ -1159,5 +1147,38 @@ public class DateUtil {
     	Calendar calender = Calendar.getInstance();
     	return calender.get(Calendar.MONTH) + 1;
     }
+
+    /**
+     * 一天的结束时间，【注：只精确到毫秒】
+     *
+     * @param date
+     * @return
+     */
+    public static Date getWithDrawOfDate(final Date date) {
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
+
+        cal.set(Calendar.HOUR_OF_DAY, 13);
+        cal.set(Calendar.MINUTE, 00);
+        cal.set(Calendar.SECOND, 00);
+        cal.set(Calendar.MILLISECOND, 000);
+
+        return new Date(cal.getTime().getTime());
+    }
     
+    /**
+     * 返回yyyy-MM-dd HH:mm:ss格式日期
+     * @return
+     */
+    public static Date parseDateTimeShortExpDefault(String dateStr,Date defaultDate) {
+    	if(dateStr == null || dateStr.length()==0){
+    		return defaultDate;
+    	}
+    	SimpleDateFormat parser = new SimpleDateFormat(DATE_TIME_SHORT);
+    	try {
+    		return parser.parse(dateStr);
+    	} catch (ParseException e) {
+    		return defaultDate;
+    	}
+    }
 }

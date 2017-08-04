@@ -21,26 +21,24 @@ public interface AfTradeWithdrawRecordDao extends BaseDao<AfTradeWithdrawRecordD
 	/**
 	 * 分页查询商圈提现记录
 	 * 
-	 * @param userId
+	 * @param businessId
 	 * @param offset
 	 * @param limit
 	 * @param startDate
 	 * @param endDate
 	 * @return
 	 */
-	List<AfTradeWithdrawRecordDo> withdrawGrid(@Param("userId") Long userId, @Param("offset") Integer offset, @Param("limit") Integer limit, @Param("startDate") Date startDate,
+	List<AfTradeWithdrawRecordDo> withdrawGrid(@Param("businessId") Long businessId, @Param("offset") Integer offset, @Param("limit") Integer limit, @Param("startDate") Date startDate,
 			@Param("endDate") Date endDate);
 
 	/**
 	 * 分页查询商圈提现记录总条数
 	 * 
-	 * @param userId
-	 * @param offset
-	 * @param limit
+	 * @param businessId
 	 * @param startDate
 	 * @param endDate
 	 * @return
 	 */
-	Long withdrawGridTotal(@Param("userId") Long userId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+	Long withdrawGridTotal(@Param("businessId") Long businessId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 }

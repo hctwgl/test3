@@ -613,7 +613,7 @@ public class RiskUtil extends AbstractThird {
 		logger.info("risk_result =" + result);
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		if (!result.equals("10")) {
-			resultMap.put("success", true);
+			resultMap.put("success", false);
 			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
 			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			
@@ -717,7 +717,7 @@ public class RiskUtil extends AbstractThird {
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		
 		if (!result.equals("10")) {
-			resultMap.put("success", true);
+			resultMap.put("success", false);
 			resultMap.put("verifybo", JSONObject.toJSONString(verybo));
 			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			
@@ -770,7 +770,10 @@ public class RiskUtil extends AbstractThird {
 			orderType = OrderType.AGENTCPBUY.getCode();
 		} else if (StringUtil.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 			orderType = OrderType.BOLUOMECP.getCode();
+		} else if (StringUtil.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())) {
+			orderType = OrderType.SELFSUPPORTCP.getCode();
 		}
+		
 		// 银行卡支付 代收
 		UpsCollectRespBo respBo = upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType);
 		if (!respBo.isSuccess()) {
@@ -845,6 +848,7 @@ public class RiskUtil extends AbstractThird {
 						afUserAccountService.updateUserAccount(accountDo);
 					}
 	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
+	      			smsUtil.sendRiskSuccess(userAccountDo.getUserName());
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
@@ -867,6 +871,7 @@ public class RiskUtil extends AbstractThird {
 						afUserAccountService.updateUserAccount(accountDo);
 	      			}
 	      			jpushService.strongRiskFail(userAccountDo.getUserName());
+	      			smsUtil.sendRiskFail(userAccountDo.getUserName());
 				}
 			}
 		}
@@ -1556,9 +1561,12 @@ public class RiskUtil extends AbstractThird {
 					afUserAccountService.updateUserAccount(accountDo);
 				}
 				jpushService.fundRiskSuccess(userAccountDo.getUserName());
-			} else {
+			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
 				auth.setFundStatus(YesNoStatus.NO.getCode());
 				jpushService.fundRiskFail(userAccountDo.getUserName());
+			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+				auth.setFundStatus("A");
+				jpushService.fundRiskFault(userAccountDo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}
@@ -1610,9 +1618,12 @@ public class RiskUtil extends AbstractThird {
 					afUserAccountService.updateUserAccount(accountDo);
 				}				
 				jpushService.socialSecurityRiskSuccess(userAccountDo.getUserName());
-			} else {
+			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
 				auth.setJinpoStatus(YesNoStatus.NO.getCode());
 				jpushService.socialSecurityRiskFail(userAccountDo.getUserName());
+			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+				auth.setJinpoStatus("A");
+				jpushService.socialSecurityRiskFault(userAccountDo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}
@@ -1665,9 +1676,12 @@ public class RiskUtil extends AbstractThird {
 					afUserAccountService.updateUserAccount(accountDo);
 				}					
 				jpushService.creditCardRiskSuccess(userAccountDo.getUserName());
-			} else {
+			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
 				auth.setCreditStatus(YesNoStatus.NO.getCode());
 				jpushService.creditCardRiskFail(userAccountDo.getUserName());
+			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+				auth.setCreditStatus("A");
+				jpushService.creditCardRiskFault(userAccountDo.getUserName());
 			}
 			
 			return afUserAuthService.updateUserAuth(auth);
@@ -1721,9 +1735,12 @@ public class RiskUtil extends AbstractThird {
 					afUserAccountService.updateUserAccount(accountDo);
 				}					
 				jpushService.alipayRiskSuccess(userAccountDo.getUserName());
-			} else {
+			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
 				auth.setAlipayStatus(YesNoStatus.NO.getCode());
 				jpushService.alipayRiskFail(userAccountDo.getUserName());
+			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+				auth.setAlipayStatus("A");
+				jpushService.alipayRiskFault(userAccountDo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}
