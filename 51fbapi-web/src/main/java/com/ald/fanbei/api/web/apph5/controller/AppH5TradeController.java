@@ -96,7 +96,7 @@ public class AppH5TradeController extends BaseController {
         }
 
         model.put("name", afTradeBusinessInfoDo.getName());
-        model.put("id", afTradeBusinessInfoDo.getId());
+        model.put("id", afTradeBusinessInfoDo.getBusinessId());
         model.put("isLogin", "yes");
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
         BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
