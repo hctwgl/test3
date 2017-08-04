@@ -42,6 +42,10 @@ import com.ald.fanbei.api.common.AbstractSerial;
      * 订单id
      */
     private Long orderId;
+    
+ 
+
+	private String status;
 
     /**
      * 订单编号
@@ -164,6 +168,14 @@ import com.ald.fanbei.api.common.AbstractSerial;
     public void setOrderId(Long orderId){
       this.orderId = orderId;
     }
+    
+    public String getStatus() {
+ 		return status;
+ 	}
+
+ 	public void setStatus(String status) {
+ 		this.status = status;
+ 	}
 
     /**
      * 获取订单编号

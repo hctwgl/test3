@@ -327,7 +327,9 @@ public class PayRoutController {
 				    afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo); 
 				}else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
 					afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
-				} 
+				}else if(OrderType.BOLUOMECP.getCode().equals(merPriv)||OrderType.SELFSUPPORTCP.getCode().equals(merPriv)||OrderType.AGENTCPBUY.getCode().equals(merPriv)){ 
+					afOrderService.dealPayCpOrderFail(outTradeNo,tradeNo,merPriv);
+				}
 			}
 			return "SUCCESS";
 		} catch (Exception e) {
