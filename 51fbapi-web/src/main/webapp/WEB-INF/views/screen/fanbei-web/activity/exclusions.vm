@@ -65,27 +65,30 @@
             dataType:'json',
             type: 'post',
             success:function (data) {
-
                 console.log(data);
                 console.log(data.data.status);
-//                alert(data.data.status);
                 if(data.data.loginUrl){
                     location.href=data.data.loginUrl;
                 }else{
+                    let appVersion = getInfo().appVersion.replace(/\./g,"");
                     let status=data.data.status;
                     let idNumber=data.data.idNumber;
                     let realName=data.data.realName;
 
-                    if( status=='A1' ){
-                        window.location.href='/fanbei-web/opennative?name=DO_SCAN_ID';  // 去扫描身份证、人脸识别
-                    }else if( status=='A2' ){
-                        window.location.href='/fanbei-web/opennative?name=DO_BIND_CARD&params={"idNumber":"'+idNumber+'","realName":"'+realName+'"}';  // 去绑定银行卡
-                    }else if( status=='A3' || status=='A4' ){
-                        window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_BASIC';  // 去提升信用基础认证
-                    }else if( status=='B' || status=='D' ){
-                        window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 去借钱、进入借贷超市页面
-                    }else if( status=='C' ){
-                        window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_EXTRA';  // 去提升信用补充认证
+                    if ( appVersion <= "374" ) {
+                        window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 老版本全部跳借钱
+                    } else {
+                        if( status=='A1' ){
+                            window.location.href='/fanbei-web/opennative?name=DO_SCAN_ID';  // 去扫描身份证、人脸识别
+                        }else if( status=='A2' ){
+                            window.location.href='/fanbei-web/opennative?name=DO_BIND_CARD&params={"idNumber":"'+idNumber+'","realName":"'+realName+'"}';  // 去绑定银行卡
+                        }else if( status=='A3' || status=='A4' ){
+                            window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_BASIC';  // 去提升信用基础认证
+                        }else if( status=='B' || status=='D' ){
+                            window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 去借钱、进入借贷超市页面
+                        }else if( status=='C' ){
+                            window.location.href='/fanbei-web/opennative?name=DO_PROMOTE_EXTRA';  // 去提升信用补充认证
+                        }
                     }
                 }
             },
