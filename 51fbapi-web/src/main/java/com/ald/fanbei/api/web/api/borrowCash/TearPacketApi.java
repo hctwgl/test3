@@ -363,7 +363,11 @@ public class TearPacketApi  implements ApiHandle {
 		if (DateUtil.afterDay(new Date(), gmtEnd)) {
 			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END);
 		}
-		String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+		String url = resourceInfo.getValue();
+		if(url != null) {
+			url = url.replace(" ", "");
+		}
+		String resultString = HttpUtil.doHttpPostJsonParam(url, JSONObject.toJSONString(bo));
 		logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
 		JSONObject resultJson = JSONObject.parseObject(resultString);
 		if (!"0".equals(resultJson.getString("code"))) {
