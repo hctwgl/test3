@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
@@ -98,7 +99,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		String json = JsonUtil.toJSONString(reqBo);
 		RiskDataBo data=new RiskDataBo();
 		Date da=new Date();
-		String times = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(da);
+		String times = new SimpleDateFormat(DateUtil.DATE_TIME_FULL).format(da);
 		data.setTimestamp(times);
 		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合
@@ -135,7 +136,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		String json = JsonUtil.toJSONString(reqBo);
 		RiskDataBo data=new RiskDataBo();
 		Date da=new Date();
-		String times = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(da);
+		String times = new SimpleDateFormat(DateUtil.DATE_TIME_FULL).format(da);
 		data.setTimestamp(times);
 		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合
