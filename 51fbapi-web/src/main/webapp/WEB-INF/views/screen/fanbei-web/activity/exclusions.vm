@@ -70,10 +70,10 @@
                 if(data.data.loginUrl){
                     location.href=data.data.loginUrl;
                 }else{
-                    let appVersion = getInfo().appVersion.replace(/\./g,"");
-                    let status=data.data.status;
-                    let idNumber=data.data.idNumber;
-                    let realName=data.data.realName;
+                    var appVersion = getInfo().appVersion.replace(/\./g,"");
+                    var status=data.data.status;
+                    var idNumber=data.data.idNumber;
+                    var realName=data.data.realName;
 
                     if ( appVersion <= "374" ) {
                         window.location.href='/fanbei-web/opennative?name=BORROW_MONEY';  // 老版本全部跳借钱
