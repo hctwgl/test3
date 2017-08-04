@@ -227,9 +227,8 @@
 		af_order a left join af_user b
 		on a.user_id =b.id
 		left join af_trade_order c on a.id = c.order_id
-		left join
-		af_order_refund d on d.order_id = a.id
-		where c.business_id = #{businessId}
+		left join af_order_refund d on d.order_id = a.id
+		where c.business_id = #{businessId} and d.id is not null
 		<if test="refundStatus != null and refundStatus != '' ">
 			and c.status = #{refundStatus}
 		</if>
