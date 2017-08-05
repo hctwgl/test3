@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -206,7 +207,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					
 					//返呗续期通知接口，向催收平台同步续期信息
 					try {
-						collectionSystemUtil.renewalNotify(afBorrowCashDo.getBorrowNo(), temRenewalDetail.getPayTradeNo(), temRenewalDetail.getRenewalDay(),(temRenewalDetail.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
+						CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(afBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
+						logger.info("collection renewalNotify req success, respinfo=",respInfo);
 					}catch(Exception e){
 						logger.error("向催收平台同步续期信息",e);
 					}

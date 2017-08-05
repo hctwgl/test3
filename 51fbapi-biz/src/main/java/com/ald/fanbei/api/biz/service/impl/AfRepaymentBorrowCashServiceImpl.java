@@ -15,6 +15,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
@@ -364,7 +365,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					
 					//会对逾期的借款还款，向催收平台同步还款信息
 					try {
-						collectionSystemUtil.consumerRepayment(repayment.getRepayNo(), afBorrowCashDo.getBorrowNo(), repayment.getCardNumber(), repayment.getCardName(),repayment.getGmtModified().toString(),repayment.getTradeNo(),repayment.getRepaymentAmount(), (afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))).subtract(afBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)), (afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRepayAmount(),afBorrowCashDo.getRateAmount());
+						CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(repayment.getRepayNo(), afBorrowCashDo.getBorrowNo(), repayment.getCardNumber(), repayment.getCardName(),DateUtil.formatDateTime(new Date()),tradeNo,repayment.getRepaymentAmount(), (bcashDo.getAmount().add(bcashDo.getRateAmount().add(bcashDo.getOverdueAmount().add(bcashDo.getSumRate().add(bcashDo.getSumOverdue())))).subtract(bcashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)), (bcashDo.getAmount().add(bcashDo.getRateAmount().add(bcashDo.getOverdueAmount().add(bcashDo.getSumRate().add(bcashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)), bcashDo.getOverdueAmount(), bcashDo.getRepayAmount(),bcashDo.getRateAmount());
+						logger.info("collection consumerRepayment req success, respinfo=",respInfo);
 					}catch(Exception e){
 						logger.error("向催收平台同步还款信息失败",e);
 					}

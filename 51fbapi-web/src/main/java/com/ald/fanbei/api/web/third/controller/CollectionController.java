@@ -16,9 +16,8 @@ import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 
 /**
- * @类现描述：
- * @author hexin 2017年3月24日 下午16:59:39
- * @version
+ * @类现描述：和催收平台互调
+ * @author chengkang 2017年8月5日 下午16:59:39
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller

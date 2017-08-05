@@ -1,22 +1,18 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.CollectionDataBo;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
-import com.ald.fanbei.api.biz.bo.RiskDataBo;
-import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
@@ -80,11 +76,11 @@ public class CollectionSystemUtil extends AbstractThird {
 	 *  	      --利息
 	 * @return
 	 */
-	public RiskRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,String repayTime,String tradeNo,BigDecimal amount,
+	public CollectionSystemReqRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,String repayTime,String tradeNo,BigDecimal amount,
 			BigDecimal restAmount,BigDecimal repayAmount,BigDecimal overdueAmount,BigDecimal repayAmountSum,
 			BigDecimal rateAmount) {
 		
-		RiskDataBo data=new RiskDataBo();
+		CollectionDataBo data=new CollectionDataBo();
 		Map<String,String> reqBo=new HashMap<String,String>();
 		reqBo.put("repay_no", repayNo);
 		reqBo.put("borrow_no", borrowNo);
@@ -102,20 +98,17 @@ public class CollectionSystemUtil extends AbstractThird {
 		String json = JsonUtil.toJSONString(reqBo);
 		data.setData(json);//数据集合
 		data.setSign(DigestUtil.MD5(json));
-		Date time=new Date();
-		String timestamp = new SimpleDateFormat(DateUtil.DATE_TIME_FULL_ALL).format(time);
+		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
 		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException("consumerRepayment fail , reqResult is null");
 		}
-		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
-		if (riskResp != null && FanbeiThirdRespCode.SUCCESS.getCode().equals(riskResp.getCode())) {
-			logger.info("consumerRepayment post success,respinfo={}",riskResp);
-			riskResp.setSuccess(true);
-			return riskResp;
+		CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
+		if (respInfo != null) {
+			return respInfo;
 		} else {
-			throw new FanbeiException("consumerRepayment fail , riskResp info is null");
+			throw new FanbeiException("consumerRepayment fail , respInfo info is null");
 		}
 	}
 
@@ -128,9 +121,9 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * @return 
 	 * 
 	 * **/
-	public static RiskRespBo renewalNotify(String borrowNo, String renewalNo, Integer renewalNum,String renewalAmount){
+	public CollectionSystemReqRespBo renewalNotify(String borrowNo, String renewalNo, Integer renewalNum,String renewalAmount){
 		
-		RiskDataBo data=new RiskDataBo();
+		CollectionDataBo data=new CollectionDataBo();
 		Map<String,String> reqBo=new HashMap<String,String>();
 		reqBo.put("borrow_no", borrowNo);
 		reqBo.put("renewal_no", renewalNo);
@@ -140,38 +133,18 @@ public class CollectionSystemUtil extends AbstractThird {
 		String json = JsonUtil.toJSONString(reqBo);
 		data.setData(json);//数据集合
 		data.setSign(DigestUtil.MD5(json));
-		Date time=new Date();
-		String timestamp = new SimpleDateFormat(DateUtil.DATE_TIME_FULL_ALL).format(time);
+		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
 		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/renewalAchieve", data);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException("renewalNotify fail , reqResult is null");
 		}
-		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
-		if (riskResp != null && FanbeiThirdRespCode.SUCCESS.getCode().equals(riskResp.getCode())) {
-			logger.info("renewalNotify post success,respinfo={}",riskResp);
-			riskResp.setSuccess(true);
-			return riskResp;
+		CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
+		if (respInfo != null) {
+			return respInfo;
 		} else {
-			throw new FanbeiException("renewalNotify fail , riskResp info is null");
+			throw new FanbeiException("renewalNotify fail , respInfo info is null");
 		}
-	}
-	
-	/**
-	 * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
-	 * @param params 需要排序并参与字符拼接的参数组
-	 * @return 拼接后字符串
-	 */
-	public static String createLinkString(Map<String, String> params) {
-		List<String> keys = new ArrayList<String>(params.keySet());
-		Collections.sort(keys);
-		String prestr = "";
-		for (int i = 0; i < keys.size(); i++) {
-			String key = keys.get(i);
-			String value = params.get(key);
-			prestr = prestr + value;
-		}
-		return prestr;
 	}
 	
 	public CollectionOperatorNotifyRespBo offlineRepaymentNotify(String timestamp, String data, String sign) {

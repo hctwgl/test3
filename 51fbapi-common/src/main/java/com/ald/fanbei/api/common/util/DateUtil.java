@@ -542,6 +542,17 @@ public class DateUtil {
     public static String getDateTimeFull(Date date) {
         return formatDate(date, DATE_TIME_FULL);
     }
+    
+    public static String getDateTimeFullAll(Date date) {
+    	if(date==null){
+    		return "";
+    	}
+    	try {
+    		return formatDate(date, DATE_TIME_FULL_ALL);
+		} catch (Exception e) {
+			return "";
+		}
+    }
 
     public static String getDateTimePattern() {
         return DateUtil.getDatePattern() + " HH:mm:ss.S";
@@ -1115,7 +1126,6 @@ public class DateUtil {
     	
     	Date date = new Date(System.currentTimeMillis());
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	Date arrivalStart = DateUtil.getStartOfDate(date);
     	Integer day = 7;
     	Date arrivalEnd = DateUtil.getEndOfDate(date);
 		Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);

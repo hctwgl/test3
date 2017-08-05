@@ -13,7 +13,6 @@ public class CollectionOperatorNotifyReqBo extends HashMap<String, String>{
 	private String sign;
 	private String timestamp;
 	private String data;
-	private String dataType;
 	
 	public String getSign() {
 		return sign;
@@ -34,12 +33,5 @@ public class CollectionOperatorNotifyReqBo extends HashMap<String, String>{
 		this.data = data;
 		this.put("data", data);
 	}
-	public String getDataType() {
-		return dataType;
-	}
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
-	
 	
 }
