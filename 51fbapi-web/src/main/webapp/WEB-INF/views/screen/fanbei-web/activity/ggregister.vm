@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/dist/activity/08/ggregister.css">
 </head>
 <body>
-    <div class="login">
+    <div class="login" id="register">
         <div class="topdiv">
             <div class="topimg">
                 <img src="$src/51icon.png" alt="">
