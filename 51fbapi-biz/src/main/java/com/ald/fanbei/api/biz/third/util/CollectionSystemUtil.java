@@ -101,7 +101,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		String json = JsonUtil.toJSONString(reqBo);
 		RiskDataBo data=new RiskDataBo();
 		Date da=new Date();
-		String times = new SimpleDateFormat(DateUtil.DATE_TIME_FULL).format(da);
+		String times = new SimpleDateFormat(DateUtil.DATE_TIME_FULL_ALL).format(da);
 		data.setTimestamp(times);
 		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合
@@ -138,7 +138,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		String json = JsonUtil.toJSONString(reqBo);
 		RiskDataBo data=new RiskDataBo();
 		Date da=new Date();
-		String times = new SimpleDateFormat(DateUtil.DATE_TIME_FULL).format(da);
+		String times = new SimpleDateFormat(DateUtil.DATE_TIME_FULL_ALL).format(da);
 		data.setTimestamp(times);
 		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合

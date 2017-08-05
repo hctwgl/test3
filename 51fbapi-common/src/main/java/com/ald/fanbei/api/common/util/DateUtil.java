@@ -105,6 +105,7 @@ public class DateUtil {
      * </pre>
      */
     public static final String DATE_TIME_FULL              = "yyyy-MM-dd HH:mm:ss.SSS";
+    public static final String DATE_TIME_FULL_ALL              = "yyyyMMddHHmmssSSS";
     
     public static final String NO_END_DATE_FORMAT          = "9999-12-31 23:59:59";
     
