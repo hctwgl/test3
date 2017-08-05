@@ -140,7 +140,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException("renewalNotify fail , reqResult is null");
 		}else{
-			logger.info("consumerRepayment req success,reqResult"+reqResult);
+			logger.info("renewalNotify req success,reqResult"+reqResult);
 		}
 		CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
 		if (respInfo != null) {
