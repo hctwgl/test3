@@ -37,13 +37,6 @@ public class RiskDataBo extends HashMap<String,String>{
 		this.timestamp = timestamp;
 		this.put("timestamp",timestamp);
 	}
-	/*public String getDataType() {
-		return dataType;
-	}
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-		this.put("dataType",dataType);
-	}*/
 	public String getData() {
 		return data;
 	}

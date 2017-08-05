@@ -83,38 +83,39 @@ public class CollectionSystemUtil extends AbstractThird {
 	public RiskRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,String repayTime,String tradeNo,BigDecimal amount,
 			BigDecimal restAmount,BigDecimal repayAmount,BigDecimal overdueAmount,BigDecimal repayAmountSum,
 			BigDecimal rateAmount) {
+		
+		RiskDataBo data=new RiskDataBo();
 		Map<String,String> reqBo=new HashMap<String,String>();
 		reqBo.put("repay_no", repayNo);
 		reqBo.put("borrow_no", borrowNo);
 		reqBo.put("card_number", cardNumber);
 		reqBo.put("card_name", cardName);
-		
 		reqBo.put("repay_time", repayTime);
 		reqBo.put("trade_no", tradeNo);
-		reqBo.put("amount", amount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
-		reqBo.put("rest_amount", restAmount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
-		reqBo.put("repay_amount", repayAmount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
-		reqBo.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
-		reqBo.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
-		reqBo.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED).toString());
+		reqBo.put("amount", amount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+		reqBo.put("rest_amount", restAmount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+		reqBo.put("repay_amount", repayAmount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+		reqBo.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+		reqBo.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+		reqBo.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
 		
 		String json = JsonUtil.toJSONString(reqBo);
-		RiskDataBo data=new RiskDataBo();
-		Date da=new Date();
-		String times = new SimpleDateFormat(DateUtil.DATE_TIME_FULL_ALL).format(da);
-		data.setTimestamp(times);
-		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合
+		data.setSign(DigestUtil.MD5(json));
+		Date time=new Date();
+		String timestamp = new SimpleDateFormat(DateUtil.DATE_TIME_FULL_ALL).format(time);
+		data.setTimestamp(timestamp);
 		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException("主动还款通知失败");
+			throw new FanbeiException("consumerRepayment fail , reqResult is null");
 		}
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		if (riskResp != null && FanbeiThirdRespCode.SUCCESS.getCode().equals(riskResp.getCode())) {
+			logger.info("consumerRepayment post success,respinfo={}",riskResp);
 			riskResp.setSuccess(true);
 			return riskResp;
 		} else {
-			throw new FanbeiException("主动还款通知失败");
+			throw new FanbeiException("consumerRepayment fail , riskResp info is null");
 		}
 	}
 
@@ -129,30 +130,30 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * **/
 	public static RiskRespBo renewalNotify(String borrowNo, String renewalNo, Integer renewalNum,String renewalAmount){
 		
+		RiskDataBo data=new RiskDataBo();
 		Map<String,String> reqBo=new HashMap<String,String>();
 		reqBo.put("borrow_no", borrowNo);
 		reqBo.put("renewal_no", renewalNo);
-		reqBo.put("renewal_num", renewalNum.toString());
+		reqBo.put("renewal_num", renewalNum+"");
 		reqBo.put("renewal_amount", renewalAmount);
 	
 		String json = JsonUtil.toJSONString(reqBo);
-		RiskDataBo data=new RiskDataBo();
-		Date da=new Date();
-		String times = new SimpleDateFormat(DateUtil.DATE_TIME_FULL_ALL).format(da);
-		data.setTimestamp(times);
-		data.setSign(DigestUtil.MD5(json));
 		data.setData(json);//数据集合
+		data.setSign(DigestUtil.MD5(json));
+		Date time=new Date();
+		String timestamp = new SimpleDateFormat(DateUtil.DATE_TIME_FULL_ALL).format(time);
+		data.setTimestamp(timestamp);
 		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/renewalAchieve", data);
-		
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException("续期通知失败");
+			throw new FanbeiException("renewalNotify fail , reqResult is null");
 		}
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		if (riskResp != null && FanbeiThirdRespCode.SUCCESS.getCode().equals(riskResp.getCode())) {
+			logger.info("renewalNotify post success,respinfo={}",riskResp);
 			riskResp.setSuccess(true);
 			return riskResp;
 		} else {
-			throw new FanbeiException("续期通知失败");
+			throw new FanbeiException("renewalNotify fail , riskResp info is null");
 		}
 	}
 	

@@ -206,7 +206,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					
 					//返呗续期通知接口，向催收平台同步续期信息
 					try {
-						collectionSystemUtil.renewalNotify(afBorrowCashDo.getBorrowNo(), temRenewalDetail.getPayTradeNo(), temRenewalDetail.getRenewalDay(),(temRenewalDetail.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED)).toString());
+						collectionSystemUtil.renewalNotify(afBorrowCashDo.getBorrowNo(), temRenewalDetail.getPayTradeNo(), temRenewalDetail.getRenewalDay(),(temRenewalDetail.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
 					}catch(Exception e){
 						logger.error("向催收平台同步续期信息",e);
 					}
