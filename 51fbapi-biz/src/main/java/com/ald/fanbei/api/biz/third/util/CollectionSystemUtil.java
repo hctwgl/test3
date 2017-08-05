@@ -79,7 +79,9 @@ public class CollectionSystemUtil extends AbstractThird {
 	public CollectionSystemReqRespBo consumerRepayment(String repayNo,String borrowNo,String cardNumber,String cardName,String repayTime,String tradeNo,BigDecimal amount,
 			BigDecimal restAmount,BigDecimal repayAmount,BigDecimal overdueAmount,BigDecimal repayAmountSum,
 			BigDecimal rateAmount) {
-		
+		logger.info("consumerRepayment info:repayNo"+repayNo+"-borrowNo"+borrowNo+"-cardNumber"+cardNumber+"-cardName"+cardName+"-repayTime"+repayTime
+				+"-tradeNo"+tradeNo+"-amount"+amount+"-restAmount"+restAmount+"-repayAmount"+repayAmount+"-overdueAmount"+overdueAmount
+				+"-repayAmountSum"+repayAmountSum+"-rateAmount"+rateAmount);
 		CollectionDataBo data=new CollectionDataBo();
 		Map<String,String> reqBo=new HashMap<String,String>();
 		reqBo.put("repay_no", repayNo);
