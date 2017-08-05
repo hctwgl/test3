@@ -139,6 +139,8 @@ public class CollectionSystemUtil extends AbstractThird {
 		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/renewalAchieve", data);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException("renewalNotify fail , reqResult is null");
+		}else{
+			logger.info("consumerRepayment req success,reqResult"+reqResult);
 		}
 		CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
 		if (respInfo != null) {
