@@ -1,2 +1,2 @@
-"use strict";
+"use strict";$(".loginbtn").click(function(){var s=$(".pinp").val(),t=$(".check").val();/^1(3|4|5|7|8)\d{9}$/i.test(s)?$.ajax({url:"/boluomeActivityLogin",type:"POST",dataType:"JSON",data:{userName:s,password:t},success:function(s){console.log(s),s.success?window.location.href="http://www.baidu.com":requestMsg(s.msg)}}):requestMsg("请填写正确的手机号")});
 //# sourceMappingURL=../../_srcmap/activity/08/gglogin.js.map

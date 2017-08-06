@@ -22,7 +22,7 @@
         </div>
         <div class="pcheck phone">
             <span class="bicon"></span>
-            <input   placeholder="请输入密码" class="check pinp">
+            <input type="password"   placeholder="请输入密码"  class="check pinp">
             <!--<span class="checkbtn">获取验证码</span>!-->
         </div>
         <div class="loginbtn">
@@ -37,7 +37,6 @@
             <img src="$src/pic-2.png" alt="">
     </div>       
 </body>
-<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
 <script type="text/javascript" src="/dist/activity/08/gglogin.js"></script>
 </body>
 </html>
