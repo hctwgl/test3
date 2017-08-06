@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import java.lang.ref.ReferenceQueue;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfBoluomeActivityItemsService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityResultService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserRebateService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -43,6 +45,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -73,6 +76,9 @@ public class H5GGShareController extends H5Controller {
 	@Resource
 	AfBoluomeActivityResultService afBoluomeActivityResultService;
 	private static String couponUrl = null;
+
+	@Resource
+	AfBoluomeActivityUserRebateService afBoluomeActivityUserRebateService;
 
 	/**
 	 * 
@@ -239,7 +245,8 @@ public class H5GGShareController extends H5Controller {
 	/**
 	 * 
 	 * @说明：获得假的人数的数据
-	 * @param: @param activityId
+	 * @param: @param
+	 *             activityId
 	 * @param: @return
 	 * @return: Map<String,Integer>
 	 */
@@ -421,7 +428,7 @@ public class H5GGShareController extends H5Controller {
 						friend = userDo.getUserName();
 					}
 					AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(userItemsDo.getItemsId());
-					
+
 					Map<String, Object> data = new HashMap<>();
 					data.put("friend", friend);
 					data.put("itemsDo", itemsDo);
@@ -510,7 +517,7 @@ public class H5GGShareController extends H5Controller {
 
 		return resultStr;
 	}
-	
+
 	/**
 	 * 
 	 * @说明：我也要点亮
@@ -575,8 +582,10 @@ public class H5GGShareController extends H5Controller {
 	/**
 	 * 
 	 * @说明：赠送给好友
-	 * @param: @param request
-	 * @param: @param response
+	 * @param: @param
+	 *             request
+	 * @param: @param
+	 *             response
 	 * @param: @return
 	 * @return: String
 	 */
@@ -592,20 +601,21 @@ public class H5GGShareController extends H5Controller {
 			if (userId != null) {
 				AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
 				if (itemsDo != null) {
-					//验证登录用户该卡片是否大于1张
+					// 验证登录用户该卡片是否大于1张
 					AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
 					userItemsDo.setUserId(userId);
 					userItemsDo.setItemsId(itemsId);
-					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService.getListByCommonCondition(userItemsDo);
-					if (userItemsList == null || userItemsList.size()<2) {
+					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+							.getListByCommonCondition(userItemsDo);
+					if (userItemsList == null || userItemsList.size() < 2) {
 						return H5CommonResponse.getNewInstance(false, "抱歉，你暂时没有足够此卡片").toString();
 					}
-					//若大于一张则，
-					//登录用户卡片选一张，然后赠状态设为已经赠送
+					// 若大于一张则，
+					// 登录用户卡片选一张，然后赠状态设为已经赠送
 					AfBoluomeActivityUserItemsDo resourceUserItemsDo = userItemsList.get(0);
-					updateUserItemsStatus(resourceUserItemsDo.getRid(),"SENT");
-				
-					//朋友的userItems表中增加一条卡片记录
+					updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
+
+					// 朋友的userItems表中增加一条卡片记录
 					AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
 					insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
 					AfUserDo insertUser = afUserService.getUserById(friendId);
@@ -620,7 +630,7 @@ public class H5GGShareController extends H5Controller {
 					insertDo.setItemsId(resourceUserItemsDo.getItemsId());
 					insertDo.setGmtSended(new Date());
 					afBoluomeActivityUserItemsService.saveRecord(insertDo);
-					
+
 					resultStr = H5CommonResponse.getNewInstance(true, "获取卡片成功").toString();
 				}
 			}
@@ -634,12 +644,10 @@ public class H5GGShareController extends H5Controller {
 
 		return resultStr;
 	}
-	
+
 	/**
 	 * 
-	 * @说明：索要初始化页面（原用户的id由页面带过来）
-	 * @param: @param
-	 *             request
+	 * @说明：索要初始化页面（原用户的id由页面带过来） @param: @param request
 	 * @param: @param
 	 *             response
 	 * @param: @return
@@ -685,12 +693,78 @@ public class H5GGShareController extends H5Controller {
 
 		return resultStr;
 	}
+
+	/**
+	 * 
+	 * @说明：获取排行榜
+	 * @param: @param request
+	 * @param: @param response
+	 * @param: @return
+	 * @return: String
+	 */
+	@RequestMapping(value="listBank" ,method = RequestMethod.GET,produces="text/html;charset=UTF-8")
+	public String listBank(HttpServletRequest request, HttpServletResponse response) {
+		String resultStr = "";
+		try {
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			List<BoluomeUserRebateBankDo> bankList = afBoluomeActivityUserRebateService.getBankList(activityId);
+			if (bankList != null) {
+				Map<String, Object> data = new HashMap<>();
+				data.put("bankList", bankList);
+				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data).toString();
+			}
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("索要初卡片失败", e);
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage()).toString();
+			logger.error("索要初卡片失败", e);
+		}
+		return resultStr;
+	}
+
+	
+	@RequestMapping(value = "/pickUpSuperPrize", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	public String pickUpSuperPrize(HttpServletRequest request, HttpServletResponse response) {
+		String resultStr = "";
+		FanbeiH5Context context = new FanbeiH5Context();
+		try {
+			context = doH5Check(request, true);
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			Long userId = context.getUserId();
+			if (activityId != null && userId != null) {
+				AfBoluomeActivityCouponDo conditionCoupon = new AfBoluomeActivityCouponDo();
+				conditionCoupon.setBoluomeActivityId(activityId);
+				conditionCoupon.setStatus("O");
+				conditionCoupon.setType("N");
+				AfBoluomeActivityCouponDo resultCoupon = afBoluomeActivityCouponService.getByCommonCondition(conditionCoupon);
+				
+				if (resultCoupon != null) {
+					//把终极大奖给插入用户result表中
+					AfBoluomeActivityResultDo conditionResultDo = new AfBoluomeActivityResultDo();
+					conditionResultDo.setBoluomeActivityId(activityId);
+					conditionResultDo.setUserId(userId);
+					conditionResultDo.setUserName(context.getUserName());
+					conditionResultDo.setResult(resultCoupon.getCouponId());
+					
+					afBoluomeActivityResultService.saveRecord(conditionResultDo);
+					
+					resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
+					
+					
+				}
+			}
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "红包领取失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("红包领取失败" + context, e);
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "红包领取失败", "", e.getMessage()).toString();
+			logger.error("红包领取失败" + context, e);
+		}
+
+		return resultStr;
+	}
 	
 	
-
-
-
-
-
-
+	
 }

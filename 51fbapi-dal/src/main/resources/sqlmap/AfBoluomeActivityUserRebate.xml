@@ -196,4 +196,11 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,order_id,re
 	    refUser. ref_user_id= #{refUserId} 
     </select>
     
+    <select id = "getBankList" resultType="com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo">
+    	SELECT user_name,gmt_create ,rebate+invite_rebate as total_rebate , invite_rebate 
+		FROM af_boluome_activity_user_rebate 
+		WHERE boluome_activity_id = #{activityId}
+		GROUP BY user_name
+		ORDER BY total_rebate , gmt_create
+    </select>
 </mapper>

@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserRebateDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
+import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserRebateService;
 
 
@@ -33,4 +36,9 @@ public class AfBoluomeActivityUserRebateServiceImpl extends ParentServiceImpl<Af
 	public BaseDao<AfBoluomeActivityUserRebateDo, Long> getDao() {
 		return afBoluomeActivityUserRebateDao;
 	}
+
+		@Override
+		public List<BoluomeUserRebateBankDo> getBankList(Long activityId) {
+			return afBoluomeActivityUserRebateDao.getBankList(activityId);
+		}
 }

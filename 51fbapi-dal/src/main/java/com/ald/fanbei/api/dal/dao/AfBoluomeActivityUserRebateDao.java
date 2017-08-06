@@ -1,6 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
+import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
 import com.ald.fanbei.api.dal.domain.query.AfBoluomeActivityUserRebateQuery;
 
 /**
@@ -15,8 +20,5 @@ public interface AfBoluomeActivityUserRebateDao extends BaseDao<AfBoluomeActivit
 
 	AfBoluomeActivityUserRebateQuery getRebateCountNumber(AfBoluomeActivityUserRebateQuery userRebateQuery);
 
-
-
-    
-
+	List<BoluomeUserRebateBankDo> getBankList(@Param("activityId") Long activityId);
 }
