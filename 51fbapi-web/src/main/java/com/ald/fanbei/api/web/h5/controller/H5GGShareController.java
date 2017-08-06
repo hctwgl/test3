@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +41,15 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.mysql.fabric.xmlrpc.base.Data;
+
+import sun.tools.tree.NewArrayExpression;
 
 @Controller
 @RequestMapping("/H5GGShare")
@@ -306,10 +311,55 @@ public class H5GGShareController extends H5Controller {
 
 		return resultStr;
 	}
-
 	/**
 	 * 
-	 * @说明：卡片赠送(专享初始化页面)
+	 * @说明：点击确定赠送，来改变卡片的中间状态
+	 * @param: @param request
+	 * @param: @param response
+	 * @param: @return
+	 * @return: String
+	 */
+	@RequestMapping(value = "/doSendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	public String doSendItems(HttpServletRequest request, HttpServletResponse response) {
+		String resultStr = "";
+		FanbeiH5Context context = new FanbeiH5Context();
+		try {
+			context = doH5Check(request, true);
+			if (context.isLogin()) {
+				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
+				// 改变用户卡片的中见状态
+				updateUserItemsStatus(userItemsId,"FROZEN");
+			}
+			
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("赠送卡片初始化失败" + context, e);
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage()).toString();
+			logger.error("赠送卡片初始化失败" + context, e);
+		}
+
+		return resultStr;
+	}
+	/**
+	 * 
+	 * @说明：改变用户卡片状态
+	 * @param: @param userItemsId
+	 * @param: @param status
+	 * @return: void
+	 */
+	private void updateUserItemsStatus(Long userItemsId,String status){
+		AfBoluomeActivityUserItemsDo resourceDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+		if (resourceDo != null) {
+			resourceDo.setStatus(status);
+			resourceDo.setGmtModified(new Date());
+			afBoluomeActivityUserItemsService.updateById(resourceDo);
+		}
+	}
+	
+	/**
+	 * 
+	 * @说明：卡片赠送(专享初始化页面,无需登录)
 	 * @param: @param
 	 *             request
 	 * @param: @param
@@ -318,22 +368,37 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/ggSendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-	public String doSendItems(HttpServletRequest request, HttpServletResponse response) {
+	public String ggSendItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
-		FanbeiH5Context context = new FanbeiH5Context();
+		//FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
-			if (context.isLogin()) {
+			//context = doH5Check(request, true);
+			//if (context.isLogin()) {
 				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
+				AfBoluomeActivityUserItemsDo userItemsDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+				if (userItemsDo != null) {
+					Map<String, Integer> fakeMap = getFakePerson(userItemsDo.getBoluomeActivityId());
+					Integer fakeFinal = 0;
+					Integer fakeJoin = 0;
+					if (fakeMap != null) {
+						fakeFinal = fakeMap.get("fakeFinal");
+						fakeJoin = fakeMap.get("fakeJoin");
+					}
+					Map<String, Object> data = new HashMap<>();
+					data.put("userItemsDo", userItemsDo);
+					data.put("fakeFinal", fakeFinal);
+					data.put("fakeJoin", fakeJoin);
+					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+				}
 				
-			}
-			
+				
+			//}
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("赠送卡片失败" + context, e);
+			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("ggSendItems error" , e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getMessage()).toString();
-			logger.error("赠送卡片失败" + context, e);
+			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getMessage()).toString();
+			logger.error("ggSendItems error", e);
 		}
 
 		return resultStr;
@@ -349,15 +414,49 @@ public class H5GGShareController extends H5Controller {
 	 * @param: @return
 	 * @return: String
 	 */
-	@RequestMapping(value = "pickUpItems", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/pickUpItems", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickUpItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, true);
 			if (context.isLogin()) {
-				
-				
+				Long userId = context.getUserId();//登录的用户id
+				Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));//卡片主人的主键id
+				AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService.getById(resourceUserItemsId);//old卡片的内容
+				if (resourceUserItemsDo != null) {
+					Long destUserId =  resourceUserItemsDo.getUserId();
+					//你没有权限领取此卡片
+					if (destUserId.equals(userId)) {
+						return H5CommonResponse.getNewInstance(true,"你没有权限领取此卡片").toString();
+					}
+					//查看是否已经领走
+					AfBoluomeActivityUserItemsDo newUserItemsDoCondition = new AfBoluomeActivityUserItemsDo();
+					newUserItemsDoCondition.setUserId(userId);
+					newUserItemsDoCondition.setSourceId(resourceUserItemsId);
+					List<AfBoluomeActivityUserItemsDo> list = afBoluomeActivityUserItemsService.getListByCommonCondition(newUserItemsDoCondition);
+					if (list != null && !list.isEmpty()) {
+						return H5CommonResponse.getNewInstance(true,"你没有权限领取此卡片").toString();
+					}
+					//领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
+					AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
+					insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
+					AfUserDo insertUser = afUserService.getUserById(userId);
+					if (insertUser == null) {
+						return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
+					}
+					insertDo.setUserName(insertUser.getUserName());
+					insertDo.setUserId(userId);
+					insertDo.setStatus("NORMAL");
+					insertDo.setSourceId(resourceUserItemsId);
+					insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
+					insertDo.setItemsId(resourceUserItemsDo.getItemsId());
+					insertDo.setGmtSended(new Date());
+					afBoluomeActivityUserItemsService.saveRecord(insertDo);
+					
+					updateUserItemsStatus(resourceUserItemsId, "SENT");
+					
+				}
 			}
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
@@ -380,13 +479,13 @@ public class H5GGShareController extends H5Controller {
 	 * @param: @return
 	 * @return: String
 	 */
-	@RequestMapping(value = "lightItems", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/lightItems", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String lightItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, true);
-
+			resultStr = initHomepage(request, response);
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("赠送卡片失败" + context, e);
