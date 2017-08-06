@@ -26,7 +26,7 @@
             <span class="checkbtn" isState=0>获取验证码</span>
         </div>
         <div class="loginbtn">
-            立即登录
+            立即注册
         </div>
         <!--<div class="lspdiv clearFix">
             <span class="spl">我要注册</span>
