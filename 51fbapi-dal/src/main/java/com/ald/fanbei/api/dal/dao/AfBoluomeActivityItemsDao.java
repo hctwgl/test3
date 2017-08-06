@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
  */
 public interface AfBoluomeActivityItemsDao extends BaseDao<AfBoluomeActivityItemsDo, Long> {
 
+	AfBoluomeActivityItemsDo getItemsInfo(AfBoluomeActivityItemsDo itemsMessageSet);
+
     
 
 }

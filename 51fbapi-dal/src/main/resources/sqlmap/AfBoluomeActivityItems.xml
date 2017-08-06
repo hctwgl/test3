@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-id,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort 
+id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort,rule_json
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -41,7 +41,7 @@ id,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" keyProperty="id">
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" keyProperty="rid">
     	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>
@@ -72,6 +72,10 @@ id,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort
 	        <if test="sort != null">        
 	            sort,
 	        </if>
+	         <if test="sourceId != null">        
+	            source_id,
+	        </if>
+	        
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -98,6 +102,9 @@ id,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort
 		    </if>
 		    <if test="sort != null" >
 		       #{sort,jdbcType=INTEGER},
+		    </if>
+		    <if test="sourceId != null" >
+		       #{sourceId,jdbcType=INTEGER}
 		    </if>
         </trim>
     </insert>
@@ -150,6 +157,13 @@ id,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort
     </select>
                
     <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_items
+        <include refid="commonCondition"/>
+    </select>
+    
+      <select id="getItemsInfo" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
         SELECT
         <include refid="queryFields" />
         FROM af_boluome_activity_items

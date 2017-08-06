@@ -61,6 +61,9 @@ import java.util.Date;
      */
     private Long sort;
 
+    private String status;
+    private String ruleJson;
+    
 
     /**
      * 获取主键Id
@@ -220,5 +223,22 @@ import java.util.Date;
     public void setSort(Long sort){
       this.sort = sort;
     }
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getRuleJson() {
+		return ruleJson;
+	}
+
+	public void setRuleJson(String ruleJson) {
+		this.ruleJson = ruleJson;
+	}
+    
 
 }

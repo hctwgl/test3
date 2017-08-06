@@ -28,4 +28,8 @@ public interface AfShopDao {
 	 * @return
 	 */
 	List<AfShopDo> getPreEnvShopList(AfShopQuery query);
+
+	AfShopDo getShopInfoBySecType(String secType);
+
+	AfShopDo getShopInfoBySecType(AfShopDo afShopDo);
 }

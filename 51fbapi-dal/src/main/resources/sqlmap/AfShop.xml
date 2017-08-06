@@ -54,4 +54,17 @@
 		ORDER BY sort DESC, gmt_modified DESC
 	</select>
 	
+	<select id="getShopInfoBySecType" parameterType="AfShopDo" resultType="AfShopDo">
+		SELECT
+			<include refid="queryFields" />
+		FROM
+			af_shop
+		WHERE
+			is_delete = 0
+		AND
+			type = #{type}
+	</select>
+	
+	
+	
 </mapper>

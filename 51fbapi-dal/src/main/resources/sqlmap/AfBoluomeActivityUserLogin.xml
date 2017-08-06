@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-id,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluomeActivityId
+id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_id
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -132,4 +132,26 @@ id,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluomeActivityId
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getUserLoginRecordByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" parameterType="java.lang.Long">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_login
+        WHERE is_delete = 0 
+        AND
+        user_id = #{userId}
+        order by gmt_create desc
+        limit 0, 1
+    </select> 
+    
+    <select id="getUserLoginRecordByRefUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" parameterType="java.lang.Long">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_login
+        WHERE is_delete = 0 
+        AND
+        ref_user_id = #{refUserId}
+        order by gmt_create desc
+        limit 0, 1
+    </select>
+     
 </mapper>

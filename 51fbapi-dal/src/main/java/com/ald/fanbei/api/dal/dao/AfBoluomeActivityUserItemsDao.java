@@ -18,6 +18,8 @@ public interface AfBoluomeActivityUserItemsDao extends BaseDao<AfBoluomeActivity
 
 	List<Long> getItemsByActivityIdUserId(@Param("activityId")Long activityId, @Param("userId")Long userId);
 
+	int saveBoluomeActivityUserItems(AfBoluomeActivityUserItemsDo userItemsDo);
+
     
 
 }

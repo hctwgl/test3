@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -54,7 +56,7 @@ import java.util.Date;
     /**
      * 自己下单返利
      */
-    private Double rebate;
+    private BigDecimal rebate;
 
     /**
      * 邀请用户下单订单id
@@ -69,27 +71,11 @@ import java.util.Date;
     /**
      * 邀请用户返利
      */
-    private Double inviteRebate;
-
-
-    /**
-     * 获取主键Id
-     *
-     * @return id
-     */
-
+    private BigDecimal inviteRebate;
     
+ 
 
-    /**
-     * 获取创建时间
-     *
-     * @return 创建时间
-     */
-    public Date getGmtCreate(){
-      return gmtCreate;
-    }
-
-    public Long getRid() {
+	public Long getRid() {
 		return rid;
 	}
 
@@ -97,175 +83,86 @@ import java.util.Date;
 		this.rid = rid;
 	}
 
-	/**
-     * 设置创建时间
-     * 
-     * @param gmtCreate 要设置的创建时间
-     */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
+	public Date getGmtCreate() {
+		return gmtCreate;
+	}
 
-    /**
-     * 获取修改时间
-     *
-     * @return 修改时间
-     */
-    public Date getGmtModified(){
-      return gmtModified;
-    }
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
+	}
 
-    /**
-     * 设置修改时间
-     * 
-     * @param gmtModified 要设置的修改时间
-     */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
-    }
+	public Date getGmtModified() {
+		return gmtModified;
+	}
 
-    /**
-     * 获取活动id
-     *
-     * @return 活动id
-     */
-    public Long getBoluomeActivityId(){
-      return boluomeActivityId;
-    }
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
 
-    /**
-     * 设置活动id
-     * 
-     * @param boluomeActivityId 要设置的活动id
-     */
-    public void setBoluomeActivityId(Long boluomeActivityId){
-      this.boluomeActivityId = boluomeActivityId;
-    }
+	public Long getBoluomeActivityId() {
+		return boluomeActivityId;
+	}
 
-    /**
-     * 获取用户id
-     *
-     * @return 用户id
-     */
-    public Long getUserId(){
-      return userId;
-    }
+	public void setBoluomeActivityId(Long boluomeActivityId) {
+		this.boluomeActivityId = boluomeActivityId;
+	}
 
-    /**
-     * 设置用户id
-     * 
-     * @param userId 要设置的用户id
-     */
-    public void setUserId(Long userId){
-      this.userId = userId;
-    }
+	public Long getUserId() {
+		return userId;
+	}
 
-    /**
-     * 获取用户账号
-     *
-     * @return 用户账号
-     */
-    public String getUserName(){
-      return userName;
-    }
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 
-    /**
-     * 设置用户账号
-     * 
-     * @param userName 要设置的用户账号
-     */
-    public void setUserName(String userName){
-      this.userName = userName;
-    }
+	public String getUserName() {
+		return userName;
+	}
 
-    /**
-     * 获取订单id
-     *
-     * @return 订单id
-     */
-    public Long getOrderId(){
-      return orderId;
-    }
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    /**
-     * 设置订单id
-     * 
-     * @param orderId 要设置的订单id
-     */
-    public void setOrderId(Long orderId){
-      this.orderId = orderId;
-    }
+	public Long getOrderId() {
+		return orderId;
+	}
 
-    /**
-     * 获取自己下单返利
-     *
-     * @return 自己下单返利
-     */
-    public Double getRebate(){
-      return rebate;
-    }
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
+	}
 
-    /**
-     * 设置自己下单返利
-     * 
-     * @param rebate 要设置的自己下单返利
-     */
-    public void setRebate(Double rebate){
-      this.rebate = rebate;
-    }
+	public BigDecimal getRebate() {
+		return rebate;
+	}
 
-    /**
-     * 获取邀请用户下单订单id
-     *
-     * @return 邀请用户下单订单id
-     */
-    public Long getRefOrderId(){
-      return refOrderId;
-    }
+	public void setRebate(BigDecimal rebate) {
+		this.rebate = rebate;
+	}
 
-    /**
-     * 设置邀请用户下单订单id
-     * 
-     * @param refOrderId 要设置的邀请用户下单订单id
-     */
-    public void setRefOrderId(Long refOrderId){
-      this.refOrderId = refOrderId;
-    }
+	public Long getRefOrderId() {
+		return refOrderId;
+	}
 
-    /**
-     * 获取邀请人id
-     *
-     * @return 邀请人id
-     */
-    public Long getRefUserId(){
-      return refUserId;
-    }
+	public void setRefOrderId(Long refOrderId) {
+		this.refOrderId = refOrderId;
+	}
 
-    /**
-     * 设置邀请人id
-     * 
-     * @param refUserId 要设置的邀请人id
-     */
-    public void setRefUserId(Long refUserId){
-      this.refUserId = refUserId;
-    }
+	public Long getRefUserId() {
+		return refUserId;
+	}
 
-    /**
-     * 获取邀请用户返利
-     *
-     * @return 邀请用户返利
-     */
-    public Double getInviteRebate(){
-      return inviteRebate;
-    }
+	public void setRefUserId(Long refUserId) {
+		this.refUserId = refUserId;
+	}
 
-    /**
-     * 设置邀请用户返利
-     * 
-     * @param inviteRebate 要设置的邀请用户返利
-     */
-    public void setInviteRebate(Double inviteRebate){
-      this.inviteRebate = inviteRebate;
-    }
+	public BigDecimal getInviteRebate() {
+		return inviteRebate;
+	}
+
+	public void setInviteRebate(BigDecimal inviteRebate) {
+		this.inviteRebate = inviteRebate;
+	}
+
+
 
 }

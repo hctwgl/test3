@@ -12,6 +12,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityDo;
  */
 public interface AfBoluomeActivityDao extends BaseDao<AfBoluomeActivityDo, Long> {
 
+
     
 
 }
