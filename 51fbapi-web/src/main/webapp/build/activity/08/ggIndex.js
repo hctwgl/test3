@@ -12,12 +12,12 @@ let vm = new Vue({
             //获取页面初始化信息
             let self = this;
             $.ajax({
-                type: 'post',
+                type: 'get',
                 url: "/H5GGShare/initHomePage",
                 data:{activityId:1},
                 success: function (data) {
-                    self.content = eval('(' + data + ')').data;
-                    console.log(self.content);
+                    //self.content = eval('(' + data + ')').data;
+                    console.log(data);
                 }
             })
         }
