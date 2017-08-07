@@ -50,52 +50,57 @@ public class AppH5TradeController extends BaseController {
 
     @RequestMapping(value = "initTradeInfo", method = RequestMethod.GET)
     public void initTradeInfo(HttpServletRequest request, ModelMap model) {
-        model.put("isLogin", "no");
-        String bid = request.getParameter("bid");
-        if (StringUtil.isBlank(bid)) {
-            return;
-        }
-
-        bid = AesUtil.decryptFromBase64(bid, Constants.TRADE_AES_DECRYPT_PASSWORD);
-        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(Long.parseLong(bid));
-        if (afTradeBusinessInfoDo == null || afTradeBusinessInfoDo.getStatus().equals(2)) {
-            return;
-        }
-
-        FanbeiWebContext context = null;
         try {
-            context = doWebCheckNoAjax(request, true);
-        } catch (Exception e) {
-            return;
-        }
+            model.put("isLogin", "no");
+            String bid = request.getParameter("bid");
+            if (StringUtil.isBlank(bid)) {
+                return;
+            }
 
-        if (!context.isLogin()) {
-            return;
-        }
+            bid = AesUtil.decryptFromBase64(bid, Constants.TRADE_AES_DECRYPT_PASSWORD);
+            AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(Long.parseLong(bid));
+            if (afTradeBusinessInfoDo == null || afTradeBusinessInfoDo.getStatus().equals(2)) {
+                return;
+            }
 
-        //认证状态
-        AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
-        if (afUserDo == null) {
-            return;
-        }
-        AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
-        AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
-        Integer status = getAuthStatus(auth, account, context.getAppVersion());
-        model.put("isShowMention", status);
-        if (status.equals(3)) {
-            model.put("realName", account.getRealName());
-            model.put("idNumber", Base64.encodeString(account.getIdNumber()));
-        }
+            FanbeiWebContext context = null;
+            try {
+                context = doWebCheckNoAjax(request, true);
+            } catch (Exception e) {
+                return;
+            }
 
-        model.put("name", afTradeBusinessInfoDo.getName());
-        model.put("id", afTradeBusinessInfoDo.getBusinessId());
-        model.put("isLogin", "yes");
-        AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
-        BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
-        BigDecimal usedAmount = afUserAccountDo.getUsedAmount()==null?BigDecimal.ZERO:afUserAccountDo.getUsedAmount();
-        BigDecimal freezeAmount = afUserAccountDo.getFreezeAmount()==null?BigDecimal.ZERO:afUserAccountDo.getFreezeAmount();
-        Double canUseAmount = BigDecimalUtil.subtract(auAmount, BigDecimalUtil.add(usedAmount, freezeAmount)).doubleValue();
-        model.put("canUseAmount", canUseAmount);
+            if (!context.isLogin()) {
+                return;
+            }
+
+            //认证状态
+            AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
+            if (afUserDo == null) {
+                return;
+            }
+            AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
+            AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+            Integer status = getAuthStatus(auth, account, context.getAppVersion());
+            model.put("isShowMention", status);
+            if (status.equals(3)) {
+                model.put("realName", account.getRealName());
+                model.put("idNumber", Base64.encodeString(account.getIdNumber()));
+            }
+
+            model.put("name", afTradeBusinessInfoDo.getName());
+            model.put("id", afTradeBusinessInfoDo.getBusinessId());
+            model.put("isLogin", "yes");
+            AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+            BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
+            BigDecimal usedAmount = afUserAccountDo.getUsedAmount()==null?BigDecimal.ZERO:afUserAccountDo.getUsedAmount();
+            BigDecimal freezeAmount = afUserAccountDo.getFreezeAmount()==null?BigDecimal.ZERO:afUserAccountDo.getFreezeAmount();
+            Double canUseAmount = BigDecimalUtil.subtract(auAmount, BigDecimalUtil.add(usedAmount, freezeAmount)).doubleValue();
+            model.put("canUseAmount", canUseAmount);
+        }
+        catch (Exception e) {
+            logger.error("trade controller error = {}", e);
+        }
 
     }
 
