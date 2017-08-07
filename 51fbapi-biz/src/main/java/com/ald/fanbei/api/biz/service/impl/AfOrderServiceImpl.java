@@ -1609,6 +1609,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						afUserVirtualAccountService.updateById(userVirtualAccountDo);
 					}
 					
+					// 如果使用了优惠卷，恢复优惠卷
+                    afUserCouponDao.updateUserCouponSatusNouseById(orderInfo.getUserCouponId());
+
 						
 					// 处理订单
 					orderInfo.setPayTradeNo(payOrderNo);
