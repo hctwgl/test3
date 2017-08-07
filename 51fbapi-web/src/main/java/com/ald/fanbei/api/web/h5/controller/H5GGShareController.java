@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseBo;
+import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityItemsService;
@@ -50,6 +51,7 @@ import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mysql.fabric.xmlrpc.base.Data;
 
@@ -123,7 +125,8 @@ public class H5GGShareController extends H5Controller {
 			bDo.setType("B");
 			List<AfBoluomeActivityCouponDo> bList = afBoluomeActivityCouponService.getListByCommonCondition(bDo);
 
-			List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
+			//List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
+			List<String> boluomeCouponList = new ArrayList<>();
 			if (bList != null && bList.size() > 0) {
 				for (AfBoluomeActivityCouponDo bCouponDo : bList) {
 					Long resourceId = bCouponDo.getCouponId();
@@ -143,15 +146,21 @@ public class H5GGShareController extends H5Controller {
 								ThirdResponseBo thirdResponseBo = JSONObject.parseObject(reqResult,
 										ThirdResponseBo.class);
 								if (thirdResponseBo != null && "0".equals(thirdResponseBo.getCode())) {
-									JSONObject dataObj = JSON.parseObject(thirdResponseBo.getData());
-									String coupons = dataObj.getString("activity_coupons");
-									if (!StringUtil.isEmpty(coupons)) {
-										BoluomeCouponResponseBo bo = JSONObject.parseObject(coupons,
-												BoluomeCouponResponseBo.class);
-										if (bo != null) {
-											boluomeCouponList.add(bo);
+									List<BoluomeCouponResponseParentBo> listParent = JSONArray.parseArray(thirdResponseBo.getData(), BoluomeCouponResponseParentBo.class);
+									if (listParent != null && listParent.size() >0) {
+										BoluomeCouponResponseParentBo parentBo = listParent.get(0);
+										if (parentBo != null ) {
+											String activityCoupons = parentBo.getActivity_coupons();
+											String result = activityCoupons.substring(1, activityCoupons.length()-1);
+											boluomeCouponList.add(result);
+											/*List<BoluomeCouponResponseBo> listCoupon = JSONArray.parseArray(activityCoupons, BoluomeCouponResponseBo.class);
+											if (listCoupon != null && listCoupon.size() >0) {
+												boluomeCouponList.add(listCoupon.get(0));//因为只有一个
+											}*/
+											
 										}
 									}
+									
 								}
 							}
 						}
@@ -183,7 +192,7 @@ public class H5GGShareController extends H5Controller {
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			context = doH5Check(request, false);
+/*			context = doH5Check(request, false);
 			if (context.isLogin()) {
 				// TODO:获取登录着的userName或者id
 				Long userId = context.getUserId();
@@ -192,7 +201,7 @@ public class H5GGShareController extends H5Controller {
 				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 						.getListByCommonCondition(useritemsDo);
 				data.put("userItemsList", userItemsList);
-			}
+			}*/
 			data.put("bannerList", bannerList);
 			data.put("fakeFinal", fakeFinal);
 			data.put("fakeJoin", fakeJoin);
