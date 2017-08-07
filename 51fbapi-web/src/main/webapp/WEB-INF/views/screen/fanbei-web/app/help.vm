@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<title>服务中心</title>
+	    <style type="text/css">
+	    	.helpWarp{
+                padding: 0.8rem 0.4rem 0.4rem;
+                line-height: 0.48rem;
+	    		text-align: Justify;
+				text-justify: inter-ideograph;
+	    	}
+            .helpWarp span{
+                font-weight: bold;
+            }
+
+            .helpWarp a{
+                margin-left: 0.08rem;
+            }
+            .helpWarp em{
+                border-bottom: 1px solid blue;
+                color: blue;
+            }
+	    </style>
+    </head>
+    <body style="background-color: #fff;">
+    	<div class="helpWarp">
+            <p>
+                1.服务中心。<br>
+                2.在法律范围内51返呗平台拥有最终解释权。<br>
+            </p>
+
+        </div>
+    </body>
+</html>
