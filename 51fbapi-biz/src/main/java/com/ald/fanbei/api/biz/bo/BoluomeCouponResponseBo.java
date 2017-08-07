@@ -8,8 +8,8 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	 */
 	private static final long serialVersionUID = -5784104070750066975L;
 	private String campaign_name;
-	private int activity_coupon_id;
-	private int id;
+/*	private int activity_coupon_id;
+	private int id;*/
 	private String name;
 	private int term_type;
 	private int type;
@@ -26,7 +26,7 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	public void setCampaign_name(String campaign_name) {
 		this.campaign_name = campaign_name;
 	}
-	public int getActivity_coupon_id() {
+/*	public int getActivity_coupon_id() {
 		return activity_coupon_id;
 	}
 	public void setActivity_coupon_id(int activity_coupon_id) {
@@ -37,7 +37,7 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
+	}*/
 	public String getName() {
 		return name;
 	}
