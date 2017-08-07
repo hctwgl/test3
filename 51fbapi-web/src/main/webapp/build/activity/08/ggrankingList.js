@@ -27,7 +27,7 @@
 
 //获取数据
 let vm = new Vue({
-    el: '#ggIndex',
+    el: '#rankingList',
     data: {
         content: {}
     },
@@ -44,9 +44,10 @@ let vm = new Vue({
                 dataType:JSON,
                 data:{activityId:1},
                 success: function (data) {
+                    console.log(111111);
                     self.content = eval('(' + data + ')').data;
                     console.log( self.content);
-                    // console.log(data);
+                    //  console.log(data);
                 }
             })
         }
