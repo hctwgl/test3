@@ -168,12 +168,16 @@ body{
   padding-bottom:.46rem;
 }
 #ggIndex .ruleInfo{
-  width:100%;
+  width:25%;
   text-align: center;
   font-size:.28rem;
   color:#5cb4e2;
   text-decoration: underline;
-  padding: .4rem 0 1.82rem 0;
+  margin: .4rem auto 0;
+}
+#ggIndex .kong{
+  width:100%;
+  height:1.82rem;
 }
 #ggIndex .alertRule{
   width:6.8rem;
@@ -213,6 +217,20 @@ body{
   height:6.61rem;
   overflow-y: scroll;
 }
+#ggIndex .alertRule .close{
+  width:.56rem;
+  height:.56rem;
+  text-align: center;
+  line-height: .56rem;
+  color:#e3e3e3;
+  font-size:0.34rem;
+  border-radius: 50%;
+  border:2px solid #e3e3e3;
+  position: absolute;
+  bottom:-1.07rem;
+  left: 50%;
+  transform: translateX(-.28rem);
+}
 #ggIndex .mask{
   width:100%;
   height:100%;
@@ -246,6 +264,23 @@ body{
   color:#000;
   text-align: center;
   font-size: .4rem;
+  position:relative;
+  display: none;
+}
+#ggIndex .alertPresent .presentTitle span:nth-of-type(2){
+  color:#fe963b;
+  position:absolute;
+  top: 41%;
+  left: 24%;
+}#ggIndex .alertPresent .presentTitle span:nth-of-type(3){
+  position:absolute;
+  top: 41%;
+  left: 55%;
+}
+#ggIndex .alertPresent .presentTitle span:nth-of-type(1){
+  position:absolute;
+  top: -40%;
+  left: 20%;
 }
 #ggIndex .alertPresent .imgCont{
   max-width:5.84rem;

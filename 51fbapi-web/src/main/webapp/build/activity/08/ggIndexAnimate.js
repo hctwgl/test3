@@ -1,3 +1,7 @@
+//1.首页顶部栏动画
+
+//2.首页轮播图动画
+//3.赠送或索要卡片弹窗里动画
 var touch = true;           //touch=true为开启触摸滑动
 var slideNub;               //轮播图片数量
 $(function(){
