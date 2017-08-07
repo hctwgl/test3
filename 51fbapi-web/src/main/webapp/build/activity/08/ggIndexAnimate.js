@@ -5,13 +5,13 @@ var cont = $(".cont1").html();
 $(".cont2").html(cont);
 //（2）:创建方法定时执行
 function wordMove(){
-    var left = $("#personAmount").scrollLeft();
+    var left = $(".personAmount").scrollLeft();
     if(left >= $(".cont1").width()){
         left = 0;
     }else{
         left++;
     }
-    $("#personAmount").scrollLeft(left);
+    $(".personAmount").scrollLeft(left);
     setTimeout("wordMove()",speed);
 }
 //wordMove();页面获取数据后再执行
