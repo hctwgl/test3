@@ -134,6 +134,9 @@ text-align:left;
     width:100%;
     margin-top:50%;
 }
-.gray{
+/* .gray{
     background-color:rgba(169,169,169);
+} */
+.password{
+    margin-top:0.28rem;
 }
