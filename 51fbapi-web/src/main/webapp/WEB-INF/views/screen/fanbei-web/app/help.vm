@@ -11,16 +11,19 @@
     <div id="navWrap">
         <ul class="nav">
             <li id="first" class="current">
-                <i ></i>
+                <i></i>
                 <span >借款</span>
             </li>
             <li id="second">
+                <i></i>
                 <span>分期</span>
             </li>
             <li id="third">
+                <i></i>
                 <span>账单与还款</span>
             </li>
             <li id="fourth">
+                <i></i>
                 <span>额度评估</span>
             </li>
         </ul>
