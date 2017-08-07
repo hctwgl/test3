@@ -578,7 +578,7 @@ public abstract class BaseController {
 				"	userName=", userName, 
 				"	", exeT, 
 				"	", inter,
-				"	result=",respData == null?false:respData.getSuccess(), 
+				"	result=",respData == null?"false":respData.getSuccess()+"", 
 				"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
 				"	", ext1, 
 				"	", ext2,
