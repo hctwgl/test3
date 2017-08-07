@@ -15,4 +15,23 @@ public class BoluomeUserRebateBankDo extends AbstractSerial{
 	private String userName;
 	private BigDecimal totalRebate;
 	private BigDecimal inviteRebate;
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public BigDecimal getTotalRebate() {
+		return totalRebate;
+	}
+	public void setTotalRebate(BigDecimal totalRebate) {
+		this.totalRebate = totalRebate;
+	}
+	public BigDecimal getInviteRebate() {
+		return inviteRebate;
+	}
+	public void setInviteRebate(BigDecimal inviteRebate) {
+		this.inviteRebate = inviteRebate;
+	}
+	
 }
