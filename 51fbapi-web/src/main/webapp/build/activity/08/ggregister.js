@@ -51,19 +51,26 @@ $(function () {
 
     // 完成注册提交
     $(".loginbtn").click(function () {
-        var smsCode = $(".check").val();
-        var registerMoblie = $(".mobile").val();
+        var smsCode = $(".check").val();//获取短信
+        var registerMoblie = $(".mobile").val();//获取手机号
+        var password=$("#password").val();//获取密码
+        console.log(password);
+        console.log(smsCode);
+         console.log(registerMoblie);
+
         if (/^1(3|4|5|7|8)\d{9}$/i.test(registerMoblie)) {
+            var password_md5 = String(CryptoJS.MD5(password));//md5加密
             $.ajax({
                 url: "/app/user/commitRegiste",
                 type: 'POST',
                 dataType: 'JSON',
                 data: {
                     "registerMoblie": registerMoblie,
-                    "smsCode":smsCode
+                    "smsCode":smsCode,
+                    "password":password_md5
                 },
                 success: function (returnData) {
-                    console.log(returnData)
+                    
                     if (returnData.success) {
                         window.location.href = returnData.url;
                     } else {

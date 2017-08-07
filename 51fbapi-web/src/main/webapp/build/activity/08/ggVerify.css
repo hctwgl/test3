@@ -1,0 +1,34 @@
+body{
+    background-color:white;
+}
+*{
+    box-sizing:border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    -webkit-box-sizing:border-box; /* Safari */
+}
+#verify{
+    padding:0.33rem 0.12rem 0 0.12rem;
+}
+
+.phoneNumber .phoneNumber-right{
+    width:100%;
+    height:1rem;
+    border:1px solid lightgray;
+    padding-left:10%;
+    position:relative;
+}
+.phoneNumber .phoneNumber-pic{
+    width:0.16rem;
+    height:0.24rem;   
+    position:absolute;
+    left:0.14rem;
+}
+.mesg .mesg-right{
+    width:60%;
+    height:1rem;
+    border:1px solid lightgray;
+}
+.mesg  .mesg-pic{
+    width:0.24rem;
+    height:0.24rem;
+}

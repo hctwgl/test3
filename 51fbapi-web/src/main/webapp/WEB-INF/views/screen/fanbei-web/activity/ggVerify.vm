@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($src="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>验证手机号</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggVerify.css?version=$version">
+</head>
+<body>
+    <div id="verify">
+        <div class="phoneNumber">
+            <img src="$src/verify-one.png" alt="" class="phoneNumber-pic">
+            <input type="text" placeHolder="请输入手机号" class="phoneNumber-right">
+        </div>
+        <div class="mesg">
+            <img src="$src/verify-two.png" alt="" class="mesg-pic">
+            <input type="text" placeHolder="请输入短信验证码" class="mesg-right">
+            <button class="btn">获取验证码</button>
+        </div>
+    </div>
+</body>
+</html>
