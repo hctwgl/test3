@@ -29,7 +29,7 @@
             立即登录
         </div>
         <div class="lspdiv clearFix">
-            <span class="spl">我要注册</span>
+            <span class="spl"><a href="http://localhost/fanbei-web/activity/ggregister">我要注册</a></span>
             <span class="spr">忘记密码</span>
         </div>   
     </div>
@@ -37,6 +37,8 @@
             <img src="$src/pic-2.png" alt="">
     </div>       
 </body>
+<script type="text/javascript" src="/common/js/core.js"></script>
+<script type="text/javascript" src="/common/js/md5.js"></script>
 <script type="text/javascript" src="/dist/activity/08/gglogin.js"></script>
 </body>
 </html>

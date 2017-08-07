@@ -24,36 +24,32 @@
 //     });
 // };
 
-/* (function ($) {
-    $.fn.scrollTop = function (options) {
-        var defaults = {
-            speed: 30
+
+//获取数据
+let vm = new Vue({
+    el: '#ggIndex',
+    data: {
+        content: {}
+    },
+    created: function () {
+        this.logData();
+    },
+    methods: {
+        logData() {
+            //获取页面初始化信息
+            let self = this;
+            $.ajax({
+                type: 'get',
+                url: "/H5GGShare/listBank",
+                dataType:JSON,
+                data:{activityId:1},
+                success: function (data) {
+                    //self.content = eval('(' + data + ')').data;
+                    console.log(data);
+                }
+            })
         }
-        var opts = $.extend(defaults, options);
-        this.each(function () {
-            var $timer;
-            var scroll_top = 0;
-            var obj = $(this);
-            var $height = obj.find("ul").height();
-            obj.find("ul").clone().appendTo(obj);
-            obj.hover(function () {
-                clearInterval($timer);
-            }, function () {
-                $timer = setInterval(function () {
-                    scroll_top++;
-                    if (scroll_top > $height) {
-                        scroll_top = 0;
-                    }
-                    obj.find("ul").first().css("margin-top", -scroll_top);
-                }, opts.speed);
-            }).trigger("mouseleave");
-        })
     }
-})(jQuery)
+})
 
 
-$(function () {
-    $(".container").scrollTop({
-        speed: 100 //数值越大 速度越慢
-    });
-}) */
