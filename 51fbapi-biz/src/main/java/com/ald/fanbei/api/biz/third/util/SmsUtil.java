@@ -153,37 +153,25 @@ public class SmsUtil extends AbstractThird {
 	}
 	
 	/**
-	 * 用户借钱风控审核中状态被技术干预后用户符合借钱条件
-	 * @param mobile
-	 * @return
-	 */
-	public boolean sendBorrowRiskQualified(String mobile){
-		return sendSmsByResource(mobile,AfResourceType.SMS_TEMPLATE.getCode(),AfResourceSecType.SMS_BORROW_RISK_QUALIFIED.getCode());
-	}
-	
-	/**
-	 * 用户借钱风控审核中状态被技术干预后用户不符合借钱条件
-	 * @param mobile
-	 * @return
-	 */
-	public boolean sendBorrowRiskNotQualified(String mobile){
-		return sendSmsByResource(mobile,AfResourceType.SMS_TEMPLATE.getCode(),AfResourceSecType.SMS_BORROW_RISK_NOT_QUALIFIED.getCode());
-	}
-	
-	/**
 	 * 借钱审核通过但是打款失败
 	 * @param mobile
 	 * @return
 	 */
 	public boolean sendBorrowPayMoneyFail(String mobile){
-		return sendSmsByResource(mobile,AfResourceType.SMS_TEMPLATE.getCode(),AfResourceSecType.SMS_BORROW_PAY_MONEY_FAIL.getCode());
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(),AfResourceSecType.SMS_BORROW_PAY_MONEY_FAIL.getCode());
+		if(resourceDo!=null&&"1".equals(resourceDo.getValue1())){
+			String content = resourceDo.getValue();
+			SmsResult smsResult = sendSmsToDhst(mobile, content);
+			return smsResult.isSucc();
+		}
+		return false;
 	}
 	
 	private boolean sendSmsByResource(String mobile,String type,String secType){
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(type,secType);
 		if(resourceDo!=null&&"1".equals(resourceDo.getValue1())){
 			String content = resourceDo.getValue();
-			SmsResult smsResult = sendSmsToDhst(mobile, content);
+			SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
 			return smsResult.isSucc();
 		}
 		return false;
