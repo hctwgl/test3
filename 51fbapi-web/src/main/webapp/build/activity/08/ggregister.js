@@ -16,7 +16,7 @@ $(function () {
 
     // 获取验证码
     $(".checkbtn").click(function () {
-        var isState = $(".checkbtn").attr('isState');
+        var isState = $(".checkbtn").attr('isState');//获取设置的状态码
         var mobileNum = $(".mobile").val(); //获取手机号
         if (isState == 0 || !mobileNum) {
             if (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) {
@@ -32,10 +32,11 @@ $(function () {
                         if (returnData.success) {
                             $(".checkbtn").attr("isState", 1);
                             $(".checkbtn").text(timerS + " s");
-                            $(".checkbtn").addClass("gray");
+                            // $(".checkbtn").addClass("gray");
                             timerInterval = setInterval(timeFunction, 1000);
                         } else {
                             requestMsg(returnData.msg);
+                           
                         }
                     },
                     error: function () {
@@ -54,7 +55,7 @@ $(function () {
         var registerMoblie = $(".mobile").val();
         if (/^1(3|4|5|7|8)\d{9}$/i.test(registerMoblie)) {
             $.ajax({
-                url: "/app/user/commitChannelRegister",
+                url: "/app/user/commitRegiste",
                 type: 'POST',
                 dataType: 'JSON',
                 data: {
@@ -62,6 +63,7 @@ $(function () {
                     "smsCode":smsCode
                 },
                 success: function (returnData) {
+                    console.log(returnData)
                     if (returnData.success) {
                         window.location.href = returnData.url;
                     } else {

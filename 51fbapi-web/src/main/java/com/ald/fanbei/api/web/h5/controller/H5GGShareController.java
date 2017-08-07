@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.h5.controller;
 
-import java.lang.ref.ReferenceQueue;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,12 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
@@ -53,9 +50,6 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.mysql.fabric.xmlrpc.base.Data;
-
-import sun.tools.tree.NewArrayExpression;
 
 @Controller
 @RequestMapping("/H5GGShare")
@@ -210,6 +204,7 @@ public class H5GGShareController extends H5Controller {
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+			doMaidianLog(request, resultStr);
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("活动点亮初始化数据失败", e);
@@ -344,6 +339,7 @@ public class H5GGShareController extends H5Controller {
 				Map<String, Object> data = new HashMap<>();
 				data.put("resultList", resultList);
 				resultStr = H5CommonResponse.getNewInstance(true, "赠送卡片初始化成功", "", data).toString();
+				
 			}
 
 		} catch (FanbeiException e) {
@@ -353,7 +349,7 @@ public class H5GGShareController extends H5Controller {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage()).toString();
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
-
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -386,7 +382,8 @@ public class H5GGShareController extends H5Controller {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage()).toString();
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
-
+		
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -457,6 +454,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("ggSendItems error", e);
 		}
 
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -524,6 +522,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("赠送卡片失败" + context, e);
 		}
 
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -552,6 +551,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("赠送卡片失败" + context, e);
 		}
 
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -585,6 +585,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("索要初卡片失败" + context, e);
 		}
 
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -651,6 +652,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("索要初卡片失败" + context, e);
 		}
 
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -700,6 +702,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("ggSendItems error", e);
 		}
 
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -729,6 +732,8 @@ public class H5GGShareController extends H5Controller {
 			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage()).toString();
 			logger.error("索要初卡片失败", e);
 		}
+		
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -771,6 +776,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("红包领取失败" + context, e);
 		}
 
+		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 	
