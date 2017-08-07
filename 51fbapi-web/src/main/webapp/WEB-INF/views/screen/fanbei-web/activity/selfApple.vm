@@ -4,7 +4,7 @@
     #set($version="2017072502")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
-    <title>苹果狂欢购 限时12期免息</title>
+    <title>夏日有狂欢 冰点价日供7元起</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/selfHome.css?version=$version">
 </head>
 <body>
