@@ -70,7 +70,6 @@ $(function () {
                     "password":password_md5
                 },
                 success: function (returnData) {
-                    
                     if (returnData.success) {
                         window.location.href = returnData.url;
                     } else {
@@ -88,3 +87,4 @@ $(function () {
         }
     });
 });
+
