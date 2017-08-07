@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -291,11 +292,6 @@ public class H5GGShareController extends H5Controller {
 		try {
 			RequestDataVo reqVo = new RequestDataVo();
 
-			JSONObject jsonObj = JSON.parseObject(requestData);
-			reqVo.setId(jsonObj.getString("id"));
-			reqVo.setMethod(request.getRequestURI());
-			reqVo.setSystem(jsonObj);
-
 			return reqVo;
 		} catch (Exception e) {
 			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
@@ -309,12 +305,18 @@ public class H5GGShareController extends H5Controller {
 	 *             response
 	 * @param: @return
 	 * @return: String
+	 * @throws UnsupportedEncodingException 
 	 * 
 	 */
 	@RequestMapping(value = "/sendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-	public String sendItems(HttpServletRequest request, HttpServletResponse response) {
+	@ResponseBody
+	public String sendItems(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
+		
+		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        
 		try {
 			context = doH5Check(request, true);
 			if (context.isLogin()) {
