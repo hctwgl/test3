@@ -8,30 +8,46 @@
 </head>
 <body>
 <div id="ggIndex">
-    <div class="personAmount"><p>已有<span>1000</span>人点亮所有场景</p></div>
+    <!--人数左右移动--start-->
+    <div id="personAmount">
+        <div class="amountCont">
+            <div class="cont cont1">
+                <p>已有<span>{{content.fakeFinal}}</span>人点亮所有场景</p>
+            </div>
+            <div class="cont cont2"></div>
+        </div>
+    </div><!--人数左右移动--end-->
     <div class="header">
         <div class="logo"><img src="$src/gg01.png"></div>
-        <p class="joinAmount"><span>12345</span>人参与</p>
+        <p class="joinAmount"><span>{{content.fakeJoin}}</span>人参与</p>
     </div>
-    <div class="money">
+    <div class="money" v-for="item in content.normalCouponList">
         <p>消费有返利</p>
-        <p>还可以领取<span>88.88</span>元现金红包</p>
+        <p>还可以领取<span>{{item.amount}}</span>元现金红包</p>
     </div>
-    <div class="banner">轮播图</div>
+    <!--首页轮播图-->
+    <div class="banner">
+        <ul class="bannerList">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+        </ul>
+        <ul class="num"></ul>
+    </div>
+    <!--首页轮播图--end-->
+    <!--优惠券--start-->
     <div class="couponList clearFix">
-        <div class="coupon">
-            <p class="name">易果生鲜</p>
-            <p class="amount">￥<span>3.0</span></p>
-            <p class="limitAmount white">满<span>10</span>元可用</p>
-            <p class="validTime white">有效期<span>3</span>天</p>
-        </div>
-        <div class="coupon">
-            <p class="name">饿了么</p>
-            <p class="amount">￥<span>3.0</span></p>
-            <p class="limitAmount white">满<span>10</span>元可用</p>
-            <p class="validTime white">有效期<span>3</span>天</p>
+        <div class="coupon"  v-for="item in content.boluomeCouponList" @click="couponClick(item)">
+            <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='waimai_ele'">饿了么</p>
+            <p class="amount" v-if="item.type===1">￥<span>{{item.value}}</span></p>
+            <p class="amount" v-if="item.type===2">￥<span>打{{item.discount*10}}折</span></p>
+            <p class="limitAmount white">满<span>{{item.threshold}}</span>元可用</p>
+            <p class="validTime white" v-if="item.term_type===1">有效期<span>{{item.effective_day}}</span>天</p>
         </div>
     </div>
+    <!--优惠券--end-->
     <div class="cardList clearFix">
         <div class="card"></div>
         <div class="card"></div>

@@ -8,17 +8,57 @@ let vm = new Vue({
         this.logData();
     },
     methods: {
-        logData() { //获取页面初始化信息
+        //获取页面初始化信息
+        logData() {
             let self = this;
             $.ajax({
                 type: 'get',
                 url: "/H5GGShare/initHomePage",
                 data:{activityId:1},
                 success: function (data) {
-                    //self.content = eval('(' + data + ')').data;
-                    console.log(data);
+                    self.content = eval('(' + data + ')').data;
+                    console.log(self.content);
+                    wordMove();//左右移动动画
+                    var couponList=self.content.boluomeCouponList;
+                    for(var i=0;i<couponList.length;i++){
+                        couponList[i] = eval("("+couponList[i]+")");
+                    }
+
                 }
             })
+        },
+        //点击优惠券
+        couponClick:function(e){
+            var couponId=e.couponId;
+            $.ajax({
+                url: "/fanbei-web/pickCoupon",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    couponId:couponId
+                },
+                success: function(returnData){
+                    if(returnData.success){
+                        requestMsg("优惠劵领取成功");
+                    }else{
+                        var status = returnData.data["status"];
+                        if (status == "USER_NOT_EXIST") { // 用户不存在
+                            window.location.href = returnData.url;
+                        }
+                        if (status == "OVER") { // 优惠券个数超过最大领券个数
+                            requestMsg(returnData.msg);
+                            requestMsg("优惠券个数超过最大领券个数");
+                        }
+                        if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                            requestMsg(returnData.msg);
+                            $(".couponLi").eq(i).css('display', 'none');
+                        }
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            });
         },
         //点击我要赠送卡片
         presentClick:function(){
