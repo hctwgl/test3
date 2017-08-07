@@ -44,8 +44,9 @@ let vm = new Vue({
                 dataType:JSON,
                 data:{activityId:1},
                 success: function (data) {
-                    //self.content = eval('(' + data + ')').data;
-                    console.log(data);
+                    self.content = eval('(' + data + ')').data;
+                    console.log( self.content);
+                    // console.log(data);
                 }
             })
         }
