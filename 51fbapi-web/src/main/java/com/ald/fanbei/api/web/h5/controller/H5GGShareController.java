@@ -715,6 +715,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value="listBank" ,method = RequestMethod.GET,produces="text/html;charset=UTF-8")
+	@ResponseBody
 	public String listBank(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		try {
