@@ -166,7 +166,9 @@ public class LoginApi implements ApiHandle {
 		//3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
 		String isBorrowed = (String) bizCacheUtil.getObject(Constants.HAVE_BORROWED+afUserDo.getRid());
 		if("1".equals(isBorrowed)){
-			jo.put("borrowed", true);
+			jo.put("borrowed", "Y");
+		}else{
+			jo.put("borrowed", "N");
 		}
 		
 		
