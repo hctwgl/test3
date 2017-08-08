@@ -228,7 +228,19 @@ public class H5GGShareController extends H5Controller {
 		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
 		t.setBoluomeActivityId(activityId);
 		List<AfBoluomeActivityItemsDo> resultList = afBoluomeActivityItemsService.getListByCommonCondition(t);
-		
+		if (resultList != null && resultList.size()>0) {
+			for(AfBoluomeActivityItemsDo itemsDo :resultList){
+				Long itemsId = itemsDo.getRid();
+				AfBoluomeActivityUserItemsDo conditionUserItems = new AfBoluomeActivityUserItemsDo();
+				conditionUserItems.setItemsId(itemsId);
+				conditionUserItems.setUserId(userId);
+				//查处此用户用户的此卡片的数量
+				List<AfBoluomeActivityUserItemsDo> numList = afBoluomeActivityUserItemsService.getListByCommonCondition(conditionUserItems);
+				if (numList != null && numList.size() > 0) {
+					itemsDo.setNum(numList.size());
+				}
+			}
+		}
 		return resultList;
 	} 
 	/**
@@ -380,6 +392,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/doSendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String doSendItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
@@ -430,6 +443,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/ggSendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String ggSendItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		try {
@@ -485,6 +499,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/pickUpItems", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String pickUpItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
@@ -553,6 +568,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/lightItems", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String lightItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
@@ -583,6 +599,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/askForItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String askForItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
@@ -616,6 +633,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/sendToFriend", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String sendToFriend(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
@@ -681,6 +699,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value = "/ggAskForItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String doAskForItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		try {
@@ -758,6 +777,7 @@ public class H5GGShareController extends H5Controller {
 
 	
 	@RequestMapping(value = "/pickUpSuperPrize", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String pickUpSuperPrize(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
