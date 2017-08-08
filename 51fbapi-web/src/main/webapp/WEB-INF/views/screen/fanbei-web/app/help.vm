@@ -8,39 +8,101 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/app/help.css?version=$version">
 </head>
 <body>
-    <div id="navWrap">
-        <ul class="nav">
-            <li id="first" class="current">
-                <i class="bg"></i>
-                <span >借款</span>
-            </li>
-            <li id="second">
-                <i></i>
-                <span>分期</span>
-            </li>
-            <li id="third">
-                <i></i>
-                <span>账单与还款</span>
-            </li>
-            <li id="fourth">
-                <i></i>
-                <span>额度评估</span>
-            </li>
-        </ul>
-    </div>
+<div id="navWrap">
+    <ul class="nav">
+        <li id="first" class="current">
+            <i class="bg"></i>
+            <span>借款</span>
+        </li>
+        <li id="second">
+            <i></i>
+            <span>分期</span>
+        </li>
+        <li id="third">
+            <i></i>
+            <span>账单与还款</span>
+        </li>
+        <li id="fourth">
+            <i></i>
+            <span>额度评估</span>
+        </li>
+    </ul>
+</div>
 
-    <div class="swiper-container">
-        <div class="main_wrap swiper-wrapper">
-            <div class="swiper-slide" data-type="第一个">
-                <ul id="initGoods" class="goodsListModel_mainContent clearfix">
-                </ul>
-            </div>
+<div class="main_wrap">
+    <ul id="firstList" class="listMainContent ">
+        <li class="itemTitle">
+            <div class="title">如何申请借款？需要具备什么条件？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent" style="display: none">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+            需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+            港澳台人士。
         </div>
-    </div>
+        <li class="itemTitle">
+            <div class="title">借款需要提交什么资料？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent"style="display: none">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+            需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+            港澳台人士。
+        </div>
+        <li class="itemTitle">
+            <div class="title">借款需要多长时间？如何查询进度？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent"style="display: none">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+            需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+            港澳台人士。
+        </div>
+        <li class="itemTitle">
+            <div class="title">借款的费用如何计算？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent"style="display: none">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+            需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+            港澳台人士。
+        </div>
+        <li class="itemTitle">
+            <div class="title">借款支持哪些银行卡？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent"style="display: none">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+            需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+            港澳台人士。
+        </div>
+        <li class="itemTitle">
+            <div class="title">申请提交后是否可以取消借款？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent"style="display: none">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+            需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+            港澳台人士。
+        </div>
+        <li class="itemTitle">
+            <div class="title">借款长时间未到账怎么办？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent"style="display: none">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+            需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+            港澳台人士。
+        </div>
+    </ul>
+    <ul class="listMainContent" style="display: none">
+        <span>分期</span>
+    </ul>
+    <ul class="listMainContent" style="display: none">
+        <span>账单与还款</span>
+    </ul>
+    <ul class="listMainContent" style="display: none">
+        <span>额度评估</span>
+    </ul>
+</div>
 
-    <script type="text/javascript" src="/common/js/jquery-2.2.4.min.js"></script>
-    <!-- <script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script> -->
-    <script type="text/javascript" src="/dist/js/app/help.js?version=$version"></script>
+
+<script type="text/javascript" src="/common/js/jquery-2.2.4.min.js"></script>
+<!-- <script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script> -->
+<script type="text/javascript" src="/dist/js/app/help.js?version=$version"></script>
 
 </body>
 </html>
