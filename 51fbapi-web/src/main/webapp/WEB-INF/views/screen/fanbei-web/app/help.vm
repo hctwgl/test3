@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="201708071630")
+    #set($version="2017080701")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>帮助中心</title>
     <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
@@ -85,13 +85,13 @@
         <div class="itemContent" style="display: none">您好，目前借款审核通过后，2小时内即会放款，具体到账时间以银行为准，如您当天没有到账，可以提供一下银行流水给客服进行核实。
         </div>
     </ul>
-    <ul class="listMainContent" style="display: none">
+    <ul id="secondList" class="listMainContent hide">
         <span>分期</span>
     </ul>
-    <ul class="listMainContent" style="display: none">
+    <ul class="listMainContent hide">
         <span>账单与还款</span>
     </ul>
-    <ul class="listMainContent" style="display: none">
+    <ul class="listMainContent hide">
         <span>额度评估</span>
     </ul>
 </div>

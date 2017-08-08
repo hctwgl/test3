@@ -10,11 +10,14 @@ $(function(){
     // 点击导航事件
     $(".nav li").on('click',function(e){
         e.preventDefault();
-        var i = $(this).index();
+        var k = $(this).index();
         $(this).addClass("current");
         $(this).siblings().removeClass("current");
         $(this).find('i').addClass("bg");
         $(this).siblings().find('i').removeClass("bg");
+
+        $(".main_wrap").find("ul").eq(k).removeClass("hide");
+        $(".main_wrap").find('ul').eq(k).siblings().addClass("hide");
     });
 
 });
