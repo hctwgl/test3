@@ -16,11 +16,10 @@ $(function(){
             }
         }
 
-
         //获取数据
         $(".btn").click(function () {
             var userName = $(".phoneNumber-right").val();//获取手机号
-            var password = $(".mesg-right").val();//获取密码
+            var mesg= $(".mesg-right").val();//获取验证码
             if (/^1(3|4|5|7|8)\d{9}$/i.test(userName)) {
                 // var password_md5 = String(CryptoJS.MD5(password));//md5加密
                 $.ajax({
@@ -36,6 +35,9 @@ $(function(){
                             $(".btn").attr("isState", 1);
                             $(".btn").text(timerS + " s");
                             timerInterval = setInterval(timeFunction, 1000);
+
+                            localStorage.setItem("user",userName); //将手机号存储到本地
+                            localStorage.setItem("mesg",mesg); //将短信验证码存储到本地
                             
                         }else{
                             requestMsg(data.msg);
