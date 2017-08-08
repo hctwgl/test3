@@ -1,3 +1,8 @@
+
+var userName = "";
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
 //获取数据
 let vm = new Vue({
     el: '#ggIndex',
@@ -14,7 +19,7 @@ let vm = new Vue({
             $.ajax({
                 type: 'get',
                 url: "/H5GGShare/initHomePage",
-                data:{activityId:1},
+                data:{'activityId':1},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
@@ -59,6 +64,43 @@ let vm = new Vue({
                     requestMsg("请求失败");
                 }
             });
+        },
+        //点击卡片
+        cardClick:function(e){
+            var shopId=e.refId;
+            //alert(shopId)
+            $.ajax({
+                type: 'post',
+                url: '/fanbei-web/getBrandUrl',
+                data:{'shopId':shopId,'userName':userName},
+                dataType:'JSON',
+                success: function (returnData) {
+                    if(returnData.success){
+                        console.log(returnData)
+                        location.href=returnData.url;
+                    }else{
+                        location.href=returnData.url;
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            })
+        },
+        //点击获取终极大奖
+        finalPrize:function(){
+           /*$.ajax({
+                type: 'get',
+                url: '/H5GGShare/pickUpSuperPrize',
+                data:{'activityId':1},
+                dataType:'JSON',
+                success: function (data) {
+                    console.log(data)
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            })*/
         },
         //点击我要赠送卡片
         presentClick:function(){
