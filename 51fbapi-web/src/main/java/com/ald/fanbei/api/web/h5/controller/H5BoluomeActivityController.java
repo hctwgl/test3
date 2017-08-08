@@ -68,7 +68,7 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/")
+@RequestMapping("/H5GGShare")
 public class H5BoluomeActivityController extends BaseController {
 	
 @Resource
@@ -94,7 +94,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 
 
 	//菠萝觅活动登录
-	@RequestMapping(value = "boluomeActivityLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/boluomeActivityLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String boluomeActivityLogin(HttpServletRequest request,HttpServletResponse response ,ModelMap model){
 		
@@ -161,7 +161,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	
 	//提交菠萝觅活动注册
 	@ResponseBody
-	@RequestMapping(value = "commitBouomeActivityRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/commitBouomeActivityRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		Calendar calStart = Calendar.getInstance();
 		String resultStr = "";
@@ -262,7 +262,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	
 	//菠萝觅活动忘记密码
 	@ResponseBody
-	@RequestMapping(value = "boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String boluomeActivityForgetPwd(HttpServletRequest request, ModelMap model) throws IOException {
 		String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
 		AfUserDo afUserDo = new AfUserDo(); 
@@ -281,7 +281,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	}
 	//菠萝觅活动重置密码
 	@ResponseBody
-	@RequestMapping(value = "boluomeActivityResetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/boluomeActivityResetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String boluomeActivityResetPwd(HttpServletRequest request, ModelMap model) throws IOException {
 	//	String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
 		String userName = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
