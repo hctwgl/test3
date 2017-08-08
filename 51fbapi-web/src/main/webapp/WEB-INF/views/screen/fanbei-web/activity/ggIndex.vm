@@ -50,9 +50,9 @@
     </div>
     <!--优惠券--end-->
     <div class="cardList clearFix">
-        <div class="card" v-for="item in content.itemsList"><img :src="item.iconUrl"></div>
+        <div class="card" v-for="item in content.itemsList" @click="cardClick(item)"><img :src="item.iconUrl"></div>
     </div>
-    <div class="finalPrize" v-for="item in content.normalCouponList">
+    <div class="finalPrize" v-for="item in content.normalCouponList" @click="finalPrize()">
         <p><span>{{item.amount}}</span>元红包</p>
     </div>
     <div class="presentCard ask" @click="presentClick()">我要赠送卡片</div>
