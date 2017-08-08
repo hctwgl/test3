@@ -42,5 +42,5 @@
 
     </div>
 </body>
-<script src="/dist/js/user/initTradeInfo.js"></script>
+<script src="/dist/js/user/initTradeInfo.js?id=1"></script>
 </html>
