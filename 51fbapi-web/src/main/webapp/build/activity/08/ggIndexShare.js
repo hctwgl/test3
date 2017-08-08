@@ -1,3 +1,8 @@
+//var activityId = getUrl("activityId");
+var userName = "";
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
 //获取数据
 let vm = new Vue({
     el: '#ggIndexShare',
@@ -30,35 +35,25 @@ let vm = new Vue({
         //点击优惠券
         couponClick:function(e){
             var couponId=e.couponId;
-            $.ajax({
-                url: "/fanbei-web/pickCoupon",
-                type: "POST",
-                dataType: "JSON",
-                data: {
-                    couponId:couponId
-                },
-                success: function(returnData){
-                    if(returnData.success){
-                        requestMsg("恭喜您领券成功");
-                    }else{
-                        var status = returnData.data["status"];
-                        if (status == "USER_NOT_EXIST") { // 用户不存在
-                            window.location.href = returnData.url;
-                        }
-                        if (status == "OVER") { // 优惠券个数超过最大领券个数
-                            requestMsg(returnData.msg);
-                            requestMsg("您已领过优惠券了，快去使用吧 ~");
-                        }
-                        if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                            requestMsg(returnData.msg);
-                            requestMsg("您下手慢了哦，优惠券已领完，下次再来吧 ~");
-                        }
+            if(userName==''|| userName==undefined){
+                window.location.href="gglogin";
+            }else{
+                $.ajax({
+                    url: "/fanbei-web/pickBoluomeCoupon",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        'sceneId':couponId,'userName':userName
+                    },
+                    success: function(data){
+
+                    },
+                    error: function(){
+                        requestMsg("请求失败");
                     }
-                },
-                error: function(){
-                    requestMsg("请求失败");
-                }
-            });
+                });
+            }
+
         },
         //点击我要赠送卡片
         presentClick:function(){
