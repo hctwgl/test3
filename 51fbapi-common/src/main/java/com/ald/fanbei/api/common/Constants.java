@@ -294,5 +294,8 @@ public class Constants {
 	public static final int DEFAULT_DIGEST_TIMES = 1024;
 	public static final String SHA1 = "SHA-1";
 	public static final String TRADE_LOGIN_BUSINESSID = "trade_login_businessId_";
+	
+	//查询用户是否结果款，1代表已借款 
+	public static final String HAVE_BORROWED = "HAVE_BORROWED";
 
 }

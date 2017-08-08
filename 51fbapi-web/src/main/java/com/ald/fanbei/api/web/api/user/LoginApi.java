@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.security.Credential.MD5;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -58,6 +60,10 @@ public class LoginApi implements ApiHandle {
 	TongdunUtil tongdunUtil;
 	@Resource
 	JpushService jpushService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	
+	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -156,6 +162,14 @@ public class LoginApi implements ApiHandle {
 		jo.put("user", userVo);
 		jo.put("token", token);
 		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(),context.getAppVersion()));
+		
+		//3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
+		String isBorrowed = (String) bizCacheUtil.getObject(Constants.HAVE_BORROWED+afUserDo.getRid());
+		if("1".equals(isBorrowed)){
+			jo.put("borrowed", true);
+		}
+		
+		
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {
 			if (StringUtils.isBlank(blackBox)) {
