@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.web.api.tradeWeiXin;
 
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderRefundService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -43,6 +40,8 @@ public class TradeOrderInfoApi implements ApiHandle {
     AfBorrowService afBorrowService;
     @Resource
     AfOrderRefundService afOrderRefundService;
+    @Resource
+    AfUserService afUserService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -53,18 +52,18 @@ public class TradeOrderInfoApi implements ApiHandle {
         if (orderInfo == null) {
             throw new FanbeiException(FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
         }
-        AfOrderVo orderVo = getOrderVo(orderInfo, context);
+        AfOrderVo orderVo = getOrderVo(orderInfo);
         resp.setResponseData(orderVo);
         return resp;
     }
 
-    private AfOrderVo getOrderVo(AfOrderDo order, FanbeiContext context) {
+    private AfOrderVo getOrderVo(AfOrderDo order) {
         AfOrderVo vo = new AfOrderVo();
         vo.setGmtCreate(order.getGmtCreate());
         vo.setOrderNo(order.getOrderNo());
         vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
         vo.setActualAmount(order.getActualAmount());
-        vo.setMobile(context.getUserName());
+        vo.setMobile(afUserService.getUserById(order.getUserId()).getUserName());
         vo.setGmtPayStart(new Date());
         vo.setGmtPayEnd(DateUtil.addHoures(order.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
         //订单状态
