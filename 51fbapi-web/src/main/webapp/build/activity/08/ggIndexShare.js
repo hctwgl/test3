@@ -1,6 +1,6 @@
 //获取数据
 let vm = new Vue({
-    el: '#ggIndex',
+    el: '#ggIndexShare',
     data: {
         content: {}
     },

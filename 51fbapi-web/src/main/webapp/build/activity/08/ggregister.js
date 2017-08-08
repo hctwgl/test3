@@ -16,7 +16,7 @@ $(function () {
 
     // 获取验证码
     $(".checkbtn").click(function () {
-        var isState = $(".checkbtn").attr('isState');
+        var isState = $(".checkbtn").attr('isState');//获取设置的状态码
         var mobileNum = $(".mobile").val(); //获取手机号
         if (isState == 0 || !mobileNum) {
             if (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) {
@@ -32,10 +32,11 @@ $(function () {
                         if (returnData.success) {
                             $(".checkbtn").attr("isState", 1);
                             $(".checkbtn").text(timerS + " s");
-                            $(".checkbtn").addClass("gray");
+                            // $(".checkbtn").addClass("gray");
                             timerInterval = setInterval(timeFunction, 1000);
                         } else {
                             requestMsg(returnData.msg);
+                           
                         }
                     },
                     error: function () {
@@ -50,16 +51,23 @@ $(function () {
 
     // 完成注册提交
     $(".loginbtn").click(function () {
-        var smsCode = $(".check").val();
-        var registerMoblie = $(".mobile").val();
+        var smsCode = $(".check").val();//获取短信
+        var registerMoblie = $(".mobile").val();//获取手机号
+        var password=$("#password").val();//获取密码
+        // console.log(password);
+        console.log(smsCode);
+         console.log(registerMoblie);
+
         if (/^1(3|4|5|7|8)\d{9}$/i.test(registerMoblie)) {
+            var password_md5 = String(CryptoJS.MD5(password));//md5加密
             $.ajax({
-                url: "/app/user/commitChannelRegister",
+                url: "/app/user/commitRegiste",
                 type: 'POST',
                 dataType: 'JSON',
                 data: {
                     "registerMoblie": registerMoblie,
-                    "smsCode":smsCode
+                    "smsCode":smsCode,
+                    "password":password_md5
                 },
                 success: function (returnData) {
                     if (returnData.success) {
@@ -79,3 +87,4 @@ $(function () {
         }
     });
 });
+

@@ -288,11 +288,6 @@ public class H5GGShareController extends H5Controller {
 		try {
 			RequestDataVo reqVo = new RequestDataVo();
 
-			JSONObject jsonObj = JSON.parseObject(requestData);
-			reqVo.setId(jsonObj.getString("id"));
-			reqVo.setMethod(request.getRequestURI());
-			reqVo.setSystem(jsonObj);
-
 			return reqVo;
 		} catch (Exception e) {
 			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
@@ -306,6 +301,7 @@ public class H5GGShareController extends H5Controller {
 	 *             response
 	 * @param: @return
 	 * @return: String
+	 * @throws UnsupportedEncodingException 
 	 * 
 	 */
 	@RequestMapping(value = "/sendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")

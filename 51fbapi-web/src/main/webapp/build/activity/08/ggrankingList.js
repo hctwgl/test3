@@ -26,30 +26,28 @@
 
 
 //获取数据
-let vm = new Vue({
-    el: '#ggIndex',
-    data: {
-        content: {}
-    },
-    created: function () {
-        this.logData();
-    },
-    methods: {
-        logData() {
-            //获取页面初始化信息
-            let self = this;
-            $.ajax({
-                type: 'get',
-                url: "/H5GGShare/listBank",
-                dataType:JSON,
-                data:{activityId:1},
-                success: function (data) {
-                    //self.content = eval('(' + data + ')').data;
-                    console.log(data);
+$(function () {
+    $.ajax({
+        type: 'get',
+        url: "/H5GGShare/listBank",
+        dataType: 'JSON',
+        data: {
+            activityId: 1
+        },
+        success: function (data) {
+            if (data.success) {
+                var bankList = data.data.bankList;
+                var html = "";
+                for (var i = 0; i < bankList.length; i++) {
+                    html += ['<li class="list">',
+                        '<span class="list-left">' + bankList[i].userName + '</span>',
+                        '<span class="list-center">' + bankList[i].totalRebate + '</span>',
+                        '<span class="list-right">' + bankList[i].inviteRebate + '</span>',
+                        '</li>'
+                    ].join("");
                 }
-            })
+                $('.numberList').html(html)
+            }
         }
-    }
+    })
 })
-
-

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>我要注册</title>
-    <link rel="stylesheet" href="/dist/activity/08/ggregister.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggregister.css?version=$version">
 </head>
 <body>
     <div class="login" id="register">
@@ -25,6 +25,11 @@
             <input   placeholder="请输入短信验证码" class="check pinp" >
             <span class="checkbtn" isState=0>获取验证码</span>
         </div>
+        <div class="phone password">
+            <span class="bicon"></span>
+            <input type="password" maxLength=11 minLength=11  placeholder="请输入密码" id="mobile" class="pinp mobile" id="password">
+            <span class="xxicon"><img src="$src/fork.png" alt=""></span>
+        </div>
         <div class="loginbtn">
             立即注册
         </div>
@@ -37,5 +42,7 @@
             <img src="$src/pic-2.png" alt="">
     </div>
 </body>
+<script type="text/javascript" src="/common/js/core.js"></script>
+<script type="text/javascript" src="/common/js/md5.js"></script>
 <script type="text/javascript" src="/dist/activity/08/ggregister.js?"></script>
 </html>

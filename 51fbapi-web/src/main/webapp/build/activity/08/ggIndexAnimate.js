@@ -1,6 +1,55 @@
-//1.首页顶部栏动画
+//1.首页顶部栏动画-------------------------
+//（1）:定速度
+var speed = 20;
+var cont = $(".cont1").html();
+$(".cont2").html(cont);
+//（2）:创建方法定时执行
+function wordMove(){
+    var left = $(".personAmount").scrollLeft();
+    if(left >= $(".cont1").width()){
+        left = 0;
+    }else{
+        left++;
+    }
+    $(".personAmount").scrollLeft(left);
+    setTimeout("wordMove()",speed);
+}
+//wordMove();页面获取数据后再执行
 
 //2.首页轮播图动画
+var i = 0;
+var liWidth=6.25+'rem';
+var clone = $(".banner .bannerList li").first().clone();//克隆第一张图片
+$(".banner .bannerList").append(clone);//复制到列表最后
+var size = $(".banner .bannerList li").length;
+var ulWidth=size*6.25+'rem';
+$(".banner .bannerList li").width(liWidth);
+$(".banner .bannerList").width(ulWidth);
+for (var j = 0; j < size-1; j++) {
+    $(".banner .num").append("<li></li>");
+}
+$(".banner .num li").first().addClass("on");
+/*自动轮播*/
+setInterval(function () { i++; move();},1500);
+/*移动事件*/
+function move() {
+    if (i == size) {
+        $(".banner .bannerList").css({ left: 0 });
+        i = 1;
+    }
+    if (i == -1) {
+        $(".banner .bannerList").css({ left: -(size - 1) * 6.25+'rem' });
+        i = size - 2;
+    }
+    $(".banner .bannerList").stop().animate({ left: -i * 6.25+'rem'}, 500);
+
+    if (i == size - 1) {
+        $(".banner .num li").eq(0).addClass("on").siblings().removeClass("on");
+    } else {
+        $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
+    }
+}
+
 //3.赠送或索要卡片弹窗里动画
 var touch = true;           //touch=true为开启触摸滑动
 var slideNub;               //轮播图片数量

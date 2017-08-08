@@ -1,2 +1,2 @@
-"use strict";var vm=new Vue({el:"#ggIndex",data:{content:{}},created:function(){this.logData()},methods:{logData:function(){$.ajax({type:"get",url:"/H5GGShare/listBank",dataType:JSON,data:{activityId:1},success:function(t){console.log(t)}})}}});
+"use strict";$(function(){$.ajax({type:"get",url:"/H5GGShare/listBank",dataType:"JSON",data:{activityId:1},success:function(s){if(s.success){for(var t=s.data.bankList,a="",e=0;e<t.length;e++)a+=['<li class="list">','<span class="list-left">'+t[e].userName+"</span>",'<span class="list-center">'+t[e].totalRebate+"</span>",'<span class="list-right">'+t[e].inviteRebate+"</span>","</li>"].join("");$(".numberList").html(a)}}})});
 //# sourceMappingURL=../../_srcmap/activity/08/ggrankingList.js.map

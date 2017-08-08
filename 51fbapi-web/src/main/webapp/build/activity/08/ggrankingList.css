@@ -71,7 +71,7 @@ body {
 #rankingList .phoneNumber .phone-center {
     float: left;
 }
-
+/*start信息滚动  */
 #rankingList .phoneNumber .phone-right {
     float: right;
 }
@@ -83,7 +83,7 @@ body {
                     transform: translateY(-100%);
                 }
             }
-            
+          
 #rankingList .container {
     padding-left: 0.2rem;
     font-size: 0.28rem;
@@ -94,7 +94,7 @@ body {
 #rankingList .container .numberList{
     animation: moveup 10s  linear infinite;
 }
- 
+/*end信息滚动  */  
 #rankingList .numberList .list {
     height: 0.6rem;
     line-height: 0.6rem;

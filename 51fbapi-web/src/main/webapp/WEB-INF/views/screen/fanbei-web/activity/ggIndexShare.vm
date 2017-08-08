@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170801")
+    #set($version="20170807")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
-    <title>场景点亮首页</title>
+    <title>场景点亮分享页</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
 </head>
 <body>
-<div id="ggIndex" class="ggIndex">
+<div id="ggIndexShare" class="ggIndex">
     <!--人数左右移动--start-->
     <div class="personAmount">
         <div class="amountCont">
@@ -58,7 +58,7 @@
     <div class="presentCard ask" @click="presentClick()">我要赠送卡片</div>
     <div class="demandCard ask" @click="demandClick()">我要索要卡片</div>
     <div class="progress">
-       <div class="left"></div>
+        <div class="left"></div>
         <p class="p01">完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利</p>
         <p class="p02">向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你</p>
         <p>集齐全部专属卡片，即可兑换<span>88.88</span>元现金红包</p>
@@ -92,6 +92,6 @@
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/08/ggIndexAnimate.js?version=$version"></script>
-<script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/ggIndexShare.js?version=$version"></script>
 </body>
 </html>
