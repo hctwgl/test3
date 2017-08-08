@@ -165,11 +165,11 @@
 		on a.user_id =b.id
 		left join af_trade_order c on a.id = c.order_id
 		where c.business_id = #{businessId}
-		<if test="startOfDate != null and startOfDate != '' ">
+		<if test="startDate != null and startDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
 			#{startOfDate}
 		</if>
-		<if test="endOfDate != null and endOfDate != '' ">
+		<if test="endDate != null and endDate != '' ">
 			and a.gmt_create <![CDATA[   <=  ]]>
 			#{endOfDate}
 		</if>
@@ -190,11 +190,11 @@
 		on a.user_id =b.id
 		left join af_trade_order c on a.id = c.order_id
 		where c.business_id = #{businessId}
-		<if test="startOfDate != null and startOfDate != '' ">
+		<if test="startDate != null and startDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
 			#{startOfDate}
 		</if>
-		<if test="endOfDate != null and endOfDate != '' ">
+		<if test="endDate != null and endDate != '' ">
 			and a.gmt_create <![CDATA[   <=  ]]>
 			#{endOfDate}
 		</if>
