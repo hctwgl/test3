@@ -1,42 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="201708071630")
+    #set($version="2017080701")
     #set($commonUrl="http://f.51fanbei.com/h5")
-    <title>服务中心</title>
+    <title>帮助中心</title>
     <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
     <link rel="stylesheet" type="text/css" href="/dist/css/app/help.css?version=$version">
 </head>
 <body>
-    <div id="navWrap">
-        <ul class="nav">
-            <li id="first" class="current">
-                <i></i>
-                <span >借款</span>
-            </li>
-            <li id="second">
-                <i></i>
-                <span>分期</span>
-            </li>
-            <li id="third">
-                <i></i>
-                <span>账单与还款</span>
-            </li>
-            <li id="fourth">
-                <i></i>
-                <span>额度评估</span>
-            </li>
-        </ul>
-    </div>
+<div id="navWrap">
+    <ul class="nav">
+        <li id="first" class="current">
+            <i class="bg"></i>
+            <span>借款</span>
+        </li>
+        <li id="second">
+            <i></i>
+            <span>分期</span>
+        </li>
+        <li id="third">
+            <i></i>
+            <span>账单与还款</span>
+        </li>
+        <li id="fourth">
+            <i></i>
+            <span>额度评估</span>
+        </li>
+    </ul>
+</div>
 
-    <div class="swiper-container">
-        <div class="main_wrap swiper-wrapper">
-            <div class="swiper-slide" data-type="第一个">
-                <ul id="initGoods" class="goodsListModel_mainContent clearfix">
-                </ul>
-            </div>
+<div class="main_wrap">
+    <ul id="firstList" class="listMainContent">
+        <li class="itemTitle">
+            <div class="title">如何申请借款？需要具备什么条件？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent hide">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+            需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+            港澳台人士。
         </div>
-    </div>
+        <hr class="divider">
+        <li class="itemTitle">
+            <div class="title">借款需要提交什么资料？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent hide" >目前基本认证需要提供身份信息、银行卡，芝麻信用分、运营商信息以及通讯录等相关信息，详情请查看APP内的信用认证。
+        </div>
+        <hr class="divider">
+        <li class="itemTitle">
+            <div class="title">借款需要多长时间？如何查询进度？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent hide" >
+            您好，当天提交的信息当天都会有审核结果，00：00-9：00内提交的申请，将在9：00后开始审核，最快8钟会有结果。您可以关注一下借钱页面或者留意一下APP的站内信。
+        </div>
+        <hr class="divider">
+        <li class="itemTitle">
+            <div class="title">借款的费用如何计算？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent hide">您好，根据市场运营规则调整，目前手续费是0.9%，如您保持良好的使用记录，后期费用也会随之调整，信用越好，费用越低。
+        </div>
+        <hr class="divider">
+        <li class="itemTitle">
+            <div class="title">为什么会借款失败？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent hide">
+            您好，借款失败通常分为审核失败和放款失败，审核失败一般都是您的综合信用评分不足导致的，暂时不符合借款要求。放款失败通常是由于您绑定的银行卡信息有误/银行卡类型不符，建议您可以先在APP内绑定另一张常用卡，然后及时联系客服做主副卡顺序调整，然后进行重新借款。
+        </div>
+        <hr class="divider">
+        <li class="itemTitle">
+            <div class="title">借款支持哪些银行卡？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent hide">
+            您好，目前只支持以下储蓄卡：工商银行、中国银行、建设银行、农业银行、交通银行、平安银行、兴业银行、上海浦东发展银行、中信银行、光大银行、邮政储蓄
+        </div>
+        <hr class="divider">
+        <li class="itemTitle">
+            <div class="title">申请提交后是否可以取消借款？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent hide" >您好，提交申请后目前不支持取消。
+        </div>
+        <hr class="divider">
+        <li class="itemTitle">
+            <div class="title">借款长时间未到账怎么办？</div>
+            <i class="arrow"></i>
+        </li>
+        <div class="itemContent hide">您好，目前借款审核通过后，2小时内即会放款，具体到账时间以银行为准，如您当天没有到账，可以提供一下银行流水给客服进行核实。
+        </div>
+
+    </ul>
+    <ul id="secondList" class="listMainContent hide">
+        <span>分期</span>
+    </ul>
+    <ul class="listMainContent hide">
+        <span>账单与还款</span>
+    </ul>
+    <ul class="listMainContent hide">
+        <span>额度评估</span>
+    </ul>
+</div>
+
+
+<script type="text/javascript" src="/common/js/jquery-2.2.4.min.js"></script>
+<!-- <script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script> -->
+<script type="text/javascript" src="/dist/js/app/help.js?version=$version"></script>
 
 </body>
 </html>
+
