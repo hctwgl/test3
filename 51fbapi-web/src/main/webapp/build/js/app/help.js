@@ -20,10 +20,26 @@ $(function(){
         $(".main_wrap").find('ul').eq(k).siblings().addClass("hide");
     });
 
-    $(".itemTitle").on('click',function (e) {
+    $("#firstList li").on('click',function (e) {
         e.preventDefault();
         var k = $(this).index();
+        console.log(k);
         $(this).find("i").toggleClass("arrowUp");
-        $(".listMainContent").find(".itemContent").eq(k).toggleClass("hide");
+        $("#firstList").find(".itemContent1").eq(k).toggleClass("hide");
+    })
+
+    $("#secondList li").on('click',function (e) {
+        e.preventDefault();
+        var k = $(this).index();
+        console.log(k);
+        $(this).find("i").toggleClass("arrowUp");
+        $("#secondList").find(".itemContent2").eq(k).toggleClass("hide");
+    })
+
+    $(".tel").click(function () {
+        window.location.href="tel://4000025151"
+    })
+    $(".kf").click(function () {
+        window.location.href="/fanbei-web/opennative?name=APP_CONTACT_CUSTOMER"
     })
 });
