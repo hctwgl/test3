@@ -43,7 +43,7 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 		List<AfTradeWithdrawDetailDo> detailList = afTradeWithdrawDetailDao.getByRecordId(id);
 		List<Long> ids = new ArrayList<>();
 		for (AfTradeWithdrawDetailDo detail: detailList) {
-			ids.add(detail.getId());
+			ids.add(detail.getOrderId());
 		}
 		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.EXTRACT.getCode());
 		return 0;
@@ -60,7 +60,7 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 		List<AfTradeWithdrawDetailDo> detailList = afTradeWithdrawDetailDao.getByRecordId(id);
 		List<Long> ids = new ArrayList<>();
 		for (AfTradeWithdrawDetailDo detail: detailList) {
-			ids.add(detail.getId());
+			ids.add(detail.getOrderId());
 		}
 		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.NEW.getCode());
 		return 0;
