@@ -86,7 +86,7 @@ public class H5GGShareController extends H5Controller {
 	@Resource
 	AfBoluomeActivityUserRebateService afBoluomeActivityUserRebateService;
 
-
+	String  opennative = "/fanbei-web/opennative?name=";
 	
 	
 	/**
@@ -360,9 +360,15 @@ public class H5GGShareController extends H5Controller {
         response.setContentType("application/json;charset=utf-8");
         
 		try {
-			context = doH5Check(request, true);
+			context = doH5Check(request, false);
+			Long userId = context.getUserId();
+			if (userId == null) {
+				Map<String,Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+			}
 			if (context.isLogin()) {
-				Long userId = context.getUserId();
 				Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 				if (userId != null && activityId != null) {
 					// 选出itemsId
@@ -418,7 +424,14 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
+			context = doH5Check(request, false);
+			Long userId = context.getUserId();
+			if (userId == null) {
+				Map<String,Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+			}
 			if (context.isLogin()) {
 				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 				// 改变用户卡片的中见状态
@@ -525,9 +538,15 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
+			context = doH5Check(request, false);
+			Long userId = context.getUserId();
+			if (userId == null) {
+				Map<String,Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+			}
 			if (context.isLogin()) {
-				Long userId = context.getUserId();// 登录的用户id
 				Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 				AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService
 						.getById(resourceUserItemsId);// old卡片的内容
@@ -594,7 +613,14 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
+			context = doH5Check(request, false);
+			Long userId = context.getUserId();
+			if (userId == null) {
+				Map<String,Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+			}
 			resultStr = initHomepage(request, response);
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
@@ -625,7 +651,14 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
+			context = doH5Check(request, false);
+			Long userId = context.getUserId();
+			if (userId == null) {
+				Map<String,Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+			}
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			List<AfBoluomeActivityItemsDo> itemsList = getActivityItems(activityId);
 			Map<String, Object> data = new HashMap<>();
@@ -659,10 +692,16 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
+			context = doH5Check(request, false);
+			Long userId = context.getUserId();
+			if (userId == null) {
+				Map<String,Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+			}
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
 			Long friendId = NumberUtil.objToLong(request.getParameter("friendId"));
-			Long userId = context.getUserId();
 			if (userId != null) {
 				AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
 				if (itemsDo != null) {
@@ -804,6 +843,7 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
+			
 			Long userId = context.getUserId();
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
