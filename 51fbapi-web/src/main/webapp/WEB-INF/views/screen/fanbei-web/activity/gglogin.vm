@@ -30,7 +30,7 @@
         </div>
         <div class="lspdiv clearFix">
             <span class="spl"><a href="http://localhost/fanbei-web/activity/ggregister">我要注册</a></span>
-            <span class="spr"><a href="http://localhost/fanbei-web/activity/ggForgetP">忘记密码</a></span>
+            <span class="spr"><a href="http://localhost/fanbei-web/activity/ggVerify">忘记密码</a></span>
         </div>   
     </div>
     <div class="botimg">

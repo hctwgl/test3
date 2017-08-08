@@ -17,7 +17,7 @@
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                     window.location.href ="data.url";
+                     window.location.href ="http://localhost/fanbei-web/activity/ggIndexShare";
                     }else{
                         requestMsg(data.msg);
                     }
