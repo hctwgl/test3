@@ -70,7 +70,7 @@ public class HttpUtil {
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;
