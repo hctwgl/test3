@@ -76,6 +76,9 @@ public class H5GGShareController extends H5Controller {
 	@Resource
 	AfBoluomeActivityUserRebateService afBoluomeActivityUserRebateService;
 
+
+	
+	
 	/**
 	 * 
 	 * @说明：活动点亮初始化
@@ -146,7 +149,9 @@ public class H5GGShareController extends H5Controller {
 										if (parentBo != null ) {
 											String activityCoupons = parentBo.getActivity_coupons();
 											String result = activityCoupons.substring(1, activityCoupons.length()-1);
-											boluomeCouponList.add(result);
+											String replacement =  ","+"\"sceneId\":"+resourceId+"}";
+											String rString = result.replaceAll("}", replacement);
+											boluomeCouponList.add(rString);
 											
 										}
 									}
