@@ -36,6 +36,22 @@ $(function(){
         $("#secondList").find(".itemContent2").eq(k).toggleClass("hide");
     })
 
+    $("#thirdList li").on('click',function (e) {
+        e.preventDefault();
+        var k = $(this).index();
+        console.log(k);
+        $(this).find("i").toggleClass("arrowUp");
+        $("#thirdList").find(".itemContent3").eq(k).toggleClass("hide");
+    })
+
+    $("#fourthList li").on('click',function (e) {
+        e.preventDefault();
+        var k = $(this).index();
+        console.log(k);
+        $(this).find("i").toggleClass("arrowUp");
+        $("#fourthList").find(".itemContent4").eq(k).toggleClass("hide");
+    })
+
     $(".tel").click(function () {
         window.location.href="tel://4000025151"
     })
