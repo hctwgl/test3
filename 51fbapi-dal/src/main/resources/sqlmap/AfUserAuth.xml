@@ -135,6 +135,10 @@
 			<if test="faceType != null">
     			,face_type=#{faceType} 
 			</if>
+			<if test="gmtFaces != null">
+    			,gmt_faces=#{gmtFaces} 
+			</if>
+			
 		WHERE user_id = #{userId}
 	</update>
 	

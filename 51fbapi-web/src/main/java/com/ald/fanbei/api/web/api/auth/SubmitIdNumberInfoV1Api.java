@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.auth;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -144,12 +145,12 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
 				auth.setYdStatus(YesNoStatus.YES.getCode());
-
 				Double similarity = (Double) bizCacheUtil.getObject(Constants.CACHEKEY_YITU_FACE_SIMILARITY+context.getUserName());
 				if (similarity != null) {
 					auth.setSimilarDegree(BigDecimal.valueOf(similarity/100).setScale(4,BigDecimal.ROUND_HALF_UP));
 					bizCacheUtil.delCache(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
 				}
+				auth.setGmtFaces(new Date());
 				auth.setFaceType(FaceType.YITU.getCode());
 				afUserAuthService.updateUserAuth(auth);
 

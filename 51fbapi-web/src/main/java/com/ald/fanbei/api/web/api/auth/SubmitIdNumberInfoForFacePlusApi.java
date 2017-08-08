@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.auth;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -147,18 +148,19 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 				Double thresholds = json.getDouble("1e-3");
 				auth.setSimilarDegree(BigDecimal.valueOf(confidence/100).setScale(4,BigDecimal.ROUND_HALF_UP));
 				auth.setThresholds(BigDecimal.valueOf(thresholds/100).setScale(4,BigDecimal.ROUND_HALF_UP));
+				
+				auth.setFaceType(FaceType.FACE_PLUS.getCode());
+				auth.setGmtFaces(new Date());
+				
 				if (confidence.compareTo(thresholds) >= 0) {
 					auth.setFacesStatus(YesNoStatus.YES.getCode());
 					auth.setYdStatus(YesNoStatus.YES.getCode());
-					auth.setFaceType(FaceType.FACE_PLUS.getCode());
 					afUserAuthService.updateUserAuth(auth);
 				} else {
-					auth.setFaceType(FaceType.FACE_PLUS.getCode());
 					afUserAuthService.updateUserAuth(auth);
 					throw new FanbeiException(FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
 				}
 
-				afUserAuthService.updateUserAuth(auth);
 				AfUserDo afUserDo = new AfUserDo();
 				afUserDo.setRid(userId);
 				afUserDo.setRealName(numberDo.getName());
