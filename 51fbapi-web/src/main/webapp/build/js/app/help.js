@@ -20,4 +20,10 @@ $(function(){
         $(".main_wrap").find('ul').eq(k).siblings().addClass("hide");
     });
 
+    $(".itemTitle").on('click',function (e) {
+        e.preventDefault();
+        var k = $(this).index();
+        $(this).find("i").toggleClass("arrowUp");
+        $(".listMainContent").find(".itemContent").eq(k).toggleClass("hide");
+    })
 });
