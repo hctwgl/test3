@@ -3,6 +3,9 @@ var userName = "";
 if(getInfo().userName){
     userName=getInfo().userName;
 };
+
+var userItemsId=getUrl("userItemsId");
+
 //获取数据
 let vm = new Vue({
     el: '#ggIndex',
@@ -18,17 +21,17 @@ let vm = new Vue({
             let self=this;
             $.ajax({
                 type: 'get',
-                url: "/H5GGShare/ggSendItemse",
-                data:{'userItemsId':5},
+                url: "/H5GGShare/ggSendItems",
+                data:{'userItemsId':userItemsId},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
-                    wordMove();//左右移动动画
-                    var couponList=self.content.boluomeCouponList;
-                    for(var i=0;i<couponList.length;i++){
-                        couponList[i] = eval("("+couponList[i]+")");
-                    }
 
+                    // wordMove();//左右移动动画
+                    // var couponList=self.content.boluomeCouponList;
+                    // for(var i=0;i<couponList.length;i++){
+                    //     couponList[i] = eval("("+couponList[i]+")");
+                    // }
                 }
             })
         },
