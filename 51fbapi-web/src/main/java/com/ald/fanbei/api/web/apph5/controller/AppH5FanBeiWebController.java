@@ -319,6 +319,146 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
+	/**
+	 * @author qiao
+	 * @说明： 领券优惠券
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pickBoluomeCouponForWeb", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickBoluomeCouponForWeb(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
+			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
+			if (sceneId == null) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+			}
+			
+			if (StringUtils.isEmpty(userName)) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
+			
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+			if (resourceInfo == null) {
+				logger.error("couponSceneId is invalid");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+			}
+			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
+			
+			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+			
+			if (DateUtil.beforeDay(new Date(), gmtStart)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+			}
+			if (DateUtil.afterDay(new Date(), gmtEnd)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+			}
+			
+			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			JSONObject resultJson = JSONObject.parseObject(resultString);
+			String code = resultJson.getString("code");
+			//10222代表已经一天只能领取一张
+			if ("10222".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, "今日已领取，请明日再来！", null, null).toString();
+			} else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+			} 
+			return H5CommonResponse.getNewInstance(true, "领券成功，有效期3天", "", null).toString();
+
+		} catch (Exception e) {
+			logger.error("pick brand coupon failed , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+		}
+
+	}
+	/**
+	 * @author qiao
+	 * @说明： 领券优惠券
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pickBoluomeCouponForApp", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickBoluomeCouponForApp(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
+			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
+			if (sceneId == null) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+			}
+			
+			if (StringUtils.isEmpty(userName)) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
+			
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+			if (resourceInfo == null) {
+				logger.error("couponSceneId is invalid");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+			}
+			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
+			
+			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+			
+			if (DateUtil.beforeDay(new Date(), gmtStart)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+			}
+			if (DateUtil.afterDay(new Date(), gmtEnd)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+			}
+			
+			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			JSONObject resultJson = JSONObject.parseObject(resultString);
+			String code = resultJson.getString("code");
+			//10222代表已经一天只能领取一张
+			if ("10222".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, "今日已领取，请明日再来！", null, null).toString();
+			} else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+			} 
+			return H5CommonResponse.getNewInstance(true, "领券成功，有效期3天", "", null).toString();
+
+		} catch (Exception e) {
+			logger.error("pick brand coupon failed , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+		}
+
+	}
 	
 	/**
 	 * 获取菠萝觅跳转地址
