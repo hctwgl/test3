@@ -8,17 +8,14 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.VirtualGoodsCateogy;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -28,7 +25,6 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -84,7 +80,7 @@ public class GetBeforePayTypeApi implements ApiHandle {
 			responseMap.put("payType", PayType.COMBINATION_PAY.getCode());
 		}
 		
-		if (StringUtil.equals(orderInfo.getPayType(), PayType.WECHAT.getCode()) || StringUtil.equals(orderInfo.getPayType(), PayType.BANK.getCode())) {
+		if (StringUtil.equals(orderInfo.getPayType(), PayType.WECHAT.getCode()) || StringUtil.equals(orderInfo.getPayType(), PayType.BANK.getCode()) || StringUtil.equals(orderInfo.getPayType(), StringUtil.EMPTY)) {
 			responseMap.put("payType", PayType.OTHER.getCode());
 		}
 		
