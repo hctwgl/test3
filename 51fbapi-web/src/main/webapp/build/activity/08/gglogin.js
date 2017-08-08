@@ -13,11 +13,13 @@
                     userName: userName,
                     password: password_md5,
                     activityId:	1,
+                    refUserName:17839218825
+
                 },
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                     window.location.href ="http://localhost/fanbei-web/activity/ggIndexShare";
+                     window.location.href ="ggIndexShare";
                     }else{
                         requestMsg(data.msg);
                     }
