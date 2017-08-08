@@ -12,20 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfH5BoluomeActivityService;
-import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
-import com.ald.fanbei.api.biz.service.AfPromotionChannelService;
-import com.ald.fanbei.api.biz.service.AfPromotionLogsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -45,18 +39,13 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.dao.AfCouponDao;
-import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.AfUserVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -97,8 +86,6 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	@RequestMapping(value = "/boluomeActivityLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String boluomeActivityLogin(HttpServletRequest request,HttpServletResponse response ,ModelMap model){
-		
-		
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String password = ObjectUtils.toString(request.getParameter("password"),"").toString();
 		Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
@@ -112,17 +99,18 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		
 		//被邀请者登录验证
 		if (userName == null || userName.isEmpty()) {
-			return H5CommonResponse.getNewInstance(false, "请输入账号", "", "").toString();
+			return  H5CommonResponse.getNewInstance(false, "请输入账号", "", "").toString();
+			
 		}
 		if (password == null || password.isEmpty()) {
 			return H5CommonResponse.getNewInstance(false, "请输入密码", "", "").toString();
 		}
 		
 		if (UserDo == null) {
-			return H5CommonResponse.getNewInstance(false, "用户不存在", "", "").toString();
+			return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", "").toString();
 		}
 		if (StringUtils.equals(UserDo.getStatus(), UserStatus.FROZEN.getCode())) {
-			return H5CommonResponse.getNewInstance(false, "用户账号冻结", "", "").toString();
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_FROZEN_ERROR.getDesc(), "", "").toString();
 		}
 		// check password
 		String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
@@ -153,7 +141,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			    int saveInfo = afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
 		        
 		}else{
-			return H5CommonResponse.getNewInstance(false, "账号已经锁定", "", "").toString();
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "", "").toString();
 		}
 		return H5CommonResponse.getNewInstance(true, "登录成功", "", "").toString();
 	}
@@ -260,7 +248,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 
 	}
 	
-	//菠萝觅活动忘记密码
+	//菠萝觅活动忘记密码获取验证码
 	@ResponseBody
 	@RequestMapping(value = "/boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String boluomeActivityForgetPwd(HttpServletRequest request, ModelMap model) throws IOException {
@@ -269,16 +257,18 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		afUserDo = afUserService.getUserByUserName(mobile);
 		String resultStr = "";
 		if (afUserDo == null) {
-			resultStr = H5CommonResponse.getNewInstance(false, "用户不存在", "", null).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", null).toString();
 		}
-
-		boolean resultForget = smsUtil.sendBoluomeForgetPwdVerifyCode(mobile, afUserDo.getRid());
+		if (afUserDo != null) {
+		boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
 		if (!resultForget) {
-			
-			resultStr = H5CommonResponse.getNewInstance(false, "用户发送验证码失败", "", null).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null).toString();
+			}else{
+			resultStr = H5CommonResponse.getNewInstance(true, "用户发送验证码成功", "", null).toString();
 		}
-		return resultStr;
 	}
+		return resultStr;
+}
 	//菠萝觅活动重置密码
 	@ResponseBody
 	@RequestMapping(value = "/boluomeActivityResetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -290,25 +280,31 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		String resultStr = "";
 		
 		if(StringUtil.isBlank(passwordSrc)){
-			resultStr = H5CommonResponse.getNewInstance(false, "参数错误", "", null).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "密码为空", "", null).toString();
+			return resultStr;
         }
-        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.BOLUOOME_FORGET_PASS.getCode());
+	
+        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
         if(smsDo == null){
-    		resultStr = H5CommonResponse.getNewInstance(false, "参数错误", "", null).toString();
+    		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+    		return resultStr;
         }
         //判断验证码是否一致并且验证码是否已经做过验证
         String realCode = smsDo.getVerifyCode();
-        if(!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 0){
-        	resultStr = H5CommonResponse.getNewInstance(false, "参数错误", "", null).toString();
+        if(!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1){
+        	resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null).toString();
+        	return resultStr;
         }
         //判断验证码是否过期
         if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
-        	resultStr = H5CommonResponse.getNewInstance(false, "验证码已经过期", "", null).toString();
+        	resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
+        	return resultStr;
         }
         
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if(afUserDo == null){
-        	resultStr = H5CommonResponse.getNewInstance(false,"用户不存在", "", null).toString();
+        	resultStr = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", null).toString();
+        	return resultStr;
         }
         
         String salt = UserUtil.getSalt();
@@ -320,6 +316,9 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
         userDo.setFailCount(0);
         userDo.setUserName(userName);
         afUserService.updateUser(userDo);
+        resultStr = H5CommonResponse.getNewInstance(true, "重置密码成功", "", null).toString();
+        //验证码改为已验证
+        afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 		return resultStr;
 	}
 	
