@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -147,10 +148,6 @@ public class H5GGShareController extends H5Controller {
 											String activityCoupons = parentBo.getActivity_coupons();
 											String result = activityCoupons.substring(1, activityCoupons.length()-1);
 											boluomeCouponList.add(result);
-											/*List<BoluomeCouponResponseBo> listCoupon = JSONArray.parseArray(activityCoupons, BoluomeCouponResponseBo.class);
-											if (listCoupon != null && listCoupon.size() >0) {
-												boluomeCouponList.add(listCoupon.get(0));//因为只有一个
-											}*/
 											
 										}
 									}
@@ -312,9 +309,14 @@ public class H5GGShareController extends H5Controller {
 	 * 
 	 */
 	@RequestMapping(value = "/sendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-	public String sendItems(HttpServletRequest request, HttpServletResponse response) {
+	@ResponseBody
+	public String sendItems(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
+		
+		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        
 		try {
 			context = doH5Check(request, true);
 			if (context.isLogin()) {
@@ -715,6 +717,7 @@ public class H5GGShareController extends H5Controller {
 	 * @return: String
 	 */
 	@RequestMapping(value="listBank" ,method = RequestMethod.GET,produces="text/html;charset=UTF-8")
+	@ResponseBody
 	public String listBank(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		try {
