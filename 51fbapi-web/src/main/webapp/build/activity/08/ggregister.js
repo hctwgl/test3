@@ -18,7 +18,9 @@ $(function () {
     $(".checkbtn").click(function () {
         var isState = $(".checkbtn").attr('isState');//获取设置的状态码
         var mobileNum = $(".mobile").val(); //获取手机号
-        if (isState == 0 || !mobileNum) {
+        var password=$('#password').val();//获取密码
+
+        if (isState == 0 || !isState) {
             if (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) {
                 $.ajax({
                     url: "/app/user/getRegisterSmsCode",
@@ -54,27 +56,30 @@ $(function () {
         var smsCode = $(".check").val();//获取短信
         var registerMoblie = $(".mobile").val();//获取手机号
         var password=$("#password").val();//获取密码
-        // console.log(password);
+        console.log(password);
         console.log(smsCode);
-         console.log(registerMoblie);
+        console.log(registerMoblie);
 
         if (/^1(3|4|5|7|8)\d{9}$/i.test(registerMoblie)) {
             var password_md5 = String(CryptoJS.MD5(password));//md5加密
             $.ajax({
-                url: "/app/user/commitRegiste",
-                type: 'POST',
-                dataType: 'JSON',
+                url: "/H5GGShare/commitBouomeActivityRegister",
+                type: 'post',
                 data: {
-                    "registerMoblie": registerMoblie,
+                    "registerMobile": registerMoblie,
                     "smsCode":smsCode,
                     "password":password_md5
                 },
                 success: function (returnData) {
-                    if (returnData.success) {
-                        window.location.href = returnData.url;
-                    } else {
-                        requestMsg(returnData.msg);
-                    }
+                    console.log(returnData);
+                    var a=JSON.parse(returnData);
+                    console.log(a);
+                    if (a.success) {
+                        window.location.href = "http://localhost/fanbei-web/activity/gglogin";
+                    
+                    } //else {
+                    //     requestMsg(returnData.msg);
+                    // }
                 },
                 error: function () {
                     requestMsg("绑定失败");
