@@ -176,7 +176,7 @@
 		<if test="orderStatus != null and orderStatus != '' ">
 			and a.status = #{orderStatus}
 		</if>
-		<if test="orderStatus == null" >
+		<if test="orderStatus == null or orderStatus == ''" >
 			and a.status in ('NEW', 'PAID')
 		</if>
 		order by a.gmt_create desc
@@ -201,7 +201,7 @@
 		<if test="orderStatus != null and orderStatus != '' ">
 			and a.status = #{orderStatus}
 		</if>
-		<if test="orderStatus == null" >
+		<if test="orderStatus == null or orderStatus == ''" >
 			and a.status in ('NEW', 'PAID')
 		</if>
 		order by a.gmt_create desc
@@ -216,7 +216,7 @@
 		<if test="refundStatus != null and refundStatus != '' ">
 			and c.status = #{refundStatus}
 		</if>
-		<if test="refundStatus == null">
+		<if test="refundStatus == null or refundStatus == ''">
 			and c.status in ('REFUNDING', 'REFUND')
 		</if>
 		<if test="startDate != null and startDate != '' ">
@@ -241,7 +241,7 @@
 		<if test="refundStatus != null and refundStatus != '' ">
 			and c.status = #{refundStatus}
 		</if>
-		<if test="refundStatus == null">
+		<if test="refundStatus == null or refundStatus == ''">
 			and c.status in ('REFUNDING', 'REFUND')
 		</if>
 		<if test="startDate != null and startDate != '' ">
