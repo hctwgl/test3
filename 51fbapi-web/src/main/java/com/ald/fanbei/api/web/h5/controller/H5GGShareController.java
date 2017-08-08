@@ -801,9 +801,13 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
-			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			context = doH5Check(request, false);
 			Long userId = context.getUserId();
+			if (userId == null) {
+				return 
+			}
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			//Long userId = context.getUserId();
 			if (activityId != null && userId != null) {
 				AfBoluomeActivityCouponDo conditionCoupon = new AfBoluomeActivityCouponDo();
 				conditionCoupon.setBoluomeActivityId(activityId);
@@ -826,6 +830,7 @@ public class H5GGShareController extends H5Controller {
 					
 				}
 			}
+			
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "红包领取失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("红包领取失败" + context, e);
