@@ -121,7 +121,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				errorCount = errorCount+1; 
 				bizCacheUtil.saveObject(cacheKey, errorCount, Constants.SECOND_OF_HALF_HOUR);
 				FanbeiExceptionCode code =  getErrorCountCode(errorCount);
-				return H5CommonResponse.getNewInstance(false, code.getErrorMsg(), "", "").toString();
+				return H5CommonResponse.getNewInstance(false, code.getDesc(), "", "").toString();
 		}	
 		
 		        bizCacheUtil.delCache(cacheKey);
@@ -130,6 +130,11 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			   				
 				CookieUtil.writeCookie(response, "userName", userName, Constants.MINITS_OF_HALF_HOUR);
 				CookieUtil.writeCookie(response, "token", token, Constants.MINITS_OF_HALF_HOUR);
+				
+				if(refUserDo == null){
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", "").toString();
+					
+				}
 				
 				//绑定关系refUserDo
 				AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin  = new AfBoluomeActivityUserLoginDo(); 
@@ -260,7 +265,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", null).toString();
 		}
 		if (afUserDo != null) {
-		boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
+			boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
 		if (!resultForget) {
 			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null).toString();
 			}else{
