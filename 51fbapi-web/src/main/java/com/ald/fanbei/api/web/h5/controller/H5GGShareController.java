@@ -1,11 +1,14 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntToDoubleFunction;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -148,10 +151,6 @@ public class H5GGShareController extends H5Controller {
 											String activityCoupons = parentBo.getActivity_coupons();
 											String result = activityCoupons.substring(1, activityCoupons.length()-1);
 											boluomeCouponList.add(result);
-											/*List<BoluomeCouponResponseBo> listCoupon = JSONArray.parseArray(activityCoupons, BoluomeCouponResponseBo.class);
-											if (listCoupon != null && listCoupon.size() >0) {
-												boluomeCouponList.add(listCoupon.get(0));//因为只有一个
-											}*/
 											
 										}
 									}
@@ -187,7 +186,7 @@ public class H5GGShareController extends H5Controller {
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-/*			context = doH5Check(request, false);
+			context = doH5Check(request, false);
 			if (context.isLogin()) {
 				// TODO:获取登录着的userName或者id
 				Long userId = context.getUserId();
@@ -196,7 +195,15 @@ public class H5GGShareController extends H5Controller {
 				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 						.getListByCommonCondition(useritemsDo);
 				data.put("userItemsList", userItemsList);
-			}*/
+				
+				//修改itemsList内容，把num统计上去
+				if (itemsList != null && itemsList.size() >0) {
+					
+				}
+				for(AfBoluomeActivityItemsDo itemsDo :itemsList){
+					
+				}
+			}
 			data.put("bannerList", bannerList);
 			data.put("fakeFinal", fakeFinal);
 			data.put("fakeJoin", fakeJoin);
@@ -217,6 +224,13 @@ public class H5GGShareController extends H5Controller {
 		return resultStr;
 	}
 
+	private List<AfBoluomeActivityItemsDo> addNumber(Long activityId,Long userId){
+		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
+		t.setBoluomeActivityId(activityId);
+		List<AfBoluomeActivityItemsDo> resultList = afBoluomeActivityItemsService.getListByCommonCondition(t);
+		
+		return resultList;
+	} 
 	/**
 	 * 
 	 * @说明：获得活动的卡片
@@ -716,16 +730,18 @@ public class H5GGShareController extends H5Controller {
 	 * @param: @return
 	 * @return: String
 	 */
-	@RequestMapping(value="listBank" ,method = RequestMethod.GET,produces="text/html;charset=UTF-8")
+	@RequestMapping(value="/listRank" ,method = RequestMethod.GET,produces="text/html;charset=UTF-8")
 	@ResponseBody
 	public String listBank(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		try {
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
-			List<BoluomeUserRebateBankDo> bankList = afBoluomeActivityUserRebateService.getBankList(activityId);
-			if (bankList != null) {
+			List<BoluomeUserRebateBankDo> rankList = afBoluomeActivityUserRebateService.getBankList(activityId);
+			if (rankList != null) {
 				Map<String, Object> data = new HashMap<>();
-				data.put("bankList", bankList);
+				int rebateNumber = rankList.size();
+				data.put("rebateNumber", rebateNumber);
+				data.put("rankList", rankList);
 				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data).toString();
 			}
 		} catch (FanbeiException e) {

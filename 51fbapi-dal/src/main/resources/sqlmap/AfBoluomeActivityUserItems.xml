@@ -206,4 +206,5 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
          boluome_activity_id = {boluomeActivityId}
     </select>
     
+    
 </mapper>

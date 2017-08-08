@@ -64,7 +64,8 @@ import java.util.Date;
     private String status;
     private String ruleJson;
     
-
+    private int num ;
+    
     /**
      * 获取主键Id
      *
@@ -72,7 +73,15 @@ import java.util.Date;
      */
 
 
-    /**
+    public int getNum() {
+		return num;
+	}
+
+	public void setNum(int num) {
+		this.num = num;
+	}
+
+	/**
      * 获取创建时间
      *
      * @return 创建时间

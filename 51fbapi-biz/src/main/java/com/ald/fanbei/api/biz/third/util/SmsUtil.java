@@ -180,6 +180,29 @@ public class SmsUtil extends AbstractThird {
 		return smsResult.isSucc();
 	}
 
+	
+	/**
+	 * 菠萝觅忘记密码发送短信验证码
+	 * 
+	 * @param mobile
+	 *            用户绑定的手机号（注意：不是userName）
+	 * @param userId
+	 *            用户id
+	 * @return
+	 */
+	public boolean sendBoluomeForgetPwdVerifyCode(String mobile, Long userId) {
+		if (!CommonUtil.isMobile(mobile)) {
+			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+		}
+		String verifyCode = CommonUtil.getRandomNumber(6);
+		String content = FORGET_TEMPLATE.replace("&param1", verifyCode);
+		SmsResult smsResult = sendSmsToDhst(mobile, content);
+		this.addSmsRecord(SmsType.BOLUOOME_FORGET_PASS, mobile, verifyCode, 0l, smsResult);
+		return smsResult.isSucc();
+	}
+
+	
+	
 	/**
 	 * 绑定手机发送短信验证码
 	 * 
