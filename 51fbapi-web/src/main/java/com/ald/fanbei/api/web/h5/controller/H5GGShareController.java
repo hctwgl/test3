@@ -1,14 +1,11 @@
 package com.ald.fanbei.api.web.h5.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.IntToDoubleFunction;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +48,6 @@ import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -190,19 +186,18 @@ public class H5GGShareController extends H5Controller {
 			if (context.isLogin()) {
 				// TODO:获取登录着的userName或者id
 				Long userId = context.getUserId();
-				useritemsDo.setUserId(userId);
-				useritemsDo.setBoluomeActivityId(activityId);
-				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
-						.getListByCommonCondition(useritemsDo);
-				data.put("userItemsList", userItemsList);
+				if (userId != null && userId > 0 ) {
+					useritemsDo.setUserId(userId);
+					useritemsDo.setBoluomeActivityId(activityId);
+					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+							.getListByCommonCondition(useritemsDo);
+					data.put("userItemsList", userItemsList);
+					
+					//修改itemsList内容，把num统计上去
+					itemsList = addNumber(activityId, userId);
+				}
 				
-				//修改itemsList内容，把num统计上去
-				if (itemsList != null && itemsList.size() >0) {
-					
-				}
-				for(AfBoluomeActivityItemsDo itemsDo :itemsList){
-					
-				}
+				
 			}
 			data.put("bannerList", bannerList);
 			data.put("fakeFinal", fakeFinal);
@@ -326,9 +321,9 @@ public class H5GGShareController extends H5Controller {
 
 	/**
 	 * 
-	 * @说明：赠送卡片(页面初始化) @param: @param request
-	 * @param: @param
-	 *             response
+	 * @说明：赠送卡片(页面初始化) 
+	 * @param: @param request
+	 * @param: response
 	 * @param: @return
 	 * @return: String
 	 * @throws UnsupportedEncodingException 
@@ -348,26 +343,31 @@ public class H5GGShareController extends H5Controller {
 			if (context.isLogin()) {
 				Long userId = context.getUserId();
 				Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
-				// 选出itemsId
-				List<AfBoluomeActivityUserItemsDo> resultList = new ArrayList<>();
-				List<Long> itemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId, userId);
-				if (itemsList != null && itemsList.size() > 0) {
-					for (Long itemsId : itemsList) {
-						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
-						t.setSourceUserId(userId);
-						t.setBoluomeActivityId(activityId);
-						t.setItemsId(itemsId);
-						List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
-								.getListByCommonCondition(t);
-						if (userItemsList != null && userItemsList.size() > 0) {
-							resultList.addAll(userItemsList);
+				if (userId != null && activityId != null) {
+					// 选出itemsId
+					List<AfBoluomeActivityUserItemsDo> resultList = new ArrayList<>();
+					List<AfBoluomeActivityItemsDo> itemsList = new ArrayList<>();
+					List<Long> tempItemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId, userId);//大于1张卡片的用户记录
+					if (tempItemsList != null && tempItemsList.size() > 0) {
+						itemsList = addNumber(activityId, userId);
+						
+						for (Long itemsId : tempItemsList) {
+							AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
+							t.setSourceUserId(userId);
+							t.setBoluomeActivityId(activityId);
+							t.setItemsId(itemsId);
+							List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+									.getListByCommonCondition(t);
+							if (userItemsList != null && userItemsList.size() > 0) {
+								resultList.addAll(userItemsList);
+							}
 						}
 					}
+					Map<String, Object> data = new HashMap<>();
+					data.put("itemsList", itemsList);
+					data.put("userItemsList", resultList);
+					resultStr = H5CommonResponse.getNewInstance(true, "赠送卡片初始化成功", "", data).toString();
 				}
-				Map<String, Object> data = new HashMap<>();
-				data.put("resultList", resultList);
-				resultStr = H5CommonResponse.getNewInstance(true, "赠送卡片初始化成功", "", data).toString();
-				
 			}
 
 		} catch (FanbeiException e) {

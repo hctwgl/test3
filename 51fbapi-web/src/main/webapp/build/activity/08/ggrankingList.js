@@ -29,24 +29,31 @@
 $(function () {
     $.ajax({
         type: 'get',
-        url: "/H5GGShare/listBank",
+        url: "/H5GGShare/listRank",
         dataType: 'JSON',
         data: {
             activityId: 1
         },
         success: function (data) {
             if (data.success) {
-                var bankList = data.data.bankList;
+                var rankList = data.data.rankList;
                 var html = "";
-                for (var i = 0; i < bankList.length; i++) {
+                var Number="";
+                //从rankingList这个数组
+                for (var i = 0; i < rankList.length; i++) {
                     html += ['<li class="list">',
-                        '<span class="list-left">' + bankList[i].userName + '</span>',
-                        '<span class="list-center">' + bankList[i].totalRebate + '</span>',
-                        '<span class="list-right">' + bankList[i].inviteRebate + '</span>',
+                        '<span class="list-left">' + rankList[i].userName + '</span>',
+                        '<span class="list-center">' + rankList[i].totalRebate + '</span>',
+                        '<span class="list-right">' + rankList[i].inviteRebate + '</span>',
                         '</li>'
                     ].join("");
                 }
                 $('.numberList').html(html)
+                console.log(data);
+                //从data.data这个对象 获取到高额返利的人数
+                Number+=['<i class="number">'+data.data.rebateNumber+'</i>'].join("");
+                $('number').html(Number);
+               
             }
         }
     })
