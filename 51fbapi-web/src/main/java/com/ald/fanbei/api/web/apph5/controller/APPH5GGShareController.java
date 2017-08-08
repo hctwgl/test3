@@ -68,7 +68,7 @@ import com.alibaba.fastjson.JSONObject;
  *
  */
 @Controller
-@RequestMapping("/webGGShare")
+@RequestMapping("/H5GG")
 public class APPH5GGShareController extends BaseController {
 
 	@Resource
