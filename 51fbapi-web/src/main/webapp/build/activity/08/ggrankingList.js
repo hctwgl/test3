@@ -51,8 +51,9 @@ $(function () {
                 $('.numberList').html(html)
                 console.log(data);
                 //从data.data这个对象 获取到高额返利的人数
-                Number+=['<i class="number">'+data.data.rebateNumber+'</i>'].join("");
-                $('number').html(Number);
+                Number+="<i class='number'>"+data.data.rebateNumber+"</i>";
+                console.log(Number);
+                $('.number').html(Number);
                
             }
         }
