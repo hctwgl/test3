@@ -18,7 +18,7 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'get',
-                url: "/H5GGShare/initHomePage",
+                url: "/H5GG/initHomePage",
                 data:{'activityId':1},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
@@ -89,7 +89,7 @@ let vm = new Vue({
         },
         //点击获取终极大奖
         finalPrize:function(){
-           /*$.ajax({
+           $.ajax({
                 type: 'get',
                 url: '/H5GGShare/pickUpSuperPrize',
                 data:{'activityId':1},
@@ -100,7 +100,7 @@ let vm = new Vue({
                 error: function(){
                     requestMsg("请求失败");
                 }
-            })*/
+            })
         },
         //点击我要赠送卡片
         presentClick:function(){
