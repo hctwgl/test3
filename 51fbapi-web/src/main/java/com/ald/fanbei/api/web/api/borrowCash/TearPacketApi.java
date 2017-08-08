@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameConfService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfGameService;
+import com.ald.fanbei.api.biz.service.AfPacketResultService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -33,6 +35,7 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGameConfDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
+import com.ald.fanbei.api.dal.domain.AfPacketResultDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -67,6 +70,9 @@ public class TearPacketApi  implements ApiHandle {
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfPacketResultService afPacketResultService;
+	
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -97,7 +103,7 @@ public class TearPacketApi  implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.NOT_CONFIG_GAME_INFO_ERROR);
 		}
 		
-		// 查询活动时间内是否有风控拒绝记录 FIXME
+		// 查询活动时间内是否有风控拒绝记录 
 		Date gameStart = gameDo.getGmtStart();
 		Date gameEnd = gameDo.getGmtEnd();
 		List<AfBorrowCashDo> riskRefuseResultList =  afBorrowCashService.getRiskRefuseBorrowCash(userId, gameStart, gameEnd);
@@ -156,7 +162,7 @@ public class TearPacketApi  implements ApiHandle {
 				}
 			}
 			String couponId = (String) winPrizeInfo.get("prizeId"); 
-		
+			String limitCount = (String) winPrizeInfo.get("limitCount"); 
 			// 获取用户最新一笔借款信息
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 			Long borrowId = 0l;
@@ -164,8 +170,22 @@ public class TearPacketApi  implements ApiHandle {
 				borrowId = afBorrowCashDo.getRid();
 			}
 			// 抽奖后将抽奖结果记录到数据库中 FIXME
-			
-			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String currentDate = sdf.format(new Date());
+			AfPacketResultDo packetResultDo = new AfPacketResultDo();
+			packetResultDo.setCouponId(Long.parseLong(couponId));
+			packetResultDo.setGameId(gameDo.getRid());
+			packetResultDo.setPrizeDate(currentDate);
+			packetResultDo.setUserId(userId);
+			// 查询是否超过当日限量
+			if(limitCount != null && !"".equals(limitCount)) {
+				Integer grantCount = afPacketResultService.getGrantCouponCount(packetResultDo);
+				if(grantCount.compareTo(new Integer(limitCount)) > 0 ) {
+					// 如果超过限量则发送备用券
+					throw new FanbeiException("beyond limit count.");
+				}
+			}
+			afPacketResultService.addPacketResult(packetResultDo);
 			
 			// 添加抽奖结果信息
 			AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, borrowId, Long.parseLong(couponId), "Y");
@@ -176,7 +196,7 @@ public class TearPacketApi  implements ApiHandle {
 				Long sceneId = Long.parseLong(couponId);
 				grantBoluomiCoupon(sceneId, data, userId);
 				
-			} else{
+			} else {
 				// 获取优惠券信息
 				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
 				data.put("prizeName", afCouponDo.getName());
@@ -192,43 +212,7 @@ public class TearPacketApi  implements ApiHandle {
 		} catch (Exception e) {
 			logger.error("TearPacketApi=>" + e.toString());
 			// 发送备用优惠券
-			JSONArray array = JSON.parseArray(rules);
-			JSONObject item1 = array.getJSONObject(0);
-			JSONArray prizeArray = item1.getJSONArray("back_prize");
-			JSONObject prize =  prizeArray.getJSONObject(0);
-			String prizeType = prize.getString("prize_type");
-			String couponId = prize.getString("prize_id");
-			if(couponId != null && !"".equals(couponId)) {
-				if("BOLUOMI".equals(prizeType)) {
-					// 发送菠萝蜜优惠券
-					Long sceneId = Long.parseLong(couponId);
-					grantBoluomiCoupon(sceneId, data, userId);
-					
-				} else{
-					// 获取优惠券信息
-					AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
-					data.put("prizeName", afCouponDo.getName());
-					data.put("prizeType", afCouponDo.getType());
-					
-					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-					Long borrowId = 0l;
-					if(afBorrowCashDo != null){
-						borrowId = afBorrowCashDo.getRid();
-					}
-					// 抽奖后将抽奖结果记录到数据库中 FIXME
-					
-					// 添加抽奖结果信息
-					AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, borrowId, Long.parseLong(couponId), "Y");
-					
-					// 发送本地平台优惠券
-					afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "RISK_PACKET", afGameResultDo.getRid() + "");
-					// 更新优惠券已领取数量
-					AfCouponDo couponDoT = new AfCouponDo();
-					couponDoT.setRid(Long.parseLong(couponId));
-					couponDoT.setQuotaAlready(1);
-					afCouponService.updateCouponquotaAlreadyById(couponDoT);
-			}
-			}
+			grantBackPrize(rules,data,userId,gameDo,userInfo);
 		}
 		resp.setResponseData(data);
 		return resp;
@@ -376,4 +360,48 @@ public class TearPacketApi  implements ApiHandle {
 			throw new FanbeiException("仅限领取一次，请勿重复领取！");
 		}
 	}
+	
+	
+	private void grantBackPrize(String rules, Map<String, Object> data, Long userId, AfGameDo gameDo, AfUserDo userInfo){
+		JSONArray array = JSON.parseArray(rules);
+		JSONObject item1 = array.getJSONObject(0);
+		JSONArray prizeArray = item1.getJSONArray("back_prize");
+		// 未配置备用券
+		if(prizeArray == null) {
+			return;
+		}
+		JSONObject prize =  prizeArray.getJSONObject(0);
+		String prizeType = prize.getString("prize_type");
+		String couponId = prize.getString("prize_id");
+		if(couponId != null && !"".equals(couponId)) {
+			if("BOLUOMI".equals(prizeType)) {
+				// 发送菠萝蜜优惠券
+				Long sceneId = Long.parseLong(couponId);
+				grantBoluomiCoupon(sceneId, data, userId);
+				
+			} else{
+				// 获取优惠券信息
+				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+				data.put("prizeName", afCouponDo.getName());
+				data.put("prizeType", afCouponDo.getType());
+				
+				AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+				Long borrowId = 0l;
+				if(afBorrowCashDo != null){
+					borrowId = afBorrowCashDo.getRid();
+				}
+				// 添加抽奖结果信息
+				AfGameResultDo afGameResultDo = afGameResultService.addGameResult(gameDo.getRid(), userInfo, borrowId, Long.parseLong(couponId), "Y");
+				
+				// 发送本地平台优惠券
+				afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "RISK_PACKET", afGameResultDo.getRid() + "");
+				// 更新优惠券已领取数量
+				AfCouponDo couponDoT = new AfCouponDo();
+				couponDoT.setRid(Long.parseLong(couponId));
+				couponDoT.setQuotaAlready(1);
+				afCouponService.updateCouponquotaAlreadyById(couponDoT);
+			}
+		}
+	}
+
 }
