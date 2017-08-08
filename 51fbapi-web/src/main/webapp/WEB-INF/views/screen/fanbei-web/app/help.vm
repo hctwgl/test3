@@ -1,34 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-		<title>服务中心</title>
-	    <style type="text/css">
-	    	.helpWarp{
-                padding: 0.8rem 0.4rem 0.4rem;
-                line-height: 0.48rem;
-	    		text-align: Justify;
-				text-justify: inter-ideograph;
-	    	}
-            .helpWarp span{
-                font-weight: bold;
-            }
+<html>
+<head>
+    #set($version="201708071630")
+    #set($commonUrl="http://f.51fanbei.com/h5")
+    <title>服务中心</title>
+    <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="/dist/css/app/help.css?version=$version">
+</head>
+<body>
+    <div id="navWrap">
+        <ul class="nav">
+            <li id="first" class="current">
+                <i></i>
+                <span >借款</span>
+            </li>
+            <li id="second">
+                <i></i>
+                <span>分期</span>
+            </li>
+            <li id="third">
+                <i></i>
+                <span>账单与还款</span>
+            </li>
+            <li id="fourth">
+                <i></i>
+                <span>额度评估</span>
+            </li>
+        </ul>
+    </div>
 
-            .helpWarp a{
-                margin-left: 0.08rem;
-            }
-            .helpWarp em{
-                border-bottom: 1px solid blue;
-                color: blue;
-            }
-	    </style>
-    </head>
-    <body style="background-color: #fff;">
-    	<div class="helpWarp">
-            <p>
-                1.服务中心。<br>
-                2.在法律范围内51返呗平台拥有最终解释权。<br>
-            </p>
-
+    <div class="swiper-container">
+        <div class="main_wrap swiper-wrapper">
+            <div class="swiper-slide" data-type="第一个">
+                <ul id="initGoods" class="goodsListModel_mainContent clearfix">
+                </ul>
+            </div>
         </div>
-    </body>
+    </div>
+
+</body>
 </html>
