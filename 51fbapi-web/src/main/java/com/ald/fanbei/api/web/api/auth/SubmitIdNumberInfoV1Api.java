@@ -150,7 +150,7 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 					auth.setSimilarDegree(BigDecimal.valueOf(similarity/100).setScale(4,BigDecimal.ROUND_HALF_UP));
 					bizCacheUtil.delCache(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
 				}
-
+				auth.setFaceType(FaceType.YITU.getCode());
 				afUserAuthService.updateUserAuth(auth);
 
 				AfUserDo afUserDo = new AfUserDo();

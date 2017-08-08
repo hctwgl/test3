@@ -52,6 +52,7 @@ public class AfUserAuthDo extends AbstractSerial {
 	private Date gmtCredit;
 	private String alipayStatus;
 	private Date gmtAlipay;
+	private String faceType;//YITU：依图 FACE_PLUS:face++
 	
 	public Long getRid() {
 		return rid;
@@ -293,6 +294,18 @@ public class AfUserAuthDo extends AbstractSerial {
 	 */
 	public void setThresholds(BigDecimal thresholds) {
 		this.thresholds = thresholds;
+	}
+	/**
+	 * @return the faceType
+	 */
+	public String getFaceType() {
+		return faceType;
+	}
+	/**
+	 * @param faceType the faceType to set
+	 */
+	public void setFaceType(String faceType) {
+		this.faceType = faceType;
 	}
 	
 }

@@ -131,7 +131,10 @@
 			</if>
 			<if test="gmtAlipay != null">
     			,gmt_alipay=#{gmtAlipay} 
-			</if>												
+			</if>
+			<if test="faceType != null">
+    			,face_type=#{faceType} 
+			</if>
 		WHERE user_id = #{userId}
 	</update>
 	

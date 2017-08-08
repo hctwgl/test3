@@ -150,8 +150,10 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 				if (confidence.compareTo(thresholds) >= 0) {
 					auth.setFacesStatus(YesNoStatus.YES.getCode());
 					auth.setYdStatus(YesNoStatus.YES.getCode());
+					auth.setFaceType(FaceType.FACE_PLUS.getCode());
 					afUserAuthService.updateUserAuth(auth);
 				} else {
+					auth.setFaceType(FaceType.FACE_PLUS.getCode());
 					afUserAuthService.updateUserAuth(auth);
 					throw new FanbeiException(FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
 				}
