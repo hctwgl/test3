@@ -50,7 +50,6 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.h5.controller.H5Controller;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

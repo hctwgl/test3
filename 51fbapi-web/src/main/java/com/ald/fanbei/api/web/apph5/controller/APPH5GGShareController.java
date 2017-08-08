@@ -213,6 +213,12 @@ public class APPH5GGShareController extends BaseController {
 					
 					//修改itemsList内容，把num统计上去
 					itemsList = addNumber(activityId, userId);
+					//吧用户名传给页面，进行下一步操作。
+					String userName = context.getUserName();
+					data.put("userId", userId);
+					if (StringUtil.isBlank(userName)) {
+						data.put("userName", userName);
+					}
 				}
 				
 				

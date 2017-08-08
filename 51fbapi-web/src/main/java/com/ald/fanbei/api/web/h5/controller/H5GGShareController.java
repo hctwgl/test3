@@ -50,7 +50,15 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
+/**
+ * 
+ * <p>Title:H5GGShareController <p>
+ * <p>Description: <p>
+ * @Copyright (c)  浙江阿拉丁电子商务股份有限公司 All Rights Reserved. 
+ * @author qiao
+ * @date 2017年8月8日下午4:10:52
+ *
+ */
 @Controller
 @RequestMapping("/H5GGShare")
 public class H5GGShareController extends H5Controller {
@@ -200,6 +208,12 @@ public class H5GGShareController extends H5Controller {
 					
 					//修改itemsList内容，把num统计上去
 					itemsList = addNumber(activityId, userId);
+					//吧用户名传给页面，进行下一步操作。
+					String userName = context.getUserName();
+					data.put("userId", userId);
+					if (StringUtil.isBlank(userName)) {
+						data.put("userName", userName);
+					}
 				}
 				
 				
