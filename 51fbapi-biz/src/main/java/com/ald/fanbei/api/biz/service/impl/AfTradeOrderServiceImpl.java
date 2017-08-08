@@ -249,7 +249,8 @@ public class AfTradeOrderServiceImpl extends ParentServiceImpl<AfTradeOrderDo, L
                     refundDo.setStatus(OrderRefundStatus.FAIL.getCode());
                     refundDo.setPayTradeNo(tempUpsResult.getOrderNo());
                     afOrderRefundDao.updateOrderRefund(refundDo);
-                    throw new FanbeiException("reund error");
+                    //throw new FanbeiException("reund error");
+                    return true;
                 } else {
                     refundDo.setPayTradeNo(tempUpsResult.getOrderNo());
                     afOrderRefundDao.updateOrderRefund(refundDo);
