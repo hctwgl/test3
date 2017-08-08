@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170801")
+    #set($src="http://f.51fanbei.com/h5/app/activity/08")
+    <title>逛逛专享-索要页面</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggGive.css?version=$version">
+</head>
+<body>
+<div id="ggIndex" class="ggIndex">
+    <!--人数左右移动--start-->
+    <div class="personAmount">
+        <div class="amountCont">
+            <div class="cont cont1">
+                <p>已有<span>{{content.fakeFinal}}</span>人点亮所有场景</p>
+            </div>
+            <div class="cont cont2"></div>
+        </div>
+    </div><!--人数左右移动--end-->
+    <div class="header">
+        <div class="logo"><img src="$src/gg01.png"></div>
+        <p class="joinAmount"><span>{{content.fakeJoin}}</span>人参与</p>
+    </div>
+    <div class="money">
+        <p>你的好友在51返呗点亮场景</p>
+        <p>向你索要<span></span></p>
+    </div>
+    <img src="" class="bannerImg">
+    <div class="presentCard ask" @click="presentClick()">我要赠送卡片</div>
+    <div class="demandCard ask" @click="demandClick()">我要索要卡片</div>
+    <div class="progress">
+       <div class="left"></div>
+        <p class="p01">完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利</p>
+        <p class="p02">向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你</p>
+        <p>集齐全部专属卡片，即可兑换<span>88.88</span>元现金红包</p>
+    </div>
+    <p class="ruleInfo" @click="ruleClick()">活动规则详情</p>
+    <div class="kong"></div>
+    <div class="mask" @click="close()"></div>
+    <!--活动规则弹窗-->
+    <div class="alertRule">
+        <p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
+        <p class="ruleCont">{{content.despcription}}</p>
+        <p class="close" @click="close()">X</p>
+    </div>
+</div>
+##<script type="text/javascript" src="/dist/activity/08/ggIndexAnimate.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/ggGive.js?version=$version"></script>
+</body>
+</html>
