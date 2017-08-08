@@ -1,4 +1,3 @@
-// let activityId = getUrl("1");
 
     //点击立即登录
     $(".loginbtn").click(function () {
@@ -13,7 +12,7 @@
                 data: {
                     userName: userName,
                     password: password_md5,
-                    // activityId:	activityId
+                    activityId:	1
                 },
                 success: function (data) {
                     console.log(data)
