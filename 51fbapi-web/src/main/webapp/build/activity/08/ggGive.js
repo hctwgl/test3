@@ -1,25 +1,25 @@
-//var activityId = getUrl("activityId");
+
 var userName = "";
 if(getInfo().userName){
     userName=getInfo().userName;
 };
 //获取数据
 let vm = new Vue({
-    el: '#ggIndexShare',
+    el: '#ggIndex',
     data: {
         content: {}
     },
     created: function () {
-        this.logData();
+        this.init();
     },
     methods: {
         //获取页面初始化信息
-        logData() {
-            let self = this;
+        init() {
+            let self=this;
             $.ajax({
                 type: 'get',
-                url: "/H5GGShare/initHomePage",
-                data:{activityId:1},
+                url: "/H5GGShare/ggSendItemse",
+                data:{'userItemsId':5},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
@@ -31,28 +31,6 @@ let vm = new Vue({
 
                 }
             })
-        },
-        //点击优惠券
-        couponClick:function(e){
-            var sceneId=e.sceneId;
-            $.ajax({
-                url: "/fanbei-web/pickBoluomeCouponForApp",
-                type: "POST",
-                dataType: "JSON",
-                data: {'sceneId':sceneId},
-                success: function (returnData) {
-                    console.log(returnData)
-                    if(returnData.success){
-                        requestMsg(returnData.msg);
-                    }else{
-                        location.href="gglogin"
-                    }
-                },
-                error: function(){
-                    requestMsg("请求失败");
-                }
-            });
-
         },
         //点击我要赠送卡片
         presentClick:function(){

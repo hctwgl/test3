@@ -1,13 +1,11 @@
 
-var userName = "";
-if(getInfo().userName){
-    userName=getInfo().userName;
-};
+var num;
 //获取数据
 let vm = new Vue({
     el: '#ggIndex',
     data: {
-        content: {}
+        content: {},
+        finalPrizeMask:''
     },
     created: function () {
         this.logData();
@@ -28,55 +26,51 @@ let vm = new Vue({
                     for(var i=0;i<couponList.length;i++){
                         couponList[i] = eval("("+couponList[i]+")");
                     }
+                    for(var j=0;j<self.content.itemsList.length;j++){//判断终极大奖蒙版
+                        num=self.content.itemsList[j].num;
+                        if(num==0){
+                            self.finalPrizeMask=true;
+                        }else{
+                            self.finalPrizeMask=false;
+                        }
+                    }//判断终极大奖蒙版
 
                 }
             })
         },
         //点击优惠券
         couponClick:function(e){
-            var couponId=e.couponId;
-            $.ajax({
-                url: "/fanbei-web/pickCoupon",
-                type: "POST",
-                dataType: "JSON",
-                data: {
-                    couponId:couponId
-                },
-                success: function(returnData){
-                    if(returnData.success){
-                        requestMsg("恭喜您领券成功");
-                    }else{
-                        var status = returnData.data["status"];
-                        if (status == "USER_NOT_EXIST") { // 用户不存在
-                            window.location.href = returnData.url;
-                        }
-                        if (status == "OVER") { // 优惠券个数超过最大领券个数
+            var sceneId=e.sceneId;
+                $.ajax({
+                    url: "/fanbei-web/pickBoluomeCouponForApp",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {'sceneId':sceneId,'userName':15839790051},
+                    success: function (returnData) {
+                        console.log(returnData)
+                        if(returnData.success){
                             requestMsg(returnData.msg);
-                            requestMsg("您已领过优惠券了，快去使用吧 ~");
+                        }else{
+                            location.href=returnData.url;
                         }
-                        if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                            requestMsg(returnData.msg);
-                            requestMsg("您下手慢了哦，优惠券已领完，下次再来吧 ~");
-                        }
+                    },
+                    error: function(){
+                        requestMsg("请求失败");
                     }
-                },
-                error: function(){
-                    requestMsg("请求失败");
-                }
-            });
+                });
+
         },
         //点击卡片
         cardClick:function(e){
             var shopId=e.refId;
-            //alert(shopId)
             $.ajax({
                 type: 'post',
                 url: '/fanbei-web/getBrandUrl',
-                data:{'shopId':shopId,'userName':userName},
+                data:{'shopId':shopId,'userName':15839790051},
                 dataType:'JSON',
                 success: function (returnData) {
+                    console.log(returnData)
                     if(returnData.success){
-                        console.log(returnData)
                         location.href=returnData.url;
                     }else{
                         location.href=returnData.url;
@@ -89,18 +83,22 @@ let vm = new Vue({
         },
         //点击获取终极大奖
         finalPrize:function(){
-           $.ajax({
-                type: 'get',
-                url: '/H5GGShare/pickUpSuperPrize',
-                data:{'activityId':1},
-                dataType:'JSON',
-                success: function (data) {
-                    console.log(data)
-                },
-                error: function(){
-                    requestMsg("请求失败");
-                }
-            })
+            console.log(0)
+            if(self.finalPrizeMask!=false){
+                $.ajax({
+                    type: 'get',
+                    url: '/H5GGShare/pickUpSuperPrize',
+                    data:{'activityId':1,'userName':15839790051},
+                    dataType:'JSON',
+                    success: function (data) {
+                        console.log(data)
+                    },
+                    error: function(){
+                        requestMsg("请求失败");
+                    }
+                })
+            }
+
         },
         //点击我要赠送卡片
         presentClick:function(){
@@ -111,8 +109,8 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'get',
-                url: "/H5GGShare/sendItems",
-                data:{activityId:1},
+                url: "/H5GG/sendItems",
+                data:{activityId:1,userName:15839790051},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(data);
