@@ -167,11 +167,11 @@
 		where c.business_id = #{businessId}
 		<if test="startDate != null and startDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
-			#{startOfDate}
+			#{startDate}
 		</if>
 		<if test="endDate != null and endDate != '' ">
 			and a.gmt_create <![CDATA[   <=  ]]>
-			#{endOfDate}
+			#{endDate}
 		</if>
 		<if test="orderStatus != null and orderStatus != '' ">
 			and a.status = #{orderStatus}
@@ -192,11 +192,11 @@
 		where c.business_id = #{businessId}
 		<if test="startDate != null and startDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
-			#{startOfDate}
+			#{startDate}
 		</if>
 		<if test="endDate != null and endDate != '' ">
 			and a.gmt_create <![CDATA[   <=  ]]>
-			#{endOfDate}
+			#{endDate}
 		</if>
 		<if test="orderStatus != null and orderStatus != '' ">
 			and a.status = #{orderStatus}

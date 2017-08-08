@@ -33,8 +33,8 @@ public class GetRefundListDateApi implements ApiHandle {
         String requestDataVoId = StringUtil.isNotBlank(requestDataVo.getId()) ? requestDataVo.getId() : "trade weixin";
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
-        Date startDate = requestDataVo.getParams().get("startDate") != null ? DateUtil.parseDate(requestDataVo.getParams().get("startDate").toString() + "00:00:00", "yyyy-MM-dd HH:mm:ss") : null;
-        Date endDate = requestDataVo.getParams().get("endDate") != null ? DateUtil.parseDate(requestDataVo.getParams().get("endDate").toString() + "23:59:59", "yyyy-MM-dd HH:mm:ss") : null;
+        Date startDate = requestDataVo.getParams().get("startDate") != null ? DateUtil.parseDate(requestDataVo.getParams().get("startDate").toString() + " 00:00:00", "yyyy-MM-dd HH:mm:ss") : null;
+        Date endDate = requestDataVo.getParams().get("endDate") != null ? DateUtil.parseDate(requestDataVo.getParams().get("endDate").toString() + " 23:59:59", "yyyy-MM-dd HH:mm:ss") : null;
         String refundStatus = ObjectUtils.toString(requestDataVo.getParams().get("refundStatus"), null);
         List<String> date = afTradeOrderService.refundGridDate(businessId, startDate, endDate, refundStatus);
         resp.addResponseData("date", date);

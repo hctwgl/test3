@@ -57,7 +57,7 @@ public interface AfTradeOrderDao extends BaseDao<AfTradeOrderDo, Long> {
      * @param orderStatus
      * @return
      */
-    List<String> orderGridDate(@Param("businessId") Long businessId, @Param("startOfDate") Date startOfDate, @Param("endOfDate") Date endOfDate, @Param("orderStatus") String orderStatus);
+    List<String> orderGridDate(@Param("businessId") Long businessId, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("orderStatus") String orderStatus);
 
     /**
      * 分页查询商圈订单
@@ -68,8 +68,8 @@ public interface AfTradeOrderDao extends BaseDao<AfTradeOrderDo, Long> {
      * @param orderStatus
      * @return
      */
-    List<AfTradeOrderDto> orderGrid(@Param("businessId") Long businessId, @Param("startOfDate") Date startOfDate,
-                                    @Param("endOfDate") Date endOfDate, @Param("orderStatus") String orderStatus);
+    List<AfTradeOrderDto> orderGrid(@Param("businessId") Long businessId, @Param("startDate") Date startDate,
+                                    @Param("endDate") Date endDate, @Param("orderStatus") String orderStatus);
 
     /**
      * 退款明细时间列表
