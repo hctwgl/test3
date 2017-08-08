@@ -34,25 +34,24 @@ let vm = new Vue({
         },
         //点击优惠券
         couponClick:function(e){
-            var couponId=e.couponId;
-            if(userName==''|| userName==undefined){
-                window.location.href="gglogin";
-            }else{
-                $.ajax({
-                    url: "/fanbei-web/pickBoluomeCoupon",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        'sceneId':couponId,'userName':userName
-                    },
-                    success: function(data){
-
-                    },
-                    error: function(){
-                        requestMsg("请求失败");
+            var sceneId=e.sceneId;
+            $.ajax({
+                url: "/fanbei-web/pickBoluomeCouponForApp",
+                type: "POST",
+                dataType: "JSON",
+                data: {'sceneId':sceneId},
+                success: function (returnData) {
+                    console.log(returnData)
+                    if(returnData.success){
+                        requestMsg(returnData.msg);
+                    }else{
+                        location.href="gglogin"
                     }
-                });
-            }
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            });
 
         },
         //点击我要赠送卡片

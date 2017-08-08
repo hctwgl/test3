@@ -53,7 +53,7 @@
         <div class="card" v-for="item in content.itemsList"><img :src="item.iconUrl"></div>
     </div>
     <div class="finalPrize" v-for="item in content.normalCouponList">
-        <p><span>{{item.amount}}</span>元红包</p>
+        <p class="amount">{{item.amount}}</p>
     </div>
     <div class="presentCard ask" @click="presentClick()">我要赠送卡片</div>
     <div class="demandCard ask" @click="demandClick()">我要索要卡片</div>
