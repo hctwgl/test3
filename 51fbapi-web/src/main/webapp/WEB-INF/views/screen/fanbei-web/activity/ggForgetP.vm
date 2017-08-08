@@ -6,16 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>忘记密码</title>
-        <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggForgetP.css?version=$version">
+        <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggForgetP.css">
 
 </head>
 <body>
     <div id="lock">
         <div class="blank">
             <img src="$src/lock.png" class="blank-pic">
-            <input type="text" placeholder="请输入登录密码" class="blank-in">
+            <input type="password" placeholder="请输入登录密码" class="blank-in">
         </div>
         <button class="btn">完成</button>
 </div>
 </body>
+<script type="text/javascript" src="/common/js/core.js"></script>
+<script type="text/javascript" src="/common/js/md5.js"></script>
+<script tyep="text/javascript" src="/dist/activity/08/ggForgetP.js"></script>
 </html>
