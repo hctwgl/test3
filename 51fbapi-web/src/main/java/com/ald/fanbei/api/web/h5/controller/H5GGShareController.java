@@ -224,6 +224,13 @@ public class H5GGShareController extends H5Controller {
 		return resultStr;
 	}
 
+	private List<AfBoluomeActivityItemsDo> addNumber(Long activityId,Long userId){
+		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
+		t.setBoluomeActivityId(activityId);
+		List<AfBoluomeActivityItemsDo> resultList = afBoluomeActivityItemsService.getListByCommonCondition(t);
+		
+		return resultList;
+	} 
 	/**
 	 * 
 	 * @说明：获得活动的卡片
@@ -723,7 +730,7 @@ public class H5GGShareController extends H5Controller {
 	 * @param: @return
 	 * @return: String
 	 */
-	@RequestMapping(value="listRank" ,method = RequestMethod.GET,produces="text/html;charset=UTF-8")
+	@RequestMapping(value="/listRank" ,method = RequestMethod.GET,produces="text/html;charset=UTF-8")
 	@ResponseBody
 	public String listBank(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
