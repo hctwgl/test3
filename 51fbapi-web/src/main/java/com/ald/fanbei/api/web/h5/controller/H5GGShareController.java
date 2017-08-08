@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -50,6 +51,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.mysql.fabric.xmlrpc.base.Data;
 /**
  * 
  * <p>Title:H5GGShareController <p>
@@ -804,7 +806,10 @@ public class H5GGShareController extends H5Controller {
 			context = doH5Check(request, false);
 			Long userId = context.getUserId();
 			if (userId == null) {
-				return 
+				Map<String,Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
 			}
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			//Long userId = context.getUserId();
