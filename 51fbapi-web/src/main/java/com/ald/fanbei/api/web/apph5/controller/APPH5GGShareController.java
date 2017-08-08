@@ -162,7 +162,9 @@ public class APPH5GGShareController extends BaseController {
 										if (parentBo != null ) {
 											String activityCoupons = parentBo.getActivity_coupons();
 											String result = activityCoupons.substring(1, activityCoupons.length()-1);
-											boluomeCouponList.add(result);
+											String replacement =  ","+"\"sceneId\":"+resourceId+"}";
+											String rString = result.replaceAll("}", replacement);
+											boluomeCouponList.add(rString);
 											
 										}
 									}
