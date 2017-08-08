@@ -101,7 +101,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String password = ObjectUtils.toString(request.getParameter("password"),"").toString();
-		Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("boluomeActivityId"));
+		Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 		String refUseraName = ObjectUtils.toString(request.getParameter("refUserName"),"").toString();
 		AfUserDo UserDo = afUserService.getUserByUserName(userName);
 		AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
