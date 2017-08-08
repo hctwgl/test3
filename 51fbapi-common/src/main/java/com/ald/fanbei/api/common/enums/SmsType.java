@@ -14,7 +14,6 @@ public enum SmsType {
 
     REGIST("R", "注册短信"), 
     FORGET_PASS("F", "忘记密码验证短信"),
-    BOLUOOME_FORGET_PASS("M", "忘记密码验证短信"),
     MOBILE_BIND("M", "手机绑定"),
     EMAIL_BIND("E", "邮箱绑定"),
 
