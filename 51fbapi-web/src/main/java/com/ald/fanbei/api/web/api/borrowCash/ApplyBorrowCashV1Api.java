@@ -367,9 +367,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 			cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
 			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
-		} else {
+		}/* else {
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.getCode());
-		}
+		}*/
 		afBorrowCashService.updateBorrowCash(cashDo);
 	}
 	
