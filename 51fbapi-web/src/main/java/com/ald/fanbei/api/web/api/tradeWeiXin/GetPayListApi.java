@@ -34,14 +34,12 @@ public class GetPayListApi implements ApiHandle {
         String requestDataVoId = StringUtil.isNotBlank(requestDataVo.getId()) ? requestDataVo.getId() : "trade weixin";
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
-        Date startDate = requestDataVo.getParams().get("startDate") != null ? DateUtil.parseDate((String) requestDataVo.getParams().get("startDate")) : null;
-        Date endDate = requestDataVo.getParams().get("endDate") != null ? DateUtil.parseDate((String) requestDataVo.getParams().get("endDate")) : null;
-        Integer page = NumberUtil.objToPageIntDefault(requestDataVo.getParams().get("page"), 0);
-        String orderStatus = ObjectUtils.toString(requestDataVo.getParams().get("orderStatus"));
-        List<AfTradeOrderDto> list = afTradeOrderService.orderGrid(businessId, (page-1)* 20, 20, startDate, endDate, orderStatus, null);
-        Long total = afTradeOrderService.orderGridTotal(businessId, startDate, endDate, orderStatus, null);
+        String date = ObjectUtils.toString(requestDataVo.getParams().get("date"));
+        Date startDate = DateUtil.parseDate(date + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+        Date endDate = DateUtil.parseDate(date + " 23:59:59", "yyyy-MM-dd HH:mm:ss");
+        String orderStatus = ObjectUtils.toString(requestDataVo.getParams().get("orderStatus"), null);
+        List<AfTradeOrderDto> list = afTradeOrderService.orderGrid(businessId, startDate, endDate, orderStatus);
         resp.addResponseData("payList", list);
-        resp.addResponseData("count", total);
         return resp;
     }
 }

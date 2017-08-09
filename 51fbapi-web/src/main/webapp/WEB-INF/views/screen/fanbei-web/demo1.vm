@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017051101")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/05")
+<title>母亲节快乐</title>
+<link rel="stylesheet" type="text/css" href="/dist/activity/05/motherDay.css?version=$version">
+</head>
+<body>
+<div class="footer" @click="bombBox">
+   <div class="words" onclick="showState()"><img src="$commonUrl/mayMovie_01_2.jpg"></div>
+   <div class="saleOff"><img src="$commonUrl/mumday30.jpg"></div>
+   <p v-for="item in show">{{item}}</p>
+</div>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_sxi0m42mfx8yqfr.css">
+<i class="iconfont icon-xiaoxi"></i>
+<i class="iconfont icon-fenxiang1"></i>
+<i class="iconfont icon-sousuo"></i>
+<i class="iconfont icon-xiaoxi"></i>
+<style>
+
+</style>
+
+<script type="text/javascript">
+
+    // $(function(){
+    //     function showState(){
+    //         console.log(1111);
+    //         let show=[true,false,false,false];
+    //         for (let i = 0; i < show.length; i++) {
+    //             this.show.splice(i,1,false);
+    //             console.log(this.show.splice(i,1,false))
+    //         }
+    //     }
+    // });
+
+
+
+//    var vm=new Vue({
+//        el:'.footer',
+//        data: {
+//            show: [true,false,false,false]
+//        },
+//        methods:{
+//            bombBox: function(){
+//                window.location.href = 'tel://' + '10086';
+//            }
+//        }
+//    });
+//
+//    Vue.set(vm.show,1,'2222');
+
+
+
+
+
+</script>
+</body>
+</html>

@@ -3,13 +3,21 @@ var canUseAmount=$('.canUseAmount').val();
 var name=$('.name').val();
 var id=$('.id').val();
 var isShowMention=$('.isShowMention').val();
+var status=$('.status').val();
 if(isShowMention=='0'){
     $('.pro-word').hide();
 }else{
     $('.pro-word').show();
 }
-if(isLogin=='no'){
-    window.location.href='/fanbei-web/opennative?name=APP_LOGIN';
+if(isLogin=='no'&&status=='abnormal'){
+    layer.open({
+        content: '该商家已暂停服务'
+        ,btn: ['知道了']
+        ,yes: function(index){
+            window.location.href='/fanbei-web/opennative?name=APP_HOME';
+            layer.close(index);
+        }
+    });
 }
 // $(document).ready(function(){
 //     $(".paymoney").trigger('click').focus();
