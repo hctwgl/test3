@@ -3,7 +3,7 @@
 <head>
     #set($version="2017080701")
     #set($commonUrl="http://f.51fanbei.com/h5")
-    <title>帮助中心</title>
+    <title>服务中心</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/help.css?version=$version">
 </head>
 <body style="background-color:#fff;">
