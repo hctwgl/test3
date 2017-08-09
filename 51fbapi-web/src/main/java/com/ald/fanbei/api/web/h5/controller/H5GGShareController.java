@@ -476,12 +476,12 @@ public class H5GGShareController extends H5Controller {
 	 * @return: void
 	 */
 	private void updateUserItemsStatus(Long userItemsId, String status) {
-		AfBoluomeActivityUserItemsDo resourceDo = afBoluomeActivityUserItemsService.getById(userItemsId);
-		if (resourceDo != null) {
-			resourceDo.setStatus(status);
-			resourceDo.setGmtModified(new Date());
-			afBoluomeActivityUserItemsService.updateById(resourceDo);
-		}
+		AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();//afBoluomeActivityUserItemsService.getById(userItemsId);
+		resourceDo.setRid(userItemsId);
+		resourceDo.setStatus(status);
+		resourceDo.setGmtModified(new Date());
+		afBoluomeActivityUserItemsService.updateById(resourceDo);
+		
 	}
 
 	/**
