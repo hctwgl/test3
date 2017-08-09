@@ -120,25 +120,25 @@ public class AuthStrongRiskApi implements ApiHandle {
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
 		if (StringUtils.equals(afUserAuthDo.getZmStatus(), YesNoStatus.NO.getCode())) {// 请先完成芝麻信用授权
-			throw new FanbeiException(FanbeiExceptionCode.ZHIMA_CREDIT_INFO_EXIST_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZHIMA_CREDIT_INFO_EXIST_ERROR);
 		}
 		if (StringUtils.equals(afUserAuthDo.getMobileStatus(), YesNoStatus.NO.getCode())) {// 请先完成运营商授权
-			throw new FanbeiException(FanbeiExceptionCode.OPERATOR_INFO_EXIST_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.OPERATOR_INFO_EXIST_ERROR);
 		}
 		if (appVersion < 368 && StringUtils.equals(afUserAuthDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {// 请先完成紧急联系人设置
-			throw new FanbeiException(FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
 		}
 		
 		if (!StringUtils.equals(afUserAuthDo.getRiskStatus(), RiskStatus.A.getCode())&&!StringUtils.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {//已经走过强风控或者正在进行中
-			throw new FanbeiException(FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
 		}		
 
 		Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
 		if (directoryCache == null) {
 			if (appVersion < 368) {
-				throw new FanbeiException(FanbeiExceptionCode.CANOT_FIND_DIRECTORY_ERROR);// 没取到通讯录时，让用户重新设置紧急联系人
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CANOT_FIND_DIRECTORY_ERROR);// 没取到通讯录时，让用户重新设置紧急联系人
 			} else {
-				throw new FanbeiException(FanbeiExceptionCode.NEED_AGAIN_DIRECTORY_PROOF_ERROR);// 没取到通讯录时，让用户重新社交认证
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.NEED_AGAIN_DIRECTORY_PROOF_ERROR);// 没取到通讯录时，让用户重新社交认证
 			}
 		}
 		
@@ -146,7 +146,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 
 		AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 		if (idNumberDo == null) {
-			throw new FanbeiException(FanbeiExceptionCode.USER_CARD_INFO_EXIST_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_INFO_EXIST_ERROR);
 		} else {
 			AfUserDo afUserDo = afUserService.getUserById(userId);
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
@@ -156,9 +156,16 @@ public class AuthStrongRiskApi implements ApiHandle {
 			String cardNo = card.getCardNumber();
 			String riskOrderNo = riskUtil.getOrderNo("regi", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 			try {
+				AfUserAuthDo authDo = new AfUserAuthDo();
+				authDo.setUserId(context.getUserId());
+				authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
+				afUserAuthService.updateUserAuth(authDo);
+				
 				RiskRespBo riskResp = riskUtil.registerStrongRisk(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, card.getCardNumber(), riskOrderNo);
 				if (!riskResp.isSuccess()) {
-					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+					authDo.setRiskStatus(RiskStatus.A.getCode());
+					afUserAuthService.updateUserAuth(authDo);
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_REGISTER_ERROR);
 				} else {
 					// 提交过信用认证,第一次给用户发放优惠劵
 					HashMap<String, String> creditRebateMap = new HashMap<String, String>();
@@ -180,11 +187,6 @@ public class AuthStrongRiskApi implements ApiHandle {
 						}
 					}
 					
-					AfUserAuthDo authDo = new AfUserAuthDo();
-					authDo.setUserId(context.getUserId());
-					authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
-					afUserAuthService.updateUserAuth(authDo);
-
 					bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
 					
 					if(context.getAppVersion()>367){
