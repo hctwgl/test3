@@ -1,26 +1,77 @@
 
+
+var userName = "";
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
+
 //获取数据
-let vm = new Vue({
-    el: '#presents',
-    data: {
-        content: {}
-    },
-    created: function () {
-        this.logData();
-    },
-    methods: {
-        logData() {
-            //获取页面初始化信息
-            let self = this;
-            $.ajax({
-                type: 'get',
-                url: "/H5GGShare/initHomePage",
-                data:{ userItemsId:1},
+$(function(){
+
+     $.ajax({
+                url: "/H5GGShare/ggSendItems",
+                type: 'GET',
+                dataType: 'JSON',
+                data: {
+                    
+
+                },
                 success: function (data) {
-                    self.content = eval('(' + data + ')').data;
-                    console.log(self.content);
+                    console.log(data)
+                    if(data.success){
+                    //  window.location.href ="ggIndexShare";
+                    }else{
+                        requestMsg(data.msg);
+                    }
+                       
                 }
             })
-        }
-    }
+
+
+    //点击我要赠送卡片
+    $('.presentCard').click(function(){
+             $.ajax({
+                url: "/H5GGShare/pickUpItems",
+                type: 'GET',
+                dataType: 'JSON',
+                data: {
+                   
+                },
+                success: function (data) {
+                    console.log(data)
+                    if(data.success){
+                    //  window.location.href ="ggIndexShare";
+                    }else{
+                        requestMsg(data.msg);
+                    }
+                       
+                }
+            })
+    })
+
+    //点击我要索要卡片
+    $('.demandCard').click(function(){
+             $.ajax({
+                url: "/H5GGShare/lightItems",
+                type: 'GET',
+                dataType: 'JSON',
+                data: {
+                   activityId:1
+                },
+                success: function (data) {
+                    console.log(data)
+                    if(data.success){
+                    //  window.location.href ="ggIndexShare";
+                    }else{
+                        requestMsg(data.msg);
+                    }
+                       
+                }
+            })
+    })
+
+
+
 })
+
+

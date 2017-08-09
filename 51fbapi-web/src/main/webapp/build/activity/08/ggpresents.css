@@ -6,11 +6,29 @@ body{
     padding: 0;
     margin: 0;
 }
+.box{
+    height:.6rem;
+     /* overflow:hidden;  */
+     /* display:inline-block;  */
+     background-color:#4c4c4c ;
+    
+}
+/*文字滚动  */
+@keyframes moveup{
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(-100%);
+                }
+            }
+          
  .personAmount{
   width:100%;
   height:.6rem;
-  background:#4c4c4c;
+  /* background:#4c4c4c; */
   position:relative;
+  animation: moveup 10s  linear infinite;
 }
 .personAmount p{
   font-size:.26rem;
