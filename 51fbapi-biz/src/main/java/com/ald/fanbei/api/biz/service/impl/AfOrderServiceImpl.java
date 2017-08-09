@@ -719,7 +719,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			     //添加卡片信息 
 			    AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
 			    userItemsDo.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
-			    userItemsDo.setSourceId(afBoluomeActivityItemsDo.getRid());
+			    userItemsDo.setItemsId(afBoluomeActivityItemsDo.getRid());
+			    userItemsDo.setSourceId((long) -1);
 			    userItemsDo.setStatus("NORMAL");
 			    userItemsDo.setUserId(userId);
 			    userItemsDo.setUserName(afUserDo.getUserName()); 
