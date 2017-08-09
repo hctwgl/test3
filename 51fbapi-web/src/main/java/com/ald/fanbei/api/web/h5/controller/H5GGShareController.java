@@ -536,7 +536,67 @@ public class H5GGShareController extends H5Controller {
 		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
+	
+	
+/*	@RequestMapping(value = "/initAskForItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String initAskForItems(HttpServletRequest request, HttpServletResponse response) {
+		String resultStr = "";
+		try {
+			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
+			if (itemsId != null) {
+				AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
+				if (itemsDo != null ) {
+					Map<String, Integer> fakeMap = getFakePerson(itemsDo.getBoluomeActivityId());
+					Integer fakeFinal = 0;
+					Integer fakeJoin = 0;
+					if (fakeMap != null) {
+						fakeFinal = fakeMap.get("fakeFinal");
+						fakeJoin = fakeMap.get("fakeJoin");
+					}
+				}
+				
+			}
+			
+			if (userItemsDo != null) {
+				Map<String, Integer> fakeMap = getFakePerson(userItemsDo.getBoluomeActivityId());
+				Integer fakeFinal = 0;
+				Integer fakeJoin = 0;
+				if (fakeMap != null) {
+					fakeFinal = fakeMap.get("fakeFinal");
+					fakeJoin = fakeMap.get("fakeJoin");
+				}
+				AfUserDo userDo = afUserService.getUserById(userItemsDo.getUserId());
+				if (userDo != null) {
+					String friend = userDo.getNick();
+					if (friend.isEmpty()) {
+						friend = userDo.getUserName();
+					}
+					AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(userItemsDo.getItemsId());
 
+					Map<String, Object> data = new HashMap<>();
+					data.put("friend", friend);
+					data.put("itemsDo", itemsDo);
+					data.put("userItemsDo", userItemsDo);
+					data.put("fakeFinal", fakeFinal);
+					data.put("fakeJoin", fakeJoin);
+					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+				}
+			}
+
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("ggSendItems error", e);
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getMessage()).toString();
+			logger.error("ggSendItems error", e);
+		}
+
+		doMaidianLog(request, resultStr);
+		return resultStr;
+	}*/
+	
+	
 	private Long convertUserNameToUserId(String userName) {
 		Long userId = null;
 		if (!StringUtil.isBlank(userName)) {
@@ -804,7 +864,9 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		try {
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
-			Long userId = NumberUtil.objToLong(request.getParameter("userId"));// 索要人的用户id
+			String userName = request.getParameter("userName");
+			
+			Long userId =convertUserNameToUserId(userName);// 索要人的用户id
 			AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
 			if (itemsDo != null) {
 				Map<String, Integer> fakeMap = getFakePerson(itemsDo.getBoluomeActivityId());
@@ -817,7 +879,7 @@ public class H5GGShareController extends H5Controller {
 				AfUserDo userDo = afUserService.getUserById(userId);
 				if (userDo != null) {
 					String friend = userDo.getNick();
-					if (friend.isEmpty()) {
+					if (StringUtil.isBlank(friend)) {
 						friend = userDo.getUserName();
 					}
 					Map<String, Object> data = new HashMap<>();
