@@ -202,32 +202,28 @@ public class APPH5GGShareController extends BaseController {
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			context = doWebCheck(request, false);		
+			context = doWebCheck(request, false);
+			// TODO:获取登录着的userName或者id
 			String userName = request.getParameter("userName");
-			Long userId = convertUserNameToUserId(userName);
-		/*	if (userId == null) {
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
-			}*/
-			if (userId != null && userId > 0 ) {
-				useritemsDo.setUserId(userId);
-				useritemsDo.setBoluomeActivityId(activityId);
-				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
-						.getListByCommonCondition(useritemsDo);
-				data.put("userItemsList", userItemsList);
-				
-				//修改itemsList内容，把num统计上去
-				itemsList = addNumber(activityId, userId);
-				//吧用户名传给页面，进行下一步操作。
-				data.put("userId", userId);
-				if (StringUtil.isBlank(userName)) {
-					data.put("userName", userName);
+			if (!StringUtil.isBlank(userName)) {
+				Long userId = convertUserNameToUserId(userName);
+				if (userId != null && userId > 0) {
+					useritemsDo.setUserId(userId);
+					useritemsDo.setBoluomeActivityId(activityId);
+					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+							.getListByCommonCondition(useritemsDo);
+					data.put("userItemsList", userItemsList);
+
+					// 修改itemsList内容，把num统计上去
+					itemsList = addNumber(activityId, userId);
+					// 吧用户名传给页面，进行下一步操作。
+
+					data.put("userId", userId);
+					if (!StringUtil.isBlank(userName)) {
+						data.put("userName", userName);
+					}
 				}
 			}
-				
-				
-			
 			data.put("bannerList", bannerList);
 			data.put("fakeFinal", fakeFinal);
 			data.put("fakeJoin", fakeJoin);
