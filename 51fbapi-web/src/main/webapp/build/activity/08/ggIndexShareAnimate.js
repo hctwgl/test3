@@ -60,7 +60,7 @@ $(function(){
     $('.presentCard').click(function(){
         $.ajax({
             type: 'get',
-            url: "/H5GG/sendItems",
+            url: "/H5GGShare/sendItems",
             data:{activityId:1,userName:15839790051},
             success: function (returnData) {
                 console.log(returnData)
@@ -141,22 +141,22 @@ $(function(){
                         $('.demandTitle').css('display','block');
                         $('.sure').html('确定索要');
                         str+='<div class="img" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"></div>';
-                        }
                     }
-                    $('.imgList').append(str);
-                    slideNub = $(".imgList .img").size();//获取轮播图片数量
-                    getData(slideNub)
-                    //确定索要
-                    $('.sure').click(function(){
-                        cardRid=$('.img.img3').attr('rid');
-                        console.log(cardRid)
-                        if(cardRid&&cardRid!=''){
-                            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/activity/ggIndexShare?cardRid'+cardRid+'","isSubmit":"Y","sharePage":"ggIndexShare"}';
-                        }else{
-                            window.location.href="ggIndex";
-                        }
+                }
+                $('.imgList').append(str);
+                slideNub = $(".imgList .img").size();//获取轮播图片数量
+                getData(slideNub)
+                //确定索要
+                $('.sure').click(function(){
+                    cardRid=$('.img.img3').attr('rid');
+                    console.log(cardRid)
+                    if(cardRid&&cardRid!=''){
+                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/activity/ggIndexShare?cardRid'+cardRid+'","isSubmit":"Y","sharePage":"ggIndexShare"}';
+                    }else{
+                        window.location.href="ggIndex";
+                    }
 
-                    })
+                })
             },
             error: function(){
                 requestMsg("请求失败");
@@ -268,16 +268,16 @@ function k_touch() {
 
 // app调用web的方法
 function alaShareData(){
-  var dataObj = { // 分享内容
-    "appLogin": "Y", // 是否需要登录，Y需要，N不需要
-    "type": "share", // 此页面的类型
-    "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
-    'shareAppContent': "你的好友赠送了一张卡片给你，快领走吧~",  // 分享的内容
-    "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-    "shareAppUrl": domainName+"/activity/ggIndexShare?cardRid="+cardRid,  // 分享后的链接
-    "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
-    "sharePage": "ggIndexShare" // 分享的页面
-  };
-  var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
-  return dataStr;
+    var dataObj = { // 分享内容
+        "appLogin": "Y", // 是否需要登录，Y需要，N不需要
+        "type": "share", // 此页面的类型
+        "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
+        'shareAppContent': "你的好友赠送了一张卡片给你，快领走吧~",  // 分享的内容
+        "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
+        "shareAppUrl": domainName+"/activity/ggIndexShare?cardRid="+cardRid,  // 分享后的链接
+        "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
+        "sharePage": "ggIndexShare" // 分享的页面
+    };
+    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
+    return dataStr;
 };

@@ -1,8 +1,4 @@
 //var activityId = getUrl("activityId");
-var userName = "";
-if(getInfo().userName){
-    userName=getInfo().userName;
-};
 //获取数据
 let vm = new Vue({
     el: '#ggIndexShare',
@@ -54,40 +50,27 @@ let vm = new Vue({
             });
 
         },
-        //点击我要赠送卡片
-        presentClick:function(){
-            $('.alertPresent').css('display','block');
-            $('.mask').css('display','block');
-            $('.presentTitle').css('display','block');
-            $('.sure').html('确定赠送');
-            let self = this;
+        //点击卡片
+        cardClick:function(e){
+            var shopId=e.refId;
             $.ajax({
-                type: 'get',
-                url: "/H5GGShare/sendItems",
-                data:{activityId:1},
-                success: function (data) {
-                    self.content = eval('(' + data + ')').data;
-                    console.log(data);
+                type: 'post',
+                url: '/fanbei-web/getBrandUrl',
+                data:{'shopId':shopId,userName:15839790051},
+                dataType:'JSON',
+                success: function (returnData) {
+                    console.log(returnData)
+                    if(returnData.success){
+                        location.href=returnData.url;
+                    }else{
+                        location.href="gglogin";
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
                 }
             })
-        },//点击我要赠送卡片
-        //点击我要索要卡片
-        demandClick:function(){
-            $('.alertPresent').css('display','block');
-            $('.mask').css('display','block');
-            $('.demandTitle').css('display','block');
-            $('.sure').html('确定索要');
-            let self = this;
-            $.ajax({
-                type: 'get',
-                url: "/H5GGShare/sendItems",
-                data:{itemsId:itemsId,userId:userId},
-                success: function (data) {
-                    self.content = eval('(' + data + ')').data;
-                    console.log(data);
-                }
-            })
-        },//点击我要索要卡片
+        },
         ruleClick:function(){
             $('.alertRule').css('display','block');
             $('.mask').css('display','block');
