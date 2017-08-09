@@ -576,7 +576,7 @@ public class H5GGShareController extends H5Controller {
 					newUserItemsDoCondition.setSourceId(resourceUserItemsId);
 					List<AfBoluomeActivityUserItemsDo> list = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(newUserItemsDoCondition);
-					if (list != null && !list.isEmpty()) {
+					if (list != null || !list.isEmpty()) {
 						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
 					}
 					// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
