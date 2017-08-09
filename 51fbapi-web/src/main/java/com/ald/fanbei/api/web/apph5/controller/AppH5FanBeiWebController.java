@@ -267,7 +267,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	 * @return: String
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/pickBoluomeCouponV1", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/"
+			+ "", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickBoluomeCouponV1(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
 			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
