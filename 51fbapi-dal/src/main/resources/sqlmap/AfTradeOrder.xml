@@ -124,4 +124,147 @@
 			#{item}
 		</foreach>
 	</update>
+	<select id="getCanWithDrawMoney" resultType="java.math.BigDecimal">
+		select sum(a.actual_amount) from af_order a left join af_trade_order b
+		on a.id = b.order_id where
+		a.status='PAID' and a.pay_status='P' and
+		a.order_type='TRADE' and a.gmt_create <![CDATA[   <=  ]]>
+		#{canWithDrawDate} and b.business_id =#{businessId} and b.status='NEW'
+	</select>
+	<select id="getCannotWithDrawMoney" resultType="java.math.BigDecimal">
+		select sum(a.actual_amount) from af_order a left join af_trade_order b
+		on a.id = b.order_id where
+		a.status='PAID' and a.pay_status='P' and
+		a.order_type='TRADE' and a.gmt_create <![CDATA[   >  ]]>
+		#{cannotWithDrawDate} and b.business_id =#{businessId} and b.status='NEW'
+	</select>
+	<select id="payOrderInfo"
+			resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto">
+		select
+		count(a.id) count,sum(a.actual_amount) money
+		from
+		af_order a left
+		join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id =
+		c.order_id
+		where c.business_id =
+		#{businessId} and a.status='PAID'
+		<if test="startOfDate != null and startOfDate != '' ">
+			and a.gmt_create <![CDATA[   >=  ]]>
+			#{startOfDate}
+		</if>
+		<if test="endOfDate != null and endOfDate != '' ">
+			and a.gmt_create <![CDATA[   <=  ]]>
+			#{endOfDate}
+		</if>
+	</select>
+	<select id="orderGridDate" resultType="java.lang.String">
+		select distinct date_format(a.gmt_create, '%Y-%m-%d')
+		from af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		where c.business_id = #{businessId}
+		<if test="startDate != null and startDate != '' ">
+			and a.gmt_create <![CDATA[   >=  ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != '' ">
+			and a.gmt_create <![CDATA[   <=  ]]>
+			#{endDate}
+		</if>
+		<if test="orderStatus != null and orderStatus != '' ">
+			and c.status = #{orderStatus}
+		</if>
+		<if test="orderStatus == null or orderStatus == ''" >
+			and c.status in ('NEW', 'PAID')
+		</if>
+		order by a.gmt_create desc
+
+	</select>
+	<select id="orderGrid" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
+		select
+		a.id,a.order_no,a.gmt_create,a.actual_amount,b.user_name,a.status
+		orderStatus,c.status withDrawStatus from
+		af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		where c.business_id = #{businessId}
+		<if test="startDate != null and startDate != '' ">
+			and a.gmt_create <![CDATA[   >=  ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != '' ">
+			and a.gmt_create <![CDATA[   <=  ]]>
+			#{endDate}
+		</if>
+		<if test="orderStatus != null and orderStatus != '' ">
+			and c.status = #{orderStatus}
+		</if>
+		<if test="orderStatus == null or orderStatus == ''" >
+			and c.status in ('NEW', 'PAID')
+		</if>
+		order by a.gmt_create desc
+	</select>
+
+	<select id="refundGridDate" resultType="java.lang.String">
+		select distinct date_format(d.gmt_create, '%Y-%m-%d')
+		from af_order a left join af_user b on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		left join af_order_refund d on d.order_id = a.id
+		where c.business_id = #{businessId} and d.id is not null
+		<if test="refundStatus != null and refundStatus != '' ">
+			and c.status = #{refundStatus}
+		</if>
+		<if test="refundStatus == null or refundStatus == ''">
+			and c.status in ('REFUNDING', 'REFUND')
+		</if>
+		<if test="startDate != null and startDate != '' ">
+			and d.gmt_create <![CDATA[   >=  ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != '' ">
+			and d.gmt_create <![CDATA[   <=  ]]>
+			#{endDate}
+		</if>
+		order by d.gmt_create desc
+	</select>
+	<select id="refundGrid" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
+		select
+		a.id,a.order_no,d.gmt_create,d.amount actualAmount,b.user_name,c.status
+		withDrawStatus from
+		af_order a left join af_user b
+		on a.user_id =b.id
+		left join af_trade_order c on a.id = c.order_id
+		left join af_order_refund d on d.order_id = a.id
+		where c.business_id = #{businessId} and d.id is not null
+		<if test="refundStatus != null and refundStatus != '' ">
+			and c.status = #{refundStatus}
+		</if>
+		<if test="refundStatus == null or refundStatus == ''">
+			and c.status in ('REFUNDING', 'REFUND')
+		</if>
+		<if test="startDate != null and startDate != '' ">
+			and d.gmt_create <![CDATA[   >=  ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != '' ">
+			and d.gmt_create <![CDATA[   <=  ]]>
+			#{endDate}
+		</if>
+		order by d.gmt_create desc
+	</select>
+
+	<select id="getCanWithDrawList" resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderDto">
+		select
+		a.id,a.order_no,a.gmt_create,a.actual_amount,a.status
+		orderStatus,c.status withDrawStatus from
+		af_order a left join
+		af_trade_order c on a.id = c.order_id
+		where
+		a.status='PAID' and
+		a.pay_status='P' and
+		a.order_type='TRADE' and a.gmt_create <![CDATA[   <=  ]]>
+		#{canWithDrawDate} and c.business_id =#{businessId} and c.status='NEW'
+	</select>
 </mapper>

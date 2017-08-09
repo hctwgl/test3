@@ -89,4 +89,6 @@ public class GetBorrowCashBase {
 		}
 		return bannerList;
 	}
+
+	
 }

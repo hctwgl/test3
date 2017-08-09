@@ -16,6 +16,8 @@
             <img src="$commonUrl/channel$!{style}_01.png">
         #elseif( $!{style}==14 )
             <img src="$commonUrl/channel7_01.jpg">
+        #elseif( $!{style}==17 )
+            <img src="$commonUrl/channel17_01.png">
         #elseif( $!{style}==19 )
             <img src="$commonUrl/channel19_01.png">
         #elseif( $!{style}==20 )

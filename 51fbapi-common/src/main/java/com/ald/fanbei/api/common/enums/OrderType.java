@@ -15,9 +15,12 @@ public enum OrderType {
 	TAOBAO("TAOBAO", "淘宝订单","TB"),
 	TMALL("TMALL", "天猫订单","TM"),
 	AGENTBUY("AGENTBUY", "代买订单","DM"),
+	AGENTCPBUY("AGENTCPBUY", "代买订单组合","DM_CP"),
 	SELFSUPPORT("SELFSUPPORT", "自营商品订单","SG"),
 
 	BOLUOME("BOLUOME", "菠萝觅","BL"),
+	BOLUOMECP("BOLUOMECP", "菠萝觅组合","BL_CP"),
+	SELFSUPPORTCP("SELFSUPPORTCP", "自营商品订单组合","SG_CP"),
 
     TRADE("TRADE", "商圈订单", "TR");
     
@@ -42,8 +45,8 @@ public enum OrderType {
         return null;
     }
 
-    public static List<String> getNeedRecordPayFailCodes(){
-        if(needRecordPayFailCodes != null && needRecordPayFailCodes.size() > 0){
+    public static List<String> getNeedRecordPayFailCodes() {
+        if(needRecordPayFailCodes != null && needRecordPayFailCodes.size() > 0) {
             return needRecordPayFailCodes;
         }
         needRecordPayFailCodes = new ArrayList<String>();
@@ -52,8 +55,6 @@ public enum OrderType {
         needRecordPayFailCodes.add(OrderType.TRADE.getCode());
         return needRecordPayFailCodes;
     }
-    
-    
 
 	public String getCode() {
 		return code;

@@ -17,6 +17,7 @@
         <input class="isShowMention" type="hidden" value="$!{isShowMention}">
         <input class="idNumber" type="hidden" value="$!{idNumber}">
         <input class="realName" type="hidden" value="$!{realName}">
+        <input class="status" type="hidden" value="$!{status}">
         <div class="businessName">
             <img class="shangjia" src="https://fs.51fanbei.com/h5/app/images/user/business.png" alt="">
             <span>$!{name}</span>
@@ -41,5 +42,5 @@
 
     </div>
 </body>
-<script src="/dist/js/user/initTradeInfo.js"></script>
+<script src="/dist/js/user/initTradeInfo.js?id=1"></script>
 </html>

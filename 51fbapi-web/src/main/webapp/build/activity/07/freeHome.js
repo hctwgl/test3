@@ -9,7 +9,8 @@ var vm=new Vue({
     el: '#freeHome',
     data: {
         discountMap: [],
-        rebateMap: []
+        rebateMap: [],
+        returnData: []
     },
     created:function(){
         let _this=this;
@@ -24,8 +25,10 @@ var vm=new Vue({
                 data:{'activityId':activityId},
                 type: 'post',
                 success:function (data) {
+                    console.log(data);
                     _this.discountMap=data.data.recommendGoodsList.slice(0,3);
                     _this.rebateMap=data.data.recommendGoodsList.slice(3);
+                    _this.returnData=data.data;
                 },
                 error: function(){
                     requestMsg("请求失败");

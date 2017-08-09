@@ -185,5 +185,16 @@
 		AND DATE_FORMAT(value_2,'%Y-%m-%d') >= DATE_FORMAT(NOW(),'%Y-%m-%d')	
 		]]>	
 	</select>
+	<select id = "getScrollbarByType" resultType = "AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0
+		AND type = 'BORROW_TOP_SCROLLBAR'
+		AND value_4 = 'O'
+	</select>
+	
 
 </mapper>

@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfGoodsSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -94,6 +95,10 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			goodsPics.add(goods.getGoodsPic4());
 		}
 		vo.setGoodsPics(goodsPics);
+		//如果为自营商品，numId设置为goodsId
+		if(AfGoodsSource.SELFSUPPORT.getCode().equals(goods.getSource())){
+			vo.setNumId(goods.getRid()+"");
+		}
 		return vo;
 	}
 	
