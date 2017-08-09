@@ -257,7 +257,79 @@ public class AppH5FanBeiWebController extends BaseController {
 			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
 		}
 	}
-	
+	/**
+	 * @author qiao
+	 * @说明：逛逛活动点亮过程中的领券
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pickBoluomeCouponV1", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickBoluomeCouponV1(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
+			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
+			if (sceneId == null) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+			}
+			
+			if (StringUtils.isEmpty(userName)) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "没有登录", notifyUrl,null )
+						.toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "没有登录", notifyUrl,null )
+						.toString();
+			}
+			
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+			if (resourceInfo == null) {
+				logger.error("couponSceneId is invalid");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+			}
+			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
+			
+			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+			
+			if (DateUtil.beforeDay(new Date(), gmtStart)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+			}
+			if (DateUtil.afterDay(new Date(), gmtEnd)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+			}
+			
+			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			JSONObject resultJson = JSONObject.parseObject(resultString);
+			String code = resultJson.getString("code");
+			
+			if ("10222".equals(code) ||  "10206".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, "您已领过优惠券，快去使用吧~").toString();
+			} else if ("10305".equals(code)){
+				return H5CommonResponse.getNewInstance(false, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
+			}
+			else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+			} 
+			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+
+		} catch (Exception e) {
+			logger.error("pick brand coupon failed , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+		}
+
+	}
 	@ResponseBody
 	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickBoluomeCoupon(HttpServletRequest request, ModelMap model) throws IOException {
