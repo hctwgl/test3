@@ -165,6 +165,7 @@
 		on a.user_id =b.id
 		left join af_trade_order c on a.id = c.order_id
 		where c.business_id = #{businessId}
+		and c.status = 'NEW'
 		<if test="startDate != null and startDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
 			#{startDate}
@@ -174,10 +175,10 @@
 			#{endDate}
 		</if>
 		<if test="orderStatus != null and orderStatus != '' ">
-			and c.status = #{orderStatus}
+			and a.status = #{orderStatus}
 		</if>
 		<if test="orderStatus == null or orderStatus == ''" >
-			and c.status in ('NEW', 'PAID')
+			and a.status in ('NEW', 'PAID')
 		</if>
 		order by a.gmt_create desc
 
@@ -190,6 +191,7 @@
 		on a.user_id =b.id
 		left join af_trade_order c on a.id = c.order_id
 		where c.business_id = #{businessId}
+		and c.status = 'NEW'
 		<if test="startDate != null and startDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
 			#{startDate}
@@ -199,10 +201,10 @@
 			#{endDate}
 		</if>
 		<if test="orderStatus != null and orderStatus != '' ">
-			and c.status = #{orderStatus}
+			and a.status = #{orderStatus}
 		</if>
 		<if test="orderStatus == null or orderStatus == ''" >
-			and c.status in ('NEW', 'PAID')
+			and a.status in ('NEW', 'PAID')
 		</if>
 		order by a.gmt_create desc
 	</select>
