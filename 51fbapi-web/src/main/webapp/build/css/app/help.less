@@ -97,13 +97,22 @@
   margin-bottom: 1.28rem;
 
 }
+.main_wrap li{
+  border-bottom: 1px solid #afafaf;
+  text-align: left;
+}
+#firstList li:last-child,#secondList li:last-child,#thirdList li:last-child,#fourthList li:last-child{
+  border-bottom: 0;
+}
 
 .itemTitle{
   padding: 0.2rem;
-  height: .56rem;
-  line-height: .56rem;
+  height: .6rem;
+  text-align: left;
+  //line-height: .6rem;
 }
 .title {
+  width: 6.8rem;
   vertical-align:middle;
   font-size: 0.28rem;
   float:left
@@ -111,7 +120,7 @@
 
 .divider{
   background-color: #afafaf;
-  height: 1px;
+  height: 0.5px;
   border: 0;
 }
 .arrow {
@@ -182,6 +191,9 @@
   display: flex;
   padding: 0 0.44rem;
   margin: 0 auto;
+}
+.footer img{
+  background-size:cover;
 }
 .kf,.tel{
   position: relative;
