@@ -17,7 +17,7 @@ let vm = new Vue({
             $.ajax({
                 type: 'get',
                 url: "/H5GG/initHomePage",
-                data:{'activityId':1},
+                data:{'activityId':1,userName:15839790051},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
@@ -46,7 +46,7 @@ let vm = new Vue({
                     type: "POST",
                     dataType: "JSON",
                     data: {'sceneId':sceneId,'userName':15839790051},
-                    success: function (returnData) {
+                    success: function (returnData){
                         console.log(returnData)
                         if(returnData.success){
                             requestMsg(returnData.msg);
@@ -83,15 +83,18 @@ let vm = new Vue({
         },
         //点击获取终极大奖
         finalPrize:function(){
-            console.log(0)
-            if(self.finalPrizeMask!=false){
+            let self = this;
+            console.log(self.finalPrizeMask)
+            if(self.finalPrizeMask){
                 $.ajax({
                     type: 'get',
                     url: '/H5GGShare/pickUpSuperPrize',
                     data:{'activityId':1,'userName':15839790051},
                     dataType:'JSON',
-                    success: function (data) {
-                        console.log(data)
+                    success: function (returnData) {
+                        if(returnData.success){
+                            requestMsg(returnData.msg)
+                        }
                     },
                     error: function(){
                         requestMsg("请求失败");
@@ -102,18 +105,28 @@ let vm = new Vue({
         },
         //点击我要赠送卡片
         presentClick:function(){
-            $('.alertPresent').css('display','block');
-            $('.mask').css('display','block');
-            $('.presentTitle').css('display','block');
-            $('.sure').html('确定赠送');
-            let self = this;
             $.ajax({
                 type: 'get',
                 url: "/H5GG/sendItems",
                 data:{activityId:1,userName:15839790051},
-                success: function (data) {
-                    self.content = eval('(' + data + ')').data;
-                    console.log(data);
+                success: function (returnData) {
+                    console.log(returnData)
+                    if(returnData.data.loginUrl!=''){
+                        location.href = returnData.data.loginUrl;
+                    }else{
+                        if(num<2){
+                            requestMsg(returnData.msg)
+                        }else{
+                            $('.alertPresent').css('display','block');
+                            $('.mask').css('display','block');
+                            $('.presentTitle').css('display','block');
+                            $('.sure').html('确定赠送');
+                        }
+
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
                 }
             })
         },//点击我要赠送卡片
@@ -126,8 +139,8 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'get',
-                url: "/H5GGShare/sendItems",
-                data:{itemsId:itemsId,userId:userId},
+                url: "/H5GG/askForItems",
+                data:{activityId:1,userName:15839790051},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(data);
