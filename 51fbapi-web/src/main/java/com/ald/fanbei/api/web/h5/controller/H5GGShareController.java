@@ -343,7 +343,7 @@ public class H5GGShareController extends H5Controller {
 
 	/**
 	 * 
-	 * @说明：赠送卡片(页面初始化) 
+	 * @说明：赠送卡片
 	 * @param: @param request
 	 * @param: response
 	 * @param: @return
@@ -511,7 +511,6 @@ public class H5GGShareController extends H5Controller {
 				}
 			}
 
-			// }
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("ggSendItems error", e);
