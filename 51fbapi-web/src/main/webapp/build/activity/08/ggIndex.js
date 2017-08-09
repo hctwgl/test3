@@ -45,10 +45,10 @@ let vm = new Vue({
         couponClick:function(e){
             var sceneId=e.sceneId;
                 $.ajax({
-                    url: "/fanbei-web/pickBoluomeCouponForApp",
+                    url: "pickBoluomeCouponV1",
                     type: "POST",
                     dataType: "JSON",
-                    data: {'sceneId':sceneId,'userName':15839790051},
+                    data: {'sceneId':sceneId},
                     success: function (returnData){
                         console.log(returnData)
                         if(returnData.success){

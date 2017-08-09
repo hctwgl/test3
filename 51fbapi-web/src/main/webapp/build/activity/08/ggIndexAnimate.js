@@ -104,8 +104,12 @@ $(function(){
                             }
                         }
                         cardRid=arr[0];
-                       alert(cardRid)
-                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友赠送了一张饿了么至尊卡给你，快领走吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/activity/ggIndexShare","isSubmit":"Y","sharePage":"ggIndexShare?cardRid="+cardRid}';
+                        console.log(cardRid)
+                        if(cardRid&&cardRid!=''){
+                            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友赠送了一张饿了么至尊卡给你，快领走吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/activity/ggIndexShare?cardRid'+cardRid+'","isSubmit":"Y","sharePage":"ggIndexShare"}';
+                        }else{
+                            window.location.href="ggIndex";
+                        }
                     })
                 }
             },
@@ -122,11 +126,12 @@ $(function(){
             url: "/H5GG/askForItems",
             data:{activityId:1,userName:15839790051},
             success: function (returnData) {
-                console.log(returnData);
-                /*if(returnData.data.loginUrl){
-                    location.href = returnData.data.loginUrl;
+                var returnData=eval('(' + returnData + ')').data;
+                console.log(returnData)
+                if(returnData.loginUrl){
+                    location.href = returnData.loginUrl;
                 }else{
-                    var presentCardList=returnData.data.itemsList;
+                    var presentCardList=returnData.itemsList;
                     var str='';
                     for(var j=0;j<presentCardList.length;j++){
                         $('.alertPresent').css('display','block');
@@ -138,7 +143,7 @@ $(function(){
                     }
                     $('.imgList').append(str);
                     slideNub = $(".imgList .img").size();//获取轮播图片数量
-                    getData(slideNub)*/
+                    getData(slideNub)
             },
             error: function(){
                 requestMsg("请求失败");
@@ -247,8 +252,7 @@ function k_touch() {
         }
     }
 }
-//获取cookie中的apihost
-apihost = getCookie("apihost");
+
 // app调用web的方法
 function alaShareData(){
   var dataObj = { // 分享内容
@@ -257,9 +261,9 @@ function alaShareData(){
     "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
     'shareAppContent': "你的好友赠送了一张饿了么至尊卡给你，快领走吧~",  // 分享的内容
     "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-    "shareAppUrl": domainName+"/activity/ggIndexShare",  // 分享后的链接
+    "shareAppUrl": domainName+"/activity/ggIndexShare?cardRid="+cardRid,  // 分享后的链接
     "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
-    "sharePage": "ggIndexShare?cardRid="+cardRid // 分享的页面
+    "sharePage": "ggIndexShare" // 分享的页面
   };
   var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
   return dataStr;
