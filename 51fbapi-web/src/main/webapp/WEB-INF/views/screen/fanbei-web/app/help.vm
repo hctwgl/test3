@@ -4,10 +4,9 @@
     #set($version="2017080701")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>帮助中心</title>
-    <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
     <link rel="stylesheet" type="text/css" href="/dist/css/app/help.css?version=$version">
 </head>
-<body>
+<body style="background-color:#fff;">
 <div id="navWrap">
     <ul class="nav">
         <li id="first" class="current">
@@ -394,12 +393,7 @@
         <span >客服电话</span>
     </div>
 </div>
-
-
-<script type="text/javascript" src="/common/js/jquery-2.2.4.min.js"></script>
-<!-- <script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script> -->
 <script type="text/javascript" src="/dist/js/app/help.js?version=$version"></script>
-
 </body>
 </html>
 
