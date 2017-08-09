@@ -1,11 +1,12 @@
-
-var num;
+var cardLength;
+var num;//卡片数量
 //获取数据
 let vm = new Vue({
     el: '#ggIndex',
     data: {
         content: {},
-        finalPrizeMask:''
+        finalPrizeMask:'',
+        present:''
     },
     created: function () {
         this.logData();
@@ -30,11 +31,13 @@ let vm = new Vue({
                         num=self.content.itemsList[j].num;
                         if(num==0){
                             self.finalPrizeMask=true;
-                        }else{
+                        }else if(num==1){
                             self.finalPrizeMask=false;
+                        }else {
+                            self.finalPrizeMask=false;
+                            self.present='Y';
                         }
                     }//判断终极大奖蒙版
-
                 }
             })
         },
@@ -103,50 +106,6 @@ let vm = new Vue({
             }
 
         },
-        //点击我要赠送卡片
-        presentClick:function(){
-            $.ajax({
-                type: 'get',
-                url: "/H5GG/sendItems",
-                data:{activityId:1,userName:15839790051},
-                success: function (returnData) {
-                    console.log(returnData)
-                    if(returnData.data.loginUrl!=''){
-                        location.href = returnData.data.loginUrl;
-                    }else{
-                        if(num<2){
-                            requestMsg(returnData.msg)
-                        }else{
-                            $('.alertPresent').css('display','block');
-                            $('.mask').css('display','block');
-                            $('.presentTitle').css('display','block');
-                            $('.sure').html('确定赠送');
-                        }
-
-                    }
-                },
-                error: function(){
-                    requestMsg("请求失败");
-                }
-            })
-        },//点击我要赠送卡片
-        //点击我要索要卡片
-        demandClick:function(){
-            $('.alertPresent').css('display','block');
-            $('.mask').css('display','block');
-            $('.demandTitle').css('display','block');
-            $('.sure').html('确定索要');
-            let self = this;
-            $.ajax({
-                type: 'get',
-                url: "/H5GG/askForItems",
-                data:{activityId:1,userName:15839790051},
-                success: function (data) {
-                    self.content = eval('(' + data + ')').data;
-                    console.log(data);
-                }
-            })
-        },//点击我要索要卡片
         ruleClick:function(){
             $('.alertRule').css('display','block');
             $('.mask').css('display','block');
