@@ -28,10 +28,7 @@
     <!--首页轮播图-->
     <div class="banner">
         <ul class="bannerList">
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
+            <li v-for="item in content.bannerList"><img :src="item.imageUrl"></li>
         </ul>
         <ul class="num"></ul>
     </div>
@@ -60,8 +57,8 @@
         <p class="amount">{{item.amount}}</p>
         <p class="finalPrizeMask" v-show="finalPrizeMask"></p>
     </div>
-    <div class="presentCard ask" @click="presentClick()">我要赠送卡片</div>
-    <div class="demandCard ask" @click="demandClick()">我要索要卡片</div>
+    <div class="presentCard ask">我要赠送卡片</div>
+    <div class="demandCard ask">我要索要卡片</div>
     <div class="progress">
        <div class="left"></div>
         <p class="p01">完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利</p>
@@ -84,19 +81,17 @@
         <div class="imgCont">
             <p class="bg"></p>
             <div id="slide" class="imgList" class="index-slide" alt="star">
-                <!-- 轮播图片数量可自行增减 -->
-                <div class="img">1</div>
-                <div class="img">2</div>
-                <div class="img">3</div>
+
             </div>
         </div>
-        <p class="previous"  onclick="left()"></p>
-        <p class="next"  onclick="right()"></p>
+        <p class="previous" onclick="left()"></p>
+        <p class="next" onclick="right()"></p>
         <p class="sure"></p>
         <p class="close" @click="close()">X</p>
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/08/ggIndexAnimate.js?version=$version"></script>
 <script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
+
 </body>
 </html>
