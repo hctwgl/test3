@@ -53,12 +53,9 @@ $(function(){
             data:{'shopId':'1','userName':userName},
             type: 'POST',
             success:function (data) {
-                data=eval('(' + data + ')');
-                if(data.success){
-                    location.href=data.url;    
-                }else{
-                   location.href=data.url;
-                }
+                // data=eval('(' + data + ')');
+                data=JSON.parse(data);
+                location.href=data.url;
             }
         });
     })

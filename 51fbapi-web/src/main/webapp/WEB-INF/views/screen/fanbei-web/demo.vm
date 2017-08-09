@@ -124,39 +124,6 @@ new Vue({
 
 
 
-$.ajax({
-    url: '/fanbei-web/pickBoluomeCoupon',
-    type: 'POST',
-    dataType: "JSON",
-    data:{
-        'sceneId': sceneId,
-        'userName': userName
-    },
-    success: function(returnData){
-        if(returnData.success){
-            requestMsg("领劵成功");
-        }else{
-            if(returnData.url){
-            location.href=returnData.url;
-        }else{
-            requestMsg(returnData.msg);
-        }
-    }
-};
-
-
-let _this=this;
-_this.$http.post('/fanbei-web/pickBoluomeCoupon', {
-    userName: userName,
-    sceneId: 8386
-})
-.then(function (res) {
-    console.log(res.data);
-})
-.catch(function (error) {
-    console.log(error);
-});
-
 <!-- <script type="text/javascript">
     var returnNum = getBlatFrom();  // 判断1为Android，2为ios
     // 客户端调用H5方法
@@ -190,6 +157,25 @@ _this.$http.post('/fanbei-web/pickBoluomeCoupon', {
         }
     });
 </script> -->
+
+
+##*---------版本号及系统------------*#
+##var appVersion = "3.4.2";
+##var appVersion = getInfo().appVersion.replace(/\./g,"");
+##var appSystem = getInfo().id.substr(0,2);  // 截取appId的开头
+##if ( appSystem == "i_" ) {
+##    if ( appVersion <= "350" ) {
+##        requestMsg("你的版本过低请升级");
+##    } else {
+##        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"邀请有礼0517","content":"五月电影0517","shareUrl":"https://app.51fanbei.com/fanbei-web/mayMovie"}';
+##    }
+##} else if( appSystem == "a_" ){
+##    if ( appVersion <= "351" ) {
+##        requestMsg("你的版本过低请升级");
+##    } else {
+##        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"邀请有礼0517","content":"五月电影0517","shareUrl":"https://app.51fanbei.com/fanbei-web/mayMovie"}';
+##    }
+##}
 
 </body>
 </html>
