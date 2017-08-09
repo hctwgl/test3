@@ -774,26 +774,28 @@ public class APPH5GGShareController extends BaseController {
 	public String doAskForItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		try {
-			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
-			Long userId = NumberUtil.objToLong(request.getParameter("userId"));// 索要人的用户id
-			AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
-			if (itemsDo != null) {
-				Map<String, Integer> fakeMap = getFakePerson(itemsDo.getBoluomeActivityId());
+			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
+			AfBoluomeActivityUserItemsDo userItemsDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+			if (userItemsDo != null) {
+				Map<String, Integer> fakeMap = getFakePerson(userItemsDo.getBoluomeActivityId());
 				Integer fakeFinal = 0;
 				Integer fakeJoin = 0;
 				if (fakeMap != null) {
 					fakeFinal = fakeMap.get("fakeFinal");
 					fakeJoin = fakeMap.get("fakeJoin");
 				}
-				AfUserDo userDo = afUserService.getUserById(userId);
+				AfUserDo userDo = afUserService.getUserById(userItemsDo.getUserId());
 				if (userDo != null) {
 					String friend = userDo.getNick();
 					if (friend.isEmpty()) {
 						friend = userDo.getUserName();
 					}
+					AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(userItemsDo.getItemsId());
+
 					Map<String, Object> data = new HashMap<>();
 					data.put("friend", friend);
 					data.put("itemsDo", itemsDo);
+					data.put("userItemsDo", userItemsDo);
 					data.put("fakeFinal", fakeFinal);
 					data.put("fakeJoin", fakeJoin);
 					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();

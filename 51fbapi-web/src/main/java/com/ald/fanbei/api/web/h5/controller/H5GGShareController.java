@@ -884,6 +884,7 @@ public class H5GGShareController extends H5Controller {
 					}
 					Map<String, Object> data = new HashMap<>();
 					data.put("friend", friend);
+					data.put("friendId", userId);
 					data.put("itemsDo", itemsDo);
 					data.put("fakeFinal", fakeFinal);
 					data.put("fakeJoin", fakeJoin);
