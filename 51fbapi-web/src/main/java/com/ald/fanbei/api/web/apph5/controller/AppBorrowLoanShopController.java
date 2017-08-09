@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -79,6 +80,31 @@ public class AppBorrowLoanShopController extends BaseController {
 			}
 			
 			Map<String, Object> data = new HashMap<String, Object>();
+			
+			//给轮播拼接地址
+			if(bannerList!=null){
+				for(Object obj:bannerList){
+					Map<String, Object> map = (Map<String, Object>) obj;
+					String content = (String) map.get("content");
+					if(StringUtils.isNotBlank(content)){
+						map.put("content", content+"&linkType=h5LoanBanner");
+					}
+				}
+			}
+			
+			String contextPath = request.getScheme() +"://" + request.getServerName()  + ":" +request.getServerPort() +request.getContextPath();
+			//重新设置linkUrl作为埋点用
+			if(list!=null){
+				for(AfLoanTapsAndShops loanTapsAndShop:list){
+					List<AfLoanShopVo> shopVos = loanTapsAndShop.getLoanShopList();
+					if(shopVos!=null){
+						for(AfLoanShopVo vo:shopVos){
+							vo.setLinkUrl(contextPath+"/fanbei-web/thirdPartyLink?linkType=h5LoanList&lsmNo="+vo.getLsmNo());
+						}
+					}
+				}
+			}
+			
 			data.put("bannerList", bannerList);
 			data.put("scrollbar", scrollbar);
 			data.put("tabList", list);

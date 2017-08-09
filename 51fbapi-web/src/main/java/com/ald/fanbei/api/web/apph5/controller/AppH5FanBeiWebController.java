@@ -644,22 +644,19 @@ public class AppH5FanBeiWebController extends BaseController {
 	 */
 	@RequestMapping(value = { "thirdPartyLink" }, method = RequestMethod.GET)
 	public void thirdPartyLink(HttpServletRequest request, ModelMap model) throws IOException {
-//		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.RES_APP_POP_IMAGE);
-//		model.put("redirectUrl", resourceDo.getName());
-//		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
 		FanbeiWebContext context = null;
 		try {
-			context = doWebCheck(request, false);
 			String linkType = request.getParameter("linkType");
-			//借贷超市banner跳转进来
-			if(ThirdPartyLinkType.LOAN_BANNER.getCode().equals(linkType)){
+			//app端借贷超市banner跳转进来
+			if(ThirdPartyLinkType.APP_LOAN_BANNER.getCode().equals(linkType)){
+				context = doWebCheckNoAjax(request, true);
 				String lsmNo = request.getParameter("lsmNo");
 				AfLoanSupermarketDo afLoanSupermarket  = afLoanSupermarketService.getLoanSupermarketByLsmNo(lsmNo);
 				AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 				if(afLoanSupermarket!=null && StringUtil.isNotBlank(afLoanSupermarket.getLinkUrl())){
 					String accessUrl = afLoanSupermarket.getLinkUrl();
 					accessUrl = accessUrl.replaceAll("\\*", "\\&");
-					logger.info("贷款超市点击banner请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+afUserDo.getRid());
+					logger.info("贷款超市app点击banner请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+afUserDo.getRid());
 					String extraInfo = "appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
 					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
 					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
@@ -667,18 +664,30 @@ public class AppH5FanBeiWebController extends BaseController {
 					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
 					afBusinessAccessRecordsDo.setRefId(afLoanSupermarket.getId());
 					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
-					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.LOAN_BANNER.getCode());
+					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.APP_LOAN_BANNER.getCode());
 					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
 					model.put("redirectUrl", accessUrl);
 				}else{
-					logger.error("贷款超市点击banner请求发起异常-贷款超市不存在或跳转链接为空，lsmNo："+lsmNo+"-userId:"+afUserDo.getRid());
+					logger.error("贷款超市app点击banner请求发起异常-贷款超市不存在或跳转链接为空，lsmNo："+lsmNo+"-userId:"+afUserDo.getRid());
 					model.put("redirectUrl", "/static/error404.html");
 				}
+			}else if(ThirdPartyLinkType.H5_LOAN_BANNER.getCode().equals(linkType)||ThirdPartyLinkType.H5_LOAN_LIST.getCode().equals(linkType)){ //h5端借贷超市
+				String lsmNo = request.getParameter("lsmNo");
+				AfLoanSupermarketDo afLoanSupermarket  = afLoanSupermarketService.getLoanSupermarketByLsmNo(lsmNo);
+				if(afLoanSupermarket!=null && StringUtil.isNotBlank(afLoanSupermarket.getLinkUrl())){
+					String accessUrl = afLoanSupermarket.getLinkUrl();
+					accessUrl = accessUrl.replaceAll("\\*", "\\&");
+					doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
+					model.put("redirectUrl", accessUrl);
+				}
+			}else{
+				logger.error("借贷超市linkType类型不对");
+				model.put("redirectUrl", "/static/error404.html");
 			}
 			
 		}catch(Exception e){
-			logger.error("贷款超市点击banner请求发起异常,异常信息:{}",e);
-//			model.put("redirectUrl", "/static/error404.html");
+			logger.error("贷款超市点击第三方链接请求发起异常,异常信息:{}",e);
+			model.put("redirectUrl", "/static/error404.html");
 		}
 	}
 
