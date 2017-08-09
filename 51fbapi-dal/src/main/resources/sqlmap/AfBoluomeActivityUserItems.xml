@@ -176,7 +176,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
         FROM af_boluome_activity_user_items
         <include refid="commonCondition"/>
     </select>
-    <select id="getItemsByActivityIdUserId" >
+    <select id="getItemsByActivityIdUserId" resultType="java.lang.Long">
     	SELECT
 		items_id
 		FROM
@@ -191,7 +191,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
 				AND user_id = #{userId} GROUP BY items_id
 			) AS t
 		WHERE
-			num > 2
+			num > 1
     </select>
     
     
