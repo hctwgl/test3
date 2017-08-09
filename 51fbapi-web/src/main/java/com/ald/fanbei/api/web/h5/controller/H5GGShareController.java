@@ -904,6 +904,15 @@ public class H5GGShareController extends H5Controller {
 		return resultStr;
 	}
 
+	private String changePhone(String userName) {
+		String newUserName = "";
+		if (!StringUtil.isBlank(userName)) {
+			newUserName = userName.substring(0, 3);
+			newUserName = newUserName + "****";
+			newUserName = newUserName + userName.substring(7, 11);
+		}
+		return newUserName;
+	}
 	/**
 	 * 
 	 * @说明：获取排行榜
@@ -922,6 +931,14 @@ public class H5GGShareController extends H5Controller {
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			List<BoluomeUserRebateBankDo> rankList = afBoluomeActivityUserRebateService.getBankList(activityId);
 			if (rankList != null) {
+				for(BoluomeUserRebateBankDo rebateBankDo: rankList){
+					String userName = rebateBankDo.getUserName();
+					if (!StringUtil.isBlank(userName)) {
+						userName = changePhone(userName);
+						rebateBankDo.setUserName(userName);
+					}
+				}
+				
 				Map<String, Object> data = new HashMap<>();
 				int rebateNumber = rankList.size();
 				data.put("rebateNumber", rebateNumber);
