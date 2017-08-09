@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.ClientTypeEnum;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -106,12 +107,28 @@ public class SetRegisterPwdApi implements ApiHandle {
 		if (registerChannelPointId != null) {
 			AfPromotionChannelPointDo channelPointDo = afPromotionChannelPointService.getPoint("Andriod", registerChannelPointId);
 			AfPromotionChannelPointDo channelPointDoIOS = afPromotionChannelPointService.getPoint("IOS", registerChannelPointId);
-			if (channelPointDo != null) {
-				userDo.setRegisterChannelPointId(channelPointDo.getId());
-				userDo.setRegisterChannelId(channelPointDo.getChannelId());
-			} else if (channelPointDoIOS != null) {
-				userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
-				userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
+			//根据设备来源区分处理
+			ClientTypeEnum clientType = StringUtil.judgeClientType(requestDataVo.getId());
+			String clientTypeCode = clientType!=null?clientType.getCode():"";
+			if(ClientTypeEnum.ANDROID.getCode().equals(clientTypeCode)){
+				if (channelPointDo != null) {
+					userDo.setRegisterChannelPointId(channelPointDo.getId());
+					userDo.setRegisterChannelId(channelPointDo.getChannelId());
+				} else if (channelPointDoIOS != null) {
+					userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
+					userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
+					logger.warn("setRegisterPwdApi setRegisterChannelId type not match,source is android,set into ios");
+				}
+			}
+			if(ClientTypeEnum.IOS.getCode().equals(clientTypeCode)){
+				if (channelPointDoIOS != null) {
+					userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
+					userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
+				} else if ( channelPointDo!= null) {
+					userDo.setRegisterChannelPointId(channelPointDo.getId());
+					userDo.setRegisterChannelId(channelPointDo.getChannelId());
+					logger.warn("setRegisterPwdApi setRegisterChannelId type not match,source is ios,set into android");
+				}
 			}
 		}
 		userDo.setRecommendId(0l);
