@@ -202,8 +202,9 @@ public class APPH5GGShareController extends BaseController {
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
+			context = doWebCheck(request, false);		
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 		/*	if (userId == null) {
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
@@ -219,7 +220,6 @@ public class APPH5GGShareController extends BaseController {
 				//修改itemsList内容，把num统计上去
 				itemsList = addNumber(activityId, userId);
 				//吧用户名传给页面，进行下一步操作。
-				String userName = context.getUserName();
 				data.put("userId", userId);
 				if (StringUtil.isBlank(userName)) {
 					data.put("userName", userName);
@@ -369,7 +369,7 @@ public class APPH5GGShareController extends BaseController {
         
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName").toString();
+			String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -388,7 +388,7 @@ public class APPH5GGShareController extends BaseController {
 					
 					for (Long itemsId : tempItemsList) {
 						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
-						t.setSourceUserId(userId);
+						t.setUserId(userId);
 						t.setBoluomeActivityId(activityId);
 						t.setItemsId(itemsId);
 						List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
@@ -406,10 +406,10 @@ public class APPH5GGShareController extends BaseController {
 		
 
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "抱歉你暂时没有可以赠送的卡片", "", e.getErrorCode().getDesc()).toString();
 			logger.error("赠送卡片初始化失败" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "抱歉你暂时没有可以赠送的卡片", "", e.getMessage()).toString();
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
 		doMaidianLog(request, resultStr);
@@ -433,7 +433,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -544,7 +545,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -617,7 +619,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -639,7 +642,7 @@ public class APPH5GGShareController extends BaseController {
 
 	/**
 	 * 
-	 * 说明：索要卡片
+	 * 说明：索要卡片初始化1
 	 * 
 	 * @param: @param
 	 *             request
@@ -655,7 +658,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -698,7 +702,8 @@ public class APPH5GGShareController extends BaseController {
 			context = doWebCheck(request, false);
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
 			Long friendId = NumberUtil.objToLong(request.getParameter("friendId"));
-			Long userId = convertUserNameToUserId(context.getUserName());
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -856,7 +861,7 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = context.getUserName();
+			String userName = request.getParameter("userName").toString();
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();

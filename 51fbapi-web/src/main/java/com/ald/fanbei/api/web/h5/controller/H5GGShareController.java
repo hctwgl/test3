@@ -200,7 +200,8 @@ public class H5GGShareController extends H5Controller {
 			context = doH5Check(request, false);
 			if (context.isLogin()) {
 				// TODO:获取登录着的userName或者id
-				Long userId = context.getUserId();
+				String userName = request.getParameter("userName");
+				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0 ) {
 					useritemsDo.setUserId(userId);
 					useritemsDo.setBoluomeActivityId(activityId);
@@ -211,7 +212,7 @@ public class H5GGShareController extends H5Controller {
 					//修改itemsList内容，把num统计上去
 					itemsList = addNumber(activityId, userId);
 					//吧用户名传给页面，进行下一步操作。
-					String userName = context.getUserName();
+					
 					data.put("userId", userId);
 					if (StringUtil.isBlank(userName)) {
 						data.put("userName", userName);
@@ -425,7 +426,8 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
-			Long userId = context.getUserId();
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -521,6 +523,17 @@ public class H5GGShareController extends H5Controller {
 		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
+	private Long convertUserNameToUserId (String userName){
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
+			
+		}
+		return userId;
+	}
 
 	/**
 	 * 
@@ -539,7 +552,8 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
-			Long userId = context.getUserId();
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -614,7 +628,8 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
-			Long userId = context.getUserId();
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -652,7 +667,8 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
-			Long userId = context.getUserId();
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -693,7 +709,8 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
-			Long userId = context.getUserId();
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -844,7 +861,8 @@ public class H5GGShareController extends H5Controller {
 		try {
 			context = doH5Check(request, false);
 			
-			Long userId = context.getUserId();
+			String userName = request.getParameter("userName");
+			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
