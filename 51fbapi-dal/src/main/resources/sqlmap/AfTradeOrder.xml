@@ -174,10 +174,10 @@
 			#{endDate}
 		</if>
 		<if test="orderStatus != null and orderStatus != '' ">
-			and c.status = #{orderStatus}
+			and a.status = #{orderStatus}
 		</if>
 		<if test="orderStatus == null or orderStatus == ''" >
-			and c.status in ('NEW', 'PAID')
+			and a.status in ('NEW', 'PAID')
 		</if>
 		order by a.gmt_create desc
 
@@ -199,10 +199,10 @@
 			#{endDate}
 		</if>
 		<if test="orderStatus != null and orderStatus != '' ">
-			and c.status = #{orderStatus}
+			and a.status = #{orderStatus}
 		</if>
 		<if test="orderStatus == null or orderStatus == ''" >
-			and c.status in ('NEW', 'PAID')
+			and a.status in ('NEW', 'PAID')
 		</if>
 		order by a.gmt_create desc
 	</select>
