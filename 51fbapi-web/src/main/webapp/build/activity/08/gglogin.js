@@ -19,7 +19,7 @@
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                     window.location.href ="ggIndexShare";
+                     window.location.href ="ggpresents";
                     }else{
                         requestMsg(data.msg);
                     }

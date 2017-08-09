@@ -304,7 +304,7 @@ public abstract class BaseController {
     	
     	if(cookies != null && cookies.length > 0){
     		for(Cookie item:cookies){
-    			if(StringUtils.equals(item.getName(), Constants.H5_USER_NAME_COOKIES_KEY)){
+    			if(StringUtils.equals(item.getName(), Constants.H5_OPEN_ID_COOKIES_KEY)){
     				openid = item.getValue();
     				openidAndToken.put("openid", openid);
     				continue;
@@ -312,6 +312,10 @@ public abstract class BaseController {
     			if(StringUtils.equals(item.getName(), Constants.H5_USER_TOKEN_COOKIES_KEY)){
     				token = item.getValue();
     				openidAndToken.put("token", token);
+    			}
+    			if(StringUtils.equals(item.getName(), Constants.H5_USER_NAME_COOKIES_KEY)) {
+    				String userName = item.getValue();
+    				openidAndToken.put("userName", userName);
     			}
     		}
     	}
@@ -513,7 +517,7 @@ public abstract class BaseController {
 	private void checkH5Sign(HttpServletRequest request, FanbeiH5Context h5Context,RequestDataVo requestDataVo, boolean needToken) {
 		//从cookie中取openid和token
 		Map<String,String> openidToken = getOpenidToken(request);
-    	String username = openidToken.get("username");
+    	String username = openidToken.get("userName");
     	String token  = openidToken.get("token");
 		
 		if(logger.isDebugEnabled()){
