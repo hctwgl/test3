@@ -24,11 +24,14 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -53,6 +56,8 @@ public class BoluomeController extends AbstractThird{
 	AfShopService afShopService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
     @RequestMapping(value = {"/synchOrder","/synchOrderStatus"}, method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -73,6 +78,7 @@ public class BoluomeController extends AbstractThird{
     	boolean sign = BoluomeNotify.verify(params);
     	
     	String retunStr = StringUtils.EMPTY;
+    	
     	if (sign) {
     		try {
     			AfOrderDo orderInfo = buildOrderInfo(params);
@@ -153,6 +159,7 @@ public class BoluomeController extends AbstractThird{
     	String detailUrl = params.get(BoluomeCore.DETAIL_URL);
     	String channel = params.get(BoluomeCore.CHANNEL);
     	
+    	
     	if (StringUtils.isNotBlank(orderType)) {
     		orderType = orderType.toUpperCase();
     	}
@@ -160,8 +167,18 @@ public class BoluomeController extends AbstractThird{
     		channel = channel.toUpperCase();
     	}
     	
-    	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
+    	String lockKey = Constants.CACHEKEY_BUILD_BOLUOME_ORDER_LOCK + orderId;
+		boolean isGetLock = bizCacheUtil.getLockTryTimes(lockKey, "1",
+				Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")));
+		AfOrderDo orderInfo = null;
+		//加锁
+    	if (isGetLock) {
+    		orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
+    		bizCacheUtil.delCache(lockKey);
+    	}
+    	
     	thirdLog.info("buildOrderInfo begin orderInfo = {}" + orderInfo);
+    	
     	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);
     	//不是新建 单订单还没有同步完成  同步订单状态接口不会有orderType字段
     	if(orderInfo == null && StringUtils.isBlank(orderType)) {
