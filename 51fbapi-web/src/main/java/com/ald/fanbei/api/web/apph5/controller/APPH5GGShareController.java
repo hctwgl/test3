@@ -204,11 +204,11 @@ public class APPH5GGShareController extends BaseController {
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
 			context = doWebCheck(request, false);
 			Long userId = convertUserNameToUserId(context.getUserName());
-			if (userId == null) {
+		/*	if (userId == null) {
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
-			}
+			}*/
 			if (userId != null && userId > 0 ) {
 				useritemsDo.setUserId(userId);
 				useritemsDo.setBoluomeActivityId(activityId);
