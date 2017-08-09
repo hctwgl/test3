@@ -79,7 +79,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
 	            gmt_sended,
 	        </if>
 	        <if test="itemsId !=null">
-            	items_id = #{itemsId,jdbcType=INTEGER},
+            	items_id,
         	</if>
         </trim>
         

@@ -135,7 +135,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", "").toString();
 					
 				}
-				
+				if(!userName.equals(refUseraName)){
 				//绑定关系refUserDo
 				AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin  = new AfBoluomeActivityUserLoginDo(); 
 				afBoluomeActivityUserLogin.setUserId(UserDo.getRid());
@@ -144,7 +144,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
 				afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
 			    int saveInfo = afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
-		        
+			}
 		}else{
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "", "").toString();
 		}
