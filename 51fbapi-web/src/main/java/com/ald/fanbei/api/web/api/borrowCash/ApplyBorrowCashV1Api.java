@@ -362,7 +362,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			}
 			afBorrowCashService.updateBorrowCash(cashDo);
 			addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
-		} else if (StringUtils.equals("30", result)) {
+		} else/* if (StringUtils.equals("30", result))*/ {
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 			cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
