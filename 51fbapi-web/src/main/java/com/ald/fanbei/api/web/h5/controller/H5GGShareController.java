@@ -366,7 +366,7 @@ public class H5GGShareController extends H5Controller {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			if (context.isLogin()) {
 				Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
