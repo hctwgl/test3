@@ -375,7 +375,7 @@ public class APPH5GGShareController extends BaseController {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "未登录","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			if (userId != null && activityId != null) {
@@ -439,7 +439,7 @@ public class APPH5GGShareController extends BaseController {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 			// 改变用户卡片的中见状态
@@ -551,7 +551,7 @@ public class APPH5GGShareController extends BaseController {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 			AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService
@@ -625,7 +625,7 @@ public class APPH5GGShareController extends BaseController {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			resultStr = initHomepage(request, response);
 		} catch (FanbeiException e) {
@@ -664,7 +664,7 @@ public class APPH5GGShareController extends BaseController {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			List<AfBoluomeActivityItemsDo> itemsList = getActivityItems(activityId);
@@ -708,7 +708,7 @@ public class APPH5GGShareController extends BaseController {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			if (userId != null) {
 				AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
@@ -867,7 +867,7 @@ public class APPH5GGShareController extends BaseController {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			if (activityId != null && userId != null) {
