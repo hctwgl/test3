@@ -83,6 +83,7 @@
   transform: translateX(-50%);
 }
 
+
 /*tab内容栏切换*/
 .main_wrap {
   position: relative;
@@ -99,7 +100,7 @@
 
 }
 .main_wrap li{
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid #cfcfcf;
 }
 #firstList li:last-child,#secondList li:last-child,#thirdList li:last-child,#fourthList li:last-child{
   border-bottom: 0;
@@ -108,20 +109,15 @@
 .itemTitle{
   padding: 0.2rem;
   height: .6rem;
-  //line-height: .56rem;
 }
 .title {
+  height: 0.6rem;
   width: 6.5rem;
-  vertical-align:middle;
+  line-height: 0.6rem;
   font-size: 0.28rem;
   float:left
 }
 
-.divider{
-  background-color: #afafaf;
-  height: 1px;
-  border: 0;
-}
 .arrow {
   background: url("@{url}/help_arrow_down.png");
   margin-top: 0.2rem;
@@ -166,15 +162,6 @@
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
-}
-
-.loadOver {
-  margin: 0.6rem 0 0.4rem;
-  text-align: center;
-}
-
-.goodsListModel_main_hide {
-  display: none;
 }
 
 .hide{
