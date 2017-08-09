@@ -432,7 +432,7 @@ public class H5GGShareController extends H5Controller {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			if (context.isLogin()) {
 				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
@@ -544,7 +544,7 @@ public class H5GGShareController extends H5Controller {
 	 * @param: @return
 	 * @return: String
 	 */
-	@RequestMapping(value = "/pickUpItems", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/pickUpItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String pickUpItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
@@ -553,14 +553,15 @@ public class H5GGShareController extends H5Controller {
 			context = doH5Check(request, false);
 			String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
+			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
-			if (context.isLogin()) {
-				Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
+			if (userId != null) {
+				
 				AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService
 						.getById(resourceUserItemsId);// old卡片的内容
 				if (resourceUserItemsDo != null) {
@@ -633,7 +634,7 @@ public class H5GGShareController extends H5Controller {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			resultStr = initHomepage(request, response);
 		} catch (FanbeiException e) {
@@ -672,7 +673,7 @@ public class H5GGShareController extends H5Controller {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			List<AfBoluomeActivityItemsDo> itemsList = getActivityItems(activityId);
@@ -714,7 +715,7 @@ public class H5GGShareController extends H5Controller {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
 			Long friendId = NumberUtil.objToLong(request.getParameter("friendId"));
@@ -866,7 +867,7 @@ public class H5GGShareController extends H5Controller {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "红包领取成功","",data).toString();
+				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			//Long userId = context.getUserId();
