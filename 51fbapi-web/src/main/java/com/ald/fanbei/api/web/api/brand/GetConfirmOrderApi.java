@@ -29,6 +29,8 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -37,6 +39,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -84,6 +87,8 @@ public class GetConfirmOrderApi implements ApiHandle {
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	BoluomeUtil boluomeUtil;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -97,7 +102,14 @@ public class GetConfirmOrderApi implements ApiHandle {
 			logger.error("orderId or plantform is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
+		String lockKey = Constants.CACHEKEY_BUILD_BOLUOME_ORDER_LOCK + orderId;
+		boolean isGetLock = bizCacheUtil.getLockTryTimes(lockKey, "1",
+				Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")));
+		AfOrderDo orderInfo = null;
+		if (isGetLock) {
+			orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
+			bizCacheUtil.delCache(lockKey);
+		}
 		if (orderInfo ==  null) {
 			//订单补偿
 			try {
