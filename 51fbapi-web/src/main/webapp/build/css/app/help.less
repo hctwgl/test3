@@ -86,10 +86,8 @@
 /*tab内容栏切换*/
 .main_wrap {
   position: relative;
-  //background: #eee;
   top: 1.4rem;
-  //height: 10.65rem;
-  height: 9.0rem;
+  height: 8.5rem;
   overflow-y: scroll;
 }
 .main_wrap::-webkit-scrollbar {
@@ -99,6 +97,12 @@
   background-color: #ffffff;
   margin-bottom: 1.28rem;
 
+}
+.main_wrap li{
+  border-bottom: 1px solid lightgray;
+}
+#firstList li:last-child,#secondList li:last-child,#thirdList li:last-child,#fourthList li:last-child{
+  border-bottom: 0;
 }
 
 .itemTitle{
