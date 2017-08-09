@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * @author shencheng 2017/7/31 下午4:14
@@ -40,6 +41,7 @@ public class TwoBarCodeApi implements ApiHandle {
         String encryptStr = "";
         try {
             encryptStr = new String(Base64.encodeBase64(AesUtil.encrypt(userId.toString(), Constants.TRADE_AES_DECRYPT_PASSWORD)), "UTF-8");
+            encryptStr = URLEncoder.encode(encryptStr, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             logger.error("加密商户ID出错",e);
         }

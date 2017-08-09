@@ -67,12 +67,13 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 	}
 
 	@Override
-	public List<AfTradeWithdrawRecordDo> withdrawGrid(Long businessId, Integer offset, Integer limit, Date startDate, Date endDate) {
-		return afTradeWithdrawRecordDao.withdrawGrid(businessId, offset, limit, startDate, endDate);
+	public List<String> withdrawGridDate(Long businessId, Date startDate, Date endDate) {
+		return afTradeWithdrawRecordDao.withdrawGridDate(businessId, startDate, endDate);
 	}
 
 	@Override
-	public Long withdrawGridTotal(Long businessId, Date startDate, Date endDate) {
-		return afTradeWithdrawRecordDao.withdrawGridTotal(businessId, startDate, endDate);
+	public List<AfTradeWithdrawRecordDo> withdrawGrid(Long businessId, Date startDate, Date endDate) {
+		return afTradeWithdrawRecordDao.withdrawGrid(businessId, startDate, endDate);
 	}
+
 }

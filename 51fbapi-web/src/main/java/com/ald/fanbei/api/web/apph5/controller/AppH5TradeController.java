@@ -51,6 +51,7 @@ public class AppH5TradeController extends BaseController {
     @RequestMapping(value = "initTradeInfo", method = RequestMethod.GET)
     public void initTradeInfo(HttpServletRequest request, ModelMap model) {
         model.put("isLogin", "no");
+        model.put("status", "normal");
         String bid = request.getParameter("bid");
         if (StringUtil.isBlank(bid)) {
             return;
@@ -58,7 +59,11 @@ public class AppH5TradeController extends BaseController {
 
         bid = AesUtil.decryptFromBase64(bid, Constants.TRADE_AES_DECRYPT_PASSWORD);
         AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(Long.parseLong(bid));
-        if (afTradeBusinessInfoDo == null || afTradeBusinessInfoDo.getStatus().equals(2)) {
+        if (afTradeBusinessInfoDo == null) {
+            return;
+        }
+        if(afTradeBusinessInfoDo.getStatus().equals(2)) {
+            model.put("status", "abnormal");
             return;
         }
 
@@ -116,7 +121,7 @@ public class AppH5TradeController extends BaseController {
     }
 
     @Override
-    public  BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         return null;
     }
 

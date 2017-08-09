@@ -7,6 +7,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessDo;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -31,8 +32,8 @@ public class TradeBusinessInfoApi implements ApiHandle {
         String requestDataVoId = StringUtil.isNotBlank(requestDataVo.getId()) ? requestDataVo.getId() : "trade weixin";
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
-        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(businessId);
-        resp.addResponseData("businessInfo", afTradeBusinessInfoDo);
+        AfTradeBusinessInfoDto afTradeBusinessInfoDto = afTradeBusinessInfoService.getBusinessInfoById(businessId);
+        resp.addResponseData("businessInfo", afTradeBusinessInfoDto);
         return resp;
     }
 }
