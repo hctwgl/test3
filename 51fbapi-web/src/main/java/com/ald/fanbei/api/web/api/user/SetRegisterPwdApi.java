@@ -117,18 +117,27 @@ public class SetRegisterPwdApi implements ApiHandle {
 				} else if (channelPointDoIOS != null) {
 					userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
 					userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
-					logger.warn("setRegisterPwdApi setRegisterChannelId type not match,source is android,set into ios");
+					logger.warn("setRegisterPwdApi setRegisterChannelId type not match,source is android,set into ios.registerChannelPointId="+registerChannelPointId);
 				}
-			}
-			if(ClientTypeEnum.IOS.getCode().equals(clientTypeCode)){
+			}else if(ClientTypeEnum.IOS.getCode().equals(clientTypeCode)){
 				if (channelPointDoIOS != null) {
 					userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
 					userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
 				} else if ( channelPointDo!= null) {
 					userDo.setRegisterChannelPointId(channelPointDo.getId());
 					userDo.setRegisterChannelId(channelPointDo.getChannelId());
-					logger.warn("setRegisterPwdApi setRegisterChannelId type not match,source is ios,set into android");
+					logger.warn("setRegisterPwdApi setRegisterChannelId type not match,source is ios,set into android.registerChannelPointId="+registerChannelPointId);
 				}
+			}else{
+				//走默认之前的处理
+				if (channelPointDo != null) {
+					userDo.setRegisterChannelPointId(channelPointDo.getId());
+					userDo.setRegisterChannelId(channelPointDo.getChannelId());
+				} else if (channelPointDoIOS != null) {
+					userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
+					userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
+				}
+				logger.warn("setRegisterPwdApi setRegisterChannelId source is not found,set into default.registerChannelPointId="+registerChannelPointId);
 			}
 		}
 		userDo.setRecommendId(0l);
