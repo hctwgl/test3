@@ -116,6 +116,8 @@ public class Constants {
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
+	//查询用户是否结果款，1代表已借款 
+	public static final String HAVE_BORROWED = "have_borrowed$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";
@@ -295,7 +297,4 @@ public class Constants {
 	public static final String SHA1 = "SHA-1";
 	public static final String TRADE_LOGIN_BUSINESSID = "trade_login_businessId_";
 	
-	//查询用户是否结果款，1代表已借款 
-	public static final String HAVE_BORROWED = "HAVE_BORROWED";
-
 }

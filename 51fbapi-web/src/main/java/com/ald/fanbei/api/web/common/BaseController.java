@@ -502,22 +502,44 @@ public abstract class BaseController {
             if (param.getString("_appInfo") != null) {
                 userName = (String) JSONObject.parseObject(param.getString("_appInfo")).get("userName");
             }
-            maidianLog.info(StringUtil.appendStrs(
-					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
-					"	", "h",
-					"	rmtIP=", CommonUtil.getIpAddr(request), 
-					"	userName=", userName, 
-					"	", 0, 
-					"	", request.getRequestURI(),
-					"	result=",respData == null?false:respData.getSuccess(), 
-					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
-					"	", "md", 
-					"	", "",
-					"	", "",
-					"	", "",
-					"	", "",
-					"	reqD=", param.toString(), 
-					"	resD=",respData==null?"null":respData.toString()));
+            //第三方链接进入
+            if(request.getRequestURI().equals("/fanbei-web/thirdPartyLink")){
+            	 maidianLog.info(StringUtil.appendStrs(
+     					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
+     					"	", "h",
+     					"	rmtIP=", CommonUtil.getIpAddr(request), 
+     					"	userName=", userName, 
+     					"	", 0, 
+     					"	", request.getRequestURI(),
+     					"	result=",respData == null?false:respData.getSuccess(), 
+     					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
+     					"	", "md", 
+     					"	lsmNo=", request.getParameter("lsmNo"),
+     					"	linkType=", request.getParameter("linkType"),
+     					"	", "",
+     					"	", "",
+     					"	reqD=", param.toString(), 
+     					"	resD=",respData==null?"null":respData.toString()));
+            }else{
+            	maidianLog.info(StringUtil.appendStrs(
+     					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
+     					"	", "h",
+     					"	rmtIP=", CommonUtil.getIpAddr(request), 
+     					"	userName=", userName, 
+     					"	", 0, 
+     					"	", request.getRequestURI(),
+     					"	result=",respData == null?false:respData.getSuccess(), 
+     					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
+     					"	", "md", 
+     					"	", "",
+     					"	", "",
+     					"	", "",
+     					"	", "",
+     					"	reqD=", param.toString(), 
+     					"	resD=",respData==null?"null":respData.toString()));
+            }
+            
+           
         } catch (Exception e) {
             logger.error("maidian logger error", e);
         }

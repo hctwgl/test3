@@ -9,7 +9,9 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum ThirdPartyLinkType {
 
-	LOAN_BANNER("loanBanner","借贷超市banner跳转");
+	APP_LOAN_BANNER("appLoanBanner","App端借贷超市banner跳转"),
+	H5_LOAN_BANNER("h5LoanBanner","H5端借贷超市banner跳转"),
+	H5_LOAN_LIST("h5LoanList","H5端借贷超市列表");
 	
 	private String code;
     private String name;
