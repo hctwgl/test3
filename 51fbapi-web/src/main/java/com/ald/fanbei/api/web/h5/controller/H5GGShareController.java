@@ -544,6 +544,7 @@ public class H5GGShareController extends H5Controller {
 	 * @param: @return
 	 * @return: String
 	 */
+
 	@RequestMapping(value = "/pickUpItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String pickUpItems(HttpServletRequest request, HttpServletResponse response) {
@@ -576,26 +577,30 @@ public class H5GGShareController extends H5Controller {
 					newUserItemsDoCondition.setSourceId(resourceUserItemsId);
 					List<AfBoluomeActivityUserItemsDo> list = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(newUserItemsDoCondition);
-					if (list != null || !list.isEmpty()) {
+					int length = list.size();
+					if (list == null || length == 0 ) {
+						// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
+						AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
+						insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
+						AfUserDo insertUser = afUserService.getUserById(userId);
+						if (insertUser == null) {
+							return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
+						}
+						insertDo.setUserName(insertUser.getUserName());
+						insertDo.setUserId(userId);
+						insertDo.setStatus("NORMAL");
+						insertDo.setSourceId(resourceUserItemsId);
+						insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
+						insertDo.setItemsId(resourceUserItemsDo.getItemsId());
+						insertDo.setGmtSended(new Date());
+						afBoluomeActivityUserItemsService.saveRecord(insertDo);
+
+						updateUserItemsStatus(resourceUserItemsId, "SENT");
+						resultStr =  H5CommonResponse.getNewInstance(true, "领取卡片成功").toString();
+					}else{
 						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
 					}
-					// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
-					AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
-					insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
-					AfUserDo insertUser = afUserService.getUserById(userId);
-					if (insertUser == null) {
-						return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
-					}
-					insertDo.setUserName(insertUser.getUserName());
-					insertDo.setUserId(userId);
-					insertDo.setStatus("NORMAL");
-					insertDo.setSourceId(resourceUserItemsId);
-					insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
-					insertDo.setItemsId(resourceUserItemsDo.getItemsId());
-					insertDo.setGmtSended(new Date());
-					afBoluomeActivityUserItemsService.saveRecord(insertDo);
-
-					updateUserItemsStatus(resourceUserItemsId, "SENT");
+					
 
 				}
 			}

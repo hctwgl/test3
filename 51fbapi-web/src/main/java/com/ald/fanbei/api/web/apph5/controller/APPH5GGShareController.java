@@ -547,48 +547,55 @@ public class APPH5GGShareController extends BaseController {
 			context = doWebCheck(request, false);
 			String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
+			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
-			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
-			AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService
-					.getById(resourceUserItemsId);// old卡片的内容
-			if (resourceUserItemsDo != null) {
-				Long destUserId = resourceUserItemsDo.getUserId();
-				// 你没有权限领取此卡片
-				if (destUserId.equals(userId)) {
-					return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
-				}
-				// 查看是否已经领走
-				AfBoluomeActivityUserItemsDo newUserItemsDoCondition = new AfBoluomeActivityUserItemsDo();
-				newUserItemsDoCondition.setUserId(userId);
-				newUserItemsDoCondition.setSourceId(resourceUserItemsId);
-				List<AfBoluomeActivityUserItemsDo> list = afBoluomeActivityUserItemsService
-						.getListByCommonCondition(newUserItemsDoCondition);
-				if (list != null && !list.isEmpty()) {
-					return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
-				}
-				// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
-				AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
-				insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
-				AfUserDo insertUser = afUserService.getUserById(userId);
-				if (insertUser == null) {
-					return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
-				}
-				insertDo.setUserName(insertUser.getUserName());
-				insertDo.setUserId(userId);
-				insertDo.setStatus("NORMAL");
-				insertDo.setSourceId(resourceUserItemsId);
-				insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
-				insertDo.setItemsId(resourceUserItemsDo.getItemsId());
-				insertDo.setGmtSended(new Date());
-				afBoluomeActivityUserItemsService.saveRecord(insertDo);
+			if (userId != null) {
+				
+				AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService
+						.getById(resourceUserItemsId);// old卡片的内容
+				if (resourceUserItemsDo != null) {
+					Long destUserId = resourceUserItemsDo.getUserId();
+					// 你没有权限领取此卡片
+					if (destUserId.equals(userId)) {
+						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
+					}
+					// 查看是否已经领走
+					AfBoluomeActivityUserItemsDo newUserItemsDoCondition = new AfBoluomeActivityUserItemsDo();
+					newUserItemsDoCondition.setUserId(userId);
+					newUserItemsDoCondition.setSourceId(resourceUserItemsId);
+					List<AfBoluomeActivityUserItemsDo> list = afBoluomeActivityUserItemsService
+							.getListByCommonCondition(newUserItemsDoCondition);
+					int length = list.size();
+					if (list == null || length == 0 ) {
+						// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
+						AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
+						insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
+						AfUserDo insertUser = afUserService.getUserById(userId);
+						if (insertUser == null) {
+							return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
+						}
+						insertDo.setUserName(insertUser.getUserName());
+						insertDo.setUserId(userId);
+						insertDo.setStatus("NORMAL");
+						insertDo.setSourceId(resourceUserItemsId);
+						insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
+						insertDo.setItemsId(resourceUserItemsDo.getItemsId());
+						insertDo.setGmtSended(new Date());
+						afBoluomeActivityUserItemsService.saveRecord(insertDo);
 
-				updateUserItemsStatus(resourceUserItemsId, "SENT");
+						updateUserItemsStatus(resourceUserItemsId, "SENT");
+						resultStr =  H5CommonResponse.getNewInstance(true, "领取卡片成功").toString();
+					}else{
+						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
+					}
+					
 
+				}
 			}
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
