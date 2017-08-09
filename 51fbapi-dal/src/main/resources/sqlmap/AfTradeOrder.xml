@@ -165,6 +165,7 @@
 		on a.user_id =b.id
 		left join af_trade_order c on a.id = c.order_id
 		where c.business_id = #{businessId}
+		and c.status = 'NEW'
 		<if test="startDate != null and startDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
 			#{startDate}
@@ -190,6 +191,7 @@
 		on a.user_id =b.id
 		left join af_trade_order c on a.id = c.order_id
 		where c.business_id = #{businessId}
+		and c.status = 'NEW'
 		<if test="startDate != null and startDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
 			#{startDate}
