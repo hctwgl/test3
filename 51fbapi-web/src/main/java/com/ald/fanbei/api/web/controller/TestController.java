@@ -32,6 +32,7 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -44,6 +45,7 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -131,6 +133,10 @@ public class TestController {
 	AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -602,6 +608,17 @@ public class TestController {
 		}
 		
 		return "success";
+	}
+	//3.7.6初始化借钱缓存，用于app端高亮显示
+	@RequestMapping(value = { "/initBorrowCache" }, method = RequestMethod.GET)
+	@ResponseBody
+	public void initBorrowCache()
+	{
+		List<String> ids = afBorrowCashService.getBorrowedUserIds();
+		if(ids!=null){
+			for(String id:ids)
+				bizCacheUtil.saveObject(Constants.HAVE_BORROWED+id,"1");
+		}
 	}
 	
 	public String getVirtualCode(Map<String, Object> resultMap) {

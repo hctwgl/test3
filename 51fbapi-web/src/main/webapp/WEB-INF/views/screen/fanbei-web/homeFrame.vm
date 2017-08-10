@@ -46,22 +46,16 @@
 	</div>
 	<!-- <iframe src="" frameborder="0"></iframe> -->
 	<script type="text/javascript">
-		
 		new Vue({
 		    el:'.footer',
 		    methods:{
 		        closeWebview: function(){ // 关闭首页弹窗
 		            /*window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"title":"邀请有礼123","content":"51返呗邀请456","shareUrl":"https://app.51fanbei.com/fanbei-web/mayMovie"}';*/
-
 		            // alert("调用了方法");
-		            
 		            window.demo.clickOnAndroid();
-
 		        }
 		    }
 		});
-
-
 	</script>
 </body>
 </html>

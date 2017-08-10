@@ -80,8 +80,10 @@ public enum AfResourceType {
 	VIRTUAL_GOODS_SERVICE_PROVIDER("VIRTUAL_GOODS_SERVICE_PROVIDER", "虚拟商品供应商"),
 	
 	SMS_TEMPLATE("SMS_TEMPLATE","短信模板"),
-	SMS_LIMIT("SMS_LIMIT","短信限制");
-
+	SMS_LIMIT("SMS_LIMIT","短信限制"),
+	
+	//app端 借钱按钮高亮显示时长配置
+	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间");
 	
 
 
