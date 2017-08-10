@@ -450,6 +450,8 @@ public class H5GGShareController extends H5Controller {
 			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 			// 改变用户卡片的中见状态
 			updateUserItemsStatus(userItemsId, "FROZEN");
+			//埋点
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success", "", ""));
 
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc()).toString();
@@ -818,6 +820,8 @@ public class H5GGShareController extends H5Controller {
 					afBoluomeActivityUserItemsService.saveRecord(insertDo);
 
 					resultStr = H5CommonResponse.getNewInstance(true, "获取卡片成功").toString();
+					//埋点
+					doMaidianLog(request,  H5CommonResponse.getNewInstance(true, "success"));
 				}
 			}
 		} catch (FanbeiException e) {

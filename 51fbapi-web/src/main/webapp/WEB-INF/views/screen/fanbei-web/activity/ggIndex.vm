@@ -21,9 +21,9 @@
         <div class="logo"><img src="$src/gg01.png"></div>
         <p class="joinAmount"><span>{{content.fakeJoin}}</span>人参与</p>
     </div>
-    <div class="money" v-for="item in content.normalCouponList">
+    <div class="money">
         <p>消费有返利</p>
-        <p>还可以领取<span>{{item.amount}}</span>元现金红包</p>
+        <p>还可以领取<span v-for="item in content.normalCouponList">{{item.amount}}</span>元现金红包</p>
     </div>
     <!--首页轮播图-->
     <div class="banner">
@@ -53,11 +53,11 @@
             <p class="num" v-if="item.num>=2">x{{item.num}}</p>
         </div>
     </div>
-    <div class="finalPrize finalPrize01" v-for="item in content.normalCouponList" @click="finalPrize()" v-show="!finalPrizeMask">
-        <p class="amount">{{item.amount}}</p>
+    <div class="finalPrize finalPrize01" @click="finalPrize()" v-show="!finalPrizeMask">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}</p>
     </div>
-    <div class="finalPrize finalPrize02" v-for="item in content.normalCouponList" v-show="finalPrizeMask">
-        <p class="amount">{{item.amount}}</p>
+    <div class="finalPrize finalPrize02" v-show="finalPrizeMask">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}</p>
     </div>
     <div class="presentCard ask">我要赠送卡片</div>
     <div class="demandCard ask">我要索要卡片</div>

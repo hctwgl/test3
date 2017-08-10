@@ -3,15 +3,21 @@
  */
 package com.ald.fanbei.api.web.api.user;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -25,7 +31,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Controller("submitShareActionApi")
 public class SubmitShareActionApi implements ApiHandle {
-
+	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
 	@Resource
 	private AfGameChanceService afGameChanceService;
 	
@@ -42,7 +48,9 @@ public class SubmitShareActionApi implements ApiHandle {
 		if("gameShare".equals(sharePage)){
 			afGameChanceService.dealWithShareGame(context.getMobile());
 		}
-		
+		if("ggShare".equals(sharePage)){
+			maidianLog.info(context.getUserName() + "ggShare");
+		}
 		return resp;
 	}
 

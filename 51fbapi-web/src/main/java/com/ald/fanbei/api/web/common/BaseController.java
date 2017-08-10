@@ -658,7 +658,7 @@ public abstract class BaseController {
 	 * @param ext4 扩展参数4
 	 * @param ext5 扩展参数5
 	 */
-	private void doLog(String reqData,H5CommonResponse respData,String httpMethod,String rmtIp,String exeT,String inter,String userName,String ext1,String ext2,String ext3,String ext4,String ext5){
+	protected void doLog(String reqData,H5CommonResponse respData,String httpMethod,String rmtIp,String exeT,String inter,String userName,String ext1,String ext2,String ext3,String ext4,String ext5){
 		webbiLog.info(StringUtil.appendStrs(
 				"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
 				"	", "h",
