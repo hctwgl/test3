@@ -127,9 +127,7 @@ public class AppH5TradeController extends BaseController {
 
     private Integer getAuthStatus(AfUserAuthDo auth, AfUserAccountDo account, Integer appVersion) {
         Integer status = 0;
-        if (YesNoStatus.NO.getCode().equals(auth.getRealnameStatus())) { //判断实名认证
-            status = 1;
-        } else if (YesNoStatus.NO.getCode().equals(auth.getFacesStatus())) { //判断人脸识别
+        if (YesNoStatus.NO.getCode().equals(auth.getFacesStatus())) { //判断人脸识别
             status = 2;
         } else if (YesNoStatus.NO.getCode().equals(auth.getBankcardStatus())) { //判断绑卡状态
             status = 3;

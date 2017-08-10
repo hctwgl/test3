@@ -290,6 +290,15 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			}
 		}
 		if (inRejectLoan.equals("Y")) {
+			if(bannerListForShop!=null){
+				for(Object obj:bannerListForShop){
+					Map<String, Object> map = (Map<String, Object>) obj;
+					String content = (String) map.get("content");
+					if(StringUtils.isNotBlank(content)){
+						map.put("content", content+"&linkType=appLoanBanner");
+					}
+				}
+			}
 			bannerResultList = bannerListForShop;
 			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
 			scrollbarVo = getAfScrollbarVo(resourceDo);

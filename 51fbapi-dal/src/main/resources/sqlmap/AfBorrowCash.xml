@@ -302,4 +302,11 @@
 			user_id = #{userId}
 	</select>
 	
+	<select id ="getBorrowedUserIds" resultType="String">
+		SELECT
+			DISTINCT user_id 
+		FROM
+			af_borrow_cash
+	</select>
+	
 </mapper>

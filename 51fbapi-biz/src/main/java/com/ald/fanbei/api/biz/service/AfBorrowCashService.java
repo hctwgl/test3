@@ -127,5 +127,9 @@ public interface AfBorrowCashService {
 
 	List<AfBorrowCashDo> getRiskRefuseBorrowCash(Long userId, Date gmtStart, Date gmtEnd);
 	
-	
+	/**
+	 * 获取借过款的用户id集合，放入缓存，用于给没借过钱的用户app端高亮显示
+	 * @return
+	 */
+	List<String> getBorrowedUserIds();
 }

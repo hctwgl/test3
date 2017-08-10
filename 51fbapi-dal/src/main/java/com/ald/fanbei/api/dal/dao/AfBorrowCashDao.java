@@ -135,4 +135,10 @@ public interface AfBorrowCashDao {
 	AfBorrowCashDo getBorrowCashInfoByBorrowNo(@Param("borrowNo")String borrowNo);
 
 	List<AfBorrowCashDo> getRiskRefuseBorrowCash(@Param("userId")Long userId, @Param("gmtStart")Date gmtStart, @Param("gmtEnd")Date gmtEnd);
+
+	/**
+	 * 获取借过款的用户id集合，放入缓存，用于给没借过钱的用户app端高亮显示
+	 * @return
+	 */
+	List<String> getBorrowedUserIds();
 }
