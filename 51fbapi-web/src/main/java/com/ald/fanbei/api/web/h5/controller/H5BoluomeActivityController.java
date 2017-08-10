@@ -99,7 +99,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		AfUserDo UserDo = afUserService.getUserByUserName(userName);
 		AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
 		if(loginSource == null ||"".equals(loginSource)){
-			loginSource = CookieUtil.getCookie(request, loginSource).getValue();
+			loginSource = CookieUtil.getCookie(request,"loginSource").getValue();
 		}
 		
 		
@@ -201,7 +201,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
 			String registerSource  = ObjectUtils.toString(request.getParameter("registerSource"), "").toString();
 			if(registerSource == null ||"".equals(registerSource)){
-				registerSource = CookieUtil.getCookie(request, registerSource).getValue();
+				registerSource = CookieUtil.getCookie(request, "loginSource").getValue();
 			}
 			
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
