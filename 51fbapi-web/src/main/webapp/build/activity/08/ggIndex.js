@@ -1,5 +1,11 @@
-var cardLength;
+var activityId=getUrl("activityId");//获取活动Id
+var userName=getCookie('userName');//获取用户名
 var num;//卡片数量
+// var domainName = domainName();//域名
+var protocol = window.location.protocol;
+var host = window.location.host;
+var domainName = protocol+'//'+host;
+
 //获取数据
 let vm = new Vue({
     el: '#ggIndex',
@@ -18,16 +24,50 @@ let vm = new Vue({
             $.ajax({
                 type: 'get',
                 url: "/H5GG/initHomePage",
-                data:{'activityId':1,userName:15839790051},
+                data:{'activityId':activityId,userName:userName},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
                     wordMove();//左右移动动画
+                    //首页轮播
+                    self.$nextTick(function () {
+                        var i = 0;
+                        var liWidth=6.25+'rem';
+                        var clone = $(".banner .bannerList li").first().clone();//克隆第一张图片
+                        $(".banner .bannerList").append(clone);//复制到列表最后
+                        var size = self.content.bannerList.length+1;
+                        var ulWidth=size*6.25+'rem';
+                        $(".banner .bannerList li").width(liWidth);
+                        $(".banner .bannerList").width(ulWidth);
+                        for (var j = 0; j < size-1; j++) {
+                            $(".banner .num").append("<li></li>");
+                        }
+                        $(".banner .num li").first().addClass("on");
+                        setInterval(function () { i++; move();},1500);
+                        function move() {
+                            if (i == size) {
+                                $(".banner .bannerList").css({ left: 0 });
+                                i = 1;
+                            }
+                            if (i == -1) {
+                                $(".banner .bannerList").css({ left: -(size - 1) * 6.25+'rem' });
+                                i = size - 2;
+                            }
+                            $(".banner .bannerList").stop().animate({ left: -i * 6.25+'rem'}, 500);
+
+                            if (i == size - 1) {
+                                $(".banner .num li").eq(0).addClass("on").siblings().removeClass("on");
+                            } else {
+                                $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
+                            }
+                        }
+                    })
+                    //判断蒙版
                     var couponList=self.content.boluomeCouponList;
                     for(var i=0;i<couponList.length;i++){
                         couponList[i] = eval("("+couponList[i]+")");
                     }
-                    for(var j=0;j<self.content.itemsList.length;j++){//判断终极大奖蒙版
+                    for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
                         num=self.content.itemsList[j].num;
                         if(num==0){
                             self.finalPrizeMask=true;
@@ -37,7 +77,7 @@ let vm = new Vue({
                             self.finalPrizeMask=false;
                             self.present='Y';
                         }
-                    }//判断终极大奖蒙版
+                    }//是否可赠送
                 }
             })
         },
@@ -48,7 +88,7 @@ let vm = new Vue({
                     url: "/fanbei-web/pickBoluomeCouponV1",
                     type: "POST",
                     dataType: "JSON",
-                    data: {'sceneId':sceneId,userName:15839790051},
+                    data: {'sceneId':sceneId,userName:userName},
                     success: function (returnData){
                         console.log(returnData)
                         if(returnData.success){
@@ -69,7 +109,7 @@ let vm = new Vue({
             $.ajax({
                 type: 'post',
                 url: '/fanbei-web/getBrandUrl',
-                data:{'shopId':shopId,'userName':15839790051},
+                data:{'shopId':shopId,'userName':userName},
                 dataType:'JSON',
                 success: function (returnData) {
                     console.log(returnData)
@@ -92,7 +132,7 @@ let vm = new Vue({
                 $.ajax({
                     type: 'get',
                     url: '/H5GGShare/pickUpSuperPrize',
-                    data:{'activityId':1,'userName':15839790051},
+                    data:{'activityId':activityId,'userName':userName},
                     dataType:'JSON',
                     success: function (returnData) {
                         if(returnData.success){
@@ -106,10 +146,12 @@ let vm = new Vue({
             }
 
         },
+        //点击获取活动规则
         ruleClick:function(){
             $('.alertRule').css('display','block');
             $('.mask').css('display','block');
         },
+        //点击关闭弹窗
         close:function(){
             $('.alertPresent').css('display','none');
             $('.mask').css('display','none');
@@ -119,3 +161,33 @@ let vm = new Vue({
         }
     }
 })
+//首页顶部栏动画-------------------------
+var speed = 20;
+var cont = $(".cont1").html();
+$(".cont2").html(cont);
+function wordMove(){
+    var left = $(".personAmount").scrollLeft();
+    if(left >= $(".cont1").width()){
+        left = 0;
+    }else{
+        left++;
+    }
+    $(".personAmount").scrollLeft(left);
+    setTimeout("wordMove()",speed);
+}
+// app调用web的方法
+function alaShareData(){
+    var dataObj = { // 分享内容
+        "appLogin": "Y", // 是否需要登录，Y需要，N不需要
+        "type": "share", // 此页面的类型
+        "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
+        'shareAppContent': "你的好友分享了一张卡片给你，快去查看吧~",  // 分享的内容
+        "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
+        "shareAppUrl": domainName+"/activity/ggIndexShare",  // 分享后的链接
+        "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
+        "sharePage": "ggIndexShare" // 分享的页面
+    };
+    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
+    return dataStr;
+};
+
