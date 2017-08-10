@@ -73,6 +73,14 @@
 	<!-- redis template definition -->
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 		<property name="connectionFactory" ref="jedisConnFactory" />
+		<property name="keySerializer">  
+            <bean  
+                class="org.springframework.data.redis.serializer.StringRedisSerializer" />  
+        </property>  
+        <property name="valueSerializer">  
+            <bean  
+                class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />  
+        </property>
 	</bean>
 	
 	<!-- redis template definition  -->

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -72,8 +71,11 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
+import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
+import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
@@ -614,11 +616,12 @@ public class TestController {
 	@ResponseBody
 	public void initBorrowCache()
 	{
+		logger.info("initBorrowCache,start");
 		List<String> ids = afBorrowCashService.getBorrowedUserIds();
 		if(ids!=null){
-			for(String id:ids)
-				bizCacheUtil.saveObject(Constants.HAVE_BORROWED+id,"1");
+			bizCacheUtil.saveRedistSet(Constants.HAVE_BORROWED, ids);
 		}
+		logger.info("initBorrowCache,end");
 	}
 	
 	public String getVirtualCode(Map<String, Object> resultMap) {
