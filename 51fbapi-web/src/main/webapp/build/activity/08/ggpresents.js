@@ -45,7 +45,7 @@ $(function () {
 
         }
     })
-
+    ScrollImgLeft();
     //文字轮播
     function ScrollImgLeft() {
         var speed = 50;
@@ -88,7 +88,7 @@ $(function () {
                     try {
                         loginUrl = outputData.data.loginUrl;
                     } catch (error) {
-                       //  ignore
+                        //  ignore
                     }
                     if (loginUrl != undefined && loginUrl != '') {
                         // 未登录，跳转登录界面

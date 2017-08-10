@@ -19,44 +19,35 @@ body {
 
 .box {
     height: .6rem;
-     width: 300%; 
-    /* overflow:hidden;  */
+    width: 100%;
+    /* margin-left: 10px; */
     /* display:inline-block;  */
-     background-color: #4c4c4c; 
+    background-color: #4c4c4c;
 }
 
-#scroll_div {overflow: hidden;white-space: nowrap;}
-#scroll_begin,#scroll_end {display: inline;}
+#scroll_div {
+    overflow: hidden;
+    white-space: nowrap;
+}
 
-
-
-
-/*文字滚动  */
-
- @keyframes moveup {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-100%);
-    }
-}  
+#scroll_begin,
+#scroll_end {
+    display: inline;
+}
 
 .personAmount {
-    width: 33.333%;
+    width: 100%;
     height: .6rem;
     /* background:#4c4c4c; */
-    position: relative;
-     float: left; 
-      animation: moveup 10s linear infinite;  
+    /* position: relative; */
 }
 
 .personAmount p {
+    width:100%;
+    display: inline-block;
     font-size: .26rem;
     line-height: .6rem;
     color: #fff;
-    position: absolute;
-    right: 0;
 }
 
 .header .logo {
