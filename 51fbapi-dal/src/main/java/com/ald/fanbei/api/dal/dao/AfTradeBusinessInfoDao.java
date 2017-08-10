@@ -18,4 +18,6 @@ public interface AfTradeBusinessInfoDao extends BaseDao<AfTradeBusinessInfoDo, L
 
     List<AfTradeBusinessInfoDto> getByOrderId(@Param("orderId")Long orderId);
 
+    AfTradeBusinessInfoDo getByBusinessId(@Param("businessId") Long businessId);
+
 }

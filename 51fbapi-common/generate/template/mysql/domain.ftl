@@ -2,6 +2,7 @@ package ${packageName}.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 import java.util.Date;
+import java.math.BigDecimal;
 
 /**
  * ${functionName}实体
@@ -18,9 +19,9 @@ import java.util.Date;
     <#list list as item>
     <#if item.columnName == "id">
     /**
-     * 主键Id
+     * 主键Rid
      */
-    private Long id;
+    private Long rid;
     
     <#elseif item.columnName == "isDelete">
 
@@ -38,10 +39,10 @@ import java.util.Date;
     /**
      * 获取主键Id
      *
-     * @return id
+     * @return rid
      */
-    public Long getId(){
-      return id;
+    public Long getRid(){
+      return rid;
     }
 
     /**
@@ -49,8 +50,8 @@ import java.util.Date;
      * 
      * @param 要设置的主键Id
      */
-    public void setId(Long id){
-      this.id = id;
+    public void setRid(Long rid){
+      this.rid = rid;
     }
     
     <#elseif item.columnName == "isDelete">

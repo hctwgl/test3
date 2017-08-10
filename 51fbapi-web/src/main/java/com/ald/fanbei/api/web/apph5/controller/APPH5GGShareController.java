@@ -49,6 +49,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONArray;
@@ -232,7 +233,7 @@ public class APPH5GGShareController extends BaseController {
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-			doMaidianLog(request, resultStr);
+//			doMaidianLog(request, resultStr);
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("活动点亮初始化数据失败", e);
@@ -408,7 +409,7 @@ public class APPH5GGShareController extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(false, "抱歉你暂时没有可以赠送的卡片", "", e.getMessage()).toString();
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -448,7 +449,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
 		
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -520,7 +521,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("ggSendItems error", e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -601,7 +602,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("赠送卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -639,7 +640,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("赠送卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -682,7 +683,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("索要初卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -757,7 +758,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("索要初卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -810,7 +811,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("ggSendItems error", e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -861,7 +862,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("索要初卡片失败", e);
 		}
 		
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -922,7 +923,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("红包领取失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -933,7 +934,7 @@ public class APPH5GGShareController extends BaseController {
 	}
 
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
 	}

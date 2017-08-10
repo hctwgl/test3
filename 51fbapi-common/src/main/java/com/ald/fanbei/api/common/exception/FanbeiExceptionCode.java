@@ -21,6 +21,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     REQUEST_PARAM_SYSTEM_NOT_EXIST("REQUEST_PARAM_SYSTEM_NOT_EXIST", 1008, "system param is invalid", "系统参数缺失"),
     CALCULATE_SHA_256_ERROR("CALCULATE_SHA_256_ERROR",1009,"cal sha 265 error","系统错误"),
     SYSTEM_REPAIRING_ERROR("SYSTEM_REPAIRING_ERROR",1010,"system repairing","系统维护中"),
+    REQUEST_PARAM_TOKEN_TIMEOUT("REQUEST_PARAM_TOKEN_ERROR", 1141, "token is invalid", "您的登录已超时, 请重新登录"),
     
     // user mode code from 1100 - 1199
     USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"), 
@@ -114,6 +115,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     SMS_MOBILE_NO_ERROR("SMS_MOBILE_NO_ERROR",1530,"invalid mobile","无效手机号"),
     SMS_MOBILE_COUNT_TOO_MANAY("SMS_MOBILE_COUNT_TOO_MANAY",1531,"too manay mobiles","手机号太多"),
     SMS_MOBILE_ERROR("SMS_MOBILE_ERROR",1532,"too manay mobiles","手机号有误"),
+    SMS_REGIST_EXCEED_TIME("SMS_REGIST_EXCEED_TIME",1141,"user regist exceed time","发送注册验证码超过每日限制次数"),
+    SMS_FORGET_PASSWORD_EXCEED_TIME("SMS_FORGET_PASSWORD_EXCEED_TIME",1142,"user forget password exceed time","发送找回密码验证码超过每日限制次数"),
+    SMS_MOBILE_BIND_EXCEED_TIME("SMS_MOBILE_BIND_EXCEED_TIME",1143,"user bind mobile exceed time","发送绑定手机号短信超过每日限制次数"),
+    SMS_SET_PAY_PASSWORD_EXCEED_TIME("SMS_SET_PAY_PASSWORD_EXCEED_TIME",1144,"user set pay password exceed time","发送设置支付密码短信超过每日限制次数"),
 
 
     AUTH_REALNAME_ERROR("AUTH_REALNAME_ERROR",1540,"auth realname error","实名认证失败"),
@@ -240,6 +245,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     GAME_CHANCE_CODE_ERROR("GAME_CHANCE_CODE_ERROR",4030,"game chance code error","无效抓娃娃机会"),
     GAME_COUPONS_LIMIT_ERROR("GAME_COUPONS_LIMIT_ERROR",4031,"coupon limit","未中奖"),
     NOT_CONFIG_GAME_INFO_ERROR("NOT_CONFIG_GAME_INFO_ERROR",4032,"not config game info error","请配置游戏信息"),
+    NOT_CHANCE_TEAR_PACKET_ERROR("NOT_CHANCE_TEAR_PACKET_ERROR",4033,"not chance tear packet error","无抽红包机会"),
     // 地址管理
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),

@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -84,4 +85,6 @@ public interface AfUserAccountDao {
 	 * @return
 	 */
 	AfUserAccountDo getUserAccountInfoByUserName(@Param("userName") String userName);
+
+	int changeAmount(@Param("userId") Long userId, @Param("amount") BigDecimal amount);
 }

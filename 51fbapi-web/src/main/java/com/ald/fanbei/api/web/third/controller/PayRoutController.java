@@ -316,8 +316,6 @@ public class PayRoutController {
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
 				}
-				
-				
 			} else if(TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo);
@@ -327,7 +325,9 @@ public class PayRoutController {
 				    afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo); 
 				}else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
 					afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
-				} 
+				}else if(OrderType.BOLUOMECP.getCode().equals(merPriv)||OrderType.SELFSUPPORTCP.getCode().equals(merPriv)||OrderType.AGENTCPBUY.getCode().equals(merPriv)){ 
+					afOrderService.dealPayCpOrderFail(outTradeNo,tradeNo, PayType.COMBINATION_PAY.getCode());
+				}
 			}
 			return "SUCCESS";
 		} catch (Exception e) {

@@ -69,6 +69,18 @@ import com.alibaba.fastjson.annotation.JSONField;
      */
     private String cardCode;
 
+    /**
+     * 持卡人姓名
+     */
+    private String cardUserName;
+
+    public String getCardUserName() {
+        return cardUserName;
+    }
+
+    public void setCardUserName(String cardUserName) {
+        this.cardUserName = cardUserName;
+    }
 
     /**
      * 获取主键Id

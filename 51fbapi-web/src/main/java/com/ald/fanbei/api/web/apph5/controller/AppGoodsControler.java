@@ -45,6 +45,7 @@ import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -288,7 +289,7 @@ public class AppGoodsControler extends BaseController {
 	}
 
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
 	}

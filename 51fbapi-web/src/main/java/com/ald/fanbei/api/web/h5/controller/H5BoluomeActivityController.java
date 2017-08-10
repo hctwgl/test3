@@ -44,6 +44,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
@@ -248,7 +249,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 			return resultStr;
 		}finally{
-			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
+//			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
 		}
 
 	}
@@ -370,7 +371,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
     }
  
     @Override
-    public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         return null;
     }
 

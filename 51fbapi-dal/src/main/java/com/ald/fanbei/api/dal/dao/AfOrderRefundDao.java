@@ -41,5 +41,5 @@ public interface AfOrderRefundDao {
 	 */
 	AfOrderRefundDo getRefundInfoById(@Param("refundId")Long refundId);
 	
-	
+	int saveRecord(AfOrderRefundDo orderRefundInfo);
 }

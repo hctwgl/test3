@@ -43,6 +43,7 @@ import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectDo;
 import com.ald.fanbei.api.dal.domain.query.AfSubjectGoodsQuery;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -89,13 +90,13 @@ public class AppH5SubjectController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		// 主会场接口
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		JSONObject jsonObj = new JSONObject();
 		try{
 			//context = doWebCheck(request, false);
 			// 数据埋点
 			request.setAttribute("context", context);
-			doMaidianLog(request,"");
+			doMaidianLog(request,H5CommonResponse.getNewInstance(true,"succ"));
 			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
 			jsonObj.put("notifyUrl", notifyUrl);
 			// 获取会场商品题目文案
@@ -167,18 +168,19 @@ public class AppH5SubjectController  extends BaseController{
 				qualityGoodsList.add(qualityGoodsInfo);
 			}
 			jsonObj.put("qualityGoodsList",qualityGoodsList);
-			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj).toString();
+			resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
+			
 		}catch(FanbeiException e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc()).toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
 			logger.error("请求失败"+context,e);
 		}catch(Exception e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", "").toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
 			logger.error("请求失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
-		return resultStr;
+		return resp.toString();
 	}
 	
 	
@@ -205,16 +207,17 @@ public class AppH5SubjectController  extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
 		
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		try {
 			//context = doWebCheck(request, false);
 			String modelId = ObjectUtils.toString(request.getParameter("modelId"), null);
 			if(modelId == null || "".equals(modelId)) {
-				return H5CommonResponse.getNewInstance(false, "模版id不能为空！").toString();
+				resp = H5CommonResponse.getNewInstance(false, "模版id不能为空！");
+				return resp.toString();
 			}
 			// 数据埋点
 			request.setAttribute("context", context);
-			doMaidianLog(request,"");
+			doMaidianLog(request,H5CommonResponse.getNewInstance(true,"succ"));
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 	        JSONArray array = JSON.parseArray(resource.getValue());
@@ -233,13 +236,15 @@ public class AppH5SubjectController  extends BaseController{
 				AfModelH5ItemDo bannerInfo = bannerList.get(0);
 				jsonObj.put("bannerImage", bannerInfo.getItemIcon());
 			} else {
-				return H5CommonResponse.getNewInstance(false, "banner信息为空").toString();
+				resp = H5CommonResponse.getNewInstance(false, "banner信息为空");
+				return resp.toString();
 			}
 			// 查询会场下所有二级会场
 			List<AfModelH5ItemDo> subjectList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(Long.parseLong(modelId), "SUBJECT");
 			List<Map> activityList = new ArrayList<Map>();
 			if(subjectList == null || subjectList.size() == 0){
-				return H5CommonResponse.getNewInstance(false, "分会场信息为空").toString(); 
+				resp = H5CommonResponse.getNewInstance(false, "分会场信息为空"); 
+				return resp.toString();
 			}
 			AfModelH5ItemDo subjectH5ItemDo = subjectList.get(0);
 			String secSubjectId = subjectH5ItemDo.getItemValue();
@@ -254,7 +259,8 @@ public class AppH5SubjectController  extends BaseController{
 				// 查询会场信息
 				AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
 				if(subjectInfo == null) {
-					return H5CommonResponse.getNewInstance(false, "会场不存在id=" + subjectId).toString();
+					resp = H5CommonResponse.getNewInstance(false, "会场不存在id=" + subjectId);
+					return resp.toString();
 				}
 				activityInfoMap.put("name", subjectInfo.getName());
 				activityInfoMap.put("subjectId", subjectInfo.getId());
@@ -361,18 +367,18 @@ public class AppH5SubjectController  extends BaseController{
 				qualityGoodsList.add(qualityGoodsInfo);
 			}
 			jsonObj.put("qualityGoodsList",qualityGoodsList);
-			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj).toString();
+			resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
 		}catch(FanbeiException e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc()).toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
 			logger.error("请求失败"+context,e);
 		}catch(Exception e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", "").toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
 			logger.error("请求失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
-		return resultStr;
+		return resp.toString();
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -382,17 +388,18 @@ public class AppH5SubjectController  extends BaseController{
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		try {
 			//context = doWebCheck(request, false);
 			String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
 			if(subjectId == null || "".equals(subjectId)) {
-				return H5CommonResponse.getNewInstance(false, "会场id不能为空！").toString();
+				resp = H5CommonResponse.getNewInstance(false, "会场id不能为空！");
+				return resp.toString();
 			}
 			AfSubjectGoodsQuery  query = buildAfSubjectGoodsQuery(request);
 			//  数据埋点
 			request.setAttribute("context", context);
-			doMaidianLog(request,"");
+			doMaidianLog(request,resp);
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 	        JSONArray array = JSON.parseArray(resource.getValue());
@@ -447,18 +454,18 @@ public class AppH5SubjectController  extends BaseController{
 				}
 			}
 			jsonObj.put("subjectGoodsList", subjectGoodsList);
-			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj).toString();
+			resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
 		}catch(FanbeiException e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc()).toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
 			logger.error("请求失败"+context,e);
 		}catch(Exception e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", "").toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
 			logger.error("请求失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
-		return resultStr;
+		return resp.toString();
 	}
 	
 	
@@ -468,7 +475,7 @@ public class AppH5SubjectController  extends BaseController{
 		// 统计精品推荐商品点击量
 		FanbeiWebContext context = new FanbeiWebContext();
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		try{
 			//context = doWebCheck(request, false);
 			String goodsId = ObjectUtils.toString(request.getParameter("goodsId"), null);
@@ -476,19 +483,19 @@ public class AppH5SubjectController  extends BaseController{
 				return H5CommonResponse.getNewInstance(false, "商品Id不能为空！").toString();
 			}
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(Long.parseLong(goodsId));
-			doMaidianLog(request, goodsInfo.toString());
-			resultStr = H5CommonResponse.getNewInstance(true, "成功").toString();
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, goodsInfo.toString()));
+			resp = H5CommonResponse.getNewInstance(true, "成功");
 		}catch(FanbeiException e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc()).toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
 			logger.error("请求失败"+context,e);
 		}catch(Exception e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", "").toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
 			logger.error("请求失败"+context,e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
-		return resultStr;
+		return resp.toString();
 	}
 	
 	@RequestMapping(value = "categoryGoodsStatistics", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -497,23 +504,23 @@ public class AppH5SubjectController  extends BaseController{
 		// 统计二级会场点击量
 		Calendar calStart = Calendar.getInstance();
 		FanbeiWebContext context = new FanbeiWebContext();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		try{
 			String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);
 			if(subjectId == null || "".equals(subjectId)) {
 				return H5CommonResponse.getNewInstance(false, "会场Id不能为空！").toString();
 			}
 			AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
-			doMaidianLog(request, subjectInfo.toString());
-			resultStr = H5CommonResponse.getNewInstance(true, "成功").toString();
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, subjectInfo.toString()));
+			resp = H5CommonResponse.getNewInstance(true, "成功");
 		}catch(Exception e){
-			resultStr = H5CommonResponse.getNewInstance(false, "请求失败", "", "").toString();
+			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
 			logger.error("请求失败",e);
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
 		}
-		return resultStr;
+		return resp.toString();
 	}
 	
 	
@@ -542,7 +549,7 @@ public class AppH5SubjectController  extends BaseController{
 	}
 
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context,
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
 			HttpServletRequest httpServletRequest) {
 		return null;
 	}

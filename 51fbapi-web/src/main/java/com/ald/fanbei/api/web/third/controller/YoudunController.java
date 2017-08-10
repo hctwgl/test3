@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.third.util.YoudunUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
@@ -92,7 +93,7 @@ public class YoudunController extends BaseController{
 	}
 
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context,
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
 			HttpServletRequest httpServletRequest) {
 		return null;
 	}
