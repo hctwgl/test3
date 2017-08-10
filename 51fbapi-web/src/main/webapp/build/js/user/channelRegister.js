@@ -105,6 +105,7 @@ $(function(){
 		var mobileNum = $("#register_mobile").val();
 		var channelCode = $("#channelCode").val();
 		var pointCode = $("#pointCode").val();
+
 		if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
 			$("#register_codeBtn").attr("disabled",true);
 			$.ajax({
@@ -117,15 +118,23 @@ $(function(){
 					channelCode: channelCode,
 					pointCode: pointCode
       			},
+                beforeSend: function(){
+                    $("#register_codeBtn").attr("isState",1);
+                    $("#register_codeBtn").text(timerS+" s");
+                    timerInterval = setInterval(timeFunction,1000);
+				},
       			success: function(returnData){
-      				if (returnData.success) {
-        				$("#register_codeBtn").attr("isState",1);
-    					$("#register_codeBtn").text(timerS+" s");
-               	        timerInterval = setInterval(timeFunction,1000);
-      				} else {
-      					requestMsg(returnData.msg);
-      					$("#register_codeBtn").removeAttr("disabled");
-      				}
+
+      				console.log(returnData);
+
+      				// if (returnData.success) {
+                       //  $("#register_codeBtn").attr("isState",1);
+    					// $("#register_codeBtn").text(timerS+" s");
+               	    //     timerInterval = setInterval(timeFunction,1000);
+      				// } else {
+      				// 	requestMsg(returnData.msg);
+      				// 	$("#register_codeBtn").removeAttr("disabled");
+      				// }
       			},
       			error: function(){
     	      	    requestMsg("请求失败");
