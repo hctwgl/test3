@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017071001")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <title>手表专场</title>
+    <style>
+        #watchHome img{
+            margin-bottom: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+    <img src="$commonUrl/watchHome1.png">
+    <div id="watchHome">
+        <img @click="goGoodsDetail(content.recommendGoodsList[0])" src="$commonUrl/watchHome2.png">
+        <img @click="goGoodsDetail(content.recommendGoodsList[1])" src="$commonUrl/watchHome3.png">
+        <img @click="goGoodsDetail(content.recommendGoodsList[2])" src="$commonUrl/watchHome4.png">
+        <img @click="goGoodsDetail(content.recommendGoodsList[3])" src="$commonUrl/watchHome5.png">
+    </div>
+</body>
+<script type="text/javascript">
+var activityId = getUrl("activityId");
+var vm=new Vue({
+    el:'#watchHome',
+    data:{
+        content:{}
+    },
+    created:function () {
+        this.init();
+    },
+    methods:{
+        init() {
+            //获取页面初始化信息
+            var self = this;
+            jQuery.ajax({
+                type: 'post',
+                url: '/fanbei-web/encoreActivityInfo',
+                data: {'activityId': activityId},
+                success: function (data) {
+                    data1 = eval('(' + data + ')');
+                    self.content =data1.data;
+                    console.log(self.content.recommendGoodsList[0].goodsId);
+                },
+                error: function () {
+                    requestMsg("请求失败");
+                }
+            });
+        },
+        goGoodsDetail(item){
+            if ( item.source=="SELFSUPPORT" ) {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
+            } else {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
+            }
+        }
+    }
+});
+</script>
+</html>
