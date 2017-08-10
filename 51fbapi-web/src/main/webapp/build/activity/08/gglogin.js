@@ -5,6 +5,7 @@ var index=currentUrl.indexOf('=');
 var urlName=currentUrl.slice(index+1);
 console.log(urlName)
 
+
     //点击立即登录
     $(".loginbtn").click(function () {
         var userName = $(".pinp").val();//获取手机号
@@ -19,14 +20,15 @@ console.log(urlName)
                     userName: userName,
                     password: password_md5,
                     activityId:	1,
-                    refUserName:17839218825
-                    ,"urlName":urlName
+                    refUserName:17839218825,
+                    "urlName":urlName
 
                 },
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                     window.location.href =urlName;
+                        alert(urlName);
+                    //  window.location.href =urlName;
                     }else{
                         requestMsg(data.msg);
                     }
