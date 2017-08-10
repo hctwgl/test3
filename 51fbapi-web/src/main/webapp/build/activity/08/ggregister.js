@@ -1,9 +1,9 @@
 
 //获取页面名称传到登录页
-var currentUrl=window.location.href;
+ var currentUrl=window.location.href;
 var index=currentUrl.indexOf('=');
 var urlName=currentUrl.slice(index+1);
-console.log(urlName)
+console.log(urlName) 
 
 $(function () {
     var timerInterval;
@@ -83,7 +83,8 @@ $(function () {
                     var a=JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
-                        window.location.href = urlName;
+                        alert(urlName)
+                        window.location.href = "urlName";
                     
                     } //else {
                     //     requestMsg(returnData.msg);
