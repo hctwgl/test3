@@ -12,8 +12,8 @@
     <div id="presents">
         <div class="presents-top">
             <div class="box" id="scroll_div">
-                <div class="personAmount" id="scroll_begin"><p>已有<span class="light"></span>人点亮所有场景</p></div>
-                <div class="personAmount" id="scroll_end"><p>已有<span class="light"></span>1111111111</p></div>     
+                <div class="personAmount" id="scroll_begin"><p>已有<span class="light">11</span>人点亮所有场景</p><p>已有<span class="light">222</span>人点亮所有场景</p></div>
+                <div class="personAmount" id="scroll_end"></div>     
                 <!--<div class="personAmount"><p>已有<span class="light"></span>22222222222</p></div>!-->
             </div>
             <div class="header">
