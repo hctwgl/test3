@@ -201,7 +201,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
 			String registerSource  = ObjectUtils.toString(request.getParameter("registerSource"), "").toString();
 			if(registerSource == null ||"".equals(registerSource)){
-				registerSource = CookieUtil.getCookie(request, "loginSource").getValue();
+				registerSource = CookieUtil.getCookie(request, "registerSource").getValue();
 			}
 			
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
