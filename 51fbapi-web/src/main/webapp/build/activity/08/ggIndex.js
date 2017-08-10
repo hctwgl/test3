@@ -28,7 +28,12 @@ let vm = new Vue({
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
-                    wordMove();//左右移动动画
+                    self.$nextTick(function () {
+                        var cont = $(".cont1").html();
+                        $(".cont2").html(cont);
+                        wordMove();//左右移动动画
+                    })
+
                     //首页轮播
                     self.$nextTick(function () {
                         var i = 0;
@@ -163,8 +168,6 @@ let vm = new Vue({
 })
 //首页顶部栏动画-------------------------
 var speed = 20;
-var cont = $(".cont1").html();
-$(".cont2").html(cont);
 function wordMove(){
     var left = $(".personAmount").scrollLeft();
     if(left >= $(".cont1").width()){
@@ -181,9 +184,9 @@ function alaShareData(){
         "appLogin": "Y", // 是否需要登录，Y需要，N不需要
         "type": "share", // 此页面的类型
         "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
-        'shareAppContent': "你的好友分享了一张卡片给你，快去查看吧~",  // 分享的内容
+        'shareAppContent': "我正在51返呗玩场景点亮活动，你也一起来玩吧~",  // 分享的内容
         "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/activity/ggIndexShare",  // 分享后的链接
+        "shareAppUrl": domainName+"/activity/ggIndexShare?loginSource=F",  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggIndexShare" // 分享的页面
     };

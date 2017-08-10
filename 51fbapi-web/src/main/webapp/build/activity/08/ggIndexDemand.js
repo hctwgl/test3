@@ -40,7 +40,7 @@ $(function() {
                     cardRid = $('.img.img3').attr('rid');
                     console.log(cardRid)
                     if (cardRid && cardRid != '') {
-                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/activity/ggIndexShare?cardRid' + cardRid + '","isSubmit":"Y","sharePage":"ggIndexShare"}';
+                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/activity/ggIndexShare?loginSource=S&&cardRid' + cardRid + '","isSubmit":"Y","sharePage":"ggIndexShare"}';
                     } else {
                         window.location.href = "ggIndex";
                     }
@@ -161,7 +161,7 @@ function alaShareData(){
         "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
         'shareAppContent': "你的好友向你索要一张卡片，快赠送给他/她吧~",  // 分享的内容
         "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/activity/ggIndexShare?cardRid="+cardRid,  // 分享后的链接
+        "shareAppUrl": domainName+"/activity/ggIndexShare?loginSource=S&&cardRid"+cardRid,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggIndexShare" // 分享的页面
     };
