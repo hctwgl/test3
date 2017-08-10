@@ -1,4 +1,9 @@
 
+var currentUrl=window.location.href;
+var index=currentUrl.lastIndexOf('/');
+var urlName=currentUrl.slice(index+1);
+console.log(urlName)
+
 
 //获取数据
 $(function(){
@@ -60,7 +65,7 @@ $(function(){
                         if(loginUrl != undefined && loginUrl != '') {
                             // 未登录，跳转登录界面
                              //window.location.href =loginUrl;
-                            window.location.href="gglogin";
+                            window.location.href="gglogin?urlName="+urlName;
                         } else {
                             // 登录后
 
@@ -93,7 +98,7 @@ $(function(){
                         if(loginUrl != undefined && loginUrl != '') {
                             // 未登录，跳转登录界面
                              //window.location.href =loginUrl;
-                            window.location.href="gglogin";
+                            window.location.href="gglogin?urlName="+urlName;
                         } else {
                             // 登录后
 
