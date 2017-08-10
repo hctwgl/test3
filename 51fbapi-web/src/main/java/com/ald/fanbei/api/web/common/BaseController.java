@@ -283,7 +283,7 @@ public abstract class BaseController {
 				h5Context.setLogin(true);
 			}
 		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期
-			if(username != null){
+			if(tokenCookie != null && username != null){
 				AfUserDo userInfo = afUserService.getUserByUserName(username);
 				h5Context.setUserName(username);
 				h5Context.setUserId(userInfo.getRid());
