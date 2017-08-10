@@ -850,7 +850,16 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		try {
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
-			String userName = request.getParameter("userName");
+			FanbeiH5Context context = new FanbeiH5Context();
+			context = doH5Check(request, false);
+			if (!context.isLogin()) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
+			String userName = context.getUserName();//request.getParameter("userName");
 
 			Long userId = convertUserNameToUserId(userName);// 索要人的用户id
 			AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
