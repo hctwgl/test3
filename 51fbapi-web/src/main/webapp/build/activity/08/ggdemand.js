@@ -104,7 +104,7 @@ $(function(){
                             // 登录后
 
                         }
-                        requestMsg(outputData.msg);
+                        // requestMsg(outputData.msg);
                     }
                        
                 }
