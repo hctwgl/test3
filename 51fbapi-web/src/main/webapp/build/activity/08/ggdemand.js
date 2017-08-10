@@ -1,8 +1,7 @@
-
+//获取页面名称传到登录页
 var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
-console.log(urlName)
 
 
 //获取数据
@@ -14,13 +13,12 @@ $(function(){
                 dataType: 'JSON',
                 data: {
                     itemsId:1,
-                    //userName:15839790051
-
+                    friendName:15839790051
                 },
                 success: function (data) {
-                    console.log(data)
-                    if(data.success){
+                    console.log(data);
 
+                    if(data.success){
                         var light="";//点亮人数
                         var pic="";//banner图片
                         var friend="";//赠送者名字

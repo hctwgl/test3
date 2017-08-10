@@ -24,7 +24,7 @@
                 <p>向你索要<span>e顿健康餐</span></p>
             </div>
             <div class="banner">
-                <img src="" alt="">
+                <img src="" alt="" class="banner-img">
             </div>
             <div class="send">
                 <div class="presentCard ask">赠送好友</div>

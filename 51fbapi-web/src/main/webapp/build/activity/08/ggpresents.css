@@ -33,14 +33,14 @@ body {
 
 /*文字滚动  */
 
-/* @keyframes moveup {
+ @keyframes moveup {
     0% {
         transform: translateX(0);
     }
     100% {
         transform: translateX(-100%);
     }
-}  */
+}  
 
 .personAmount {
     width: 33.333%;
@@ -48,7 +48,7 @@ body {
     /* background:#4c4c4c; */
     position: relative;
      float: left; 
-     /* animation: moveup 10s linear infinite;  */
+      animation: moveup 10s linear infinite;  
 }
 
 .personAmount p {

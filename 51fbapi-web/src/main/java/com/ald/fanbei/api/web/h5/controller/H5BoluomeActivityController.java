@@ -99,7 +99,9 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		AfUserDo UserDo = afUserService.getUserByUserName(userName);
 		AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
 		if(loginSource == null ||"".equals(loginSource)){
+			if(CookieUtil.getCookie(request,"loginSource") != null ){
 			loginSource = CookieUtil.getCookie(request,"loginSource").getValue();
+			}
 		}
 		
 		
