@@ -260,20 +260,30 @@ public abstract class BaseController {
 	 */
 	private void checkH5Sign(HttpServletRequest request, FanbeiH5Context h5Context,RequestDataVo requestDataVo, boolean needToken) {
 		//从cookie中取openid和token
-		Map<String,String> openidToken = getOpenidToken(request);
-    	String username = openidToken.get("userName");
-    	String token  = openidToken.get("token");
+		Map<String,String> openidToken = getUserNameToken(request);
+    	String username = openidToken.get(Constants.H5_USER_NAME_COOKIES_KEY);
+    	String tokenCookie  = openidToken.get(Constants.H5_USER_TOKEN_COOKIES_KEY);
 		
 		if(logger.isDebugEnabled()){
-			logger.debug(" username = " + username + " token= " + token);
+			logger.debug(" username = " + username + " token= " + tokenCookie);
 		}
 		if (needToken) {//需要登录的接口必须加token
-			if (token == null) {
+			if (tokenCookie == null) {
 				throw new FanbeiException("no login", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
 			}
-			h5Context.setLogin(true);
+			String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY +  username;
+			Object token = bizCacheUtil.getObject(tokenKey);
+			if (token == null || !tokenCookie.equals(token.toString()))  {
+				throw new FanbeiException("no login", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+			}
+			if(username != null){
+				AfUserDo userInfo = afUserService.getUserByUserName(username);
+				h5Context.setUserName(username);
+				h5Context.setUserId(userInfo.getRid());
+				h5Context.setLogin(true);
+			}
 		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期
-			if(token != null){
+			if(tokenCookie != null && username != null){
 				AfUserDo userInfo = afUserService.getUserByUserName(username);
 				h5Context.setUserName(username);
 				h5Context.setUserId(userInfo.getRid());
@@ -283,22 +293,22 @@ public abstract class BaseController {
 		return;
 	}
 	
-	private Map<String,String> getOpenidToken(HttpServletRequest request){
+	private Map<String,String> getUserNameToken(HttpServletRequest request){
     	Map<String,String> openidAndToken = new HashMap<>();
     	Cookie[] cookies = request.getCookies();
-    	String openid = null;
+    	String userName = null;
     	String token  = null;
     	
     	if(cookies != null && cookies.length > 0){
     		for(Cookie item:cookies){
     			if(StringUtils.equals(item.getName(), Constants.H5_USER_NAME_COOKIES_KEY)){
-    				openid = item.getValue();
-    				openidAndToken.put("openid", openid);
+    				userName = item.getValue();
+    				openidAndToken.put(Constants.H5_USER_NAME_COOKIES_KEY, userName);
     				continue;
     			}
     			if(StringUtils.equals(item.getName(), Constants.H5_USER_TOKEN_COOKIES_KEY)){
     				token = item.getValue();
-    				openidAndToken.put("token", token);
+    				openidAndToken.put(Constants.H5_USER_TOKEN_COOKIES_KEY, token);
     			}
     		}
     	}

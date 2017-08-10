@@ -659,11 +659,11 @@ public class H5GGShareController extends H5Controller {
 				}
 			}
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("赠送卡片失败" + context, e);
+			resultStr = H5CommonResponse.getNewInstance(false, "领取卡片失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("领取卡片失败" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getMessage()).toString();
-			logger.error("赠送卡片失败" + context, e);
+			resultStr = H5CommonResponse.getNewInstance(false, "领取卡片失败", "", e.getMessage()).toString();
+			logger.error("领取卡片失败" + context, e);
 		}
 
 		// doMaidianLog(request, resultStr);
@@ -794,7 +794,7 @@ public class H5GGShareController extends H5Controller {
 					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(userItemsDo);
 					if (userItemsList == null || userItemsList.size() < 2) {
-						return H5CommonResponse.getNewInstance(false, "抱歉，你暂时没有足够此卡片").toString();
+						return H5CommonResponse.getNewInstance(true, "抱歉，你暂时没有足够此卡片").toString();
 					}
 					// 若大于一张则，
 					// 登录用户卡片选一张，然后赠状态设为已经赠送
@@ -821,11 +821,11 @@ public class H5GGShareController extends H5Controller {
 				}
 			}
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("索要初卡片失败" + context, e);
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("赠送失败" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage()).toString();
-			logger.error("索要初卡片失败" + context, e);
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getMessage()).toString();
+			logger.error("赠送失败" + context, e);
 		}
 
 		// doMaidianLog(request, resultStr);

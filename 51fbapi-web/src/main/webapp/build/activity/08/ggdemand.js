@@ -1,4 +1,9 @@
 
+var currentUrl=window.location.href;
+var index=currentUrl.lastIndexOf('/');
+var urlName=currentUrl.slice(index+1);
+console.log(urlName)
+
 
 //获取数据
 $(function(){
@@ -9,7 +14,7 @@ $(function(){
                 dataType: 'JSON',
                 data: {
                     itemsId:1,
-                    userName:15839790051
+                    //userName:15839790051
 
                 },
                 success: function (data) {
@@ -60,13 +65,14 @@ $(function(){
                         if(loginUrl != undefined && loginUrl != '') {
                             // 未登录，跳转登录界面
                              //window.location.href =loginUrl;
-                            window.location.href="gglogin";
+                            window.location.href="gglogin?urlName="+urlName;
                         } else {
                             // 登录后
-
+                            requestMsg(outputData.msg);
                         }
-                        requestMsg(outputData.msg);
+                        
                     }
+                    requestMsg(outputData.msg);
                        
                 }
             })
@@ -93,7 +99,7 @@ $(function(){
                         if(loginUrl != undefined && loginUrl != '') {
                             // 未登录，跳转登录界面
                              //window.location.href =loginUrl;
-                            window.location.href="gglogin";
+                            window.location.href="gglogin?urlName="+urlName;
                         } else {
                             // 登录后
 

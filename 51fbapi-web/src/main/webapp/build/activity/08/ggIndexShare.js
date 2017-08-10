@@ -1,9 +1,17 @@
-//var activityId = getUrl("activityId");
+var activityId = getUrl("activityId");//获取活动Id
+var userName=getCookie('userName');//获取用户名
+//获取页面名称传到登录页
+var currentUrl=window.location.href;
+var index=currentUrl.lastIndexOf('/');
+var urlName=currentUrl.slice(index+1);
+var num;//卡片数量
 //获取数据
 let vm = new Vue({
     el: '#ggIndexShare',
     data: {
-        content: {}
+        content: {},
+        finalPrizeMask:'',
+        present:''
     },
     created: function () {
         this.logData();
@@ -15,61 +23,125 @@ let vm = new Vue({
             $.ajax({
                 type: 'get',
                 url: "/H5GGShare/initHomePage",
-                data:{activityId:1},
+                data:{activityId:activityId},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
                     wordMove();//左右移动动画
+                    //首页轮播
+                    self.$nextTick(function () {
+                        var i = 0;
+                        var liWidth=6.25+'rem';
+                        var clone = $(".banner .bannerList li").first().clone();//克隆第一张图片
+                        $(".banner .bannerList").append(clone);//复制到列表最后
+                        var size = self.content.bannerList.length+1;
+                        var ulWidth=size*6.25+'rem';
+                        $(".banner .bannerList li").width(liWidth);
+                        $(".banner .bannerList").width(ulWidth);
+                        for (var j = 0; j < size-1; j++) {
+                            $(".banner .num").append("<li></li>");
+                        }
+                        $(".banner .num li").first().addClass("on");
+                        setInterval(function () { i++; move();},1500);
+                        function move() {
+                            if (i == size) {
+                                $(".banner .bannerList").css({ left: 0 });
+                                i = 1;
+                            }
+                            if (i == -1) {
+                                $(".banner .bannerList").css({ left: -(size - 1) * 6.25+'rem' });
+                                i = size - 2;
+                            }
+                            $(".banner .bannerList").stop().animate({ left: -i * 6.25+'rem'}, 500);
+
+                            if (i == size - 1) {
+                                $(".banner .num li").eq(0).addClass("on").siblings().removeClass("on");
+                            } else {
+                                $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
+                            }
+                        }
+                    })
+                    //优惠券数据格式
                     var couponList=self.content.boluomeCouponList;
                     for(var i=0;i<couponList.length;i++){
                         couponList[i] = eval("("+couponList[i]+")");
                     }
+                    //是否可赠送
+                    for(var j=0;j<self.content.itemsList.length;j++){
+                        num=self.content.itemsList[j].num;
+                        if(num==0){
+                            self.finalPrizeMask=true;
+                        }else if(num==1){
+                            self.finalPrizeMask=false;
+                        }else {
+                            self.finalPrizeMask=false;
+                            self.present='Y';
+                        }
+                    }//是否可赠送
 
                 }
             })
         },
         //点击优惠券
         couponClick:function(e){
-            var sceneId=e.sceneId;
-            $.ajax({
-                url: "/fanbei-web/pickBoluomeCouponForApp",
-                type: "POST",
-                dataType: "JSON",
-                data: {'sceneId':sceneId},
-                success: function (returnData) {
-                    console.log(returnData)
-                    if(returnData.success){
-                        requestMsg(returnData.msg);
-                    }else{
-                        location.href="gglogin"
-                    }
-                },
-                error: function(){
-                    requestMsg("请求失败");
-                }
-            });
-
+            if(userName='' || !userName){
+                window.location.href="gglogin?urlName="+urlName;
+            }else{
+                    var sceneId=e.sceneId;
+                    $.ajax({
+                        url: "/fanbei-web/pickBoluomeCouponWeb",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {'sceneId':sceneId,userName:userName},
+                        success: function (returnData){
+                            console.log(returnData)
+                            if(returnData.success){
+                                requestMsg(returnData.msg);
+                            }
+                        },
+                        error: function(){
+                            requestMsg("请求失败");
+                        }
+                    });
+            }
         },
-        //点击卡片
-        cardClick:function(e){
-            var shopId=e.refId;
-            $.ajax({
-                type: 'post',
-                url: '/fanbei-web/getBrandUrl',
-                data:{'shopId':shopId,userName:15839790051},
-                dataType:'JSON',
-                success: function (returnData) {
-                    console.log(returnData)
-                    if(returnData.success){
-                        location.href=returnData.url;
-                    }else{
-                        location.href="gglogin";
+        //点击获取终极大奖
+        finalPrize:function(){
+            let self = this;
+            if(userName='' || !userName){
+                window.location.href="gglogin?urlName="+urlName;
+            }else{
+                    if(self.finalPrizeMask){
+                        $.ajax({
+                            type: 'get',
+                            url: '/H5GGShare/pickUpSuperPrize',
+                            data:{'activityId':activityId,'userName':userName},
+                            dataType:'JSON',
+                            success: function (returnData) {
+                                if(returnData.success){
+                                    requestMsg(returnData.msg)
+                                }
+                            },
+                            error: function(){
+                                requestMsg("请求失败");
+                            }
+                        })
                     }
-                },
-                error: function(){
-                    requestMsg("请求失败");
-                }
-            })
+            }
+        },
+        presentClick:function(){
+            if(userName='' || !userName){
+                window.location.href="gglogin?urlName="+urlName;
+            }else{
+                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            }
+        },
+        demandClick:function(){
+            if(userName='' || !userName){
+                window.location.href="gglogin?urlName="+urlName;
+            }else{
+                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            }
         },
         ruleClick:function(){
             $('.alertRule').css('display','block');
@@ -84,3 +156,17 @@ let vm = new Vue({
         }
     }
 })
+//左右移动动画
+var speed = 20;
+var cont = $(".cont1").html();
+$(".cont2").html(cont);
+function wordMove(){
+    var left = $(".personAmount").scrollLeft();
+    if(left >= $(".cont1").width()){
+        left = 0;
+    }else{
+        left++;
+    }
+    $(".personAmount").scrollLeft(left);
+    setTimeout("wordMove()",speed);
+}
