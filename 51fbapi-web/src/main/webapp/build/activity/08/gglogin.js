@@ -1,4 +1,9 @@
 
+//获取页面名称传到登录页
+var currentUrl=window.location.href;
+var index=currentUrl.indexOf('=');
+var urlName=currentUrl.slice(index+1);
+console.log(urlName)
     //点击立即登录
     $(".loginbtn").click(function () {
         var userName = $(".pinp").val();//获取手机号

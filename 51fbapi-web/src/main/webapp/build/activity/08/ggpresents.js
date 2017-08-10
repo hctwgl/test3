@@ -50,24 +50,28 @@ $(function(){
                 type: 'GET',
                 dataType: 'JSON',
                 data: {
-                    userItemsId:30
+                    userItemsId:30,
+                    userName:15839790051
+
                 },
                 success: function (outputData) {
-                    var data = outputData.data;
                     if(outputData.success){
-                        var loginUrl = data.loginUrl;
-                        // alert(loginUrl);
+                        var loginUrl = "";
+                        try {
+                             loginUrl = outputData.data.loginUrl;
+                        } catch (error) {
+                            // ignore
+                        }
                         if(loginUrl != undefined && loginUrl != '') {
-                                window.location.href = loginUrl;
-                                
+                            // 未登录，跳转登录界面
+                             //window.location.href =loginUrl;
+                            window.location.href="gglogin";
                         } else {
+                            // 登录后
 
                         }
-
-                    }else{
-                        requestMsg(data.msg);
+                        requestMsg(outputData.msg);
                     }
-                       
                 }
             })
     })
@@ -79,26 +83,56 @@ $(function(){
                 type: 'GET',
                 dataType: 'JSON',
                 data: {
-                   activityId:1
+                   activityId:1,
+                   userName:15839790051
                 },
-                success: function (data) {
-                    console.log(data)
-                    if(data.success){
-                        var loginUrl = data.loginUrl;
-                        alert(loginUrl);
+                success: function (outputData) {
+                    console.log(outputData)
+                    if(outputData.success){
+                        var loginUrl = "";
+                        try {
+                             loginUrl = outputData.data.loginUrl;
+                        } catch (error) {
+                            // ignore
+                        }
                         if(loginUrl != undefined && loginUrl != '') {
-                            // window.location.href = loginUrl;
-                           
+                            // 未登录，跳转登录界面
+                             //window.location.href =loginUrl;
+                            window.location.href="gglogin";
                         } else {
+                            // 登录后
 
                         }
-                    }else{
-                        requestMsg(data.msg);
                     }
                        
                 }
             })
     })
+
+    //文字横向滚动
+        // function ScrollImgLeft(){
+        // var speed=50;
+        // var MyMar = null;
+        // var scroll_begin = document.getElementById("scroll_begin");
+        // var scroll_end = document.getElementById("scroll_end");
+        // var scroll_div = document.getElementById("scroll_div");
+        // scroll_end.innerHTML=scroll_begin.innerHTML;
+        // function Marquee(){
+        // if(scroll_end.offsetWidth-scroll_div.scrollLeft<=0)
+        // scroll_div.scrollLeft-=scroll_begin.offsetWidth;
+        // else
+        // scroll_div.scrollLeft++;
+        // }
+        // MyMar=setInterval(Marquee,speed);
+        // scroll_div.onmouseover = function(){
+        // 　　　　　　　clearInterval(MyMar);
+        // 　　　　　}
+        // 　　　　scroll_div.onmouseout = function(){
+        // 　　　　　　　MyMar = setInterval(Marquee,speed); 　　　　
+        // 　　　　　}
+        // }
+        // ScrollImgLeft();
+    
 
 
 
