@@ -4,6 +4,7 @@ var userName=getCookie('userName');//获取用户名
 var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
+console.log(urlName)
 var num;//卡片数量
 //获取数据
 let vm = new Vue({
@@ -27,7 +28,11 @@ let vm = new Vue({
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
-                    wordMove();//左右移动动画
+                    self.$nextTick(function () {
+                        var cont = $(".cont1").html();
+                        $(".cont2").html(cont);
+                        wordMove();//左右移动动画
+                    })
                     //首页轮播
                     self.$nextTick(function () {
                         var i = 0;
@@ -106,6 +111,14 @@ let vm = new Vue({
                     });
             }
         },
+        //点击卡片
+        cardClick:function(){
+            if(userName='' || !userName){
+                window.location.href="gglogin?urlName="+urlName;
+            }else{
+                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            }
+        },
         //点击获取终极大奖
         finalPrize:function(){
             let self = this;
@@ -116,7 +129,7 @@ let vm = new Vue({
                         $.ajax({
                             type: 'get',
                             url: '/H5GGShare/pickUpSuperPrize',
-                            data:{'activityId':activityId,'userName':userName},
+                            data:{'activityId':activityId},
                             dataType:'JSON',
                             success: function (returnData) {
                                 if(returnData.success){
@@ -159,8 +172,6 @@ let vm = new Vue({
 })
 //左右移动动画
 var speed = 20;
-var cont = $(".cont1").html();
-$(".cont2").html(cont);
 function wordMove(){
     var left = $(".personAmount").scrollLeft();
     if(left >= $(".cont1").width()){

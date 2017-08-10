@@ -88,7 +88,7 @@ let vm = new Vue({
         //点击轮播图
         bannerClick:function(e){
             var shopId=e.refId;
-            $.ajax({
+            /*$.ajax({
                 type: 'post',
                 url: '/fanbei-web/getBrandUrlV1',
                 data:{'shopId':shopId},
@@ -104,7 +104,7 @@ let vm = new Vue({
                 error: function(){
                     requestMsg("请求失败");
                 }
-            })
+            })*/
         },
         //点击优惠券
         couponClick:function(e){
