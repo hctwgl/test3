@@ -809,6 +809,104 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/getBrandUrlWeb", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String getBrandUrlWeb(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
+			//String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			FanbeiH5Context context = new FanbeiH5Context();
+			String userName = context.getUserName();
+			Map<String, String> buildParams = new HashMap<String, String>();
+			if (shopId == null) {
+				logger.error("shopId is empty");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+			}
+			
+			AfShopDo shopInfo = afShopService.getShopById(shopId);
+			if (shopInfo ==  null) {
+				logger.error("shopId is invalid");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (StringUtils.isEmpty(userName) || afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+						.toString();
+			}
+			String shopUrl = shopInfo.getShopUrl() + "?";
+			
+			buildParams.put(BoluomeCore.CUSTOMER_USER_ID, afUserDo.getRid() + StringUtil.EMPTY);
+			buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, afUserDo.getMobile());
+			buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() + StringUtil.EMPTY);
+			
+			String sign =  BoluomeCore.buildSignStr(buildParams);
+			buildParams.put(BoluomeCore.SIGN, sign);
+			String paramsStr = BoluomeCore.createLinkString(buildParams);
+			
+			return H5CommonResponse.getNewInstance(true, "成功", shopUrl + paramsStr, null).toString();
+
+		} catch (Exception e) {
+			logger.error("getBrandUrl , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "操作失败", "", null).toString();
+		}
+
+	}
+	/**
+	 * @author qiao
+	 * @说明：进去场景
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getBrandUrlV1", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String getBrandUrlV1(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
+			//String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			FanbeiWebContext context = new FanbeiWebContext();
+			String userName = context.getUserName();
+			Map<String, String> buildParams = new HashMap<String, String>();
+			if (shopId == null) {
+				logger.error("shopId is empty");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+			}
+			
+			AfShopDo shopInfo = afShopService.getShopById(shopId);
+			if (shopInfo ==  null) {
+				logger.error("shopId is invalid");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (StringUtils.isEmpty(userName) || afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+						.toString();
+			}
+			String shopUrl = shopInfo.getShopUrl() + "?";
+			
+			buildParams.put(BoluomeCore.CUSTOMER_USER_ID, afUserDo.getRid() + StringUtil.EMPTY);
+			buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, afUserDo.getMobile());
+			buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() + StringUtil.EMPTY);
+			
+			String sign =  BoluomeCore.buildSignStr(buildParams);
+			buildParams.put(BoluomeCore.SIGN, sign);
+			String paramsStr = BoluomeCore.createLinkString(buildParams);
+			
+			return H5CommonResponse.getNewInstance(true, "成功", shopUrl + paramsStr, null).toString();
+
+		} catch (Exception e) {
+			logger.error("getBrandUrl , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "操作失败", "", null).toString();
+		}
+
+	}
+	
 	
 	/**
 	 * 获取菠萝觅跳转地址
