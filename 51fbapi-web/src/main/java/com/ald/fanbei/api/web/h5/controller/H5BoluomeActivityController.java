@@ -128,9 +128,11 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		        bizCacheUtil.delCache(cacheKey);
 				// save token to cache
 				String token = UserUtil.generateToken(userName);
-			   				
-				CookieUtil.writeCookie(response, "userName", userName, Constants.MINITS_OF_HALF_HOUR);
-				CookieUtil.writeCookie(response, "token", token, Constants.MINITS_OF_HALF_HOUR);
+				String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + userName;
+				CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, userName, Constants.SECOND_OF_HALF_HOUR_INT);
+				CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
+				
+				bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_HOUR);
 				
 				if(refUserDo == null){
 					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", "").toString();
