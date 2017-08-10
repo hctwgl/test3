@@ -24,7 +24,7 @@ let vm = new Vue({
             $.ajax({
                 type: 'get',
                 url: "/H5GG/initHomePage",
-                data:{'activityId':activityId,userName:userName},
+                data:{'activityId':activityId},
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
@@ -93,7 +93,7 @@ let vm = new Vue({
                     url: "/fanbei-web/pickBoluomeCouponV1",
                     type: "POST",
                     dataType: "JSON",
-                    data: {'sceneId':sceneId,userName:userName},
+                    data: {'sceneId':sceneId},
                     success: function (returnData){
                         console.log(returnData)
                         if(returnData.success){
@@ -113,8 +113,8 @@ let vm = new Vue({
             var shopId=e.refId;
             $.ajax({
                 type: 'post',
-                url: '/fanbei-web/getBrandUrl',
-                data:{'shopId':shopId,'userName':userName},
+                url: '/fanbei-web/getBrandUrlV1',
+                data:{'shopId':shopId},
                 dataType:'JSON',
                 success: function (returnData) {
                     console.log(returnData)
@@ -137,7 +137,7 @@ let vm = new Vue({
                 $.ajax({
                     type: 'get',
                     url: '/H5GGShare/pickUpSuperPrize',
-                    data:{'activityId':activityId,'userName':userName},
+                    data:{'activityId':activityId},
                     dataType:'JSON',
                     success: function (returnData) {
                         if(returnData.success){
@@ -186,7 +186,7 @@ function alaShareData(){
         "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
         'shareAppContent': "我正在51返呗玩场景点亮活动，你也一起来玩吧~",  // 分享的内容
         "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/activity/ggIndexShare?loginSource=F",  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggIndexShare?loginSource=F",  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggIndexShare" // 分享的页面
     };

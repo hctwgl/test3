@@ -10,11 +10,10 @@ var activityId=getUrl("activityId");//获取活动Id
 var userName=getCookie('userName');//获取用户名
 $(function() {
     $('.demandCard').click(function () {
-        alert(0)
         $.ajax({
             type: 'get',
             url: "/H5GG/askForItems",
-            data: {activityId: activityId, userName: userName},
+            data: {activityId: activityId},
             success: function (returnData) {
                 var returnData = eval('(' + returnData + ')').data;
                 console.log(returnData)
@@ -22,13 +21,13 @@ $(function() {
                     location.href = returnData.loginUrl;
                 } else {
                     $('.imgList').empty();
+                    $('.alertPresent').css('display', 'block');
+                    $('.mask').css('display', 'block');
+                    $('.demandTitle').css('display', 'block');
+                    $('.sure').html('确定索要');
                     var presentCardList = returnData.itemsList;
                     var str = '';
                     for (var j = 0; j < presentCardList.length; j++) {
-                        $('.alertPresent').css('display', 'block');
-                        $('.mask').css('display', 'block');
-                        $('.demandTitle').css('display', 'block');
-                        $('.sure').html('确定索要');
                         str += '<div class="img" rid="' + presentCardList[j].rid + '"><img src="' + presentCardList[j].iconUrl + '"></div>';
                     }
                 }
@@ -40,7 +39,7 @@ $(function() {
                     cardRid = $('.img.img3').attr('rid');
                     console.log(cardRid)
                     if (cardRid && cardRid != '') {
-                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/activity/ggIndexShare?loginSource=S&&cardRid' + cardRid + '","isSubmit":"Y","sharePage":"ggIndexShare"}';
+                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&&cardRid=' + cardRid + '","isSubmit":"Y","sharePage":"ggdemand"}';
                     } else {
                         window.location.href = "ggIndex";
                     }
@@ -161,9 +160,9 @@ function alaShareData(){
         "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
         'shareAppContent': "你的好友向你索要一张卡片，快赠送给他/她吧~",  // 分享的内容
         "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/activity/ggIndexShare?loginSource=S&&cardRid"+cardRid,  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggdemand?loginSource=S&&cardRid="+cardRid,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
-        "sharePage": "ggIndexShare" // 分享的页面
+        "sharePage": "ggdemand" // 分享的页面
     };
     var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
     return dataStr;

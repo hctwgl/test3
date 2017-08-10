@@ -95,6 +95,7 @@ let vm = new Vue({
                         data: {'sceneId':sceneId,userName:userName},
                         success: function (returnData){
                             console.log(returnData)
+                            var returnData = eval('(' + returnData + ')').data;
                             if(returnData.success){
                                 requestMsg(returnData.msg);
                             }
