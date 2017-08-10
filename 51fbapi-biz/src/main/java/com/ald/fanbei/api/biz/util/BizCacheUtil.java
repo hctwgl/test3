@@ -337,7 +337,6 @@ public class BizCacheUtil extends AbstractThird {
 	public void saveRedistSet(final String key, final List<String> seriObjList) {
 		try {
 			setOps.add(key, seriObjList.toArray());
-			setOps.add(key, "9999");
 		} catch (Exception e) {
 			logger.error("saveRedistSet" + key, e);
 		}
@@ -347,7 +346,7 @@ public class BizCacheUtil extends AbstractThird {
 		try {
 			setOps.add(key, value);
 		} catch (Exception e) {
-			logger.error("saveRedistList" + key, e);
+			logger.error("saveRedistSetOne" + key, e);
 		}
 	}
 	
