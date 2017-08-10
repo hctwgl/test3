@@ -250,7 +250,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		}
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 		//3.7.6 借过款的放入缓存，借钱按钮不需要高亮显示
-		bizCacheUtil.saveObject(Constants.HAVE_BORROWED+userId, "1");
+		bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED,String.valueOf(userId));
 		
 		Long borrowId = afBorrowCashDo.getRid();
 
