@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017072607")
+    #set($version="2017081001")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -88,7 +88,7 @@
                     <input type="checkbox" class="input_check" id="input_check" checked="checked">
                     <label for="input_check"></label>
                     #if( $!{style}==21 )
-                        <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolBorrowSuperman">《借贷超人用户注册协议》</a></p>
+                        <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolBorrowSuperman">《借款超人用户注册协议》</a></p>
                     #else
                         <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
                     #end
@@ -97,7 +97,11 @@
                 #if( $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==17 || $!{style}==20 || $!{style}==21 )
                 <p class="clearfix" style="width: 3.0rem; margin: 0.2rem auto 0; color: #fff; font-size: 0.3rem;">
                     <span style="float:left;margin-right:0.1rem;">已注册用户</span>
-                    <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
+                    #if( $!{style}==21 )
+                        <a href="javascript:void(0)" id="borrowSuperman" style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
+                    #else
+                        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
+                    #end
                 </p>
                 #end
             </ul>
