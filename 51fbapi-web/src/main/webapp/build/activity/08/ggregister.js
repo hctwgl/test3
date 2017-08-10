@@ -1,3 +1,5 @@
+
+
 $(function () {
     var timerInterval;
     var timerS = 60;
@@ -75,7 +77,7 @@ $(function () {
                     var a=JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
-                        window.location.href = "http://localhost/fanbei-web/activity/gglogin";
+                        window.location.href = "gglogin";
                     
                     } //else {
                     //     requestMsg(returnData.msg);

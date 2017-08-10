@@ -14,7 +14,7 @@ $(function(){
                 dataType: 'JSON',
                 data: {
                     itemsId:1,
-                    userName:15839790051
+                    //userName:15839790051
 
                 },
                 success: function (data) {
@@ -68,10 +68,11 @@ $(function(){
                             window.location.href="gglogin?urlName="+urlName;
                         } else {
                             // 登录后
-
+                            requestMsg(outputData.msg);
                         }
-                        requestMsg(outputData.msg);
+                        
                     }
+                    requestMsg(outputData.msg);
                        
                 }
             })

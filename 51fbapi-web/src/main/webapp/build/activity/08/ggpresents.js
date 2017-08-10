@@ -61,6 +61,7 @@ $(function(){
 
                 },
                 success: function (outputData) {
+                    console.log(outputData)
                     if(outputData.success){
                         var loginUrl = "";
                         try {
@@ -72,11 +73,9 @@ $(function(){
                             // 未登录，跳转登录界面
                              //window.location.href =loginUrl;
                             window.location.href="gglogin?urlName="+urlName;
-                        } else {
-                            // 登录后
-
                         }
                         requestMsg(outputData.msg);
+                        console.log(outputData.msg);
                     }
                 }
             })
@@ -89,8 +88,8 @@ $(function(){
                 type: 'GET',
                 dataType: 'JSON',
                 data: {
-                   activityId:1,
-                   userName:15839790051
+                   activityId:1
+                   //userName:15839790051
                 },
                 success: function (outputData) {
                     console.log(outputData)
@@ -104,7 +103,7 @@ $(function(){
                         if(loginUrl != undefined && loginUrl != '') {
                             // 未登录，跳转登录界面
                              //window.location.href =loginUrl;
-                            window.location.href="gglogin";
+                            window.location.href="gglogin?urlName="+urlName;
                         } else {
                             // 登录后
 
