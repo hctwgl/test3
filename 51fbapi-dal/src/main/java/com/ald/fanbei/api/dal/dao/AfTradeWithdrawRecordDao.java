@@ -9,7 +9,7 @@ import com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo;
 
 /**
  * 商圈商户提现记录表Dao
- * 
+ *
  * @author huyang
  * @version 1.0.0 初始化
  * @date 2017-07-14 16:46:58
@@ -17,28 +17,24 @@ import com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo;
  */
 public interface AfTradeWithdrawRecordDao extends BaseDao<AfTradeWithdrawRecordDo, Long> {
 
-    
-	/**
-	 * 分页查询商圈提现记录
-	 * 
-	 * @param businessId
-	 * @param offset
-	 * @param limit
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 */
-	List<AfTradeWithdrawRecordDo> withdrawGrid(@Param("businessId") Long businessId, @Param("offset") Integer offset, @Param("limit") Integer limit, @Param("startDate") Date startDate,
-			@Param("endDate") Date endDate);
+    /**
+     * 提现明细时间列表
+     *
+     * @param businessId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    List<String> withdrawGridDate(@Param("businessId") Long businessId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
-	/**
-	 * 分页查询商圈提现记录总条数
-	 * 
-	 * @param businessId
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 */
-	Long withdrawGridTotal(@Param("businessId") Long businessId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+    /**
+     * 分页查询商圈提现记录
+     *
+     * @param businessId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    List<AfTradeWithdrawRecordDo> withdrawGrid(@Param("businessId") Long businessId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 }

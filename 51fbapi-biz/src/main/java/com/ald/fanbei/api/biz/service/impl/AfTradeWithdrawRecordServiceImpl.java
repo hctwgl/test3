@@ -43,7 +43,7 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 		List<AfTradeWithdrawDetailDo> detailList = afTradeWithdrawDetailDao.getByRecordId(id);
 		List<Long> ids = new ArrayList<>();
 		for (AfTradeWithdrawDetailDo detail: detailList) {
-			ids.add(detail.getId());
+			ids.add(detail.getOrderId());
 		}
 		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.EXTRACT.getCode());
 		return 0;
@@ -60,19 +60,20 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 		List<AfTradeWithdrawDetailDo> detailList = afTradeWithdrawDetailDao.getByRecordId(id);
 		List<Long> ids = new ArrayList<>();
 		for (AfTradeWithdrawDetailDo detail: detailList) {
-			ids.add(detail.getId());
+			ids.add(detail.getOrderId());
 		}
 		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.NEW.getCode());
 		return 0;
 	}
 
 	@Override
-	public List<AfTradeWithdrawRecordDo> withdrawGrid(Long businessId, Integer offset, Integer limit, Date startDate, Date endDate) {
-		return afTradeWithdrawRecordDao.withdrawGrid(businessId, offset, limit, startDate, endDate);
+	public List<String> withdrawGridDate(Long businessId, Date startDate, Date endDate) {
+		return afTradeWithdrawRecordDao.withdrawGridDate(businessId, startDate, endDate);
 	}
 
 	@Override
-	public Long withdrawGridTotal(Long businessId, Date startDate, Date endDate) {
-		return afTradeWithdrawRecordDao.withdrawGridTotal(businessId, startDate, endDate);
+	public List<AfTradeWithdrawRecordDo> withdrawGrid(Long businessId, Date startDate, Date endDate) {
+		return afTradeWithdrawRecordDao.withdrawGrid(businessId, startDate, endDate);
 	}
+
 }

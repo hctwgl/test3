@@ -179,8 +179,14 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 								refundInfo.getAmount(), refundInfo.getRefundNo());
 					} else if (UserAccountLogType.BorrowCash.getCode().equals(merPriv)) {
 						// 借钱
+						
 						Long rid = NumberUtil.objToLong(result);
 						AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
+						// 回调只处理打款中的
+						if(!afBorrowCashDo.getStatus().equals("TRANSEDING")){
+							return 0;
+						}
+						
 						afBorrowCashDo.setStatus("TRANSEDFAIL");
 						afBorrowCashService.updateBorrowCash(afBorrowCashDo);
 						
@@ -190,7 +196,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 						if(userAccountDo.getUsedAmount().intValue() >= afBorrowCashDo.getAmount().intValue()){
 							// 恢复账户额度
 							AfUserAccountDo account = new AfUserAccountDo();
-							account.setUsedAmount(afBorrowCashDo.getAmount().multiply(new BigDecimal(-1)));
+							account.setUsedAmount(afBorrowCashDo.getAmount().negate());
 							account.setUserId(afBorrowCashDo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
 						}

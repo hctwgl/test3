@@ -12,25 +12,22 @@ public interface AfTradeWithdrawRecordService extends ParentService<AfTradeWithd
 	int dealWithDrawFail(long id);
 
 	/**
+	 * 提现明细时间列表
+	 * @param businessId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	List<String> withdrawGridDate(Long businessId, Date startDate, Date endDate);
+
+	/**
 	 * 分页查询商圈提现记录
 	 *
 	 * @param businessId
-	 * @param offset
-	 * @param limit
 	 * @param startDate
 	 * @param endDate
 	 * @return
 	 */
-	List<AfTradeWithdrawRecordDo> withdrawGrid(Long businessId, Integer offset, Integer limit, Date startDate, Date endDate);
-
-	/**
-	 * 分页查询商圈提现记录总条数
-	 *
-	 * @param businessId
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 */
-	Long withdrawGridTotal(Long businessId, Date startDate, Date endDate);
+	List<AfTradeWithdrawRecordDo> withdrawGrid(Long businessId, Date startDate, Date endDate);
 
 }

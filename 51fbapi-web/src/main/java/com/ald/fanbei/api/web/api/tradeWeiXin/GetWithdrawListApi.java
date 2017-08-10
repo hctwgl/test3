@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -33,13 +34,11 @@ public class GetWithdrawListApi implements ApiHandle {
         String requestDataVoId = StringUtil.isNotBlank(requestDataVo.getId()) ? requestDataVo.getId() : "trade weixin";
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
-        Date startDate = requestDataVo.getParams().get("startDate") != null ? DateUtil.parseDate((String) requestDataVo.getParams().get("startDate")) : null;
-        Date endDate = requestDataVo.getParams().get("endDate") != null ? DateUtil.parseDate((String) requestDataVo.getParams().get("endDate")) : null;
-        Integer page = NumberUtil.objToPageIntDefault(requestDataVo.getParams().get("page"), 0);
-        List<AfTradeWithdrawRecordDo> withdrawList = afTradeWithdrawRecordService.withdrawGrid(businessId, (page-1)* 20, 20, startDate, endDate);
-        Long total = afTradeWithdrawRecordService.withdrawGridTotal(businessId, startDate, endDate);
+        String date = ObjectUtils.toString(requestDataVo.getParams().get("date"));
+        Date startDate = DateUtil.parseDate(date + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+        Date endDate = DateUtil.parseDate(date + " 23:59:59", "yyyy-MM-dd HH:mm:ss");
+        List<AfTradeWithdrawRecordDo> withdrawList = afTradeWithdrawRecordService.withdrawGrid(businessId, startDate, endDate);
         resp.addResponseData("withdrawList", withdrawList);
-        resp.addResponseData("count", total);
         return resp;
     }
 }

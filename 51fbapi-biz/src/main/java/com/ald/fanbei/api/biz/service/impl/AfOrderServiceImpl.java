@@ -1259,7 +1259,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						break;
 					case COMBINATION_PAY:
 						// 组合支付退款
-						logger.info("agent pay refund begin");
+						logger.info("CP pay refund begin");
 						orderInfo = orderDao.getOrderById(orderId);
 
 						AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
@@ -1275,7 +1275,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							newBorrowAmount = afBorrowService.calculateBorrowAmount(afBorrowDo.getRid(), refundAmount, refundSource.equals(RefundSource.USER.getCode()));
 							backAmount = newBorrowAmount.negate();
 						}
-						logger.info("dealBrandOrderRefund newBorrowAmount = {} backAmount = {}", new Object[] { newBorrowAmount, backAmount });
+						logger.info("dealBrandOrderCPRefund newBorrowAmount = {} backAmount = {}", new Object[] { newBorrowAmount, backAmount });
 
 						// 更新账户金额
 						BigDecimal userUsedAmount = afUserAccountDo.getUsedAmount();
@@ -1565,6 +1565,79 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 			}
 		}
+	}
+
+	
+	/**
+	 * 处理组合支付失败的情况
+	 */
+	@Override
+	public int dealPayCpOrderFail(final String payOrderNo, final String tradeNo,final String payType) {
+		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					
+					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+					// 不处理新建，处理
+					if (orderInfo == null) {
+						return 0;
+					}
+					// 只处理订单处理中的状态
+					if (!orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()) ){
+						return 0;
+					}
+					logger.info("dealPayCpOrderFail fail begin , payOrderNo = {} and tradeNo = {}", new Object[] { payOrderNo, tradeNo});
+					
+					//恢复额度
+					
+					// 如果已经使用的额度大于要恢复的额度 才会给用户增加额度，防止重复回调造成重复给我用户增加额度问题
+					AfUserAccountDo userAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+					if(userAccountDo.getUsedAmount().compareTo(orderInfo.getBorrowAmount()) >=0) {
+						// 恢复账户额度
+						AfUserAccountDo account = new AfUserAccountDo();
+						account.setUsedAmount(orderInfo.getBorrowAmount().negate());
+						account.setUserId(orderInfo.getUserId());
+						afUserAccountDao.updateUserAccount(account);
+						// 增加资金变化的记录
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL, orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
+					}
+					
+					// 恢复虚拟额度
+					AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();
+					queryVirtualAccountDo.setUserId(orderInfo.getUserId());
+					queryVirtualAccountDo.setOrderId(orderInfo.getRid());
+					AfUserVirtualAccountDo userVirtualAccountDo = afUserVirtualAccountService.getByCommonCondition(queryVirtualAccountDo);
+					if(userVirtualAccountDo !=null){
+						userVirtualAccountDo.setStatus(YesNoStatus.NO.getCode());
+						afUserVirtualAccountService.updateById(userVirtualAccountDo);
+					}
+					
+					// 如果使用了优惠卷，恢复优惠卷
+					if(orderInfo.getUserCouponId() != null && orderInfo.getUserCouponId() != 0){
+	                    afUserCouponDao.updateUserCouponSatusNouseById(orderInfo.getUserCouponId());
+					}
+
+						
+					// 处理订单
+					orderInfo.setPayTradeNo(payOrderNo);
+					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+					orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
+					orderInfo.setStatusRemark(Constants.PAY_ORDER_UPS_FAIL_BANK);
+					orderInfo.setPayType(payType);
+					orderInfo.setGmtPay(new Date());
+					orderInfo.setTradeNo(tradeNo);
+					orderDao.updateOrder(orderInfo);
+					logger.info("dealPayCpOrderFail fail complete , orderInfo = {} ", orderInfo);
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealPayCpOrderFail fail error:", e);
+					return 0;
+				}
+			}
+		});
+		return result;
 	}
 	
 }

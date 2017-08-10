@@ -12,6 +12,14 @@
    <div class="saleOff"><img src="$commonUrl/mumday30.jpg"></div>
    <p v-for="item in show">{{item}}</p>
 </div>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_sxi0m42mfx8yqfr.css">
+<i class="iconfont icon-xiaoxi"></i>
+<i class="iconfont icon-fenxiang1"></i>
+<i class="iconfont icon-sousuo"></i>
+<i class="iconfont icon-xiaoxi"></i>
+<style>
+
+</style>
 
 <script type="text/javascript">
 
@@ -26,32 +34,25 @@
     //     }
     // });
 
-    var vm=new Vue({
-        el:'.footer',
-        data: {
-            show: [true,false,false,false]
-        },
-        methods:{
-            bombBox: function(){
-                window.location.href = 'tel://' + '10086';
-            }
-        }
-    });
-
-    Vue.set(vm.show,1,'2222');
 
 
+//    var vm=new Vue({
+//        el:'.footer',
+//        data: {
+//            show: [true,false,false,false]
+//        },
+//        methods:{
+//            bombBox: function(){
+//                window.location.href = 'tel://' + '10086';
+//            }
+//        }
+//    });
+//
+//    Vue.set(vm.show,1,'2222');
 
 
 
-    // new Vue({
-    //     el:'.footer',
-    //     methods:{
-    //         bombBox: function(){
-    //             window.location.href = 'tel://' + '10086';
-    //         }
-    //     }
-    // });
+
 
 </script>
 </body>

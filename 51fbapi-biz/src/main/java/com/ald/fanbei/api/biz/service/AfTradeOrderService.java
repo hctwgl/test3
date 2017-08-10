@@ -45,52 +45,46 @@ public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>
     AfTradeOrderStatisticsDto payOrderInfo(Long businessId, Date startDate, Date endDate);
 
     /**
+     * 收款明细时间列表
+     * @param businessId
+     * @param startOfDate
+     * @param endOfDate
+     * @param orderStatus
+     * @return
+     */
+    List<String> orderGridDate(Long businessId, Date startOfDate, Date endOfDate, String orderStatus);
+
+    /**
      * 分页查询商圈订单
      *
      * @param businessId
-     * @param offset
-     * @param limit
      * @param startOfDate
      * @param endOfDate
-     * @param withDrawStatus
      * @param orderStatus
      * @return
      */
-    List<AfTradeOrderDto> orderGrid(Long businessId, Integer offset, Integer limit, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus);
+    List<AfTradeOrderDto> orderGrid(Long businessId, Date startOfDate, Date endOfDate, String orderStatus);
 
     /**
-     * 分页查询商圈订单总条数
-     *
+     * 退款明细时间列表
      * @param businessId
      * @param startOfDate
      * @param endOfDate
-     * @param orderStatus
-     * @param withDrawStatus
+     * @param refundStatus
      * @return
      */
-    Long orderGridTotal(Long businessId, Date startOfDate, Date endOfDate, String orderStatus, String withDrawStatus);
+    List<String> refundGridDate(Long businessId, Date startOfDate, Date endOfDate, String refundStatus);
 
     /**
      * 分页查询商圈退款明细
      *
      * @param businessId
-     * @param offset
-     * @param limit
      * @param startDate
      * @param endDate
      * @return
      */
-    List<AfTradeOrderDto> refundGrid(Long businessId, Integer offset, Integer limit, Date startDate, Date endDate);
+    List<AfTradeOrderDto> refundGrid(Long businessId, Date startDate, Date endDate, String refundStatus);
 
-    /**
-     * 分页查询商圈退款明细总条数
-     *
-     * @param businessId
-     * @param startDate
-     * @param endDate
-     * @return
-     */
-    Long refundGridTotal(Long businessId, Date startDate, Date endDate);
 
     /**
      * 商户提现
@@ -99,4 +93,12 @@ public interface AfTradeOrderService extends ParentService<AfTradeOrderDo, Long>
      * @return
      */
     boolean withdraw(Long businessId);
+
+    /**
+     * 商户退款
+     * @param businessId
+     * @param orderId
+     * @return
+     */
+    boolean refund(Long businessId, Long orderId);
 }
