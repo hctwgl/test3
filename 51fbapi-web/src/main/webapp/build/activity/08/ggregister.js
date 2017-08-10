@@ -3,7 +3,7 @@
  var currentUrl=window.location.href;
 var index=currentUrl.indexOf('=');
 var urlName=currentUrl.slice(index+1);
-console.log(urlName) 
+console.log(urlName)
 
 $(function () {
     var timerInterval;
@@ -84,7 +84,7 @@ $(function () {
                     console.log(a);
                     if (a.success) {
                         alert(urlName)
-                        window.location.href = "urlName";
+                        window.location.href = "gglogin?urlName="+urlName;
                     
                     } //else {
                     //     requestMsg(returnData.msg);

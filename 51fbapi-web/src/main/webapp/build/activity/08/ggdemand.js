@@ -64,11 +64,8 @@ $(function(){
                             // 未登录，跳转登录界面
                              //window.location.href =loginUrl;
                             window.location.href="gglogin?urlName="+urlName;
-                        } else {
-                            // 登录后
+                        } 
                             requestMsg(outputData.msg);
-                        }
-                        
                     }
                     requestMsg(outputData.msg);
                        

@@ -91,7 +91,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		String exeT = DateUtil.formatDateToYYYYMMddHHmmss(new Date());
 		// IP
 		String rmtIp = CommonUtil.getIpAddr(request);
-		String loginSource = ObjectUtils.toString(request.getParameter("loginSource"), "").toString();
+		String loginSource = ObjectUtils.toString(request.getParameter("urlName"), "").toString();
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String password = ObjectUtils.toString(request.getParameter("password"),"").toString();
 		Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
