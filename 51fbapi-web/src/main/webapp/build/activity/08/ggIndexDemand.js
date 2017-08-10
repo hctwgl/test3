@@ -8,6 +8,7 @@ var domainName = protocol+'//'+host;
 var cardRid;//索要的卡片主键
 var activityId=getUrl("activityId");//获取活动Id
 var userName=getCookie('userName');//获取用户名
+var name;//卡片名称
 $(function() {
     $('.demandCard').click(function () {
         $.ajax({
@@ -28,7 +29,7 @@ $(function() {
                     var presentCardList = returnData.itemsList;
                     var str = '';
                     for (var j = 0; j < presentCardList.length; j++) {
-                        str += '<div class="img" rid="' + presentCardList[j].rid + '"><img src="' + presentCardList[j].iconUrl + '"></div>';
+                        str += '<div class="img" name="'+presentCardList[j].name+'" rid="' + presentCardList[j].rid + '"><img src="' + presentCardList[j].iconUrl + '"></div>';
                     }
                 }
                 $('.imgList').append(str);
@@ -37,9 +38,11 @@ $(function() {
                 //确定索要
                 $('.sure').click(function () {
                     cardRid = $('.img.img3').attr('rid');
-                    console.log(cardRid)
+                    name=$('.img.img3').attr('name');
+                    //console.log(cardRid)
+                    //console.log(name)
                     if (cardRid && cardRid != '') {
-                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&&cardRid=' + cardRid + '","isSubmit":"Y","sharePage":"ggdemand"}';
+                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张'+name+'卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&&cardRid=' + cardRid + '","isSubmit":"Y","sharePage":"ggdemand"}';
                     } else {
                         window.location.href = "ggIndex";
                     }
@@ -158,7 +161,7 @@ function alaShareData(){
         "appLogin": "Y", // 是否需要登录，Y需要，N不需要
         "type": "share", // 此页面的类型
         "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
-        'shareAppContent': "你的好友向你索要一张卡片，快赠送给他/她吧~",  // 分享的内容
+        'shareAppContent': "你的好友向你索要一张"+name+"卡片，快赠送给他/她吧~",  // 分享的内容
         "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
         "shareAppUrl": domainName+"/fanbei-web/activity/ggdemand?loginSource=S&&cardRid="+cardRid,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要

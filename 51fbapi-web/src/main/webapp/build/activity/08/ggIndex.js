@@ -33,7 +33,6 @@ let vm = new Vue({
                         $(".cont2").html(cont);
                         wordMove();//左右移动动画
                     })
-
                     //首页轮播
                     self.$nextTick(function () {
                         var i = 0;
@@ -83,6 +82,27 @@ let vm = new Vue({
                             self.present='Y';
                         }
                     }//是否可赠送
+                }
+            })
+        },
+        //点击轮播图
+        bannerClick:function(e){
+            var shopId=e.refId;
+            $.ajax({
+                type: 'post',
+                url: '/fanbei-web/getBrandUrlV1',
+                data:{'shopId':shopId},
+                dataType:'JSON',
+                success: function (returnData) {
+                    console.log(returnData)
+                    if(returnData.success){
+                        location.href=returnData.url;
+                    }else{
+                        location.href=returnData.url;
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
                 }
             })
         },
