@@ -48,19 +48,24 @@ $(function(){
                     friendId:68885
                    
                 },
-                success: function (data) {
-                    console.log(data)
-                    if(data.success){
-                        var loginUrl = data.loginUrl;
-                        alert(loginUrl);
+                success: function (outputData) {
+                    console.log(outputData)
+                    if(outputData.success){
+                        var loginUrl = "";
+                        try {
+                             loginUrl = outputData.data.loginUrl;
+                        } catch (error) {
+                            // ignore
+                        }
                         if(loginUrl != undefined && loginUrl != '') {
-                            window.location.href = loginUrl;
-                           
+                            // 未登录，跳转登录界面
+                             //window.location.href =loginUrl;
+                            window.location.href="gglogin";
                         } else {
+                            // 登录后
 
                         }
-                    }else{
-                        requestMsg(data.msg);
+                        requestMsg(outputData.msg);
                     }
                        
                 }
@@ -76,18 +81,24 @@ $(function(){
                 data: {
                    activityId:1
                 },
-                success: function (data) {
-                    console.log(data)
-                    if(data.success){
-                        var loginUrl = data.loginUrl;
+                success: function (outputData) {
+                    console.log(outputData)
+                    if(outputData.success){
+                        var loginUrl = "";
+                        try {
+                             loginUrl = outputData.data.loginUrl;
+                        } catch (error) {
+                            // ignore
+                        }
                         if(loginUrl != undefined && loginUrl != '') {
-                            window.location.href = loginUrl;
-                           
+                            // 未登录，跳转登录界面
+                             //window.location.href =loginUrl;
+                            window.location.href="gglogin";
                         } else {
+                            // 登录后
 
                         }
-                    }else{
-                        requestMsg(data.msg);
+                        requestMsg(outputData.msg);
                     }
                        
                 }
