@@ -1,0 +1,88 @@
+/*
+* @Author: Jacky
+* @Date:   2017-08-7 16:58:37
+* @title:  服务中心
+*/
+@url: "http://f.51fanbei.com/h5/app/images/sys";
+
+#navWrap {
+  position: relative;
+}
+
+.nav {
+  width: 100%;
+  color: #111;
+  height: 0.88rem;
+  position: fixed;
+  white-space: nowrap;
+  font-size: 0.24rem;
+  background: white;
+  display: flex;
+  vertical-align: middle;
+  border-bottom: solid 1px #efefef;
+  padding-left: 0.2rem;
+  padding-right:0.2rem;
+
+}
+
+.nav li {
+  position: relative;
+  display: inline;
+  flex: 1;
+  color: #111;
+  height: 0.88rem;
+  line-height: 0.88rem;
+  text-align: center;
+}
+
+.main_wrap {
+  position: relative;
+  top: 0.88rem;
+  overflow-y: scroll;
+}
+
+.itemTitle{
+  padding: 0.32rem 0.2rem;
+}
+.title {
+  width: 6.5rem;
+  font-size: 0.28rem;
+  position: relative;
+
+}
+
+.itemContent {
+  padding: 0.2rem;
+  vertical-align:middle;
+  font-size: 0.26rem;
+  color: #8e8e8e;
+}
+
+/**加载效果旋转**/
+@-webkit-keyframes rotate {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.hide{
+  display: none;
+}
+
+
