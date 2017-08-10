@@ -1,16 +1,20 @@
-
-//3.赠送或索要卡片弹窗里动画
-/*var touch = true;           //touch=true为开启触摸滑动
+//赠送卡片弹窗动画
+var touch = true;           //touch=true为开启触摸滑动
 var slideNub;               //轮播图片数量
-var domainName = domainName();
-var cardRid;*/
+// var domainName = domainName();//域名
+var protocol = window.location.protocol;
+var host = window.location.host;
+var domainName = protocol+'//'+host;
+var cardRid;//赠送的卡片主键
+var activityId=getUrl("activityId");//获取活动Id
+var userName=getCookie('userName');//获取用户名
+
 $(function(){
-    //赠送卡片
-    /*$('.presentCard').click(function(){
+    $('.presentCard').click(function(){
         $.ajax({
             type: 'get',
             url: "/H5GG/sendItems",
-            data:{activityId:1,userName:15839790051},
+            data:{activityId:activityId,userName:userName},
             success: function (returnData) {
                 console.log(returnData)
                 if(returnData.data.loginUrl){
@@ -43,7 +47,7 @@ $(function(){
                     }//判断终极大奖蒙版
                     $('.imgList').append(str);
                     slideNub = $(".imgList .img").size();//获取轮播图片数量
-                    getData(slideNub)
+                    getData(slideNub);
                     //确定赠送
                     $('.sure').click(function(){
                         itemsListRid=$('.img.img3').attr('rid');
@@ -55,9 +59,9 @@ $(function(){
                             }
                         }
                         cardRid=arr[0];
-                        console.log(cardRid)
+                        //console.log(cardRid)
                         if(cardRid&&cardRid!=''){
-                            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友分享了一张卡片给你，快去查看吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/activity/ggIndexShare?cardRid'+cardRid+'","isSubmit":"Y","sharePage":"ggIndexShare"}';
+                            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友赠送了一张卡片给你，快领走吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/activity/ggIndexShare?cardRid'+cardRid+'","isSubmit":"Y","sharePage":"ggIndexShare"}';
                         }else{
                             window.location.href="ggIndex";
                         }
@@ -68,54 +72,9 @@ $(function(){
                 requestMsg("请求失败");
             }
         })
-    })*/
-    //索要卡片
-    /*$('.demandCard').click(function(){
-        $.ajax({
-            type: 'get',
-            url: "/H5GG/askForItems",
-            data:{activityId:1,userName:15839790051},
-            success: function (returnData) {
-                var returnData=eval('(' + returnData + ')').data;
-                console.log(returnData)
-                if(returnData.loginUrl){
-                    location.href = returnData.loginUrl;
-                }else{
-                    $('.imgList').empty();
-                    var presentCardList=returnData.itemsList;
-                    var str='';
-                    for(var j=0;j<presentCardList.length;j++){
-                        $('.alertPresent').css('display','block');
-                        $('.mask').css('display','block');
-                        $('.demandTitle').css('display','block');
-                        $('.sure').html('确定索要');
-                        str+='<div class="img" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"></div>';
-                        }
-                    }
-                    $('.imgList').append(str);
-                    slideNub = $(".imgList .img").size();//获取轮播图片数量
-                    getData(slideNub)
-                    //确定索要
-                    $('.sure').click(function(){
-                        cardRid=$('.img.img3').attr('rid');
-                        console.log(cardRid)
-                        if(cardRid&&cardRid!=''){
-                            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友分享了一张卡片给你，快去查看吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/activity/ggIndexShare?cardRid'+cardRid+'","isSubmit":"Y","sharePage":"ggIndexShare"}';
-                        }else{
-                            window.location.href="ggIndex";
-                        }
-
-                    })
-            },
-            error: function(){
-                requestMsg("请求失败");
-            }
-        })
-    })*/
-
-
+    })
 })
-/*function getData(slideNub){
+function getData(slideNub){
     for(var i=0;i<slideNub;i++){
         $(".imgList .img:eq("+i+")").attr("data-slide-imgId",i);
     }
@@ -217,16 +176,16 @@ function k_touch() {
 
 // app调用web的方法
 function alaShareData(){
-  var dataObj = { // 分享内容
-    "appLogin": "Y", // 是否需要登录，Y需要，N不需要
-    "type": "share", // 此页面的类型
-    "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
-    'shareAppContent': "你的好友分享了一张卡片给你，快去查看吧~",  // 分享的内容
-    "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-    "shareAppUrl": domainName+"/activity/ggIndexShare?cardRid="+cardRid,  // 分享后的链接
-    "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
-    "sharePage": "ggIndexShare" // 分享的页面
-  };
-  var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
-  return dataStr;
-};*/
+    var dataObj = { // 分享内容
+        "appLogin": "Y", // 是否需要登录，Y需要，N不需要
+        "type": "share", // 此页面的类型
+        "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
+        'shareAppContent': "你的好友赠送了一张卡片给你，快领走吧~",  // 分享的内容
+        "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
+        "shareAppUrl": domainName+"/activity/ggIndexShare?cardRid="+cardRid,  // 分享后的链接
+        "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
+        "sharePage": "ggIndexShare" // 分享的页面
+    };
+    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
+    return dataStr;
+};
