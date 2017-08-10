@@ -118,23 +118,16 @@ $(function(){
 					channelCode: channelCode,
 					pointCode: pointCode
       			},
-                beforeSend: function(){
-                    $("#register_codeBtn").attr("isState",1);
-                    $("#register_codeBtn").text(timerS+" s");
-                    timerInterval = setInterval(timeFunction,1000);
-				},
       			success: function(returnData){
-
       				console.log(returnData);
-
-      				// if (returnData.success) {
-                       //  $("#register_codeBtn").attr("isState",1);
-    					// $("#register_codeBtn").text(timerS+" s");
-               	    //     timerInterval = setInterval(timeFunction,1000);
-      				// } else {
-      				// 	requestMsg(returnData.msg);
-      				// 	$("#register_codeBtn").removeAttr("disabled");
-      				// }
+      				if (returnData.success) {
+                        $("#register_codeBtn").attr("isState",1);
+    					$("#register_codeBtn").text(timerS+" s");
+               	        timerInterval = setInterval(timeFunction,1000);
+      				} else {
+      					requestMsg(returnData.msg);
+      					$("#register_codeBtn").removeAttr("disabled");
+      				}
       			},
       			error: function(){
     	      	    requestMsg("请求失败");
