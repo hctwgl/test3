@@ -281,6 +281,17 @@ public class DigestUtil{
 
     /**
      * 对字符串进行给定次数和指定算法的散列(包含盐值)
+     *
+     * @param bytes
+     * @param algorithm
+     * @return
+     */
+    public static byte[] digestString(byte[] bytes, byte[] salt, int counts, String algorithm) {
+        return digest(bytes, algorithm, salt, counts);
+    }
+
+    /**
+     * 对字符串进行给定次数和指定算法的散列(包含盐值)
      * 
      * @param bytes
      * @param algorithm

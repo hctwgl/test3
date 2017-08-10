@@ -236,7 +236,7 @@ public class H5GGShareController extends H5Controller {
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-			doMaidianLog(request, resultStr);
+//			doMaidianLog(request, resultStr);
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("活动点亮初始化数据失败", e);
@@ -418,7 +418,7 @@ public class H5GGShareController extends H5Controller {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage()).toString();
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -462,7 +462,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -533,7 +533,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("ggSendItems error", e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 	
@@ -687,7 +687,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("赠送卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -726,7 +726,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("赠送卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -770,7 +770,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("索要初卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -846,7 +846,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("索要初卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -900,7 +900,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("ggSendItems error", e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -953,7 +953,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("索要初卡片失败", e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -1007,7 +1007,7 @@ public class H5GGShareController extends H5Controller {
 			logger.error("红包领取失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
@@ -40,10 +42,10 @@ public class H5Controller extends BaseController {
 	 * @throws IOException
 	 */
 
-	@RequestMapping(value = { "app/*","borrow/loanShop", "app/goods/*", "app/user/*", "app/sys/*", "activity/*", "activity/04/*", "activity/05/*", "activity/06/*", "fanbei-web/*", "fanbei-web/app/*", "fanbei-web/activity/*"}, method = RequestMethod.GET)
+	@RequestMapping(value = { "app/*","borrow/loanShop", "app/goods/*", "app/user/*", "app/sys/*", "activity/*", "fanbei-web/*", "fanbei-web/app/*", "fanbei-web/activity/*"}, method = RequestMethod.GET)
 	public String newVmPage(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String returnUrl = request.getRequestURI();
-		doMaidianLog(request,"");
+		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
 		return returnUrl;
 	}
 
@@ -71,7 +73,7 @@ public class H5Controller extends BaseController {
 	}
 
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
 	}

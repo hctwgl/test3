@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -42,7 +43,7 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 		List<AfTradeWithdrawDetailDo> detailList = afTradeWithdrawDetailDao.getByRecordId(id);
 		List<Long> ids = new ArrayList<>();
 		for (AfTradeWithdrawDetailDo detail: detailList) {
-			ids.add(detail.getId());
+			ids.add(detail.getOrderId());
 		}
 		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.EXTRACT.getCode());
 		return 0;
@@ -59,9 +60,20 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 		List<AfTradeWithdrawDetailDo> detailList = afTradeWithdrawDetailDao.getByRecordId(id);
 		List<Long> ids = new ArrayList<>();
 		for (AfTradeWithdrawDetailDo detail: detailList) {
-			ids.add(detail.getId());
+			ids.add(detail.getOrderId());
 		}
 		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.NEW.getCode());
 		return 0;
 	}
+
+	@Override
+	public List<String> withdrawGridDate(Long businessId, Date startDate, Date endDate) {
+		return afTradeWithdrawRecordDao.withdrawGridDate(businessId, startDate, endDate);
+	}
+
+	@Override
+	public List<AfTradeWithdrawRecordDo> withdrawGrid(Long businessId, Date startDate, Date endDate) {
+		return afTradeWithdrawRecordDao.withdrawGrid(businessId, startDate, endDate);
+	}
+
 }

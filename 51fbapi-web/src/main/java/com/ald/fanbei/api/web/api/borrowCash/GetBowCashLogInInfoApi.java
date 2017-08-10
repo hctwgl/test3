@@ -207,16 +207,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("maxAmount", calculateMaxAmount(usableAmount));
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
-		if (inRejectLoan.equals("Y")) {
-			bannerResultList = bannerListForShop;
-			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
-			scrollbarVo = getAfScrollbarVo(resourceDo);
-		}else{
-			bannerResultList = bannerList;
-		}
-		data.put("bannerList", bannerResultList);
+
 		data.put("lender", rate.get("lender"));
-		data.put("scrollbar", scrollbarVo);
+		
 		if (account != null) {
 			data.put("maxAmount", calculateMaxAmount(usableAmount));
 		}
@@ -296,7 +289,15 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				jumpPageBannerUrl = bannerResourceDo.getValue1();
 			}
 		}
-		
+		if (inRejectLoan.equals("Y")) {
+			bannerResultList = bannerListForShop;
+			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
+			scrollbarVo = getAfScrollbarVo(resourceDo);
+		}else{
+			bannerResultList = bannerList;
+		}
+		data.put("scrollbar", scrollbarVo);
+		data.put("bannerList", bannerResultList);
 		data.put("inRejectLoan", inRejectLoan);
 		data.put("jumpToRejectPage", jumpToRejectPage);
 		data.put("jumpPageBannerUrl", jumpPageBannerUrl);
@@ -317,7 +318,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		try {
 			// 首先判断用户是否参与过拆红包活动
 			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid());
+			List<AfGameResultDo> gameResultList =  afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid(),"tear_packet");
 			String status  = afLastBorrowCashDo.getStatus();
 			int takePartTime = 0;
 			if(gameResultList != null){
@@ -351,6 +352,32 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} catch (Exception e){
 			logger.error(e.getMessage());
 		}
+		
+		try{
+			// 风控拒绝红包
+			AfGameDo riskPacketGameDo = afGameService.getByCode("risk_packet");
+			if(riskPacketGameDo != null){
+				// 查询活动时间内是否有风控拒绝记录 FIXME
+				Date gameStart = riskPacketGameDo.getGmtStart();
+				Date gameEnd = riskPacketGameDo.getGmtEnd();	
+				List<AfBorrowCashDo> riskRefuseResultList =  afBorrowCashService.getRiskRefuseBorrowCash(userId, gameStart, gameEnd);
+				List<AfGameResultDo> gameResultList =  afGameResultService.getTearRiskPacketResultByUserId(userId,"risk_packet");
+				int takePartTime = 0;
+				if(gameResultList != null){
+					takePartTime = gameResultList.size();
+				}
+				if(riskRefuseResultList == null || riskRefuseResultList.size() != 1 || takePartTime >= 1) {
+					data.put("showRiskPacket","N");
+				} else {
+					data.put("showRiskPacket","Y");
+				}
+			} else {
+				data.put("showRiskPacket","N");
+			}
+		} catch (Exception e){
+			logger.error(e.getMessage());
+		}
+		
 		resp.setResponseData(data);
 		return resp;
 	}
