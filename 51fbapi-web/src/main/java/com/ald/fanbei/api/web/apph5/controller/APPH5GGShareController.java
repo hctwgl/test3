@@ -206,7 +206,8 @@ public class APPH5GGShareController extends BaseController {
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
 			context = doWebCheck(request, false);
 			// TODO:获取登录着的userName或者id
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = context.getUserName();//request.getParameter("userName");
 			if (!StringUtil.isBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0) {
@@ -356,7 +357,7 @@ public class APPH5GGShareController extends BaseController {
         
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();//request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -420,7 +421,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -532,7 +534,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 			if (userId == null) {
@@ -613,7 +616,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -652,7 +656,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -696,7 +701,8 @@ public class APPH5GGShareController extends BaseController {
 			context = doWebCheck(request, false);
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
 			Long friendId = NumberUtil.objToLong(request.getParameter("friendId"));
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -874,7 +880,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName").toString();
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName").toString();
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
