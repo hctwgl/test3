@@ -52,10 +52,18 @@ $(function(){
                 data: {
                     userItemsId:30
                 },
-                success: function (data) {
-                    console.log(data)
-                    if(data.success){
-                        window.location.href =data.data.loginUrl;
+                success: function (outputData) {
+                    var data = outputData.data;
+                    if(outputData.success){
+                        var loginUrl = data.loginUrl;
+                        // alert(loginUrl);
+                        if(loginUrl != undefined && loginUrl != '') {
+                                window.location.href = loginUrl;
+                                
+                        } else {
+
+                        }
+
                     }else{
                         requestMsg(data.msg);
                     }
@@ -76,7 +84,14 @@ $(function(){
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                        window.location.href =data.data.loginUrl;
+                        var loginUrl = data.loginUrl;
+                        alert(loginUrl);
+                        if(loginUrl != undefined && loginUrl != '') {
+                            // window.location.href = loginUrl;
+                           
+                        } else {
+
+                        }
                     }else{
                         requestMsg(data.msg);
                     }

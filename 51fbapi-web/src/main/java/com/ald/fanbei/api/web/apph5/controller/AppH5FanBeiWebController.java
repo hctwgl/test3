@@ -315,12 +315,12 @@ public class AppH5FanBeiWebController extends BaseController {
 			String code = resultJson.getString("code");
 			
 			if ("10222".equals(code) ||  "10206".equals(code)) {
-				return H5CommonResponse.getNewInstance(false, "您已领过优惠券，快去使用吧~").toString();
+				return H5CommonResponse.getNewInstance(true, "您已领过优惠券，快去使用吧~").toString();
 			} else if ("10305".equals(code)){
-				return H5CommonResponse.getNewInstance(false, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
+				return H5CommonResponse.getNewInstance(true, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
 			}
 			else if (!"0".equals(code)) {
-				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			} 
 			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
 

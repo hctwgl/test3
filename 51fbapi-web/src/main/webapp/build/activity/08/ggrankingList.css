@@ -102,7 +102,7 @@ body {
 
 #rankingList .numberList .list .list-left {
     float: left;
-    margin-right: 17%;
+    margin-right: 20%;
 }
 
 #rankingList .numberList .list .list-center {
@@ -112,5 +112,5 @@ body {
 
 #rankingList .numberList .list .list-right {
     float: right;
-    margin-right:7%;
+    margin-right:10%;
 }

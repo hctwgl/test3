@@ -261,7 +261,7 @@ public abstract class BaseController {
 	private void checkH5Sign(HttpServletRequest request, FanbeiH5Context h5Context,RequestDataVo requestDataVo, boolean needToken) {
 		//从cookie中取openid和token
 		Map<String,String> openidToken = getOpenidToken(request);
-    	String username = openidToken.get("username");
+    	String username = openidToken.get("userName");
     	String token  = openidToken.get("token");
 		
 		if(logger.isDebugEnabled()){

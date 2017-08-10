@@ -627,7 +627,7 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
 			Long userId = convertUserNameToUserId(userName);
 			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 			if (userId == null) {

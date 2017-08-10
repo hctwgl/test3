@@ -18,7 +18,7 @@ public class Constants {
 	public static final long SECOND_OF_ONE_WEEK = 7 * 24 * 60 * 60l;
 
 	public static final int MINITS_OF_2HOURS = 120;
-	public static final int MINITS_OF_HALF_HOUR = 30;
+	public static final int MINITS_OF_HALF_HOUR = 30 * 60;
 
 	public static final int MONTH_OF_YEAR = 12;
 	//商品详情图片信息包含数据总计部分
@@ -292,11 +292,12 @@ public class Constants {
 	public static final String FACE_TYPE = "FACE_TYPE";
 	
 	//H5用户以及token cookie
-	public static final String H5_USER_NAME_COOKIES_KEY = "H5_USER_NAME_COOKIES_KEY";
-	public static final String H5_USER_TOKEN_COOKIES_KEY = "H5_USER_TOKEN_COOKIES_KEY";
+	public static final String H5_USER_NAME_COOKIES_KEY = "userName";
+	public static final String H5_USER_TOKEN_COOKIES_KEY = "token";
 	
 	public static final String TIRPLE_DES_KEY             = "DO3Rz7we8IW5zb2m";
 	public static final String DEFAULT_CODE               = "UTF-8";
+	public static final String H5_OPEN_ID_COOKIES_KEY = "openid";
 	
 	
 
