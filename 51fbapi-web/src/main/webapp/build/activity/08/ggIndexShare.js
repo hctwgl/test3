@@ -93,18 +93,18 @@ let vm = new Vue({
             if(userName){
                 var sceneId=e.sceneId;
                 $.ajax({
-                    url: "/fanbei-web/pickBoluomeCouponWeb",
+                    url: "/H5GGShare/pickBoluomeCouponWeb",
                     type: "POST",
                     dataType: "JSON",
                     data: {'sceneId':sceneId},
                     success: function (returnData){
+                        var returnData = eval('(' + returnData + ')');
                         console.log(returnData)
-                        /*var returnData = eval('(' + returnData + ')');
                         if(returnData.success){
                             requestMsg(returnData.msg);
                         }else{
                             requestMsg(returnData.msg);
-                        }*/
+                        }
                     },
                     error: function(){
                         requestMsg("请求失败");

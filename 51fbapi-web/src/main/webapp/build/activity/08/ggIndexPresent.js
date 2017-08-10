@@ -17,6 +17,7 @@ $(function(){
             data:{activityId:activityId},
             success: function (returnData) {
                 var returnData = eval('(' + returnData + ')');
+                console.log(returnData)
                 if(returnData.data.loginUrl){
                     location.href = returnData.data.loginUrl;
                 }else{

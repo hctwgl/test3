@@ -27,8 +27,8 @@ console.log(urlName)
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                        alert(urlName);
-                    //  window.location.href =urlName;
+                        //alert(urlName);
+                    window.location.href =urlName;
                     }else{
                         requestMsg(data.msg);
                     }
