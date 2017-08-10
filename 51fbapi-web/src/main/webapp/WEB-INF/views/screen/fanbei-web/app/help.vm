@@ -60,7 +60,7 @@
 
             </div>
             <div class="itemContent itemContent1 hide">
-                您好，当天提交的信息当天都会有审核结果，00：00-9：00内提交的申请，将在9：00后开始审核，最快8钟会有结果。您可以关注一下借钱页面或者留意一下APP的站内信。
+                您好，当天提交的信息当天都会有审核结果，00：00-9：00内提交的申请，将在9：00后开始审核，最快8分钟会有结果。您可以关注一下借钱页面或者留意一下APP的站内信。
             </div>
         </li>
         <li>
@@ -175,11 +175,11 @@
         </li>
         <li>
             <div class="itemTitle">
-                <div class="title">分期的产品如何查询单号？
+                <div class="title">分期的产品如何查询物流单号？
                 <i class="arrow"></i>
                 </div>
             </div>
-            <div class="itemContent itemContent2 hide">您好，商家发货后，我们也会第一时间在APP内同步物流消息，您只要订单状态即可。
+            <div class="itemContent itemContent2 hide">发货后，物流信息会在订单详情中同步，进入订单详情即可查看。
             </div>
         </li>
         <li>
@@ -207,7 +207,7 @@
                 </div>
             </div>
             <div class="itemContent itemContent2 hide">
-                我们的申请退/换货审核时间为：当日9:00-16:00点前提交申请，当日回复；16:00-次日9:00提交申请，12:00前回复您结果。
+                我们的申请退/换货审核时间为：当日9:00-16:00点前提交申请，当日回复；16:00-次日9:00提交申请，次日12:00前回复您结果。
             </div>
         </li>
         <li>
