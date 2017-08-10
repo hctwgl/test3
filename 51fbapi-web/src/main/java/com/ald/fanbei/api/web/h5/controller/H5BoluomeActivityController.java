@@ -90,7 +90,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		//执行时间
 		String exeT = DateUtil.formatDateToYYYYMMddHHmmss(new Date());
 		// IP
-		String rmtIp =request.getRemoteAddr();
+		String rmtIp = CommonUtil.getIpAddr(request);
 		String loginSource = ObjectUtils.toString(request.getParameter("loginSource"), "").toString();
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String password = ObjectUtils.toString(request.getParameter("password"),"").toString();
@@ -192,7 +192,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		//执行时间
 		String exeT = DateUtil.formatDateToYYYYMMddHHmmss(new Date());
 		// IP
-		String rmtIp =request.getRemoteAddr();
+		String rmtIp = CommonUtil.getIpAddr(request);
 		String resultStr = "";
 		
 		try {
