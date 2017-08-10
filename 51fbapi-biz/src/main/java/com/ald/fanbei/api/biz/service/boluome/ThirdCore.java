@@ -29,6 +29,7 @@ public class ThirdCore {
 	public static final String SIGN = "sign";
 	public static final String REFUND_NO = "refundNo";
 	public static final String REFUND_SOURCE = "refundSource";
+	public static final String TYPE = "type";//调用该接口类型【PASSAGE_INFO:获取乘客信息 PAY_INFO:获取支付信息】
 	private static Map<String, String> appKeyMap;
 
     /** 
