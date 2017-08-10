@@ -87,7 +87,11 @@ public class AppBorrowLoanShopController extends BaseController {
 					Map<String, Object> map = (Map<String, Object>) obj;
 					String content = (String) map.get("content");
 					if(StringUtils.isNotBlank(content)){
-						map.put("content", content+"&linkType=h5LoanBanner");
+						if(content.contains("=")){
+							map.put("content", content+"&linkType=h5LoanBanner");
+						}else{
+							map.put("content", content+"?linkType=h5LoanBanner");
+						}
 					}
 				}
 			}
