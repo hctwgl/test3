@@ -606,7 +606,7 @@ public class H5GGShareController extends H5Controller {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, false);
+
 			String userName = context.getUserName();
 			//String userName = context.getUserName();
 			Long userId = convertUserNameToUserId(userName);

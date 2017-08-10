@@ -20,6 +20,7 @@ console.log(urlName)
                     password: password_md5,
                     activityId:	1,
                     refUserName:17839218825
+                    ,"urlName":urlName
 
                 },
                 success: function (data) {

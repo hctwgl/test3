@@ -1,4 +1,9 @@
 
+//获取页面名称传到登录页
+var currentUrl=window.location.href;
+var index=currentUrl.indexOf('=');
+var urlName=currentUrl.slice(index+1);
+console.log(urlName)
 
 $(function () {
     var timerInterval;
@@ -71,13 +76,14 @@ $(function () {
                     "registerMobile": registerMoblie,
                     "smsCode":smsCode,
                     "password":password_md5
+                    ,"urlName":urlName
                 },
                 success: function (returnData) {
                     console.log(returnData);
                     var a=JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
-                        window.location.href = "gglogin";
+                        window.location.href = urlName;
                     
                     } //else {
                     //     requestMsg(returnData.msg);

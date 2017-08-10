@@ -46,6 +46,7 @@ $(function () {
         }
     })
 
+    //文字轮播
     function ScrollImgLeft() {
         var speed = 50;
         var MyMar = null;
@@ -92,7 +93,7 @@ $(function () {
                     if (loginUrl != undefined && loginUrl != '') {
                         // 未登录，跳转登录界面
                         //window.location.href =loginUrl;
-                        window.location.href = "gglogin?urlName=" + urlName;
+                        window.location.href = "ggregister?urlName=" + urlName;
                     }
                     requestMsg(outputData.msg);
                     console.log(outputData.msg);
@@ -123,7 +124,7 @@ $(function () {
                     if (loginUrl != undefined && loginUrl != '') {
                         // 未登录，跳转登录界面
                         //window.location.href =loginUrl;
-                        window.location.href = "gglogin?urlName=" + urlName;
+                        window.location.href = "ggregister?urlName=" + urlName;
                     }
                     //  requestMsg(outputData.msg);
                 }

@@ -99,8 +99,8 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		AfUserDo UserDo = afUserService.getUserByUserName(userName);
 		AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
 		if(loginSource == null ||"".equals(loginSource)){
-			if(CookieUtil.getCookie(request,"loginSource") != null ){
-			loginSource = CookieUtil.getCookie(request,"loginSource").getValue();
+			if(CookieUtil.getCookie(request,"urlName") != null ){
+			loginSource = CookieUtil.getCookie(request,"urlName").getValue();
 			}
 		}
 		
@@ -201,10 +201,10 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-			String registerSource  = ObjectUtils.toString(request.getParameter("registerSource"), "").toString();
+			String registerSource  = ObjectUtils.toString(request.getParameter("urlName"), "").toString();
 			if(registerSource == null ||"".equals(registerSource)){
-				if(CookieUtil.getCookie(request, "registerSource") != null){
-				registerSource = CookieUtil.getCookie(request, "registerSource").getValue();
+				if(CookieUtil.getCookie(request, "urlName") != null){
+				registerSource = CookieUtil.getCookie(request, "urlName").getValue();
 				}
 			}
 			
