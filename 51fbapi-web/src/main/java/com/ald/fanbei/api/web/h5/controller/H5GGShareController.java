@@ -113,13 +113,13 @@ public class H5GGShareController extends H5Controller {
 		try {
 
 			// TODO:banner轮播图后台增加一个类型，和配置。GG_TOP_BANNER.根据类型和活动id去取。
-			List<Object> bannerList = new ArrayList<>();
-			List<AfResourceDo> bannerResclist = afResourceService
+			//List<Object> bannerList = new ArrayList<>();
+			List<AfResourceDo> bannerList = afResourceService
 					.getResourceHomeListByTypeOrderBy(AfResourceType.GGTopBanner.getCode());
-			if (bannerResclist != null && bannerResclist.size() > 0) {
+		/*	if (bannerResclist != null && bannerResclist.size() > 0) {
 				GetBorrowCashBase base = new GetBorrowCashBase();
 				bannerList = base.getBannerObjectWithResourceDolist(bannerResclist);
-			}
+			}*/
 
 			// TODO:resource+终极大奖的人数.初始化数据,根据类型和活动id去取。GG_FAKE_PERSON
 			Map<String, Integer> fakeMap = getFakePerson(activityId);
