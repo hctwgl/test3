@@ -348,7 +348,9 @@ public class AppH5FanBeiWebController extends BaseController {
 	public String pickBoluomeCouponV1(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
 			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
-			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			FanbeiWebContext context = new FanbeiWebContext();
+			context = doWebCheck(request, false);
+			String userName = context.getUserName();
 			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
 			if (sceneId == null) {
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
