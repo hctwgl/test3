@@ -21,14 +21,14 @@ console.log(urlName)
                     password: password_md5,
                     activityId:	1,
                     refUserName:17839218825,
-                    "urlName":urlName
+                    urlName:urlName
 
                 },
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                        alert(urlName);
-                    //  window.location.href =urlName;
+                        window.location.href =urlName;
+;
                     }else{
                         requestMsg(data.msg);
                     }

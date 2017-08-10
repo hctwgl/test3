@@ -85,10 +85,11 @@ $(function () {
                 console.log(outputData)
                 if (outputData.success) {
                     var loginUrl = "";
+                    console.log(loginUrl)
                     try {
                         loginUrl = outputData.data.loginUrl;
                     } catch (error) {
-                        // ignore
+                         ignore
                     }
                     if (loginUrl != undefined && loginUrl != '') {
                         // 未登录，跳转登录界面
