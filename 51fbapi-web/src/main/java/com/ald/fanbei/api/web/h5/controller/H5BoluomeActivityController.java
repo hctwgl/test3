@@ -44,6 +44,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
@@ -127,9 +128,11 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		        bizCacheUtil.delCache(cacheKey);
 				// save token to cache
 				String token = UserUtil.generateToken(userName);
-			   				
-				CookieUtil.writeCookie(response, "userName", userName, Constants.MINITS_OF_HALF_HOUR);
-				CookieUtil.writeCookie(response, "token", token, Constants.MINITS_OF_HALF_HOUR);
+				String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + userName;
+				CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, userName, Constants.SECOND_OF_HALF_HOUR_INT);
+				CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
+				
+				bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_HOUR);
 				
 				if(refUserDo == null){
 					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", "").toString();
@@ -248,7 +251,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 			return resultStr;
 		}finally{
-			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
+//			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
 		}
 
 	}
@@ -370,7 +373,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
     }
  
     @Override
-    public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         return null;
     }
 

@@ -133,4 +133,6 @@ public interface AfBorrowCashDao {
 	 * @return
 	 */
 	AfBorrowCashDo getBorrowCashInfoByBorrowNo(@Param("borrowNo")String borrowNo);
+
+	List<AfBorrowCashDo> getRiskRefuseBorrowCash(@Param("userId")Long userId, @Param("gmtStart")Date gmtStart, @Param("gmtEnd")Date gmtEnd);
 }

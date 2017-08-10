@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_trade_business表:商圈商户表模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfTradeBusinessDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id,name,password,login_time,logout_time,status,creator,gmt_create,modifier,gmt_modified
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="id !=null">
+            AND id  = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="name != null and name != ''">
+            AND name = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="password != null and password != ''">
+            AND password = #{password,jdbcType=VARCHAR}
+        </if>
+        <if test="loginTime !=null">
+            AND login_time = #{loginTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="logoutTime !=null">
+            AND logout_time = #{logoutTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="creator != null and creator != ''">
+            AND creator = #{creator,jdbcType=VARCHAR}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="modifier != null and modifier != ''">
+            AND modifier = #{modifier,jdbcType=VARCHAR}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessDo" keyProperty="id">
+    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_trade_business
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="name != null">        
+	            name,
+	        </if>
+	        <if test="password != null">        
+	            password,
+	        </if>
+	        <if test="loginTime != null">        
+	            login_time,
+	        </if>
+	        <if test="logoutTime != null">        
+	            logout_time,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="creator != null">        
+	            creator,
+	        </if>
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="modifier != null">        
+	            modifier,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		    </if>
+		    <if test="password != null" >
+		       #{password,jdbcType=VARCHAR},
+		    </if>
+		    <if test="loginTime != null" >
+		       #{loginTime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="logoutTime != null" >
+		       #{logoutTime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=INTEGER},
+		    </if>
+		    <if test="creator != null" >
+		       #{creator,jdbcType=VARCHAR},
+		    </if>
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="modifier != null" >
+		       #{modifier,jdbcType=VARCHAR},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessDo">
+        UPDATE af_trade_business
+          <set>
+            <if test="name != null and name != '' ">        
+                name = #{name,jdbcType=VARCHAR},                
+            </if>
+            <if test="password != null and password != '' ">        
+                password = #{password,jdbcType=VARCHAR},                
+            </if>
+            <if test="loginTime != null and loginTime != '' ">        
+                login_time = #{loginTime,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="logoutTime != null and logoutTime != '' ">        
+                logout_time = #{logoutTime,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=INTEGER},                
+            </if>
+            <if test="creator != null and creator != '' ">        
+                creator = #{creator,jdbcType=VARCHAR},                
+            </if>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="modifier != null and modifier != '' ">        
+                modifier = #{modifier,jdbcType=VARCHAR},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_business
+        WHERE is_delete = 0 AND id=#{id ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_business
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeBusinessDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_business
+        <include refid="commonCondition"/>
+    </select>
+    
+    <select id="getByName" resultType="com.ald.fanbei.api.dal.domain.AfTradeBusinessDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_trade_business
+        WHERE is_delete = 0 AND name=#{name} AND status=1
+        LIMIT 0,1
+    </select>
+</mapper>

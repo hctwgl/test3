@@ -49,6 +49,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
@@ -205,7 +206,8 @@ public class APPH5GGShareController extends BaseController {
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
 			context = doWebCheck(request, false);
 			// TODO:获取登录着的userName或者id
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = context.getUserName();//request.getParameter("userName");
 			if (!StringUtil.isBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0) {
@@ -233,7 +235,7 @@ public class APPH5GGShareController extends BaseController {
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-			doMaidianLog(request, resultStr);
+//			doMaidianLog(request, resultStr);
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("活动点亮初始化数据失败", e);
@@ -355,7 +357,7 @@ public class APPH5GGShareController extends BaseController {
         
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();//request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -398,7 +400,7 @@ public class APPH5GGShareController extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(false, "抱歉你暂时没有可以赠送的卡片", "", e.getMessage()).toString();
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -419,7 +421,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -438,7 +441,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("赠送卡片初始化失败" + context, e);
 		}
 		
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -510,7 +513,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("ggSendItems error", e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -531,7 +534,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 			if (userId == null) {
@@ -591,7 +595,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("赠送卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -612,7 +616,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -629,7 +634,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("赠送卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -651,7 +656,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -672,7 +678,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("索要初卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -695,7 +701,8 @@ public class APPH5GGShareController extends BaseController {
 			context = doWebCheck(request, false);
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
 			Long friendId = NumberUtil.objToLong(request.getParameter("friendId"));
-			String userName = request.getParameter("userName");
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -747,7 +754,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("索要初卡片失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -800,7 +807,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("ggSendItems error", e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -851,7 +858,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("索要初卡片失败", e);
 		}
 		
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -873,7 +880,8 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
-			String userName = request.getParameter("userName").toString();
+			String userName = context.getUserName();
+			//String userName = request.getParameter("userName").toString();
 			Long userId = convertUserNameToUserId(userName);
 			if (userId == null) {
 				Map<String,Object> data = new HashMap<>();
@@ -912,7 +920,7 @@ public class APPH5GGShareController extends BaseController {
 			logger.error("红包领取失败" + context, e);
 		}
 
-		doMaidianLog(request, resultStr);
+//		doMaidianLog(request, resultStr);
 		return resultStr;
 	}
 
@@ -923,7 +931,7 @@ public class APPH5GGShareController extends BaseController {
 	}
 
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
 	}

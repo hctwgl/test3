@@ -8,9 +8,11 @@ body{
 }
 .box{
     height:.6rem;
+    width: 200%;
      /* overflow:hidden;  */
      /* display:inline-block;  */
      background-color:#4c4c4c ;
+     animation: moveup 10s  linear infinite;
     
 }
 /*文字滚动  */
@@ -23,11 +25,12 @@ body{
                 }
             }
  .personAmount{
-  width:100%;
+  width: 50%;
   height:.6rem;
   /* background:#4c4c4c; */
   position:relative;
-  animation: moveup 10s  linear infinite;
+  float: left;
+  
 }
 .personAmount p{
   font-size:.26rem;

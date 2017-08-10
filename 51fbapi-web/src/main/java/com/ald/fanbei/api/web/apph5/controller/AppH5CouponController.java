@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,7 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
@@ -221,6 +223,57 @@ public class AppH5CouponController extends BaseController {
     
   
     
+    @RequestMapping(value = "activityCouponInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+    public String activityCouponInfo(HttpServletRequest request, ModelMap model) throws IOException {
+    	try{
+    		// FanbeiWebContext context = doWebCheck(request, false);
+    		// context = doWebCheck(request, false);
+    		JSONObject jsonObj = new JSONObject();
+    		// 获取活动优惠券组信息
+    		String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
+    		if(groupId == null) {
+    			throw new FanbeiException("groupId can't be null or empty.");
+    		}
+    		// 根据Id获取分组优惠券
+    		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
+    		String coupons = couponCategory.getCoupons();
+    		
+    		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+    		for(int i = 0; i < couponsArray.size(); i++){
+    			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
+    			String couponId = (String)couponsArray.getString(i);
+    			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+    			couponInfoMap.put("shopUrl", couponCategory.getUrl());
+    			couponInfoMap.put("couponId", afCouponDo.getRid());
+    			couponInfoMap.put("name", afCouponDo.getName());
+    			couponInfoMap.put("useRule", afCouponDo.getUseRule());
+    			couponInfoMap.put("type", afCouponDo.getType());
+    			couponInfoMap.put("amount", afCouponDo.getAmount());
+    			couponInfoMap.put("useRange", afCouponDo.getUseRange());
+    			couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
+    			Date gmtStart = afCouponDo.getGmtStart();
+    			if( gmtStart != null){
+    				couponInfoMap.put("gmtStart", gmtStart.getTime());
+    			} else {
+    				couponInfoMap.put("gmtStart", 0);
+    			}
+    			Date gmtEnd = afCouponDo.getGmtEnd();
+    			if (gmtEnd != null) {
+    				couponInfoMap.put("gmtEnd", gmtEnd.getTime());
+    			} else {
+    				couponInfoMap.put("gmtEnd", 0);
+    			}
+    		}
+    		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+    	}
+    }
+    
+    
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
         return null;
@@ -242,7 +295,7 @@ public class AppH5CouponController extends BaseController {
     }
  
     @Override
-    public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         return null;
     }
  

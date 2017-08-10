@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.ald.fanbei.api.common.enums.ClientTypeEnum;
+
 /**
  * 
  * @类描述：字符串工具类
@@ -206,5 +208,22 @@ public class StringUtil extends StringUtils {
             return sReturnCode;
         }
     }
+	
+	/**
+	 * 判断客户端类型
+	 * @param flagStr
+	 * @return
+	 */
+	public static ClientTypeEnum judgeClientType(String flagStr){
+		if(isEmpty(flagStr)){
+			return null;
+		}
+		if(flagStr.startsWith("i_")){
+			return ClientTypeEnum.ANDROID;
+		}else if(flagStr.startsWith("a_")){
+			return ClientTypeEnum.IOS;
+		}
+		return null;
+	}
     
 }

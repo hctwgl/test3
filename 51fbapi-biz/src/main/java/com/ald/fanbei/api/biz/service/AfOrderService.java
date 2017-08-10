@@ -260,4 +260,11 @@ public interface AfOrderService {
 	 * @return
 	 */
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo);
+	
+	/**
+	 * 处理组合支付失败的情况
+	 */
+	
+	int dealPayCpOrderFail(String payOrderNo, String tradeNo,String payType);
+	
 }

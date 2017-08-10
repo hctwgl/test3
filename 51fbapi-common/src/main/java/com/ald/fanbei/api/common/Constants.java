@@ -14,11 +14,14 @@ public class Constants {
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
 	public static final long SECOND_OF_ONE_DAY = 24 * 60 * 60l;
+	
+	public static final int SECOND_OF_HALF_HOUR_INT = 30 * 60;
+	public static final int SECOND_OF_AN_HOUR_INT = 60 * 60;
 
 	public static final long SECOND_OF_ONE_WEEK = 7 * 24 * 60 * 60l;
 
 	public static final int MINITS_OF_2HOURS = 120;
-	public static final int MINITS_OF_HALF_HOUR = 30 * 60;
+	public static final int MINITS_OF_HALF_HOUR = 30;
 
 	public static final int MONTH_OF_YEAR = 12;
 	//商品详情图片信息包含数据总计部分
@@ -295,9 +298,23 @@ public class Constants {
 	public static final String H5_USER_NAME_COOKIES_KEY = "userName";
 	public static final String H5_USER_TOKEN_COOKIES_KEY = "token";
 	
+	public static final String H5_CACHE_USER_NAME_COOKIES_KEY = "h5_cookie_userName";
+	public static final String H5_CACHE_USER_TOKEN_COOKIES_KEY = "h5_cookie_token";
+	
 	public static final String TIRPLE_DES_KEY             = "DO3Rz7we8IW5zb2m";
 	public static final String DEFAULT_CODE               = "UTF-8";
 	public static final String H5_OPEN_ID_COOKIES_KEY = "openid";
+	
+	
+
+	//商圈
+	public static final String DEFAULT_SALT = "51fb";
+	public static final int DEFAULT_DIGEST_TIMES = 1024;
+	public static final String SHA1 = "SHA-1";
+	public static final String TRADE_LOGIN_BUSINESSID = "trade_login_businessId_";
+	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "ala_bororw_deliver_money_lock";
+	
+	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
 	
 	
 
