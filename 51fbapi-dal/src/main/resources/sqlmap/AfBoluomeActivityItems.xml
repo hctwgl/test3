@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort,rule_json
+id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort,rule_json,logo
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -37,6 +37,12 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         </if>
         <if test="sort != null and sort != ''">
             AND sort = #{sort,jdbcType=INTEGER}
+        </if>
+        <if test="ruleJson != null and ruleJson != ''">
+            AND rule_json = #{ruleJson,jdbcType=INTEGER}
+        </if>
+        <if test="logo != null and logo != ''">
+            AND logo = #{logo,jdbcType=VARCHAR}
         </if>
     </sql>
 
@@ -75,6 +81,12 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
 	         <if test="sourceId != null">        
 	            source_id,
 	        </if>
+	        <if test="ruleJson != null">        
+	            rule_json,
+	        </if>
+	        <if test="logo != null">        
+	            logo,
+	        </if>
 	        
         </trim>
         
@@ -104,7 +116,13 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
 		       #{sort,jdbcType=INTEGER},
 		    </if>
 		    <if test="sourceId != null" >
-		       #{sourceId,jdbcType=INTEGER}
+		       #{sourceId,jdbcType=INTEGER},
+		    </if>
+		    <if test="ruleJson != null" >
+		       #{ruleJson,jdbcType=INTEGER},
+		    </if>
+		    <if test="logo != null" >
+		       #{logo,jdbcType=VARCHAR}
 		    </if>
         </trim>
     </insert>
@@ -134,7 +152,13 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
                 ref_id = #{refId,jdbcType=INTEGER},                
             </if>
             <if test="sort != null and sort != '' ">        
-                sort = #{sort,jdbcType=INTEGER}                
+                sort = #{sort,jdbcType=INTEGER},               
+            </if>
+             <if test="ruleJson != null and ruleJson != '' ">        
+                rule_json = #{ruleJson,jdbcType=INTEGER},                
+            </if>
+             <if test="logo != null and logo != '' ">        
+                logo = #{sort,jdbcType=VARCHAR}                
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
