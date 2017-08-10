@@ -39,11 +39,11 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -87,12 +87,18 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	@RequestMapping(value = "/boluomeActivityLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String boluomeActivityLogin(HttpServletRequest request,HttpServletResponse response ,ModelMap model){
+		//执行时间
+		String exeT = DateUtil.formatDateToYYYYMMddHHmmss(new Date());
+		// IP
+		String rmtIp =request.getRemoteAddr();
+		String loginSource = ObjectUtils.toString(request.getParameter("loginSource"), "").toString();
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String password = ObjectUtils.toString(request.getParameter("password"),"").toString();
 		Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 		String refUseraName = ObjectUtils.toString(request.getParameter("refUserName"),"").toString();
 		AfUserDo UserDo = afUserService.getUserByUserName(userName);
 		AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
+		
 		
 		String cacheKey = Constants.BOLUOME_LOGIN_ERROR_TIMES + userName;
 		int errorCount =  NumberUtil.objToIntDefault((bizCacheUtil.getObject(cacheKey)), 0);
@@ -148,6 +154,25 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
 			    int saveInfo = afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
 			}
+				
+				   //登录成功进行埋点
+					if(loginSource  != null ){
+						String login = "";
+					if("Z".equals(loginSource)){
+						login =  "zengsong";
+					}
+					if("F".equals(loginSource)){
+						login =  "fenxiang";
+					}
+					if("S".equals(loginSource)){
+						login =  "suoyao";
+					}
+					String reqData  = request.toString();
+					doLog(reqData,H5CommonResponse.getNewInstance(true, "成功", "", ""),request.getMethod(),rmtIp,exeT,"/H5GGShare/boluomeActivityLogin",request.getParameter("userName"),login, "", "","","");
+				}else{
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", "").toString();
+				}	
+				
 		}else{
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "", "").toString();
 		}
@@ -159,7 +184,10 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	@ResponseBody
 	@RequestMapping(value = "/commitBouomeActivityRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
-		Calendar calStart = Calendar.getInstance();
+		//执行时间
+		String exeT = DateUtil.formatDateToYYYYMMddHHmmss(new Date());
+		// IP
+		String rmtIp =request.getRemoteAddr();
 		String resultStr = "";
 		
 		try {
@@ -168,6 +196,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+			String registerSource  = ObjectUtils.toString(request.getParameter("registerSource"), "").toString();
 			
 			
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
@@ -178,7 +207,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
 			if (smsDo == null) {
 				logger.error("sms record is empty");
-				resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SMS_MOBILE_ERROR.getDesc(), "", null).toString();
+				resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST.getDesc(), "", null).toString();
 				return resultStr;
 			}
 
@@ -238,6 +267,23 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			}
 			resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
 			
+			//注册成功进行埋点
+				if(registerSource != null ){
+					String register = "";
+				if("Z".equals(registerSource)){
+					register =  "zengsong";
+				}
+				if("F".equals(registerSource)){
+					register =  "fenxiang";
+				}
+				if("S".equals(registerSource)){
+					register =  "suoyao";
+			    }
+				String reqData  = request.toString();
+				doLog(reqData,H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null),request.getMethod(),rmtIp,exeT,"/H5GGShare/commitBouomeActivityRegister",request.getParameter("registerMobile"),register, "", "","","");
+			}else{
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", "").toString();
+			}	
 			// 注册成功给用户发送注册短信
 //			smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 			return resultStr;
@@ -251,7 +297,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 			return resultStr;
 		}finally{
-//			doLog(request, resultStr,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
+			
 		}
 
 	}
