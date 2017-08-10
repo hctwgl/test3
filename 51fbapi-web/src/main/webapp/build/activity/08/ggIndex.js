@@ -1,5 +1,4 @@
 var activityId=getUrl("activityId");//获取活动Id
-var userName=getCookie('userName');//获取用户名
 var num;//卡片数量
 // var domainName = domainName();//域名
 var protocol = window.location.protocol;
@@ -116,11 +115,11 @@ let vm = new Vue({
                     data: {'sceneId':sceneId},
                     success: function (returnData){
                         console.log(returnData)
-                        if(returnData.success){
+                        /*if(returnData.success){
                             requestMsg(returnData.msg);
                         }else{
                             location.href=returnData.url;
-                        }
+                        }*/
                     },
                     error: function(){
                         requestMsg("请求失败");

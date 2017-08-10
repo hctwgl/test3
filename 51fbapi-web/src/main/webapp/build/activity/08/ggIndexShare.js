@@ -4,7 +4,7 @@ var userName=getCookie('userName');//获取用户名
 var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
-console.log(urlName)
+console.log(userName)
 var num;//卡片数量
 //获取数据
 let vm = new Vue({
@@ -89,30 +89,34 @@ let vm = new Vue({
         },
         //点击优惠券
         couponClick:function(e){
-            if(userName='' || !userName){
-                window.location.href="gglogin?urlName="+urlName;
+            console.log(userName + '111')
+            if(userName){
+                var sceneId=e.sceneId;
+                $.ajax({
+                    url: "/fanbei-web/pickBoluomeCouponWeb",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {'sceneId':sceneId},
+                    success: function (returnData){
+                        console.log(returnData)
+                        /*var returnData = eval('(' + returnData + ')');
+                        if(returnData.success){
+                            requestMsg(returnData.msg);
+                        }else{
+                            requestMsg(returnData.msg);
+                        }*/
+                    },
+                    error: function(){
+                        requestMsg("请求失败");
+                    }
+                });
             }else{
-                    var sceneId=e.sceneId;
-                    $.ajax({
-                        url: "/fanbei-web/pickBoluomeCouponWeb",
-                        type: "POST",
-                        dataType: "JSON",
-                        data: {'sceneId':sceneId,userName:userName},
-                        success: function (returnData){
-                            console.log(returnData)
-                            var returnData = eval('(' + returnData + ')').data;
-                            if(returnData.success){
-                                requestMsg(returnData.msg);
-                            }
-                        },
-                        error: function(){
-                            requestMsg("请求失败");
-                        }
-                    });
+                window.location.href="gglogin?urlName="+urlName;
             }
         },
         //点击卡片
         cardClick:function(){
+            console.log(userName)
             if(userName='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
@@ -144,6 +148,7 @@ let vm = new Vue({
             }
         },
         presentClick:function(){
+            console.log(userName)
             if(userName='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
@@ -151,6 +156,7 @@ let vm = new Vue({
             }
         },
         demandClick:function(){
+            console.log(userName)
             if(userName='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
