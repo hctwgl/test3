@@ -954,7 +954,7 @@ public class APPH5GGShareController extends BaseController {
 				// TODO:判断用户是否有活动配置的所有的卡片
 				if (itemsList != null && itemsList.size() > 0) {
 					for (AfBoluomeActivityItemsDo uDo : itemsList) {
-						Long itemsId = uDo.getRefId();
+						Long itemsId = uDo.getRid();
 						// 查到用户活动卡片
 						AfBoluomeActivityUserItemsDo useritemsdoo = new AfBoluomeActivityUserItemsDo();
 						useritemsdoo.setBoluomeActivityId(activityId);
