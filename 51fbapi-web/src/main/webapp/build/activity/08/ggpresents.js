@@ -100,13 +100,16 @@ $(function () {
 
             },
             success: function (outputData) {
-                //console.log(outputData)
+                console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
                        window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName; 
                     }else{
-                      requestMsg(outputData.msg)
-                    }
+                        alert(outputData.msg);
+                     requestMsg(outputData.msg);
+                     
+                      console.log(outputData.msg)
+                    } 
                 }
             }
         })
@@ -124,7 +127,7 @@ $(function () {
                 //userName:15839790051
             },
             success: function (outputData) {
-                console.log(outputData.success)
+                console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
                        window.location.href = "gglogin?urlName=" + urlName; 
