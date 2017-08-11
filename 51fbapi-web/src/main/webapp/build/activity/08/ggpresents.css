@@ -10,11 +10,14 @@
 .clearFix {
     zoom: 1;
 }
-
+*{
+    box-sizing:border-box;
+}
 body {
     background-color: white;
     padding: 0;
     margin: 0;
+    position:relative;
 }
 
 .box {
@@ -200,46 +203,45 @@ body {
     color: #5cb4e2;
     text-decoration: underline;
 }
-/* 详情弹框 */
+/* 活动详情弹框 */
 .alertRule{
-  width:6.8rem;
-  height:8.3rem;
-  background:#fff;
-  z-index: 100;
-  position: fixed;
-  top: 2rem;
-  left: 50%;
-  transform: translateX(-3.4rem);
-  display: none;
+    width:6.8rem;
+    height:8.34rem;
+    background-color:white;
+    padding:0 0.27rem;
+    position:absolute;
+    top:40%;
+    left:50%;
+    transform:translateX(-50%) translateY(-50%);
+    display:none; 
 }
-.alertRule .ruleTitle{
-  font-size:.4rem;
-  color:#fe8744;
-  width:100%;
-  text-align: center;
-  margin:.6rem 0 .37rem 0;
+.ruleTitle{
+    text-align:center;
+    margin-top:0.64rem;
+    margin-bottom:0.35rem;
+    
 }
-.alertRule .ruleTitle span.dian{
-  width:.1rem;
-  height:.1rem;
-  background-color:#fe8744;
-  border-radius: 50%;
-  margin-bottom: .07rem;
+.word{
+    font-size:0.4rem;
+    color:#fe8744;
+    margin:0 0.25rem;
+    font-weight:700;
 }
-.alertRule .ruleTitle span.word{
-  padding:0 .27rem;
+.dian{
+    width:0.11rem;
+    height:0.11rem;
+    background-color:#fe8744;
+    border-radius:50%;
 }
-.alertRule .ruleCont{
-  width:90%;
-  margin:0 auto;
-  font-size:.26rem;
-  color:#4a4a4a;
-  line-height:.35rem;
-  text-align: justify;
-  height:6.61rem;
-  overflow-y: scroll;
+.mask{
+    width:100%;
+    height:100%;
+    background-color: rgba(0,0,0,0.5);
+    position:fixed;
+    top:0;
+     display:none; 
 }
-.alertRule .close{
+.close{
   width:.56rem;
   height:.56rem;
   text-align: center;
