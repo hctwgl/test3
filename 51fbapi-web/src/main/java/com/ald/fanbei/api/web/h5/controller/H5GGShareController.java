@@ -595,81 +595,58 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
-			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
-			// String userName = request.getParameter("userName").toString();
+			// String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
-			if (userId == null || StringUtil.isBlank(userName)) {
+			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
+			if (userId == null) {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
-			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
-			if (activityId != null && userId != null) {
-				// 判断是否已经领取红包
-				AfBoluomeActivityResultDo conditionDo = new AfBoluomeActivityResultDo();
-				conditionDo.setBoluomeActivityId(activityId);
-				conditionDo.setUserId(userId);
-				List<AfBoluomeActivityResultDo> isHave = afBoluomeActivityResultService
-						.getListByCommonCondition(conditionDo);
-				if (isHave != null && isHave.size() > 0) {
-					return H5CommonResponse.getNewInstance(true, "您已经成功领取88.8元现金红包，不能重复领取").toString();
-				}
-				AfBoluomeActivityCouponDo conditionCoupon = new AfBoluomeActivityCouponDo();
-				conditionCoupon.setBoluomeActivityId(activityId);
-				conditionCoupon.setStatus("O");
-				conditionCoupon.setType("N");
-				AfBoluomeActivityCouponDo resultCoupon = afBoluomeActivityCouponService
-						.getByCommonCondition(conditionCoupon);
-				// 活动卡片
-				AfBoluomeActivityItemsDo activityItemsDo = new AfBoluomeActivityItemsDo();
-				activityItemsDo.setBoluomeActivityId(activityId);
-				List<AfBoluomeActivityItemsDo> itemsList = afBoluomeActivityItemsService
-						.getListByCommonCondition(activityItemsDo);
+			if (userId != null) {
 
-				// all userItmes list to be deleted later
-				List<AfBoluomeActivityUserItemsDo> deleteList = new ArrayList<>();
-				// TODO:判断用户是否有活动配置的所有的卡片
-				if (itemsList != null && itemsList.size() > 0) {
-					for (AfBoluomeActivityItemsDo uDo : itemsList) {
-						Long itemsId = uDo.getRid();
-						// 查到用户活动卡片
-						AfBoluomeActivityUserItemsDo useritemsdoo = new AfBoluomeActivityUserItemsDo();
-						useritemsdoo.setBoluomeActivityId(activityId);
-						useritemsdoo.setUserId(userId);
-						useritemsdoo.setStatus("NORMAL");
-						useritemsdoo.setItemsId(itemsId);
-						List<AfBoluomeActivityUserItemsDo> useritemsList = afBoluomeActivityUserItemsService
-								.getListByCommonCondition(useritemsdoo);
-						if (useritemsList == null || useritemsList.size() <= 0) {
-							return H5CommonResponse.getNewInstance(false, "红包领取失败：缺少没有" + uDo.getName() + "卡片")
-									.toString();
+				AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService
+						.getById(resourceUserItemsId);// old卡片的内容
+				if (resourceUserItemsDo != null) {
+					Long destUserId = resourceUserItemsDo.getUserId();
+					// 你没有权限领取此卡片
+					if (destUserId.equals(userId)) {
+						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
+					}
+					// 查看是否已经领走
+					AfBoluomeActivityUserItemsDo newUserItemsDoCondition = new AfBoluomeActivityUserItemsDo();
+					newUserItemsDoCondition.setUserId(userId);
+					newUserItemsDoCondition.setSourceId(resourceUserItemsId);
+					newUserItemsDoCondition.setStatus("NORMAL");
+					List<AfBoluomeActivityUserItemsDo> list = afBoluomeActivityUserItemsService
+							.getListByCommonCondition(newUserItemsDoCondition);
+					int length = list.size();
+					if (list == null || length == 0) {
+						// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
+						AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
+						insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
+						AfUserDo insertUser = afUserService.getUserById(userId);
+						if (insertUser == null) {
+							return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
 						}
-						deleteList.add(useritemsList.get(0));
+						insertDo.setUserName(insertUser.getUserName());
+						insertDo.setUserId(userId);
+						insertDo.setStatus("NORMAL");
+						insertDo.setSourceId(resourceUserItemsId);
+						insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
+						insertDo.setItemsId(resourceUserItemsDo.getItemsId());
+						insertDo.setGmtSended(new Date());
+						afBoluomeActivityUserItemsService.saveRecord(insertDo);
+
+						updateUserItemsStatus(resourceUserItemsId, "SENT");
+						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功").toString();
+					} else {
+						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
 					}
-				}
-				// to delete
-				if (deleteList != null && deleteList.size() > 0) {
-					for (AfBoluomeActivityUserItemsDo delete : deleteList) {
-						afBoluomeActivityUserItemsService.deleteByRid(delete.getRid());
-					}
 
-					if (resultCoupon != null) {
-						// 把终极大奖给插入用户result表中
-						AfBoluomeActivityResultDo conditionResultDo = new AfBoluomeActivityResultDo();
-						conditionResultDo.setBoluomeActivityId(activityId);
-						conditionResultDo.setUserId(userId);
-						conditionResultDo.setUserName(context.getUserName());
-						conditionResultDo.setResult(resultCoupon.getCouponId());
-
-						afBoluomeActivityResultService.saveRecord(conditionResultDo);
-
-						// 从用户卡片去掉活动卡片的一个。
-						resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
-
-					}
 				}
 			}
 		} catch (FanbeiException e) {
@@ -1005,19 +982,53 @@ public class H5GGShareController extends H5Controller {
 				conditionCoupon.setType("N");
 				AfBoluomeActivityCouponDo resultCoupon = afBoluomeActivityCouponService
 						.getByCommonCondition(conditionCoupon);
+				// 活动卡片
+				AfBoluomeActivityItemsDo activityItemsDo = new AfBoluomeActivityItemsDo();
+				activityItemsDo.setBoluomeActivityId(activityId);
+				List<AfBoluomeActivityItemsDo> itemsList = afBoluomeActivityItemsService
+						.getListByCommonCondition(activityItemsDo);
 
-				if (resultCoupon != null) {
-					// 把终极大奖给插入用户result表中
-					AfBoluomeActivityResultDo conditionResultDo = new AfBoluomeActivityResultDo();
-					conditionResultDo.setBoluomeActivityId(activityId);
-					conditionResultDo.setUserId(userId);
-					conditionResultDo.setUserName(context.getUserName());
-					conditionResultDo.setResult(resultCoupon.getCouponId());
+				// all userItmes list to be deleted later
+				List<AfBoluomeActivityUserItemsDo> deleteList = new ArrayList<>();
+				// TODO:判断用户是否有活动配置的所有的卡片
+				if (itemsList != null && itemsList.size() > 0) {
+					for (AfBoluomeActivityItemsDo uDo : itemsList) {
+						Long itemsId = uDo.getRid();
+						// 查到用户活动卡片
+						AfBoluomeActivityUserItemsDo useritemsdoo = new AfBoluomeActivityUserItemsDo();
+						useritemsdoo.setBoluomeActivityId(activityId);
+						useritemsdoo.setUserId(userId);
+						useritemsdoo.setStatus("NORMAL");
+						useritemsdoo.setItemsId(itemsId);
+						List<AfBoluomeActivityUserItemsDo> useritemsList = afBoluomeActivityUserItemsService
+								.getListByCommonCondition(useritemsdoo);
+						if (useritemsList == null || useritemsList.size() <= 0) {
+							return H5CommonResponse.getNewInstance(false, "红包领取失败：缺少没有" + uDo.getName() + "卡片")
+									.toString();
+						}
+						deleteList.add(useritemsList.get(0));
+					}
+				}
+				// to delete
+				if (deleteList != null && deleteList.size() > 0) {
+					for(AfBoluomeActivityUserItemsDo delete : deleteList){
+						afBoluomeActivityUserItemsService.deleteByRid(delete.getRid());
+					}
+					
+					if (resultCoupon != null) {
+						// 把终极大奖给插入用户result表中
+						AfBoluomeActivityResultDo conditionResultDo = new AfBoluomeActivityResultDo();
+						conditionResultDo.setBoluomeActivityId(activityId);
+						conditionResultDo.setUserId(userId);
+						conditionResultDo.setUserName(context.getUserName());
+						conditionResultDo.setResult(resultCoupon.getCouponId());
 
-					afBoluomeActivityResultService.saveRecord(conditionResultDo);
+						afBoluomeActivityResultService.saveRecord(conditionResultDo);
 
-					resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
+						// 从用户卡片去掉活动卡片的一个。
+						resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
 
+					}
 				}
 			}
 
