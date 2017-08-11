@@ -165,6 +165,17 @@ let vm = new Vue({
                         console.log(returnData)
                         if(returnData.success){
                             requestMsg(returnData.msg);
+                            for(var j=0;j<self.content.itemsList.length;j++){
+                                num=self.content.itemsList[j].num;
+                                if(num==0){
+                                    return ""
+                                }else{
+                                    $('.card').eq(j).find('.num').html('x'+(num-1));
+                                    if(num-1==0){
+                                        $('.card').eq(j).find('.cardMask').css('display','block');
+                                    }
+                                }
+                            }
                         }else{
                             requestMsg(returnData.msg);
                         }
