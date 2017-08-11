@@ -9,6 +9,9 @@ var domainName = protocol+'//'+host;
 var cardRid;//赠送的卡片主键
 var activityId=getUrl("activityId");//获取活动Id
 var name;//卡片名称
+var itemsListRid;
+var itemsId;
+var userItemsList;
 $(function(){
     $('.presentCard').click(function(){
             $.ajax({
@@ -28,10 +31,9 @@ $(function(){
                             $('.presentTitle').css('display','block');
                             $('.sure').html('确定赠送');
                             var presentCardList=returnData.data.itemsList;
-                            var userItemsList=returnData.data.userItemsList;
+                            userItemsList=returnData.data.userItemsList;
                             var str='';
-                            var itemsId;
-                            var itemsListRid;
+
                             for(var j=0;j<presentCardList.length;j++){//判断终极大奖蒙版
                                 if(presentCardList[j].num>=2){
                                     str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'">'+ '<p class="num">'+(presentCardList[j].num-1)+'</p></div>';
@@ -48,36 +50,6 @@ $(function(){
                                 var index=$(this).index();
                                 $('.presentTitle span').eq(1).html($('.img').eq(index).attr('name'));
                             })
-                            //确定赠送
-                            $('.sure').click(function(){
-                                name=$('.img.img3').attr('name');
-                                itemsListRid=$('.img.img3').attr('rid');
-                                for(var i=0;i<userItemsList.length;i++){
-                                    itemsId=userItemsList[i].itemsId;
-                                    if(itemsId==itemsListRid){
-                                        var arr=[];
-                                        arr.push(userItemsList[i].rid);
-                                    }
-                                }
-                                cardRid=arr[0];
-                                //console.log(cardRid)
-                                if(cardRid&&cardRid!=''){
-                                    $.ajax({
-                                            type: 'get',
-                                            url: "/H5GG/doSendItems",
-                                            data:{'userItemsId':cardRid},
-                                            success: function (returnData) {
-                                                requestMsg(returnData.msg);
-                                                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友赠送了一张'+name+'卡片给你，快领走吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&&cardRid='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
-                                            },
-                                            error:function(){
-                                                requestMsg('请求失败');
-                                            }
-                                        })
-                                }else{
-                                         window.location.href="ggIndex";
-                                }
-                            })
                         }else{
                             requestMsg("抱歉，你暂时没有可以赠送的卡片")
                         }
@@ -89,7 +61,42 @@ $(function(){
                 }
             })
     })
-})
+
+    //确定赠送
+    $('.sure').click(function(){
+        name = $('.img.img3').attr('name');
+        itemsListRid=$('.img.img3').attr('rid');
+        for(var i=0;i<userItemsList.length;i++){
+            itemsId=userItemsList[i].itemsId;
+            if(itemsId==itemsListRid){
+                var arr=[];
+                arr.push(userItemsList[i].rid);
+            }
+        }
+        cardRid=arr[0];
+        //console.log(cardRid)
+        if(cardRid&&cardRid!=''){
+            $.ajax({
+                type: 'get',
+                url: "/H5GG/doSendItems",
+                data:{'userItemsId':cardRid},
+                success: function (returnData) {
+                    var returnData = eval('(' + returnData + ')');
+                    if(returnData.success){
+                        requestMsg(returnData.msg);
+                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友赠送了一张'+name+'卡片给你，快领走吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
+                    }
+                },
+                error:function(){
+                    requestMsg('请求失败');
+                }
+            })
+        }else{
+            window.location.href="ggIndex";
+        }
+    })
+});
+
 function getData(slideNub){
     for(var i=0;i<slideNub;i++){
         $(".imgList .img:eq("+i+")").attr("data-slide-imgId",i);
@@ -199,10 +206,11 @@ function alaShareData(){
         "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
         'shareAppContent': "你的好友赠送了一张"+name+"卡片给你，快领走吧~",  // 分享的内容
         "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggpresents?loginSource=Z&&cardRid="+cardRid,  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggpresents?loginSource=Z&userItemsId="+cardRid,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggpresents" // 分享的页面
     };
     var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
     return dataStr;
 };
+
