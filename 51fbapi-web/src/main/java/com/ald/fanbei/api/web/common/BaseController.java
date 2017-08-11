@@ -16,7 +16,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -24,7 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfAppUpgradeService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -40,6 +41,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
@@ -69,6 +71,9 @@ public abstract class BaseController {
     AfAppUpgradeService afAppUpgradeService;
     @Resource
     private BizCacheUtil bizCacheUtil;
+    
+    @Resource
+    AfShopService afShopService;
 
     /**
      * 解析request
@@ -116,6 +121,7 @@ public abstract class BaseController {
                     reqData = reqData.replace("\r", "").replace("\n", "").replace(" ", "");
                 }
                 if (biLogger.isInfoEnabled()) {
+                	String url = browsingAndCertification(request,reqData);
                     String req = "";
                     String userName = "no user";
                     if (requestDataVo == null) {
@@ -140,7 +146,7 @@ public abstract class BaseController {
 							"	rmtIP=", CommonUtil.getIpAddr(request), 
 							"	userName=", userName, 
 							"	", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), 
-							"	", request.getRequestURI(),
+							"	", url,
 							"	result=",exceptionresponse == null?9999:((ApiHandleResponse)exceptionresponse).getResult().getCode(), 
 							"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
 							"	", "", 
@@ -157,6 +163,30 @@ public abstract class BaseController {
         }
         return resultStr;
     }
+    
+    /**
+	 *逛逛和实名认证埋点
+	 * 
+	 * @param reqData
+	 * @param request
+	 * @return
+	 */
+		private String browsingAndCertification(HttpServletRequest request,
+				String reqData) {
+			// TODO Auto-generated method stub
+			String url = request.getRequestURI();
+			JSONObject result = JSONObject.parseObject(reqData);
+			if("/brand/getBrandUrl".equals(url)){
+				Long shopId = NumberUtil.objToLongDefault(result.get("shopId"), null);
+				AfShopDo afShopDo = afShopService.getShopById(shopId);
+				String type = afShopDo.getType();
+				url = url+"_"+type.toLowerCase();
+			}else if("/system/maidian".equals(url)){
+				String maidianEvent = ObjectUtils.toString(result.get("maidianEvent"), null);
+				url =  maidianEvent;
+			}
+			return url;
+		}
 
     /**
      * 验证参数
