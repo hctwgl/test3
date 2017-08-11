@@ -24,6 +24,7 @@ $(function(){
                         var friend="";//赠送者名字
                         var join="";//参与人数
                         var combo="";//e顿健康套餐
+                        var detail="";//活动规则详情
                         join+="<span class='join'>"+data.data.fakeJoin+"</span>";
                         $('.join').html(join);
                         friend+='<i class="friend">'+data.data.friend+'</i>';
@@ -34,6 +35,8 @@ $(function(){
                         $('.light').html(light);
                         combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
                         $('.combo').html(combo);
+                        detail+='<p class="ruleCont">'+data.data.description+'</p>'
+                        $('.ruleCont').html(detail);
 
                         ScrollImgLeft();//文字轮播
                     }else{
@@ -137,5 +140,16 @@ $(function(){
             MyMar = setInterval(Marquee, speed);　　　　　　　　　
         }
     }
+
+
+    //点击规则弹框 弹出规则详情
+    $('.rules').click(function(){
+        $('.mask').show();
+        $('.alertRule').show();
+    })
+    $('.mask').click(function(){
+        $('.mask').hide();
+        $('.alertRule').hide();
+    })
 
 })

@@ -55,7 +55,6 @@
             </div>
         </div>
         <!--活动规则弹框!-->
-        
         <div class="mask">
             <div class="alertRule">
                 <p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
