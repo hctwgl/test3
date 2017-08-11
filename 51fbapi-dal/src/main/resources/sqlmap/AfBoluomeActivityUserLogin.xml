@@ -35,7 +35,7 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" keyProperty="id">
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" keyProperty="rid">
     	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>
