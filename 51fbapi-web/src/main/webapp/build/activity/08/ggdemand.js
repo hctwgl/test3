@@ -1,3 +1,7 @@
+/* 'use strict';
+var activityId = getUrl("activityId");//获取活动Id
+var userName=getCookie('userName');//获取用户名 */
+
 //获取页面名称传到登录页
 var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
@@ -29,7 +33,7 @@ $(function(){
                         $('.join').html(join);
                         friend+='<i class="friend">'+data.data.friend+'</i>';
                         $('.friend').html(friend);
-                        pic+= '<img src='+data.data.itemsDo.iconUrl+' alt="" class="banner-img">';
+                        pic+= '<img src='+data.data.resourceDo.value+' alt="" class="banner-img">';
                         $('.banner').html(pic);
                         light+='<span class="light">'+data.data.fakeFinal+'</span>';
                         $('.light').html(light);
@@ -63,22 +67,13 @@ $(function(){
                 },
                 success: function (outputData) {
                     console.log(outputData)
-                    if(outputData.success){
-                        var loginUrl = "";
-                        try {
-                             loginUrl = outputData.data.loginUrl;
-                        } catch (error) {
-                            // ignore
-                        }
-                        if(loginUrl != undefined && loginUrl != '') {
-                            // 未登录，跳转登录界面
-                             //window.location.href =loginUrl;
-                            window.location.href="gglogin?urlName="+urlName;
-                        } 
-                            requestMsg(outputData.msg);
+                    if (outputData.success) {
+                            if(outputData.msg=="没有登录"){
+                                window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName; 
+                            }else{
+                                requestMsg(outputData.msg)
+                            }
                     }
-                    requestMsg(outputData.msg);
-                       
                 }
             })
     })
@@ -94,24 +89,13 @@ $(function(){
                 },
                 success: function (outputData) {
                     console.log(outputData)
-                    if(outputData.success){
-                        var loginUrl = "";
-                        try {
-                             loginUrl = outputData.data.loginUrl;
-                        } catch (error) {
-                            // ignore
+                    if (outputData.success) {
+                        if(outputData.msg=="没有登录"){
+                            window.location.href = "gglogin?urlName=" + urlName; 
+                        }else{
+                            window.location.href = "ggIndexShare?login=true";
                         }
-                        if(loginUrl != undefined && loginUrl != '') {
-                            // 未登录，跳转登录界面
-                             //window.location.href =loginUrl;
-                            window.location.href="gglogin?urlName="+urlName;
-                        } else {
-                            // 登录后
-
-                        }
-                        // requestMsg(outputData.msg);
                     }
-                       
                 }
             })
     })
