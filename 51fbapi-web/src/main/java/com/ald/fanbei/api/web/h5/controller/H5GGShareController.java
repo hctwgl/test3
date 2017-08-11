@@ -679,7 +679,7 @@ public class H5GGShareController extends H5Controller {
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
-			resultStr = initHomepage(request, response);
+			resultStr = H5CommonResponse.getNewInstance(true, "成功").toString();
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("lightItems" + context, e);
@@ -955,6 +955,14 @@ public class H5GGShareController extends H5Controller {
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			// Long userId = context.getUserId();
 			if (activityId != null && userId != null) {
+				//判断是否已经领取红包
+				AfBoluomeActivityResultDo conditionDo = new AfBoluomeActivityResultDo();
+				conditionDo.setBoluomeActivityId(activityId);
+				conditionDo.setUserId(userId);
+				AfBoluomeActivityResultDo isHave = afBoluomeActivityResultService.getByCommonCondition(conditionDo);
+				if (isHave != null) {
+					H5CommonResponse.getNewInstance(true, "您已经成功领取88.8元现金红包，不能重复领取").toString();
+				}
 				AfBoluomeActivityCouponDo conditionCoupon = new AfBoluomeActivityCouponDo();
 				conditionCoupon.setBoluomeActivityId(activityId);
 				conditionCoupon.setStatus("O");

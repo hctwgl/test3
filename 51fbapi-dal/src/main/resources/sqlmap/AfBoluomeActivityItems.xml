@@ -48,7 +48,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
 
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>
     
