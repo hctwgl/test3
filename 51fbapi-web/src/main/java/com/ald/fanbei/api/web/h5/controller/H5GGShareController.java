@@ -219,7 +219,7 @@ public class H5GGShareController extends H5Controller {
 			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
 			// 为了兼容从我也要点亮中调用主页接口
-			if (!StringUtil.isBlank(userName)) {
+			if (StringUtil.isBlank(userName)) {
 				userName = request.getParameter("userName");
 			}
 			// String userName = request.getParameter("userName");
