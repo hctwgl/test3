@@ -52,7 +52,8 @@ $(function(){
 
         //点击下一步 跳到忘记密码页
         $('.nextStep').click(function(){
-            window.location.href='http://localhost/fanbei-web/activity/ggForgetP';
+            
+            window.location.href='ggForgetP';
         })
 }) 
 

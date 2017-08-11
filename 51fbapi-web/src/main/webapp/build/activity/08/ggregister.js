@@ -83,7 +83,7 @@ $(function () {
                     var a=JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
-                        alert(urlName)
+                        // alert(urlName)
                         window.location.href = "gglogin?urlName="+urlName;
                     
                     } //else {

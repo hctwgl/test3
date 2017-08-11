@@ -21,7 +21,7 @@ $(function(){
                         console.log(data)
                         if(data.success){
                             
-                            window.location.href ="http://localhost/fanbei-web/activity/gglogin";
+                            window.location.href ="gglogin";
                         }else{
                             requestMsg(data.msg);
                         }
@@ -34,7 +34,7 @@ $(function(){
 
         //点击完成跳转到登录
         $('.btn').click(function(){
-            window.location.href='http://localhost/fanbei-web/activity/gglogin';
+            window.location.href='gglogin';
         })
 
 })

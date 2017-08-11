@@ -7,6 +7,11 @@ var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
 
+//获取数据
+var url = window.location.href;
+var param = getUrlParam(url);
+var userItemsId = param['userItemsId'];
+
 
 //获取数据
 $(function(){
@@ -78,7 +83,7 @@ $(function(){
             })
     })
 
-    //点击我要索要卡片
+    //点击我也要点亮
     $('.demandCard').click(function(){
              $.ajax({
                 url: "/H5GGShare/lightItems",
@@ -91,7 +96,9 @@ $(function(){
                     console.log(outputData)
                     if (outputData.success) {
                         if(outputData.msg=="没有登录"){
+                            alert(urlName)
                             window.location.href = "gglogin?urlName=" + urlName; 
+                            
                         }else{
                             var userName = outputData.data.userName;
                             window.location.href = "ggIndexShare?userName="+userName;
@@ -138,3 +145,16 @@ $(function(){
     })
 
 })
+
+//截取方法
+function getUrlParam(url) {
+    var param = new Object(); 
+    if (url.indexOf("?") != -1) { 
+        var str = url.substr(1); 
+        strs = str.split("&"); 
+        for(var i = 0; i < strs.length; i ++) { 
+            param[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
+        } 
+    } 
+    return param; 
+}
