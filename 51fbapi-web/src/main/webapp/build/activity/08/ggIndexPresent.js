@@ -64,7 +64,7 @@ $(function(){
                                 if(cardRid&&cardRid!=''){
                                     $.ajax({
                                             type: 'get',
-                                            url: "/H5GG/sendItems",
+                                            url: "/H5GGShare/doSendItems",
                                             data:{'userItemsId':cardRid},
                                             success: function (returnData) {
                                                 requestMsg(returnData.msg);
