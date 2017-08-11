@@ -624,13 +624,14 @@ public class APPH5GGShareController extends BaseController {
 			String userName = context.getUserName();
 			//String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
+			Map<String,Object> data = new HashMap<>();
 			if (userId == null) {
-				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录","",data).toString();
 			}
-			resultStr = H5CommonResponse.getNewInstance(true, "成功").toString();
+			data.put("userName", userName);
+			resultStr = H5CommonResponse.getNewInstance(true, "成功","",data).toString();
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("lightItems" + context, e);

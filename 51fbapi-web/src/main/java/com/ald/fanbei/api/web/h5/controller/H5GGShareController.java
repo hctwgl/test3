@@ -218,6 +218,10 @@ public class H5GGShareController extends H5Controller {
 
 			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
+			//为了兼容从我也要点亮中调用主页接口
+			if(!StringUtil.isBlank(userName)){
+				userName = request.getParameter("userName");
+			}
 			// String userName = request.getParameter("userName");
 			if (!StringUtil.isBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
@@ -672,14 +676,16 @@ public class H5GGShareController extends H5Controller {
 			String userName = context.getUserName();
 			// String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
+			Map<String, Object> data = new HashMap<>();
 			if (userId == null) {
-				Map<String, Object> data = new HashMap<>();
+				
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
-			resultStr = H5CommonResponse.getNewInstance(true, "成功").toString();
+			data.put("userName", userName);
+			resultStr = H5CommonResponse.getNewInstance(true, "成功","",data).toString();
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("lightItems" + context, e);
