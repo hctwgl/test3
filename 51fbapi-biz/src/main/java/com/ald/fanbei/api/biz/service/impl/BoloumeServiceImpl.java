@@ -12,6 +12,7 @@ import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoPayInfoBo;
 import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
 import com.ald.fanbei.api.biz.service.BoluomeService;
 import com.ald.fanbei.api.common.enums.BoluomePayType;
+import com.ald.fanbei.api.common.util.DigestUtil;
 
 /**
  *@类描述：
@@ -30,8 +31,8 @@ public class BoloumeServiceImpl implements BoluomeService {
 		pay_info.setPay_type(BoluomePayType.DEBITCARD.getCode());
 		pay_info.setTime(System.currentTimeMillis());
 		BoluomeGetDidiRiskInfoCardInfoBo card_info = new BoluomeGetDidiRiskInfoCardInfoBo();
-		card_info.setCard_id(MD5.digest("16668"));
-		card_info.setPeople_id(MD5.digest("68885"));
+		card_info.setCard_id(DigestUtil.MD5("16668"));
+		card_info.setPeople_id(DigestUtil.MD5("68885"));
 		card_info.setChannel(BoluomePayType.DEBITCARD.getCode());
 		card_info.setDeviceid("863389038473537");
 		card_info.setIp("36.23.96.138");
