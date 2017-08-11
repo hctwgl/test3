@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameAwardService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
@@ -26,15 +28,20 @@ import com.ald.fanbei.api.biz.service.AfGameFivebabyService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -46,12 +53,13 @@ import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfGameFivebabyDo;
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.h5.controller.H5Controller;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -84,13 +92,21 @@ public class AppH5GameController  extends BaseController{
 	AfUserService afUserService;
 	@Resource
 	AfCouponService afCouponService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
+	@Resource
+	AfUserAuthService afUserAuthService;
+	@Resource
+	AfUserAccountService afUserAccountService;
+	
+	String  opennative = "/fanbei-web/opennative?name=";
 	
 	@RequestMapping(value = "initGame", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String initGame(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Calendar calStart = Calendar.getInstance();
-//		String resultStr = "";
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 			Long userId = -1l;
@@ -142,6 +158,7 @@ public class AppH5GameController  extends BaseController{
 	public String submitGameResult(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Calendar calStart = Calendar.getInstance();
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+
 		FanbeiWebContext context = new FanbeiWebContext();
 		Map<String,Object> resultData = new HashMap<String, Object>(); 
 		try{
@@ -176,17 +193,17 @@ public class AppH5GameController  extends BaseController{
 			}
 			
 			resp = H5CommonResponse.getNewInstance(true, "成功", "", resultData);
-		}catch(FanbeiException e){
-			resp = H5CommonResponse.getNewInstance(false, "抽奖失败", "", e.getErrorCode().getDesc());
-			logger.error("fb抽奖失败"+context,e);
-		}catch(Exception e){
-			resp = H5CommonResponse.getNewInstance(false, "抽奖失败", "", "");
-			logger.error("抽奖失败"+context,e);
-		}finally{
-			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
-		}
-		return resp.toString();
+			}catch(FanbeiException e){
+				resp = H5CommonResponse.getNewInstance(false, "抽奖失败", "", e.getErrorCode().getDesc());
+				logger.error("fb抽奖失败"+context,e);
+			}catch(Exception e){
+				resp = H5CommonResponse.getNewInstance(false, "抽奖失败", "", "");
+				logger.error("抽奖失败"+context,e);
+			}finally{
+				Calendar calEnd = Calendar.getInstance();
+				doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+			}
+			return resp.toString();
 	}
 	
 	@RequestMapping(value = "submitContract", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -373,6 +390,81 @@ public class AppH5GameController  extends BaseController{
 		}
 	}
 	
+	
+	
+	@RequestMapping(value = "tearRiskPacketActivity", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String tearRiskPacketActivity(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HashMap<String, Object> data = new HashMap<String, Object>();
+		FanbeiWebContext context = new FanbeiWebContext();
+		try{
+			context = doWebCheck(request, false);
+			String userName = context.getUserName();
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			if(userDo != null) {
+				Long userId = userDo.getRid();
+				AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+				AfUserAccountDo userAccount =  afUserAccountService.getUserAccountByUserId(userId);
+				String idNumber = userAccount.getIdNumber();
+				// 身份证Base64加密
+				if(idNumber != null) {
+					idNumber = Base64.encode(idNumber.getBytes());
+				}
+				String realName = userAccount.getRealName();
+				data.put("idNumber", idNumber);
+				data.put("realName", realName);
+				if(userAuthDo != null) {
+					String riskStatus = userAuthDo.getRiskStatus();
+					if("A".equals(riskStatus)){
+						String realnameStatus = userAuthDo.getRealnameStatus();
+						String bankcardStatus = userAuthDo.getBankcardStatus();
+						String facesStatus = userAuthDo.getFacesStatus();
+						if("N".equals(facesStatus)) {
+							data.put("status", "A1");
+						}else if("N".equals(bankcardStatus)) {
+							data.put("status", "A2");
+						} else if("Y".equals(realnameStatus)
+								&& "Y".equals(bankcardStatus)) {
+							data.put("status", "A3");
+						}
+					} else if("P".equals(riskStatus)) {
+						data.put("status", "A4");
+					} else if("N".equals(riskStatus) || "Y".equals(riskStatus)){
+						
+						if(userAccount != null) {
+							BigDecimal auAmount = userAccount.getAuAmount();
+							BigDecimal usedAmount = userAccount.getUsedAmount();
+							BigDecimal remainAmount = auAmount.subtract(usedAmount);
+							if(remainAmount.compareTo(new BigDecimal(500)) >= 0) {
+								data.put("status", "B");
+							} else {
+								// 补充认证信息
+								String alipayStatus = userAuthDo.getAlipayStatus();
+								String creditStatus = userAuthDo.getCreditStatus();
+								String jinpoStatus = userAuthDo.getJinpoStatus();
+								String fundStatus = userAuthDo.getFundStatus();
+								if("Y".equals(alipayStatus) && "Y".equals(creditStatus)
+										&& "Y".equals(jinpoStatus) && "Y".equals(fundStatus)){
+									data.put("status", "D");
+								} else {
+									data.put("status", "C");
+								}
+							}
+						}
+					}
+				}
+			} else {
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+			}
+			
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+		}
+	}
+	
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request,
 			boolean isForQQ) {
@@ -396,7 +488,7 @@ public class AppH5GameController  extends BaseController{
 	}
 
 	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
+	public  BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
 			HttpServletRequest httpServletRequest) {
 		return null;
 	}

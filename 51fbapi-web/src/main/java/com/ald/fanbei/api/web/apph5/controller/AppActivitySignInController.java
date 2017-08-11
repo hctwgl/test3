@@ -99,7 +99,6 @@ public class AppActivitySignInController extends BaseController {
 	public String initActivitySign(HttpServletRequest request, HttpServletResponse response) {
 		Calendar calStart = Calendar.getInstance();
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
-//		String resultStr = " ";
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			Long userId = -1l;
@@ -118,7 +117,6 @@ public class AppActivitySignInController extends BaseController {
 						if (afCouponSceneDo == null) {
 							resp = H5CommonResponse.getNewInstance(false, "初始化失败", "", "");
 							return resp.toString();
-
 						}
 						Integer seriesTotal = 1;
 
@@ -201,7 +199,6 @@ public class AppActivitySignInController extends BaseController {
 							JSONObject jsonResult = new JSONObject(mapResult);
 
 							resp = H5CommonResponse.getNewInstance(true, "初始化成功", "", jsonResult);
-//							resultStr = resp.toString();
 						}
 					}
 
@@ -232,7 +229,6 @@ public class AppActivitySignInController extends BaseController {
 			public String doInTransaction(TransactionStatus status) {
 				Calendar calStart = Calendar.getInstance();
 				H5CommonResponse resp = H5CommonResponse.getNewInstance();
-//				String resultStr = " ";
 				FanbeiWebContext context = new FanbeiWebContext();
 				try {
 					Long userId = -1l;
@@ -251,8 +247,7 @@ public class AppActivitySignInController extends BaseController {
 								AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
 								if (afCouponSceneDo == null) {
 									resp = H5CommonResponse.getNewInstance(false, "签到失败", "", FanbeiExceptionCode.FAILED);
-									return resp.toString();
-								}
+									return resp.toString();								}
 
 								Integer cycle = 1;
 								List<CouponSceneRuleBo> ruleBoList = afCouponSceneService.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");

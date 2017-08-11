@@ -416,13 +416,18 @@ public class AfGameResultServiceImpl implements AfGameResultService {
 	}
 
 	@Override
-	public List<AfGameResultDo> getTearPacketResultByUserId(Long userId, Long borrowId) {
-		return afGameResultDao.getTearPacketResultByUserId(userId, borrowId);
+	public List<AfGameResultDo> getTearPacketResultByUserId(Long userId, Long borrowId, String gameCode) {
+		return afGameResultDao.getTearPacketResultByUserId(userId, borrowId,gameCode);
 	}
 
 	@Override
 	public List<AfGameResultDo> getTearPacketLatestRecord() {
 		return afGameResultDao.getTearPacketLatestRecord();
+	}
+
+	@Override
+	public List<AfGameResultDo> getTearRiskPacketResultByUserId(Long userId, String gameCode) {
+		return afGameResultDao.getTearRiskPacketResultByUserId(userId, gameCode);
 	}
 
 	

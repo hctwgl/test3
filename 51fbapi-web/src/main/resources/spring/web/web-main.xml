@@ -107,7 +107,6 @@
 				<value>/good/getGoodsTkRate</value>
 				<value>/goods/getGoodsInfoByNumId</value>
 
-
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
 				<value>/brand/getBrandList</value>
@@ -118,6 +117,7 @@
 				<value>/user/submitShareAction</value>
 				<value>/user/getImageCode</value>
 				<value>/goods/getGoodsSpec</value>
+				<value>/trade/login</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -319,6 +319,22 @@
 				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />
 				<entry key="/auth/submitIdNumberInfoForFacePlus" value-ref="submitIdNumberInfoForFacePlusApi" />
 				<entry key="/auth/updateIdCardForFacePlus" value-ref="updateIdCardForFacePlusApi" />
+				
+				<!-- 商圈微信端 -->
+				<entry key="/trade/login" value-ref="tradeLoginApi" />
+				<entry key="/trade/logout" value-ref="tradeLogoutApi" />
+				<entry key="/trade/businessInfo" value-ref="tradeBusinessInfoApi" />
+				<entry key="/trade/twoBarCode" value-ref="twoBarCodeApi" />
+				<entry key="/trade/getPayListDate" value-ref="getPayListDateApi" />
+				<entry key="/trade/getPayList" value-ref="getPayListApi" />
+				<entry key="/trade/getWithdrawListDate" value-ref="getWithdrawListDateApi" />
+				<entry key="/trade/getWithdrawList" value-ref="getWithdrawListApi" />
+				<entry key="/trade/getRefundListDate" value-ref="getRefundListDateApi" />
+				<entry key="/trade/getRefundList" value-ref="getRefundListApi" />
+				<entry key="/trade/withdraw" value-ref="tradeWithdrawApi" />
+				<entry key="/trade/refund" value-ref="tradeRefundApi" />
+				<entry key="/trade/getIndexData" value-ref="getIndexDataApi" />
+				<entry key="/trade/orderInfo" value-ref="tradeOrderInfoApi" />
 			</map>
 		</constructor-arg>
 	</bean>

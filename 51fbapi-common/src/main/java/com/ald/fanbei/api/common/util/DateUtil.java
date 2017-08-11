@@ -44,10 +44,12 @@ public class DateUtil {
      * yyyy-MM
      */
     public static final String MONTH_PATTERN               = "yyyy-MM";
+    
     /**
      * yyyyMM
      */
     public static final String MONTH_SHOT_PATTERN               = "yyyyMM";
+
 
     /**
      * yyyyMMdd
@@ -1146,6 +1148,24 @@ public class DateUtil {
     public static Integer getCurrentMonth() {
     	Calendar calender = Calendar.getInstance();
     	return calender.get(Calendar.MONTH) + 1;
+    }
+
+    /**
+     * 一天的结束时间，【注：只精确到毫秒】
+     *
+     * @param date
+     * @return
+     */
+    public static Date getWithDrawOfDate(final Date date) {
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
+
+        cal.set(Calendar.HOUR_OF_DAY, 13);
+        cal.set(Calendar.MINUTE, 00);
+        cal.set(Calendar.SECOND, 00);
+        cal.set(Calendar.MILLISECOND, 000);
+
+        return new Date(cal.getTime().getTime());
     }
     
 }

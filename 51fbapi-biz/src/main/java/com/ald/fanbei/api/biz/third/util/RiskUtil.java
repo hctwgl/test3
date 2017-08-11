@@ -599,7 +599,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param virtualCode 虚拟值
 	 * @return
 	 */
-	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) throws FanbeiException{
+	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final Map<String, Object> virtualMap) throws FanbeiException{
 		String result = verifybo.getResult();
 		
 		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -609,7 +609,7 @@ public class RiskUtil extends AbstractThird {
 		logger.info("risk_result =" + result);
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		if (!result.equals("10")) {
-			resultMap.put("success", true);
+			resultMap.put("success", false);
 			resultMap.put("verifybo", JSONObject.toJSONString(verifybo));
 			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			
@@ -624,40 +624,30 @@ public class RiskUtil extends AbstractThird {
 				orderInfo.setClosedReason("风控审批不通过");
 				orderInfo.setGmtClosed(new Date());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
-					if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-						try {
-							//菠萝觅风控拒绝的订单自动取消
-							boluomeUtil.cancelOrder(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), orderInfo.getClosedReason());
-							orderDao.updateOrder(orderInfo);
-						} catch (UnsupportedEncodingException e) {
-							logger.info("cancel Order error");
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
+					AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+					afAgentOrderDo.setClosedReason("风控审批失败");
+					afAgentOrderDo.setGmtClosed(new Date());
+					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+					
+					//添加关闭订单释放优惠券
+					if(afAgentOrderDo.getCouponId()>0){
+						AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+						
+						if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+							couponDo.setStatus(CouponStatus.NOUSE.getCode());
+							afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
 						}
-					} else {
-						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-							AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
-							afAgentOrderDo.setClosedReason("风控审批失败");
-							afAgentOrderDo.setGmtClosed(new Date());
-							afAgentOrderService.updateAgentOrder(afAgentOrderDo);
-							
-							//添加关闭订单释放优惠券
-							if(afAgentOrderDo.getCouponId()>0){
-								AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
-								
-								if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
-									couponDo.setStatus(CouponStatus.NOUSE.getCode());
-									afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
-								}
-								else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
-									couponDo.setStatus(CouponStatus.EXPIRE.getCode());
-									afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
-								}
-							}
-							orderDao.updateOrder(orderInfo);
-						}
-						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
-							orderDao.updateOrder(orderInfo);
+						else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+							couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+							afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
 						}
 					}
+					orderDao.updateOrder(orderInfo);
+				}
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
+					orderDao.updateOrder(orderInfo);
+				}
 				jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 //			}
 			return resultMap;
@@ -668,8 +658,9 @@ public class RiskUtil extends AbstractThird {
 		orderInfo.setStatus(OrderStatus.PAID.getCode());
 		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
 		//是虚拟商品
+		String virtualCode = afOrderService.getVirtualCode(virtualMap);
 		if (StringUtils.isNotBlank(virtualCode)) {
-			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), 
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getActualAmount(), afOrderService.getVirtualAmount(virtualMap), 
 					orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
 			//增加虚拟商品记录
 			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
@@ -705,7 +696,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param cardInfo
 	 * @return
 	 */
-	public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, String virtualCode, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
+	public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, Map<String, Object> virtualMap, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
 		String result = verybo.getResult();
 		
 		logger.info("combinationPay:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -713,7 +704,7 @@ public class RiskUtil extends AbstractThird {
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
 		
 		if (!result.equals("10")) {
-			resultMap.put("success", true);
+			resultMap.put("success", false);
 			resultMap.put("verifybo", JSONObject.toJSONString(verybo));
 			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			
@@ -775,10 +766,10 @@ public class RiskUtil extends AbstractThird {
 		if (!respBo.isSuccess()) {
 			throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
-		
+		String virtualCode = afOrderService.getVirtualCode(virtualMap);
 		//是虚拟商品
 		if (StringUtils.isNotBlank(virtualCode)) {
-			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getBorrowAmount(), orderInfo.getActualAmount(), orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getBorrowAmount(), afOrderService.getVirtualAmount(virtualMap), orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
 			//增加虚拟商品记录
 			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
 		}
@@ -844,6 +835,7 @@ public class RiskUtil extends AbstractThird {
 						afUserAccountService.updateUserAccount(accountDo);
 					}
 	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
+	      			smsUtil.sendRiskSuccess(userAccountDo.getUserName());
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
@@ -866,6 +858,7 @@ public class RiskUtil extends AbstractThird {
 						afUserAccountService.updateUserAccount(accountDo);
 	      			}
 	      			jpushService.strongRiskFail(userAccountDo.getUserName());
+	      			smsUtil.sendRiskFail(userAccountDo.getUserName());
 				}
 			}
 		}
@@ -1555,9 +1548,12 @@ public class RiskUtil extends AbstractThird {
 					afUserAccountService.updateUserAccount(accountDo);
 				}
 				jpushService.fundRiskSuccess(userAccountDo.getUserName());
-			} else {
+			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
 				auth.setFundStatus(YesNoStatus.NO.getCode());
 				jpushService.fundRiskFail(userAccountDo.getUserName());
+			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+				auth.setFundStatus("A");
+				jpushService.fundRiskFault(userAccountDo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}
@@ -1609,9 +1605,12 @@ public class RiskUtil extends AbstractThird {
 					afUserAccountService.updateUserAccount(accountDo);
 				}				
 				jpushService.socialSecurityRiskSuccess(userAccountDo.getUserName());
-			} else {
+			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
 				auth.setJinpoStatus(YesNoStatus.NO.getCode());
 				jpushService.socialSecurityRiskFail(userAccountDo.getUserName());
+			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+				auth.setJinpoStatus("A");
+				jpushService.socialSecurityRiskFault(userAccountDo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}
@@ -1664,9 +1663,12 @@ public class RiskUtil extends AbstractThird {
 					afUserAccountService.updateUserAccount(accountDo);
 				}					
 				jpushService.creditCardRiskSuccess(userAccountDo.getUserName());
-			} else {
+			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
 				auth.setCreditStatus(YesNoStatus.NO.getCode());
 				jpushService.creditCardRiskFail(userAccountDo.getUserName());
+			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+				auth.setCreditStatus("A");
+				jpushService.creditCardRiskFault(userAccountDo.getUserName());
 			}
 			
 			return afUserAuthService.updateUserAuth(auth);
@@ -1720,9 +1722,12 @@ public class RiskUtil extends AbstractThird {
 					afUserAccountService.updateUserAccount(accountDo);
 				}					
 				jpushService.alipayRiskSuccess(userAccountDo.getUserName());
-			} else {
+			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
 				auth.setAlipayStatus(YesNoStatus.NO.getCode());
 				jpushService.alipayRiskFail(userAccountDo.getUserName());
+			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+				auth.setAlipayStatus("A");
+				jpushService.alipayRiskFault(userAccountDo.getUserName());
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}

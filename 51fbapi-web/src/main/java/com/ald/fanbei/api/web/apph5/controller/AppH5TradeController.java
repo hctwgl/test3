@@ -8,10 +8,8 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -19,24 +17,18 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
-import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author 沈铖 2017/7/14 下午3:14
@@ -59,14 +51,19 @@ public class AppH5TradeController extends BaseController {
     @RequestMapping(value = "initTradeInfo", method = RequestMethod.GET)
     public void initTradeInfo(HttpServletRequest request, ModelMap model) {
         model.put("isLogin", "no");
+        model.put("status", "normal");
         String bid = request.getParameter("bid");
         if (StringUtil.isBlank(bid)) {
             return;
         }
 
         bid = AesUtil.decryptFromBase64(bid, Constants.TRADE_AES_DECRYPT_PASSWORD);
-        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getById(Long.parseLong(bid));
+        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(Long.parseLong(bid));
         if (afTradeBusinessInfoDo == null) {
+            return;
+        }
+        if(afTradeBusinessInfoDo.getStatus().equals(2)) {
+            model.put("status", "abnormal");
             return;
         }
 
@@ -96,7 +93,7 @@ public class AppH5TradeController extends BaseController {
         }
 
         model.put("name", afTradeBusinessInfoDo.getName());
-        model.put("id", afTradeBusinessInfoDo.getId());
+        model.put("id", afTradeBusinessInfoDo.getBusinessId());
         model.put("isLogin", "yes");
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
         BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
@@ -130,9 +127,7 @@ public class AppH5TradeController extends BaseController {
 
     private Integer getAuthStatus(AfUserAuthDo auth, AfUserAccountDo account, Integer appVersion) {
         Integer status = 0;
-        if (YesNoStatus.NO.getCode().equals(auth.getRealnameStatus())) { //判断实名认证
-            status = 1;
-        } else if (YesNoStatus.NO.getCode().equals(auth.getFacesStatus())) { //判断人脸识别
+        if (YesNoStatus.NO.getCode().equals(auth.getFacesStatus())) { //判断人脸识别
             status = 2;
         } else if (YesNoStatus.NO.getCode().equals(auth.getBankcardStatus())) { //判断绑卡状态
             status = 3;

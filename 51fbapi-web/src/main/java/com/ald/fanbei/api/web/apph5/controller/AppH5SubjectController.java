@@ -91,7 +91,6 @@ public class AppH5SubjectController  extends BaseController{
 		// 主会场接口
 		Calendar calStart = Calendar.getInstance();
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
-//		String resultStr = "";
 		JSONObject jsonObj = new JSONObject();
 		try{
 			//context = doWebCheck(request, false);
@@ -388,9 +387,8 @@ public class AppH5SubjectController  extends BaseController{
 	public String subjectGoodsInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// 分会场接口
 		FanbeiWebContext context = new FanbeiWebContext();
-		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = "";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		try {
 			//context = doWebCheck(request, false);
 			String subjectId = ObjectUtils.toString(request.getParameter("subjectId"), null);

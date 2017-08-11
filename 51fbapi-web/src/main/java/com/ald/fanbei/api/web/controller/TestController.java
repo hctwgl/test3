@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,45 +25,65 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfContactsOldService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
+import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
+import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
+import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -107,6 +129,16 @@ public class TestController {
 	AfOrderDao afOrderDao;
 	@Resource
 	AfBorrowService afBorrowService;
+	@Resource
+	AfBorrowDao afBorrowDao;
+	@Resource
+	AfUserAccountDao afUserAccountDao;
+	@Resource
+	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfBorrowCashService afBorrowCashService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -537,6 +569,129 @@ public class TestController {
 //		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
 //		logger.info("dealWithSynchronizeOverduedOrder completed");
 		return "success";
+	}
+	
+	@RequestMapping(value = { "/dealWithBorrow" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String dealWithBorrow(HttpServletRequest request, HttpServletResponse response) {
+		List<AfOrderDo> list = afOrderDao.get20170801ExceptionOrder();
+		for (AfOrderDo orderInfo : list) {
+			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
+			String name = orderInfo.getGoodsName();
+			
+			AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, orderInfo.getUserId(), orderInfo.getActualAmount(),
+					orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+			
+			Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+			String virtualCode = getVirtualCode(virtualMap);
+			//是虚拟商品
+			if (StringUtils.isNotBlank(virtualCode)) {
+				AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), 
+						orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
+				//增加虚拟商品记录
+				afUserVirtualAccountService.saveRecord(virtualAccountInfo);
+			}
+			
+			orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+			orderInfo.setStatus(OrderStatus.PAID.getCode());
+			orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+			// 新增借款信息
+			afBorrowDao.addBorrow(borrow);
+			// 在风控审批通过后额度不变生成账单
+			afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode());
+			// 修改用户账户信息
+			AfUserAccountDo account = new AfUserAccountDo();
+			account.setUsedAmount(orderInfo.getActualAmount());
+			account.setUserId(userAccountInfo.getUserId());
+			afUserAccountDao.updateUserAccount(account);
+			
+			logger.info("updateOrder orderInfo = {}", orderInfo);
+			afOrderDao.updateOrder(orderInfo);
+		}
+		
+		return "success";
+	}
+	//3.7.6初始化借钱缓存，用于app端高亮显示
+	@RequestMapping(value = { "/initBorrowCache" }, method = RequestMethod.GET)
+	@ResponseBody
+	public void initBorrowCache()
+	{
+		logger.info("initBorrowCache,start");
+		List<String> ids = afBorrowCashService.getBorrowedUserIds();
+		if(ids!=null){
+			bizCacheUtil.saveRedistSet(Constants.HAVE_BORROWED, ids);
+		}
+		logger.info("initBorrowCache,end");
+	}
+	
+	public String getVirtualCode(Map<String, Object> resultMap) {
+		if (resultMap == null) {
+			return null;
+		}
+		if (resultMap.get(Constants.VIRTUAL_CODE) == null) {
+			return null;
+		} 
+		return resultMap.get(Constants.VIRTUAL_CODE).toString();
+	}
+	
+	/**
+	 * 
+	 * @param name 分期名称
+	 * @param type 分期类型
+	 * @param userId 用户id
+	 * @param amount 分期金额
+	 * @param nper 分期期数
+	 * @param perAmount 每期金额
+	 * @param status 状态
+	 * @param orderId 订单id
+	 * @param orderNo 订单编号
+	 * @param borrowRate 借款利率等参数
+	 * @param interestFreeJson 分期规则
+	 * @return
+	 */
+	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson) {
+		
+		Integer freeNper = 0;
+		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
+		if (CollectionUtils.isNotEmpty(interestFreeList)) {
+			for (InterestFreeJsonBo bo : interestFreeList) {
+				if (bo.getNper().equals(nper)) {
+					freeNper = bo.getFreeNper();
+					break;
+				}
+			}
+		}
+		//拿到日利率快照Bo
+		BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(borrowRate);
+		//每期本金
+		BigDecimal principleAmount = amount.divide(new BigDecimal(nper), 2, RoundingMode.DOWN);
+		//每期利息
+		BigDecimal interestAmount = amount.multiply(borrowRateBo.getRate()).divide(Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
+		//每期手续费
+		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(amount, nper, borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
+
+		BigDecimal perAmount = BigDecimalUtil.add(principleAmount,interestAmount,poundageAmount);
+		
+		Date currDate = new Date();
+		AfBorrowDo borrow = new AfBorrowDo();
+		borrow.setGmtCreate(currDate);
+		borrow.setAmount(amount);
+		borrow.setType(type.getCode());
+		borrow.setBorrowNo(generatorClusterNo.getBorrowNo(currDate));
+		borrow.setStatus(status);// 默认转账成功
+		borrow.setName(name);
+		borrow.setUserId(userId);
+		borrow.setNper(nper);
+		borrow.setNperAmount(perAmount);
+		borrow.setCardNumber(StringUtils.EMPTY);
+		borrow.setCardName("代付");
+		borrow.setRemark(name);
+		borrow.setOrderId(orderId);
+		borrow.setOrderNo(orderNo);
+		borrow.setBorrowRate(borrowRate);
+		borrow.setCalculateMethod(BorrowCalculateMethod.DENG_BEN_DENG_XI.getCode());
+		borrow.setFreeNper(freeNper);
+		return borrow;
 	}
 	
 	

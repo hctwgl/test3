@@ -70,11 +70,30 @@
 		AND 
 			g.is_delete = 0 
 		AND 
-			g.code='tear_packet' 
+			g.code= #{gameCode} 
 		AND 
 			user_id = #{userId}
 		AND
 			gr.code = #{borrowId}
+	</select>
+	
+	
+	<select id="getTearRiskPacketResultByUserId" resultType="AfGameResultDto">
+		SELECT 
+			<include refid="queryFieldsWithPrefix"/>
+		FROM 
+			af_game_result gr 
+		LEFT JOIN 
+			af_game g 
+		ON(g.id = gr.game_id) 
+		WHERE 
+			gr.is_delete = 0 
+		AND 
+			g.is_delete = 0 
+		AND 
+			g.code= #{gameCode} 
+		AND 
+			user_id = #{userId}
 	</select>
 	
 </mapper>

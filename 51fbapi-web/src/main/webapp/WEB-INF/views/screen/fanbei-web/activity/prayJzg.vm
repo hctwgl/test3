@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <title>祈福九寨沟</title>
+</head>
+<body>
+    <img src="$commonUrl/prayJzg1.jpg">
+    <img src="$commonUrl/prayJzg2.jpg">
+    <img src="$commonUrl/prayJzg3.jpg">
+    <img src="$commonUrl/prayJzg4.jpg">
+    <img src="$commonUrl/prayJzg5.jpg">
+    <img src="$commonUrl/prayJzg6.jpg">
+    <img src="$commonUrl/prayJzg7.jpg">
+    <img src="$commonUrl/prayJzg8.jpg">
+    <img src="$commonUrl/prayJzg9.jpg">
+    <img src="$commonUrl/prayJzg10.jpg">
+    <img src="$commonUrl/prayJzg11.jpg">
+</body>
+</html>

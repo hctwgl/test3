@@ -33,6 +33,7 @@ public class AfIdNumberDo extends AbstractSerial {
 	private String idFrontUrl;
 	private String idBehindUrl;
 	private String faceUrl;
+	private String faceType;//人脸识别类型【YITU:依图 FACE_PLUS:face++】
 
 	
 	/**
@@ -204,6 +205,18 @@ public class AfIdNumberDo extends AbstractSerial {
 	 */
 	public void setFaceUrl(String faceUrl) {
 		this.faceUrl = faceUrl;
+	}
+	/**
+	 * @return the faceType
+	 */
+	public String getFaceType() {
+		return faceType;
+	}
+	/**
+	 * @param faceType the faceType to set
+	 */
+	public void setFaceType(String faceType) {
+		this.faceType = faceType;
 	}
 	
 	

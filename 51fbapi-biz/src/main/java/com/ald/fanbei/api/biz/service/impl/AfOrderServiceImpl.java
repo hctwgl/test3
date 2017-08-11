@@ -11,6 +11,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,16 +28,6 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -82,17 +74,6 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
@@ -176,6 +157,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfUserVirtualAccountService afUserVirtualAccountService;
 	@Resource
 	AfTradeBusinessInfoDao afTradeBusinessInfoDao;
+	@Resource
+	AfTradeOrderService afTradeOrderService;
 	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
@@ -732,20 +715,26 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
 						// 最后调用风控控制
+						String _vcode = getVirtualCode(virtualMap);
 						String str = orderInfo.getGoodsName();
 						if(OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 							str = OrderType.BOLUOME.getCode();
 						}
 						if(OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-							str = OrderType.TRADE.getCode();
+							AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
+							afTradeOrderDo.setOrderId(orderInfo.getRid());
+							AfTradeOrderDo result = afTradeOrderService.getByCommonCondition(afTradeOrderDo);
+							str = String.valueOf(result.getBusinessId());
+							_vcode = "99";
 						}
 						logger.info("verify userId" + userId);
+
 						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
-						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, getVirtualCode(virtualMap));
+						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode);
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
-							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, getVirtualCode(virtualMap));
+							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap);
 						}
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {//组合支付
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
@@ -800,7 +789,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
 							
-							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualCode, bankAmount, borrow, verybo, cardInfo);
+							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
 						}
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
@@ -1270,7 +1259,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						break;
 					case COMBINATION_PAY:
 						// 组合支付退款
-						logger.info("agent pay refund begin");
+						logger.info("CP pay refund begin");
 						orderInfo = orderDao.getOrderById(orderId);
 
 						AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
@@ -1286,7 +1275,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							newBorrowAmount = afBorrowService.calculateBorrowAmount(afBorrowDo.getRid(), refundAmount, refundSource.equals(RefundSource.USER.getCode()));
 							backAmount = newBorrowAmount.negate();
 						}
-						logger.info("dealBrandOrderRefund newBorrowAmount = {} backAmount = {}", new Object[] { newBorrowAmount, backAmount });
+						logger.info("dealBrandOrderCPRefund newBorrowAmount = {} backAmount = {}", new Object[] { newBorrowAmount, backAmount });
 
 						// 更新账户金额
 						BigDecimal userUsedAmount = afUserAccountDo.getUsedAmount();
@@ -1576,6 +1565,79 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 			}
 		}
+	}
+
+	
+	/**
+	 * 处理组合支付失败的情况
+	 */
+	@Override
+	public int dealPayCpOrderFail(final String payOrderNo, final String tradeNo,final String payType) {
+		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					
+					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+					// 不处理新建，处理
+					if (orderInfo == null) {
+						return 0;
+					}
+					// 只处理订单处理中的状态
+					if (!orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()) ){
+						return 0;
+					}
+					logger.info("dealPayCpOrderFail fail begin , payOrderNo = {} and tradeNo = {}", new Object[] { payOrderNo, tradeNo});
+					
+					//恢复额度
+					
+					// 如果已经使用的额度大于要恢复的额度 才会给用户增加额度，防止重复回调造成重复给我用户增加额度问题
+					AfUserAccountDo userAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+					if(userAccountDo.getUsedAmount().compareTo(orderInfo.getBorrowAmount()) >=0) {
+						// 恢复账户额度
+						AfUserAccountDo account = new AfUserAccountDo();
+						account.setUsedAmount(orderInfo.getBorrowAmount().negate());
+						account.setUserId(orderInfo.getUserId());
+						afUserAccountDao.updateUserAccount(account);
+						// 增加资金变化的记录
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL, orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
+					}
+					
+					// 恢复虚拟额度
+					AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();
+					queryVirtualAccountDo.setUserId(orderInfo.getUserId());
+					queryVirtualAccountDo.setOrderId(orderInfo.getRid());
+					AfUserVirtualAccountDo userVirtualAccountDo = afUserVirtualAccountService.getByCommonCondition(queryVirtualAccountDo);
+					if(userVirtualAccountDo !=null){
+						userVirtualAccountDo.setStatus(YesNoStatus.NO.getCode());
+						afUserVirtualAccountService.updateById(userVirtualAccountDo);
+					}
+					
+					// 如果使用了优惠卷，恢复优惠卷
+					if(orderInfo.getUserCouponId() != null && orderInfo.getUserCouponId() != 0){
+	                    afUserCouponDao.updateUserCouponSatusNouseById(orderInfo.getUserCouponId());
+					}
+
+						
+					// 处理订单
+					orderInfo.setPayTradeNo(payOrderNo);
+					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+					orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
+					orderInfo.setStatusRemark(Constants.PAY_ORDER_UPS_FAIL_BANK);
+					orderInfo.setPayType(payType);
+					orderInfo.setGmtPay(new Date());
+					orderInfo.setTradeNo(tradeNo);
+					orderDao.updateOrder(orderInfo);
+					logger.info("dealPayCpOrderFail fail complete , orderInfo = {} ", orderInfo);
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealPayCpOrderFail fail error:", e);
+					return 0;
+				}
+			}
+		});
+		return result;
 	}
 	
 }

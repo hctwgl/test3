@@ -116,6 +116,8 @@ public class Constants {
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
+	//查询用户是否结果款，1代表已借款
+	public static final String HAVE_BORROWED = "have_borrowed$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";
@@ -288,5 +290,17 @@ public class Constants {
 	
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
+
+	//商圈
+	public static final String DEFAULT_SALT = "51fb";
+	public static final int DEFAULT_DIGEST_TIMES = 1024;
+	public static final String SHA1 = "SHA-1";
+	public static final String TRADE_LOGIN_BUSINESSID = "trade_login_businessId_";
+
+	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "ala_bororw_deliver_money_lock";
+
+	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
+
+
 
 }

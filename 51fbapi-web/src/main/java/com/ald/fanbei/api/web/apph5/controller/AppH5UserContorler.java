@@ -119,7 +119,6 @@ public class AppH5UserContorler extends BaseController {
 	public String getRegisterSmsCode(HttpServletRequest request, ModelMap model) throws IOException {
 		Calendar calStart = Calendar.getInstance();
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
-//		String resultStr = "";
 		try {
 			String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
 			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
@@ -160,8 +159,8 @@ public class AppH5UserContorler extends BaseController {
 	@RequestMapping(value = "commitRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		Calendar calStart = Calendar.getInstance();
-//		String resultStr = "";
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+		
 		try {
 			String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
@@ -174,6 +173,7 @@ public class AppH5UserContorler extends BaseController {
 			if (eUserDo != null) {
 				resp= H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null);
 				return resp.toString();
+
 			}
 			AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
 			if (smsDo == null) {
@@ -267,7 +267,7 @@ public class AppH5UserContorler extends BaseController {
 	}
 
 	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public  BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		return null;
 	}
 

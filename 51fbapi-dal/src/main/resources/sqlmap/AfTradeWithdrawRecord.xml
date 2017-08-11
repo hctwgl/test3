@@ -5,7 +5,7 @@
 
 	<!--基本的sql查询字段 公共引用... -->
 	<sql id="queryFields">
-		id,gmt_create,gmt_modified,status,business_id,amount,type,card_number,card_name,card_code
+		id,gmt_create,gmt_modified,status,business_id,amount,type,card_number,card_name,card_code,card_user_name
 	</sql>
 
 	<!-- 基本的sql查询条件公共引用 -->
@@ -81,6 +81,9 @@
 			<if test="cardCode != null">
 				card_code,
 			</if>
+			<if test="cardUserName != null">
+				card_user_name,
+			</if>
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -110,6 +113,9 @@
 			</if>
 			<if test="cardCode != null">
 				#{cardCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cardUserName != null">
+				#{cardUserName,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>
@@ -143,7 +149,10 @@
 				card_name = #{cardName,jdbcType=VARCHAR},
 			</if>
 			<if test="cardCode != null and cardCode != '' ">
-				card_code = #{cardCode,jdbcType=VARCHAR}
+				card_code = #{cardCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cardUserName != null and cardUserName != '' ">
+				card_user_name = #{cardUserName,jdbcType=VARCHAR}
 			</if>
 		</set>
 		WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
@@ -178,12 +187,25 @@
 		<include refid="commonCondition" />
 	</select>
 
-	<select id="withdrawGrid"
-		resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
+	<select id="withdrawGridDate" resultType="java.lang.String">
+		select distinct date_format(gmt_create, '%Y-%m-%d')
+		from af_trade_withdraw_record
+		where business_id = #{businessId}
+		<if test="startDate != null and startDate != '' ">
+			and gmt_create <![CDATA[   >=  ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != '' ">
+			and gmt_create <![CDATA[   <=  ]]>
+			#{endDate}
+		</if>
+		order by gmt_create desc
+	</select>
+	<select id="withdrawGrid" resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawRecordDo">
 		select
 		<include refid="queryFields" />
-		from af_trade_withdraw_record 
-		where business_id = #{userId}
+		from af_trade_withdraw_record
+		where business_id = #{businessId}
 		<if test="startDate != null and startDate != '' ">
 			and gmt_create <![CDATA[   >=  ]]>
 			#{startDate}
@@ -192,20 +214,6 @@
 			and gmt_create <![CDATA[   <=  ]]>
 			#{endDate}
 		</if>
-		limit #{offset} , #{limit}
-	</select>
-	<select id="withdrawGridTotal" resultType="java.lang.Long">
-		select
-		count(1)
-		from af_trade_withdraw_record 
-		where business_id = #{userId}
-		<if test="startDate != null and startDate != '' ">
-			and gmt_create <![CDATA[   >=  ]]>
-			#{startDate}
-		</if>
-		<if test="endDate != null and endDate != '' ">
-			and gmt_create <![CDATA[   <=  ]]>
-			#{endDate}
-		</if>
+		order by gmt_create desc
 	</select>
 </mapper>

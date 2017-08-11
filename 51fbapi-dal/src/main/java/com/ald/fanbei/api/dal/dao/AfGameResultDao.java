@@ -28,7 +28,9 @@ public interface AfGameResultDao {
 	     */
 	    List<AfGameResultDto> getResultDtoByUserId(Long userId);
 
-		List<AfGameResultDo> getTearPacketResultByUserId(@Param("userId")Long userId, @Param("borrowId")Long borrowId);
+		List<AfGameResultDo> getTearPacketResultByUserId(@Param("userId")Long userId, @Param("borrowId")Long borrowId,@Param("gameCode")String gameCode);
 
 		List<AfGameResultDo> getTearPacketLatestRecord();
+
+		List<AfGameResultDo> getTearRiskPacketResultByUserId(@Param("userId")Long userId, @Param("gameCode")String gameCode);
 }

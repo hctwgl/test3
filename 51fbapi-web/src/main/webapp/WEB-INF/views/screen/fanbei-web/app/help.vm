@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+    #set($version="201708101600")
+    #set($commonUrl="http://f.51fanbei.com/h5")
+    <title>服务中心</title>
+    <link rel="stylesheet" type="text/css" href="/dist/css/app/help.css?version=$version">
+</head>
+<body style="background-color:#fff;">
+<div id="navWrap">
+    <ul class="nav">
+        <li id="first" class="current">
+            <i class="bg"></i>
+            <span>借款</span>
+        </li>
+        <li id="second">
+            <i></i>
+            <span>分期</span>
+        </li>
+        <li id="third">
+            <i></i>
+            <span>账单与还款</span>
+        </li>
+        <li id="fourth">
+            <i></i>
+            <span>额度评估</span>
+        </li>
+    </ul>
+</div>
+
+<div class="main_wrap">
+    <ul id="firstList" class="listMainContent">
+        <li>
+            <div class="itemTitle">
+                <div class="title">如何申请借款？需要具备什么条件？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent1 hide">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
+                需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
+                港澳台人士。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">借款需要提交什么资料？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent1 hide">目前基本认证需要提供身份信息、银行卡，芝麻信用分、运营商信息以及通讯录等相关信息，详情请查看APP内的信用认证。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">借款需要多长时间？如何查询进度？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent1 hide">
+                您好，当天提交的信息当天都会有审核结果，00：00-9：00内提交的申请，将在9：00后开始审核，最快8分钟会有结果。您可以关注一下借钱页面或者留意一下APP的站内信。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">借款的费用如何计算？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent1 hide">您好，我们将根据市场运营规则进行调整，如您保持良好的使用记录，后期费用也会随之调整，信用越好，费用越低。详情请查看APP内借钱页面。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">为什么会借款失败？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent1 hide">
+                您好，借款失败通常分为审核失败和放款失败，审核失败一般都是您的综合信用评分不足导致的，暂时不符合借款要求。放款失败通常是由于您绑定的银行卡信息有误/银行卡类型不符，建议您可以先在APP内绑定另一张常用卡，然后及时联系客服做主副卡顺序调整，然后进行重新借款。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">借款支持哪些银行卡？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent1 hide">
+                您好，目前只支持以下储蓄卡：工商银行、中国银行、建设银行、农业银行、交通银行、平安银行、兴业银行、上海浦东发展银行、中信银行、光大银行、邮政储蓄
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">申请提交后是否可以取消借款？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent1 hide">您好，提交申请后目前不支持取消。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">借款长时间未到账怎么办？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent1 hide">您好，目前借款审核通过后，2小时内即会放款，具体到账时间以银行为准，如您当天没有到账，可以提供一下银行流水给客服进行核实。
+            </div>
+        </li>
+    </ul>
+    <ul id="secondList" class="listMainContent hide">
+        <li>
+            <div class="itemTitle">
+                <div class="title">分期审核需要多久？
+                    <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">您好，消费分期在当天18：00之前提交的订单，当天都会有审核结果，18：00之后的订单，次日处理。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">返利多久到账？
+                    <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">普通订单（直接购买）以‘集分宝’形式返利
+                <br>(1)小额订单返利
+                <br>订单金额500元以内，返利金额20元以内，确认收货后，7天内到账。
+                <br>(2))中额订单返利
+                <br>订单金额500-5000元，返利金额20-150元，确认收货后，15天内到账。
+                <br>(3)大额订单返利
+                <br>订单金额5000以上，返利金额150元以上，人工进行订单返利金额审核并证实交易是否存在，核对无误后次月21日发放。
+                <br>注：确认收货且返利到账的情况下如产生退货退款，每发生一次，返利到账时间累积叠加7天，如存在恶意刷单用户，则永久停封账号，返利金额全部收回。
+                <br>分期订单&自营订单，以“现金”形式直接返利
+                <br>(1)分期+自营订单返利
+                <br>使用信用额度进行消费购物，用户确认收货后3个工作日内，以现金形式返至“我的-返现金额”之后用户如需退货退款，需统一返还等额返利金额。
+                <br>(2)申请退/换货时间
+                <br>分期与自营订单确认收货后7天内可进行退款申请，超过7天则不能进行退款申请。
+                <br>注：返利到账后如发生退款，当用户集分宝与余额相加金额不足无法偿还返利账单时，此时先扣除用户账上的集分宝再扣余额后生成剩余返利金额的账单。
+                <br>具体分以下情况：
+                <br>情况1：确认收货，返利未发放，申请退款
+                <br>商品不影响二次销售，可进行退款，订单关闭账单清零。
+                <br>情况2：确认收货，返利到账，申请退款
+                <br>商品不影响二次销售，可进行退款，生成等额返利账单，订单关闭账单清零
+                <br>如售价3000元A商品返利150元，给用户生成150元返利账单，商品账单清零。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">分期的订单是否可以修改信息？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent2 hide">您好，您可以关注一下您的订单状态，如在审核中，可以及时联系客服更改地址
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">分期的订单是否可以取消？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">您好，订单在未发货之前，可以及时联系客服取消。（发货状态可第一时间联系客服获取相关动态）
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">分期的产品如何查询物流单号？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">您好，发货后，物流信息会在订单详情中同步，进入订单详情即可查看。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">如何退/换货？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">请在“我的-全部订单”里找到需要退/换货的订单，申请售后提交相应原因，部分品类不支持7天无理由退/换货，详情查看“退换货总则”。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">申请退换货后，多久办理?
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">请点击“我的-全部订单”再点击顶部“全部订单”查看订单退货状态，订单超过10天后则系统自动关闭申请退/换货入口。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">提交退换货申请后多久通过？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">
+                我们的申请退/换货审核时间为：当日9:00-16:00点前提交申请，当日回复；16:00-次日9:00提交申请，次日12:00前回复您结果。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">退/换货邮寄费用报销吗？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent2 hide">
+                因51返呗原因产生的退换货邮寄费用由51返呗承担，邮寄退换货完成后请“联系客服”办理，但因您个人原因产生的退换货，涉及相关运费需要由顾客自行承担。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">商家订单如何退换货？
+                    <i class="arrow"></i>
+                </div>
+
+            </div>
+            <div class="itemContent itemContent2 hide">
+                未使用51返呗信用额度进行消费购物，可自行联系商家申请退换货；如使用51返呗额度进行分期消费，则可找到相应订单申请售后或联系客服处理。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">商家订单如何退换货？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">
+                未使用51返呗信用额度进行消费购物，可自行联系商家申请退换货；如使用51返呗额度进行分期消费，则可找到相应订单申请售后或联系客服处理。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">提交的换货申请，怎么成退货了？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">若您换货的商品在配货过程中发生缺货，将直接为您办理退货。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">是否支持7天无理由退货？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">商品页面会提示您商品是否支持“7天无理由退货”，自营商品则不支持7天无理由退/换货，更多信息，请查看“退换货总则”。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">如何区分51返呗自营商品和非自营商品？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">(1)自营：若商品页面左侧角标出现“自营”则为51返呗自营商品。
+                <br>(2)非自营：点击商品链接跳转淘宝、天猫等购买页面则为非自营商品。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">订单已签收，但是配送状态显示配送中状态，为什么不能申请退换货？<i class="arrow"></i></div>
+
+            </div>
+            <div class="itemContent itemContent2 hide">只有您确认包裹已签收后，才能够申请退换货。请您登录“我的-全部订单”，点击 “确认收货”即可。
+            </div>
+        </li>
+
+        <li>
+            <div class="itemTitle">
+                <div class="title">发票内容可以写什么？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">发票内容只能开具明细(即:商品名称+型号)。
+            </div>
+        </li>
+
+        <li>
+            <div class="itemTitle">
+                <div class="title">发票随商品一起送吗？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">一张订单只可以开具一张发票，发票统一确认收货后30天内发出。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">退款方式说明？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">(1)不使用51返呗信用额度进行购买的情况下，使用微信支付或银行卡支付，原路退还余额，处理周期5工作日内；
+                <br>(2)使用51返呗信用额度进行消费购物，退至“分期—可用额度”，处理周期3个工作日内；
+                <br>(3)满减券、抵扣券等优惠券则不退还。
+                <br>注：若订单中使用多种支付方式，退款时将按各种支付方式金额所占订单金额比例进行原路退款。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">退换货总则
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">1.退换货基本规则
+                <br>51返呗承诺若符合以下情况，客户收到商品之日起7日内可以申请退货，15日内可以申请换货，具体退换货标准如下：
+                <br>(1)国家法律所规定的功能性故障或商品质量问题，经由生产厂家指定或特约售后服务中心检测确认，并出具检测报告确认属于商品质量问题。可支持7天退货15天换货，51返呗为顾客报销运费。
+                <br>(2)到货物流损、缺件或商品描述与网站不符原因，物流损指在运输过程中造成的损坏、漏液、破碎、性能故障，经售后人员核查情况属实。可支持7天退货15天换货，51返呗为顾客报销运费。
+                <br>(3)除以上两种原因之外，如个人原因导致的退换货，未使用且不影响二次销售（商品原包装未拆封）。暂支持7天退货但不支持15天换货，运费由顾客承担。
+                <br>注：已激活的3c数码产品，非质量问题不支持7天无理由退货，请确认需求后再激活使用！
+                <br>2.不适用于7天无理由退货的商品
+                <br>依据《网络购买商品七日无理由退货暂行办法》第六条，以下商品不适用七日无理由退货规定：
+                <br>(1)消费者定作的商品；
+                <br>(2)逛逛生活场景鲜活易腐的商品；
+                <br>(3)在线下载或者消费者拆封的音像制品、计算机软件等数字化商品；
+                <br>(4)交付的报纸、期刊。
+                <br>3.不适用7日无理由退货规定
+                <br>依据《网络购买商品七日无理由退货暂行办法》第七条，以下商品可以不适用七日无理由退货规定
+                <br>(1)拆封后易影响人身安全或者生命健康的商品，或者拆封后易导致商品品质发生改变的商品；
+                <br>(2)一经激活或者试用后价值贬损较大的商品；
+                <br>(3)销售时已明示的临近保质期的商品、有瑕疵的商品。
+            </div>
+        </li>
+    </ul>
+    <ul id="thirdList" class="listMainContent hide">
+        <li>
+            <div class="itemTitle">
+                <div class="title">还款遇到问题怎么办？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent3 hide">您好，如您在操作还款过程中遇到无法还款事宜，请:<br>(1)刷新页面; <br>(2)退出账户重新登录
+                如一直显示还款处理中，建议您耐心等待2小时，期间有可能支付通道会存在延迟的情况，如2小时候后仍未更新状态，请及时联系客服进行处理。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">如何查询账单？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent3 hide">您好，现金借款可以点击借钱，页面即可查看到需还金额和还款时间。消费分期可以点击分期，页面即可查看还款金额，以及你的分期账单。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">还款方式有哪些？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent3 hide">
+                您好，还款方式:<br>(1)线上：微信、银行卡主动还款;<br>(2)线下：支付宝、银行卡转账(如您通过线下还款，请在还款后及时联系客服提供还款凭证及流水号，做账单同步处理)
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">是否可以提前还款？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent3 hide">您好，目前可以操作提前还款，费用不做减免。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">逾期会有什么结果，如何处理？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent3 hide">
+                您好，如未在还款日前进行还款或恶意拖欠导致还款失败，即视为逾期，将会产生滞纳金，您的逾期情况也将对您后期的借款造成一定的影响，建议您保持良好的信用记录。如非个人原因导致的逾期，请第一时间联系客服进行处理。
+                (温馨提醒：如您在还款日前，资金紧缺，也可在还款日前1天，在借钱页面申请续期，可延长7天的还款日)
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">还款券该如何使用
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent3 hide">您好，还款券可在您还款的时候进行资金的抵扣。
+            </div>
+        </li>
+
+    </ul>
+    <ul id="fourthList" class="listMainContent hide">
+        <li>
+            <div class="itemTitle">
+                <div class="title">如何获取额度？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent4 hide">您好，您可以进入51返呗APP完成信用基本认证，获取相对应的额度。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">如何提升额度？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent4 hide">
+                您好，建议您可以完善补充认证并且保证您的资料填写真实，持续使用51返呗APP并且按时还款保持良好的信用，系统会对您的使用记录进行评估进行提额。
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">为什么额度为“0”？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent4 hide">您好，一般都是您所绑定的授权信息不满足要求，会判定您综合评分不足，系统会默认额度为0，建议您可以完善一下补充认证
+            </div>
+        </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">为什么我的额度会下降？
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent4 hide">您好，系统会不定时的调整审核标准，对信息进行评估，不满足相关要求，则会降低额度。
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="footer">
+    <div class="kf">
+        <img src="$commonUrl/app/images/sys/help_kf.png">
+        <span>在线客服</span>
+    </div>
+    <div class="tel">
+        <img src="$commonUrl/app/images/sys/help_tel.png">
+        <span>客服电话</span>
+    </div>
+</div>
+<script type="text/javascript" src="/dist/js/app/help.js?version=$version"></script>
+</body>
+</html>
+

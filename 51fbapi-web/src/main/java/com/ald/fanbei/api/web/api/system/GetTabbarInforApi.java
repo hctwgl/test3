@@ -81,6 +81,10 @@ public class GetTabbarInforApi implements ApiHandle {
 				handleIosBorow(context,requestDataVo,data);
 				index.put("borrowSelected", data);
 			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_HIGHLIGHT")){
+				handleIosBorow(context,requestDataVo,data);
+				index.put("borrowHighLight", data);
+			}
 			
 		}
 

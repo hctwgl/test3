@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfLoanSupermarketTabService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfLoanSupermarketDao;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo;
@@ -29,6 +32,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.api.borrowCash.GetBowCashLogInInfoApi;
 import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfLoanShopVo;
@@ -63,7 +67,7 @@ public class AppBorrowLoanShopController extends BaseController {
 	@ResponseBody
 	public String getInfoForBorrowLaonShop(HttpServletRequest request, HttpServletResponse response) {
 		Calendar calStart = Calendar.getInstance();
-		String resultStr = " ";
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
@@ -78,23 +82,52 @@ public class AppBorrowLoanShopController extends BaseController {
 			}
 			
 			Map<String, Object> data = new HashMap<String, Object>();
+			
+			//给轮播拼接地址
+			if(bannerList!=null){
+				for(Object obj:bannerList){
+					Map<String, Object> map = (Map<String, Object>) obj;
+					String content = (String) map.get("content");
+					if(StringUtils.isNotBlank(content)){
+						if(content.contains("=")){
+							map.put("content", content+"&linkType=h5LoanBanner");
+						}else{
+							map.put("content", content+"?linkType=h5LoanBanner");
+						}
+					}
+				}
+			}
+			
+			String contextPath = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+			//重新设置linkUrl作为埋点用
+			if(list!=null){
+				for(AfLoanTapsAndShops loanTapsAndShop:list){
+					List<AfLoanShopVo> shopVos = loanTapsAndShop.getLoanShopList();
+					if(shopVos!=null){
+						for(AfLoanShopVo vo:shopVos){
+							vo.setLinkUrl(contextPath+"/fanbei-web/thirdPartyLink?linkType=h5LoanList&lsmNo="+vo.getLsmNo());
+						}
+					}
+				}
+			}
+			
 			data.put("bannerList", bannerList);
 			data.put("scrollbar", scrollbar);
 			data.put("tabList", list);
 
-			return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+			resp = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "获取数据失败", "", e.getErrorCode().getDesc()).toString();
+			resp = H5CommonResponse.getNewInstance(false, "获取数据失败", "", e.getErrorCode().getDesc());
 			logger.error("获取借贷超市数据失败", e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "获取数据失败", "", e.getMessage()).toString();
+			resp = H5CommonResponse.getNewInstance(false, "获取数据失败", "", e.getMessage());
 			logger.error("获取借贷超市数据失败" , e);
 		} finally {
 			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resultStr, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(),
+			doLog(request, resp, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(),
 					context.getUserName());
 		}
-		return resultStr;
+		return resp.toString();
 
 	}
 	
@@ -155,7 +188,7 @@ public class AppBorrowLoanShopController extends BaseController {
 	}
 
 	@Override
-	public String doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
 	}
