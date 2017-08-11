@@ -29,7 +29,7 @@ $(function(){
                             $('.alertPresent').css('display','block');
                             $('.mask').css('display','block');
                             $('.presentTitle').css('display','block');
-                            $('.sure').html('确定赠送');
+                            $('.sureDemand').hide();
                             var presentCardList=returnData.data.itemsList;
                             userItemsList=returnData.data.userItemsList;
                             var str='';
@@ -63,7 +63,7 @@ $(function(){
     })
 
     //确定赠送
-    $('.sure').click(function(){
+    $('.surePresent').click(function(){
         name = $('.img.img3').attr('name');
         itemsListRid=$('.img.img3').attr('rid');
         for(var i=0;i<userItemsList.length;i++){

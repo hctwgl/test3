@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170801")
+    #set($version="20170811")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <title>场景点亮首页</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
@@ -89,7 +89,8 @@
         </div>
         <p class="previous" onclick="left()"></p>
         <p class="next" onclick="right()"></p>
-        <p class="sure"></p>
+        <p class="sure surePresent">确定赠送</p>
+        <p class="sure sureDemand">确定索要</p>
         <p class="close" @click="close()">X</p>
     </div>
 </div>
