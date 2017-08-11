@@ -93,7 +93,8 @@ $(function(){
                         if(outputData.msg=="没有登录"){
                             window.location.href = "gglogin?urlName=" + urlName; 
                         }else{
-                            window.location.href = "ggIndexShare?login=true";
+                            var userName = outputData.data.userName;
+                            window.location.href = "ggIndexShare?userName="+userName;
                         }
                     }
                 }
