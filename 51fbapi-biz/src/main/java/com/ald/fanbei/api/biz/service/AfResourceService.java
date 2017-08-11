@@ -157,5 +157,6 @@ public interface AfResourceService {
 	 */
 	AfResourceDo getFakePersonByActivityId(String string);
 	
+	AfResourceDo getGGSpecificBanner(String value2);
 	
 }
