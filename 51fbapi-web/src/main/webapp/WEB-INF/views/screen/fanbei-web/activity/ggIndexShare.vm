@@ -28,7 +28,7 @@
     <!--首页轮播图-->
     <div class="banner">
         <ul class="bannerList">
-            <li v-for="item in content.bannerList"><img :src="item.imageUrl"></li>
+            <li v-for="item in content.bannerList"><img :src="item.value" @click="bannerClick()"></li>
         </ul>
         <ul class="num"></ul>
     </div>

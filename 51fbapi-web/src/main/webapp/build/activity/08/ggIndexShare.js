@@ -1,3 +1,4 @@
+'use strict';
 var activityId = getUrl("activityId");//获取活动Id
 var userName=getCookie('userName');//获取用户名
 //获取页面名称传到登录页
@@ -87,6 +88,14 @@ let vm = new Vue({
                 }
             })
         },
+        //点击轮播图
+        bannerClick:function(){
+            if(userName='' || !userName){
+                window.location.href="gglogin?urlName="+urlName;
+            }else{
+                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            }
+        },
         //点击优惠券
         couponClick:function(e){
             console.log(userName + '111')
@@ -98,8 +107,8 @@ let vm = new Vue({
                     dataType: "JSON",
                     data: {'sceneId':sceneId},
                     success: function (returnData){
-                        var returnData = eval('(' + returnData + ')');
                         console.log(returnData)
+
                         if(returnData.success){
                             requestMsg(returnData.msg);
                         }else{
@@ -148,16 +157,17 @@ let vm = new Vue({
             }
         },
         presentClick:function(){
-            console.log(userName)
-            if(userName='' || !userName){
+            userName=getCookie('userName');
+            if(userName=='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
             }
         },
         demandClick:function(){
-            console.log(userName)
-            if(userName='' || !userName){
+            userName=getCookie('userName');
+
+            if(userName=='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";

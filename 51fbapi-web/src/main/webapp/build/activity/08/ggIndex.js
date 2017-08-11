@@ -86,12 +86,12 @@ let vm = new Vue({
         },
         //点击轮播图
         bannerClick:function(e){
-            var shopId=e.refId;
-            /*$.ajax({
+            var shopId=e.value2;
+            //console.log(shopId)
+            $.ajax({
                 type: 'post',
                 url: '/fanbei-web/getBrandUrlV1',
                 data:{'shopId':shopId},
-                dataType:'JSON',
                 success: function (returnData) {
                     console.log(returnData)
                     if(returnData.success){
@@ -100,14 +100,15 @@ let vm = new Vue({
                         location.href=returnData.url;
                     }
                 },
+                dataType:'JSON',
                 error: function(){
                     requestMsg("请求失败");
                 }
-            })*/
+            })
         },
         //点击优惠券
         couponClick:function(e){
-            alert(0)
+            //alert(0)
             var sceneId=e.sceneId;
                 $.ajax({
                     url: "/fanbei-web/pickBoluomeCouponV1",
@@ -115,15 +116,13 @@ let vm = new Vue({
                     dataType: "JSON",
                     data: {'sceneId':sceneId},
                     success: function(returnData){
-                        //var returnData = eval('(' + returnData + ')');
-                        console.log(returnData)
-                        console.log(returnData.url)
+                        //console.log(returnData)
+                        //console.log(returnData.url)
                         if(returnData.success){
                             requestMsg(returnData.msg);
                         }else{
-                            alert(returnData.url);
+                            //alert(returnData.url);
                             window.location.href=returnData.url;
-                            //window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN";
                         }
                     },
                     error: function(){

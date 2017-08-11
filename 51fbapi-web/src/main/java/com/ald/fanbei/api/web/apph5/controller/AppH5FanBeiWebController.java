@@ -388,7 +388,11 @@ public class AppH5FanBeiWebController extends BaseController {
 						.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
 						.toString();
 			}
-
+		} catch (FanbeiException e) {
+			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+			return H5CommonResponse
+					.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+					.toString();
 		} catch (Exception e) {
 			logger.error("getBrandUrl , e = {}", e.getMessage());
 			return H5CommonResponse.getNewInstance(false, "操作失败", "", null).toString();
