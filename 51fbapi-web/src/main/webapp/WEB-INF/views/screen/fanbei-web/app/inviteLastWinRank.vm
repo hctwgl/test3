@@ -27,19 +27,13 @@
 <div class="main_wrap">
     <ul id="list" class="listMainContent">
         <li>
-            <div class="itemTitle">
-                <div class="title">如何申请借款？需要具备什么条件？
-                    <i class="arrow"></i>
-                </div>
-
-            </div>
             <div class="itemContent ">您好，下载51返呗APP，使用常用手机号码进行注册，点击借钱，选择相对应的借款及期限即可。
                 需要是17周岁-45周岁持有第二代身份证的公民，暂不支持
                 港澳台人士。
             </div>
         </li>
         <li>
-            <div class="itemContent itemContent">领奖规则：
+            <div class="rule">领奖规则：
                 <br>1.每月累积邀请奖励金最高的前10位用户，可获得相应奖励；
                 <br>2.该中奖名单每月更新一次，8月中奖名单9月公布，9月中奖
                 名单10月公布，以此类推；
