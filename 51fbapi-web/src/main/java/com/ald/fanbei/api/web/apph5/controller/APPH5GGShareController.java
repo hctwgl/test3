@@ -211,8 +211,10 @@ public class APPH5GGShareController extends BaseController {
 			context = doWebCheck(request, false);
 			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
-			// String userName =
-			// context.getUserName();//request.getParameter("userName");
+			// 为了兼容从我也要点亮中调用主页接口
+			if (StringUtil.isBlank(userName)) {
+				userName = request.getParameter("userName");
+			}
 			if (StringUtil.isBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0) {
