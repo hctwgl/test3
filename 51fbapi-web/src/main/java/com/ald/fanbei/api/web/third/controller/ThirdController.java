@@ -25,8 +25,10 @@ import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.AppResponse;
@@ -123,7 +125,8 @@ public class ThirdController extends AbstractThird{
     	}
     	if ("getDidiRiskInfo".equals(method) && (StringUtils.isEmpty(params.get(ThirdCore.ORDER_ID)) 
     			|| StringUtils.isEmpty(params.get(ThirdCore.TIME_STAMP))
-    		    || StringUtils.isEmpty(params.get(ThirdCore.SIGN)))) {
+    		    || StringUtils.isEmpty(params.get(ThirdCore.SIGN))
+    			)) {
     		throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
     	}
         boolean sign = ThirdNotify.verify(params);
@@ -159,11 +162,13 @@ public class ThirdController extends AbstractThird{
     
     private Map<String, String> buildDidiRiskParam(JSONObject requestParams) {
         Map<String, String> params = new HashMap<String, String>();
+        String appKey = "1d397480-dbce-4d87-b48c-a34b55ee310d";
         String orderId = requestParams.getString(ThirdCore.ORDER_ID);
         String timestamp = requestParams.getString(ThirdCore.TIME_STAMP);
         String sign = requestParams.getString(ThirdCore.SIGN);
         String type = requestParams.getString(ThirdCore.TYPE);
 
+        params.put(ThirdCore.APP_KEY, appKey);
         params.put(ThirdCore.ORDER_ID, orderId);
         params.put(ThirdCore.TIME_STAMP, timestamp);
         params.put(ThirdCore.SIGN, sign);
