@@ -470,13 +470,13 @@ public class H5GGShareController extends H5Controller {
 			// 改变用户卡片的中见状态
 			updateUserItemsStatus(userItemsId, "FROZEN");
 			// 埋点
-			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success", "", ""));
-
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
+			H5CommonResponse.getNewInstance(true, "赠送成功").toString();
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("doSendItems" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getMessage()).toString();
 			logger.error("doSendItems" + context, e);
 		}
 
