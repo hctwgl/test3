@@ -205,6 +205,12 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
         AND
          boluome_activity_id = {boluomeActivityId}
     </select>
-    
+           <select id="deleteByRid">
+   
+      UPDATE af_boluome_activity_user_items
+    SET is_delete = 1
+    WHERE
+      id = #{rid};
+    </select>
     
 </mapper>
