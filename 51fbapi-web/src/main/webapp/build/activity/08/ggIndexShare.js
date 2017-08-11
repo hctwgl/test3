@@ -90,7 +90,8 @@ let vm = new Vue({
         },
         //点击轮播图
         bannerClick:function(){
-            if(userName='' || !userName){
+            userName=getCookie('userName');
+            if(userName=='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
@@ -98,7 +99,7 @@ let vm = new Vue({
         },
         //点击优惠券
         couponClick:function(e){
-            console.log(userName + '111')
+            userName=getCookie('userName');
             if(userName){
                 var sceneId=e.sceneId;
                 $.ajax({
@@ -107,8 +108,7 @@ let vm = new Vue({
                     dataType: "JSON",
                     data: {'sceneId':sceneId},
                     success: function (returnData){
-                        console.log(returnData)
-
+                        //console.log(returnData)
                         if(returnData.success){
                             requestMsg(returnData.msg);
                         }else{
@@ -125,8 +125,8 @@ let vm = new Vue({
         },
         //点击卡片
         cardClick:function(){
-            console.log(userName)
-            if(userName='' || !userName){
+            userName=getCookie('userName');
+            if(userName=='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
@@ -135,7 +135,8 @@ let vm = new Vue({
         //点击获取终极大奖
         finalPrize:function(){
             let self = this;
-            if(userName='' || !userName){
+            userName=getCookie('userName');
+            if(userName=='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
                     if(self.finalPrizeMask){
@@ -166,7 +167,6 @@ let vm = new Vue({
         },
         demandClick:function(){
             userName=getCookie('userName');
-
             if(userName=='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
