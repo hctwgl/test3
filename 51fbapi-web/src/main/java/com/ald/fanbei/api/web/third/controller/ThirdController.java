@@ -99,7 +99,7 @@ public class ThirdController extends AbstractThird{
 
         AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
         try {
-//            result = checkSignAndParam(params,"getDidiRiskInfo");
+            result = checkSignAndParam(params,"getDidiRiskInfo");
             String orderId = params.get(ThirdCore.ORDER_ID);
             String type = params.get(ThirdCore.TYPE);
             BoluomeGetDidiRiskInfoRespBo respInfo = boluomeService.getRiskInfo(orderId, type);
