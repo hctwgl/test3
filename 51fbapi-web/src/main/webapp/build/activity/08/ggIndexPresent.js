@@ -120,7 +120,6 @@ function getData(slideNub){
 }
 //右滑动
 function right(){
-    alert(2)
     var fy = new Array();
     for(var i=0;i<slideNub;i++){
         fy[i]=$(".imgList .img[data-slide-imgId="+i+"]").attr("class");
@@ -136,7 +135,7 @@ function right(){
 }
 //左滑动
 function left(){
-    console.log(1)
+
     var fy = new Array();
     for(var i=0;i<slideNub;i++){
         fy[i]=$(".imgList .img[data-slide-imgId="+i+"]").attr("class");
@@ -156,7 +155,7 @@ function imgClickFy(){
     $(".imgList .img2").attr("onclick","left()");
     $(".imgList .img4").attr("onclick","right()");
 }
-//触摸滑动模块
+/*//触摸滑动模块
 function k_touch() {
     var _start = 0, _end = 0, _content = document.getElementById("slide");
     _content.addEventListener("touchstart", touchStart, false);
@@ -179,7 +178,7 @@ function k_touch() {
             _end=0;
         }
     }
-}
+}*/
 
 // app调用web的方法
 function alaShareData(){

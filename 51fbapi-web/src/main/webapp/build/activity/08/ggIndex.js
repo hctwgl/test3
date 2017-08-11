@@ -164,7 +164,9 @@ let vm = new Vue({
                     success: function (returnData) {
                         console.log(returnData)
                         if(returnData.success){
-                            requestMsg(returnData.msg)
+                            requestMsg(returnData.msg);
+                        }else{
+                            requestMsg(returnData.msg);
                         }
                     },
                     error: function(){
