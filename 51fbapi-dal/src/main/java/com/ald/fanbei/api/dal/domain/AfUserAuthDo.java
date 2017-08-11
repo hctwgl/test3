@@ -27,6 +27,7 @@ public class AfUserAuthDo extends AbstractSerial {
 	private Integer realnameScore;
 	private String facesStatus;
 	private BigDecimal similarDegree;
+	private BigDecimal thresholds;
 	private String mobileStatus;
 	private Date gmtMobile;
 	private String bankcardStatus;
@@ -51,7 +52,9 @@ public class AfUserAuthDo extends AbstractSerial {
 	private Date gmtCredit;
 	private String alipayStatus;
 	private Date gmtAlipay;
-	
+	private String faceType;//YITU：依图 FACE_PLUS:face++
+	private Date gmtFaces;//人脸识别时间
+
 	public Long getRid() {
 		return rid;
 	}
@@ -280,6 +283,42 @@ public class AfUserAuthDo extends AbstractSerial {
 	}
 	public void setGmtAlipay(Date gmtAlipay) {
 		this.gmtAlipay = gmtAlipay;
+	}
+	/**
+	 * @return the thresholds
+	 */
+	public BigDecimal getThresholds() {
+		return thresholds;
+	}
+	/**
+	 * @param thresholds the thresholds to set
+	 */
+	public void setThresholds(BigDecimal thresholds) {
+		this.thresholds = thresholds;
+	}
+	/**
+	 * @return the faceType
+	 */
+	public String getFaceType() {
+		return faceType;
+	}
+	/**
+	 * @param faceType the faceType to set
+	 */
+	public void setFaceType(String faceType) {
+		this.faceType = faceType;
+	}
+	/**
+	 * @return the gmtFaces
+	 */
+	public Date getGmtFaces() {
+		return gmtFaces;
+	}
+	/**
+	 * @param gmtFaces the gmtFaces to set
+	 */
+	public void setGmtFaces(Date gmtFaces) {
+		this.gmtFaces = gmtFaces;
 	}
 	
 }

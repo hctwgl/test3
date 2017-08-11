@@ -34,6 +34,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -115,6 +116,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	AfBorrowService afBorrowService;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -246,7 +249,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			logger.error(e.getMessage());
 		}
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
-
+		//3.7.6 借过款的放入缓存，借钱按钮不需要高亮显示
+		bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED,String.valueOf(userId));
+		
 		Long borrowId = afBorrowCashDo.getRid();
 
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();

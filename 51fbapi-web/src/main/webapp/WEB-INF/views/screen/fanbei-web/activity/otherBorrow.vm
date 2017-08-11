@@ -38,7 +38,7 @@
                     <div class="left">
                         <img class="img" :src="item.iconUrl">
                         <div class="name">{{item.lsmName}}</div>
-                        <div class="text">{{txtFix(item.lsmIntro,14)}}</div>
+                        <div class="text">{{txtFix(item.lsmIntro,11)}}</div>
                     </div>
                     <div class="right" v-if="item.marketPoint">
                         <div class="num">{{sp(item.marketPoint,0)}}</div>

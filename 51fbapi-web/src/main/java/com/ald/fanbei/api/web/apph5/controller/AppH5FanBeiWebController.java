@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -32,6 +34,7 @@ import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
@@ -39,8 +42,10 @@ import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.MoXieResCodeType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
+import com.ald.fanbei.api.common.enums.ThirdPartyLinkType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -49,7 +54,9 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -96,6 +103,10 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfShopService afShopService;
 	@Resource
 	private AfUserAuthService afUserAuthService;
+	@Resource
+	AfLoanSupermarketService afLoanSupermarketService;
+	@Resource
+	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
 	
 	/**
 	 * 首页弹窗页面
@@ -624,6 +635,61 @@ public class AppH5FanBeiWebController extends BaseController {
 
 	}
 	
+	
+	/**
+	 * 第三方链接跳转，记录pv，uv
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "thirdPartyLink" }, method = RequestMethod.GET)
+	public void thirdPartyLink(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext context = null;
+		try {
+			String linkType = request.getParameter("linkType");
+			//app端借贷超市banner跳转进来
+			if(ThirdPartyLinkType.APP_LOAN_BANNER.getCode().equals(linkType)){
+				context = doWebCheckNoAjax(request, true);
+				String lsmNo = request.getParameter("lsmNo");
+				AfLoanSupermarketDo afLoanSupermarket  = afLoanSupermarketService.getLoanSupermarketByLsmNo(lsmNo);
+				AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+				if(afLoanSupermarket!=null && StringUtil.isNotBlank(afLoanSupermarket.getLinkUrl())){
+					String accessUrl = afLoanSupermarket.getLinkUrl();
+					accessUrl = accessUrl.replaceAll("\\*", "\\&");
+					logger.info("贷款超市app点击banner请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+afUserDo.getRid());
+					String extraInfo = "appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
+					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
+					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
+					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
+					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
+					afBusinessAccessRecordsDo.setRefId(afLoanSupermarket.getId());
+					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
+					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.APP_LOAN_BANNER.getCode());
+					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
+					model.put("redirectUrl", accessUrl);
+				}else{
+					logger.error("贷款超市app点击banner请求发起异常-贷款超市不存在或跳转链接为空，lsmNo："+lsmNo+"-userId:"+afUserDo.getRid());
+					model.put("redirectUrl", "/static/error404.html");
+				}
+			}else if(ThirdPartyLinkType.H5_LOAN_BANNER.getCode().equals(linkType)||ThirdPartyLinkType.H5_LOAN_LIST.getCode().equals(linkType)){ //h5端借贷超市
+				String lsmNo = request.getParameter("lsmNo");
+				AfLoanSupermarketDo afLoanSupermarket  = afLoanSupermarketService.getLoanSupermarketByLsmNo(lsmNo);
+				if(afLoanSupermarket!=null && StringUtil.isNotBlank(afLoanSupermarket.getLinkUrl())){
+					String accessUrl = afLoanSupermarket.getLinkUrl();
+					accessUrl = accessUrl.replaceAll("\\*", "\\&");
+					doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
+					model.put("redirectUrl", accessUrl);
+				}
+			}else{
+				logger.error("借贷超市linkType类型不对");
+				model.put("redirectUrl", "/static/error404.html");
+			}
+			
+		}catch(Exception e){
+			logger.error("贷款超市点击第三方链接请求发起异常,异常信息:{}",e);
+			model.put("redirectUrl", "/static/error404.html");
+		}
+	}
 
 	/*
 	 * (non-Javadoc)

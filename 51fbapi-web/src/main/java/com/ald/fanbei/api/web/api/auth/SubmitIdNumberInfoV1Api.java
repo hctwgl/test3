@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.auth;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -22,6 +23,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ApiCallType;
+import com.ald.fanbei.api.common.enums.FaceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
@@ -98,6 +100,7 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 			afIdNumberDo.setNation(nation);
 			afIdNumberDo.setValidDateBegin(validDateBegin);
 			afIdNumberDo.setValidDateEnd(validDateEnd);
+			afIdNumberDo.setFaceType(FaceType.YITU.getCode());
 			AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 			if (StringUtils.equals(auth.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 				AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
@@ -142,13 +145,13 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 				AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
 				auth.setYdStatus(YesNoStatus.YES.getCode());
-
 				Double similarity = (Double) bizCacheUtil.getObject(Constants.CACHEKEY_YITU_FACE_SIMILARITY+context.getUserName());
 				if (similarity != null) {
 					auth.setSimilarDegree(BigDecimal.valueOf(similarity/100).setScale(4,BigDecimal.ROUND_HALF_UP));
 					bizCacheUtil.delCache(Constants.CACHEKEY_YITU_FACE_SIMILARITY);
 				}
-
+				auth.setGmtFaces(new Date());
+				auth.setFaceType(FaceType.YITU.getCode());
 				afUserAuthService.updateUserAuth(auth);
 
 				AfUserDo afUserDo = new AfUserDo();

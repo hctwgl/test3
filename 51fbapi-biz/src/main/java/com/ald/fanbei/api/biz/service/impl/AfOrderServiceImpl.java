@@ -734,7 +734,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
-							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, getVirtualCode(virtualMap));
+							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap);
 						}
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {//组合支付
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
@@ -789,7 +789,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
 							
-							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualCode, bankAmount, borrow, verybo, cardInfo);
+							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
 						}
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());

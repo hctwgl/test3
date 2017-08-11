@@ -603,7 +603,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param virtualCode 虚拟值
 	 * @return
 	 */
-	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final String virtualCode) throws FanbeiException{
+	public Map<String,Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final Map<String, Object> virtualMap) throws FanbeiException{
 		String result = verifybo.getResult();
 		
 		logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -672,8 +672,9 @@ public class RiskUtil extends AbstractThird {
 		orderInfo.setStatus(OrderStatus.PAID.getCode());
 		orderInfo.setPayType(PayType.AGENT_PAY.getCode());
 		//是虚拟商品
+		String virtualCode = afOrderService.getVirtualCode(virtualMap);
 		if (StringUtils.isNotBlank(virtualCode)) {
-			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), 
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getActualAmount(), afOrderService.getVirtualAmount(virtualMap), 
 					orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
 			//增加虚拟商品记录
 			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
@@ -709,7 +710,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param cardInfo
 	 * @return
 	 */
-	public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, String virtualCode, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
+	public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, Map<String, Object> virtualMap, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
 		String result = verybo.getResult();
 		
 		logger.info("combinationPay:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -779,10 +780,10 @@ public class RiskUtil extends AbstractThird {
 		if (!respBo.isSuccess()) {
 			throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
-		
+		String virtualCode = afOrderService.getVirtualCode(virtualMap);
 		//是虚拟商品
 		if (StringUtils.isNotBlank(virtualCode)) {
-			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getBorrowAmount(), orderInfo.getActualAmount(), orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
+			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getBorrowAmount(), afOrderService.getVirtualAmount(virtualMap), orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
 			//增加虚拟商品记录
 			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
 		}

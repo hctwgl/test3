@@ -31,6 +31,7 @@ let vue=new Vue({
             let title=[this.content.tabList[0].name,this.content.tabList[1].name,this.content.tabList[2].name,this.content.tabList[3].name];
             let mySwiper = new Swiper ('.swiper-container', {
                 loop: true,
+                autoHeight: true,
                 // 如果需要分页器
                 pagination: '.swiper-pagination',
                 paginationClickable :true,
