@@ -2,8 +2,10 @@
 //获取页面名称传到登录页
 var currentUrl=window.location.href;
 var index=currentUrl.indexOf('=');
-var urlName=currentUrl.slice(index+1);
-console.log(urlName)
+var urlName01=currentUrl.slice(index+1,index+2);
+var index=currentUrl.lastIndexOf('=');
+var urlName02=currentUrl.slice(index+1);
+console.log(urlName02)
 
 
     //点击立即登录
@@ -21,14 +23,18 @@ console.log(urlName)
                     password: password_md5,
                     activityId:	1,
                     refUserName:17839218825,
-                    "urlName":urlName
+                    urlName:urlName02
 
                 },
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                        //alert(urlName);
-                    window.location.href =urlName;
+                    
+                         if(urlName01=="Z"){
+                            window.location.href =urlName02;
+                        }else{
+                            window.location.href ="ggIndexShare";
+                        } 
                     }else{
                         requestMsg(data.msg);
                     }

@@ -1,6 +1,9 @@
 @url: "https://fs.51fanbei.com/h5/app/activity/08";
 .clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
 .clearFix{zoom:1;}
+*{
+    box-sizing:border-box;
+}
 body{
     background-color:white;
     padding: 0;

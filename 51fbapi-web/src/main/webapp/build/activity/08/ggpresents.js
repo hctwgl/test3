@@ -9,7 +9,7 @@
 var currentUrl = window.location.href;
 var index = currentUrl.lastIndexOf('/');
 var urlName = currentUrl.slice(index + 1);
-console.log(urlName)
+//console.log(urlName)
 
 //获取数据
 $(function () {
@@ -19,12 +19,12 @@ $(function () {
         type: 'GET',
         dataType: 'JSON',
         data: {
-            userItemsId: 30,
-            userName: 15839790051
+            userItemsId: 30
+            // userName: 15839790051
 
         },
         success: function (data) {
-            console.log(data)
+            //console.log(data)
             if (data.success) {
                 var light = ""; //点亮人数
                 var pic = ""; //banner图片
@@ -36,7 +36,7 @@ $(function () {
                 $('.join').html(join);
                 friend += '<i class="friend">' + data.data.friend + '</i>';
                 $('.friend').html(friend);
-                pic += '<img src=' + data.data.itemsDo.iconUrl + ' alt="" class="banner-img">';
+                pic += '<img src=' + data.data.resourceDo.value + ' alt="" class="banner-img">';
                 $('.banner').html(pic);
                 light += '<span class="light">' + data.data.fakeFinal + '</span>';
                 $('.light').html(light);
@@ -89,31 +89,24 @@ $(function () {
 
     //点击我要赠送卡片
     $('.presentCard').click(function () {
+        var word=$(this).html();
         $.ajax({
             url: "/H5GGShare/pickUpItems",
             type: 'GET',
             dataType: 'JSON',
             data: {
-                userItemsId: 30,
-                userName: 15839790051
+                userItemsId: 30
+                // userName: 15839790051
 
             },
             success: function (outputData) {
-                console.log(outputData)
+                //console.log(outputData)
                 if (outputData.success) {
-                    var loginUrl = "";
-                    try {
-                        loginUrl = outputData.data.loginUrl;
-                    } catch (error) {
-                        //  ignore
+                    if(outputData.msg=="没有登录"){
+                       window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName; 
+                    }else{
+                      requestMsg(outputData.msg)
                     }
-                    if (loginUrl != undefined && loginUrl != '') {
-                        // 未登录，跳转登录界面
-                        //window.location.href =loginUrl;
-                        window.location.href = "gglogin?urlName=" + urlName;
-                    }
-                    requestMsg(outputData.msg);
-                    console.log(outputData.msg);
                 }
             }
         })
@@ -121,6 +114,7 @@ $(function () {
 
     //点击我要索要卡片
     $('.demandCard').click(function () {
+        var word=$(this).html();
         $.ajax({
             url: "/H5GGShare/lightItems",
             type: 'GET',
@@ -130,22 +124,15 @@ $(function () {
                 //userName:15839790051
             },
             success: function (outputData) {
-                console.log(outputData)
+                console.log(outputData.success)
                 if (outputData.success) {
-                    var loginUrl = "";
-                    try {
-                        loginUrl = outputData.data.loginUrl;
-                    } catch (error) {
-                        // ignore
+                    if(outputData.msg=="没有登录"){
+                       window.location.href = "gglogin?urlName=" + urlName; 
+                    }else{
+                       window.location.href = "ggIndexShare?login=true";
                     }
-                    if (loginUrl != undefined && loginUrl != '') {
-                        // 未登录，跳转登录界面
-                        //window.location.href =loginUrl;
-                        window.location.href = "gglogin?urlName=" + urlName;
-                    }
-                    //  requestMsg(outputData.msg);
                 }
-
+                
             }
         })
     })
