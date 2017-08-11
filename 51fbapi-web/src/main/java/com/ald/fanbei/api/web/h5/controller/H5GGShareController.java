@@ -471,7 +471,7 @@ public class H5GGShareController extends H5Controller {
 			updateUserItemsStatus(userItemsId, "FROZEN");
 			// 埋点
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
-			H5CommonResponse.getNewInstance(true, "赠送成功").toString();
+			resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("doSendItems" + context, e);
