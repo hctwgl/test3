@@ -41,4 +41,10 @@ public class AfBoluomeActivityUserItemsServiceImpl extends ParentServiceImpl<AfB
 			return afBoluomeActivityUserItemsDao.getItemsByActivityIdUserId(activityId,userId);
 			
 		}
+
+		@Override
+		public void deleteByRid(Long rid) {
+			afBoluomeActivityUserItemsDao.deleteByRid(rid);
+			
+		}
 }

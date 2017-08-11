@@ -20,6 +20,8 @@ public interface AfBoluomeActivityUserItemsDao extends BaseDao<AfBoluomeActivity
 
 	int saveBoluomeActivityUserItems(AfBoluomeActivityUserItemsDo userItemsDo);
 
+	void deleteByRid(@Param("rid")Long rid);
+
     
 
 }

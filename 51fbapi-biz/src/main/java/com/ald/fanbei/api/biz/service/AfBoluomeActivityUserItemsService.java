@@ -16,4 +16,6 @@ public interface AfBoluomeActivityUserItemsService extends ParentService<AfBoluo
 
 	List<Long> getItemsByActivityIdUserId(Long activityId, Long userId);
 
+	void deleteByRid(Long rid);
+
 }
