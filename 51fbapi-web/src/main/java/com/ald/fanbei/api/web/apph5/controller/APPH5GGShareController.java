@@ -449,6 +449,7 @@ public class APPH5GGShareController extends BaseController {
 			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 			// 改变用户卡片的中见状态
 			updateUserItemsStatus(userItemsId, "FROZEN");
+			resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("doSendItems" + context, e);
