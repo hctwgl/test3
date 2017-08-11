@@ -48,7 +48,7 @@
     <!--卡片list-->
     <div class="cardList clearFix">
         <div class="card" v-for="item in content.itemsList" @click="cardClick()">
-            <img :src="item.iconUrl">
+            <img :src="item.logo">
             <p class="cardMask" v-if="item.num===0"></p>
             <p class="num" v-if="item.num>=2">x{{item.num}}</p>
         </div>

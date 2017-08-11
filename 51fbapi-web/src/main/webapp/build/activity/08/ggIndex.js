@@ -10,8 +10,7 @@ let vm = new Vue({
     el: '#ggIndex',
     data: {
         content: {},
-        finalPrizeMask:'',
-        present:''
+        finalPrizeMask:''
     },
     created: function () {
         this.logData();
@@ -78,7 +77,7 @@ let vm = new Vue({
                             self.finalPrizeMask=false;
                         }else {
                             self.finalPrizeMask=false;
-                            self.present='Y';
+                            $('.presentCard').attr('present','Y');
                         }
                     }//是否可赠送
                 }
