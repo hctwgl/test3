@@ -509,6 +509,11 @@ public class H5GGShareController extends H5Controller {
 			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 			AfBoluomeActivityUserItemsDo userItemsDo = afBoluomeActivityUserItemsService.getById(userItemsId);
 			if (userItemsDo != null) {
+				AfBoluomeActivityDo activityDo = afBoluomeActivityService.getById(userItemsDo.getBoluomeActivityId());
+				String desctiption = "";
+				if(activityDo != null){
+					desctiption = activityDo.getDescription();
+				}
 				Map<String, Integer> fakeMap = getFakePerson(userItemsDo.getBoluomeActivityId());
 				Integer fakeFinal = 0;
 				Integer fakeJoin = 0;
@@ -525,6 +530,7 @@ public class H5GGShareController extends H5Controller {
 					AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(userItemsDo.getItemsId());
 
 					Map<String, Object> data = new HashMap<>();
+					data.put("description", desctiption);
 					data.put("friend", friend);
 					data.put("itemsDo", itemsDo);
 					data.put("userItemsDo", userItemsDo);
@@ -865,6 +871,11 @@ public class H5GGShareController extends H5Controller {
 			Long userId = convertUserNameToUserId(userName);// 绱㈣浜虹殑鐢ㄦ埛id
 			AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
 			if (itemsDo != null) {
+				AfBoluomeActivityDo activityDo = afBoluomeActivityService.getById(itemsDo.getBoluomeActivityId());
+				String desctiption = "";
+				if(activityDo != null){
+					desctiption = activityDo.getDescription();
+				}
 				Map<String, Integer> fakeMap = getFakePerson(itemsDo.getBoluomeActivityId());
 				Integer fakeFinal = 0;
 				Integer fakeJoin = 0;
@@ -879,6 +890,7 @@ public class H5GGShareController extends H5Controller {
 						friend = userDo.getUserName();
 					}
 					Map<String, Object> data = new HashMap<>();
+					data.put("description", desctiption);
 					data.put("friend", friend);
 					data.put("friendId", userId);
 					data.put("itemsDo", itemsDo);
