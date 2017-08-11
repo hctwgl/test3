@@ -213,7 +213,7 @@ public class APPH5GGShareController extends BaseController {
 			String userName = context.getUserName();
 			// String userName =
 			// context.getUserName();//request.getParameter("userName");
-			if (!StringUtil.isBlank(userName)) {
+			if (StringUtil.isBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0) {
 					useritemsDo.setUserId(userId);
