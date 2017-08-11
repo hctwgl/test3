@@ -7,6 +7,11 @@ var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
 
+//获取数据
+var url = window.location.href;
+var param = getUrlParam(url);
+var userItemsId = param['userItemsId'];
+
 
 //获取数据
 $(function(){
@@ -140,3 +145,16 @@ $(function(){
     })
 
 })
+
+//截取方法
+function getUrlParam(url) {
+    var param = new Object(); 
+    if (url.indexOf("?") != -1) { 
+        var str = url.substr(1); 
+        strs = str.split("&"); 
+        for(var i = 0; i < strs.length; i ++) { 
+            param[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
+        } 
+    } 
+    return param; 
+}
