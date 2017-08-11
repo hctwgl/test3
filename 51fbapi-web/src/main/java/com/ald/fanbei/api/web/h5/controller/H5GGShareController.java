@@ -228,6 +228,7 @@ public class H5GGShareController extends H5Controller {
 				if (userId != null && userId > 0) {
 					useritemsDo.setUserId(userId);
 					useritemsDo.setBoluomeActivityId(activityId);
+					useritemsDo.setStatus("NORMAL");
 					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(useritemsDo);
 					data.put("userItemsList", userItemsList);
@@ -273,6 +274,7 @@ public class H5GGShareController extends H5Controller {
 				AfBoluomeActivityUserItemsDo conditionUserItems = new AfBoluomeActivityUserItemsDo();
 				conditionUserItems.setItemsId(itemsId);
 				conditionUserItems.setUserId(userId);
+				conditionUserItems.setStatus("NORMAL");
 				// 查处此用户用户的此卡片的数量
 				List<AfBoluomeActivityUserItemsDo> numList = afBoluomeActivityUserItemsService
 						.getListByCommonCondition(conditionUserItems);
@@ -343,6 +345,7 @@ public class H5GGShareController extends H5Controller {
 			Integer fakeJoin = new Integer(fakeJoinStr);
 			AfBoluomeActivityUserItemsDo itemsDo = new AfBoluomeActivityUserItemsDo();
 			itemsDo.setBoluomeActivityId(activityId);
+			itemsDo.setStatus("NORMAL");
 			List<AfBoluomeActivityUserItemsDo> listItems = afBoluomeActivityUserItemsService
 					.getListByCommonCondition(itemsDo);
 			if (listItems != null && listItems.size() > 0) {
@@ -411,6 +414,7 @@ public class H5GGShareController extends H5Controller {
 						t.setSourceUserId(userId);
 						t.setBoluomeActivityId(activityId);
 						t.setItemsId(itemsId);
+						t.setStatus("NORMAL");
 						List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 								.getListByCommonCondition(t);
 						if (userItemsList != null && userItemsList.size() > 0) {
@@ -803,6 +807,7 @@ public class H5GGShareController extends H5Controller {
 					AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
 					userItemsDo.setUserId(userId);
 					userItemsDo.setItemsId(itemsId);
+					userItemsDo.setStatus("NORMAL");
 					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(userItemsDo);
 					if (userItemsList == null || userItemsList.size() < 2) {

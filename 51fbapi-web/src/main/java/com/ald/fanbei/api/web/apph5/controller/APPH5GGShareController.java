@@ -218,6 +218,7 @@ public class APPH5GGShareController extends BaseController {
 				if (userId != null && userId > 0) {
 					useritemsDo.setUserId(userId);
 					useritemsDo.setBoluomeActivityId(activityId);
+					useritemsDo.setStatus("NORMAL");
 					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(useritemsDo);
 					data.put("userItemsList", userItemsList);
@@ -262,6 +263,7 @@ public class APPH5GGShareController extends BaseController {
 				AfBoluomeActivityUserItemsDo conditionUserItems = new AfBoluomeActivityUserItemsDo();
 				conditionUserItems.setItemsId(itemsId);
 				conditionUserItems.setUserId(userId);
+				conditionUserItems.setStatus("NORMAL");
 				// 查处此用户用户的此卡片的数量
 				List<AfBoluomeActivityUserItemsDo> numList = afBoluomeActivityUserItemsService
 						.getListByCommonCondition(conditionUserItems);
@@ -332,6 +334,7 @@ public class APPH5GGShareController extends BaseController {
 			Integer fakeJoin = new Integer(fakeJoinStr);
 			AfBoluomeActivityUserItemsDo itemsDo = new AfBoluomeActivityUserItemsDo();
 			itemsDo.setBoluomeActivityId(activityId);
+			itemsDo.setStatus("NORMAL");
 			List<AfBoluomeActivityUserItemsDo> listItems = afBoluomeActivityUserItemsService
 					.getListByCommonCondition(itemsDo);
 			if (listItems != null && listItems.size() > 0) {
@@ -386,6 +389,7 @@ public class APPH5GGShareController extends BaseController {
 					for (Long itemsId : tempItemsList) {
 						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
 						t.setUserId(userId);
+						t.setStatus("NORMAL");
 						t.setBoluomeActivityId(activityId);
 						t.setItemsId(itemsId);
 						List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
@@ -574,6 +578,7 @@ public class APPH5GGShareController extends BaseController {
 					AfBoluomeActivityUserItemsDo newUserItemsDoCondition = new AfBoluomeActivityUserItemsDo();
 					newUserItemsDoCondition.setUserId(userId);
 					newUserItemsDoCondition.setSourceId(resourceUserItemsId);
+					newUserItemsDoCondition.setStatus("NORMAL");
 					List<AfBoluomeActivityUserItemsDo> list = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(newUserItemsDoCondition);
 					int length = list.size();
@@ -736,6 +741,7 @@ public class APPH5GGShareController extends BaseController {
 					AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
 					userItemsDo.setUserId(userId);
 					userItemsDo.setItemsId(itemsId);
+					userItemsDo.setStatus("NORMAL");
 					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(userItemsDo);
 					if (userItemsList == null || userItemsList.size() < 2) {
