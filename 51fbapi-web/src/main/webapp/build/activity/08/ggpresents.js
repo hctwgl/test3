@@ -105,7 +105,7 @@ $(function () {
                     if(outputData.msg=="没有登录"){
                        window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName; 
                     }else{
-                        alert(outputData.msg);
+    
                      requestMsg(outputData.msg);
                      
                       console.log(outputData.msg)

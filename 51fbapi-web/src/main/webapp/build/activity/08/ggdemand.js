@@ -78,7 +78,7 @@ $(function(){
             })
     })
 
-    //点击我要索要卡片
+    //点击我也要点亮
     $('.demandCard').click(function(){
              $.ajax({
                 url: "/H5GGShare/lightItems",
@@ -91,7 +91,9 @@ $(function(){
                     console.log(outputData)
                     if (outputData.success) {
                         if(outputData.msg=="没有登录"){
+                            alert(urlName)
                             window.location.href = "gglogin?urlName=" + urlName; 
+                            
                         }else{
                             var userName = outputData.data.userName;
                             window.location.href = "ggIndexShare?userName="+userName;
