@@ -62,9 +62,20 @@ $(function(){
                                 cardRid=arr[0];
                                 //console.log(cardRid)
                                 if(cardRid&&cardRid!=''){
-                                    window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友赠送了一张'+name+'卡片给你，快领走吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&&cardRid='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
+                                    $.ajax({
+                                            type: 'get',
+                                            url: "/H5GG/sendItems",
+                                            data:{'userItemsId':cardRid},
+                                            success: function (returnData) {
+                                                requestMsg(returnData.msg);
+                                                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友赠送了一张'+name+'卡片给你，快领走吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&&cardRid='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
+                                            },
+                                            error:function(){
+                                                requestMsg('请求失败');
+                                            }
+                                        })
                                 }else{
-                                    window.location.href="ggIndex";
+                                         window.location.href="ggIndex";
                                 }
                             })
                         }else{
