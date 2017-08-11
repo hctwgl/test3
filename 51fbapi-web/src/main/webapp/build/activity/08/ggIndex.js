@@ -154,14 +154,15 @@ let vm = new Vue({
         //点击获取终极大奖
         finalPrize:function(){
             let self = this;
-            console.log(self.finalPrizeMask)
-            if(self.finalPrizeMask){
+            //alert(self.finalPrizeMask)
+            if(!self.finalPrizeMask){
                 $.ajax({
                     type: 'get',
-                    url: '/H5GGShare/pickUpSuperPrize',
+                    url: '/H5GG/pickUpSuperPrize',
                     data:{'activityId':activityId},
                     dataType:'JSON',
                     success: function (returnData) {
+                        console.log(returnData)
                         if(returnData.success){
                             requestMsg(returnData.msg)
                         }

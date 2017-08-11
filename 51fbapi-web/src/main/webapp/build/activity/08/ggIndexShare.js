@@ -12,8 +12,7 @@ let vm = new Vue({
     el: '#ggIndexShare',
     data: {
         content: {},
-        finalPrizeMask:'',
-        present:''
+        finalPrizeMask:''
     },
     created: function () {
         this.logData();
@@ -81,7 +80,6 @@ let vm = new Vue({
                             self.finalPrizeMask=false;
                         }else {
                             self.finalPrizeMask=false;
-                            self.present='Y';
                         }
                     }//是否可赠送
 
@@ -135,17 +133,19 @@ let vm = new Vue({
         //点击获取终极大奖
         finalPrize:function(){
             let self = this;
+            //alert(0)
             userName=getCookie('userName');
             if(userName=='' || !userName){
                 window.location.href="gglogin?urlName="+urlName;
             }else{
-                    if(self.finalPrizeMask){
+                    if(!self.finalPrizeMask){
                         $.ajax({
                             type: 'get',
                             url: '/H5GGShare/pickUpSuperPrize',
-                            data:{'activityId':activityId},
+                            data:{'activityId':1},
                             dataType:'JSON',
                             success: function (returnData) {
+                                console.log(returnData)
                                 if(returnData.success){
                                     requestMsg(returnData.msg)
                                 }
