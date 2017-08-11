@@ -21,7 +21,7 @@
             </div>
             <div class="money">
                 <p><i class="friend">你的好友</i>在51返呗点亮场景</p>
-                <p>向你索要<span>e顿健康餐</span></p>
+                <p>向你索要<span class="combo"></span></p>
             </div>
             <div class="banner">
                 <img src="" alt="" class="banner-img">

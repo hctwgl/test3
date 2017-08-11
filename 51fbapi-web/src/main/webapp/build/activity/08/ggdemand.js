@@ -23,6 +23,7 @@ $(function(){
                         var pic="";//banner图片
                         var friend="";//赠送者名字
                         var join="";//参与人数
+                        var combo="";//e顿健康套餐
                         join+="<span class='join'>"+data.data.fakeJoin+"</span>";
                         $('.join').html(join);
                         friend+='<i class="friend">'+data.data.friend+'</i>';
@@ -31,8 +32,10 @@ $(function(){
                         $('.banner').html(pic);
                         light+='<span class="light">'+data.data.fakeFinal+'</span>';
                         $('.light').html(light);
+                        combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
+                        $('.combo').html(combo);
 
-                        ScrollImgLeft();
+                        ScrollImgLeft();//文字轮播
                     }else{
                         requestMsg(data.msg);
                     }

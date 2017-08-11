@@ -30,6 +30,7 @@ $(function () {
                 var pic = ""; //banner图片
                 var friend = ""; //赠送者名字
                 var join = ""; //参与人数
+                var combo="";//e顿健康套餐
                 join += "<span class='join'>" + data.data.fakeJoin + "</span>";
                 $('.join').html(join);
                 friend += '<i class="friend">' + data.data.friend + '</i>';
@@ -38,6 +39,8 @@ $(function () {
                 $('.banner').html(pic);
                 light += '<span class="light">' + data.data.fakeFinal + '</span>';
                 $('.light').html(light);
+                combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
+                $('.combo').html(combo);
 
             } else {
                 requestMsg(data.msg);
@@ -45,6 +48,7 @@ $(function () {
 
         }
     })
+
     ScrollImgLeft();
     //文字轮播
     function ScrollImgLeft() {
@@ -93,7 +97,7 @@ $(function () {
                     if (loginUrl != undefined && loginUrl != '') {
                         // 未登录，跳转登录界面
                         //window.location.href =loginUrl;
-                        window.location.href = "ggregister?urlName=" + urlName;
+                        window.location.href = "gglogin?urlName=" + urlName;
                     }
                     requestMsg(outputData.msg);
                     console.log(outputData.msg);
@@ -124,7 +128,7 @@ $(function () {
                     if (loginUrl != undefined && loginUrl != '') {
                         // 未登录，跳转登录界面
                         //window.location.href =loginUrl;
-                        window.location.href = "ggregister?urlName=" + urlName;
+                        window.location.href = "gglogin?urlName=" + urlName;
                     }
                     //  requestMsg(outputData.msg);
                 }
