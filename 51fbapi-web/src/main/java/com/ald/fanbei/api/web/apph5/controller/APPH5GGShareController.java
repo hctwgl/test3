@@ -892,10 +892,11 @@ public class APPH5GGShareController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
+			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
 			//String userName = request.getParameter("userName").toString();
 			Long userId = convertUserNameToUserId(userName);
-			if (userId == null) {
+			if (userId == null || StringUtil.isBlank(userName)) {
 				Map<String,Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
