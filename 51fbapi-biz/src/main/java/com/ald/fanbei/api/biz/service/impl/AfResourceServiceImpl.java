@@ -428,5 +428,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 		
 	}
 
+	@Override
+	public AfResourceDo getGGSpecificBanner(String value2) {
+		
+		return afResourceDao.getGGSpecificBanner(value2);
+		
+	}
+
 	
 }

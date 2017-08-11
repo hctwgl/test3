@@ -205,6 +205,16 @@
 		AND type = 'GG_FAKE_PERSON'
 		AND value = #{activityId}
 	</select>
+	<select id = "getGGSpecificBanner" resultType = "AfResourceDo">
+		SELECT
+			*
+		FROM
+			af_resource
+		WHERE
+			type = 'GG_TOP_BANNER'
+		AND is_delete = 0
+		AND value_2 = #{value2};
+	</select>
 	
 
 </mapper>
