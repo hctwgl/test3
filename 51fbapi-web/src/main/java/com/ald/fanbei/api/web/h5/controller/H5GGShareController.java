@@ -959,8 +959,8 @@ public class H5GGShareController extends H5Controller {
 				AfBoluomeActivityResultDo conditionDo = new AfBoluomeActivityResultDo();
 				conditionDo.setBoluomeActivityId(activityId);
 				conditionDo.setUserId(userId);
-				AfBoluomeActivityResultDo isHave = afBoluomeActivityResultService.getByCommonCondition(conditionDo);
-				if (isHave != null) {
+				List<AfBoluomeActivityResultDo> isHave = afBoluomeActivityResultService.getListByCommonCondition(conditionDo);
+				if (isHave != null && isHave.size() > 0) {
 					return H5CommonResponse.getNewInstance(true, "您已经成功领取88.8元现金红包，不能重复领取").toString();
 				}
 				AfBoluomeActivityCouponDo conditionCoupon = new AfBoluomeActivityCouponDo();
