@@ -8,16 +8,10 @@ $(function () {
     var index=currentUrl.lastIndexOf('/');
     var index01=currentUrl.indexOf("?");
     var urlName=currentUrl.slice(index+1,index01);
-    // console.log(urlName)
-    // var str=currentUrl.substring(index01+1);//获取?后面的字符串
-    // var arr=[];
-    // arr=str.split("&");//获取?后面以&分隔的字符串
-    // var activityId=arr[1].slice(arr[1].indexOf("=")+1);//获取arr数组里面的具体值
-    // var userItemsId=arr[2].slice(arr[2].indexOf("=")+1);
     var param = getUrlParam(currentUrl);
     var activityId = param['activityId'];
     var userItemsId = param['userItemsId'];
-
+    var userName = param['userName'];
     alert(activityId);
     alert(userItemsId);
     $.ajax({
@@ -100,13 +94,13 @@ $(function () {
             dataType: 'JSON',
             data: {
                 userItemsId:userItemsId
-
             },
             success: function (outputData) {
                 console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
-                       window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName;
+                        alert(urlName);
+                        window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName + "&activityId=" + activityId +"&userName=" + userName;
                     }else{
     
                      requestMsg(outputData.msg);

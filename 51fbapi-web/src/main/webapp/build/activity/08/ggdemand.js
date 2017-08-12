@@ -1,4 +1,3 @@
-
 //获取数据
 $(function(){
     //获取页面名称传到登录页
@@ -8,7 +7,7 @@ $(function(){
     var index = currentUrl.lastIndexOf('/');
     var index01 = currentUrl.indexOf("?");
     var urlName = currentUrl.slice(index+1,index01);
-    var param = getUrlParam(currentUrl);
+    var param = sgetUrlParam(currentUrl);
     var itemsId = param['itemsId'];
     var userName = param['userName'];
     alert(itemsId);
