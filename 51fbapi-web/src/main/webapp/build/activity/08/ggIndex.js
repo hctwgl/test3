@@ -86,6 +86,10 @@ let vm = new Vue({
                 }
             })
         },
+        //点击参与人数进入排行榜
+        joinAmountClick:function(){
+            window.location.href='ggrankingList?activityId='+activityId;
+        },
         //点击轮播图
         bannerClick:function(e){
             var shopId=e.value2;
@@ -110,7 +114,6 @@ let vm = new Vue({
         },
         //点击优惠券
         couponClick:function(e){
-            //alert(0)
             var sceneId=e.sceneId;
                 $.ajax({
                     url: "/fanbei-web/pickBoluomeCouponV1",
@@ -118,12 +121,9 @@ let vm = new Vue({
                     dataType: "JSON",
                     data: {'sceneId':sceneId},
                     success: function(returnData){
-                        //console.log(returnData)
-                        //console.log(returnData.url)
                         if(returnData.success){
                             requestMsg(returnData.msg);
                         }else{
-                            //alert(returnData.url);
                             window.location.href=returnData.url;
                         }
                     },
