@@ -11,8 +11,7 @@ let vm = new Vue({
     el: '#ggIndexShare',
     data: {
         content: {},
-        finalPrizeMask:'',
-        present:''
+        finalPrizeMask:''
     },
     created: function () {
         this.logData();
@@ -65,7 +64,6 @@ let vm = new Vue({
                                 $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
                             }
                         }
-                    })
                     //优惠券数据格式
                     var couponList=self.content.boluomeCouponList;
                     for(var i=0;i<couponList.length;i++){
@@ -80,10 +78,11 @@ let vm = new Vue({
                             self.finalPrizeMask=false;
                         }else {
                             self.finalPrizeMask=false;
-                            self.present='Y';
+                            //self.present='Y';
+                            $('.card').eq(j).find('.num').css('display','block');
                         }
                     }//是否可赠送
-
+                    })
                 }
             })
         },
@@ -152,6 +151,20 @@ let vm = new Vue({
                                 console.log(returnData)
                                 if(returnData.success){
                                     requestMsg(returnData.msg);
+                                    for(var j=0;j<self.content.itemsList.length;j++){
+                                        num=self.content.itemsList[j].num;
+                                        if(num==0){
+                                            return ""
+                                        }else{
+                                            $('.card').eq(j).find('.num').html('x'+(num-1));
+                                            if(num-1==0){
+                                                $('.card').eq(j).find('.cardMask').css('display','block');
+                                                $('.card').eq(j).find('.num').css('display','none');
+                                            }else if(num-1==1){
+                                                $('.card').eq(j).find('.num').css('display','none');
+                                            }
+                                        }
+                                    }
                                 }else{
                                     requestMsg(returnData.msg);
                                 }

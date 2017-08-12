@@ -66,7 +66,6 @@ let vm = new Vue({
                                 $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
                             }
                         }
-                    })
                     //判断蒙版
                     var couponList=self.content.boluomeCouponList;
                     for(var i=0;i<couponList.length;i++){
@@ -80,9 +79,11 @@ let vm = new Vue({
                             self.finalPrizeMask=false;
                         }else {
                             self.finalPrizeMask=false;
+                            $('.card').eq(j).find('.num').css('display','block');
                             $('.presentCard').attr('present','Y');
                         }
                     }//是否可赠送
+                    })
                 }
             })
         },
@@ -176,6 +177,9 @@ let vm = new Vue({
                                     $('.card').eq(j).find('.num').html('x'+(num-1));
                                     if(num-1==0){
                                         $('.card').eq(j).find('.cardMask').css('display','block');
+                                        $('.card').eq(j).find('.num').css('display','none');
+                                    }else if(num-1==1){
+                                        $('.card').eq(j).find('.num').css('display','none');
                                     }
                                 }
                             }
