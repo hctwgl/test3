@@ -22,9 +22,6 @@
         <div class="container">
                  <ul class="numberList" id='numberList'>
                  </ul>
-                 <ul class="numberList">
-                  
-                 </ul>
         </div>
     </div>
 </body>

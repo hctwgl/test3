@@ -8,7 +8,7 @@ var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
 
 //获取页面名称传到登录页
-//var currentUrl = window.location.href;
+var currentUrl = window.location.href;
 var currentUrl = "http://192.168.96.210/fanbei-web/activity/ggdemand?loginSource=S&activityId=1&userName=15839790051&itemsId=3&from=singlemessage&isappinstalled=1";
 var index01=currentUrl.indexOf("?");
 var str=currentUrl.substring(index01+1);//获取?后面的字符串
@@ -77,7 +77,7 @@ $(function(){
                 dataType: 'JSON',
                 data: {
                     itemsId:itemsId,
-                    friendId:userName//friendId==userName
+                    friendName:userName//friendName==userName
                    
                 },
                 success: function (outputData) {
@@ -106,7 +106,7 @@ $(function(){
                     console.log(outputData)
                     if (outputData.success) {
                         if(outputData.msg=="没有登录"){
-                            alert(urlName)
+                            // alert(urlName)
                             window.location.href = "gglogin?urlName=" + urlName; 
                             
                         }else{
