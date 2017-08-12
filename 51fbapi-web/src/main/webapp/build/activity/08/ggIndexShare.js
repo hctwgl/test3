@@ -88,6 +88,10 @@ let vm = new Vue({
                 }
             })
         },
+        //点击参与人数进入排行榜
+        joinAmountClick:function(){
+            window.location.href='ggrankingList?activityId='+activityId;
+        },
         //点击轮播图
         bannerClick:function(){
             userName=getCookie('userName');
