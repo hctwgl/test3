@@ -162,7 +162,7 @@ let vm = new Vue({
                 $.ajax({
                     type: 'get',
                     url: '/H5GG/pickUpSuperPrize',
-                    data:{'activityId':activityId},
+                    data:{'activityId':1},
                     dataType:'JSON',
                     success: function (returnData) {
                         console.log(returnData)
