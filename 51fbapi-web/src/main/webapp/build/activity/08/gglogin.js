@@ -7,6 +7,7 @@ var urlName = param['urlName'];
 var userName = param['userName'];
 var activityId = param['activityId'];
 var userItemsId = param['userItemsId'];
+var itemsId = param['itemsId'];
 //点击立即登录
 $(".loginbtn").click(function () {
     var userName = $(".pinp").val();//获取手机号
@@ -28,8 +29,10 @@ $(".loginbtn").click(function () {
                 console.log(data)
                 if(data.success){
                     if(word=="Z"){
-                        window.location.href = urlName + "?userName=" + userName +"&activityId=" + activityId + "&userItemsId" + userItemsId;
-                    }else{
+                        window.location.href = urlName + "?userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId;
+                    }else if (word == "S"){
+                        window.location.href = urlName + "?userName=" + userName +"&itemsId=" + itemsId;
+                    }else {
                         window.location.href ="ggIndexShare" + "?activityId=" + activityId + "&userName=" + userName;
                     } 
                 }else{

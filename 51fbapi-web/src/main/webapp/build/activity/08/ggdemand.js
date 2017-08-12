@@ -7,11 +7,11 @@ $(function(){
     var index = currentUrl.lastIndexOf('/');
     var index01 = currentUrl.indexOf("?");
     var urlName = currentUrl.slice(index+1,index01);
-    var param = sgetUrlParam(currentUrl);
+    var param = getUrlParam(currentUrl);
     var itemsId = param['itemsId'];
     var userName = param['userName'];
-    alert(itemsId);
-    alert(userName);
+    alert("itemsId->" + itemsId);
+    alert("userName->" + userName);
      $.ajax({
                 url: "/H5GGShare/ggAskForItems",
                 type: 'GET',
@@ -61,13 +61,12 @@ $(function(){
                 data: {
                     itemsId:itemsId,
                     friendName:userName//friendName==userName
-                   
                 },
                 success: function (outputData) {
                     console.log(outputData)
                     if (outputData.success) {
                             if(outputData.msg=="没有登录"){
-                                window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName; 
+                                window.location.href = "gglogin?word=S"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName; 
                             }else{
                                 requestMsg(outputData.msg)
                             }
