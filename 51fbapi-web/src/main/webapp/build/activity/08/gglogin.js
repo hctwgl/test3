@@ -44,6 +44,16 @@ $(".loginbtn").click(function () {
         requestMsg("请填写正确的手机号");
     }
     });
+
+
+
+    $("#gg_register").click(function(){
+        window.location.href= "ggregister?word=" + word + "&userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId +"&itemsId=" + itemsId;
+    });
+
+    $("#gg_forget").click(function(){
+        window.location.href= "ggVerify?word=" + word + "&userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId +"&itemsId=" + itemsId;
+    });
 })
 //截取字符串方法
 function getUrlParam(url) {

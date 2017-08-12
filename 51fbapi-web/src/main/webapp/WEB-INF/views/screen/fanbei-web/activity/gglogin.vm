@@ -29,8 +29,8 @@
             立即登录
         </div>
         <div class="lspdiv clearFix">
-            <span class="spl"><a href="http://localhost/fanbei-web/activity/ggregister">我要注册</a></span>
-            <span class="spr"><a href="http://localhost/fanbei-web/activity/ggVerify">忘记密码</a></span>
+            <span class="spl"><a id="gg_register" href="#">我要注册</a></span>
+            <span class="spr"><a id="gg_forget" href="#">忘记密码</a></span>
         </div>   
     </div>
     <div class="botimg">

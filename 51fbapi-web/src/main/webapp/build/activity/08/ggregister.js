@@ -1,11 +1,15 @@
 
-//获取页面名称传到登录页
- var currentUrl=window.location.href;
-var index=currentUrl.indexOf('=');
-var urlName=currentUrl.slice(index+1);
-console.log(urlName)
-
 $(function () {
+    //获取页面名称传到登录页
+    var currentUrl = window.location.href;
+    var param = getUrlParam(currentUrl);
+    var word = param['word'];
+    var urlName = param['urlName'];
+    var userName = param['userName'];
+    var activityId = param['activityId'];
+    var userItemsId = param['userItemsId'];
+    var itemsId = param['itemsId'];
+
     var timerInterval;
     var timerS = 60;
 
@@ -66,7 +70,6 @@ $(function () {
         console.log(password);
         console.log(smsCode);
         console.log(registerMoblie);
-
         if (/^1(3|4|5|7|8)\d{9}$/i.test(registerMoblie)) {
             var password_md5 = String(CryptoJS.MD5(password));//md5加密
             $.ajax({
@@ -83,18 +86,14 @@ $(function () {
                     var a=JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
-                        // alert(urlName)
-                        window.location.href = "gglogin?urlName="+urlName;
-                    
-                    } //else {
-                    //     requestMsg(returnData.msg);
-                    // }
+                        var urlName = param['urlName'];
+                        window.location.href = "gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;
+                    } 
                 },
                 error: function () {
                     requestMsg("绑定失败");
                 }
             })
-
 
         } else {
             requestMsg("请填写正确的手机号");
@@ -102,3 +101,16 @@ $(function () {
     });
 });
 
+//截取字符串方法
+function getUrlParam(url) {
+    var param = new Object(); 
+    if (url.indexOf("?") != -1) { 
+        var str = url.substr(url.indexOf("?")+1,url.length); 
+        var strs=[];
+        strs = str.split("&"); 
+        for(var i = 0; i < strs.length; i ++) { 
+            param[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
+        } 
+    } 
+    return param; 
+}
