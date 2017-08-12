@@ -1,15 +1,18 @@
 
 //获取页面名称传到登录页
 var currentUrl = window.location.href;
-var index = currentUrl.lastIndexOf('/');
-var urlName = currentUrl.slice(index + 1);
-//console.log(urlName)
+var index=currentUrl.lastIndexOf('/');
+var urlName=currentUrl.slice(index+1);
 
-//获取数据
-var url = window.location.href;
-var param = getUrlParam(url);
-var userItemsId = param['userItemsId'];
-alert(itemId)
+var currentUrl = "htttp://192.168.96.210/fanbei-web/activity/ggpresents?loginSource=Z&activityId=1&userItemsId=32&from=singlemessage&isappinstalled=1";
+var index01=currentUrl.indexOf("?");
+var str=currentUrl.substring(index01+1);//获取?后面的字符串
+var arr=[];
+arr=str.split("&");//获取?后面以&分隔的字符串
+var activityId=arr[1].slice(arr[1].indexOf("=")+1);//获取arr数组里面的具体值
+var userItemsId=arr[2].slice(arr[2].indexOf("=")+1);
+console.log(activityId)
+console.log(userItemsId)
 $(function () {
 
     $.ajax({
@@ -17,10 +20,10 @@ $(function () {
         type: 'GET',
         dataType: 'JSON',
         data: {
-            userItemsId: userItemsId
+            userItemsId:userItemsId
         },
         success: function (data) {
-            //console.log(data)
+            console.log(data)
             if (data.success) {
                 var light = ""; //点亮人数
                 var pic = ""; //banner图片
@@ -83,7 +86,7 @@ $(function () {
         $('.alertRule').hide();
     })
 
-    //点击我要赠送卡片
+    //点击我要赠送卡片(领走卡片)
     $('.presentCard').click(function () {
         var word=$(this).html();
         $.ajax({
@@ -91,19 +94,17 @@ $(function () {
             type: 'GET',
             dataType: 'JSON',
             data: {
-                userItemsId: userItemsId
-                
+                userItemsId:userItemsId
 
             },
             success: function (outputData) {
                 console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
-                       window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName; 
+                       window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName;
                     }else{
     
                      requestMsg(outputData.msg);
-                     
                       console.log(outputData.msg)
                     } 
                 }
@@ -111,7 +112,7 @@ $(function () {
         })
     })
 
-    //点击我要索要卡片
+    //点击我要索要卡片(点亮)
     $('.demandCard').click(function () {
         var word=$(this).html();
         $.ajax({
@@ -119,7 +120,7 @@ $(function () {
             type: 'GET',
             dataType: 'JSON',
             data: {
-                userItemsId: userItemsId
+                activityId:activityId
             },
             success: function (outputData) {
                 console.log(outputData)
@@ -139,15 +140,18 @@ $(function () {
 
 })
 
-//截取方法
+//截取字符串方法
 function getUrlParam(url) {
     var param = new Object(); 
     if (url.indexOf("?") != -1) { 
         var str = url.substr(1); 
+        var strs=[];
         strs = str.split("&"); 
         for(var i = 0; i < strs.length; i ++) { 
             param[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
         } 
     } 
     return param; 
+
 }
+

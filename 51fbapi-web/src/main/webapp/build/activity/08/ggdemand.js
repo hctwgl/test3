@@ -7,10 +7,20 @@ var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
 
-//获取数据
-var url = window.location.href;
-var param = getUrlParam(url);
-var userItemsId = param['userItemsId'];
+//获取页面名称传到登录页
+//var currentUrl = window.location.href;
+var currentUrl = "http://192.168.96.210/fanbei-web/activity/ggdemand?loginSource=S&activityId=1&userName=15839790051&itemsId=3&from=singlemessage&isappinstalled=1";
+var index01=currentUrl.indexOf("?");
+var str=currentUrl.substring(index01+1);//获取?后面的字符串
+var arr=[];
+arr=str.split("&");//获取?后面以&分隔的字符串
+var itemsId=arr[3].slice(arr[3].indexOf("=")+1);//获取arr数组里面的具体值
+var userName=arr[2].slice(arr[2].indexOf("=")+1);
+var activityId=arr[1].slice(arr[1].indexOf("=")+1);
+console.log(itemsId)
+console.log(userName)
+console.log(activityId)
+
 
 
 //获取数据
@@ -21,8 +31,8 @@ $(function(){
                 type: 'GET',
                 dataType: 'JSON',
                 data: {
-                    itemsId:1,
-                    friendName:15839790051
+                    itemsId:itemsId,
+                    friendName:userName//friendName==userName
                 },
                 success: function (data) {
                     console.log(data);
@@ -66,8 +76,8 @@ $(function(){
                 type: 'GET',
                 dataType: 'JSON',
                 data: {
-                    itemsId:1,
-                    friendId:68885
+                    itemsId:itemsId,
+                    friendId:userName//friendId==userName
                    
                 },
                 success: function (outputData) {
@@ -90,7 +100,7 @@ $(function(){
                 type: 'GET',
                 dataType: 'JSON',
                 data: {
-                   activityId:1
+                   activityId:activityId
                 },
                 success: function (outputData) {
                     console.log(outputData)
@@ -146,8 +156,8 @@ $(function(){
 
 })
 
-//截取方法
-function getUrlParam(url) {
+//截取字符串方法
+/* function getUrlParam(url) {
     var param = new Object(); 
     if (url.indexOf("?") != -1) { 
         var str = url.substr(1); 
@@ -157,4 +167,4 @@ function getUrlParam(url) {
         } 
     } 
     return param; 
-}
+} */
