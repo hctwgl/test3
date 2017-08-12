@@ -99,8 +99,7 @@ $(function () {
                 console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
-                        alert(urlName);
-                        window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName + "&activityId=" + activityId +"&userName=" + userName;
+                        window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName + "&activityId=" + activityId +"&userName=" + userName + "&userItemsId=" + userItemsId;
                     }else{
     
                      requestMsg(outputData.msg);
