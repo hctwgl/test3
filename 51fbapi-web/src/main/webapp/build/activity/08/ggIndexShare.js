@@ -1,11 +1,10 @@
 'use strict';
 var activityId = getUrl("activityId");//获取活动Id
-var userName=getCookie('userName');//获取用户名
+var userName='';//获取用户名
 //获取页面名称传到登录页
 var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
-console.log(userName)
 var num;//卡片数量
 //获取数据
 let vm = new Vue({
@@ -147,12 +146,14 @@ let vm = new Vue({
                         $.ajax({
                             type: 'get',
                             url: '/H5GGShare/pickUpSuperPrize',
-                            data:{'activityId':activityId},
+                            data:{'activityId':1},
                             dataType:'JSON',
                             success: function (returnData) {
                                 console.log(returnData)
                                 if(returnData.success){
-                                    requestMsg(returnData.msg)
+                                    requestMsg(returnData.msg);
+                                }else{
+                                    requestMsg(returnData.msg);
                                 }
                             },
                             error: function(){
