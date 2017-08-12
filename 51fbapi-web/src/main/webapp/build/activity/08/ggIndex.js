@@ -1,10 +1,13 @@
 var activityId=getUrl("activityId");//获取活动Id
+var userName = "";//获取用户名
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
 var num;//卡片数量
 // var domainName = domainName();//域名
 var protocol = window.location.protocol;
 var host = window.location.host;
 var domainName = protocol+'//'+host;
-
 //获取数据
 let vm = new Vue({
     el: '#ggIndex',
@@ -222,7 +225,7 @@ function alaShareData(){
         "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
         'shareAppContent': "我正在51返呗玩场景点亮活动，你也一起来玩吧~",  // 分享的内容
         "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggIndexShare?loginSource=F",  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggIndexShare?loginSource=F&activityId="+activityId+"&userName="+userName,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggIndexShare" // 分享的页面
     };
