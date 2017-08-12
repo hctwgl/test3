@@ -161,6 +161,12 @@
 				<entry key="/user/getUserCounponListType" value-ref="getUserCounponListTypeApi" />
 				<entry key="/user/submitShareAction" value-ref="submitShareActionApi" />
 				<entry key="/user/getImageCode" value-ref="getImageCodeApi" />
+				<entry key="/user/getRecommedData" value-ref="getRecommedDataApi" />
+				<entry key="/user/getRecommendListByUserId" value-ref="getRecommendListByUserIdApi" />
+				<entry key="/user/getActivieResourceByType" value-ref="getActivieResourceByTypeApi" />
+				<entry key="/user/getRecommendListSort" value-ref="getRecommendListSortApi" />
+				<entry key="/user/getPrizeUser" value-ref="getPrizeUserApi"/>
+
 
 				<entry key="/user/signin" value-ref="signinApi" />
 

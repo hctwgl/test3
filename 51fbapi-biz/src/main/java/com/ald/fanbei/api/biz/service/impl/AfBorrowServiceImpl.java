@@ -11,6 +11,11 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -20,12 +25,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
@@ -48,27 +47,6 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowInterestDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowLogDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowTempDao;
-import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
-import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowInterestDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLogDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -134,7 +112,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	AfResourceService afResourceService;
 	@Resource
 	AfOrderService afOrderService;
-	
+	@Resource
+	AfRecommendUserDao afRecommendUserDao;
+	@Resource
+	AfRecommendUserService afRecommendUserService;
 	@Override
 	public Date getReyLimitDate(String billType, Date now) {
 		Date start = DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now));
@@ -514,9 +495,17 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					}
 					afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
 					pushService.dealBorrowCashTransfer(userDto.getUserName(), borrow.getGmtCreate());
+
+					//#region 修改最是否己借款  add by hongzhengpei
+
+					afRecommendUserService.updateRecommendByBorrow(borrow.getUserId(),borrow.getGmtCreate());
+
+					//#endregion
+
 				} catch (Exception e) {
-					logger.info("create cashBill error:", e);
+//					logger.info("create cashBill error:", e);
 					status.setRollbackOnly();
+					throw  new FanbeiException(FanbeiExceptionCode.BORROW_ERROR,e);
 				}
 				return null;
 			}
@@ -726,6 +715,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 							afBorrowDao.addBorrowBill(billList);
 							afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
 							pushService.dealBorrowConsumeTransfer(userDto.getUserName(), borrow.getName());
+
+							//#region 修改最是否己借款  add by hongzhengpei
+							afRecommendUserService.updateRecommendByBorrow(borrow.getUserId(),borrow.getGmtCreate());
+							//#endregion
 						}
 					}
 				} catch (Exception e) {

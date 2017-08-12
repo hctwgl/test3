@@ -5,7 +5,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -50,6 +53,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
 
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -58,8 +64,20 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	}
 
 	@Override
-	public int updateBorrowCash(AfBorrowCashDo afBorrowCashDo) {
-		return afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+	public int updateBorrowCash(final AfBorrowCashDo afBorrowCashDo) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus transactionStatus) {
+				 afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+
+				//#region 修改最是否己借款  add by hongzhengpei
+				afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(),afBorrowCashDo.getGmtCreate());
+				//#endregion
+
+				 return 1;
+			}
+		});
+
 	}
 
 	@Override

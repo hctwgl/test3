@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfFeedBackService;
+import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -40,6 +43,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	TransactionTemplate transactionTemplate;
 	@Resource
 	CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
+
+	@Resource
+	AfRecommendUserDao afRecommendUserDao;
+
+
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	@Override
@@ -58,6 +66,18 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId());
+
+			        long recommendId = afUserDo.getRecommendId();
+
+					//#region add by hongzhengpei
+			        if(recommendId !=0){
+			        	//新增推荐记录表
+						AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
+						afRecommendUserDo.setUser_id(afUserDo.getRid());
+						afRecommendUserDo.setParentId(recommendId);
+						afRecommendUserDao.addRecommendUser(afRecommendUserDo);
+					}
+					//#endregion
 
 					return 1;
 				} catch (Exception e) {
