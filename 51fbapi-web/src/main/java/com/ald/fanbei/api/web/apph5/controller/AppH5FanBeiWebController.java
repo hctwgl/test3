@@ -278,7 +278,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			String userName = context.getUserName();
 			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
 			if (sceneId == null) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
 			}
 			
 			if (StringUtils.isEmpty(userName)) {
@@ -298,7 +298,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
 			if (resourceInfo == null) {
 				logger.error("couponSceneId is invalid");
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
 			}
 			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
 			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
@@ -307,10 +307,10 @@ public class AppH5FanBeiWebController extends BaseController {
 			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
 			
 			if (DateUtil.beforeDay(new Date(), gmtStart)) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
 			}
 			if (DateUtil.afterDay(new Date(), gmtEnd)) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
 			}
 			
 			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
@@ -330,7 +330,7 @@ public class AppH5FanBeiWebController extends BaseController {
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
-			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
 		}
 
 	}

@@ -1094,7 +1094,7 @@ public class H5GGShareController extends H5Controller {
 			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
 			if (resourceInfo == null) {
 				logger.error("couponSceneId is invalid");
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
 			}
 			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
 			bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
@@ -1103,11 +1103,11 @@ public class H5GGShareController extends H5Controller {
 			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
 
 			if (DateUtil.beforeDay(new Date(), gmtStart)) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc())
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc())
 						.toString();
 			}
 			if (DateUtil.afterDay(new Date(), gmtEnd)) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc())
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc())
 						.toString();
 			}
 
