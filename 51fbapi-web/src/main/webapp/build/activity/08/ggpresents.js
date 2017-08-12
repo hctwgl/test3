@@ -4,7 +4,7 @@ var currentUrl = window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
 
-var currentUrl = "htttp://192.168.96.210/fanbei-web/activity/ggpresents?loginSource=Z&activityId=1&userItemsId=32&from=singlemessage&isappinstalled=1";
+//var currentUrl = "htttp://192.168.96.210/fanbei-web/activity/ggpresents?loginSource=Z&activityId=1&userItemsId=32&from=singlemessage&isappinstalled=1";
 var index01=currentUrl.indexOf("?");
 var str=currentUrl.substring(index01+1);//获取?后面的字符串
 var arr=[];
