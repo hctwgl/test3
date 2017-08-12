@@ -1,11 +1,11 @@
 
 //获取页面名称传到登录页
 var currentUrl = window.location.href;
-var index=currentUrl.lastIndexOf('/');
-var urlName=currentUrl.slice(index+1);
-
 //var currentUrl = "htttp://192.168.96.210/fanbei-web/activity/ggpresents?loginSource=Z&activityId=1&userItemsId=32&from=singlemessage&isappinstalled=1";
+var index=currentUrl.lastIndexOf('/');
 var index01=currentUrl.indexOf("?");
+var urlName=currentUrl.slice(index+1,index01);
+console.log(urlName)
 var str=currentUrl.substring(index01+1);//获取?后面的字符串
 var arr=[];
 arr=str.split("&");//获取?后面以&分隔的字符串
