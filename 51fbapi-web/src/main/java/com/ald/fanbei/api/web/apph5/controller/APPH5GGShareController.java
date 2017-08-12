@@ -928,7 +928,7 @@ public class APPH5GGShareController extends BaseController {
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+				return H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
 			}
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			if (activityId != null && userId != null) {
@@ -939,7 +939,7 @@ public class APPH5GGShareController extends BaseController {
 				List<AfBoluomeActivityResultDo> isHave = afBoluomeActivityResultService
 						.getListByCommonCondition(conditionDo);
 				if (isHave != null && isHave.size() > 0) {
-					return H5CommonResponse.getNewInstance(true, "您已经成功领取88.8元现金红包，不能重复领取").toString();
+					return H5CommonResponse.getNewInstance(false, "您已经成功领取88.8元现金红包，不能重复领取").toString();
 				}
 				AfBoluomeActivityCouponDo conditionCoupon = new AfBoluomeActivityCouponDo();
 				conditionCoupon.setBoluomeActivityId(activityId);
