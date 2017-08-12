@@ -30,7 +30,7 @@ $(".loginbtn").click(function () {
                     if(word=="Z"){
                         window.location.href = urlName + "?userName=" + userName +"&activityId=" + activityId + "&userItemsId" + userItemsId;
                     }else{
-                        window.location.href ="ggIndexShare";
+                        window.location.href ="ggIndexShare" + "?activityId=" + activityId + "&userName=" + userName;
                     } 
                 }else{
                     requestMsg(data.msg);
