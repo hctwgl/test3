@@ -50,7 +50,8 @@
         <div class="card" v-for="item in content.itemsList" @click="cardClick()">
             <img :src="item.logo">
             <p class="cardMask" v-if="item.num===0"></p>
-            <p class="num" v-if="item.num>=2">x{{item.num}}</p>
+            <p class="cardMask" style="display: none"></p>
+            <p class="num" style="display: none">x{{item.num}}</p>
         </div>
     </div>
     <div class="finalPrize finalPrize01" v-for="item in content.normalCouponList" @click="finalPrize()" v-show="!finalPrizeMask">
