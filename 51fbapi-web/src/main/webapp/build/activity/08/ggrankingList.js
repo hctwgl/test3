@@ -1,6 +1,6 @@
 //获取页面名称传到登录页
 var currentUrl = window.location.href;
-// var currentUrl = "http://ggrankingList?activityId=1";
+//var currentUrl = "http://ggrankingList?activityId=1";
 var index01=currentUrl.indexOf("?");
 var str=currentUrl.substring(index01+1);//获取?后面的字符串
 var arr=[];
