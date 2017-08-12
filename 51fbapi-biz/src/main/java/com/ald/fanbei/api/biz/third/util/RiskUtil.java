@@ -624,40 +624,30 @@ public class RiskUtil extends AbstractThird {
 				orderInfo.setClosedReason("风控审批不通过");
 				orderInfo.setGmtClosed(new Date());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
-					if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-						try {
-							//菠萝觅风控拒绝的订单自动取消
-							boluomeUtil.cancelOrder(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), orderInfo.getClosedReason());
-							orderDao.updateOrder(orderInfo);
-						} catch (UnsupportedEncodingException e) {
-							logger.info("cancel Order error");
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
+					AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+					afAgentOrderDo.setClosedReason("风控审批失败");
+					afAgentOrderDo.setGmtClosed(new Date());
+					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+					
+					//添加关闭订单释放优惠券
+					if(afAgentOrderDo.getCouponId()>0){
+						AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+						
+						if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+							couponDo.setStatus(CouponStatus.NOUSE.getCode());
+							afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
 						}
-					} else {
-						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-							AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
-							afAgentOrderDo.setClosedReason("风控审批失败");
-							afAgentOrderDo.setGmtClosed(new Date());
-							afAgentOrderService.updateAgentOrder(afAgentOrderDo);
-							
-							//添加关闭订单释放优惠券
-							if(afAgentOrderDo.getCouponId()>0){
-								AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
-								
-								if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
-									couponDo.setStatus(CouponStatus.NOUSE.getCode());
-									afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
-								}
-								else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
-									couponDo.setStatus(CouponStatus.EXPIRE.getCode());
-									afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
-								}
-							}
-							orderDao.updateOrder(orderInfo);
-						}
-						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
-							orderDao.updateOrder(orderInfo);
+						else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+							couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+							afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
 						}
 					}
+					orderDao.updateOrder(orderInfo);
+				}
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
+					orderDao.updateOrder(orderInfo);
+				}
 				jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 //			}
 			return resultMap;
