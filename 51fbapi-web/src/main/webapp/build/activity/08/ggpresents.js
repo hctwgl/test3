@@ -1,20 +1,25 @@
 
-//获取页面名称传到登录页
-var currentUrl = window.location.href;
-//var currentUrl = "htttp://192.168.96.210/fanbei-web/activity/ggpresents?loginSource=Z&activityId=1&userItemsId=32&from=singlemessage&isappinstalled=1";
-var index=currentUrl.lastIndexOf('/');
-var index01=currentUrl.indexOf("?");
-var urlName=currentUrl.slice(index+1,index01);
-console.log(urlName)
-var str=currentUrl.substring(index01+1);//获取?后面的字符串
-var arr=[];
-arr=str.split("&");//获取?后面以&分隔的字符串
-var activityId=arr[1].slice(arr[1].indexOf("=")+1);//获取arr数组里面的具体值
-var userItemsId=arr[2].slice(arr[2].indexOf("=")+1);
-console.log(activityId)
-console.log(userItemsId)
-$(function () {
 
+$(function () {
+    //获取页面名称传到登录页
+    var currentUrl = window.location.href;
+    alert(currentUrl);
+    //var currentUrl = "htttp://192.168.96.210/fanbei-web/activity/ggpresents?loginSource=Z&activityId=1&userItemsId=32&from=singlemessage&isappinstalled=1";
+    var index=currentUrl.lastIndexOf('/');
+    var index01=currentUrl.indexOf("?");
+    var urlName=currentUrl.slice(index+1,index01);
+    // console.log(urlName)
+    // var str=currentUrl.substring(index01+1);//获取?后面的字符串
+    // var arr=[];
+    // arr=str.split("&");//获取?后面以&分隔的字符串
+    // var activityId=arr[1].slice(arr[1].indexOf("=")+1);//获取arr数组里面的具体值
+    // var userItemsId=arr[2].slice(arr[2].indexOf("=")+1);
+    var param = getUrlParam(currentUrl);
+    var activityId = param['activityId'];
+    var userItemsId = param['userItemsId'];
+
+    alert(activityId);
+    alert(userItemsId);
     $.ajax({
         url: "/H5GGShare/ggSendItems",
         type: 'GET',
@@ -144,7 +149,7 @@ $(function () {
 function getUrlParam(url) {
     var param = new Object(); 
     if (url.indexOf("?") != -1) { 
-        var str = url.substr(1); 
+        var str = url.substr(url.indexOf("?")+1,url.length); 
         var strs=[];
         strs = str.split("&"); 
         for(var i = 0; i < strs.length; i ++) { 
@@ -154,4 +159,3 @@ function getUrlParam(url) {
     return param; 
 
 }
-

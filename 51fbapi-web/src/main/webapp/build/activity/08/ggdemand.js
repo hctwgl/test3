@@ -8,16 +8,19 @@ var currentUrl = window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var index01=currentUrl.indexOf("?");
 var urlName=currentUrl.slice(index+1,index01);
-var str=currentUrl.substring(index01+1);//获取?后面的字符串
-var arr=[];
-arr=str.split("&");//获取?后面以&分隔的字符串
-var itemsId=arr[3].slice(arr[3].indexOf("=")+1);//获取arr数组里面的具体值
-var userName=arr[2].slice(arr[2].indexOf("=")+1);
-var activityId=arr[1].slice(arr[1].indexOf("=")+1);
-console.log(itemsId)
-console.log(userName)
-console.log(activityId)
+// var str=currentUrl.substring(index01+1);//获取?后面的字符串
+// var arr=[];
+// arr=str.split("&");//获取?后面以&分隔的字符串
+// var itemsId=arr[3].slice(arr[3].indexOf("=")+1);//获取arr数组里面的具体值
+// var userName=arr[2].slice(arr[2].indexOf("=")+1);
+// var activityId=arr[1].slice(arr[1].indexOf("=")+1);
+// console.log(itemsId)
+// console.log(userName)
+// console.log(activityId)
 
+  var param = getUrlParam(currentUrl);
+  var itemsId = param['itemsId'];
+  var userName = param['userName'];
 
 
 //获取数据
@@ -154,14 +157,16 @@ $(function(){
 })
 
 //截取字符串方法
-/* function getUrlParam(url) {
+function getUrlParam(url) {
     var param = new Object(); 
     if (url.indexOf("?") != -1) { 
-        var str = url.substr(1); 
+        var str = url.substr(url.indexOf("?")+1,url.length); 
+        var strs=[];
         strs = str.split("&"); 
         for(var i = 0; i < strs.length; i ++) { 
             param[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
         } 
     } 
     return param; 
-} */
+
+}
