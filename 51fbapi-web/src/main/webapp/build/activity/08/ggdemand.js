@@ -2,7 +2,6 @@
 $(function(){
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
-    alert(currentUrl);
     //var currentUrl = "http://192.168.96.210/fanbei-web/activity/ggdemand?loginSource=S&activityId=1&userName=15839790051&itemsId=3&from=singlemessage&isappinstalled=1";
     var index = currentUrl.lastIndexOf('/');
     var index01 = currentUrl.indexOf("?");
@@ -10,8 +9,6 @@ $(function(){
     var param = getUrlParam(currentUrl);
     var itemsId = param['itemsId'];
     var userName = param['userName'];
-    alert("itemsId->" + itemsId);
-    alert("userName->" + userName);
      $.ajax({
                 url: "/H5GGShare/ggAskForItems",
                 type: 'GET',

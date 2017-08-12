@@ -7,8 +7,6 @@ var arr=[];
 arr=str.split("&");//获取?后面以&分隔的字符串
 var activityId=arr[0].slice(arr[0].indexOf("=")+1);//获取arr数组里面的具体值
 console.log(activityId) 
-
-
 //列表信息无缝滚动
 var $uList = $(".container ul");
 var timer = null;
@@ -34,9 +32,6 @@ function scrollList(obj) {
         }).find("li:first").appendTo($uList);
     });
 };
-
-
-
 
 //获取数据
 $(function () {

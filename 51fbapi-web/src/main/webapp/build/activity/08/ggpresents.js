@@ -3,7 +3,6 @@
 $(function () {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
-    alert("currentUrl->"+currentUrl);
     //var currentUrl = "htttp://192.168.96.210/fanbei-web/activity/ggpresents?loginSource=Z&activityId=1&userItemsId=32&from=singlemessage&isappinstalled=1";
     var index=currentUrl.lastIndexOf('/');
     var index01=currentUrl.indexOf("?");
@@ -12,8 +11,6 @@ $(function () {
     var activityId = param['activityId'];
     var userItemsId = param['userItemsId'];
     var userName = param['userName'];
-    alert("activityId=>" + activityId);
-    alert("userItemsId=>" + userItemsId);
     $.ajax({
         url: "/H5GGShare/ggSendItems",
         type: 'GET',
