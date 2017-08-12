@@ -7,6 +7,15 @@ var index=currentUrl.lastIndexOf('=');
 var urlName02=currentUrl.slice(index+1);
 console.log(urlName02)
 
+var currentUrl = "http://192.168.96.210/fanbei-web/activity/ggIndexShare?loginSource=F&activityId=1&userName=15839790051&from=singlemessage&isappinstalled=1";
+var index01=currentUrl.indexOf("?");
+var str=currentUrl.substring(index01+1);////获取?后面的字符串
+var arr=[];
+arr=str.split("&");//获取?后面以&分隔的字符串
+var activityId=arr[1].slice(arr[1].indexOf("=")+1);//获取arr数组里面的具体值
+var userName=arr[2].slice(arr[2].indexOf("=")+1);
+
+
 
     //点击立即登录
     $(".loginbtn").click(function () {
@@ -21,15 +30,15 @@ console.log(urlName02)
                 data: {
                     userName: userName,
                     password: password_md5,
-                    activityId:	1,
-                    refUserName:17839218825,
+                    activityId:activityId,
+                    refUserName:userName,
                     urlName:urlName02
 
                 },
                 success: function (data) {
                     console.log(data)
                     if(data.success){
-                    
+        
                          if(urlName01=="Z"){
                             window.location.href =urlName02;
                         }else{

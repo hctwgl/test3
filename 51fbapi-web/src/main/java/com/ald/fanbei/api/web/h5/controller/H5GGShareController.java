@@ -776,7 +776,8 @@ public class H5GGShareController extends H5Controller {
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
-			Long friendId = NumberUtil.objToLong(request.getParameter("friendId"));
+			String friendName = request.getParameter("friendName");
+			Long friendId = convertUserNameToUserId(friendName);
 			if (userId != null) {
 				AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
 				if (itemsDo != null) {
