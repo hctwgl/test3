@@ -20,7 +20,7 @@ $(function(){
             $.ajax({
                 type: 'get',
                 url: "/H5GG/sendItems",
-                data:{'activityId':1},
+                data:{'activityId':activityId},
                 success: function (returnData) {
                     var returnData = eval('(' + returnData + ')');
                     console.log(returnData)
