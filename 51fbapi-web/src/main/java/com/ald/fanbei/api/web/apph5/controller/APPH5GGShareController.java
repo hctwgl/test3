@@ -726,7 +726,8 @@ public class APPH5GGShareController extends BaseController {
 		try {
 			context = doWebCheck(request, false);
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
-			Long friendId = NumberUtil.objToLong(request.getParameter("friendId"));
+			String friendName = request.getParameter("friendName");
+			Long friendId = convertUserNameToUserId(friendName);
 			String userName = context.getUserName();
 			// String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
