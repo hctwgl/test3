@@ -75,14 +75,14 @@ body {
 #rankingList .phoneNumber .phone-right {
     float: right;
 }
-@keyframes moveup{
+/* @keyframes moveup{
                 0% {
                     transform: translateY(0);
                 }
                 100% {
                     transform: translateY(-100%);
                 }
-            }
+            } */
           
 #rankingList .container {
     padding-left: 0.2rem;
@@ -92,7 +92,7 @@ body {
     
 }
 #rankingList .container .numberList{
-    animation: moveup 10s  linear infinite;
+    /* animation: moveup 10s  linear infinite; */
 }
 /*end信息滚动  */  
 #rankingList .numberList .list {

@@ -32,10 +32,13 @@ body{
 #scroll_div {
     overflow: hidden;
     white-space: nowrap;
+      /* position: relative;    */
 }
 #scroll_begin,
 #scroll_end {
     display: inline;
+    /* position:absolute;
+    right:-60%;  */
 }
  .personAmount{
   width: 100%;

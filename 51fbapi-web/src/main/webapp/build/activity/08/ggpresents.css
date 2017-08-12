@@ -31,18 +31,21 @@ body {
 #scroll_div {
     overflow: hidden;
     white-space: nowrap;
+    /* position: relative;  */
 }
 
 #scroll_begin,
 #scroll_end {
     display: inline;
+    /* position:absolute;
+    right:40%; */
 }
 
 .personAmount {
     width: 100%;
     height: .6rem;
     /* background:#4c4c4c; */
-    /* position: relative; */
+     
 }
 
 .personAmount p {
