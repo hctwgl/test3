@@ -163,8 +163,10 @@ public class PayRoutController {
         		} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)){//借款
         			Long rid = NumberUtil.objToLong(result);
         			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
-        			afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
-        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+        			if(AfBorrowCashStatus.transeding.getCode().equals(afBorrowCashDo.getStatus())){
+        				afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
+            			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+        			}
         		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
         			//退款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
