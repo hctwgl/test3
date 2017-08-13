@@ -22,7 +22,14 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	private int ets;
 	private float discount;
 	private List<String> channels;
+	private String sceneId ;
 	
+	public String getSceneId() {
+		return sceneId;
+	}
+	public void setSceneId(String sceneId) {
+		this.sceneId = sceneId;
+	}
 	public String getCampaign_name() {
 		return campaign_name;
 	}
