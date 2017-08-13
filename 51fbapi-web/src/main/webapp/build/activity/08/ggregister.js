@@ -111,7 +111,7 @@ $('.mmicon').css("display","block");
         console.log(smsCode);
         console.log(registerMoblie);
         var yzcheck=$('#yzcheck').val();//获取验证码
-        var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(registerMoblie));
+        var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(registerMoblie));
         var yztrue=(/^\d{6}$/.test(yzcheck));//6位數字增則驗證 驗證碼
         var mmtrue=/^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password);
         if (( (userck) && yztrue&&yzcheck!='')&& ( mmtrue&& password!=undefined)) {

@@ -30,7 +30,7 @@ $(function(){
         //点击获取验证码
         $(".btn").click(function () {
              var userName = $(".phoneNumber-right").val();//获取手机号
-              var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(userName));//手机号正则验证
+              var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userName));//手机号正则验证
             // var mesg= $(".mesg-right").val();//获取验证码  
             if (userck) {
                 // var password_md5 = String(CryptoJS.MD5(password));//md5加密
@@ -70,6 +70,11 @@ $(function(){
         $('.nextStep').click(function(){
             var mesg= $(".mesg-right").val();//获取验证码 
             console.log(mesg);
+            var userName = $(".phoneNumber-right").val();//获取手机号
+             if(userName==''){
+                requestMsg("请填写正确的手机号");
+                return false;
+            }
             if(mesg==''){
                 requestMsg("请填写正确的验证码");
                 return false;

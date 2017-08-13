@@ -49,7 +49,7 @@ $(".loginbtn").click(function () {
     var userName = $("#yhinp").val();//获取手机号
     var password = $(".check").val();//获取密码
 
-    var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(userName));
+    var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userName));
     if (userck && /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password)) {
        
         var password_md5 = String(CryptoJS.MD5(password));//md5加密
