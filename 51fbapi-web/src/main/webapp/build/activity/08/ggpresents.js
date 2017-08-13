@@ -3,7 +3,6 @@
 $(function () {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
-    //var currentUrl = "htttp://192.168.96.210/fanbei-web/activity/ggpresents?loginSource=Z&activityId=1&userItemsId=32&from=singlemessage&isappinstalled=1";
     var index=currentUrl.lastIndexOf('/');
     var index01=currentUrl.indexOf("?");
     var urlName=currentUrl.slice(index+1,index01);

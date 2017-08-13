@@ -12,7 +12,7 @@
     <div id="verify">
         <div class="phoneNumber">
             <img src="$src/verify-one.png" alt="" class="phoneNumber-pic">
-            <input type="text" placeHolder="请输入手机号" class="phoneNumber-right">
+            <input maxLength=11 minLength=11 type="text" placeHolder="请输入手机号" class="phoneNumber-right">
         </div>
         <div class="mesg">
             <img src="$src/verify-two.png" alt="" class="mesg-pic">

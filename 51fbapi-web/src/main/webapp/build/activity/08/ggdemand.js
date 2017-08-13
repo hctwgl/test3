@@ -2,13 +2,14 @@
 $(function(){
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
-    //var currentUrl = "http://192.168.96.210/fanbei-web/activity/ggdemand?loginSource=S&activityId=1&userName=15839790051&itemsId=3&from=singlemessage&isappinstalled=1";
     var index = currentUrl.lastIndexOf('/');
     var index01 = currentUrl.indexOf("?");
     var urlName = currentUrl.slice(index+1,index01);
     var param = getUrlParam(currentUrl);
     var itemsId = param['itemsId'];
     var userName = param['userName'];
+    var activityId = param['activityId'];
+    var word = param['loginSource'];
      $.ajax({
                 url: "/H5GGShare/ggAskForItems",
                 type: 'GET',
@@ -63,14 +64,15 @@ $(function(){
                     console.log(outputData)
                     if (outputData.success) {
                             if(outputData.msg=="没有登录"){
-                                window.location.href = "gglogin?word=S"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName; 
+                                alert("&activityId=" + activityId);
+                                window.location.href = "gglogin?word=S"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName + "&activityId=" + activityId; 
                             }else{
                                 requestMsg(outputData.msg)
                             }
                     }
                 }
             })
-    })
+    });
 
     //点击我也要点亮
     $('.demandCard').click(function(){
@@ -85,8 +87,7 @@ $(function(){
                     console.log(outputData)
                     if (outputData.success) {
                         if(outputData.msg=="没有登录"){
-                            // alert(urlName)
-                            window.location.href = "gglogin?urlName=" + urlName; 
+                            window.location.href = "gglogin?word=S"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName + "&activityId=" + activityId; 
                             
                         }else{
                             var userName = outputData.data.userName;

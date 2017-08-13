@@ -46,13 +46,16 @@ $(".loginbtn").click(function () {
     });
 
 
-
+    //注册
     $("#gg_register").click(function(){
-        window.location.href= "ggregister?word=" + word + "&userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId +"&itemsId=" + itemsId;
+         alert(word);
+        window.location.href= "ggregister?word=" + word + "&userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId +"&itemsId=" + itemsId + "&urlName="+urlName;
     });
 
+    //忘记密码
     $("#gg_forget").click(function(){
-        window.location.href= "ggVerify?word=" + word + "&userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId +"&itemsId=" + itemsId;
+        alert(word);
+        window.location.href= "ggVerify?word=" + word + "&userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId +"&itemsId=" + itemsId + "&urlName="+urlName;
     });
 })
 //截取字符串方法

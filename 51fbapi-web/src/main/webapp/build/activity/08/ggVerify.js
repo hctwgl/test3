@@ -1,5 +1,14 @@
 $(function(){
  
+        //获取页面名称传到登录页
+        var currentUrl = window.location.href;
+        var param = getUrlParam(currentUrl);
+        var word = param['word'];
+        var urlName = param['urlName'];
+        var userName = param['userName'];
+        var activityId = param['activityId'];
+        var userItemsId = param['userItemsId'];
+        var itemsId = param['itemsId'];
         //倒计时
         var timerInterval;
         var timerS = 60;
@@ -62,8 +71,21 @@ $(function(){
            localStorage.setItem("mesg",mesg); //将短信验证码存储到本地
            console.log(mesg)
 
-            window.location.href='ggForgetP';
+            window.location.href= "ggForgetP?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;;
 
         })
 }) 
 
+//截取字符串方法
+function getUrlParam(url) {
+    var param = new Object(); 
+    if (url.indexOf("?") != -1) { 
+        var str = url.substr(url.indexOf("?")+1,url.length); 
+        var strs=[];
+        strs = str.split("&"); 
+        for(var i = 0; i < strs.length; i ++) { 
+            param[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
+        } 
+    } 
+    return param; 
+}

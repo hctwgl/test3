@@ -13,7 +13,7 @@
     <div id="lock">
         <div class="blank">
             <img src="$src/lock.png" class="blank-pic">
-            <input type="password" placeholder="请输入登录密码" class="blank-in">
+            <input maxLength=11 minLength=11 type="password" placeholder="请输入登录密码" class="blank-in">
         </div>
         <button class="btn">完成</button>
 </div>

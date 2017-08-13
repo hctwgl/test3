@@ -64,5 +64,5 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/dist/activity/08/ggpresents.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/ggpresents.js"></script>
 </html>
