@@ -68,10 +68,6 @@ let vm = new Vue({
                             }
                         }
                     //判断蒙版
-                    var couponList=self.content.boluomeCouponList;
-                    for(var i=0;i<couponList.length;i++){
-                        couponList[i] = eval("("+couponList[i]+")");
-                    }
                     for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
                         num=self.content.itemsList[j].num;
                         if(num==0){

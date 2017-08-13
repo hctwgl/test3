@@ -65,11 +65,6 @@ let vm = new Vue({
                                 $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
                             }
                         }
-                    //优惠券数据格式
-                    var couponList=self.content.boluomeCouponList;
-                    for(var i=0;i<couponList.length;i++){
-                        couponList[i] = eval("("+couponList[i]+")");
-                    }
                     //是否可赠送
                     for(var j=0;j<self.content.itemsList.length;j++){
                         num=self.content.itemsList[j].num;
