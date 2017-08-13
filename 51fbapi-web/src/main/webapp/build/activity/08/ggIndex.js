@@ -4,6 +4,7 @@ if(getInfo().userName){
     userName=getInfo().userName;
 };
 var num;//卡片数量
+var len=0;
 // var domainName = domainName();//域名
 var protocol = window.location.protocol;
 var host = window.location.host;
@@ -13,7 +14,8 @@ let vm = new Vue({
     el: '#ggIndex',
     data: {
         content: {},
-        finalPrizeMask:''
+        finalPrizeMask:'',
+        getFinal:false
     },
     created: function () {
         this.logData();
@@ -70,16 +72,18 @@ let vm = new Vue({
                     //判断蒙版
                     for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
                         num=self.content.itemsList[j].num;
-                        if(num==0){
-                            self.finalPrizeMask=true;
-                        }else if(num==1){
-                            self.finalPrizeMask=false;
-                        }else {
-                            self.finalPrizeMask=false;
+                        if(num>=2){
                             $('.card').eq(j).find('.num').css('display','block');
                             $('.presentCard').attr('present','Y');
                         }
-                    }//是否可赠送
+                    }
+                    for(var j=0;j<self.content.itemsList.length;j++){//是否可领取终极大奖
+                            num=self.content.itemsList[j].num;
+                            if(num==0&&self.getFinal==false){   
+                                self.finalPrizeMask=true;
+                                break;
+                            }
+                        }
                     })
                 }
             })
@@ -166,6 +170,7 @@ let vm = new Vue({
                         console.log(returnData)
                         if(returnData.success){
                             requestMsg(returnData.msg);
+                            console.log(self.getFinal)
                             for(var j=0;j<self.content.itemsList.length;j++){
                                 num=self.content.itemsList[j].num;
                                 if(num==0){

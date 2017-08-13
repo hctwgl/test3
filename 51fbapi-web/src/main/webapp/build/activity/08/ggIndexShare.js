@@ -71,11 +71,11 @@ let vm = new Vue({
                         if(num==0){
                             self.finalPrizeMask=true;
                         }else if(num==1){
-                            self.finalPrizeMask=false;
+                            $('.card').eq(j).find('.num').css('display','none');
                         }else {
                             self.finalPrizeMask=false;
-                            //self.present='Y';
                             $('.card').eq(j).find('.num').css('display','block');
+                            $('.presentCard').attr('present','Y');
                         }
                     }//是否可赠送
                     })
