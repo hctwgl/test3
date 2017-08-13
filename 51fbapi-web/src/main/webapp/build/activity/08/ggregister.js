@@ -13,6 +13,41 @@ $(function () {
     var timerInterval;
     var timerS = 60;
 
+
+
+
+$('.yhicon').click(function(){
+    $(".yhinp").val('');
+    $('.yhicon').css("display","none");
+});
+
+$(".yhinp").keyup(function(){
+   
+if($(".yhinp").val()==''){
+$('.yhicon').css("display","none");
+}else{
+$('.yhicon').css("display","block");
+}
+});
+
+
+// 密碼叉叉點擊清楚所有文字
+
+$('.mmicon').click(function(){
+    $("#mobile").val('');
+    console.log( $("#mobile").val());
+    $('.mmicon').css("display","none");
+});
+
+
+$("#mobile").keyup(function(){
+if($("#mobile").val()==''){
+$('.mmicon').css("display","none");
+}else{
+$('.mmicon').css("display","block");
+}
+});
+
     function timeFunction() { // 60s倒计时
         timerS--;
         if (timerS <= 0) {
@@ -30,9 +65,10 @@ $(function () {
         var isState = $(".checkbtn").attr('isState');//获取设置的状态码
         var mobileNum = $(".mobile").val(); //获取手机号
         var password=$('#password').val();//获取密码
-
+        
         if (isState == 0 || !isState) {
-            if (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) {
+            var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(mobileNum));
+            if (userck ) {
                 $.ajax({
                     url: "/app/user/getRegisterSmsCode",
                     type: "POST",
@@ -57,7 +93,11 @@ $(function () {
                     }
                 })
             } else {
-                requestMsg("请填写正确的手机号");
+                console.log(userck);
+               
+                     requestMsg("请填写正确的手机号");
+                
+               
             }
         }
     });
@@ -70,7 +110,11 @@ $(function () {
         console.log(password);
         console.log(smsCode);
         console.log(registerMoblie);
-        if (/^1(3|4|5|7|8)\d{9}$/i.test(registerMoblie)) {
+        var yzcheck=$('#yzcheck').val();//获取验证码
+        var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(registerMoblie));
+        var yztrue=(/^\d{6}$/.test(yzcheck));//6位數字增則驗證 驗證碼
+        var mmtrue=/^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password);
+        if (( (userck) && yztrue&&yzcheck!='')&& ( mmtrue&& password!=undefined)) {
             var password_md5 = String(CryptoJS.MD5(password));//md5加密
             $.ajax({
                 url: "/H5GGShare/commitBouomeActivityRegister",
@@ -96,7 +140,14 @@ $(function () {
             })
 
         } else {
-            requestMsg("请填写正确的手机号");
+                if(!userck){// if else if 只走一条线 通了不走其他
+                requestMsg("请填写正确的手机号");
+                }else if(!yztrue){//
+                     requestMsg("请填写正确的验证码");
+                } else if(true){//上兩種都不是就是第三种不用判断
+                      requestMsg("请填写6-18位的数字、字母、字符组成的密码");
+                }
+               
         }
     });
 });

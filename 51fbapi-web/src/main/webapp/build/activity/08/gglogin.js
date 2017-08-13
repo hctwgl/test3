@@ -9,11 +9,49 @@ var activityId = param['activityId'];
 var userItemsId = param['userItemsId'];
 var itemsId = param['itemsId'];
 //点击立即登录
+
+// 叉叉相關問題
+
+//用戶名叉叉點擊清楚所有文字
+
+$('.yhicon').click(function(){
+    $(".yhinp").val('');
+    $('.yhicon').css("display","none");
+});
+
+$(".yhinp").keyup(function(){
+   
+if($(".yhinp").val()==''){
+$('.yhicon').css("display","none");
+}else{
+$('.yhicon').css("display","block");
+}
+});
+
+// 密碼叉叉點擊清楚所有文字
+
+$('.mmicon').click(function(){
+    $(".check").val('');
+    $('.mmicon').css("display","none");
+});
+
+
+$(".check").keyup(function(){
+if($(".check").val()==''){
+$('.mmicon').css("display","none");
+}else{
+$('.mmicon').css("display","block");
+}
+});
+
+
 $(".loginbtn").click(function () {
-    var userName = $(".pinp").val();//获取手机号
+    var userName = $(".yhinp").val();//获取手机号
     var password = $(".check").val();//获取密码
-    if (/^1(3|4|5|7|8)\d{9}$/i.test(userName)) {
-        
+
+    var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(userName));
+    if (userck && /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password)) {
+       
         var password_md5 = String(CryptoJS.MD5(password));//md5加密
         $.ajax({
             url: "/H5GGShare/boluomeActivityLogin",
@@ -42,7 +80,13 @@ $(".loginbtn").click(function () {
             }
         })
     } else {
-        requestMsg("请填写正确的手机号");
+        console.log(userck);
+        if(!userck){
+            requestMsg("请填写正确的手机号");
+        }else{
+            requestMsg("请填写6-18位的数字、字母、字符组成的密码");  
+        }
+        
     }
     });
 

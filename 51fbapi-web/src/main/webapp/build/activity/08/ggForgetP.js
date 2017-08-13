@@ -18,29 +18,33 @@ $(function(){
         $(".btn").click(function (){
                 var password = $(".blank-in").val();//获取登录密码
                 var password_md5 = String(CryptoJS.MD5(password));//md5加密
+                var mmtrue=/^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password);//密码正则验证
                 console.log(password_md5);
-           
-                $.ajax({
-                    url: "/H5GGShare/boluomeActivityResetPwd",
-                    type: 'POST',
-                    dataType: 'JSON',
-                    data: {
-                        password: password_md5,                       	
-                        mobile:number,
-                        verifyCode:mesg
-                    },
-                    success: function (data) {
-                        console.log(data)
-                        if(data.success){
-                            window.location.href ="gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;;
-                        }else{
-                            requestMsg(data.msg);
-                        }
+                console.log(mmtrue);
+                if(mmtrue){
+                        $.ajax({
+                            url: "/H5GGShare/boluomeActivityResetPwd",
+                            type: 'POST',
+                            dataType: 'JSON',
+                            data: {
+                                password: password_md5,                       	
+                                mobile:number,
+                                verifyCode:mesg
+                            },
+                            success: function (data) {
+                                console.log(data)
+                                if(data.success){
+                                    window.location.href ="gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;;
+                                }else{
+                                    requestMsg(data.msg);
+                                }
+                            }
+                        
+                        })
+                    }else{
+                        requestMsg('请填写6-18位的数字、字母、字符组成的密码');
                     }
-                  
-                })
-            
-        });
+                });
 })
 //截取字符串方法
 function getUrlParam(url) {

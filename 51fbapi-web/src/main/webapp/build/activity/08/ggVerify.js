@@ -30,8 +30,9 @@ $(function(){
         //点击获取验证码
         $(".btn").click(function () {
              var userName = $(".phoneNumber-right").val();//获取手机号
+              var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(userName));//手机号正则验证
             // var mesg= $(".mesg-right").val();//获取验证码  
-            if (/^1(3|4|5|7|8)\d{9}$/i.test(userName)) {
+            if (userck) {
                 // var password_md5 = String(CryptoJS.MD5(password));//md5加密
                 $.ajax({
                     url: "/H5GGShare/boluomeActivityForgetPwd",
@@ -68,6 +69,11 @@ $(function(){
         //点击下一步 跳到忘记密码页
         $('.nextStep').click(function(){
             var mesg= $(".mesg-right").val();//获取验证码 
+            console.log(mesg);
+            if(mesg==''){
+                requestMsg("请填写正确的验证码");
+                return false;
+            }
            localStorage.setItem("mesg",mesg); //将短信验证码存储到本地
            console.log(mesg)
 

@@ -41,6 +41,9 @@ position: relative;
 padding-left: 1.08rem;
 
 }
+.yhinp{
+    /* display: none; */
+}
 .pinp{
 border:  none;
 outline: none;
@@ -60,6 +63,7 @@ transform: translateY(-50%);
 width:0.24rem;
 height:0.25rem;
 right: 0.17rem;
+display: none;
 }
 
 .bicon{
