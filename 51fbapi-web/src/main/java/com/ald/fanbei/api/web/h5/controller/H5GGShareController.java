@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
@@ -149,7 +150,7 @@ public class H5GGShareController extends H5Controller {
 
 			// List<BoluomeCouponResponseBo> boluomeCouponList = new
 			// ArrayList<>();
-			List<String> boluomeCouponList = new ArrayList<>();
+			List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
 			if (bList != null && bList.size() > 0) {
 				for (AfBoluomeActivityCouponDo bCouponDo : bList) {
 					Long resourceId = bCouponDo.getCouponId();
@@ -178,7 +179,10 @@ public class H5GGShareController extends H5Controller {
 											String result = activityCoupons.substring(1, activityCoupons.length() - 1);
 											String replacement = "," + "\"sceneId\":" + resourceId + "}";
 											String rString = result.replaceAll("}", replacement);
-											boluomeCouponList.add(rString);
+											//字符串转为json对象
+											BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(rString,
+													BoluomeCouponResponseBo.class);
+											boluomeCouponList.add(BoluomeCouponResponseBo);
 
 										}
 									}
