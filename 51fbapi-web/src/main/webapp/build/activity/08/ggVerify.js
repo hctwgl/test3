@@ -27,7 +27,7 @@ $(function(){
 
             
 
-        //获取数据
+        //点击获取验证码
         $(".btn").click(function () {
              var userName = $(".phoneNumber-right").val();//获取手机号
             // var mesg= $(".mesg-right").val();//获取验证码  

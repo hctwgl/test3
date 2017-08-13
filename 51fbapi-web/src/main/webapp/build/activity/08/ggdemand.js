@@ -64,7 +64,7 @@ $(function(){
                     console.log(outputData)
                     if (outputData.success) {
                             if(outputData.msg=="没有登录"){
-                                alert("&activityId=" + activityId);
+                                // alert("&activityId=" + activityId);
                                 window.location.href = "gglogin?word=S"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName + "&activityId=" + activityId; 
                             }else{
                                 requestMsg(outputData.msg)
