@@ -315,10 +315,12 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	@ResponseBody
 	@RequestMapping(value = "/boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String boluomeActivityForgetPwd(HttpServletRequest request, ModelMap model) throws IOException {
+		String resultStr = "";
+		try{
 		String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
 		AfUserDo afUserDo = new AfUserDo(); 
 		afUserDo = afUserService.getUserByUserName(mobile);
-		String resultStr = "";
+	
 		if (afUserDo == null) {
 			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", null).toString();
 		}
@@ -329,6 +331,10 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			}else{
 			resultStr = H5CommonResponse.getNewInstance(true, "用户发送验证码成功", "", null).toString();
 		}
+	  }
+	}catch (Exception e) {
+		resultStr = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+		logger.error("boluomeActivityForgetPwd fanbei exception"+e.getMessage());
 	}
 		return resultStr;
 }

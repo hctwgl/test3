@@ -4,7 +4,6 @@ if(getInfo().userName){
     userName=getInfo().userName;
 };
 var num;//卡片数量
-// var domainName = domainName();//域名
 var protocol = window.location.protocol;
 var host = window.location.host;
 var domainName = protocol+'//'+host;
@@ -13,7 +12,7 @@ let vm = new Vue({
     el: '#ggIndex',
     data: {
         content: {},
-        finalPrizeMask:''
+        finalPrizeMask:false
     },
     created: function () {
         this.logData();
@@ -67,19 +66,23 @@ let vm = new Vue({
                                 $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
                             }
                         }
-                    //判断蒙版
-                    for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
-                        num=self.content.itemsList[j].num;
-                        if(num==0){
-                            self.finalPrizeMask=true;
-                        }else if(num==1){
-                            self.finalPrizeMask=false;
-                        }else {
-                            self.finalPrizeMask=false;
-                            $('.card').eq(j).find('.num').css('display','block');
-                            $('.presentCard').attr('present','Y');
+                      //判断蒙版
+                      for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
+                          num=self.content.itemsList[j].num;
+                          if(num>=2){
+                              $('.card').eq(j).find('.num').css('display','block');
+                              $('.presentCard').attr('present','Y');
+                          }                
+                      }
+                       for(var j=0;j<self.content.itemsList.length;j++){//是否可领取终极大奖
+                            num=self.content.itemsList[j].num;
+                            if(num==0){   
+                                self.finalPrizeMask=true;
+                                break;
+                            }
                         }
-                    }//是否可赠送
+                        
+
                     })
                 }
             })
@@ -155,7 +158,6 @@ let vm = new Vue({
         //点击获取终极大奖
         finalPrize:function(){
             let self = this;
-            //alert(self.finalPrizeMask)
             if(!self.finalPrizeMask){
                 $.ajax({
                     type: 'get',
@@ -165,7 +167,7 @@ let vm = new Vue({
                     success: function (returnData) {
                         console.log(returnData)
                         if(returnData.success){
-                            requestMsg(returnData.msg);
+                            requestMsg(returnData.msg);                   
                             for(var j=0;j<self.content.itemsList.length;j++){
                                 num=self.content.itemsList[j].num;
                                 if(num==0){
@@ -175,6 +177,7 @@ let vm = new Vue({
                                     if(num-1==0){
                                         $('.card').eq(j).find('.cardMask').css('display','block');
                                         $('.card').eq(j).find('.num').css('display','none');
+                                        self.finalPrizeMask=true;
                                     }else if(num-1==1){
                                         $('.card').eq(j).find('.num').css('display','none');
                                     }
