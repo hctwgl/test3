@@ -36,7 +36,7 @@
     <!--优惠券--start-->
     <div class="couponList clearFix">
         <div class="coupon"  v-for="item in content.boluomeCouponList" @click="couponClick(item)">
-            <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
+           <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
             <p class="name" v-for="a in item.channels" v-if="a==='waimai_ele'">饿了么</p>
             <p class="amount" v-if="item.type===1">￥<span>{{item.value}}</span></p>
             <p class="amount" v-if="item.type===2">￥<span>{{item.discount*10}}</span>折</p>
@@ -54,11 +54,11 @@
             <p class="num" style="display: none">x{{item.num}}</p>
         </div>
     </div>
-    <div class="finalPrize finalPrize01" v-for="item in content.normalCouponList" @click="finalPrize()" v-show="!finalPrizeMask">
-        <p class="amount">{{item.amount}}</p>
+    <div class="finalPrize finalPrize01" @click="finalPrize()" v-show="!finalPrizeMask">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}</p>
     </div>
-    <div class="finalPrize finalPrize02" v-for="item in content.normalCouponList" v-show="finalPrizeMask">
-        <p class="amount">{{item.amount}}</p>
+    <div class="finalPrize finalPrize02" v-show="finalPrizeMask">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}</p>
     </div>
     <div class="presentCard ask" @click="presentClick()">我要赠送卡片</div>
     <div class="demandCard ask" @click="demandClick()">我要索要卡片</div>
