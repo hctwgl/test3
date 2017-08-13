@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -36,17 +37,21 @@ import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 
 /**
  * @类现描述：
@@ -88,6 +93,8 @@ public class PayRoutController {
 	private AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	@Resource
 	private AfTradeWithdrawRecordService afTradeWithdrawRecordService;
+	@Resource
+	private AfUserAccountLogDao afUserAccountLogDao;
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -166,6 +173,17 @@ public class PayRoutController {
         			if(AfBorrowCashStatus.transeding.getCode().equals(afBorrowCashDo.getStatus())){
         				afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
             			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+        			}else if(AfBorrowCashStatus.transedfail.getCode().equals(afBorrowCashDo.getStatus())){
+        				afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
+        				AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(afBorrowCashDo.getUserId());
+        				//减少额度
+        				accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+        				afUserAccountService.updateOriginalUserAccount(accountInfo);
+        				//增加日志
+        				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash, 
+        						afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId(), afBorrowCashDo.getRid());
+        				afUserAccountLogDao.addUserAccountLog(accountLog);
+        				afBorrowCashService.updateBorrowCash(afBorrowCashDo);
         			}
         		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
         			//退款记录
