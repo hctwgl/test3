@@ -67,7 +67,7 @@ $('.mmicon').css("display","block");
         var password=$('#password').val();//获取密码
         
         if (isState == 0 || !isState) {
-            var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(mobileNum));
+            var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(mobileNum));
             if (userck ) {
                 $.ajax({
                     url: "/app/user/getRegisterSmsCode",
