@@ -27,6 +27,7 @@ let vm = new Vue({
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
+                    console.log(typeof(self.content.boluomeCouponList[0]))
                     self.$nextTick(function () {
                         var cont = $(".cont1").html();
                         $(".cont2").html(cont);
