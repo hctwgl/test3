@@ -16,7 +16,7 @@
         </div>
         <div class="mesg">
             <img src="$src/verify-two.png" alt="" class="mesg-pic">
-            <input type="text" placeHolder="请输入短信验证码" class="mesg-right">
+            <input type="text" placeHolder="请输入短信验证码" class="mesg-right" maxlength="6" pattern="[0-9]*">
             <button class="btn" isState=0>获取验证码</button>
         </div>
         <button class="nextStep">下一步</button>

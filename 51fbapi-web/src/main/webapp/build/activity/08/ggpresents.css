@@ -66,7 +66,7 @@ body {
 .header .joinAmount {
     width: 2.49rem;
     height: .43rem;
-    border-radius: 1rem;
+    border-radius: 1rem 0 0 1rem;
     background: #fe963b;
     color: #fff;
     line-height: .43rem;

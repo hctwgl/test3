@@ -1,5 +1,4 @@
 
-
 $(function () {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
