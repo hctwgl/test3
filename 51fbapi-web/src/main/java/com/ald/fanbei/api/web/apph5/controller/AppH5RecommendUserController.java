@@ -5,6 +5,13 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -15,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +45,18 @@ public class AppH5RecommendUserController extends BaseController {
     @Resource
     AfRecommendUserService afRecommendUserService;
 
+    @Resource
+    AfRecommendUserDao afRecommendUserDao;
 
+    @Resource
+    AfUserDao afUserDao;
+
+    /**
+     * 获奖名单
+     * @param request
+     * @param model
+     * @throws IOException
+     */
     @RequestMapping(value = "prizeUser", method = RequestMethod.GET)
     public void getPrizeUser(HttpServletRequest request, ModelMap model) throws IOException {
 //        FanbeiWebContext context = doWebCheck(request, false);
@@ -48,6 +67,11 @@ public class AppH5RecommendUserController extends BaseController {
     }
 
 
+    /**
+     * 全国排行
+     * @param request
+     * @param model
+     */
     @RequestMapping(value = "recommendListSort", method = RequestMethod.GET)
     public void getRecommendListSort(HttpServletRequest request, ModelMap model){
         Calendar c = Calendar.getInstance();
@@ -81,6 +105,66 @@ public class AppH5RecommendUserController extends BaseController {
 
         model.put("dataList",list);
     }
+
+    /**
+     *新增分享
+     * @param request
+     * @param type 类型 0 微信朋友圈，1 微信好友，2 qq空间 ，3二维码
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "addShared", method = RequestMethod.POST)
+    public int addShared(HttpServletRequest request,int type){
+        FanbeiWebContext context = doWebCheck(request, false);
+        String userName = context.getUserName();
+//        String userName ="13588469645";
+
+        AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+        AfRecommendShareDo afRecommendShareDo = new AfRecommendShareDo();
+        afRecommendShareDo.setUser_id(afUserDo.getRid());
+        afRecommendShareDo.setType(type);
+        afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
+        return afRecommendUserService.addRecommendShared(afRecommendShareDo);
+    }
+
+
+    /**
+     * 分享页
+     * @param sharedId
+     * @param request
+     * @param model
+     */
+    @RequestMapping(value = "recommendShared", method = RequestMethod.GET)
+    public void recommendShared(String sharedId ,HttpServletRequest request, ModelMap model) {
+        HashMap afRecommendShareDo =  afRecommendUserService.getRecommendSharedById(sharedId);
+        model.put("data",afRecommendShareDo);
+    }
+
+
+
+
+
+//    @ResponseBody
+//    @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
+//    public String insertTestData(){
+//
+//        for (int i=0;i<30000;i++){
+//            long parentId = i;
+//            for(int j = 0;j<10;j++) {
+//                long userId = i*10 +j;
+//                AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
+//                afRecommendUserDo.setUser_id(userId);
+//                afRecommendUserDo.setParentId(parentId);
+//                if(j>4){
+//                    afRecommendUserDo.setIs_loan(true);
+//                    afRecommendUserDo.setLoan_time(new Date());
+//                    afRecommendUserDo.setLoan_user_count(1);
+//                }
+//                afRecommendUserDao.addRecommendUser(afRecommendUserDo);
+//            }
+//        }
+//        return  "success";
+//    }
 
 
 

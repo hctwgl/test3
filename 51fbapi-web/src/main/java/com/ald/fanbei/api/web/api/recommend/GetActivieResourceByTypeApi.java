@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @类描述：活动资源
- * @author  2017年月10日上午11:32:25
+ * @类描述：获取活动资源
+ * @author  hongzhengpei
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  *
  */
@@ -33,9 +33,9 @@ public class GetActivieResourceByTypeApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request){
 
         List<String> typeList = new ArrayList<String>();
-        typeList.add("RECOMMEND_PRIZE");
-        typeList.add("RECOMMEND_IMG");
-
+        typeList.add("RECOMMEND_PRIZE");    //活动奖品
+        typeList.add("RECOMMEND_IMG");      //活动banner
+        typeList.add("RECOMMEND_ONE_IMG"); //活动
 
         Map<String, Object> params = requestDataVo.getParams();
         String type = ObjectUtils.toString(params.get("type"), "").toString();

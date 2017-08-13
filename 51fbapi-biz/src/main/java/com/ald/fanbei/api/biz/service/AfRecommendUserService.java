@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.apache.ibatis.annotations.Param;
 
@@ -54,4 +55,8 @@ public interface AfRecommendUserService {
      * @return
      */
     List<HashMap> getPrizeUser( String datamonth);
+
+    int addRecommendShared(AfRecommendShareDo afRecommendShareDo);
+
+    HashMap getRecommendSharedById(String id);
 }

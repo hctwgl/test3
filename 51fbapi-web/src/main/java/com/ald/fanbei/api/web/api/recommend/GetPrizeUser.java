@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 获取获奖人
+ */
 @Component("getPrizeUserApi")
 public class GetPrizeUser implements ApiHandle {
 

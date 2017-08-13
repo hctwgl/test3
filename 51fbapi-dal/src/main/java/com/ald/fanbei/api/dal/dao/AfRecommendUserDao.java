@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,5 +17,9 @@ public interface AfRecommendUserDao {
     List<HashMap> getRecommendListSort(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
     List<HashMap> getPrizeUser(@Param("datamonth") String datamonth);
+
+    int addRecommendShared(AfRecommendShareDo afRecommendShareDo);
+
+    HashMap getRecommendSharedById(@Param("id") String id);
 
 }

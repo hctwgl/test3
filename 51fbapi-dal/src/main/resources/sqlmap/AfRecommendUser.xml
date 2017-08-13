@@ -88,4 +88,26 @@
 						left join af_resource c on a.prize_id = c.id
 						where date_month = #{datamonth} and a.is_delete = 0
 	</select>
+
+
+	<insert id="addRecommendShared" parameterType="AfRecommendShareDo">
+		INSERT INTO af_recommend_shared (
+			id,
+			gmt_create,
+			user_id,
+			recommend_code,
+			type
+		)
+		VALUES (
+			#{id},
+			NOW(),
+			#{user_id},
+			#{recommend_code},
+			#{type}
+		)
+	</insert>
+
+	<select id="getRecommendSharedById" resultType="HashMap">
+		SELECT  a.*,b.user_name from af_recommend_shared a left join af_user b  on a.user_id = b.id where a.id = #{id}
+	</select>
 </mapper>

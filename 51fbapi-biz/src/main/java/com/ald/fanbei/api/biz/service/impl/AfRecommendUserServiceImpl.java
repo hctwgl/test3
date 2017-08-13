@@ -86,4 +86,12 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
     public List<HashMap> getPrizeUser( String datamonth){
         return afRecommendUserDao.getPrizeUser(datamonth);
     }
+
+    public int addRecommendShared(AfRecommendShareDo afRecommendShareDo){
+        return  afRecommendUserDao.addRecommendShared(afRecommendShareDo);
+    }
+
+    public HashMap getRecommendSharedById(String id){
+        return  afRecommendUserDao.getRecommendSharedById(id);
+    }
 }

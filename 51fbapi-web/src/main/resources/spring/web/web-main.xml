@@ -166,7 +166,7 @@
 				<entry key="/user/getActivieResourceByType" value-ref="getActivieResourceByTypeApi" />
 				<entry key="/user/getRecommendListSort" value-ref="getRecommendListSortApi" />
 				<entry key="/user/getPrizeUser" value-ref="getPrizeUserApi"/>
-
+				<entry key="/user/addRecommendShared" value-ref="addRecommendSharedApi" />
 
 				<entry key="/user/signin" value-ref="signinApi" />
 
