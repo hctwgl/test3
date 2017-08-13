@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.bo;
 
+import java.util.List;
+
 import com.ald.fanbei.api.common.AbstractSerial;
 public class BoluomeCouponResponseBo extends AbstractSerial{
 
@@ -19,7 +21,8 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	private int sts;
 	private int ets;
 	private float discount;
-	private String channels;
+	private List<String> channels;
+	
 	public String getCampaign_name() {
 		return campaign_name;
 	}
@@ -28,6 +31,12 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	}
 	public int getActivity_coupon_id() {
 		return activity_coupon_id;
+	}
+	public List<String> getChannels() {
+		return channels;
+	}
+	public void setChannels(List<String> channels) {
+		this.channels = channels;
 	}
 	public void setActivity_coupon_id(int activity_coupon_id) {
 		this.activity_coupon_id = activity_coupon_id;
@@ -92,12 +101,7 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	public void setDiscount(float discount) {
 		this.discount = discount;
 	}
-	public String getChannels() {
-		return channels;
-	}
-	public void setChannels(String channels) {
-		this.channels = channels;
-	}
+
 	
 
 }
