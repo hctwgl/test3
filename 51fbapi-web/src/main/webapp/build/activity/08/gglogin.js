@@ -15,13 +15,13 @@ var itemsId = param['itemsId'];
 //用戶名叉叉點擊清楚所有文字
 
 $('.yhicon').click(function(){
-    $(".yhinp").val('');
+    $("#yhinp").val('');
     $('.yhicon').css("display","none");
 });
 
-$(".yhinp").keyup(function(){
+$("#yhinp").keyup(function(){
    
-if($(".yhinp").val()==''){
+if($("#yhinp").val()==''){
 $('.yhicon').css("display","none");
 }else{
 $('.yhicon').css("display","block");
@@ -46,7 +46,7 @@ $('.mmicon').css("display","block");
 
 
 $(".loginbtn").click(function () {
-    var userName = $(".yhinp").val();//获取手机号
+    var userName = $("#yhinp").val();//获取手机号
     var password = $(".check").val();//获取密码
 
     var userck=(/^1[3|4|5|8][0-9]\d{4,8}$/.test(userName));
