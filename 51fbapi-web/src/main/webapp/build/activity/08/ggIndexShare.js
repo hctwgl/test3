@@ -65,19 +65,21 @@ let vm = new Vue({
                                 $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
                             }
                         }
-                    //是否可赠送
-                    for(var j=0;j<self.content.itemsList.length;j++){
-                        num=self.content.itemsList[j].num;
-                        if(num==0){
-                            self.finalPrizeMask=true;
-                        }else if(num==1){
-                            $('.card').eq(j).find('.num').css('display','none');
-                        }else {
-                            self.finalPrizeMask=false;
-                            $('.card').eq(j).find('.num').css('display','block');
-                            $('.presentCard').attr('present','Y');
+                    //判断蒙版
+                      for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
+                          num=self.content.itemsList[j].num;
+                          if(num>=2){
+                              $('.card').eq(j).find('.num').css('display','block');
+                              $('.presentCard').attr('present','Y');
+                          }                
+                      }
+                       for(var j=0;j<self.content.itemsList.length;j++){//是否可领取终极大奖
+                            num=self.content.itemsList[j].num;
+                            if(num==0){   
+                                self.finalPrizeMask=true;
+                                break;
+                            }
                         }
-                    }//是否可赠送
                     })
                 }
             })
@@ -156,6 +158,7 @@ let vm = new Vue({
                                             if(num-1==0){
                                                 $('.card').eq(j).find('.cardMask').css('display','block');
                                                 $('.card').eq(j).find('.num').css('display','none');
+                                                self.finalPrizeMask=true;
                                             }else if(num-1==1){
                                                 $('.card').eq(j).find('.num').css('display','none');
                                             }
