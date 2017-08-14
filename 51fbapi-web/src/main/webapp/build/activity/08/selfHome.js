@@ -29,6 +29,9 @@ var vm=new Vue({
                     _this.discountMap=data.data.recommendGoodsList.slice(0,3);
                     _this.rebateMap=data.data.recommendGoodsList.slice(3);
                     _this.returnData=data.data;
+                    _this.$nextTick(function () {
+                        lazy.init();
+                    })
                 },
                 error: function(){
                     requestMsg("请求失败");
