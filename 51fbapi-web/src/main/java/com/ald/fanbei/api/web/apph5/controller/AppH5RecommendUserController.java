@@ -155,8 +155,15 @@ public class AppH5RecommendUserController extends BaseController {
     @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
     public String insertTestData(){
 
-        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");
-        String aa = JSON.toJSONString(list);
+        long userId = 178;
+        HashMap totalData = afRecommendUserService.getRecommedData(userId);
+        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_ONE_IMG");
+        HashMap ret = new HashMap();
+        ret.put("userData",totalData);
+        ret.put("pic",list);
+
+        String json = JSON.toJSONString(ret);
+
 
 //        for (int i=0;i<30000;i++){
 //            long parentId = i;

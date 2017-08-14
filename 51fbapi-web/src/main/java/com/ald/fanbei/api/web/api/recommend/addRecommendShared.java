@@ -2,8 +2,10 @@ package com.ald.fanbei.api.web.api.recommend;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -33,6 +35,9 @@ public class addRecommendShared implements ApiHandle {
 
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
+        String notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+
+
         long userId = context.getUserId();
         AfUserDo afUserDo = afUserService.getUserById(userId);
         Map<String, Object> params = requestDataVo.getParams();
@@ -49,9 +54,11 @@ public class addRecommendShared implements ApiHandle {
             afRecommendShareDo.setId(uuid);
         }
 
+        String url = notifyHost +"/fanbei-web/app/inviteShare?sharedId="+afRecommendShareDo.getId();
+
         HashMap ret = new HashMap();
         int i= afRecommendUserService.addRecommendShared(afRecommendShareDo);
-        ret.put("result",i);
+        ret.put("url",url);
         resp.setResponseData(ret);
         return resp;
     }
