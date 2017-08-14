@@ -7,6 +7,9 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteLastWinRank.css?version=$version">
 </head>
 <body style="background-color:#ff0000;">
+<div id="top">
+    <span>7月Top10</span>
+</div>
 <div id="navWrap">
     <ul class="nav">
         <li id="first">
