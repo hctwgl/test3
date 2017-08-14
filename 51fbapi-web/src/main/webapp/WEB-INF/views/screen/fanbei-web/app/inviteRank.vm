@@ -8,6 +8,9 @@
 </head>
 
 <body style="background-color:#ff0000;">
+<div id="top">
+    <span>7月Top20</span>
+</div>
 <div id="navWrap">
     <ul class="nav">
         <li id="first">
