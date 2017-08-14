@@ -54,11 +54,36 @@ public class addRecommendShared implements ApiHandle {
             afRecommendShareDo.setId(uuid);
         }
 
+        //RECOMMEND_SHARED_IMG
+        //RECOMMEND_SHARED_TITLE
+        //RECOMMEND_SHARED_DESCRIPTION
+        String sharedImg ="";
+        String sharedTitle ="";
+        String sharedDesc ="";
+        List<AfResourceDo> listImg = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_IMG");
+        List<AfResourceDo> listTitle = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_TITLE");
+        List<AfResourceDo> listDes = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_DESCRIPTION");
+        if(listImg != null && listImg.size()>0){
+            sharedImg = listImg.get(0).getValue();
+        }
+        if(listTitle != null && listTitle.size()>0){
+            sharedTitle = listTitle.get(0).getValue();
+        }
+
+        if(listDes != null && listDes.size()>0){
+            sharedDesc = listDes.get(0).getValue();
+        }
+
+
+
         String url = notifyHost +"/fanbei-web/app/inviteShare?sharedId="+afRecommendShareDo.getId();
 
         HashMap ret = new HashMap();
         int i= afRecommendUserService.addRecommendShared(afRecommendShareDo);
         ret.put("url",url);
+        ret.put("title",sharedTitle);
+        ret.put("img",sharedImg);
+        ret.put("desc",sharedDesc);
         resp.setResponseData(ret);
         return resp;
     }

@@ -30,7 +30,7 @@ public class GetUserRecommedApi implements ApiHandle{
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         long userId = context.getUserId();
         HashMap totalData = afRecommendUserService.getRecommedData(userId);
-        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_ONE_IMG");
+        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_BACK_IMG");
         HashMap ret = new HashMap();
         if(totalData == null){
             totalData = new HashMap();

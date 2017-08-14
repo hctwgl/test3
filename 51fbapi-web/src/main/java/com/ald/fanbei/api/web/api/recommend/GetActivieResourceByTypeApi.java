@@ -35,13 +35,22 @@ public class GetActivieResourceByTypeApi implements ApiHandle {
         List<String> typeList = new ArrayList<String>();
         typeList.add("RECOMMEND_PRIZE");    //活动奖品
         typeList.add("RECOMMEND_IMG");      //活动banner
-        typeList.add("RECOMMEND_ONE_IMG"); //活动
+        typeList.add("RECOMMEND_BACK_IMG"); //活动背景
+        typeList.add("RECOMMEND_RULE");      //活动规则
 
         Map<String, Object> params = requestDataVo.getParams();
         String type = ObjectUtils.toString(params.get("type"), "").toString();
         if( typeList.contains(type)){
             ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
             List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType(type);
+            if(type.equals("RECOMMEND_IMG")){
+                for (AfResourceDo afResourceDo : list){
+                    String url = afResourceDo.getValue() + "?name=RECOMMEND_IMG";
+                    afResourceDo.setValue(url);
+                }
+            }
+
+
             HashMap map = new HashMap();
             map.put("reuslt",list);
             resp.setResponseData(map);
