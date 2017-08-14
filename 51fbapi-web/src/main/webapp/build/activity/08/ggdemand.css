@@ -100,7 +100,7 @@ body{
 }
 .banner img{
     width:6.25rem;
-    height:5rem;
+    /* height:5rem; */
     /* background-color:pink; */
     margin-left:9%;
 }
