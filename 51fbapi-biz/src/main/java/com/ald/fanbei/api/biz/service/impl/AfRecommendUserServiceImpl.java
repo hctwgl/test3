@@ -25,7 +25,16 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
     AfResourceDao afResourceDao;
 
     private BigDecimal getAddMoney(){
-        return new BigDecimal(30);
+        List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_MONEY");
+        if(list != null && list.size()>0){
+            try{
+                return new BigDecimal( Double.parseDouble( list.get(0).getValue()));
+            }
+            catch (Exception e){
+
+            }
+        }
+        return new BigDecimal(50);
     }
 
 

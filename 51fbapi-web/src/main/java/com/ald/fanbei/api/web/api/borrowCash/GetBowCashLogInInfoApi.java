@@ -297,6 +297,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				Map<String, Object> map = new HashMap();
 				map.put("imageUrl",afResourceDo.getValue()+"?name=RECOMMEND_IMG" );
 				map.put("titleName",afResourceDo.getName());
+				map.put("type","RECOMMEND_IMG");
 				_bannerResultList.add(map);
 			}
 //			_bannerResultList.add(bannerList);
