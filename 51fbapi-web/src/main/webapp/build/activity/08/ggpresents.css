@@ -106,7 +106,7 @@ body {
 
 .banner img {
     width: 6.25rem;
-    height: 5rem;
+    /* height: 5rem; */
     /* background-color: pink; */
     margin-left: 9%;
 }
@@ -249,7 +249,7 @@ body {
   width:.56rem;
   height:.56rem;
   text-align: center;
-  line-height: .56rem;
+  line-height: .47rem;
   color:#e3e3e3;
   font-size:0.34rem;
   border-radius: 50%;
