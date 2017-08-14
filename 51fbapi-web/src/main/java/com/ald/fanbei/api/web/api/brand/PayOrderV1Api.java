@@ -74,6 +74,8 @@ public class PayOrderV1Api implements ApiHandle {
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
+		BigDecimal lat = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lat"), null);
+		BigDecimal lng = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lng"), null);
 
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		String isCombinationPay = ObjectUtils.toString(requestDataVo.getParams().get("isCombinationPay"), "").toString();
@@ -117,7 +119,11 @@ public class PayOrderV1Api implements ApiHandle {
 
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
-
+		orderInfo.setLat(lat);
+		orderInfo.setLng(lng);
+		afOrderService.updateOrder(orderInfo);
+		
+		
 		try {
 			BigDecimal saleAmount = orderInfo.getSaleAmount();
 			if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode())) {

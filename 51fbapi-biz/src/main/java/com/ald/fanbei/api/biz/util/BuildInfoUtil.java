@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfUpsLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 
 /**
@@ -75,6 +76,18 @@ public class BuildInfoUtil {
 		virtualAccountInfo.setAmount(amount);
 		virtualAccountInfo.setTotalAmount(totalAmount);
 		return virtualAccountInfo;
+	}
+	
+	public static AfUserBankDidiRiskDo buildUserBankDidiRiskInfo(String ip, BigDecimal lat, BigDecimal lng, Long userId, Long userBankId, String uuid,String wifiMac){
+		AfUserBankDidiRiskDo userBankDidiRiskInfo = new AfUserBankDidiRiskDo();
+		userBankDidiRiskInfo.setIp(ip);
+		userBankDidiRiskInfo.setLat(lat);
+		userBankDidiRiskInfo.setLng(lng);
+		userBankDidiRiskInfo.setUserId(userId);
+		userBankDidiRiskInfo.setUserBankId(userBankId);
+		userBankDidiRiskInfo.setUuid(uuid);
+		userBankDidiRiskInfo.setWifiMac(wifiMac);
+		return userBankDidiRiskInfo;
 	}
 
 }

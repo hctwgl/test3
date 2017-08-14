@@ -22,4 +22,11 @@ public interface AfUserLoginLogDao {
 	
 	int getCountByUserName(@Param("userName")String userName);
 	
+	/**
+	 * 获取用户最后一次登陆相关信息
+	 * @param userName
+	 * @return
+	 */
+	AfUserLoginLogDo getUserLastLoginInfo(@Param("userName")String userName);
+	
 }

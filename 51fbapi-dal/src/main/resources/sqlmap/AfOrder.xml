@@ -7,7 +7,8 @@
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
-		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount
+		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,
+		lat,lng
 	</sql>
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
@@ -422,7 +423,13 @@
 		</if>
 		<if test="bankAmount != null">
 		    ,bank_amount=#{bankAmount}
-		</if>		
+		</if>	
+		<if test="lat != null">
+		    ,lat=#{lat}
+		</if>	
+		<if test="lng != null">
+		    ,lng=#{lng}
+		</if>	
 		where is_delete=0 and pay_trade_no = #{payTradeNo}
 	</update>
 
@@ -533,6 +540,12 @@
 		<if test="bankAmount != null">
 		    ,bank_amount=#{bankAmount}
 		</if>		
+		<if test="lat != null">
+		    ,lat=#{lat}
+		</if>	
+		<if test="lng != null">
+		    ,lng=#{lng}
+		</if>	
 		where is_delete=0 and order_no = #{orderNo} 
 	</update>
 	
@@ -805,6 +818,12 @@
 			<if test="bankAmount != null">
 			    ,bank_amount=#{bankAmount}
 			</if>
+			<if test="lat != null">
+			    ,lat=#{lat}
+			</if>	
+			<if test="lng != null">
+			    ,lng=#{lng}
+			</if>	
 		WHERE id = #{rid}
 	</update>
 	

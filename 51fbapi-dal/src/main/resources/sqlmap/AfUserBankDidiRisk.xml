@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_user_bank_didi_risk表:滴滴风控绑卡信息模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankDidiRiskDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,user_id,user_bank_id,uuid,ip,lat,lng,wifi_mac 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="userBankId != null and userBankId != ''">
+            AND user_bank_id = #{userBankId,jdbcType=INTEGER}
+        </if>
+        <if test="uuid != null and uuid != ''">
+            AND uuid = #{uuid,jdbcType=VARCHAR}
+        </if>
+        <if test="ip != null and ip != ''">
+            AND ip = #{ip,jdbcType=VARCHAR}
+        </if>
+        <if test="lat != null and lat != ''">
+            AND lat = #{lat,jdbcType=DECIMAL}
+        </if>
+        <if test="lng != null and lng != ''">
+            AND lng = #{lng,jdbcType=DECIMAL}
+        </if>
+        <if test="wifiMac != null and wifiMac != ''">
+            AND wifi_mac = #{wifiMac,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_user_bank_didi_risk
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="userBankId != null">        
+	            user_bank_id,
+	        </if>
+	        <if test="uuid != null">        
+	            uuid,
+	        </if>
+	        <if test="ip != null">        
+	            ip,
+	        </if>
+	        <if test="lat != null">        
+	            lat,
+	        </if>
+	        <if test="lng != null">        
+	            lng,
+	        </if>
+	        <if test="wifiMac != null">        
+	            wifi_mac,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="userBankId != null" >
+		       #{userBankId,jdbcType=INTEGER},
+		    </if>
+		    <if test="uuid != null" >
+		       #{uuid,jdbcType=VARCHAR},
+		    </if>
+		    <if test="ip != null" >
+		       #{ip,jdbcType=VARCHAR},
+		    </if>
+		    <if test="lat != null" >
+		       #{lat,jdbcType=DECIMAL},
+		    </if>
+		    <if test="lng != null" >
+		       #{lng,jdbcType=DECIMAL},
+		    </if>
+		    <if test="wifiMac != null" >
+		       #{wifiMac,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo">
+        UPDATE af_user_bank_didi_risk
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="userBankId != null and userBankId != '' ">        
+                user_bank_id = #{userBankId,jdbcType=INTEGER},                
+            </if>
+            <if test="uuid != null and uuid != '' ">        
+                uuid = #{uuid,jdbcType=VARCHAR},                
+            </if>
+            <if test="ip != null and ip != '' ">        
+                ip = #{ip,jdbcType=VARCHAR},                
+            </if>
+            <if test="lat != null and lat != '' ">        
+                lat = #{lat,jdbcType=DECIMAL},                
+            </if>
+            <if test="lng != null and lng != '' ">        
+                lng = #{lng,jdbcType=DECIMAL},                
+            </if>
+            <if test="wifiMac != null and wifiMac != '' ">        
+                wifi_mac = #{wifiMac,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_bank_didi_risk
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_bank_didi_risk
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_bank_didi_risk
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
