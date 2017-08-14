@@ -91,7 +91,7 @@ $(function(){
                             
                         }else{
                             var userName = outputData.data.userName;
-                            window.location.href = "ggIndexShare?userName="+userName;
+                            window.location.href = "ggIndexShare?userName="+userName+"&activityId=" + activityId;
                         }
                     }
                 }

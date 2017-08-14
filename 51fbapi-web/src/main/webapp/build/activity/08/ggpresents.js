@@ -9,6 +9,8 @@ $(function () {
     var activityId = param['activityId'];
     var userItemsId = param['userItemsId'];
     var userName = param['userName'];
+    var word = param['loginSource'];
+    var itemsId = param['itemsId'];
     $.ajax({
         url: "/H5GGShare/ggSendItems",
         type: 'GET',
@@ -119,10 +121,10 @@ $(function () {
                 console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
-                       window.location.href = "gglogin?urlName=" + urlName; 
+                       window.location.href = "gglogin?word=Z"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName + "&activityId=" + activityId; 
                     }else{
                        var userName = outputData.data.userName;
-                       window.location.href = "ggIndexShare?userName="+userName;
+                       window.location.href = "ggIndexShare?userName="+userName+"&activityId=" + activityId;;
                     }
                 }
                 
