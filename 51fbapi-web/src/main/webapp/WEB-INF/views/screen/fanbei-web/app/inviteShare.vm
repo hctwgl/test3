@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017081003")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
+    <title>51返呗注册</title>
+    <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
+</head>
+<body>
+    <input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
+    <input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
+    <input type="hidden" id="style" value="$!{style}">
+
+    <div class="channelRegister_wrap">
+        <div class="channelRegisterWrap">
+           <ul class="clearfix">
+                <li><input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
+                <li><button class="register_submitBtn" id="register_submitBtn">立即注册</button></li>
+                <div class="clearfix register_checkbox">
+                    <input type="checkbox" class="input_check" id="input_check" checked="checked">
+                    <label for="input_check"></label>
+                    <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+                </div>
+                <p class="clearfix" style="width: 3.0rem; margin: 0.2rem auto 0; color: #fff; font-size: 0.3rem;">
+                    <span style="float:left;margin-right:0.1rem;">已注册用户</span>
+                    <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
+                </p>
+            </ul>
+        </div>
+    </div>
+    <script type="text/javascript" src="/common/js/core.js"></script>
+    <script type="text/javascript" src="/common/js/md5.js"></script>
+    <script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
+    <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
+</body>
+</html>
