@@ -28,6 +28,7 @@
           	<input type="password" class="register_password" id="register_password" placeholder="请输入登陆密码" name="words" maxlength="18" onkeyup="changeBtn()">
           	<i class="register_passwordEyeClosed"></i>
           </li>
+			<li> <input type="text" id="recommendCode" name="recommendCode"></li>
         </ul>
       	<div class="register_submitBtn_wrap"><button class="register_submitBtn btnc_cf" onkeyup="changeBtn()">完成注册并下载App</button></div>
       	<div class="register_checkbox clearfix">
