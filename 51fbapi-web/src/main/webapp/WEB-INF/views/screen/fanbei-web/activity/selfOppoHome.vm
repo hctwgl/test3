@@ -14,7 +14,7 @@
             <img src="$commonUrl/oppoHome1.png">
             <ul class="discount clearfix">
                 <li v-for="item in discountMap" @click="goGoodsDetail(item)">
-                    <img :lazy-src="item.goodsIcon">
+                    <img :src="item.goodsIcon">
                     <div class="discountRight">
                         <p class="discountRightTitle">{{item.goodName}}</p>
                         <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
@@ -28,10 +28,10 @@
             </ul>
         </div>
         <div class="rebateWrap">
-            <img lazy-src="$commonUrl/oppoHome2.png">
+            <img src="$commonUrl/oppoHome2.png">
             <ul class="rebate clearfix">
                 <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
-                    <img :lazy-src="item.goodsIcon">
+                    <img :src="item.goodsIcon">
                     <div class="rebateRight">
                         <p class="rebateRightTitle">{{item.goodName}}</p>
                         <p class="remark">{{item.remark}}</p>
