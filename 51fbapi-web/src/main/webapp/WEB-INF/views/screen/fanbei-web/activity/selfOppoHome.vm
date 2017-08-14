@@ -9,9 +9,9 @@
 </head>
 <body>
     <div id="selfHome" style="background-color: #f6bcbd;">
-        <img :lazy-src="returnData.bannerUrl">
+        <img :src="returnData.bannerUrl">
         <div class="discountWrap">
-            <img lazy-src="$commonUrl/oppoHome1.png">
+            <img src="$commonUrl/oppoHome1.png">
             <ul class="discount clearfix">
                 <li v-for="item in discountMap" @click="goGoodsDetail(item)">
                     <img :lazy-src="item.goodsIcon">
