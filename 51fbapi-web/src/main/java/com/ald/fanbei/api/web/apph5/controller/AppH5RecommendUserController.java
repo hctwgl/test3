@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * @类描述：
  * 推荐活动
- * @author 洪正沛 2017年6月20日下午1:41:05
+ * @author 洪正沛 2017年8月12日下午1:41:05
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
@@ -57,13 +57,16 @@ public class AppH5RecommendUserController extends BaseController {
      * @param model
      * @throws IOException
      */
-    @RequestMapping(value = "prizeUser", method = RequestMethod.GET)
-    public void getPrizeUser(HttpServletRequest request, ModelMap model) throws IOException {
+    @ResponseBody
+    @RequestMapping(value = "prizeUser", method = RequestMethod.GET,produces = "text/html;charset=UTF-8")
+    public String getPrizeUser(String dataMonth) throws IOException {
 //        FanbeiWebContext context = doWebCheck(request, false);
 //        String userName = context.getUserName();
-        String dataMonth= request.getParameter("datamonth");
+
         List<HashMap> mapList = afRecommendUserService.getPrizeUser(dataMonth);
-        model.put("dataList",mapList);
+        //model.put("dataList",mapList);
+        String ret = JSON.toJSONString(mapList);
+        return ret;
     }
 
 
@@ -72,8 +75,9 @@ public class AppH5RecommendUserController extends BaseController {
      * @param request
      * @param model
      */
+    @ResponseBody
     @RequestMapping(value = "recommendListSort", method = RequestMethod.GET)
-    public void getRecommendListSort(HttpServletRequest request, ModelMap model){
+    public String getRecommendListSort(){
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, 0);
         c.set(Calendar.DAY_OF_MONTH, 1);//设置为1号,当前日期既为本月第一天
@@ -103,7 +107,10 @@ public class AppH5RecommendUserController extends BaseController {
 
         List<HashMap> list = afRecommendUserService.getRecommendListSort(start,last);
 
-        model.put("dataList",list);
+        //model.put("dataList",list);
+
+        String ret = JSON.toJSONString(list);
+        return ret;
     }
 
     /**
@@ -134,10 +141,13 @@ public class AppH5RecommendUserController extends BaseController {
      * @param request
      * @param model
      */
+    @ResponseBody
     @RequestMapping(value = "recommendShared", method = RequestMethod.GET)
-    public void recommendShared(String sharedId ,HttpServletRequest request, ModelMap model) {
+    public String recommendShared(String sharedId ) {
         HashMap afRecommendShareDo =  afRecommendUserService.getRecommendSharedById(sharedId);
-        model.put("data",afRecommendShareDo);
+        //model.put("data",afRecommendShareDo);
+        String ret = JSON.toJSONString(afRecommendShareDo);
+        return ret;
     }
 
 

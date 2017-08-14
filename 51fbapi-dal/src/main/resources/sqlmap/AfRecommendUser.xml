@@ -77,7 +77,7 @@
 	</select>
 
 	<select id="getRecommendListSort" resultType="HashMap">
-		select (@i:=@i+1) as sort,b.user_name, user_id,SUM(a.prize_money) sum_money from af_recommend_user a left join af_user b on a.parentId = b.id ,(select @i:=0) as ic
+		select b.user_name, user_id,SUM(a.prize_money) sum_money from af_recommend_user a left join af_user b on a.parentId = b.id
 		where a.loan_time &gt;= #{startTime} and a.loan_time &lt;= #{endTime}
 		GROUP BY a.parentId ORDER BY SUM(a.prize_money) desc LIMIT 20;
 	</select>
