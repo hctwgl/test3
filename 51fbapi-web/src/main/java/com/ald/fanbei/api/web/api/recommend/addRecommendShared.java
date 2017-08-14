@@ -36,12 +36,18 @@ public class addRecommendShared implements ApiHandle {
         AfUserDo afUserDo = afUserService.getUserById(userId);
         Map<String, Object> params = requestDataVo.getParams();
         Integer type = Integer.parseInt(ObjectUtils.toString(params.get("type"), "0").toString());
+        String uuid = ObjectUtils.toString(params.get("uuid"), "").toString();
+
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
         AfRecommendShareDo afRecommendShareDo = new AfRecommendShareDo();
         afRecommendShareDo.setUser_id(afUserDo.getRid());
         afRecommendShareDo.setType(type);
         afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
+        if(uuid !=null && !uuid.equals("")){
+            afRecommendShareDo.setId(uuid);
+        }
+
         int i= afRecommendUserService.addRecommendShared(afRecommendShareDo);
         resp.setResponseData(i);
         return resp;

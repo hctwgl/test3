@@ -8,10 +8,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
-import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -154,10 +151,13 @@ public class AppH5RecommendUserController extends BaseController {
 
 
 
-//    @ResponseBody
-//    @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
-//    public String insertTestData(){
-//
+    @ResponseBody
+    @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
+    public String insertTestData(){
+
+        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");
+        String aa = JSON.toJSONString(list);
+
 //        for (int i=0;i<30000;i++){
 //            long parentId = i;
 //            for(int j = 0;j<10;j++) {
@@ -173,8 +173,8 @@ public class AppH5RecommendUserController extends BaseController {
 //                afRecommendUserDao.addRecommendUser(afRecommendUserDo);
 //            }
 //        }
-//        return  "success";
-//    }
+        return  "success";
+    }
 
 
 

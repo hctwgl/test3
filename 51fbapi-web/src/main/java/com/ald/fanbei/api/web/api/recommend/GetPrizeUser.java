@@ -29,7 +29,7 @@ public class GetPrizeUser implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request){
 
         Map<String, Object> params = requestDataVo.getParams();
-        String datemonth = ObjectUtils.toString(params.get("datemonth"), "2017-08").toString();
+        String datemonth = ObjectUtils.toString(params.get("dateMonth"), "2017-08").toString();
 
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         List<HashMap> list = afRecommendUserService.getPrizeUser(datemonth);
