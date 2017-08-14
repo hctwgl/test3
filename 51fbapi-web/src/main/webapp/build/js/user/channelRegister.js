@@ -12,9 +12,9 @@ console.log(os);
 if( style==21 ){
     document.title="借款超人注册";
 
-    $("#borrowSuperman").click(function(){  // 更换协议内容
+    $("#borrowSuperman").click(function(){  // 更换已登陆链接
         if ( os==1 ){
-            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www.borrowSuperman";
+            window.location.href="http://f.51fanbei.com/online/jiekuancaoren_v3.7.1.apk";
         }else if( os==2 ){
             window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%85%8D%E6%81%AF%E5%B0%8F%E9%A2%9D%E5%80%9F%E8%B4%B7%E6%89%8B%E6%9C%BA%E8%BD%AF%E4%BB%B6/id1263792729?mt=8";
         }
@@ -212,7 +212,7 @@ $(function(){
 											});
 										} else if( style==21 ){
                                             if ( os==1 ){
-                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www.borrowSuperman";
+                                                window.location.href="http://f.51fanbei.com/online/jiekuancaoren_v3.7.1.apk";
                                             }else if( os==2 ){
                                                 window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%85%8D%E6%81%AF%E5%B0%8F%E9%A2%9D%E5%80%9F%E8%B4%B7%E6%89%8B%E6%9C%BA%E8%BD%AF%E4%BB%B6/id1263792729?mt=8";
                                             }
