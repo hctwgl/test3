@@ -74,7 +74,7 @@
     <!--活动规则弹窗-->
     <div class="alertRule">
         <p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
-        <p class="ruleCont">{{content.despcription}}</p>
+        <p class="ruleCont" v-html="content.despcription"></p>
         <p class="close" @click="close()">X</p>
     </div>
 </div>

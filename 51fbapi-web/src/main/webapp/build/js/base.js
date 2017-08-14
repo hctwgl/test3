@@ -135,3 +135,8 @@ function txtFix(i,len){
     }
     return cut_str(i, len)
 }
+//字符串替换+换行
+function formatStr(str){
+    str=str.replace(/<br\/>/g, "\n");
+    return str;
+}
