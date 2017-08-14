@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +49,10 @@ public class addRecommendShared implements ApiHandle {
             afRecommendShareDo.setId(uuid);
         }
 
+        HashMap ret = new HashMap();
         int i= afRecommendUserService.addRecommendShared(afRecommendShareDo);
-        resp.setResponseData(i);
+        ret.put("result",i);
+        resp.setResponseData(ret);
         return resp;
     }
 }

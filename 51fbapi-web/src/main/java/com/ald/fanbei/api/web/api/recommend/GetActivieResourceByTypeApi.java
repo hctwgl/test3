@@ -42,7 +42,9 @@ public class GetActivieResourceByTypeApi implements ApiHandle {
         if( typeList.contains(type)){
             ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
             List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType(type);
-            resp.setResponseData(list);
+            HashMap map = new HashMap();
+            map.put("reuslt",list);
+            resp.setResponseData(map);
             return resp;
         }
         else{

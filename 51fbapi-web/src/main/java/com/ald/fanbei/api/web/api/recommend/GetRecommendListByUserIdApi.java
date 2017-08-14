@@ -38,6 +38,10 @@ public class GetRecommendListByUserIdApi implements ApiHandle {
 
 
         List<HashMap> list = afRecommendUserService.getRecommendListByUserId(userId,pageIndex,pageSize);
+
+        HashMap map = new HashMap();
+        map.put("result",list);
+
         resp.setResponseData(list);
         return  resp;
     }
