@@ -52,84 +52,85 @@ public class WithdrawCashApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
-		String account = ObjectUtils.toString(requestDataVo.getParams().get("account"));
-		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-		BigDecimal amount = new BigDecimal(ObjectUtils.toString(requestDataVo.getParams().get("amount")));
-		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
-		AfCashRecordDo afCashRecordDo = new AfCashRecordDo();
+		throw new FanbeiException("user id or account or type is  empty", FanbeiExceptionCode.CASH_LIMIT);
+//		Long userId = context.getUserId();
+//		String account = ObjectUtils.toString(requestDataVo.getParams().get("account"));
+//		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
+//		BigDecimal amount = new BigDecimal(ObjectUtils.toString(requestDataVo.getParams().get("amount")));
+//		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
+//		AfCashRecordDo afCashRecordDo = new AfCashRecordDo();
+//
+//		if (userId == null || StringUtils.isEmpty(account) || StringUtils.isEmpty(type)) {
+//			throw new FanbeiException("user id or account or type is  empty", FanbeiExceptionCode.PARAM_ERROR);
+//		}
+//		if (!StringUtils.equals(type, UserAccountLogType.JIFENBAO.getCode())
+//				&& !StringUtils.equals(type, UserAccountLogType.CASH.getCode())) {
+//			throw new FanbeiException(" type is error", FanbeiExceptionCode.PARAM_ERROR);
+//		}
+//
+//		AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+//		if (userAccountDo == null) {
+//			throw new FanbeiException("account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+//		}
+//		AfUserBankcardDo afUserBankcardDo = null;
+//		if (StringUtils.equals(type, UserAccountLogType.CASH.getCode())) {
+//			if(amount.compareTo(new BigDecimal(20))<0){
+//				throw new FanbeiException("apply cash amount too samll",
+//						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_TOO_SMALL);
+//			}else
+//			if (userAccountDo.getRebateAmount().compareTo(amount) < 0) {
+//				throw new FanbeiException("apply cash amount more than account money",
+//						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
+//			} else {
+//				afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
+//				Long bankId = NumberUtil.objToLong(account);
+//				// 判断是否是本人主卡
+//				if (!bankId.equals(afUserBankcardDo.getRid())) {
+//					throw new FanbeiException("the bank card must be main card",
+//							FanbeiExceptionCode.APPLY_CASHED_BANK_ERROR);
+//				} else {
+//					afCashRecordDo.setCardNumber(afUserBankcardDo.getCardNumber());
+//					afCashRecordDo.setCardName(afUserBankcardDo.getBankName());
+//				}
+//
+//			}
+//		} else if (StringUtils.equals(type, UserAccountLogType.JIFENBAO.getCode())) {
+//			if(amount.compareTo(new BigDecimal(2000))<0){
+//				throw new FanbeiException("apply cash amount too samll",
+//						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_TOO_SMALL_JFB);
+//			}else
+//			if (userAccountDo.getJfbAmount().compareTo(amount) < 0) {
+//				throw new FanbeiException("apply cash amount more than account money",
+//						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
+//			}else if(!CommonUtil.isMobile(account)&&!CommonUtil.isEmail(account)){
+//				throw new FanbeiException("apply zhifubao account error",
+//						FanbeiExceptionCode.APPLY_CASHED_ZHIFUBAO_ERROR);
+//			}else
+//			{
+//				afCashRecordDo.setCardNumber(account);
+//				afCashRecordDo.setCardName(zhifubao);
+//				status = zhifubaostatus;
+//			}
+//		}
+//
+//		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountDo.getSalt());
+//		if (!StringUtils.equals(inputOldPwd, userAccountDo.getPassword())) {
+//
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+//		}
+//
+//		afCashRecordDo.setType(type);
+//		// afCashRecordDo.setAccount(account);
+//		afCashRecordDo.setAmount(amount);
+//		afCashRecordDo.setUserId(userId);
+//		afCashRecordDo.setStatus(status);
+//
+//		if (afCashRecordService.addCashRecord(afCashRecordDo,afUserBankcardDo) > 0) {
+//			
+//			return resp;
+//		}
 
-		if (userId == null || StringUtils.isEmpty(account) || StringUtils.isEmpty(type)) {
-			throw new FanbeiException("user id or account or type is  empty", FanbeiExceptionCode.PARAM_ERROR);
-		}
-		if (!StringUtils.equals(type, UserAccountLogType.JIFENBAO.getCode())
-				&& !StringUtils.equals(type, UserAccountLogType.CASH.getCode())) {
-			throw new FanbeiException(" type is error", FanbeiExceptionCode.PARAM_ERROR);
-		}
-
-		AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
-		if (userAccountDo == null) {
-			throw new FanbeiException("account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-		}
-		AfUserBankcardDo afUserBankcardDo = null;
-		if (StringUtils.equals(type, UserAccountLogType.CASH.getCode())) {
-			if(amount.compareTo(new BigDecimal(20))<0){
-				throw new FanbeiException("apply cash amount too samll",
-						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_TOO_SMALL);
-			}else
-			if (userAccountDo.getRebateAmount().compareTo(amount) < 0) {
-				throw new FanbeiException("apply cash amount more than account money",
-						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
-			} else {
-				afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
-				Long bankId = NumberUtil.objToLong(account);
-				// 判断是否是本人主卡
-				if (!bankId.equals(afUserBankcardDo.getRid())) {
-					throw new FanbeiException("the bank card must be main card",
-							FanbeiExceptionCode.APPLY_CASHED_BANK_ERROR);
-				} else {
-					afCashRecordDo.setCardNumber(afUserBankcardDo.getCardNumber());
-					afCashRecordDo.setCardName(afUserBankcardDo.getBankName());
-				}
-
-			}
-		} else if (StringUtils.equals(type, UserAccountLogType.JIFENBAO.getCode())) {
-			if(amount.compareTo(new BigDecimal(2000))<0){
-				throw new FanbeiException("apply cash amount too samll",
-						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_TOO_SMALL_JFB);
-			}else
-			if (userAccountDo.getJfbAmount().compareTo(amount) < 0) {
-				throw new FanbeiException("apply cash amount more than account money",
-						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_MORE_ACCOUNT);
-			}else if(!CommonUtil.isMobile(account)&&!CommonUtil.isEmail(account)){
-				throw new FanbeiException("apply zhifubao account error",
-						FanbeiExceptionCode.APPLY_CASHED_ZHIFUBAO_ERROR);
-			}else
-			{
-				afCashRecordDo.setCardNumber(account);
-				afCashRecordDo.setCardName(zhifubao);
-				status = zhifubaostatus;
-			}
-		}
-
-		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountDo.getSalt());
-		if (!StringUtils.equals(inputOldPwd, userAccountDo.getPassword())) {
-
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
-		}
-
-		afCashRecordDo.setType(type);
-		// afCashRecordDo.setAccount(account);
-		afCashRecordDo.setAmount(amount);
-		afCashRecordDo.setUserId(userId);
-		afCashRecordDo.setStatus(status);
-
-		if (afCashRecordService.addCashRecord(afCashRecordDo,afUserBankcardDo) > 0) {
-			
-			return resp;
-		}
-
-		throw new FanbeiException(FanbeiExceptionCode.FAILED);
+//		throw new FanbeiException(FanbeiExceptionCode.FAILED);
 	}
 
 }
