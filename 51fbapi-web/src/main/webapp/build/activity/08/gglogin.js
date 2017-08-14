@@ -70,7 +70,7 @@ $(".loginbtn").click(function () {
                     if(word=="Z"){
                         window.location.href = urlName + "?userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId;
                     }else if (word == "S"){
-                        window.location.href = urlName + "?userName=" + userName +"&itemsId=" + itemsId;
+                        window.location.href = urlName + "?userName=" + userName +"&itemsId=" + itemsId + "&activityId=" + activityId;
                     }else {
                         window.location.href ="ggIndexShare" + "?activityId=" + activityId + "&userName=" + userName;
                     } 

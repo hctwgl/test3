@@ -121,7 +121,7 @@ $(function () {
                 console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
-                       window.location.href = "gglogin?word=Z"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName + "&activityId=" + activityId; 
+                        window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName + "&activityId=" + activityId +"&userName=" + userName + "&userItemsId=" + userItemsId;               
                     }else{
                        var userName = outputData.data.userName;
                        window.location.href = "ggIndexShare?userName="+userName+"&activityId=" + activityId;;
