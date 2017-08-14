@@ -42,7 +42,7 @@ public class GetRecommendListByUserIdApi implements ApiHandle {
         HashMap map = new HashMap();
         map.put("result",list);
 
-        resp.setResponseData(list);
+        resp.setResponseData(map);
         return  resp;
     }
 }

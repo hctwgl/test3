@@ -32,11 +32,17 @@ public class GetUserRecommedApi implements ApiHandle{
         HashMap totalData = afRecommendUserService.getRecommedData(userId);
         List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_BACK_IMG");
         HashMap ret = new HashMap();
+        String color = "#FE4B2D";
         if(totalData == null){
             totalData = new HashMap();
         }
         ret.put("userData",totalData);
         ret.put("pic",list);
+
+        if(list != null && list.size()>0){
+            color = list.get(0).getValue1();
+        }
+        ret.put("color",color);
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         resp.setResponseData(ret);
         return resp;
