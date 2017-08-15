@@ -3,7 +3,7 @@
 <head>
     #set($version="20170811")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
-    <title>场景点亮首页</title>
+    <title>逛逛专享区</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
 </head>
 <body>

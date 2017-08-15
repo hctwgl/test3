@@ -24,6 +24,8 @@ $(function() {
                 if (returnData.loginUrl) {
                     location.href = returnData.loginUrl;
                 } else {
+                    $('body').addClass('overflowChange');
+                    $('html').addClass('overflowChange');
                     $('.imgList').empty();
                     $('.alertPresent').css('display', 'block');
                     $('.mask').css('display', 'block');
@@ -50,13 +52,19 @@ $(function() {
     $('.sureDemand').click(function () {
         itemsId = $('.img.img3').attr('rid');
         name=$('.img.img3').attr('name');
-        //console.log(itemsId)
-        //alert(itemsId)
         if (itemsId && itemsId != '') {
             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友向你索要一张'+name+'卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
         } else {
             requestMsg("索要失败")
         }
+    })
+    $('.close').click(function(){
+        $('body').removeClass('overflowChange');
+        $('html').removeClass('overflowChange');
+    })
+    $('.mask').click(function(){
+        $('body').removeClass('overflowChange');
+        $('html').removeClass('overflowChange');
     })
 
 })

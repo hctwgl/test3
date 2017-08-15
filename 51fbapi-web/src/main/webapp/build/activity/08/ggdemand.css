@@ -198,24 +198,24 @@ body{
     width:6.8rem;
     height:8.34rem;
     background-color:white;
-    padding:0 0.27rem;
+    padding:0 .3rem;
     position:absolute;
-    top:40%;
+    top:43%;
     left:50%;
     transform:translateX(-50%) translateY(-50%);
-    display:none; 
+    display:none;
+    border-radius: .2rem;
 }
 .ruleTitle{
     text-align:center;
     margin-top:0.64rem;
     margin-bottom:0.35rem;
-    
+
 }
 .word{
     font-size:0.4rem;
     color:#fe8744;
     margin:0 0.25rem;
-    font-weight:700;
 }
 .dian{
     width:0.11rem;
@@ -229,19 +229,28 @@ body{
     background-color: rgba(0,0,0,0.5);
     position:fixed;
     top:0;
-     display:none; 
+    display:none;
 }
 .close{
-  width:.56rem;
-  height:.56rem;
-  text-align: center;
-  line-height: .47rem;
-  color:#e3e3e3;
-  font-size:0.34rem;
-  border-radius: 50%;
-  border:2px solid #e3e3e3;
-  position: absolute;
-  bottom:-1.07rem;
-  left: 50%;
-  transform: translateX(-.28rem);
+    width:.56rem;
+    height:.56rem;
+    text-align: center;
+    line-height: .47rem;
+    color:#e3e3e3;
+    font-size:0.34rem;
+    border-radius: 50%;
+    border:2px solid #e3e3e3;
+    position: absolute;
+    bottom:-1.07rem;
+    left: 50%;
+    transform: translateX(-.28rem);
+}
+.alertRule .ruleCont{
+    margin:0 auto;
+    font-size:.26rem;
+    color:#4a4a4a;
+    line-height:.35rem;
+    height:6.61rem;
+    overflow-y: scroll;
+    text-align: justify;
 }

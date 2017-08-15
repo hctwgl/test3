@@ -28,6 +28,8 @@ $(function(){
                         location.href = returnData.data.loginUrl;
                     }else{
                         if($('.presentCard').attr('present')=='Y'){
+                            $('body').addClass('overflowChange');
+                            $('html').addClass('overflowChange');
                             $('.imgList').empty();
                             $('.alertPresent').css('display','block');
                             $('.mask').css('display','block');
@@ -97,6 +99,14 @@ $(function(){
         }else{
             window.location.href="ggIndex";
         }
+    })
+    $('.close').click(function(){
+        $('body').removeClass('overflowChange');
+        $('html').removeClass('overflowChange');
+    })
+    $('.mask').click(function(){
+        $('body').removeClass('overflowChange');
+        $('html').removeClass('overflowChange');
     })
 });
 
@@ -176,7 +186,7 @@ function imgClickFy(){
     $(".imgList .img2").attr("onclick","left()");
     $(".imgList .img4").attr("onclick","right()");
 }
-/*//触摸滑动模块
+//触摸滑动模块
 function k_touch() {
     var _start = 0, _end = 0, _content = document.getElementById("slide");
     _content.addEventListener("touchstart", touchStart, false);
@@ -199,7 +209,7 @@ function k_touch() {
             _end=0;
         }
     }
-}*/
+}
 
 // app调用web的方法
 function alaShareData(){
