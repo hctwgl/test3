@@ -25,14 +25,18 @@ public class IPTransferUtil extends AbstractThird{
 		LookupService cl = new LookupService(IP_DAT_URL, LookupService.GEOIP_MEMORY_CACHE);
 		Location l2 = cl.getLocation(ip);
 		IPTransferBo bo = new IPTransferBo();
-		if(l2 != null ){
-			bo.setCountryCode(l2.countryCode);
-			bo.setCountryName(l2.countryName);
-			bo.setLatitude(new BigDecimal(l2.latitude));
-			bo.setLongitude(new BigDecimal(l2.longitude));
-			bo.setRegion(l2.region);
+		try {
+			if(l2 != null ){
+				bo.setCountryCode(l2.countryCode);
+				bo.setCountryName(l2.countryName);
+				bo.setLatitude(new BigDecimal(l2.latitude));
+				bo.setLongitude(new BigDecimal(l2.longitude));
+				bo.setRegion(l2.region);
+			}
+			thirdLog.info("parseIpToLatAndLng complete ip = {},result = {}",ip,bo);
+		} catch (Exception e) {
+			thirdLog.info("parseIpToLatAndLng error e = {}",e);
 		}
-		thirdLog.info("parseIpToLatAndLng complete ip = {},result = {}",ip,bo);
 		return bo;
 	}
 	
