@@ -213,6 +213,7 @@
 		WHERE
 			type = 'GG_TOP_BANNER'
 		AND is_delete = 0
+		AND value_4 ='O'
 		AND value_2 = #{value2};
 	</select>
 	
