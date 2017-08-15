@@ -140,7 +140,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setInvoiceHeader(invoiceHeader);
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
-		afOrder.setUserCouponId(couponId);
+
 
 		//通过商品查询免息规则配置
 		AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
@@ -165,6 +165,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			afOrder.setPriceAmount(priceDo.getPriceAmount());
 
 		}
+		afOrder.setUserCouponId(couponId);
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 
