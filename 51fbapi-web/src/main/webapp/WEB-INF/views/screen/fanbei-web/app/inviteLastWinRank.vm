@@ -9,7 +9,8 @@
 <body style="background: linear-gradient(to bottom,#fd5d2c, #ff4a2d);">
 <div id="inviteLastWinRank">
     <div id="top">
-        <span>7月Top10</span>
+        <span class="topTitle">7月Top10</span>
+        <span class="topDivider"><i></i></span>
     </div>
     <div id="navWrap">
         <ul class="nav">
@@ -49,7 +50,7 @@
                 <li class="amount">
                     <span>{{item.money}}</span>
                 </li>
-                <li id="gift">
+                <li class="gift">
                     <span>{{item.name}}</span>
                 </li>
             </ul>
