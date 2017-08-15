@@ -49,8 +49,10 @@
     <div class="cardList clearFix">
         <div class="card" v-for="item in content.itemsList" @click="cardClick(item)">
             <img :src="item.logo">
-            <p class="cardMask" v-if="item.num===0"></p>
-            <p class="cardMask" style="display: none"></p>
+            <img :src="item.logo" class="gray" v-if="item.num===0">
+            <img :src="item.logo" class="gray" style="display: none">
+            #*<p class="cardMask" v-if="item.num===0"></p>
+            <p class="cardMask" style="display: none"></p>*#
             <p class="num" style="display: none">x{{item.num}}</p>
         </div>
     </div>

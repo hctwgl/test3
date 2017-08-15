@@ -175,7 +175,7 @@ let vm = new Vue({
                                 }else{
                                     $('.card').eq(j).find('.num').html('x'+(num-1));
                                     if(num-1==0){
-                                        $('.card').eq(j).find('.cardMask').css('display','block');
+                                        $('.card').eq(j).find('.gray').css('display','block');
                                         $('.card').eq(j).find('.num').css('display','none');
                                         self.finalPrizeMask=true;
                                     }else if(num-1==1){
