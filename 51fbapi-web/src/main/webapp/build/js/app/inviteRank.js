@@ -1,61 +1,34 @@
 /*
-* @Author: Jacky
-* @Date:   2017-08-08 14:11:41
-*/
+ * @Author: Jacky
+ * @Date:   2017-08-08 14:11:41
+ */
 
 let finished = 0;//防止多次请求ajax
 
-// 导航tab切换
-$(function(){
-    // 点击导航事件
-    $(".nav li").on('click',function(e){
-        e.preventDefault();
-        var k = $(this).index();
-        $(this).addClass("current");
-        $(this).siblings().removeClass("current");
-        $(this).find('i').addClass("bg");
-        $(this).siblings().find('i').removeClass("bg");
-
-        $(".main_wrap").find("ul").eq(k).removeClass("hide");
-        $(".main_wrap").find('ul').eq(k).siblings().addClass("hide");
-    });
-
-    $("#firstList li").on('click',function (e) {
-        e.preventDefault();
-        var k = $(this).index();
-        console.log(k);
-        $(this).find("i").toggleClass("arrowUp");
-        $("#firstList").find(".itemContent1").eq(k).toggleClass("hide");
-    })
-
-    $("#secondList li").on('click',function (e) {
-        e.preventDefault();
-        var k = $(this).index();
-        console.log(k);
-        $(this).find("i").toggleClass("arrowUp");
-        $("#secondList").find(".itemContent2").eq(k).toggleClass("hide");
-    })
-
-    $("#thirdList li").on('click',function (e) {
-        e.preventDefault();
-        var k = $(this).index();
-        console.log(k);
-        $(this).find("i").toggleClass("arrowUp");
-        $("#thirdList").find(".itemContent3").eq(k).toggleClass("hide");
-    })
-
-    $("#fourthList li").on('click',function (e) {
-        e.preventDefault();
-        var k = $(this).index();
-        console.log(k);
-        $(this).find("i").toggleClass("arrowUp");
-        $("#fourthList").find(".itemContent4").eq(k).toggleClass("hide");
-    })
-
-    $(".tel").click(function () {
-        window.location.href="tel://4000025151"
-    })
-    $(".kf").click(function () {
-        window.location.href="/fanbei-web/opennative?name=APP_CONTACT_CUSTOMER"
-    })
+var vm = new Vue({
+    el: '#inviteRank',
+    data: {
+        returnData: []
+    },
+    created: function () {
+        let _this = this;
+        _this.initial();
+    },
+    methods: {
+        initial(){
+            let _this = this;
+            $.ajax({
+                url: '/fanbei-web/recommendListSort',
+                dataType: 'json',
+                type: 'get',
+                success: function (data) {
+                    console.log(data);
+                    _this.returnData = data.data;
+                },
+                error: function () {
+                    requestMsg("请求失败");
+                }
+            });
+        },
+    }
 });
