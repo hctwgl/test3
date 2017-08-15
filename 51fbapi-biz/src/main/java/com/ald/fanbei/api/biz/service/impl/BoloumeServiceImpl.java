@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.math.BigDecimal;
-
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,11 +9,13 @@ import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoCardInfoBo;
 import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoLoginInfoBo;
 import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoPayInfoBo;
 import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
+import com.ald.fanbei.api.biz.bo.IPTransferBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserBankDidiRiskService;
 import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BoluomeService;
+import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BoluomePayType;
@@ -46,6 +46,8 @@ public class BoloumeServiceImpl implements BoluomeService {
 	AfUserBankDidiRiskService afUserBankDidiRiskService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	IPTransferUtil iPTransferUtil;
 	
 	@Override
 	public BoluomeGetDidiRiskInfoRespBo getRiskInfo(String orderId, String type) {
@@ -116,10 +118,13 @@ public class BoloumeServiceImpl implements BoluomeService {
 		Long userId = orderInfo.getUserId();
 		AfUserDo userInfo = afUserService.getUserById(userId);
 		AfUserLoginLogDo userLoginInfo = afUserLoginLogService.getUserLastLoginInfo(userInfo.getUserName());
+		String ip = userLoginInfo.getLoginIp();
+		//转换ip
+		IPTransferBo ipResult = iPTransferUtil.parseIpToLatAndLng(ip);
 		login_info.setDeviceid(userLoginInfo.getUuid());
 		login_info.setIp(userLoginInfo.getLoginIp());
-		login_info.setLat(new BigDecimal("30.293594"));
-		login_info.setLng(new BigDecimal("120.16141"));
+		login_info.setLat(ipResult.getLatitude());
+		login_info.setLat(ipResult.getLongitude());
 		login_info.setSource("app");
 		login_info.setTime(userLoginInfo.getGmtCreate().getTime());
 		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+orderInfo.getUserId();

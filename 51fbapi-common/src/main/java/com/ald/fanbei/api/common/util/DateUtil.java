@@ -10,8 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ald.fanbei.api.common.Constants;
-
 /**
  * 
  *@类描述：日期相关工具类
