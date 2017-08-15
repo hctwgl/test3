@@ -52,7 +52,7 @@ public class GetActivieResourceByTypeApi implements ApiHandle {
 
 
             HashMap map = new HashMap();
-            map.put("reuslt",list);
+            map.put("result",list);
             resp.setResponseData(map);
             return resp;
         }
