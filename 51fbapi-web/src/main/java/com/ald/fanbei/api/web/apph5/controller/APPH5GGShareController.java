@@ -776,7 +776,7 @@ public class APPH5GGShareController extends BaseController {
 					insertDo.setGmtSended(new Date());
 					afBoluomeActivityUserItemsService.saveRecord(insertDo);
 
-					resultStr = H5CommonResponse.getNewInstance(true, "获取卡片成功").toString();
+					resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
 				}
 			}
 		} catch (FanbeiException e) {

@@ -816,7 +816,7 @@ public class H5GGShareController extends H5Controller {
 					insertDo.setGmtSended(new Date());
 					afBoluomeActivityUserItemsService.saveRecord(insertDo);
 
-					resultStr = H5CommonResponse.getNewInstance(true, "获取卡片成功").toString();
+					resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
 					// 埋点
 					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
 				}
@@ -1029,7 +1029,7 @@ public class H5GGShareController extends H5Controller {
 						conditionResultDo.setResult(resultCoupon.getCouponId());
 
 						afBoluomeActivityResultService.saveRecord(conditionResultDo);
-
+						//bug:吧现金大奖转为用户余额。
 						// 从用户卡片去掉活动卡片的一个。
 						resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
 
