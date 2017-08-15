@@ -98,7 +98,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 			afUserCouponService.updateUserCouponSatusUsedById(couponId);
 		}
 		Integer appversion = context.getAppVersion();
-		logger.error("rdhdsef");
 		Date currTime = new Date();
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
@@ -141,6 +140,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setInvoiceHeader(invoiceHeader);
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
+		afOrder.setUserCouponId(couponId);
 
 		//通过商品查询免息规则配置
 		AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
