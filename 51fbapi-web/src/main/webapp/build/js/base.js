@@ -140,7 +140,7 @@ function txtFix(i, len) {
 
 // 隐藏电话号码的中间四位
 function formateTelNum(tel) {
-    if(tel){
+    if (tel) {
         var telLength = tel.length;
         if (telLength < 11) {
             tel = tel;
@@ -149,7 +149,7 @@ function formateTelNum(tel) {
             tel = tel.replace(telNum, "****");
         }
         return tel;
-    }else {
+    } else {
         return "";
     }
 }

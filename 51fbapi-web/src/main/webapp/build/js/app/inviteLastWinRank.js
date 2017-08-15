@@ -22,7 +22,7 @@ var vm = new Vue({
                 dataType: 'json',
                 type: 'post',
                 success: function (data) {
-                    console.log(data);
+                    console.debug(data);
                     _this.returnData = data;
                 },
                 error: function () {
