@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserRebateService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -46,6 +48,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
@@ -91,6 +94,8 @@ public class APPH5GGShareController extends BaseController {
 	AfBoluomeActivityCouponService afBoluomeActivityCouponService;
 	@Resource
 	AfBoluomeActivityResultService afBoluomeActivityResultService;
+	@Resource
+	AfUserAccountService afUserAccountService;
 	private static String couponUrl = null;
 
 	@Resource
@@ -994,6 +999,20 @@ public class APPH5GGShareController extends BaseController {
 
 						afBoluomeActivityResultService.saveRecord(conditionResultDo);
 
+						//bug:吧现金大奖转为用户余额。
+						AfUserAccountDo accountDo = new AfUserAccountDo();
+						BigDecimal rebateAmount = null;
+						//查到n券对应的金额
+						AfCouponDo userCouponDo = afCouponService.getCouponById(resultCoupon.getCouponId());//afUserCouponService.getUserCouponById(resultCoupon.getCouponId());
+						if (userCouponDo != null) {
+							rebateAmount = userCouponDo.getAmount();
+							accountDo.setRebateAmount(rebateAmount);
+							accountDo.setUserId(userId);
+							afUserAccountService.updateUserAccount(accountDo);
+							// 从用户卡片去掉活动卡片的一个。
+							resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
+
+						}
 						// 从用户卡片去掉活动卡片的一个。
 						resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
 
