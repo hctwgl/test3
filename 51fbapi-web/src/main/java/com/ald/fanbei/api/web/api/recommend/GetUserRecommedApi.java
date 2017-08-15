@@ -29,6 +29,7 @@ public class GetUserRecommedApi implements ApiHandle{
 
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         long userId = context.getUserId();
+        AfUserDo afUserDo = afUserService.getUserById(userId);
         HashMap totalData = afRecommendUserService.getRecommedData(userId);
         List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_BACK_IMG");
         HashMap ret = new HashMap();
@@ -36,6 +37,39 @@ public class GetUserRecommedApi implements ApiHandle{
         if(totalData == null){
             totalData = new HashMap();
         }
+
+        String notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+
+
+        //# regoin 分享
+        String sharedImg ="";
+        String sharedTitle ="";
+        String sharedDesc ="";
+        List<AfResourceDo> listImg = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_IMG");
+        List<AfResourceDo> listTitle = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_TITLE");
+        List<AfResourceDo> listDes = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_DESCRIPTION");
+        if(listImg != null && listImg.size()>0){
+            sharedImg = listImg.get(0).getValue();
+        }
+        if(listTitle != null && listTitle.size()>0){
+            sharedTitle = listTitle.get(0).getValue();
+        }
+
+        if(listDes != null && listDes.size()>0){
+            sharedDesc = listDes.get(0).getValue();
+        }
+
+        totalData.put("allOrderUrl","http://www.baidu.com");
+        totalData.put("activeRule","http://www.baidu.com");
+        totalData.put("recommendCode",afUserDo.getRecommendCode());
+
+        String sharedurl = notifyHost +"/fanbei-web/app/inviteShare?recommendCode="+afUserDo.getRecommendCode();
+        totalData.put("url",sharedurl);
+        totalData.put("title",sharedTitle);
+        totalData.put("img",sharedImg);
+        totalData.put("desc",sharedDesc);
+
+        //# endregion
         ret.put("userData",totalData);
         ret.put("pic",list);
 
