@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.brand;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.IPTransferBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -18,14 +20,15 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
@@ -65,6 +68,8 @@ public class PayOrderV1Api implements ApiHandle {
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	IPTransferUtil iPTransferUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -119,10 +124,15 @@ public class PayOrderV1Api implements ApiHandle {
 
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
-		orderInfo.setLat(lat);
-		orderInfo.setLng(lng);
+		if (lat == null || lng == null) {
+			IPTransferBo bo = iPTransferUtil.parseIpToLatAndLng(ipAddress);
+			orderInfo.setLat(bo.getLatitude());
+			orderInfo.setLng(bo.getLongitude());
+		} else {
+			orderInfo.setLat(lat);
+			orderInfo.setLng(lng);
+		}
 		afOrderService.updateOrder(orderInfo);
-		
 		
 		try {
 			BigDecimal saleAmount = orderInfo.getSaleAmount();

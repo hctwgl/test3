@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
@@ -21,11 +20,11 @@ public class IPTransferUtil extends AbstractThird{
 	
 	private static final String IP_DAT_URL = "/home/aladin/project/tomcat/ipData/GeoLiteCity.dat";
 	
-	public IPTransferBo parseIpToLatAndLng(String ip) throws IOException{
-		LookupService cl = new LookupService(IP_DAT_URL, LookupService.GEOIP_MEMORY_CACHE);
-		Location l2 = cl.getLocation(ip);
+	public IPTransferBo parseIpToLatAndLng(String ip){
 		IPTransferBo bo = new IPTransferBo();
 		try {
+			LookupService cl = new LookupService(IP_DAT_URL, LookupService.GEOIP_MEMORY_CACHE);
+			Location l2 = cl.getLocation(ip);
 			if(l2 != null ){
 				bo.setCountryCode(l2.countryCode);
 				bo.setCountryName(l2.countryName);
