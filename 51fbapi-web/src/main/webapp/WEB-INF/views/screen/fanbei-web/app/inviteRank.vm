@@ -7,10 +7,11 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteRank.css?version=$version">
 </head>
 
-<body style="background-color:#ff0000;">
+<body style="background: linear-gradient(to bottom,#fd5d2c, #ff4a2d);">
 <div id="inviteRank">
     <div id="top">
-        <span>7月Top20</span>
+        <span class="topTitle">7月Top20</span>
+        <span class="divider"><i></i></span>
     </div>
     <div id="navWrap">
         <ul class="nav">

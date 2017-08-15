@@ -6,7 +6,7 @@
     <title>上月获奖名单</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteLastWinRank.css?version=$version">
 </head>
-<body style="background-color:#ff0000;">
+<body style="background: linear-gradient(to bottom,#fd5d2c, #ff4a2d);">
 <div id="inviteLastWinRank">
     <div id="top">
         <span>7月Top10</span>
