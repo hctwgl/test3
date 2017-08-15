@@ -4,12 +4,11 @@
 */
 
 let finished = 0;//防止多次请求ajax
-let dataMonth = getUrl("dataMonth");
 
 var vm = new Vue({
-    el: '#inviteLastwinRank',
+    el:'#inviteLastWinRank',
     data: {
-        returnData: []
+        returnData:[],
     },
     created: function () {
         let _this = this;
@@ -19,9 +18,8 @@ var vm = new Vue({
         initial(){
             let _this = this;
             $.ajax({
-                url: '/fanbei-web/prizeUser',
+                url: '/fanbei-web/getPrizeByLastMonth',
                 dataType: 'json',
-                data:{'dataMonth':dataMonth},
                 type: 'post',
                 success: function (data) {
                     console.log(data);
