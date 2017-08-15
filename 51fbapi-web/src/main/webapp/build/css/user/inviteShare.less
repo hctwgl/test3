@@ -1,0 +1,129 @@
+
+
+@url: "http://f.51fanbei.com/h5/app/images/user/channel";
+
+input,button{
+  background-color: transparent;
+  font-size: 0.28rem;
+}
+.inviteShare{
+  background-color: #f13c41;
+}
+.inviteShareContWrap{
+  position: relative;
+}
+.inviteShareCont{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+}
+.inviteShareCont li{
+  width: 6.0rem;
+  height: 0.8rem;
+  line-height: 0.8rem;
+  text-align: left;
+  margin: 0 auto 0.2rem;
+  padding-left: 0.2rem;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.inviteShareCont li:nth-child(2) input{
+   width: 3.6rem;
+ }
+.inviteShareCont li:nth-child(2) button{
+  width: 2.1rem;
+  height: 100%;
+  color: #a62c0d;
+}
+.inviteShareCont li:nth-child(3){
+  margin-bottom: 0.68rem;
+}
+.inviteShareCont li:last-child button{
+  width: 100%;
+  height: 0.8rem;
+  text-align: center;
+  font-size: 0.32rem;
+  color: #a62c0d;
+}
+
+
+/* 协议 */
+.checkbox{
+  position: relative;
+  width: 5.36rem;
+  height: .36rem;
+  line-height: .36rem;
+  margin: 0 auto;
+  text-align: left;
+}
+.inputCheck {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+}
+.inputCheck+label,.inputCheck:checked+label:after{
+  position: absolute;
+  top: 50%;
+}
+.inputCheck+label {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  display: inline-block;
+  width: 0.34rem;
+  height: 0.34rem;
+  -webkit-background-size: cover;
+  background-size: cover;
+  border: 1px solid #fff;
+  border-radius: 0.08rem;
+}
+.inputCheck:checked+label:after {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  display: inline-block;
+  width: 0.29rem;
+  height: 0.19rem;
+  content: "";
+  background-image: url("@{url}/tick.png");
+  -webkit-background-size: cover;
+  background-size: cover;
+}
+.checkbox p{
+  float: left;
+  font-size: 0.24rem;
+  margin-left: 0.4rem;
+  color: #fff;
+  padding-left: 10px;
+}
+.checkbox span,.checkbox a{
+  float: left;
+}
+.checkbox a{
+  color: #fff;
+}
+
+
+// 已登陆
+.registered{
+  width: 7.5rem;
+  height: 1.2rem;
+  font-size: 0.3rem;
+  position: relative;
+}
+.registered a{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  color:#ffe500;
+  text-decoration:underline;
+}
