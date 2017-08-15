@@ -103,4 +103,5 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
     public HashMap getRecommendSharedById(String id){
         return  afRecommendUserDao.getRecommendSharedById(id);
     }
+
 }

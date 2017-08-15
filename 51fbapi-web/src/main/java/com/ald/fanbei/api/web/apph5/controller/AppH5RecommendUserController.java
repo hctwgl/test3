@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,6 +49,27 @@ public class AppH5RecommendUserController extends BaseController {
     @Resource
     AfUserDao afUserDao;
 
+    @ResponseBody
+    @RequestMapping(value = "getPrizeByLastMonth",produces = "text/html;charset=UTF-8")
+    public String getPrizeByLastMonth(){
+        Calendar calendar = Calendar.getInstance();
+        Date date = new Date();//获取当前时间
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, -1);//当前时间前去一个月，即一个月前的时间
+        Date lastMonth = calendar.getTime();//获取一年前的时间，或者一个月前的时间
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM");//设置日期格式
+
+        String year_month = df.format(lastMonth);
+
+        List<HashMap> mapList = afRecommendUserService.getPrizeUser(year_month);
+        //model.put("dataList",mapList);
+        String ret = JSON.toJSONString(mapList);
+        return ret;
+
+    }
+
+
     /**
      * 获奖名单
      * @param request
@@ -55,7 +77,7 @@ public class AppH5RecommendUserController extends BaseController {
      * @throws IOException
      */
     @ResponseBody
-    @RequestMapping(value = "prizeUser", method = RequestMethod.GET,produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "prizeUser",produces = "text/html;charset=UTF-8")
     public String getPrizeUser(String dataMonth) throws IOException {
 //        FanbeiWebContext context = doWebCheck(request, false);
 //        String userName = context.getUserName();
@@ -73,7 +95,7 @@ public class AppH5RecommendUserController extends BaseController {
      * @param model
      */
     @ResponseBody
-    @RequestMapping(value = "recommendListSort", method = RequestMethod.GET)
+    @RequestMapping(value = "recommendListSort", method = RequestMethod.POST)
     public String getRecommendListSort(){
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, 0);
@@ -157,7 +179,7 @@ public class AppH5RecommendUserController extends BaseController {
 
         long userId = 178;
         HashMap totalData = afRecommendUserService.getRecommedData(userId);
-        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_ONE_IMG");
+        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_BACK_IMG");
         HashMap ret = new HashMap();
         ret.put("userData",totalData);
         ret.put("pic",list);
