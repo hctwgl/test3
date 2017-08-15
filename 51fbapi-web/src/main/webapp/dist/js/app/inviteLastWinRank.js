@@ -1,2 +1,2 @@
-"use strict";var finished=0;$(function(){});
+"use strict";var finished=0,dataMonth=getUrl("dataMonth"),vm=new Vue({el:"#inviteLastwinRank",data:{returnData:[]},created:function(){this.initial()},methods:{initial:function(){var t=this;$.ajax({url:"/fanbei-web/prizeUser",dataType:"json",data:{dataMonth:dataMonth},type:"post",success:function(a){console.log(a),t.returnData=a},error:function(){requestMsg("请求失败")}})}}});
 //# sourceMappingURL=../../_srcmap/js/app/inviteLastWinRank.js.map
