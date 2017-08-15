@@ -1,6 +1,5 @@
 
 
-// var recommendCode="11kxh";
 // 从分享链接中获取code
 var recommendCode = getUrl("recommendCode");
 

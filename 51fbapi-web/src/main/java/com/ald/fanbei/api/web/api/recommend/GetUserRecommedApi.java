@@ -59,7 +59,7 @@ public class GetUserRecommedApi implements ApiHandle{
             sharedDesc = listDes.get(0).getValue();
         }
 
-        totalData.put("allOrderUrl","http://www.baidu.com");
+        totalData.put("allOrderUrl",notifyHost+"/fanbei-web/app/inviteRank");
         totalData.put("activeRule","http://www.baidu.com");
         totalData.put("recommendCode",afUserDo.getRecommendCode());
 
