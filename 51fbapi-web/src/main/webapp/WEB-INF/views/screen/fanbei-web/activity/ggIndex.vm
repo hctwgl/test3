@@ -91,7 +91,7 @@
         <p class="next" onclick="right()"></p>
         <p class="sure surePresent">确定赠送</p>
         <p class="sure sureDemand">确定索要</p>
-        <p class="close" @click="close()">X</p>
+        #*<p class="close" @click="close()">X</p>*#
     </div>
 </div>
 #*<script type="text/javascript" src="/dist/activity/08/ggIndexAnimate.js?version=$version"></script>*#
