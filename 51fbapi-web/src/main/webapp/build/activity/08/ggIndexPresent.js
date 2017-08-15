@@ -88,7 +88,6 @@ $(function(){
                 success: function (returnData) {
                     var returnData = eval('(' + returnData + ')');
                     if(returnData.success){
-                        requestMsg(returnData.msg);
                         window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取88.88元现金红包！","shareAppContent":"你的好友赠送了一张'+name+'卡片给你，快领走吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
                     }
                 },
