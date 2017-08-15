@@ -76,6 +76,7 @@ $(".loginbtn").click(function () {
                     } 
                 }else{
                     requestMsg(data.msg);
+                    window.location.href= "ggregister?word=" + word + "&userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId +"&itemsId=" + itemsId + "&urlName="+urlName;
                 }
             }
         })
