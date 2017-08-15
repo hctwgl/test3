@@ -1,31 +1,72 @@
 /*
 * @Author: Jacky
 * @Date:   2017-08-7 16:58:37
-* @title:  服务中心
+* @title:  上月中奖名单
 */
 @url: "http://f.51fanbei.com/h5/app/images/sys";
+
+#top {
+  text-align: center;
+  color: #ffffff;
+  font-size: 0.36rem;
+  background: url("@{url}/invite_rank.png");
+}
 
 #navWrap {
   position: relative;
 }
 
 .nav {
-  width: 100%;
-  color: #111;
-  height: 0.88rem;
-  position: fixed;
-  white-space: nowrap;
-  font-size: 0.24rem;
-  background: white;
+  width: 7.3rem;
+  color: #fff;
+  height: 0.92rem;
+  font-size: 0.28rem;
+  background: rgb(254,75,45);
   display: flex;
   vertical-align: middle;
-  border-bottom: solid 1px #efefef;
-  padding-left: 0.2rem;
-  padding-right:0.2rem;
-
+  margin:0 auto;
+  border-radius: 0.1rem;
+  box-shadow:0 0.04rem rgba(200, 27, 0, 0.44) ;
 }
 
 .nav li {
+  position: relative;
+  display: inline;
+  flex: 1;
+  color: #fff;
+  height: 0.92rem;
+  line-height: 0.92rem;
+  text-align: center;
+}
+
+.main_wrap {
+  position: relative;
+  padding-right: 0.2rem;
+  padding-left: 0.2rem;
+  overflow-y: scroll;
+}
+
+.listMainContent {
+  width: 7.1rem;
+  color: #fff;
+  border-bottom-left-radius: 0.1rem;
+  border-bottom-right-radius: 0.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.item {
+  width: 7.1rem;
+  color: #111;
+  height: 0.88rem;
+  font-size: 0.26rem;
+  background: #fff;
+  display: flex;
+  vertical-align: middle;
+  margin:0 auto;
+  border-bottom: 1px solid #ededed;
+}
+
+.item li {
   position: relative;
   display: inline;
   flex: 1;
@@ -35,19 +76,15 @@
   text-align: center;
 }
 
-.main_wrap {
-  position: relative;
-  top: 1.08rem;
-  padding-right: 0.2rem;
-  padding-left: 0.2rem;
-  overflow-y: scroll;
-}
-
-
-.itemContent {
-  vertical-align:middle;
-  font-size: 0.26rem;
-  color: #111;
+.ruleTitle {
+  padding: 0.2rem 0;
+  text-align:center;
+  font-size: 0.42rem;
+  color: rgb(67,67,67) ;
+  border-top-left-radius: 0.1rem;
+  border-top-right-radius: 0.1rem;
+  padding: 0.47rem 0.2rem 0.29rem;
+  background: #ffffff;
 }
 
 .rule {
@@ -55,6 +92,10 @@
   vertical-align:middle;
   font-size: 0.26rem;
   color: #8e8e8e;
+  border-bottom-left-radius: 0.1rem;
+  border-bottom-right-radius: 0.1rem;
+  padding: 0.44rem 0.2rem;
+  background: #ffffff;
 }
 
 .hide{
