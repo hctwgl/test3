@@ -90,24 +90,45 @@ public class BoloumeServiceImpl implements BoluomeService {
 		BoluomeGetDidiRiskInfoCardInfoBo card_info = new BoluomeGetDidiRiskInfoCardInfoBo();
 		//当为微信支付，或者额度支付，获取默认滴滴风控银行卡信息
 		AfUserBankDidiRiskDo conditionInfo = new AfUserBankDidiRiskDo();
-		conditionInfo.setUserId(orderInfo.getUserId());
+		Long userId = orderInfo.getUserId();
+		conditionInfo.setUserId(userId);
 		if (orderInfo.getBankId() <= 0) {
 			conditionInfo.setUserBankId(0l);
 		} else {
 			conditionInfo.setUserBankId(orderInfo.getBankId());
 		}
 		AfUserBankDidiRiskDo bankInfo =afUserBankDidiRiskService.getByCommonCondition(conditionInfo);
-		//用户id MD5加密
-		card_info.setPeople_id(DigestUtil.MD5(bankInfo.getUserId() + StringUtils.EMPTY));
-		//用户id + 银行卡id MD5加密
-		card_info.setCard_id(DigestUtil.MD5(bankInfo.getUserId() + bankInfo.getUserBankId() + StringUtils.EMPTY));
-		card_info.setChannel(BoluomePayType.DEBITCARD.getCode());
-		card_info.setDeviceid(bankInfo.getUuid());
-		card_info.setIp(bankInfo.getIp());
-		card_info.setLat(bankInfo.getLat());
-		card_info.setLng(bankInfo.getLng());
-		card_info.setWifi_mac(bankInfo.getWifiMac());
-		card_info.setTime(bankInfo.getGmtCreate().getTime());
+		//当用户没有绑卡，给个默认值
+		if (bankInfo == null) {
+			AfUserDo userInfo = afUserService.getUserById(userId);
+			AfUserLoginLogDo loginInfo = afUserLoginLogService.getUserLastLoginInfo(userInfo.getUserName());
+			//用户id MD5加密
+			card_info.setPeople_id(DigestUtil.MD5(userId + StringUtils.EMPTY));
+			//用户id + 银行卡id MD5加密
+			card_info.setCard_id(DigestUtil.MD5(userId + "0" + StringUtils.EMPTY));
+			card_info.setChannel(BoluomePayType.DEBITCARD.getCode());
+			card_info.setDeviceid(loginInfo.getUuid());
+			//转换ip
+			IPTransferBo ipResult = iPTransferUtil.parseIpToLatAndLng(loginInfo.getLoginIp());
+			card_info.setIp(loginInfo.getLoginIp());
+			card_info.setLat(ipResult.getLatitude());
+			card_info.setLng(ipResult.getLongitude());
+			String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+orderInfo.getUserId();
+			Object wifiMac = bizCacheUtil.getObject(loginWifiMacKey);
+			card_info.setWifi_mac(wifiMac != null ? wifiMac.toString() : StringUtils.EMPTY);
+			card_info.setTime(loginInfo.getGmtCreate().getTime());
+		} else {
+			card_info.setPeople_id(DigestUtil.MD5(bankInfo.getUserId() + StringUtils.EMPTY));
+			//用户id + 银行卡id MD5加密
+			card_info.setCard_id(DigestUtil.MD5(bankInfo.getUserId() + bankInfo.getUserBankId() + StringUtils.EMPTY));
+			card_info.setChannel(BoluomePayType.DEBITCARD.getCode());
+			card_info.setDeviceid(bankInfo.getUuid());
+			card_info.setIp(bankInfo.getIp());
+			card_info.setLat(bankInfo.getLat());
+			card_info.setLng(bankInfo.getLng());
+			card_info.setWifi_mac(bankInfo.getWifiMac());
+			card_info.setTime(bankInfo.getGmtCreate().getTime());
+		}
 		card_info.setSource("app");
 		card_info.setStatus("1");
 		return card_info;

@@ -19,7 +19,6 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -118,8 +117,6 @@ public class CheckBankcardApi implements ApiHandle {
 		AfUserBankDidiRiskDo didiInfo = BuildInfoUtil.buildUserBankDidiRiskInfo(ipAddress, lat, lng, context.getUserId(), bankId, uuid, wifiMac);
 		afUserBankDidiRiskService.saveRecord(didiInfo);
 		
-		String authParamUrl =  ZhimaUtil.authorize(account.getIdNumber(), account.getRealName());
-		resp.addResponseData("zmxyAuthUrl", authParamUrl);
 		//判断是否需要设置支付密码
 		String allowPayPwd = YesNoStatus.YES.getCode();
 		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){

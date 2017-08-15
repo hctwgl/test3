@@ -39,4 +39,14 @@ public class IPTransferUtil extends AbstractThird{
 		return bo;
 	}
 	
+	public BigDecimal getLat(String ip){
+		IPTransferBo result = parseIpToLatAndLng(ip);
+		return result != null ? result.getLatitude() : null;
+	}
+	
+	public BigDecimal getLng(String ip){
+		IPTransferBo result = parseIpToLatAndLng(ip);
+		return result != null ? result.getLongitude() : null;
+	}
+	
 }
