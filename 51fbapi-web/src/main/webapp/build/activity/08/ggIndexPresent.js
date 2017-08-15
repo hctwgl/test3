@@ -43,6 +43,8 @@ $(function(){
                             for(var j=0;j<presentCardList.length;j++){//判断终极大奖蒙版
                                 if(presentCardList[j].num>=2){
                                     str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'">'+ '<p class="num">'+(presentCardList[j].num-1)+'</p></div>';
+                                }else if(presentCardList[j].num==0){
+                                    str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="gray" src="'+presentCardList[j].iconUrl+'">'+ '</div>';
                                 }else{
                                     str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><p class="cardMask"></p>'+ '</div>';
                                 }
