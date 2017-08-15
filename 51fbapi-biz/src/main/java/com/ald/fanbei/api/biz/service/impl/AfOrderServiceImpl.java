@@ -780,6 +780,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 							orderInfo.setStatus(OrderStatus.DEALING.getCode());
 							orderDao.updateOrder(orderInfo);
+							//支付中
+							
 							AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
 
 							resultMap = new HashMap<String, Object>();
@@ -788,14 +790,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
-							
+						
 							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
 						}
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
 						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 						orderInfo.setStatus(OrderStatus.DEALING.getCode());
-
+						//支付中
+					//	boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
 						AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
@@ -839,6 +842,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						currUpdateOrder.setRid(orderInfo.getRid());
 						currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
 						currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+						//支付失败
+					//	boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 						currUpdateOrder.setStatusRemark(payFailMsg);
 						orderDao.updateOrder(currUpdateOrder);
 						logger.info("ap pay order fail,reason is useamount is too less orderId="+orderInfo.getRid());
@@ -853,6 +858,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 			
 		});
+		
+		
 	}
 	
 	public JSONObject borrowRateWithOrder(Long orderId,Integer nper){
@@ -962,6 +969,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 						orderInfo.setStatus(OrderStatus.DEALING.getCode());
 						orderInfo.setPayType(PayType.AGENT_PAY.getCode());
+						//支付中
 
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
@@ -1147,6 +1155,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setGmtPay(new Date());
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
+					boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 					logger.info("dealBrandOrder fail comlete , orderInfo = {} ", orderInfo);
 					return 1;
 				} catch (Exception e) {
@@ -1156,6 +1165,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+		if (result == 1) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+		}
 		return result;
 	}
 	
@@ -1637,7 +1649,87 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+		
 		return result;
 	}
 	
+
+
+/**
+ * 处理菠萝觅组合支付失败的情况
+ */
+@Override
+public int dealBrandPayCpOrderFail(final String payOrderNo, final String tradeNo,final String payType) {
+	final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+	Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+		@Override
+		public Integer doInTransaction(TransactionStatus status) {
+			try {
+				
+				AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
+				// 不处理新建，处理
+				if (orderInfo == null) {
+					return 0;
+				}
+				// 只处理订单处理中的状态
+				if (!orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()) ){
+					return 0;
+				}
+				logger.info("dealPayCpOrderFail fail begin , payOrderNo = {} and tradeNo = {}", new Object[] { payOrderNo, tradeNo});
+				
+				//恢复额度
+				
+				// 如果已经使用的额度大于要恢复的额度 才会给用户增加额度，防止重复回调造成重复给我用户增加额度问题
+				AfUserAccountDo userAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+				if(userAccountDo.getUsedAmount().compareTo(orderInfo.getBorrowAmount()) >=0) {
+					// 恢复账户额度
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUsedAmount(orderInfo.getBorrowAmount().negate());
+					account.setUserId(orderInfo.getUserId());
+					afUserAccountDao.updateUserAccount(account);
+					// 增加资金变化的记录
+					afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL, orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
+				}
+				
+				// 恢复虚拟额度
+				AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();
+				queryVirtualAccountDo.setUserId(orderInfo.getUserId());
+				queryVirtualAccountDo.setOrderId(orderInfo.getRid());
+				AfUserVirtualAccountDo userVirtualAccountDo = afUserVirtualAccountService.getByCommonCondition(queryVirtualAccountDo);
+				if(userVirtualAccountDo !=null){
+					userVirtualAccountDo.setStatus(YesNoStatus.NO.getCode());
+					afUserVirtualAccountService.updateById(userVirtualAccountDo);
+				}
+				
+				// 如果使用了优惠卷，恢复优惠卷
+				if(orderInfo.getUserCouponId() != null && orderInfo.getUserCouponId() != 0){
+                    afUserCouponDao.updateUserCouponSatusNouseById(orderInfo.getUserCouponId());
+				}
+
+					
+				// 处理订单
+				orderInfo.setPayTradeNo(payOrderNo);
+				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+				orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
+				orderInfo.setStatusRemark(Constants.PAY_ORDER_UPS_FAIL_BANK);
+				orderInfo.setPayType(payType);
+				orderInfo.setGmtPay(new Date());
+				orderInfo.setTradeNo(tradeNo);
+				orderDao.updateOrder(orderInfo);
+				logger.info("dealPayCpOrderFail fail complete , orderInfo = {} ", orderInfo);
+				return 1;
+			} catch (Exception e) {
+				status.setRollbackOnly();
+				logger.error("dealPayCpOrderFail fail error:", e);
+				return 0;
+			}
+		}
+	});
+	if (result == 1) {
+		boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+	}
+	
+	return result;
+}
+
 }

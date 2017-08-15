@@ -12,7 +12,9 @@ import java.util.Map;
 public enum PushStatus {
 
 	REFUND_SUC("REFUND_SUC", "退款成功"), REFUND_FAIL("REFUND_FAIL", "退款失败"),
-	PAY_SUC("PAY_SUC", "支付成功");
+	PAY_SUC("PAY_SUC", "支付成功"),
+	PAY_DEALING("PAY_DEALING","支付中"),
+	PAY_FAIL("PAY_FAIL","支付失败");
 
 	private String code;
 
