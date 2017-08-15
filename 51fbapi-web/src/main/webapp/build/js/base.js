@@ -1,5 +1,5 @@
 /*
-* @Author: Yangyang
+* @Author: yoe
 * @Date:   2017-02-15 09:59:54
 * @Last Modified by:   Marte
 * @Last Modified time: 2017-06-08 11:22:16
@@ -134,4 +134,16 @@ function txtFix(i,len){
         }
     }
     return cut_str(i, len)
+}
+
+
+// 隐藏电话号码的中间四位
+function telNumHide(tel){
+    var telLength=tel.length;
+    if(telLength < 11){
+        tel=tel;
+    }else if(telLength >= 11){
+        var telNum=tel.substring(4,7);
+        tel = tel.replace(telNum, "****");
+    }
 }
