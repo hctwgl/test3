@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +41,7 @@ import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -137,6 +137,9 @@ public class TestController {
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	
+	@Resource
+	IPTransferUtil iPTransferUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -621,6 +624,14 @@ public class TestController {
 		}
 	}
 	
+	//3.7.6初始化借钱缓存，用于app端高亮显示
+	@RequestMapping(value = { "/ipTest" }, method = RequestMethod.GET)
+	@ResponseBody
+	public void ipTest() throws IOException
+	{
+	  System.out.println(iPTransferUtil.parseIpToLatAndLng("222.161.87.110"));
+	}
+
 	public String getVirtualCode(Map<String, Object> resultMap) {
 		if (resultMap == null) {
 			return null;
@@ -690,6 +701,8 @@ public class TestController {
 		borrow.setFreeNper(freeNper);
 		return borrow;
 	}
+	
+	
 	
 	
 }
