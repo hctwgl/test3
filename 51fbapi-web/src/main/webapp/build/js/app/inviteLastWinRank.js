@@ -1,14 +1,14 @@
 /*
-* @Author: Jacky
-* @Date:   2017-08-08 14:11:41
-*/
+ * @Author: Jacky
+ * @Date:   2017-08-08 14:11:41
+ */
 
 let finished = 0;//防止多次请求ajax
 
 var vm = new Vue({
-    el:'#inviteLastWinRank',
+    el: '#inviteLastWinRank',
     data: {
-        returnData:[],
+        returnData: [],
     },
     created: function () {
         let _this = this;

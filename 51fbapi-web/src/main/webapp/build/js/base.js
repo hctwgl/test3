@@ -139,12 +139,17 @@ function txtFix(i, len) {
 
 
 // 隐藏电话号码的中间四位
-function telNumHide(tel) {
-    var telLength = tel.length;
-    if (telLength < 11) {
-        tel = tel;
-    } else if (telLength >= 11) {
-        var telNum = tel.substring(4, 7);
-        tel = tel.replace(telNum, "****");
+function formateTelNum(tel) {
+    if(tel){
+        var telLength = tel.length;
+        if (telLength < 11) {
+            tel = tel;
+        } else if (telLength >= 11) {
+            var telNum = tel.substring(4, 7);
+            tel = tel.replace(telNum, "****");
+        }
+        return tel;
+    }else {
+        return "";
     }
 }

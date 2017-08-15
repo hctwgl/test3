@@ -29,7 +29,7 @@
     </div>
 
     <div id="list" class="listMainContent main_wrap">
-        <template v-if='returnData=="" '>
+        <template v-if="returnData && returnData !=''">
             <ul v-for="(item,index) in returnData" class="item">
                 <li class="rank" v-if="index ==0">
                     <span>1</span>
@@ -44,7 +44,7 @@
                     <span>{{index+1}}</span>
                 </li>
                 <li class="account">
-                    <span>{{item.user_name}}</span>
+                    <span>{{formateTelNum(item.user_name)}}</span>
                 </li>
                 <li class="amount">
                     <span>{{item.money}}</span>
