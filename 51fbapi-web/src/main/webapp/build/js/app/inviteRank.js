@@ -20,10 +20,10 @@ var vm = new Vue({
             $.ajax({
                 url: '/fanbei-web/recommendListSort',
                 dataType: 'json',
-                type: 'get',
+                type: 'post',
                 success: function (data) {
                     console.log(data);
-                    _this.returnData = data.data;
+                    _this.returnData = data;
                 },
                 error: function () {
                     requestMsg("请求失败");
