@@ -55,7 +55,7 @@ public class AppH5RecommendUserController extends BaseController {
      * @throws IOException
      */
     @ResponseBody
-    @RequestMapping(value = "prizeUser", method = RequestMethod.GET,produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "prizeUser", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String getPrizeUser(String dataMonth) throws IOException {
 //        FanbeiWebContext context = doWebCheck(request, false);
 //        String userName = context.getUserName();
@@ -73,7 +73,7 @@ public class AppH5RecommendUserController extends BaseController {
      * @param model
      */
     @ResponseBody
-    @RequestMapping(value = "recommendListSort", method = RequestMethod.GET)
+    @RequestMapping(value = "recommendListSort", method = RequestMethod.POST)
     public String getRecommendListSort(){
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, 0);

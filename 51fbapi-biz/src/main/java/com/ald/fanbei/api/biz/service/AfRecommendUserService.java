@@ -59,4 +59,5 @@ public interface AfRecommendUserService {
     int addRecommendShared(AfRecommendShareDo afRecommendShareDo);
 
     HashMap getRecommendSharedById(String id);
+
 }
