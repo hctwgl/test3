@@ -47,23 +47,23 @@ let vm = new Vue({
                             $(".banner .num").append("<li></li>");
                         }
                         $(".banner .num li").first().addClass("on");
-                        setInterval(function () { i++; move();},3000);
+                        setInterval(function () { i++; move();},4000);
                         function move() {
                             if (i == size) {
-                                $(".banner .bannerList").css({ left: 0 });
+                                $(".banner .bannerList").animate({left: '0'}, 0);
+                                $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
                                 i = 1;
+                                $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
                             }
                             if (i == -1) {
-                                $(".banner .bannerList").css({ left: -(size - 1) * 6.25+'rem' });
+                                $(".banner .bannerList").css({left: -(size - 1) * 6.25 + 'rem'});
+                                $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
+                                $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
                                 i = size - 2;
                             }
-                            $(".banner .bannerList").stop().animate({ left: -i * 6.25+'rem'}, 500);
-
-                            if (i == size - 1) {
-                                $(".banner .num li").eq(0).addClass("on").siblings().removeClass("on");
-                            } else {
-                                $(".banner .num li").eq(i).addClass("on").siblings().removeClass("on");
-                            }
+                            $(".banner .bannerList").stop().animate({left: -i * 6.25 + 'rem'}, 1000);
+                            $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
+                            $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
                         }
                     //判断蒙版
                       for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
@@ -148,7 +148,9 @@ let vm = new Vue({
                             success: function (returnData) {
                                 console.log(returnData)
                                 if(returnData.success){
-                                    requestMsg(returnData.msg);
+                                    //requestMsg(returnData.msg);
+                                    $('.mask').css('display','block');
+                                    $('.alertFinalPrize').css('display','block');
                                     for(var j=0;j<self.content.itemsList.length;j++){
                                         num=self.content.itemsList[j].num;
                                         if(num==0){
@@ -201,6 +203,10 @@ let vm = new Vue({
             $('.title').css('display','none');
             $('.alertRule').css('display','none');
             $('.mask').css('display','none');
+            $('.alertFinalPrize').css('display','none');
+        },
+        fixImgUrl:function(i){
+            return "http://f.51fanbei.com/h5/app/activity/08/gg00"+i+".png";
         }
     }
 })

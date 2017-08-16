@@ -20,9 +20,9 @@ $(function(){
             $.ajax({
                 type: 'get',
                 url: "/H5GG/sendItems",
-                data:{'activityId':activityId},
+                data:{'activityId':1},
                 success: function (returnData) {
-                    var returnData = eval('(' + returnData + ')');
+                   /* var returnData = eval('(' + returnData + ')');*/
                     console.log(returnData)
                     if(returnData.data.loginUrl){
                         location.href = returnData.data.loginUrl;
@@ -44,7 +44,7 @@ $(function(){
                                 if(presentCardList[j].num>=2){
                                     str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'">'+ '<p class="num">'+(presentCardList[j].num-1)+'</p></div>';
                                 }else if(presentCardList[j].num==0){
-                                    str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="gray" src="'+presentCardList[j].iconUrl+'">'+ '</div>';
+                                    str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="gray" src="http://f.51fanbei.com/h5/app/activity/08/gg00'+presentCardList[j].rid+'.png">'+ '</div>';
                                 }else{
                                     str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><p class="cardMask"></p>'+ '</div>';
                                 }

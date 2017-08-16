@@ -49,10 +49,8 @@
     <div class="cardList clearFix">
         <div class="card" v-for="item in content.itemsList" @click="cardClick()">
             <img :src="item.logo">
-            <img :src="item.logo" class="gray" v-if="item.num===0">
-            <img :src="item.logo" class="gray" style="display: none">
-        #*<p class="cardMask" v-if="item.num===0"></p>
-        <p class="cardMask" style="display: none"></p>*#
+            <img :src="fixImgUrl(item.rid)" class="gray" v-if="item.num===0">
+            <img :src="fixImgUrl(item.rid)" class="gray" style="display: none">
             <p class="num" style="display: none">x{{item.num}}</p>
         </div>
     </div>
@@ -61,6 +59,13 @@
     </div>
     <div class="finalPrize finalPrize02" v-show="finalPrizeMask">
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}</p>
+    </div>
+    <div class="alertFinalPrize">
+        <img src="$src/gg19.jpg">
+        <p class="prizeWord01">恭喜红包领取成功！</p>
+        <p class="prizeWord02">请前往“我的-返利金额”查看</p>
+        <p class="know" @click="close()"></p>
+        <p class="closePrize" @click="close()"></p>
     </div>
     <div class="presentCard ask" @click="presentClick()">我要赠送卡片</div>
     <div class="demandCard ask" @click="demandClick()">我要索要卡片</div>
