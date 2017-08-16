@@ -9,8 +9,10 @@
 <body style="background: linear-gradient(to bottom,#fd5d2c, #ff4a2d);">
 <div id="inviteLastWinRank">
     <div id="top">
-        <span class="topTitle">7月Top10</span>
-        <span class="topDivider"><i></i></span>
+        <template v-if="month && month !=''">
+            <span class="topTitle">{{month}}月Top{{total}}</span>
+            <span class="topDivider"><i></i></span>
+        </template>
     </div>
     <div id="navWrap">
         <ul class="nav">

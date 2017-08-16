@@ -8,7 +8,9 @@ let finished = 0;//防止多次请求ajax
 var vm = new Vue({
     el: '#inviteRank',
     data: {
-        returnData: []
+        returnData: [],
+        month:"",
+        total:""
     },
     created: function () {
         let _this = this;
@@ -23,7 +25,9 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
-                    _this.returnData = data;
+                    _this.returnData = data.datalist;
+                    _this.month = data.month;
+                    _this.total = data.total;
                 },
                 error: function () {
                     requestMsg("请求失败");
