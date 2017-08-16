@@ -207,6 +207,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Resource
 	AfTradeOrderService afTradeOrderService;
 	
+	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
 		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -767,8 +768,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							ownRebate.setGmtModified(nowTime);
 							int saveRebateYaoQingResult =  afBoluomeActivityUserRebateDao.saveRecord(refMessage);
 							//更新账户金额
-							AfUserAccountDo refAccountInfo = new AfUserAccountDo();
-							refAccountInfo.setRebateAmount(afOrder.getRebateAmount());
+							AfUserAccountDo refAccountInfo = afUserAccountService.getUserAccountByUserId(refUserLoginRecord.getRefUserId());
+							refAccountInfo.setRebateAmount(refAccountInfo.getRebateAmount());
 							refAccountInfo.setUserId(refUserLoginRecord.getRefUserId());
 							afUserAccountService.updateUserAccount(refAccountInfo);
 						}
