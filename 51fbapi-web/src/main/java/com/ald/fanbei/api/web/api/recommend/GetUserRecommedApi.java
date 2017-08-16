@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -63,7 +65,20 @@ public class GetUserRecommedApi implements ApiHandle{
         totalData.put("activeRule","http://www.baidu.com");
         totalData.put("recommendCode",afUserDo.getRecommendCode());
 
+//        addUiName = LAST_WIN_RANK
+
         String sharedurl = notifyHost +"/fanbei-web/app/inviteShare?recommendCode="+afUserDo.getRecommendCode();
+        Date now = new Date();
+        Date last = getMonthLast();
+        if(now.getTime() > last.getTime()){
+            sharedurl +="?addUiName = LAST_WIN_RANK";
+        }
+        //test
+        if(notifyHost.equals("http://testapp.51fanbei.com")) {
+            sharedurl += "?addUiName = LAST_WIN_RANK";
+        }
+
+
         totalData.put("url",sharedurl);
         totalData.put("title",sharedTitle);
         totalData.put("img",sharedImg);
@@ -80,5 +95,12 @@ public class GetUserRecommedApi implements ApiHandle{
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         resp.setResponseData(ret);
         return resp;
+    }
+
+
+    private Date getMonthLast(){
+        Calendar ca = Calendar.getInstance();
+        ca.set(2017, 8, 1, 0, 0, 0);
+        return  ca.getTime();
     }
 }

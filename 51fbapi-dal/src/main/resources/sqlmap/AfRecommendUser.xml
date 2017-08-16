@@ -73,7 +73,7 @@
 	<select id="getRecommendListByUserId" resultType="HashMap">
 		select
 		a.*,b.user_name
-		from af_recommend_user a  left join af_user b on a.user_id = b.id  where parentId = #{userId} ORDER BY gmt_create desc limit #{pageIndex},#{pageSize}
+		from af_recommend_user a  left join af_user b on a.user_id = b.id  where parentId = #{userId} and origin = 0 ORDER BY gmt_create desc limit #{pageIndex},#{pageSize}
 	</select>
 
 	<select id="getRecommendListSort" resultType="HashMap">

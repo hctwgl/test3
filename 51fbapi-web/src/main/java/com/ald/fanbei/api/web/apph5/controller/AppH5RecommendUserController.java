@@ -221,6 +221,12 @@ public class AppH5RecommendUserController extends BaseController {
 
 
 
+    private Date getMonthLast(){
+        Calendar ca = Calendar.getInstance();
+        ca.set(2017, 8, 1, 0, 0, 0);
+        return  ca.getTime();
+    }
+
 
 
     @Override
