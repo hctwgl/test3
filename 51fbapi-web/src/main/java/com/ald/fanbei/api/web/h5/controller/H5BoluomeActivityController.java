@@ -365,7 +365,6 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		        
 			  }catch (Exception e) {
 				 return  H5CommonResponse.getNewInstance(false,"boluomeActivityCheckVerifyCode fanbei exception", "ForgetPwd", null).toString();
-		    	logger.error("boluomeActivityCheckVerifyCode fanbei exception"+e.getMessage());
 		    }
 			 return  H5CommonResponse.getNewInstance(true,"验证码校验成功", "ResetPwd", null).toString();
 	}
