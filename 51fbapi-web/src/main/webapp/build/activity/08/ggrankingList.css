@@ -86,8 +86,9 @@ body {
           
 #rankingList .container {
     padding-left: 0.2rem;
+    padding-right:0.2rem;
     font-size: 0.28rem;
-    height: 8.22rem;
+    height: 10rem;
     overflow: hidden;
     
 }
