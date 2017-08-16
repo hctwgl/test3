@@ -10,6 +10,18 @@
             width: 100%;
             overflow: hidden;
             text-align: center;
+            background-color: #fff;
+        }
+        .main .copyrightWrap{
+            width: 1100px;
+            height: 130px;
+            text-align: left;
+            background-color: #fff;
+            font-size: 36px;
+            margin: 0 auto;
+        }
+        .main .copyrightWrap p{
+            line-height: 60px;
         }
     </style>
 </head>
@@ -23,7 +35,11 @@
         <img src="http://f.51fanbei.com/h5/pc/vest/vest6.jpg">
         <img src="http://f.51fanbei.com/h5/pc/vest/vest7.jpg">
         <img src="http://f.51fanbei.com/h5/pc/vest/vest8.jpg">
-        <img src="http://f.51fanbei.com/h5/pc/vest/vest9.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest10.jpg">
+        <div class="copyrightWrap">
+            <p>版权所有</p>
+            <p class="copyright" id="copyright"></p>
+        </div>
     </div>
 </body>
 <script>
@@ -40,10 +56,16 @@
     var channelCode=getUrl("channelCode");
     if ( channelCode==1 ){
         document.title="快急送-小额信用借款，随借随还，利息低额度高";
+        document.getElementById("copyright").innerHTML="Yangzhou Grapefruit Nationwide Financial Services Inc.";
     }else if( channelCode==2 ){
         document.title="钱有路白金版-小额信用借款，随借随还，利息低额度高";
+        document.getElementById("copyright").innerHTML="Yangzhou Grapefruit Nationwide Financial Services Inc.";
     }else if( channelCode==3 ){
         document.title="向钱贷白金版-小额信用借款，随借随还，利息低额度高";
+        document.getElementById("copyright").innerHTML="Kang Yu Sheng Hong (XIAMEN) Financial Service Co.,Ltd.";
+    }else if( channelCode==4 ){
+        document.title="速贷专家-小额信用借款，随借随还，利息低额度高";
+        document.getElementById("copyright").innerHTML="Yangzhou Grapefruit Nationwide Financial Services Inc.";
     }
 
 
