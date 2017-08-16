@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017081502")
+    #set($version="2017081601")
     #set($commonUrl="http://f.51fanbei.com/h5/app/images/user")
     <title>51返呗注册</title>
-    <link rel="stylesheet" type="text/css" href="/dist/css/user/inviteShare.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteShare.css?version=$version">
 </head>
 <body>
     <div id="inviteShare" class="inviteShare">
@@ -18,7 +18,7 @@
                     <input type="text" id="VerifiCode" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
                     <button class="codeBtn" id="codeBtn" @click="getCode()">点击获取</button>
                 </li>
-                <li><input type="password" id="password" placeholder="请输入密码" name="words" maxlength="18"></li>
+                <li><input type="password" id="password" placeholder="请设置登陆密码" name="words" maxlength="18"></li>
                 <li @click="goRegister()"><button class="submitBtn" id="submitBtn">立即注册</button></li>
             </ul>
         </div>
@@ -33,7 +33,7 @@
     </div>
     <script type="text/javascript" src="/common/js/core.js"></script>
     <script type="text/javascript" src="/common/js/md5.js"></script>
-    <script type="text/javascript" src="/dist/js/user/inviteShare.js?version=$version"></script>
+    <script type="text/javascript" src="/dist/js/app/inviteShare.js?version=$version"></script>
     <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </body>
 </html>
