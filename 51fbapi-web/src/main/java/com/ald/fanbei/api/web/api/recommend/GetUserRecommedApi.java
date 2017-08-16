@@ -66,11 +66,11 @@ public class GetUserRecommedApi implements ApiHandle{
         Date now = new Date();
         Date last = getMonthLast();
         if(now.getTime() > last.getTime()){
-            allOrderUrl +="?addUiName = LAST_WIN_RANK";
+            allOrderUrl +="?addUiName=LAST_WIN_RANK";
         }
         //test
 //        if(notifyHost.equals("http://testapp.51fanbei.com")) {
-        allOrderUrl += "?addUiName=LAST_WIN_RANK";
+//        allOrderUrl += "?addUiName=LAST_WIN_RANK";
 //        }
 
 
