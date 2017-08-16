@@ -595,6 +595,9 @@ public class APPH5GGShareController extends BaseController {
 							.getListByCommonCondition(newUserItemsDoCondition);
 					int length = list.size();
 					if (list == null || length == 0) {
+						if (resourceUserItemsDo.getStatus() == "NORMAL") {
+							return H5CommonResponse.getNewInstance(true, "改卡片已经超时退给赠送者，不能领取").toString();
+						}
 						// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
 						AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
 						insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());

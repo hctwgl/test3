@@ -624,9 +624,9 @@ public class H5GGShareController extends H5Controller {
 				AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService
 						.getById(resourceUserItemsId);// old卡片的内容
 				if (resourceUserItemsDo != null) {
-					Long destUserId = resourceUserItemsDo.getUserId();
+					Long reourceUserId = resourceUserItemsDo.getUserId();
 					// 你没有权限领取此卡片
-					if (destUserId.equals(userId)) {
+					if (reourceUserId.equals(userId)) {
 						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
 					}
 					// 查看是否已经领走
@@ -638,6 +638,10 @@ public class H5GGShareController extends H5Controller {
 							.getListByCommonCondition(newUserItemsDoCondition);
 					int length = list.size();
 					if (list == null || length == 0) {
+						//检查卡片是否过期（是否有FROZEN状态变成了NORMAL）
+						if (resourceUserItemsDo.getStatus() == "NORMAL") {
+							return H5CommonResponse.getNewInstance(true, "改卡片已经超时退给赠送者，不能领取").toString();
+						}
 						// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
 						AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
 						insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
@@ -657,7 +661,7 @@ public class H5GGShareController extends H5Controller {
 						updateUserItemsStatus(resourceUserItemsId, "SENT");
 						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功").toString();
 					} else {
-						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
+						return H5CommonResponse.getNewInstance(true, "你已领走卡片，无需重复领取").toString();
 					}
 
 				}
