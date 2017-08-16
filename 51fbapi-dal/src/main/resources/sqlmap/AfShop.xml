@@ -64,7 +64,18 @@
 		AND
 			type = #{type}
 	</select>
-	
+		<select id="getShopInfoBySecTypeOpen" parameterType="AfShopDo" resultType="AfShopDo">
+		SELECT
+			<include refid="queryFields" />
+		FROM
+			af_shop
+		WHERE
+			is_delete = 0
+		AND
+		    status = 'O'
+		AND
+			type = #{type}
+	</select>
 	
 	
 </mapper>

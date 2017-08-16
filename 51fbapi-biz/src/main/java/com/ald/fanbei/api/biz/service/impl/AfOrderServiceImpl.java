@@ -697,7 +697,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			//查询商城id
 			AfShopDo afShopDo =new AfShopDo();
 			afShopDo.setType(afOrder.getSecType());
-			AfShopDo shop =  afShopService.getShopInfoBySecType(afShopDo);
+			AfShopDo shop =  afShopService.getShopInfoBySecTypeOpen(afShopDo);
 		    Long shopId = shop.getRid();
 		      //根据shopId查询卡片信息
 		    AfBoluomeActivityItemsDo ItemsMessageSet = new AfBoluomeActivityItemsDo();
@@ -721,12 +721,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				ownRebate.setGmtCreate(nowTime);
 				ownRebate.setGmtModified(nowTime);
 				ownRebate.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
-				int saveRebateResult =  afBoluomeActivityUserRebateDao.saveRecord(ownRebate);
-				//更新账户金额
-				AfUserAccountDo accountInfo = new AfUserAccountDo();
-				accountInfo.setRebateAmount(afOrder.getRebateAmount());
-				accountInfo.setUserId(userId);
-				afUserAccountService.updateUserAccount(accountInfo);
+			    afBoluomeActivityUserRebateDao.saveRecord(ownRebate);
+				
 			     //添加卡片信息 
 			    AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
 			    userItemsDo.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
@@ -736,7 +732,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			    userItemsDo.setUserId(userId);
 			    userItemsDo.setUserName(afUserDo.getUserName()); 
 			    userItemsDo.setGmtSended(nowTime);
-			    int saveItemsResult = afBoluomeActivityUserItemsDao.saveRecord(userItemsDo);
+			    afBoluomeActivityUserItemsDao.saveRecord(userItemsDo);
 				
 			  //给他人返利
 			    AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
@@ -766,10 +762,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							refMessage.setInviteRebate(afOrder.getRebateAmount()); 
 							ownRebate.setGmtCreate(nowTime);
 							ownRebate.setGmtModified(nowTime);
-							int saveRebateYaoQingResult =  afBoluomeActivityUserRebateDao.saveRecord(refMessage);
+						    afBoluomeActivityUserRebateDao.saveRecord(refMessage);
 							//更新账户金额
-							AfUserAccountDo refAccountInfo = afUserAccountService.getUserAccountByUserId(refUserLoginRecord.getRefUserId());
-							refAccountInfo.setRebateAmount(refAccountInfo.getRebateAmount());
+							AfUserAccountDo refAccountInfo = new AfUserAccountDo();
+							refAccountInfo.setRebateAmount(afOrder.getRebateAmount());
 							refAccountInfo.setUserId(refUserLoginRecord.getRefUserId());
 							afUserAccountService.updateUserAccount(refAccountInfo);
 						}
