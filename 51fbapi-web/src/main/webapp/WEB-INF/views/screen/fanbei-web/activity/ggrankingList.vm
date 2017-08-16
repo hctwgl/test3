@@ -20,6 +20,7 @@
             <span class="phone-right">邀请好友返利</span>
         </div>
         <div class="container">
+                <!-- 最多显示17条信息 !-->
                  <ul class="numberList" id='numberList'>
                  </ul>
         </div>

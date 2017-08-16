@@ -46,7 +46,7 @@ $('.mmicon').css("display","block");
 
 
 $(".loginbtn").click(function () {
-    var userName = $("#yhinp").val();//获取手机号
+    var userNamePhone = $("#yhinp").val();//获取手机号
     var password = $(".check").val();//获取密码
 
     var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userName));
@@ -58,7 +58,7 @@ $(".loginbtn").click(function () {
             type: 'POST',
             dataType: 'JSON',
             data: {
-                userName: userName,
+                userName: userNamePhone,
                 password: password_md5,
                 activityId:activityId,
                 refUserName:userName,

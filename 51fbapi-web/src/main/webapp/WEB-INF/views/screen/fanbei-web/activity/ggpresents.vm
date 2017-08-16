@@ -28,8 +28,8 @@
                 <img src="" alt="" class="banner-img">
             </div>
             <div class="send">
-                <div class="presentCard ask">我要赠送卡片</div>
-                <div class="demandCard ask">我要索要卡片</div>
+                <div class="presentCard ask">领走卡片</div>
+                <div class="demandCard ask">我也要点亮</div>
             </div>
         </div>
         <div class="presents-bottom clearFix">

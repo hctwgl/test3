@@ -721,12 +721,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				ownRebate.setGmtModified(nowTime);
 				ownRebate.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
 				int saveRebateResult =  afBoluomeActivityUserRebateDao.saveRecord(ownRebate);
-				//
 				//更新账户金额
-				AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(afOrder.getUserId());
-				BigDecimal usedAmount = BigDecimalUtil.add(afOrder.getRebateAmount(), accountInfo.getRebateAmount());
-				accountInfo.setUsedAmount(usedAmount);
-				afUserAccountDao.updateOriginalUserAccount(accountInfo);
+				AfUserAccountDo accountInfo = new AfUserAccountDo();
+				accountInfo.setRebateAmount(afOrder.getRebateAmount());
+				accountInfo.setUserId(userId);
+				afUserAccountService.updateUserAccount(accountInfo);
 			     //添加卡片信息 
 			    AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
 			    userItemsDo.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
@@ -766,10 +765,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							ownRebate.setGmtModified(nowTime);
 							int saveRebateYaoQingResult =  afBoluomeActivityUserRebateDao.saveRecord(refMessage);
 							//更新账户金额
-							AfUserAccountDo refAccountInfo = afUserAccountDao.getUserAccountInfoByUserId(refUserLoginRecord.getRefUserId());
-							BigDecimal refUsedAmount = BigDecimalUtil.add(afOrder.getRebateAmount(), refAccountInfo.getRebateAmount());
-							refAccountInfo.setUsedAmount(refUsedAmount);
-							afUserAccountDao.updateOriginalUserAccount(refAccountInfo);
+							AfUserAccountDo refAccountInfo = new AfUserAccountDo();
+							refAccountInfo.setRebateAmount(afOrder.getRebateAmount());
+							refAccountInfo.setUserId(refUserLoginRecord.getRefUserId());
+							afUserAccountService.updateUserAccount(refAccountInfo);
 						}
 					}
 			    }	

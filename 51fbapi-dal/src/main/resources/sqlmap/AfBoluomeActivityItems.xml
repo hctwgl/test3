@@ -161,14 +161,14 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
                 logo = #{sort,jdbcType=VARCHAR}                
             </if>
         </set>    
-        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}  AND status = 'O'
     </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
         SELECT
         <include refid="queryFields" />
         FROM af_boluome_activity_items
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT} AND status = 'O'
         LIMIT 0,1
     </select>
 
@@ -177,6 +177,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <include refid="queryFields" />
         FROM af_boluome_activity_items
         <include refid="commonCondition"/> 
+         AND status = 'O'
         limit 0,1
     </select>
                
@@ -185,6 +186,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <include refid="queryFields" />
         FROM af_boluome_activity_items
         <include refid="commonCondition"/>
+         AND status = 'O'
     </select>
     
       <select id="getItemsInfo" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
@@ -192,6 +194,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <include refid="queryFields" />
         FROM af_boluome_activity_items
         <include refid="commonCondition"/>
+         AND status = 'O'
     </select>
     
 </mapper>
