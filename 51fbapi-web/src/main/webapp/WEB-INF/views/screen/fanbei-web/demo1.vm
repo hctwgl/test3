@@ -51,7 +51,23 @@
 //    Vue.set(vm.show,1,'2222');
 
 
+var tel="13500000401";
+function telNumHide(tel){
+    var telLength=tel.length;
+    if(telLength < 11){
+        tel=tel;
+    }else if(telLength >= 11){
+        var telNum=tel.substring(4,7);
+        tel = tel.replace(telNum, "****");
+    }
+    console.log(tel);
+}
+telNumHide(tel);
 
+// var tel = "13122223333";
+// var reg = /^(\d{3})\d{4}(\d{4})$/;
+// tel = tel.replace(reg, "$1****$2");
+// console.log(tel);
 
 
 </script>

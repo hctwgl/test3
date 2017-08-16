@@ -266,6 +266,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 
 			String cardNo = card.getCardNumber();
 			String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+			cashDo.setUserId(userId);
+			cashDo.setGmtCreate(new Date(System.currentTimeMillis()));
 			cashDo.setRishOrderNo(riskOrderNo);
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
