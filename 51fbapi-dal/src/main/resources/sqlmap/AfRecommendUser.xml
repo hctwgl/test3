@@ -86,7 +86,7 @@
 		select a.*,b.user_name,c.`name` from af_recommend_prize_user a
 						left join af_user b on a.user_id = b.id
 						left join af_resource c on a.prize_id = c.id
-						where date_month = #{datamonth} and a.is_delete = 0
+						where date_month = #{datamonth} and a.is_delete = 0 limit 0,10
 	</select>
 
 

@@ -68,14 +68,14 @@ public class AppH5RecommendUserController extends BaseController {
         retMap.put("datalist",mapList);
 
 
-        SimpleDateFormat df1 = new SimpleDateFormat("M");//设置日期格式
-        String m = df.format(lastMonth);
+        SimpleDateFormat df1 = new SimpleDateFormat("MM");//设置日期格式
+        String m = String.valueOf( Integer.parseInt(df1.format(lastMonth)));
         retMap.put("month",m);
-        retMap.put("total",20);
+        retMap.put("total",10);
 
 
-        //model.put("dataList",mapList);
-        String ret = JSON.toJSONString(mapList);
+        String ret = JSON.toJSONString(retMap);
+//        String ret = JSON.toJSONString(mapList);
         return ret;
 
     }
@@ -135,9 +135,14 @@ public class AppH5RecommendUserController extends BaseController {
 
         List<HashMap> list = afRecommendUserService.getRecommendListSort(start,last);
 
-        //model.put("dataList",list);
-
-        String ret = JSON.toJSONString(list);
+        SimpleDateFormat df = new SimpleDateFormat("MM");//设置日期格式
+        String m = String.valueOf( Integer.parseInt(df.format(start)));
+        HashMap map = new HashMap();
+        map.put("month",m);
+        map.put("total",20);
+        map.put("datalist",list);
+        String ret = JSON.toJSONString(map);
+//        String ret = JSON.toJSONString(list);
         return ret;
     }
 
