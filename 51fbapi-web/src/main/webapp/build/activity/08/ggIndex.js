@@ -48,18 +48,23 @@ let vm = new Vue({
                             $(".banner .num").append("<li></li>");
                         }
                         $(".banner .num li").first().addClass("on");
-                        setInterval(function () { i++; move();},1500);
+                        setInterval(function () { i++; move();},4000);
                         function move() {
                             if (i == size) {
                                 $(".banner .bannerList").css({ left: 0 });
+                                $(".banner .bannerList").find('li').eq(i-1).css('opacity',0);
+                                $(".banner .bannerList").find('li').eq(i).css('opacity',1 );
                                 i = 1;
                             }
                             if (i == -1) {
                                 $(".banner .bannerList").css({ left: -(size - 1) * 6.25+'rem' });
+                                $(".banner .bannerList").find('li').eq(i-1).css('opacity',0);
+                                $(".banner .bannerList").find('li').eq(i).css('opacity',1 );
                                 i = size - 2;
                             }
-                            $(".banner .bannerList").stop().animate({ left: -i * 6.25+'rem'}, 500);
-
+                            $(".banner .bannerList").stop().animate({ left: -i * 6.25+'rem'},1000);
+                            $(".banner .bannerList").find('li').eq(i-1).css('opacity',0);
+                            $(".banner .bannerList").find('li').eq(i).css('opacity',1 );
                             if (i == size - 1) {
                                 $(".banner .num li").eq(0).addClass("on").siblings().removeClass("on");
                             } else {
@@ -226,7 +231,7 @@ function alaShareData(){
     var dataObj = { // 分享内容
         "appLogin": "Y", // 是否需要登录，Y需要，N不需要
         "type": "share", // 此页面的类型
-        "shareAppTitle": "消费有返利 领取88.88元现金红包！",  // 分享的title
+        "shareAppTitle": "消费有返利 领取51元现金红包！",  // 分享的title
         'shareAppContent': "我正在51返呗玩场景点亮活动，你也一起来玩吧~",  // 分享的内容
         "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
         "shareAppUrl": domainName+"/fanbei-web/activity/ggIndexShare?loginSource=F&activityId="+activityId+"&userName="+userName,  // 分享后的链接
