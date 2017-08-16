@@ -119,7 +119,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		}
 		
 		if (UserDo == null) {
-			return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "Login", "").toString();
+			return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", "").toString();
 		}
 		if (StringUtils.equals(UserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_FROZEN_ERROR.getDesc(), "Login", "").toString();
