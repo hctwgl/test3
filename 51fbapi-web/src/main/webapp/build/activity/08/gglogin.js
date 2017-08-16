@@ -74,14 +74,17 @@ $(".loginbtn").click(function () {
                     }else {
                         window.location.href ="ggIndexShare" + "?activityId=" + activityId + "&userName=" + userName;
                     } 
-                }else{
+                }else if(data.url=="Login"){
+                    requestMsg(data.msg);
+                
+                }else if(data.url=="DownLoad"){
                     requestMsg(data.msg);
                     window.location.href= "ggregister?word=" + word + "&userName=" + userName +"&activityId=" + activityId + "&userItemsId=" + userItemsId +"&itemsId=" + itemsId + "&urlName="+urlName;
                 }
             }
         })
     } else {
-        console.log(userck);
+        console.log(userck+'000');
         if(!userck){
             requestMsg("请填写正确的手机号");
         }else{
