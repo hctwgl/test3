@@ -21,7 +21,7 @@ public interface AfBorrowCashService {
 	int addBorrowCash(AfBorrowCashDo afBorrowCashDo);
 
 
-	int borrowSuccess(final AfBorrowCashDo afBorrowCashDo)
+	int borrowSuccess(final AfBorrowCashDo afBorrowCashDo);
 
 	/**
 	 * 更新记录
