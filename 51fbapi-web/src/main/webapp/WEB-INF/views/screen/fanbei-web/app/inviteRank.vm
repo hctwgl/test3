@@ -30,14 +30,14 @@
     <div id="list" class="main_wrap listMainContent">
         <template v-if="returnData && returnData !=''">
             <ul v-for="(item,index) in returnData" class="item">
-                <li class="rank" v-if="index ==0">
-                    <span>1</span>
+                <li class="rank1" v-if="index ==0">
+                    <span></span>
                 </li>
-                <li class="rank" v-else-if="index ==1">
-                    <span>2</span>
+                <li class="rank2" v-else-if="index ==1">
+                    <span></span>
                 </li>
-                <li class="rank" v-else-if="index ==2">
-                    <span>3</span>
+                <li class="rank3" v-else-if="index ==2">
+                    <span></span>
                 </li>
                 <li class="rank" v-else>
                     <span>{{index+1}}</span>
