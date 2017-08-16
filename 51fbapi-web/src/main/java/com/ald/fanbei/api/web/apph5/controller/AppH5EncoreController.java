@@ -270,7 +270,8 @@ public class AppH5EncoreController extends BaseController {
     			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
     			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
     			goodsInfo.put("source", goodsDo.getSource());
-    			goodsInfo.put("doubleRebate", goodsDo.getDoubleRebate());
+    			String doubleRebate = goodsDo.getDoubleRebate();
+    			goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
     			goodsInfo.put("goodsType", "0");
     			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
     			// 如果是分期免息商品，则计算分期
