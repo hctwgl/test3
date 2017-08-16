@@ -111,18 +111,18 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		
 		//被邀请者登录验证
 		if (userName == null || userName.isEmpty()) {
-			return  H5CommonResponse.getNewInstance(false, "请输入账号", "", "").toString();
+			return  H5CommonResponse.getNewInstance(false, "请输入账号", "Login", "").toString();
 			
 		}
 		if (password == null || password.isEmpty()) {
-			return H5CommonResponse.getNewInstance(false, "请输入密码", "", "").toString();
+			return H5CommonResponse.getNewInstance(false, "请输入密码", "Login", "").toString();
 		}
 		
 		if (UserDo == null) {
-			return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "", "").toString();
+			return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "Login", "").toString();
 		}
 		if (StringUtils.equals(UserDo.getStatus(), UserStatus.FROZEN.getCode())) {
-			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_FROZEN_ERROR.getDesc(), "", "").toString();
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_FROZEN_ERROR.getDesc(), "Login", "").toString();
 		}
 		// check password
 		String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
@@ -133,7 +133,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				errorCount = errorCount+1; 
 				bizCacheUtil.saveObject(cacheKey, errorCount, Constants.SECOND_OF_HALF_HOUR);
 				FanbeiExceptionCode code =  getErrorCountCode(errorCount);
-				return H5CommonResponse.getNewInstance(false, code.getDesc(), "", "").toString();
+				return H5CommonResponse.getNewInstance(false, code.getDesc(), "Login", "").toString();
 		}	
 		
 		        bizCacheUtil.delCache(cacheKey);
@@ -146,7 +146,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_HOUR);
 				
 				if(refUserDo == null){
-					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", "").toString();
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Login", "").toString();
 					
 				}
 				if(!userName.equals(refUseraName)){
@@ -175,11 +175,11 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 					String reqData  = request.toString();
 					doLog(reqData,H5CommonResponse.getNewInstance(true, "成功", "", ""),request.getMethod(),rmtIp,exeT,"/H5GGShare/boluomeActivityLogin",request.getParameter("userName"),login, "", "","","");
 				}else{
-					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", "").toString();
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Login", "").toString();
 				}	
 				
 		}else{
-			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "", "").toString();
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "Login", "").toString();
 		}
 		return H5CommonResponse.getNewInstance(true, "登录成功", "", "").toString();
 	}
