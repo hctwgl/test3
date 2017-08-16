@@ -63,6 +63,17 @@ public class AppH5RecommendUserController extends BaseController {
         String year_month = df.format(lastMonth);
 
         List<HashMap> mapList = afRecommendUserService.getPrizeUser(year_month);
+
+        HashMap retMap = new HashMap();
+        retMap.put("datalist",mapList);
+
+
+        SimpleDateFormat df1 = new SimpleDateFormat("M");//设置日期格式
+        String m = df.format(lastMonth);
+        retMap.put("month",m);
+        retMap.put("total",20);
+
+
         //model.put("dataList",mapList);
         String ret = JSON.toJSONString(mapList);
         return ret;
@@ -72,8 +83,6 @@ public class AppH5RecommendUserController extends BaseController {
 
     /**
      * 获奖名单
-     * @param request
-     * @param model
      * @throws IOException
      */
     @ResponseBody
