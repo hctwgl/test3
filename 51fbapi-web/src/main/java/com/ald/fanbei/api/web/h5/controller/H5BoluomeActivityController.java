@@ -146,7 +146,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_HOUR);
 				
 				if(refUserDo == null){
-					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Login", "").toString();
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
 					
 				}
 				if(!userName.equals(refUseraName)){
