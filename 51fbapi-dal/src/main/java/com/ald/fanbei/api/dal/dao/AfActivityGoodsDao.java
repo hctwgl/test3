@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 
 
 /**
@@ -29,6 +30,8 @@ public interface AfActivityGoodsDao {
 	// 根据goodsId查询商品信息
 	AfActivityGoodsDo  getActivityGoodsByGoodsId(@Param("goodsId") Long goodsId);
 
-	
+	List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityIdLT371(@Param("activityId")Long activityId);
+
+	List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(@Param("activityId")Long activityId);
 
 }
