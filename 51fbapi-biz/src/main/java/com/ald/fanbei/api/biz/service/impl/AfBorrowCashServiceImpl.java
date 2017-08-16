@@ -71,7 +71,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				 afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
 
 				//#region 修改最是否己借款  add by hongzhengpei
-				afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(),afBorrowCashDo.getGmtCreate());
+				if(afBorrowCashDo.getStatus().equals("TRANSED")) {
+					afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
+				}
 				//#endregion
 
 				 return 1;
