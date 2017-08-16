@@ -74,9 +74,9 @@ public class GetUserRecommedApi implements ApiHandle{
             sharedurl +="?addUiName = LAST_WIN_RANK";
         }
         //test
-        if(notifyHost.equals("http://testapp.51fanbei.com")) {
+//        if(notifyHost.equals("http://testapp.51fanbei.com")) {
             sharedurl += "?addUiName = LAST_WIN_RANK";
-        }
+//        }
 
 
         totalData.put("url",sharedurl);
