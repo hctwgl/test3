@@ -349,23 +349,25 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
 		        if(smsDo == null){
 		    		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "ForgetPwd", null).toString();
-		    		//return resultStr;
+		    		return resultStr;
 		        }
 		        //判断验证码是否一致并且验证码是否已经做过验证
 		        String realCode = smsDo.getVerifyCode();
 		        if(!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1){
 		        	resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "ForgetPwd", null).toString();
-		        	//return resultStr;
+		        	return resultStr;
 		        }
 		        //判断验证码是否过期
 		        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
 		        	resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "ForgetPwd", null).toString();
-		        	//return resultStr;
+		        	return resultStr;
 		        }
+		        
 			  }catch (Exception e) {
-		    		logger.error("boluomeActivityCheckVerifyCode fanbei exception"+e.getMessage());
+				 return  H5CommonResponse.getNewInstance(false,"boluomeActivityCheckVerifyCode fanbei exception", "ForgetPwd", null).toString();
+		    	logger.error("boluomeActivityCheckVerifyCode fanbei exception"+e.getMessage());
 		    }
-			return resultStr;
+			 return  H5CommonResponse.getNewInstance(true,"验证码校验成功", "ResetPwd", null).toString();
 	}
 	
 	
