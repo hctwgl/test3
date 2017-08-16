@@ -56,6 +56,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Resource
 	AfRecommendUserService afRecommendUserService;
 
+
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -63,19 +64,34 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return afBorrowCashDao.addBorrowCash(afBorrowCashDo);
 	}
 
+
+	/**
+	 * 借款成功
+	 * @param afBorrowCashDo
+	 * @return
+	 */
+	public int borrowSuccess(final AfBorrowCashDo afBorrowCashDo){
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus transactionStatus) {
+				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+				//#region 修改最是否己借款  add by hongzhengpei
+				if(afBorrowCashDo.getStatus().equals("TRANSED")) {
+					afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
+				}
+				//#endregion
+				return 1;
+			}
+		});
+	}
+
+
 	@Override
 	public int updateBorrowCash(final AfBorrowCashDo afBorrowCashDo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
 				 afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
-
-				//#region 修改最是否己借款  add by hongzhengpei
-				if(afBorrowCashDo.getStatus().equals("TRANSED")) {
-					afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
-				}
-				//#endregion
-
 				 return 1;
 			}
 		});
