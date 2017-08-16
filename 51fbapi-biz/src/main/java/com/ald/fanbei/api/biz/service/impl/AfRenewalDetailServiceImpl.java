@@ -221,7 +221,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
 		boList.add(parseOverduedBorrowBo(borrowCashInfo.getBorrowNo(), 0,null));
 		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
-		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		try {
+			riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		} catch (Exception e) {
+			logger.error("续借成功时给风控传输数据出错", e);
+		}
+		
 		logger.info("dealWithSynchronizeOverduedOrder completed");
 	}
 	
