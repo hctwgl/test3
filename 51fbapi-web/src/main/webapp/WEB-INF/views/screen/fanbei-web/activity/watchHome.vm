@@ -14,20 +14,20 @@
 <body>
     <img src="$commonUrl/watchHome1.png">
     <div id="watchHome">
-        <img @click="goGoodsDetail(content.recommendGoodsList[0])" data-original="$commonUrl/watchHome2.png">
-        <img @click="goGoodsDetail(content.recommendGoodsList[1])" data-original="$commonUrl/watchHome3.png">
-        <img @click="goGoodsDetail(content.recommendGoodsList[2])" data-original="$commonUrl/watchHome4.png">
-        <img @click="goGoodsDetail(content.recommendGoodsList[3])" data-original="$commonUrl/watchHome5.png">
-        <img @click="goGoodsDetail(content.recommendGoodsList[4])" data-original="$commonUrl/watchHome6.png">
+        <img @click="goGoodsDetail(content.recommendGoodsList[0])" src="$commonUrl/watchHome2.png">
+        <img @click="goGoodsDetail(content.recommendGoodsList[1])" src="$commonUrl/watchHome3.png">
+        <img @click="goGoodsDetail(content.recommendGoodsList[2])" src="$commonUrl/watchHome4.png">
+        <img @click="goGoodsDetail(content.recommendGoodsList[3])" src="$commonUrl/watchHome5.png">
+        <img @click="goGoodsDetail(content.recommendGoodsList[4])" src="$commonUrl/watchHome6.png">
     </div>
 </body>
-<script type="text/javascript" src="/common/js/jquery.lazyload.js"></script>
+##<script type="text/javascript" src="/common/js/jquery.lazyload.js"></script>
 <script type="text/javascript">
-    $(function() {
-        $("#watchHome img").lazyload({
-            effect : "fadeIn"
-        });
-    });
+//    $(function() {
+//        $("#watchHome img").lazyload({
+//            effect : "fadeIn"
+//        });
+//    });
 
     var activityId = getUrl("activityId");
     var vm=new Vue({

@@ -142,7 +142,6 @@ public class PayOrderV1Api implements ApiHandle {
 			
 			String success = result.get("success").toString();
 			if (StringUtils.isNotBlank(success)) {
-//				dealWithPayOrderRiskFailed(result, resp);
 				if (Boolean.parseBoolean(success)) {
 					if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
 						riskUtil.payOrderChangeAmount(orderInfo.getRid());
@@ -154,7 +153,6 @@ public class PayOrderV1Api implements ApiHandle {
 					return response;
 				}	
 			}
-				
 			resp.setResponseData(result);
 			
 		} catch (FanbeiException exception) {
@@ -166,39 +164,4 @@ public class PayOrderV1Api implements ApiHandle {
 		return resp;
 	}
 	
-//	/**
-//	 * 处理风控逾期订单处理
-//	 * @param result
-//	 * @param resp
-//	 */
-//	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
-//		String success = result.get("success").toString();
-//		//如果代付，风控支付是不通过的，找出其原因
-//		if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {
-//			String verifyBoStr = (String) result.get("verifybo");
-//			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
-//			String rejectCode = riskResp.getRejectCode();
-//			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
-//			switch (erorrCode) {
-//			case AUTH_AMOUNT_LIMIT:
-//				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_AUTH_AMOUNT_LIMIT);
-//			case OVERDUE_BORROW:
-//			{
-//				String borrowNo = riskResp.getBorrowNo();
-//				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-//				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
-//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_OVERDUED));
-//				resp.addResponseData("billId", billId == null ? 0 : billId);
-//			}
-//				break;
-//			case OVERDUE_BORROW_CASH:
-//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_CASH_OVERDUED));
-//				break;
-//			case OTHER_RULE:
-//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_OTHER_RULE));
-//			default:
-//				break;
-//			}
-//		}
-//	}
 }
