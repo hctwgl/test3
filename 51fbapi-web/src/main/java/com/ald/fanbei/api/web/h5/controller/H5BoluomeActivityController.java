@@ -338,6 +338,37 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	}
 		return resultStr;
 }
+	//菠萝觅校验验证码
+		@ResponseBody
+		@RequestMapping(value = "/boluomeActivityCheckVerifyCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		public String checkVerifyCode(HttpServletRequest request, ModelMap model) throws IOException {
+			String resultStr = "";
+			try{
+				String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
+				String userName = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+			    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
+		        if(smsDo == null){
+		    		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "ForgetPwd", null).toString();
+		    		//return resultStr;
+		        }
+		        //判断验证码是否一致并且验证码是否已经做过验证
+		        String realCode = smsDo.getVerifyCode();
+		        if(!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1){
+		        	resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "ForgetPwd", null).toString();
+		        	//return resultStr;
+		        }
+		        //判断验证码是否过期
+		        if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
+		        	resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "ForgetPwd", null).toString();
+		        	//return resultStr;
+		        }
+			  }catch (Exception e) {
+		    		logger.error("boluomeActivityCheckVerifyCode fanbei exception"+e.getMessage());
+		    }
+			return resultStr;
+	}
+	
+	
 	//菠萝觅活动重置密码
 	@ResponseBody
 	@RequestMapping(value = "/boluomeActivityResetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
