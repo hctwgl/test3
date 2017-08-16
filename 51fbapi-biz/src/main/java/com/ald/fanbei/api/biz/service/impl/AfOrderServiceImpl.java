@@ -757,6 +757,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			    	   if(RebateQueryResult.getFanLiRecordTime()<1){
 							//进行返利
 							AfBoluomeActivityUserRebateDo refMessage = new AfBoluomeActivityUserRebateDo();
+							refMessage.setUserId(userId);
+							refMessage.setUserName(afUserDo.getUserName());
 							refMessage.setRefUserId(refUserLoginRecord.getRefUserId());
 							refMessage.setBoluomeActivityId(refUserLoginRecord.getBoluomeActivityId());
 							refMessage.setRefOrderId(afOrder.getRid());//id还是orderNo?
