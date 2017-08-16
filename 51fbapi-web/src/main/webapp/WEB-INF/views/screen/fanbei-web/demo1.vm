@@ -18,8 +18,27 @@
 <i class="iconfont icon-sousuo"></i>
 <i class="iconfont icon-xiaoxi"></i>
 <style>
-
+    .demo1{
+        padding: 0.2rem;
+    }
+    .left{
+        float: left;
+        width: 10%;
+        background-color: pink;
+        white-space: nowrap;
+        display: table-cell;
+        vertical-align: top;
+    }
+    .right{
+        float: right;
+        width: 90%;
+        display: table-cell;
+    }
 </style>
+<div class="demo1 clearfix">
+    <span class="left">1</span><span class="right">分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！</span>
+</div>
+
 
 <script type="text/javascript">
 
