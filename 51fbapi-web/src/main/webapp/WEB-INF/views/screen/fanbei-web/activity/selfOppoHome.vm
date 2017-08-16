@@ -27,7 +27,7 @@
                         <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
                         <div class="priceWrap">
                             <span class="saleAmount">¥{{item.saleAmount}}</span>
-                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount/2}}*2</span>
+                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount/2}}x2</span>
                         </div>
                         <span class="goBuyBtn" style="background: linear-gradient(to right, #fcb595 , #fa6073); ">立即抢购</span>
                     </div>
@@ -44,7 +44,7 @@
                         <p class="remark">{{item.remark}}</p>
                         <div class="priceWrap">
                             <span class="saleAmount">¥{{item.saleAmount}}</span>
-                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount/2}}*2</span>
+                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount/2}}x2</span>
                         </div>
                     </div>
                 </li>
