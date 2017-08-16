@@ -32,13 +32,13 @@
     <div id="list" class="main_wrap listMainContent">
         <template v-if="returnData && returnData !=''">
             <ul v-for="(item,index) in returnData" class="item">
-                <li class="rank1" v-if="index ==0">
+                <li class="comRank rank1" v-if="index ==0">
                     <span></span>
                 </li>
-                <li class="rank2" v-else-if="index ==1">
+                <li class="comRank rank2" v-else-if="index ==1">
                     <span></span>
                 </li>
-                <li class="rank3" v-else-if="index ==2">
+                <li class="comRank rank3" v-else-if="index ==2">
                     <span></span>
                 </li>
                 <li class="rank" v-else-if="index >2">
