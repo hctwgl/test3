@@ -498,7 +498,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 					//#region 修改最是否己借款  add by hongzhengpei
 //					if(borrow.getStatus().equals("TRANSED")) {
-						afRecommendUserService.updateRecommendByBorrow(borrow.getUserId(), borrow.getGmtCreate());
+//						afRecommendUserService.updateRecommendByBorrow(borrow.getUserId(), borrow.getGmtCreate());
 //					}
 
 					//#endregion
@@ -719,7 +719,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 							//#region 修改最是否己借款  add by hongzhengpei
 //							if(borrow.getStatus().equals("TRANSED")) {
-								afRecommendUserService.updateRecommendByBorrow(borrow.getUserId(), borrow.getGmtCreate());
+//								afRecommendUserService.updateRecommendByBorrow(borrow.getUserId(), borrow.getGmtCreate());
 //							}
 							//#endregion
 						}

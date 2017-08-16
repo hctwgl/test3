@@ -738,7 +738,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
 							//#region add by honghzengpei
-							afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
+//							afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
 							//#endregion
 							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap);
 						}
@@ -1068,7 +1068,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
 
 						//#region add by hongzhengpei
-						afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new Date());
+//						afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new Date());
 						//#endregion
 					}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
@@ -1120,7 +1120,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					logger.info("dealAgentCpOrderSucc comlete , orderInfo = {} ", orderInfo);
 
 					// #region add by hongzhengpei
-					afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new Date());
+//					afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new Date());
 					// #endregion
 
 					return 1;
