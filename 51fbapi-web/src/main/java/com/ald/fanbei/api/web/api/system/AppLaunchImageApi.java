@@ -34,6 +34,7 @@ public class AppLaunchImageApi implements ApiHandle{
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String appVersion = context.getAppVersion()!=null?context.getAppVersion()+"":"";
 		
 		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(RESOURCE_TYPE);
 		if(resourceDo == null){
@@ -48,7 +49,7 @@ public class AppLaunchImageApi implements ApiHandle{
 		//同盾处理
 		try {
 			if (StringUtils.isNotBlank(blackBox)) {
-				tongdunUtil.activeOperate(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), "","", "",true);
+				tongdunUtil.activeOperate(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),appVersion, "","",true);
 			}
 		} catch (Exception e) {
 			logger.error("appLaunchImageApi activeOperate error",e);
