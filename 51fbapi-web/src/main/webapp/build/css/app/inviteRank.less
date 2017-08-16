@@ -64,15 +64,67 @@
 .listMainContent {
   width: 7.1rem;
   color: #fff;
-  border-bottom-left-radius: 0.1rem;
-  border-bottom-right-radius: 0.1rem;
   margin-bottom: 0.2rem;
+}
+
+.listMainContent ul:last-child{
+  border-bottom-right-radius: 0.1rem;
+  border-bottom-left-radius: 0.1rem;
+}
+
+.comRank span {
+  position: absolute;
+  top:50%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  -moz-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  -o-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  width: 0.9rem;
+  height:0.9rem;
+  line-height: 0.9rem;
+  color: #fff;
+
+}
+.rank1 span {
+  background: url("@{url}/invite_king.png");
+  background-size: cover;
+  -webkit-background-size: cover;
+}
+
+.rank2 span {
+  background: url("@{url}/invite_silver.png");
+  background-size: cover;
+  -webkit-background-size: cover;
+}
+
+.rank3 span {
+  background: url("@{url}/invite_copper.png");
+  background-size: cover;
+  -webkit-background-size: cover;
+}
+.rank span{
+  position: absolute;
+  top:50%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  -moz-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  -o-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  width: 0.44rem;
+  height:0.44rem;
+  line-height: 0.44rem;
+  border-radius: 0.22rem;
+  background-color: rgb(225,225,225);
+  color: #fff;
 }
 
 .item {
   width: 7.1rem;
   color: #111;
-  height: 0.88rem;
+  height: 1.02rem;
   font-size: 0.26rem;
   background: #fff;
   display: flex;
@@ -86,10 +138,11 @@
   display: inline;
   flex: 1;
   color: #111;
-  height: 0.88rem;
-  line-height: 0.88rem;
+  height: 0.9rem;
+  line-height: 0.9rem;
   text-align: center;
 }
+
 
 .amount span {
   color: rgb(255,179,34);

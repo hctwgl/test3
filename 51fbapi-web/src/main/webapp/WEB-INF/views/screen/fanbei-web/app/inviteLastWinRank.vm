@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="201708152230")
+    #set($version="201708162230")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>上月获奖名单</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteLastWinRank.css?version=$version">
@@ -29,17 +29,17 @@
         </ul>
     </div>
 
-    <div id="list" class="listMainContent main_wrap">
+    <div id="list" class="main_wrap listMainContent">
         <template v-if="returnData && returnData !=''">
             <ul v-for="(item,index) in returnData" class="item">
-                <li class="rank" v-if="index ==0">
-                    <span>1</span>
+                <li class="comRank rank1" v-if="index ==0">
+                    <span></span>
                 </li>
-                <li class="rank" v-else-if="index ==1">
-                    <span>2</span>
+                <li class="comRank rank2" v-else-if="index ==1">
+                    <span></span>
                 </li>
-                <li class="rank" v-else-if="index ==2">
-                    <span>3</span>
+                <li class="comRank rank3" v-else-if="index ==2">
+                    <span></span>
                 </li>
                 <li class="rank" v-else-if="index >2">
                     <span>{{index+1}}</span>
@@ -55,29 +55,30 @@
                 </li>
             </ul>
         </template>
-        <div class="ruleWrap">
-            <div class="ruleTitle">
-                领奖规则
-            </div>
-            <span class="divider"><i></i></span>
-            <div class="rule">
-                <br>1.每月累积邀请奖励金最高的前10位用户，可获得
-                相应奖励；
-                <br>2.该中奖名单每月更新一次，8月中奖名单9月公布，
-                9月中奖名单10月公布，以此类推；
-                <br>3.所有奖励将于次月7个工作日内安排发放，现金
-                奖励将发放至“我的-返现金额”，获得实物奖励
-                的用户，请于7个工作日内联系51返呗提交您的
-                收件信息，若逾期未提交则视为自动放弃奖励；
-                <br>4.活动期间禁止任何作弊行为，包括但并不限于通
-                过软件进行批量操作，邀请刷单等行为，一经发
-                现平台将取消其参与资格，并有权追回所发奖励；
-                <br>5.本活动与苹果公司无关，最终解释权归51返呗
-                所有。
-            </div>
-        </div>
 
     </div>
+    <div class="ruleWrap">
+        <div class="ruleTitle">
+            领奖规则
+        </div>
+        <span class="divider"><i></i></span>
+        <div class="rule">
+            <br>1.每月累积邀请奖励金最高的前10位用户，可获得
+            相应奖励；
+            <br>2.该中奖名单每月更新一次，8月中奖名单9月公布，
+            9月中奖名单10月公布，以此类推；
+            <br>3.所有奖励将于次月7个工作日内安排发放，现金
+            奖励将发放至“我的-返现金额”，获得实物奖励
+            的用户，请于7个工作日内联系51返呗提交您的
+            收件信息，若逾期未提交则视为自动放弃奖励；
+            <br>4.活动期间禁止任何作弊行为，包括但并不限于通
+            过软件进行批量操作，邀请刷单等行为，一经发
+            现平台将取消其参与资格，并有权追回所发奖励；
+            <br>5.本活动与苹果公司无关，最终解释权归51返呗
+            所有。
+        </div>
+    </div>
+
 </div>
 <script type="text/javascript" src="/dist/js/app/inviteLastWinRank.js?version=$version"></script>
 </body>
