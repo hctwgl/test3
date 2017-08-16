@@ -70,7 +70,7 @@ public class GetUserRecommedApi implements ApiHandle{
         }
         //test
 //        if(notifyHost.equals("http://testapp.51fanbei.com")) {
-        allOrderUrl += "?addUiName = LAST_WIN_RANK";
+        allOrderUrl += "?addUiName=LAST_WIN_RANK";
 //        }
 
 
