@@ -47,7 +47,7 @@ let vm = new Vue({
                             $(".banner .num").append("<li></li>");
                         }
                         $(".banner .num li").first().addClass("on");
-                        setInterval(function () { i++; move();},1500);
+                        setInterval(function () { i++; move();},3000);
                         function move() {
                             if (i == size) {
                                 $(".banner .bannerList").css({ left: 0 });
