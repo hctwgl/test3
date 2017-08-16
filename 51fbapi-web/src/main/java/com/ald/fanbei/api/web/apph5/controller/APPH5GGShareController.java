@@ -1013,11 +1013,9 @@ public class APPH5GGShareController extends BaseController {
 							accountDo.setUserId(userId);
 							afUserAccountService.updateUserAccount(accountDo);
 							// 从用户卡片去掉活动卡片的一个。
-							resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
+							resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功，请前往  我的-返利金额  查看").toString();
 
 						}
-						// 从用户卡片去掉活动卡片的一个。
-						resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功").toString();
 
 					}
 				}
