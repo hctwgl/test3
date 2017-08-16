@@ -46,21 +46,26 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
      * @return
      */
     public int updateRecommendByBorrow(long userId, Date createTime){
-
-        AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
-        if(afRecommendUserDo != null && !afRecommendUserDo.isIs_loan()){
-            afRecommendUserDo.setLoan_time(createTime);
-            BigDecimal addMoney = getAddMoney();
-            afRecommendUserDo.setPrize_money(addMoney);
-            afRecommendUserDao.updateLoanById(afRecommendUserDo);
-            //修改返现金额
-            long pid = afRecommendUserDo.getParentId();
-            AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-            afUserAccountDo.setUserId(pid);
-            afUserAccountDo.setRebateAmount(addMoney);
-            afUserAccountDao.updateRebateAmount(afUserAccountDo);
+        try {
+            //不影响原来逻辑，不保持事物一样
+            AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
+            if (afRecommendUserDo != null && !afRecommendUserDo.isIs_loan()) {
+                afRecommendUserDo.setLoan_time(createTime);
+                BigDecimal addMoney = getAddMoney();
+                afRecommendUserDo.setPrize_money(addMoney);
+                afRecommendUserDao.updateLoanById(afRecommendUserDo);
+                //修改返现金额
+                long pid = afRecommendUserDo.getParentId();
+                AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+                afUserAccountDo.setUserId(pid);
+                afUserAccountDo.setRebateAmount(addMoney);
+                afUserAccountDao.updateRebateAmount(afUserAccountDo);
+            }
+            return 1;
         }
-        return 1;
+        catch (Exception e){
+            return 1;
+        }
     }
 
 
