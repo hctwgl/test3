@@ -61,24 +61,27 @@ public class GetUserRecommedApi implements ApiHandle{
             sharedDesc = listDes.get(0).getValue();
         }
 
-        totalData.put("allOrderUrl",notifyHost+"/fanbei-web/app/inviteRank");
+
+        String allOrderUrl = notifyHost+"/fanbei-web/app/inviteRank";
+        Date now = new Date();
+        Date last = getMonthLast();
+        if(now.getTime() > last.getTime()){
+            allOrderUrl +="?addUiName = LAST_WIN_RANK";
+        }
+        //test
+//        if(notifyHost.equals("http://testapp.51fanbei.com")) {
+        allOrderUrl += "?addUiName = LAST_WIN_RANK";
+//        }
+
+
+
+        totalData.put("allOrderUrl",allOrderUrl);
         totalData.put("activeRule","http://www.baidu.com");
         totalData.put("recommendCode",afUserDo.getRecommendCode());
 
 //        addUiName = LAST_WIN_RANK
 
         String sharedurl = notifyHost +"/fanbei-web/app/inviteShare?recommendCode="+afUserDo.getRecommendCode();
-        Date now = new Date();
-        Date last = getMonthLast();
-        if(now.getTime() > last.getTime()){
-            sharedurl +="?addUiName = LAST_WIN_RANK";
-        }
-        //test
-//        if(notifyHost.equals("http://testapp.51fanbei.com")) {
-            sharedurl += "?addUiName = LAST_WIN_RANK";
-//        }
-
-
         totalData.put("url",sharedurl);
         totalData.put("title",sharedTitle);
         totalData.put("img",sharedImg);
