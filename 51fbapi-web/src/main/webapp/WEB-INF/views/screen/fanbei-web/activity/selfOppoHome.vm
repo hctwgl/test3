@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017080301")
+    #set($version="2017081401")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
-    <title>OPPO分期免息0首付 仅限5天</title>
+    <title>七夕提前购 惊喜双倍返</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/selfHome.css?version=$version">
 </head>
 <body>
-    <div id="selfHome">
+    <div id="selfHome" style="background-color: #f6bcbd;">
         <img :src="returnData.bannerUrl">
-        <div class="discountWrap" style="background-color: #2d836a;">
+        <div class="discountWrap">
             <img src="$commonUrl/oppoHome1.png">
-            <ul class="discount clearfix" style="background-color: #2d836a;">
+            <ul class="discount clearfix">
                 <li v-for="item in discountMap" @click="goGoodsDetail(item)">
                     <img :src="item.goodsIcon">
                     <div class="discountRight">
@@ -22,14 +22,14 @@
                             <span class="saleAmount">¥{{item.saleAmount}}</span>
                             <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
                         </div>
-                        <span class="goBuyBtn">立即抢购</span>
+                        <span class="goBuyBtn" style="background: linear-gradient(to right, #fcb595 , #fa6073); ">立即抢购</span>
                     </div>
                 </li>
             </ul>
         </div>
-        <div class="rebateWrap" style="background-color: #2d836a;">
+        <div class="rebateWrap">
             <img src="$commonUrl/oppoHome2.png">
-            <ul class="rebate clearfix" style="background-color: #2d836a;">
+            <ul class="rebate clearfix">
                 <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
                     <img :src="item.goodsIcon">
                     <div class="rebateRight">

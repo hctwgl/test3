@@ -48,6 +48,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -175,6 +176,8 @@ public class RiskUtil extends AbstractThird {
 	AfOrderService afOrderService;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
 	private static String getUrl() {
 		if (url == null) {
@@ -279,6 +282,7 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 
+	
 	/**
 	 * 用户信息修改
 	 * 
@@ -1733,4 +1737,5 @@ public class RiskUtil extends AbstractThird {
 		}
 		return 0;
 	}
+	
 }

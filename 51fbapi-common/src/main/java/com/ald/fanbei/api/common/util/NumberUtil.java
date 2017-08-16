@@ -377,8 +377,18 @@ public class NumberUtil {
 		return (obj == null || obj < 0);
 	}
     
+
+    public static BigDecimal objToBigDecimalDivideOnehundredDefault(Object obj, BigDecimal defaultValue) {
+        if (null == obj) return defaultValue;
+        try {
+            return new BigDecimal(obj.toString()).divide(BigDecimal.valueOf(100.00), 2, BigDecimal.ROUND_DOWN);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+    
     public static void main(String[] args) {
-		System.out.println(between2Number(new Long(100),10l,200));
+		System.out.println(objToBigDecimalDivideOnehundredDefault(21350.78,BigDecimal.ZERO));
 	}
 
 }

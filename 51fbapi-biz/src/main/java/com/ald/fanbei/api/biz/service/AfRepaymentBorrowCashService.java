@@ -6,6 +6,7 @@ package com.ald.fanbei.api.biz.service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -89,4 +90,7 @@ public interface AfRepaymentBorrowCashService {
 	 * @return
 	 */
 	String getCurrentLastRepayNo(String orderNoPre);
+	
+	public String dealOfflineRepaymentSucess(final String repayNo,final String borrowNo,final String repayType,final String repayTime,final BigDecimal repayAmount,final BigDecimal restAmount,final String tradeNo,final String isBalance);
+	
 }

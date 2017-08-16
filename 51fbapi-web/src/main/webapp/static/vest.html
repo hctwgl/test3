@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/common/css/reset.css">
+    <title></title>
+    <style>
+        .main{
+            margin: 0 auto;
+            width: 100%;
+            overflow: hidden;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest1.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest2.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest3.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest4.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest5.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest6.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest7.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest8.jpg">
+        <img src="http://f.51fanbei.com/h5/pc/vest/vest9.jpg">
+    </div>
+</body>
+<script>
+    function getUrl(para){
+        var paraArr = location.search.substring(1).split("&");
+        for(var i = 0;i < paraArr.length;i++){
+            if(para == paraArr[i].split('=')[0]){
+                return paraArr[i].split('=')[1];
+            }
+        }
+        return '';
+    }
+
+    var channelCode=getUrl("channelCode");
+    if ( channelCode==1 ){
+        document.title="快急送-小额信用借款，随借随还，利息低额度高";
+    }else if( channelCode==2 ){
+        document.title="钱有路白金版-小额信用借款，随借随还，利息低额度高";
+    }else if( channelCode==3 ){
+        document.title="向钱贷白金版-小额信用借款，随借随还，利息低额度高";
+    }
+
+
+
+</script>
+</html>

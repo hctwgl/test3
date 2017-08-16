@@ -300,7 +300,7 @@ public class Constants {
 	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "ala_bororw_deliver_money_lock";
 
 	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
-
-
+	//催收系统
+	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
 
 }
