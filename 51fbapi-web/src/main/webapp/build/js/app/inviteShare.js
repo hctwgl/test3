@@ -3,9 +3,6 @@
 // 从分享链接中获取code
 var recommendCode = getUrl("recommendCode");
 
-// 防止风控被拒
-var token=formatDateTime()+Math.random().toString(36).substr(2);
-
 // 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
@@ -25,6 +22,21 @@ var _fmOpt;
     // alert(json.msg);
 })();
 
+// 防止风控被拒
+function formatDateTime() {
+    var date = new Date();
+    var y = date.getFullYear();
+    var m = date.getMonth() + 1;
+    m = m < 10 ? ('0' + m) : m;
+    var d = date.getDate();
+    d = d < 10 ? ('0' + d) : d;
+    var h = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    return y +  m +  d +h +minute+second;
+};
+var token=formatDateTime()+Math.random().toString(36).substr(2);
+
 var timerInterval ;
 var timerS = 60;
 function timeFunction(){ // 60s倒计时
@@ -43,7 +55,6 @@ var vm=new Vue({
     el: '#inviteShare',
     methods:{
         getCode(){
-            console.log(222);
             var isState = $(this).attr("isState");
             var mobileNum = $("#tel").val();
 
@@ -65,10 +76,6 @@ var vm=new Vue({
                         console.log(returnData);
                         if (returnData.success) {
                             console.log(returnData);
-
-                            // $("#register_codeBtn").attr("isState",1);
-                            // $("#register_codeBtn").text(timerS+" s");
-                            // timerInterval = setInterval(timeFunction,1000);
                         } else {
                             requestMsg(returnData.msg);
                             $("#codeBtn").removeAttr("disabled");
