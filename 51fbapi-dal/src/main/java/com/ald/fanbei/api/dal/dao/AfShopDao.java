@@ -32,4 +32,5 @@ public interface AfShopDao {
 	AfShopDo getShopInfoBySecType(String secType);
 
 	AfShopDo getShopInfoBySecType(AfShopDo afShopDo);
+	AfShopDo getShopInfoBySecTypeOpen(AfShopDo afShopDo);
 }

@@ -21,4 +21,6 @@ public interface AfShopService {
 	List<AfShopDo> getShopList(AfShopQuery query);
 
 	AfShopDo getShopInfoBySecType(AfShopDo afShopDo);
+
+	AfShopDo getShopInfoBySecTypeOpen(AfShopDo afShopDo);
 }
