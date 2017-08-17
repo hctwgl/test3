@@ -70,6 +70,50 @@ public class TongdunUtil extends AbstractThird {
 	}
 
 	/**
+	 * app首页激活操作
+	 * @param requsetId
+	 * @param blackBox
+	 *            设备指纹
+	 * @param ip
+	 *            真实ip
+	 * @param accountLogin
+	 *            账户名
+	 * @param accountMobile
+	 *            账户绑定手机号
+	 * @param accountEmail
+	 *            账户绑定邮箱
+	 * @param isLimitVest
+	 *            是事限制马甲包激活处理
+	 */
+	public void activeOperate(String requsetId, String blackBox, String ip,String version, String accountLogin, String accountMobile, boolean isLimitVest) {
+		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.ACTIVATE_IOS : TongdunEventEnmu.ACTIVATE_ANDROID;
+
+		String[] idInfos = requsetId.split("_");
+		if(idInfos.length!=4){
+			logger.error("app activeOperate error,requsetId is invalid,requsetId="+requsetId);
+			return;
+		}
+		if(isLimitVest && Constants.FORMAL_APP_IDENTIFY.equals(idInfos[3])){
+			logger.info("app activeOperate exit,not need this operate,requsetId="+requsetId);
+			return;
+		}
+		Map<String, Object> params = getCommonParam(tongdunEvent, blackBox, ip, accountLogin, accountMobile);
+		params.put("app_ver", version);
+		JSONObject apiResp = null;
+		try {
+			String respStr = invoke(params);
+			apiResp = JSONObject.parseObject(respStr);
+		} catch (Exception e) {
+			logger.error("app activeOperate tongdunEvent error", e);
+			return;
+		}
+		if (apiResp != null) {
+			maidianLog.info("app activeOperate tongdunEvent,appType="+idInfos[0] +",deviceCode="+ idInfos[1]+",channelCode="+ idInfos[3] +",decision="+ apiResp.get("final_decision")
+					+",final_score="+apiResp.get("final_score")+",seq_id="+apiResp.get("seq_id")+",risk_type="+apiResp.get("risk_type")+",policy_name="+apiResp.get("policy_name"));
+		}
+	}
+	
+	/**
 	 * 查询借贷申请结果
 	 * 
 	 * @param reportId
@@ -189,7 +233,7 @@ public class TongdunUtil extends AbstractThird {
 		if (StringUtil.isBlank(registSwitch) || "0".equals(registSwitch)) {// 验证开关关闭
 			return;
 		}
-		if (apiResp != null && apiResp.get("final_decision") != null
+		if (apiResp != null && apiResp.get(" ") != null
 				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
 			logger.info("手机号码为：" + accountMobile + "的用户在app端注册的时候被拦截....同盾返回的code是...." + apiResp.get("final_decision"));
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);

@@ -76,6 +76,7 @@ public class Constants {
 	public static final String INVELOMENT_TYPE_TEST = "test";
 	public static final String INVELOMENT_TYPE_ONLINE = "online";
 	public static final String INVELOMENT_TYPE_PRE_ENV = "preEnv";
+	public static final String FORMAL_APP_IDENTIFY = "www";
 
 	public static final double DEFAULT_CHARGE_MIN = 1;
 	public static final double DEFAULT_CHARGE_MAX = 50;
