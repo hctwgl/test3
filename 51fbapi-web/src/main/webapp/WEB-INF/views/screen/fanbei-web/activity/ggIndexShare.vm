@@ -56,10 +56,10 @@
         </div>
     </div>
     <div class="finalPrize finalPrize01" @click="finalPrize()" v-show="!finalPrizeMask">
-        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}</p>
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
     <div class="finalPrize finalPrize02" v-show="finalPrizeMask">
-        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}</p>
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
     <div class="alertFinalPrize">
         <img src="$src/gg19.jpg">

@@ -168,7 +168,7 @@ let vm = new Vue({
                     success: function (returnData) {
                         console.log(returnData)
                         if(returnData.success){
-                            //requestMsg(returnData.msg);
+                            $('.presentCard').attr('present','');
                             $('.mask').css('display','block');
                             $('.alertFinalPrize').css('display','block');
                             for(var j=0;j<self.content.itemsList.length;j++){
@@ -181,10 +181,10 @@ let vm = new Vue({
                                         $('.card').eq(j).find('.gray').css('display','block');
                                         $('.card').eq(j).find('.num').css('display','none');
                                         self.finalPrizeMask=true;
-                                        $('.presentCard').attr('present','');
                                     }else if(num-1==1){
                                         $('.card').eq(j).find('.num').css('display','none');
-                                        $('.presentCard').attr('present','');
+                                    }else if(num-1>=2){
+                                        $('.presentCard').attr('present','Y');
                                     }
                                 }
                             }
