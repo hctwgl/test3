@@ -20,7 +20,7 @@ $(function() {
             data: {activityId: activityId},
             success: function (returnData) {
                 var returnData = eval('(' + returnData + ')').data;
-                console.log(returnData)
+                //console.log(returnData)
                 if (returnData.loginUrl) {
                     location.href = returnData.loginUrl;
                 } else {
@@ -53,7 +53,10 @@ $(function() {
         itemsId = $('.img.img3').attr('rid');
         name=$('.img.img3').attr('name');
         if (itemsId && itemsId != '') {
-            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"消费有返利 领取51元现金红包！","shareAppContent":"你的好友向你索要一张'+name+'卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
+            var dat='{"shareAppTitle":"消费有返利 领取51元现金红包！","shareAppContent":"你的好友向你索要一张'+name+'卡片，快赠送给他/她吧~","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
+            var base64 = BASE64.encoder(dat);
+            //console.log(base64)
+            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
         } else {
             requestMsg("索要失败")
         }
@@ -181,8 +184,5 @@ function alaShareData(){
         "sharePage": "ggdemand" // 分享的页面
     };
     var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
-    var base64 = BASE64.encoder(dataStr);
-    console.log(base64)
-    return base64
-};
-alaShareData()
+    return dataStr
+}

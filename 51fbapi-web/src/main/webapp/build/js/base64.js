@@ -140,6 +140,8 @@
             for(var i = 0 , len = extra_Zero_Count/2 ; i < len ; ++i){
                 base64 += '=';
             }
+            base64=base64.replace(/\+/g,'-');
+            base64=base64.replace(/\//g,'_');
             return base64;
         },
         /**
