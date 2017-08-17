@@ -3,6 +3,8 @@
 // 从分享链接中获取code
 var recommendCode = getUrl("recommendCode");
 
+var token=formatDateTime()+Math.random().toString(36).substr(2);
+
 // 防止风控被拒
 function formatDateTime() {
     var date = new Date();
@@ -16,7 +18,7 @@ function formatDateTime() {
     var second = date.getSeconds();
     return y +  m +  d +h +minute+second;
 };
-var token=formatDateTime()+Math.random().toString(36).substr(2);
+
 
 // 同盾校验编号的sessionId
 var _fmOpt;
