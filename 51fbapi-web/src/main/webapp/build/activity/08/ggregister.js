@@ -35,18 +35,25 @@ $('.yhicon').css("display","block");
 
 $('.mmicon').click(function(){
     $("#mobile").val('');
-    console.log( $("#mobile").val());
-    $('.mmicon').css("display","none");
+    // console.log( $("#mobile").val());
+    // $('.mmicon').css("display","none");
+});
+
+$('.pasicon').click(function(){
+    $("#pasicon").val('');
+    // console.log( $("#mobile").val());
+    // $('.mmicon').css("display","none");
 });
 
 
+/* 
 $("#mobile").keyup(function(){
 if($("#mobile").val()==''){
-$('.mmicon').css("display","none");
+    $('.mmicon').css("display","none");
 }else{
-$('.mmicon').css("display","block");
+    $('.mmicon').css("display","block");
 }
-});
+}); */
 
     function timeFunction() { // 60s倒计时
         timerS--;
