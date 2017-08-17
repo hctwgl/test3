@@ -85,19 +85,7 @@ new Vue({
                     self.$nextTick(function () {                              //dom渲染完成后执行
                        $('body').css('background',self.content.data.bgColor);
                        $('.monthPrice').css('background',self.content.data.btnColor);
-                        // if(sort==2){
-                        //     $('#vueCon').css('background-color','#4515aa');
-                        //     $('#listAlert').css('background-color','#4515aa');
-                        // }
-                        // self.divTop=document.getElementById('navWrap').offsetTop;
-                        // if(getBlatFrom()==2){
-                        //     window.addEventListener('touchstart', this.handleScroll);
-                        //     window.addEventListener('touchmove', this.handleScroll);
-                        //     window.addEventListener('touchend', this.handleScroll);
-                        // }else{
-                        //     window.addEventListener('scroll', this.handleScroll);
-                        // }
-                        // new Swipe(document.getElementById('navWrap'));
+                        lazy.init()
                     })
                 }
             })
