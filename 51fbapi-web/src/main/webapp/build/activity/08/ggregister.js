@@ -35,18 +35,25 @@ $('.yhicon').css("display","block");
 
 $('.mmicon').click(function(){
     $("#mobile").val('');
-    console.log( $("#mobile").val());
-    $('.mmicon').css("display","none");
+    // console.log( $("#mobile").val());
+    // $('.mmicon').css("display","none");
+});
+
+$('.pasicon').click(function(){
+    $("#pasicon").val('');
+    // console.log( $("#mobile").val());
+    // $('.mmicon').css("display","none");
 });
 
 
+/* 
 $("#mobile").keyup(function(){
 if($("#mobile").val()==''){
-$('.mmicon').css("display","none");
+    $('.mmicon').css("display","none");
 }else{
-$('.mmicon').css("display","block");
+    $('.mmicon').css("display","block");
 }
-});
+}); */
 
     function timeFunction() { // 60s倒计时
         timerS--;
@@ -132,18 +139,25 @@ $('.mmicon').css("display","block");
                     console.log(a);
                     if (a.success) {
                         var urlName = param['urlName'];
-                        window.location.href = "gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;
-                    } 
-                },
+                         requestMsg("注册成功");
+                         setTimeout(function () {
+                            window.location.href = "gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;
+                        }, 1500);
+                        
+                    }else if(a.url=="Register"){
+                        requestMsg(a.msg);
+                    }
+                   
+                } ,
                 error: function () {
                     requestMsg("绑定失败");
-                }
+                } 
             })
 
         } else {
                 if(!userck){// if else if 只走一条线 通了不走其他
                 requestMsg("请填写正确的手机号");
-                }else if(!yztrue){//
+                }else if(!yztrue){
                      requestMsg("请填写正确的验证码");
                 } else if(true){//上兩種都不是就是第三种不用判断
                       requestMsg("请填写6-18位的数字、字母、字符组成的密码");

@@ -49,7 +49,8 @@ $(function () {
         var userNamePhone = $("#yhinp").val(); //获取手机号
         var password = $(".check").val(); //获取密码
 
-        var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userNamePhone));
+        //var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userNamePhone));
+        var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(userNamePhone)); //手机号正则验证11位
         if (userck && /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password)) {
 
             var password_md5 = String(CryptoJS.MD5(password)); //md5加密
