@@ -946,11 +946,19 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				amount, resource.getValue1(), resource.getValue2());
 		BigDecimal perAmount = null;
 		for(Map<String, Object> nperMap : nperList) {
-			if(nper == Integer.parseInt((String) nperMap.get("nper"))) {
+			
+			Object nperObj = nperMap.get("nper");
+			int nperTemp = 0;
+			if(nperObj instanceof BigDecimal) {
+				nperTemp = ((BigDecimal) nperObj).intValue();
+			} else {
+				nperTemp = Integer.parseInt((String)nperObj);
+			}
+			if(nper == nperTemp) {
 				String isFree = (String) nperMap.get("isFree");
 				if("1".equals(isFree)) {
 					perAmount = (BigDecimal)nperMap.get("freeAmount");
-				} else if("2".equals(isFree)){
+				} else if("0".equals(isFree) || "2".equals(isFree)){
 					perAmount = (BigDecimal)nperMap.get("amount");
 				}
 			}
