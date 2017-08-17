@@ -418,7 +418,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
 
 					// 变更还款记录未还款状态
-					afRepaymentDao.updateRepayment(RepaymentStatus.NEW.getCode(), tradeNo, repayment.getRid());
+					afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), tradeNo, repayment.getRid());
 					
 					
 					return 1;

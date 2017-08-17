@@ -195,6 +195,12 @@
 		AND type = 'BORROW_TOP_SCROLLBAR'
 		AND value_4 = 'O'
 	</select>
-	
+
+
+	<select id="getActivieResourceByType" resultType = "AfResourceDo">
+		select
+		<include refid="queryAllFields" />
+		from af_resource WHERE type = #{type} and is_delete = 0 ORDER BY sort asc
+	</select>
 
 </mapper>

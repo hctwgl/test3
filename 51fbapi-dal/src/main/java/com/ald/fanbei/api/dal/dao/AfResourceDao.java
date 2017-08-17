@@ -128,4 +128,6 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getScrollbarByType();
 
+	List<AfResourceDo> getActivieResourceByType(@Param("type") String type);
+
 }

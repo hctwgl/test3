@@ -159,6 +159,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfTradeBusinessInfoDao afTradeBusinessInfoDao;
 	@Resource
 	AfTradeOrderService afTradeOrderService;
+
+	@Resource
+	AfRecommendUserService afRecommendUserService;
 	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
@@ -734,6 +737,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
+							//#region add by honghzengpei
+//							afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
+							//#endregion
 							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap);
 						}
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {//组合支付
@@ -1060,6 +1066,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
 						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
+
+						//#region add by hongzhengpei
+//						afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new Date());
+						//#endregion
 					}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
 					orderInfo.setPayTradeNo(payOrderNo);
@@ -1070,6 +1080,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
+
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -1107,6 +1118,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealAgentCpOrderSucc comlete , orderInfo = {} ", orderInfo);
+
+					// #region add by hongzhengpei
+//					afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new Date());
+					// #endregion
+
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();

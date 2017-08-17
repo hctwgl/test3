@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfRecommendUserDao">
+
+	<sql id="queryFields">
+				id,
+				user_id,
+				parentId,
+				is_delete,
+				origin,
+				is_loan,
+				loan_time,
+				gmt_create,
+				prize_money,
+				loan_user_count,
+				recommend_count,
+				gmt_modified
+	</sql>
+
+
+	<insert id="addRecommendUser" parameterType="AfRecommendUserDo" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO
+			af_recommend_user
+			(
+				user_id,
+				parentId,
+				is_delete,
+				origin,
+				is_loan,
+				loan_time,
+				gmt_create,
+				prize_money,
+				loan_user_count,
+				recommend_count,
+				gmt_modified
+			)
+		VALUES
+		    (
+				#{user_id},
+				#{parentId},
+				#{is_delete},
+				#{origin},
+				#{is_loan},
+				NOW(),
+				NOW(),
+				#{prize_money},
+				#{loan_user_count},
+				#{recommend_count},
+				NOW()
+			)
+	</insert>
+	
+	<select id="getARecommendUserById" resultType="AfRecommendUserDo">
+		select
+			<include refid="queryFields" />
+		from af_recommend_user where user_id = #{user_id}
+	</select>
+
+	<update id="updateLoanById" parameterType="AfRecommendUserDo">
+		UPDATE af_recommend_user
+		set is_loan = 1,
+		loan_user_count =1,
+		prize_money = #{prize_money},
+		loan_time = #{loan_time}
+		where id = #{id}
+	</update>
+
+
+	<select id="getRecommedData" resultType="HashMap">
+		select sum(prize_money) sum_prize_money,sum(loan_user_count) sum_loan_user_count,sum(recommend_count) sum_recommend_count from af_recommend_user where parentId = #{userId}
+	</select>
+
+	<select id="getRecommendListByUserId" resultType="HashMap">
+		select
+		a.*,b.user_name
+		from af_recommend_user a  left join af_user b on a.user_id = b.id  where parentId = #{userId} and origin = 0 ORDER BY gmt_create desc limit #{pageIndex},#{pageSize}
+	</select>
+
+	<select id="getRecommendListSort" resultType="HashMap">
+		select b.user_name, user_id,SUM(a.prize_money) sum_money from af_recommend_user a left join af_user b on a.parentId = b.id
+		where a.loan_time &gt;= #{startTime} and a.loan_time &lt;= #{endTime}
+		GROUP BY a.parentId ORDER BY SUM(a.prize_money) desc LIMIT 20;
+	</select>
+
+	<select id="getPrizeUser" resultType="HashMap">
+		select a.*,b.user_name,c.`name` from af_recommend_prize_user a
+						left join af_user b on a.user_id = b.id
+						left join af_resource c on a.prize_id = c.id
+						where date_month = #{datamonth} and a.is_delete = 0 limit 0,10
+	</select>
+
+
+	<insert id="addRecommendShared" parameterType="AfRecommendShareDo">
+		INSERT INTO af_recommend_shared (
+			id,
+			gmt_create,
+			user_id,
+			recommend_code,
+			type
+		)
+		VALUES (
+			#{id},
+			NOW(),
+			#{user_id},
+			#{recommend_code},
+			#{type}
+		)
+	</insert>
+
+	<select id="getRecommendSharedById" resultType="HashMap">
+		SELECT  a.*,b.user_name from af_recommend_shared a left join af_user b  on a.user_id = b.id where a.id = #{id}
+	</select>
+</mapper>

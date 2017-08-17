@@ -1,93 +1,39 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-    	#set($commonUrl="http://f.51fanbei.com/h5")
-		<title>邀请有奖</title>
-	    <style type="text/css">
-	    	.invitationGift_footer_wrap{
-	    		position: fixed;
-	    		left: 0;
-	    		bottom: 0;
-	    		width: 100%;
-	    		background-color: rgba(0,0,0,.8);
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
-	    	}
-	    	.invitationGift_footer{
-	    		margin: 0.1rem;
-	    	}
-            .invitationGift_content{
-                margin-top: 0.16rem;
-            }
-	    	.invitationGift_content img{
-	    		width: 1.34rem;
-	    		height: 1.34rem;
-                border-radius: 0.08rem;
-	    		margin-right: 0.2rem;
-                float: left;
-                -webkit-background-size: cover;
-                background-size: cover;
-	    	}
-            .invitationGift_text{
-                position: relative;
-                float: left;
-                width: 5.7rem;
-                height: 1.34rem;
-                color: #fff;
-                font-size: 0.28rem;
-            }
-            .invitationGift_text p{
-                position: absolute;
-                top: 50%;
-                left: 0;
-                -webkit-transform: translateY(-50%);
-                transform: translateY(-50%);
-            }
-            .invitationGift_text span{
-                color: #FE963B;
-            }
-            .invitationGift_text p:nth-child(2){
-                margin-top: -0.05rem;
-            }
-	    	.invitationGift_btn{
-	    		width: 100%;
-	    		height: 0.8rem;
-	    		line-height: 0.8rem;
-                text-align: center;
-	    		margin-top: 0.16rem;
-	    		font-size: 0.32rem;
-                background-color: #FE963B;
-                border-radius: 0.08rem;
-                color: #fff;
-	    	}
-	    </style>
-    </head>
-    <body>
-    	<input type="hidden" id="recommendCode" name="recommendCode" value="$!{recommendCode}">
-    	<div class="invitationGift_wrap">
-            <img src="$commonUrl/app/images/user/invitationGift1.png" align="absmiddle">
-    		<div class="invitationGift_footer_wrap">
-	    		<div class="invitationGift_footer">
-	    			<div class="invitationGift_content clearfix">
-##	    				<img src="$!{avatar}">
-						#if($!{avatar}=='')
-							<img src="$commonUrl/app/images/user/icon120.png">
-						#else
-							<img src="$!{avatar}">
-						#end
-                        <div class="invitationGift_text">
-                            <p>亲，您的好友$!{userName}邀你来51返呗购物省钱，请注册的时候填写推荐人的<span>邀请码：$!{recommendCode}</span>，一起轻松开启省钱之旅吧～</p>
-                        </div>
-	    			</div>
-	    			<div class="invitationGift_btn">马上注册拿返利</div>
-	    		</div>
-    		</div>
-    	</div>
-    	<script type="text/javascript">
-    		var recommendCode = $("#recommendCode").val();
-    		$(".invitationGift_btn").click(function(event) { // 马上去注册
-    			window.location.href = "/app/user/register?recommendCode="+recommendCode;
-    		});
-    	</script>
-    </body>
+<head>
+    #set($version="2017081701")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/images/user")
+    <title>51返呗注册</title>
+    <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteShare.css?version=$version">
+</head>
+<body>
+    <div id="inviteShare" class="inviteShare">
+        <img src="$commonUrl/inviteShare1.png">
+        <div class="inviteShareContWrap">
+            <img src="$commonUrl/inviteShare2.png">
+            <ul class="inviteShareCont">
+                <li><input type="text" id="tel" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
+                <li class="clearfix">
+                    <input type="text" id="VerifiCode" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+                    <button class="codeBtn" id="codeBtn" @click="getCode()">点击获取</button>
+                </li>
+                <li><input type="password" id="password" placeholder="请设置登陆密码" name="words" maxlength="18"></li>
+                <li @click="goRegister()"><button class="submitBtn" id="submitBtn">立即注册</button></li>
+            </ul>
+        </div>
+        <div class="checkbox clearfix">
+            <input type="checkbox" class="inputCheck" id="inputCheck" checked="checked">
+            <label for="inputCheck"></label>
+            <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+        </div>
+        <p class="registered clearfix">
+            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>
+        </p>
+    </div>
+    <script type="text/javascript" src="/common/js/core.js"></script>
+    <script type="text/javascript" src="/common/js/md5.js"></script>
+    <script type="text/javascript" src="/dist/js/app/inviteShare.js?version=$version"></script>
+    <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
+</body>
 </html>
