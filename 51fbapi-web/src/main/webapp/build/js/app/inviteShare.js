@@ -70,14 +70,17 @@ var vm=new Vue({
                         mobile: mobileNum,
                     },
                     beforeSend: function(){
-                        $("#codeBtn").attr("isState",1);
-                        $("#codeBtn").text(timerS+" s");
-                        timerInterval = setInterval(timeFunction,1000);
+                        // $("#codeBtn").attr("isState",1);
+                        // $("#codeBtn").text(timerS+" s");
+                        // timerInterval = setInterval(timeFunction,1000);
+                        console.log(ok);
                     },
                     success: function(returnData){
-                        console.log(returnData);
                         if (returnData.success) {
                             console.log(returnData);
+                            $("#codeBtn").attr("isState",1);
+                            $("#codeBtn").text(timerS+" s");
+                            timerInterval = setInterval(timeFunction,1000);
                         } else {
                             requestMsg(returnData.msg);
                             $("#codeBtn").removeAttr("disabled");
