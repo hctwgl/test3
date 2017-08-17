@@ -61,10 +61,6 @@ $(function() {
             requestMsg("索要失败")
         }
     })
-    $('.close').click(function(){
-        $('body').removeClass('overflowChange');
-        $('html').removeClass('overflowChange');
-    })
     $('.mask').click(function(){
         $('body').removeClass('overflowChange');
         $('html').removeClass('overflowChange');

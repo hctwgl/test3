@@ -15,6 +15,7 @@ var name;//卡片名称
 var itemsListRid;
 var itemsId;
 var userItemsList;
+var numClick;
 $(function(){
     $('.presentCard').click(function(){
             $.ajax({
@@ -42,11 +43,9 @@ $(function(){
 
                             for(var j=0;j<presentCardList.length;j++){//判断终极大奖蒙版
                                 if(presentCardList[j].num>=2){
-                                    str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'">'+ '<p class="num">'+(presentCardList[j].num-1)+'</p></div>';
-                                }else if(presentCardList[j].num==0){
-                                    str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="gray" src="http://f.51fanbei.com/h5/app/activity/08/gg000'+presentCardList[j].rid+'.png">'+ '</div>';
+                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'">'+ '<p class="num">x'+(presentCardList[j].num-1)+'</p></div>';
                                 }else{
-                                    str+='<div class="img" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><p class="cardMask"></p>'+ '</div>';
+                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><p class="cardMask"></p>'+ '</div>';
                                 }
                                 //console.log(num)
                             }//判断终极大奖蒙版
@@ -75,42 +74,44 @@ $(function(){
         var arr=[];
         name = $('.img.img3').attr('name');
         itemsListRid=$('.img.img3').attr('rid');
-        for(var i=0;i<userItemsList.length;i++){
-            itemsId=userItemsList[i].itemsId;
-            if(itemsId==itemsListRid){
-                arr.push(userItemsList[i].rid);
+        numClick=$('.img.img3').attr('numClick');
+        if(numClick<2){
+            $('.surePresent').css('background','#9c9794');
+        }else{
+            $('.surePresent').css('background','#fb9659');
+            for(var i=0;i<userItemsList.length;i++){
+                itemsId=userItemsList[i].itemsId;
+                if(itemsId==itemsListRid){
+                    arr.push(userItemsList[i].rid);
+                }
+            }
+            cardRid=arr[0];
+            if(cardRid&&cardRid!=''){
+                $.ajax({
+                    type: 'get',
+                    url: "/H5GG/doSendItems",
+                    data:{'userItemsId':cardRid},
+                    success: function (returnData) {
+                        returnData = eval('(' + returnData + ')');
+                        if(returnData.success){
+                            var dat='{"shareAppTitle":"消费有返利 领取51元大奖！","shareAppContent":"你的好友赠送了一张'+name+'卡片给你，快领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
+                            var base64 = BASE64.encoder(dat);
+                            //console.log(base64)
+                            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
+                        }
+                    },
+                    error:function(){
+                        requestMsg('请求失败');
+                    }
+                })
             }
         }
-        cardRid=arr[0];
-        if(cardRid&&cardRid!=''){
-            $.ajax({
-                type: 'get',
-                url: "/H5GG/doSendItems",
-                data:{'userItemsId':cardRid},
-                success: function (returnData) {
-                    returnData = eval('(' + returnData + ')');
-                    if(returnData.success){
-                        var dat='{"shareAppTitle":"消费有返利 领取51元大奖！","shareAppContent":"你的好友赠送了一张'+name+'卡片给你，快领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
-                        var base64 = BASE64.encoder(dat);
-                        //console.log(base64)
-                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
-                    }
-                },
-                error:function(){
-                    requestMsg('请求失败');
-                }
-            })
-        }else{
-            window.location.href="ggIndex";
-        }
-    })
-    $('.close').click(function(){
-        $('body').removeClass('overflowChange');
-        $('html').removeClass('overflowChange');
+
     })
     $('.mask').click(function(){
         $('body').removeClass('overflowChange');
         $('html').removeClass('overflowChange');
+        $('.surePresent').css('background','#fb9659');
     })
 });
 
