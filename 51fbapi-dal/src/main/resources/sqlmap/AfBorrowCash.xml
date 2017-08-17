@@ -311,6 +311,6 @@
 
 
 	<select id="getBorrowCashByRemcommend" resultType="HashMap">
-		SELECT count(1) 'count' FROM  af_borrow_cash where user_id = #{user_id}  and status in ('TRANSEDING','TRANSED','CLOSED','CLOSED')
+		SELECT count(1) 'count' FROM  af_borrow_cash where user_id = #{user_id}  and status in ('TRANSEDING','TRANSED','CLOSED','FINSH')
 	</select>
 </mapper>
