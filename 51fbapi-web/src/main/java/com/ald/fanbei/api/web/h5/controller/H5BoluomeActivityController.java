@@ -157,7 +157,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
 				afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
 				afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
-			    int saveInfo = afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+			    afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
 			}
 				
 				   //登录成功进行埋点
@@ -216,7 +216,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
 			if (smsDo == null) {
 				logger.error("sms record is empty");
-				resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST.getDesc(), "Register", null).toString();
+				resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "Register", null).toString();
 				return resultStr;
 			}
 
@@ -348,7 +348,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				String userName = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
 			    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
 		        if(smsDo == null){
-		    		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "ForgetPwd", null).toString();
+		    		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "ForgetPwd", null).toString();
 		    		return resultStr;
 		        }
 		        //判断验证码是否一致并且验证码是否已经做过验证
@@ -387,7 +387,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 	
         AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
         if(smsDo == null){
-    		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "ResetPwd", null).toString();
+    		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "ResetPwd", null).toString();
     		return resultStr;
         }
         //判断验证码是否一致并且验证码是否已经做过验证
