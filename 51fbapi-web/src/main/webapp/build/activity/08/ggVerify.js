@@ -70,15 +70,21 @@ $(function () {
     $('.nextStep').click(function () {
         var mesg = $(".mesg-right").val(); //获取验证码 
         var userName = $(".phoneNumber-right").val(); //获取手机号
+        // var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(userName)); //手机号正则验证
 
-        if (userName == '') {
-            requestMsg("请填写正确的手机号");
-            return false;
-        }
-        if (mesg == '') {
-            requestMsg("请填写正确的验证码");
-            return false;
-        }
+        // if (userck) {
+        //     requestMsg("请填写正确的手机号");
+        //     return false;
+        // }
+        // if (mesg == '') {
+        //     requestMsg("请填写正确的验证码");
+        //     return false;
+        // }
+        //  if (mesg.replace(/\s/g, '') == '') {
+        //     requestMsg("验证码不能为空");
+        //     return false;
+        // }
+
         $.ajax({
             url: "/H5GGShare/boluomeActivityCheckVerifyCode",
             type: 'POST',
@@ -88,6 +94,9 @@ $(function () {
                 verifyCode: mesg
             },
             success: function (data) {
+                if(data.url=="ForgetPwd"){
+                    requestMsg(data.msg);
+                }
                 console.log(data)
                 if (!data.success) {
                     requestMsg(data.msg);
