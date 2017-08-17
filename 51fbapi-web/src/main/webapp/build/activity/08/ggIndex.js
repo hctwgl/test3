@@ -26,6 +26,7 @@ let vm = new Vue({
                 url: "/H5GG/initHomePage",
                 data:{'activityId':activityId},
                 success: function (data) {
+                    $('.positionImg').fadeOut(2000);
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
                     console.log(typeof(self.content.boluomeCouponList[0]))
@@ -213,7 +214,7 @@ let vm = new Vue({
             $('.alertFinalPrize').css('display','none');
         },
         fixImgUrl:function(i){
-            return "http://f.51fanbei.com/h5/app/activity/08/gg00"+i+".png";
+            return "http://f.51fanbei.com/h5/app/activity/08/gg000"+i+".png";
         }
     }
 })

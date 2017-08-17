@@ -28,6 +28,7 @@
     <!--首页轮播图-->
     <div class="banner">
         <ul class="bannerList">
+            <div class="positionImg"><img src="$src/ggIndex.png"></div>
             <li v-for="item in content.bannerList"><img :src="item.value" @click="bannerClick(item)"></li>
         </ul>
         <ul class="num"></ul>
