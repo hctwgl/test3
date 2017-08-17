@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,9 @@ import com.ald.fanbei.api.common.enums.TongdunEventEnmu;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -85,7 +89,7 @@ public class TongdunUtil extends AbstractThird {
 	 * @param isLimitVest
 	 *            是事限制马甲包激活处理
 	 */
-	public void activeOperate(String requsetId, String blackBox, String ip,String version, String accountLogin, String accountMobile, boolean isLimitVest) {
+	public void activeOperate(HttpServletRequest request,String requsetId, String blackBox, String ip,String version, String accountLogin, String accountMobile, boolean isLimitVest) {
 		TongdunEventEnmu tongdunEvent = requsetId.startsWith("i") ? TongdunEventEnmu.ACTIVATE_IOS : TongdunEventEnmu.ACTIVATE_ANDROID;
 
 		String[] idInfos = requsetId.split("_");
@@ -108,8 +112,22 @@ public class TongdunUtil extends AbstractThird {
 			return;
 		}
 		if (apiResp != null) {
-			maidianLog.info("app activeOperate tongdunEvent,appType="+idInfos[0] +",deviceCode="+ idInfos[1]+",channelCode="+ idInfos[3] +",decision="+ apiResp.get("final_decision")
-					+",final_score="+apiResp.get("final_score")+",seq_id="+apiResp.get("seq_id")+",risk_type="+apiResp.get("risk_type")+",policy_name="+apiResp.get("policy_name"));
+			maidianLog.info(StringUtil.appendStrs(
+					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
+ 					"	", "h",
+ 					"	rmtIP=", CommonUtil.getIpAddr(request), 
+ 					"	userName=", idInfos[1], 
+ 					"	", 0, 
+ 					"	", request.getRequestURI(),
+ 					"	result=",apiResp.get("final_decision"), 
+ 					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
+ 					"	", "md", 
+ 					"	appType=", idInfos[0],
+ 					"	channelCode=", idInfos[3],
+ 					"	seq_id=", apiResp.get("seq_id"),
+ 					"	policy_name=", apiResp.get("policy_name"),
+ 					"	reqD=", tongdunEvent.getEventId(), 
+ 					"	resD=",apiResp.get("risk_type")));
 		}
 	}
 	

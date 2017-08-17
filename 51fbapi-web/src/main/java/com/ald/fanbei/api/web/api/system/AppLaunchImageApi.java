@@ -49,7 +49,7 @@ public class AppLaunchImageApi implements ApiHandle{
 		//同盾处理
 		try {
 			if (StringUtils.isNotBlank(blackBox)) {
-				tongdunUtil.activeOperate(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),appVersion, "","",true);
+				tongdunUtil.activeOperate(request,requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request),appVersion, "","",true);
 			}
 		} catch (Exception e) {
 			logger.error("appLaunchImageApi activeOperate error",e);
