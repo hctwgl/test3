@@ -187,10 +187,13 @@ public class AppH5RecommendUserController extends BaseController {
 
     @Resource
     AfOrderDao afOrderDao;
-
+    @Resource
+    AfBorrowCashDao afBorrowCashDao;
     @ResponseBody
     @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
     public String insertTestData(){
+        HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(69399);
+        Long count = (Long)map.get("count");
 
         long orderId =  217730;
 
