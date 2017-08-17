@@ -76,7 +76,7 @@ $(function(){
         itemsListRid=$('.img.img3').attr('rid');
         numClick=$('.img.img3').attr('numClick');
         if(numClick<2){
-            $('.surePresent').css('background','#9c9794');
+            $('.surePresent').css('background','#B3B3B3');
         }else{
             $('.surePresent').css('background','#fb9659');
             for(var i=0;i<userItemsList.length;i++){

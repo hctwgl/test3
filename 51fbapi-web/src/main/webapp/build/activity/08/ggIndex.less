@@ -16,7 +16,7 @@ body{
   height:0.6rem;
   overflow:hidden;
   background: #000;
-  opacity:.4;
+  opacity:.6;
   position:fixed;
   top:0;
   left:0;
@@ -317,9 +317,10 @@ body{
   margin:0 auto;
   font-size:.26rem;
   color:#4a4a4a;
-  line-height:.35rem;
+  line-height:.45rem;
   text-align: justify;
-  height:6.61rem;
+  height: 6.2rem;
+  overflow-y: scroll;
 }
 .ggIndex .alertRule .close{
   width:.56rem;
@@ -435,10 +436,10 @@ body{
 }
 .ggIndex .alertPresent .imgList .img .cardMask{
   position: absolute;
-  width: 91.5%;
-  height: 94.2%;
-  top: 1%;
-  left: 4%;
+  width: 94.4%;
+  height: 96%;
+  top: 1.6%;
+  left: 3%;
   background: #fff;
   opacity: .5;
   border-radius: 3%;
@@ -473,6 +474,10 @@ body{
   top: .68rem;
   left: 0;
   z-index: 2;
+ /* -webkit-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
+  -o-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
+  -moz-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
+  box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);*/
 }
 .ggIndex .alertPresent .imgList .img3{
   width: 3.22rem;
@@ -488,6 +493,10 @@ body{
   top: .68rem;
   left: 54%;
   z-index: 2;
+  /*-webkit-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
+  -o-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
+  -moz-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
+  box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);*/
 }
 .ggIndex .alertPresent .imgList .img5{
   width: 40%;
@@ -578,5 +587,8 @@ body{
   top: .32rem;
   right: .3rem;
 }
-
+::-webkit-scrollbar{
+  width: 0;
+  height:0;
+}
 
