@@ -74,12 +74,12 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
+				logger.info("borrowSuccess--begin");
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
-				//#region 修改最是否己借款  add by hongzhengpei
-				if(afBorrowCashDo.getStatus().equals("TRANSED")) {
-					afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
-				}
-				//#endregion
+				logger.info("user_id="+ afBorrowCashDo.getUserId());
+				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
+				logger.info("updateRecommendUser="+ rr);
+				logger.info("borrowSuccess--end");
 				return 1;
 			}
 		});

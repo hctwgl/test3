@@ -1,13 +1,13 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -20,6 +20,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -184,22 +185,17 @@ public class AppH5RecommendUserController extends BaseController {
     }
 
 
-
-
+    @Resource
+    AfOrderDao afOrderDao;
 
     @ResponseBody
     @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
     public String insertTestData(){
 
-        long userId = 178;
-        HashMap totalData = afRecommendUserService.getRecommedData(userId);
-        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_BACK_IMG");
-        HashMap ret = new HashMap();
-        ret.put("userData",totalData);
-        ret.put("pic",list);
+        long orderId =  217730;
 
-        String json = JSON.toJSONString(ret);
-
+        AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
+        BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(afOrderDo.getBorrowRate());
 
 //        for (int i=0;i<30000;i++){
 //            long parentId = i;
