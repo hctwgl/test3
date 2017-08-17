@@ -704,6 +704,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		    ItemsMessageSet.setRefId(shopId);
 		   // ItemsMessageSet.setBoluomeActivityId(userLoginRecord.getBoluomeActivityId());
 		    AfBoluomeActivityItemsDo afBoluomeActivityItemsDo  =  afBoluomeActivityItemsDao.getItemsInfo(ItemsMessageSet);
+		    if(afBoluomeActivityItemsDo!= null){
 	  		//规则判断
 		    BigDecimal actualAmount = afOrder.getActualAmount();
 		    BigDecimal minConsumption=new BigDecimal(afBoluomeActivityItemsDo.getRuleJson());   
@@ -772,6 +773,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					}
 			    }	
 			 }
+		   }
 			return 0;
 	}
 	
