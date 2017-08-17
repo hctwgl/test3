@@ -70,12 +70,7 @@ var vm=new Vue({
                     dataType: "JSON",
                     data: {
                         mobile: mobileNum,
-                    },
-                    beforeSend: function(){
-                        // $("#codeBtn").attr("isState",1);
-                        // $("#codeBtn").text(timerS+" s");
-                        // timerInterval = setInterval(timeFunction,1000);
-                        console.log(ok);
+                        token: token
                     },
                     success: function(returnData){
                         if (returnData.success) {
