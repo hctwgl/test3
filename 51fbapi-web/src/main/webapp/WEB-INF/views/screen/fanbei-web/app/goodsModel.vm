@@ -17,8 +17,8 @@
                     <img :src="data.goodsIcon">
                     <div class="txtContent">
                         <p>{{txtFix(data.goodName,20)}}</p>
-                        <p class="price">活动价：￥{{data.saleAmount}}</p>
-                        <s>{{priceTxt(data)}}：￥{{data.priceAmount}}</s>
+                        <p class="price">活动价:￥{{data.saleAmount}}</p>
+                        <s>{{priceTxt(data)}}:￥{{data.priceAmount}}</s>
                         <button class="button">{{buttonTxt(data)}}</button>
                     </div>
                 </a>

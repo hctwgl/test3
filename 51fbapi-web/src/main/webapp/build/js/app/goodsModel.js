@@ -55,12 +55,12 @@ new Vue({
     methods:{
         buttonTxt(data){
             if(data.doubleRebate=='Y'){
-                return "双倍返：￥"+(data.rebateAmount/2)+'×2'
+                return "双倍返:￥"+(data.rebateAmount/2)+'×2'
             }else if(data.nperMap){
                 if(data.nperMap.isFree==1){
-                    return '月供：￥'+data.nperMap.freeAmount+'起'
+                    return '月供:￥'+data.nperMap.freeAmount+'起'
                 }else{
-                    return '月供：￥'+data.nperMap.amount+'起'
+                    return '月供:￥'+data.nperMap.amount+'起'
                 }
             }else{
                 return '立即购买'
