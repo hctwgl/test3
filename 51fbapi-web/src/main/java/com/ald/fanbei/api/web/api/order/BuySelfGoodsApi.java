@@ -89,14 +89,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);//用户的优惠券id(af_user_coupon的主键)
-		if (couponId > 0) {
-			AfUserCouponDto couponDo = afUserCouponService.getUserCouponById(couponId);
-			if (couponDo.getGmtEnd().before(new Date()) || StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode())) {
-				logger.error("coupon end less now");
-				throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
-			}
-			afUserCouponService.updateUserCouponSatusUsedById(couponId);
-		}
+		
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
@@ -185,6 +178,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 		data.put("isEnoughAmount", isEnoughAmount);
 		data.put("isNoneQuota", isNoneQuota);
 
+		if (couponId > 0) {
+			AfUserCouponDto couponDo = afUserCouponService.getUserCouponById(couponId);
+			if (couponDo.getGmtEnd().before(new Date()) || StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode())) {
+				logger.error("coupon end less now");
+				throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
+			}
+			afUserCouponService.updateUserCouponSatusUsedById(couponId);
+		}
+		
 		resp.setResponseData(data);
 		return resp;
 	}
