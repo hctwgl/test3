@@ -3,6 +3,27 @@
 // 从分享链接中获取code
 var recommendCode = getUrl("recommendCode");
 
+// 防止风控被拒
+var token=formatDateTime()+Math.random().toString(36).substr(2);
+
+// 同盾校验编号的sessionId
+var _fmOpt;
+(function() {
+    _fmOpt = {
+        partner: 'alading',
+        appName: 'alading_web',
+        token: token
+    };
+    var cimg = new Image(1,1);
+    cimg.onload = function() {
+        _fmOpt.imgLoaded = true;
+    };
+    cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
+    var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+    fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+    // alert(json.msg);
+})();
 
 var timerInterval ;
 var timerS = 60;
@@ -86,7 +107,8 @@ var vm=new Vue({
                                         registerMobile: telNum,
                                         smsCode: VerifiCode,
                                         password: pwdMd5,
-                                        recommendCode: recommendCode
+                                        recommendCode: recommendCode,
+                                        token: token
                                     },
                                     success: function(returnData){
                                         if ( returnData.success ) {
