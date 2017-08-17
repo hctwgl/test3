@@ -166,7 +166,7 @@ public class PayRoutController {
         			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
         			afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
 //        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
-        			afBorrowCashService.borrowSuccess(afBorrowCashDo); 
+        			afBorrowCashService.borrowSuccess(afBorrowCashDo);
         		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
         			//退款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
