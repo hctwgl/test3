@@ -111,8 +111,9 @@ $('.mmicon').css("display","block");
         console.log(smsCode);
         console.log(registerMoblie);
         var yzcheck=$('#yzcheck').val();//获取验证码
-        var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(registerMoblie));
-        var yztrue=(/^\d{6}$/.test(yzcheck));//6位數字增則驗證 驗證碼
+        //var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(registerMoblie));
+        var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(registerMoblie)); //手机号正则验证11位
+        var yztrue=(/^\d{6}$/.test(yzcheck));//6位数字正则验证 验证码
         var mmtrue=/^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password);
         if (( (userck) && yztrue&&yzcheck!='')&& ( mmtrue&& password!=undefined)) {
             var password_md5 = String(CryptoJS.MD5(password));//md5加密
