@@ -8,12 +8,43 @@ $(function () {
     var activityId = param['activityId'];
     var userItemsId = param['userItemsId'];
     var itemsId = param['itemsId'];
-    //点击立即登录
+    var loginSource = param['loginSource'];
 
-    // 叉叉相關問題
+    var token=formatDateTime()+Math.random().toString(36).substr(2);
+    // 防止风控被拒
+    function formatDateTime() {
+        var date = new Date();
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        var second = date.getSeconds();
+        return y +  m +  d +h +minute+second;
+    };
+
+    // 同盾校验编号的sessionId
+    var _fmOpt;
+    (function() {
+        _fmOpt = {
+            partner: 'alading',
+            appName: 'alading_web',
+            token: token
+        };
+        var cimg = new Image(1,1);
+        cimg.onload = function() {
+            _fmOpt.imgLoaded = true;
+        };
+        cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
+        var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+        fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+        // alert(json.msg);
+    })();
 
     //用戶名叉叉點擊清楚所有文字
-
     $('.yhicon').click(function () {
         $("#yhinp").val('');
         $('.yhicon').css("display", "none");
@@ -23,25 +54,24 @@ $(function () {
 
         if ($("#yhinp").val() == '') {
             $('.yhicon').css("display", "none");
-        } else {
+            } else {
             $('.yhicon').css("display", "block");
         }
     });
 
     // 密碼叉叉點擊清楚所有文字
-
     $('.mmicon').click(function () {
-        $(".check").val('');
-        $('.mmicon').css("display", "none");
+            $(".check").val('');
+            $('.mmicon').css("display", "none");
     });
 
 
     $(".check").keyup(function () {
-        if ($(".check").val() == '') {
-            $('.mmicon').css("display", "none");
-        } else {
-            $('.mmicon').css("display", "block");
-        }
+            if ($(".check").val() == '') {
+                $('.mmicon').css("display", "none");
+            } else {
+                $('.mmicon').css("display", "block");
+            }
     });
 
 
@@ -63,7 +93,8 @@ $(function () {
                     password: password_md5,
                     activityId: activityId,
                     refUserName: userName,
-                    urlName: word
+                    urlName: word,
+                    token:token
                 },
                 success: function (data) {
                     console.log(data)
@@ -73,7 +104,7 @@ $(function () {
                         } else if (word == "S") {
                             window.location.href = urlName + "?userName=" + userName + "&itemsId=" + itemsId + "&activityId=" + activityId;
                         } else {
-                            window.location.href = "ggIndexShare" + "?activityId=" + activityId + "&userName=" + userName;
+                            window.location.href = "ggIndexShare" + "?activityId=" + activityId + "&userName=" + userName+ "&loginSource=" + loginSource;
                         }
                     } else if (data.url == "Login") {
                         requestMsg(data.msg);
@@ -103,7 +134,7 @@ $(function () {
     //注册
     $("#gg_register").click(function () {
         //  alert(word);
-        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName+ "&loginSource=" + loginSource;
     });
 
     //忘记密码

@@ -14,46 +14,80 @@ $(function () {
     var timerS = 60;
 
 
+    var token=formatDateTime()+Math.random().toString(36).substr(2);
+    // 防止风控被拒
+    function formatDateTime() {
+        var date = new Date();
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        var second = date.getSeconds();
+        return y +  m +  d +h +minute+second;
+    };
+
+    // 同盾校验编号的sessionId
+    var _fmOpt;
+    (function() {
+        _fmOpt = {
+            partner: 'alading',
+            appName: 'alading_web',
+            token: token
+        };
+        var cimg = new Image(1,1);
+        cimg.onload = function() {
+            _fmOpt.imgLoaded = true;
+        };
+        cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
+        var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+        fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+        // alert(json.msg);
+    })();
 
 
-$('.yhicon').click(function(){
-    $(".yhinp").val('');
-    $('.yhicon').css("display","none");
-});
 
-$(".yhinp").keyup(function(){
-   
-if($(".yhinp").val()==''){
-$('.yhicon').css("display","none");
-}else{
-$('.yhicon').css("display","block");
-}
-});
+    $('.yhicon').click(function(){
+        $(".yhinp").val('');
+        $('.yhicon').css("display","none");
+    });
 
-
-// 密碼叉叉點擊清楚所有文字
-
-$('.mmicon').click(function(){
-    $("#mobile").val('');
-    // console.log( $("#mobile").val());
-    // $('.mmicon').css("display","none");
-});
-
-$('.pasicon').click(function(){
-    $("#pasicon").val('');
-    // console.log( $("#mobile").val());
-    // $('.mmicon').css("display","none");
-});
+    $(".yhinp").keyup(function(){
+    
+    if($(".yhinp").val()==''){
+        $('.yhicon').css("display","none");
+    }else{
+        $('.yhicon').css("display","block");
+    }
+    });
 
 
-/* 
-$("#mobile").keyup(function(){
-if($("#mobile").val()==''){
-    $('.mmicon').css("display","none");
-}else{
-    $('.mmicon').css("display","block");
-}
-}); */
+    // 密碼叉叉點擊清楚所有文字
+
+    $('.mmicon').click(function(){
+        $("#mobile").val('');
+        // console.log( $("#mobile").val());
+        // $('.mmicon').css("display","none");
+    });
+
+    $('.pasicon').click(function(){
+        $("#pasicon").val('');
+        // console.log( $("#mobile").val());
+        // $('.mmicon').css("display","none");
+    });
+
+
+    /* 
+    $("#mobile").keyup(function(){
+    if($("#mobile").val()==''){
+        $('.mmicon').css("display","none");
+    }else{
+        $('.mmicon').css("display","block");
+    }
+    }); */
 
     function timeFunction() { // 60s倒计时
         timerS--;
@@ -82,6 +116,7 @@ if($("#mobile").val()==''){
                     dataType: "json",
                     data: {
                         "mobile": mobileNum, //将手机号码传给后台
+                         token:token
                     },
                     success: function (returnData) {
 
