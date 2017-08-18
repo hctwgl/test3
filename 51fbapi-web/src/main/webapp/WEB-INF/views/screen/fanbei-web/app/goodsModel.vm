@@ -13,7 +13,7 @@
         <ul>
             <li v-for="data in content.data.oneLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
-                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate==Y">返利<span>￥{{data.rebateAmount}}</span></p>
+                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'">返利<span>￥{{data.rebateAmount}}</span></p>
                     <img :lazy-src="data.goodsIcon">
                     <div class="txtContent">
                         <p>{{txtFix(data.goodName,20)}}</p>
@@ -30,7 +30,7 @@
         <ul class="clearfix">
             <li v-for="data in content.data.twoLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
-                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate==Y">返利<span>￥{{data.rebateAmount}}</span></p>
+                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'">返利<span>￥{{data.rebateAmount}}</span></p>
                     <p class="goodImg"><img :lazy-src="data.goodsIcon"></p>
                     <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
                     <p class="fanPrice">￥{{data.saleAmount}}</p>
@@ -45,7 +45,7 @@
         <ul class="clearfix">
             <li v-for="data in content.data.threeLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
-                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate==Y">返利<span>￥{{data.rebateAmount}}</span></p>
+                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'">返利<span>￥{{data.rebateAmount}}</span></p>
                     <p class="goodImg"><img :lazy-src="data.goodsIcon"></p>
                     <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
                     <p class="fanPrice">￥{{data.saleAmount}}</p>
@@ -60,7 +60,7 @@
         <ul class="clearfix">
             <li v-for="data in content.data.fourLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
-                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate==Y">返利<span>￥{{data.rebateAmount}}</span></p>
+                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'">返利<span>￥{{data.rebateAmount}}</span></p>
                     <p class="goodImg"><img :lazy-src="data.goodsIcon"></p>
                     <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
                     <p class="fanPrice">￥{{data.saleAmount}}</p>
