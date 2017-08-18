@@ -83,6 +83,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
             return 1;
         }
         catch (Exception e){
+            logger.error("update userBorrowError userId="+userId);
             return 1;
         }
     }

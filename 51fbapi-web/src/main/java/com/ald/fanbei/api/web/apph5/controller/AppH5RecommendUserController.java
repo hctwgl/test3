@@ -194,16 +194,12 @@ public class AppH5RecommendUserController extends BaseController {
     @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
     public String insertTestData(){
 
-        afRecommendUserService.updateRecommendByBorrow(13989455668L,new Date());
+//        AfRecommendUserDo afRecommendUserDo1 = new AfRecommendUserDo();
+//        afRecommendUserDo1.setUser_id(201582284L);
+//        afRecommendUserDo1.setParentId(13989455667L);
+//        afRecommendUserDao.addRecommendUser(afRecommendUserDo1);
 
-        AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(13989455668L);
-
-        afRecommendUserDo.setUser_id(9999999L);
-        afRecommendUserDo.setId(0);
-//        afRecommendUserDao.addRecommendUser(afRecommendUserDo);
-//
-//        afRecommendUserDo.setPrize_money(BigDecimal.valueOf(300));
-//        afRecommendUserDao.updateLoanById(afRecommendUserDo);
+        afRecommendUserService.updateRecommendByBorrow(201582284L,new Date());
 
         HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(69399);
         Long count = (Long)map.get("count");
@@ -213,21 +209,6 @@ public class AppH5RecommendUserController extends BaseController {
         AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
         BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(afOrderDo.getBorrowRate());
 
-//        for (int i=0;i<30000;i++){
-//            long parentId = i;
-//            for(int j = 0;j<10;j++) {
-//                long userId = i*10 +j;
-//                AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
-//                afRecommendUserDo.setUser_id(userId);
-//                afRecommendUserDo.setParentId(parentId);
-//                if(j>4){
-//                    afRecommendUserDo.setIs_loan(true);
-//                    afRecommendUserDo.setLoan_time(new Date());
-//                    afRecommendUserDo.setLoan_user_count(1);
-//                }
-//                afRecommendUserDao.addRecommendUser(afRecommendUserDo);
-//            }
-//        }
         return  "success";
     }
 
