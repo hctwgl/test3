@@ -384,8 +384,8 @@ public class RiskUtil extends AbstractThird {
 			directory = directoryCache.toString();
 		}
 		AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
-		int userId = Integer.parseInt(oldUserInfo.getValue());
-		int consumerId = Integer.parseInt(consumerNo);
+		Long userId = Long.parseLong(oldUserInfo.getValue());
+		Long consumerId = Long.parseLong(consumerNo);
 		if ("ALL".equals(event) && !StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode()) && consumerId <= userId) {
 			event = "REAUTH";
 		}

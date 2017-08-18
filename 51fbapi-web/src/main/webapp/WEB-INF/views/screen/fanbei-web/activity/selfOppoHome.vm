@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017081401")
+    #set($version="2017081601")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>七夕提前购 惊喜双倍返</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/selfHome.css?version=$version">
+    <style>
+        img[lazy-src]{
+            background: url("http://f.51fanbei.com/h5/app/images/sys/bitmap.png") no-repeat center center;
+            -webkit-background-size: 70%;
+            background-size: 70%;
+        }
+    </style>
 </head>
 <body>
     <div id="selfHome" style="background-color: #f6bcbd;">
-        <img :src="returnData.bannerUrl">
+        <img :lazy-src="returnData.bannerUrl">
         <div class="discountWrap">
             <img src="$commonUrl/oppoHome1.png">
             <ul class="discount clearfix">
                 <li v-for="item in discountMap" @click="goGoodsDetail(item)">
-                    <img :src="item.goodsIcon">
+                    <img :lazy-src="item.goodsIcon">
                     <div class="discountRight">
                         <p class="discountRightTitle">{{item.goodName}}</p>
                         <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
                         <div class="priceWrap">
                             <span class="saleAmount">¥{{item.saleAmount}}</span>
-                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
+                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount/2}}x2</span>
                         </div>
                         <span class="goBuyBtn" style="background: linear-gradient(to right, #fcb595 , #fa6073); ">立即抢购</span>
                     </div>
@@ -31,13 +38,13 @@
             <img src="$commonUrl/oppoHome2.png">
             <ul class="rebate clearfix">
                 <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
-                    <img :src="item.goodsIcon">
+                    <img :lazy-src="item.goodsIcon">
                     <div class="rebateRight">
                         <p class="rebateRightTitle">{{item.goodName}}</p>
                         <p class="remark">{{item.remark}}</p>
                         <div class="priceWrap">
                             <span class="saleAmount">¥{{item.saleAmount}}</span>
-                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
+                            <span class="rebateAmount"><i></i>¥{{item.rebateAmount/2}}x2</span>
                         </div>
                     </div>
                 </li>

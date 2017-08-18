@@ -101,10 +101,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.RENEWAL_PAY.getCode());
 		} else if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
-			if (respBo.isSuccess()) {
-				dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
-			} else {
+			if (!respBo.isSuccess()) {
 				dealRenewalFail(payTradeNo, "");
 			}
 			map.put("resp", respBo);
@@ -232,7 +231,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
 		boList.add(parseOverduedBorrowBo(borrowCashInfo.getBorrowNo(), 0,null));
 		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
-		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		try {
+			riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		} catch (Exception e) {
+			logger.error("续借成功时给风控传输数据出错", e);
+		}
+		
 		logger.info("dealWithSynchronizeOverduedOrder completed");
 	}
 	

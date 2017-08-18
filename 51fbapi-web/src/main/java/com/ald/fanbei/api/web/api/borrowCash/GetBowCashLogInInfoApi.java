@@ -12,20 +12,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfGameResultService;
-import com.ald.fanbei.api.biz.service.AfGameService;
-import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserOperationLogService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
@@ -43,16 +34,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfGameDo;
-import com.ald.fanbei.api.dal.domain.AfGameResultDo;
-import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserOperationLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -90,7 +71,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfGameService afGameService;
-	
+
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -103,7 +87,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
-		//
+
 		String inRejectLoan = YesNoStatus.NO.getCode();
 		String unfinished = YesNoStatus.NO.getCode();
 		AfBorrowCashDo afBorrowCash = afBorrowCashService.getNowUnfinishedBorrowCashByUserId(userId);
@@ -309,8 +293,29 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		}else{
 			bannerResultList = bannerList;
 		}
+
+		List<Object> _bannerResultList = new ArrayList<>();
+		List<AfResourceDo> recommend_imgs = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");//获取活动图片
+		if(recommend_imgs != null && recommend_imgs.size()>0) {
+			for (AfResourceDo afResourceDo : recommend_imgs) {
+				Map<String, Object> map = new HashMap();
+				map.put("imageUrl",afResourceDo.getValue()+"?name=RECOMMEND_IMG" );
+				map.put("titleName",afResourceDo.getName());
+				map.put("type","RECOMMEND_IMG");
+				_bannerResultList.add(map);
+			}
+//			_bannerResultList.add(bannerList);
+			for (Object obj :bannerList){
+				_bannerResultList.add(obj);
+			}
+
+		}
+
+
+
 		data.put("scrollbar", scrollbarVo);
-		data.put("bannerList", bannerResultList);
+//		data.put("bannerList", bannerResultList);
+		data.put("bannerList", _bannerResultList);
 		data.put("inRejectLoan", inRejectLoan);
 		data.put("jumpToRejectPage", jumpToRejectPage);
 		data.put("jumpPageBannerUrl", jumpPageBannerUrl);

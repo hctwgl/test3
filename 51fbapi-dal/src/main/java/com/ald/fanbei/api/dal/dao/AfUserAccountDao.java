@@ -87,4 +87,6 @@ public interface AfUserAccountDao {
 	AfUserAccountDo getUserAccountInfoByUserName(@Param("userName") String userName);
 
 	int changeAmount(@Param("userId") Long userId, @Param("amount") BigDecimal amount);
+
+	int updateRebateAmount(AfUserAccountDo afUserAccountDo);
 }

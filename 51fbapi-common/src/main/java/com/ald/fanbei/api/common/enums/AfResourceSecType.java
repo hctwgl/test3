@@ -57,9 +57,10 @@ public enum AfResourceSecType {
 		SMS_BORROW_AUDIT("SMS_BORROW_AUDIT","借款审核通过"),
 		SMS_REPAYMENT_SUCCESS("SMS_REPAYMENT_SUCCESS","还款成功"),
 		SMS_REPAYMENT_SUCCESS_REMAIN("SMS_REPAYMENT_SUCCESS_REMAIN","部分还款成功"),
-		SMS_LIMIT("SMS_LIMIT","短信限制");
+		SMS_LIMIT("SMS_LIMIT","短信限制"),
+		IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片");
 		
-	 	private String    code;
+	 	private String code;
 		private String name;
 	
 		AfResourceSecType(String code, String name) {

@@ -54,12 +54,12 @@ public class LoginApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserAuthService afUserAuthService;
-	@Resource
-	AfGameChanceService afGameChanceService;
+//	@Resource
+//	AfGameChanceService afGameChanceService;
 	@Resource
 	TongdunUtil tongdunUtil;
-	@Resource
-	JpushService jpushService;
+//	@Resource
+//	JpushService jpushService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	
@@ -134,12 +134,12 @@ public class LoginApi implements ApiHandle {
 			FanbeiExceptionCode errorCode = getErrorCountCode(errorCount + 1);
 			return new ApiHandleResponse(requestDataVo.getId(), errorCode);
 		}
-		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
-			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
-			//向推荐人推送消息
-			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
-			jpushService.gameShareSuccess(user.getUserName());
-		}
+//		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
+//			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
+//			//向推荐人推送消息
+//			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
+//			jpushService.gameShareSuccess(user.getUserName());
+//		}
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// reset fail count to 0 and record login ip phone msg

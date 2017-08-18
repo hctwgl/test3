@@ -246,4 +246,10 @@
 		</set>
 		WHERE is_delete = 0 AND user_id = #{userId}
 	</update>
+
+	<update id="updateRebateAmount" parameterType="AfUserAccountDo">
+		UPDATE af_user_account SET gmt_modified = NOW()
+		,rebate_amount = rebate_amount + #{rebateAmount}
+		where user_id = #{userId}
+	</update>
 </mapper>

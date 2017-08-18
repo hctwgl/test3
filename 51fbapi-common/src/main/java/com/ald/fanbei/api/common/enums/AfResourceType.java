@@ -83,12 +83,12 @@ public enum AfResourceType {
 	SMS_LIMIT("SMS_LIMIT","短信限制"),
 	
 	//app端 借钱按钮高亮显示时长配置
-	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间");
+	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间"),
+	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片");
 	
 
 
-	 private String    code;
-
+	private String code;
     private String name;
     AfResourceType(String code, String name) {
         this.code = code;

@@ -6,13 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +27,18 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -59,6 +70,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
@@ -74,6 +86,20 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
@@ -159,6 +185,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfTradeBusinessInfoDao afTradeBusinessInfoDao;
 	@Resource
 	AfTradeOrderService afTradeOrderService;
+
+	@Resource
+	AfRecommendUserService afRecommendUserService;
 	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
@@ -734,6 +763,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
+							//#region add by honghzengpei
+//							afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
+							//#endregion
 							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap);
 						}
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {//组合支付
@@ -896,17 +928,41 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		}
-		//拿到日利率快照Bo
-		BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(borrowRate);
-		//每期本金
-		BigDecimal principleAmount = amount.divide(new BigDecimal(nper), 2, RoundingMode.DOWN);
-		//每期利息
-		BigDecimal interestAmount = amount.multiply(borrowRateBo.getRate()).divide(Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
-		//每期手续费
-		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(amount, nper, borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
-
-		BigDecimal perAmount = BigDecimalUtil.add(principleAmount,interestAmount,poundageAmount);
 		
+		//获取借款分期配置信息
+        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+        JSONArray array = JSON.parseArray(resource.getValue());
+        //删除2分期
+        if (array == null) {
+            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+        }
+        removeSecondNper(array);
+		
+		JSONArray interestFreeArray = null;
+		if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+			interestFreeArray = JSON.parseArray(interestFreeJson);
+		}
+		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+				amount, resource.getValue1(), resource.getValue2());
+		BigDecimal perAmount = null;
+		for(Map<String, Object> nperMap : nperList) {
+			
+			Object nperObj = nperMap.get("nper");
+			int nperTemp = 0;
+			if(nperObj instanceof BigDecimal) {
+				nperTemp = ((BigDecimal) nperObj).intValue();
+			} else {
+				nperTemp = Integer.parseInt((String)nperObj);
+			}
+			if(nper == nperTemp) {
+				String isFree = (String) nperMap.get("isFree");
+				if("1".equals(isFree)) {
+					perAmount = (BigDecimal)nperMap.get("freeAmount");
+				} else if("0".equals(isFree) || "2".equals(isFree)){
+					perAmount = (BigDecimal)nperMap.get("amount");
+				}
+			}
+		}
 		Date currDate = new Date();
 		AfBorrowDo borrow = new AfBorrowDo();
 		borrow.setGmtCreate(currDate);
@@ -928,6 +984,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		borrow.setFreeNper(freeNper);
 		return borrow;
 	}
+	
+	private void removeSecondNper(JSONArray array) {
+        if (array == null) {
+            return;
+        }
+        Iterator<Object> it = array.iterator();
+        while (it.hasNext()) {
+            JSONObject json = (JSONObject) it.next();
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+                it.remove();
+                break;
+            }
+        }
+
+    }
 	
 	@Override
 	public Map<String, Object> payBrandOrderOld(final Long payId, final Long orderId, final Long userId,
@@ -1060,6 +1131,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
 						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
+
+						//#region add by hongzhengpei
+//						afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new Date());
+						//#endregion
 					}
 					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
 					orderInfo.setPayTradeNo(payOrderNo);
@@ -1070,6 +1145,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
+
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -1107,6 +1183,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealAgentCpOrderSucc comlete , orderInfo = {} ", orderInfo);
+
+					// #region add by hongzhengpei
+//					afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new Date());
+					// #endregion
+
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
