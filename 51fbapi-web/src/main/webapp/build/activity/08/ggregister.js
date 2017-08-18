@@ -149,7 +149,7 @@ $(function () {
     $(".loginbtn").click(function () {
         var smsCode = $(".check").val();//获取短信
         var registerMoblie = $(".mobile").val();//获取手机号
-        var password=$("#password").val();//获取密码
+        var password=$("#pasicon").val();//获取密码
         console.log(password);
         console.log(smsCode);
         console.log(registerMoblie);
