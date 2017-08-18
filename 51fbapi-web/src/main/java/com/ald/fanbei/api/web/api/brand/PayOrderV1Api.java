@@ -146,17 +146,18 @@ public class PayOrderV1Api implements ApiHandle {
 			
 			Map<String, Object> result = afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 			
-			String success = result.get("success").toString();
-			if (StringUtils.isNotBlank(success)) {
-				if (Boolean.parseBoolean(success)) {
-					if("DEALING".equals(orderInfo.getStatus())){
-						boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
+			Object success = result.get("success");
+			Object payStatus = result.get("status");
+			if (success != null) {
+				if (Boolean.parseBoolean(success.toString())) {
+					//判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
+					if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) ) {
+						if (payId.intValue() == 0) {
+							riskUtil.payOrderChangeAmount(orderInfo.getRid());
+						} else if (payId > 0 &&  PayStatus.DEALING.getCode().equals(payStatus.toString())) {
+							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
+						}
 					}
-					if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
-						riskUtil.payOrderChangeAmount(orderInfo.getRid());
-					}
-					
-					
 				} else {
 					FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
 					ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);

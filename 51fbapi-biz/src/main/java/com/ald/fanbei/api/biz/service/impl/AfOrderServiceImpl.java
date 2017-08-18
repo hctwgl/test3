@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -790,15 +791,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
-						
-							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
+							
+							Map<String, Object> result = riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
+							resultMap.put("status", PayStatus.DEALING.getCode());
+							return result;
 						}
 					} else {
+						//银行卡支付
 						orderInfo.setPayType(PayType.BANK.getCode());
 						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 						orderInfo.setStatus(OrderStatus.DEALING.getCode());
-						//支付中
-					//	boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
 						AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
@@ -821,6 +823,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
 						resultMap.put("resp", newMap);
 						resultMap.put("success", true);
+						resultMap.put("status", PayStatus.DEALING.getCode());
 					}
 					return resultMap;
 				} catch (FanbeiException exception) {
