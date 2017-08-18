@@ -4,7 +4,7 @@
     #set($version="2017081802")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
-    <title>七夕狂欢节</title>
+    <title>七夕让爱加倍，不一样の套路</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/altairHome.css?version=$version">
 </head>
 <body>
@@ -32,7 +32,7 @@
                         <p>{{txtFix(item.goodName,16)}}</p>
                         <p class="price">活动价:￥{{item.saleAmount}}</p>
                         <s>原价:￥{{item.priceAmount}}</s>
-                        <button class="button">返利:￥{{item.saleAmount/2}}x2倍</button>
+                        <button class="button">返利:￥{{item.rebateAmount/2}}x2倍</button>
                     </div>
                 </li>
             </ul>
@@ -48,7 +48,7 @@
                     <p class="goodDes">{{txtFix(item.goodName,16)}}</p>
                     <p class="fanPrice">￥{{item.saleAmount}}</p>
                     <p class="originPrice">￥{{item.priceAmount}}</p>
-                    <p class="monthPrice">返利:￥{{item.saleAmount/2}}x2倍</p>
+                    <p class="monthPrice">返利:￥{{item.rebateAmount/2}}x2倍</p>
                 </li>
             </ul>
         </div>
