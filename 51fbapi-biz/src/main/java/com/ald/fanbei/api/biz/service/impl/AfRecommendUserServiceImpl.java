@@ -1,10 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +27,9 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 
     @Resource
     AfBorrowCashDao afBorrowCashDao;
+
+    @Resource
+    AfUserAccountLogDao afUserAccountLogDao;
 
     private BigDecimal getAddMoney(){
         List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_MONEY");
@@ -79,6 +79,14 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
                 afUserAccountDo.setUserId(pid);
                 afUserAccountDo.setRebateAmount(addMoney);
                 afUserAccountDao.updateRebateAmount(afUserAccountDo);
+
+                AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
+                afUserAccountLogDo.setAmount(addMoney);
+                afUserAccountLogDo.setUserId(userId);
+                afUserAccountLogDo.setType("RECOMMEND_CASH");
+                afUserAccountLogDo.setRefId(String.valueOf( afRecommendUserDo.getId()));
+                afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+
             }
             return 1;
         }
