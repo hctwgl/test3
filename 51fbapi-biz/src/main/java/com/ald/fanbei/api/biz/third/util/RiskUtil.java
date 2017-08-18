@@ -824,10 +824,10 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal au_amount = new BigDecimal(limitAmount);
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
 			String result = obj.getString("result");
-			
+			String orderNo = obj.getString("orderNo"); 
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
 			//风控异步回调的话，以第一次异步回调成功为准
-			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
 				if (StringUtils.equals("10", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
