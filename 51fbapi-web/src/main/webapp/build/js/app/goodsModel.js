@@ -45,9 +45,6 @@ new Vue({
     data:{
         tableUrl:"/fanbei-web/newEncoreActivityInfo",
         content:[]
-        // option:{
-        //     sort:sort
-        // }
     },
     created:function () {
         this.logData();
@@ -83,7 +80,8 @@ new Vue({
                     self.content = JSON.parse(res);
                     console.log(self.content);
                     self.$nextTick(function () {                              //dom渲染完成后执行
-                       $('body').css('background',self.content.data.bgColor);
+                       document.title=self.content.data.title;
+                        $('body').css('background',self.content.data.bgColor);
                        $('.monthPrice').css('background',self.content.data.btnColor);
                         lazy.init()
                     })
