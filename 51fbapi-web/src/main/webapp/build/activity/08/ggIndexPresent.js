@@ -15,7 +15,8 @@ var name;//卡片名称
 var itemsListRid;
 var itemsId;
 var userItemsList;
-var numClick;
+var numClick01;
+var numClick02;
 $(function(){
     $('.presentCard').click(function(){
             $.ajax({
@@ -56,6 +57,12 @@ $(function(){
                             $('.img').click(function(){
                                 var index=$(this).index();
                                 $('.presentTitle span').eq(1).html($('.img').eq(index).attr('name'));
+                                numClick01=$(this).attr('numClick');
+                                if(numClick01<2){
+                                    $('.surePresent').css('background','#B3B3B3');
+                                }else{
+                                    $('.surePresent').css('background','#fb9659');
+                                }
                             })
                         }else{
                             requestMsg("抱歉，你暂时没有可以赠送的卡片")
@@ -74,11 +81,8 @@ $(function(){
         var arr=[];
         name = $('.img.img3').attr('name');
         itemsListRid=$('.img.img3').attr('rid');
-        numClick=$('.img.img3').attr('numClick');
-        if(numClick<2){
-            $('.surePresent').css('background','#B3B3B3');
-        }else{
-            $('.surePresent').css('background','#fb9659');
+        numClick02=$('.img.img3').attr('numClick');
+        if(numClick02>=2){
             for(var i=0;i<userItemsList.length;i++){
                 itemsId=userItemsList[i].itemsId;
                 if(itemsId==itemsListRid){

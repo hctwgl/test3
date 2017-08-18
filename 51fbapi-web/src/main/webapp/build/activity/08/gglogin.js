@@ -9,6 +9,7 @@ $(function () {
     var userItemsId = param['userItemsId'];
     var itemsId = param['itemsId'];
     var loginSource = param['loginSource'];
+    // var word = param['loginSource'];
 
     var token=formatDateTime()+Math.random().toString(36).substr(2);
     // 防止风控被拒
@@ -95,8 +96,10 @@ $(function () {
                     refUserName: userName,
                     urlName: word,
                     token:token
+                    
                 },
                 success: function (data) {
+
                     console.log(data)
                     if (data.success) {
                         if (word == "Z") {
@@ -104,7 +107,7 @@ $(function () {
                         } else if (word == "S") {
                             window.location.href = urlName + "?userName=" + userName + "&itemsId=" + itemsId + "&activityId=" + activityId;
                         } else {
-                            window.location.href =urlName + "?activityId=" + activityId + "&userName=" + userName+ "&loginSource=" + loginSource+ "&urlName=" + urlName;
+                            window.location.href =urlName + "?activityId=" + activityId + "&userName=" + userName+ "&word=" + loginSource+ "&urlName=" + urlName;
                         }
                     } else if (data.url == "Login") {
                         requestMsg(data.msg);
