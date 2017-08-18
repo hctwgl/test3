@@ -351,7 +351,7 @@ public class TongdunUtil extends AbstractThird {
 	 * @param source
 	 */
 	public void getPromotionSmsResult(String sessionId, String channleCode, String pointCode, String ip, String accountMobile, String accountLogin, String source) {
-		TongdunEventEnmu tongdunEvent = TongdunEventEnmu.REGISTER_WEB;
+		TongdunEventEnmu tongdunEvent = TongdunEventEnmu.SMS_WEB;
 
 		accountLogin = accountMobile;
 		Map<String, Object> params = getCommonWebParam(tongdunEvent, sessionId, ip, accountLogin, accountMobile);
