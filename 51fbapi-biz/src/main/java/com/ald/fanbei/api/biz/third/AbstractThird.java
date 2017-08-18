@@ -13,6 +13,8 @@ import com.ald.fanbei.api.common.util.StringUtil;
  */
 public abstract class AbstractThird {
 	protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
+
+	protected static final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");
 	protected static Logger logger = LoggerFactory.getLogger(AbstractThird.class);
 
 	/**

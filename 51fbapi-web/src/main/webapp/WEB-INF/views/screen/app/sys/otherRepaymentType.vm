@@ -3,11 +3,19 @@
 <head>
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/sys")
     <title>还款方式</title>
+    <style type="text/css">
+        .line{
+            width:100%;
+            height:0.2rem;
+        }
+    </style>
 </head>
 <body scroll=no style="overflow:hidden">
-
-<img src="$commonUrl/other_repayment_type1.png">
-<img src="$commonUrl/other_repayment_type2.png">
-<img src="$commonUrl/other_repayment_type3.png">
+<p class="line"></p>
+<img src="$commonUrl/other_repayment_type1_2.png">
+<p class="line"></p>
+<img src="$commonUrl/other_repayment_type2_2.png">
+<p class="line"></p>
+<img src="$commonUrl/other_repayment_type3_2.png">
 </body>
 </html>

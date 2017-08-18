@@ -9,7 +9,9 @@ package com.ald.fanbei.api.common.exception;
 public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
-    
+
+
+
     // PARAM_CODE 1001-1099
     PARAM_ERROR("PARAM_ERROR", 1001, "param error", "参数错误"),
     REQUEST_PARAM_NOT_EXIST("REQUEST_PARAM_NOT_EXIST", 1002, "request param is invalid", "请求参数缺失"),
@@ -212,7 +214,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","借钱金额或者时间有误"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
-    
+    BORROW_ERROR("BORROW_ERROR",7001,"borrow_errow","借款回调修改异常"),
+
     BORROW_CASH_NOT_EXIST_ERROR("BORROW_CASH_NOT_EXIST_ERROR",2002,"borrow cash not exist","借钱信息不存在"),
     BORROW_CASH_REPAY_NOT_EXIST_ERROR("BORROW_CASH_REPAY_NOT_EXIST_ERROR",2003,"borrow cash repay not exist","还钱信息不存在或已删除"),
    
@@ -255,6 +258,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
 
     //订单
     ORDER_NOT_EXIST("ORDER_NOT_EXIST",6001,"order_not_exist","订单不存在"),
+
+
+
+
 
     //系统升级该code不能随便修改
     SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗V3.7.0新版上线 更新内容： \n1.用户提额全新上线 \n2.多种支付方式随心享，更有好礼相赠。您即将前往的下一站是【App Store】更新，如无更新按钮，请稍后重试或卸载后重新安装"),
