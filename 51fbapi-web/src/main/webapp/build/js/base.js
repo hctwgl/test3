@@ -116,26 +116,22 @@ function domainName(){
 	return domainName;
 }
 //限制文字数量
-function txtFix(i,len){
-    function cut_str(str,len){
-        var char_length = 0;
-        if(str.length<=len){
-            return str
-        }else{
-            for (var i = 0; i < str.length; i++){
-                var son_str = str.charAt(i);
-                encodeURI(son_str).length > 2 ? char_length += 1 : char_length += 0.5;
-                if (char_length >= len){
-                    var sub_len = char_length == len ? i+1 : i;
-                    return str.substr(0, sub_len);
-                    break;
-                }
+function txtFix(str,len){
+    var char_length = 0;
+    if(str.length<=len){
+        return str
+    }else{
+        for (var i = 0; i < str.length; i++){
+            var son_str = str.charAt(i);
+            encodeURI(son_str).length > 2 ? char_length += 2 : char_length += 1;
+            if (char_length >= len){
+                var sub_len = (char_length == len) ? i+1 : i;
+                return str.substr(0, sub_len);
+                break;
             }
         }
     }
-    return cut_str(i, len)
 }
-
 //图片懒加载
 window.lazy = (function(window, document, undefined) {
 
