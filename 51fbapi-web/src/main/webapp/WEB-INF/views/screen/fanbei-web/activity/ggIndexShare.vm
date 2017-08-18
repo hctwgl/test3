@@ -74,7 +74,7 @@
         <div class="left"></div>
         <p class="p01">完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利</p>
         <p class="p02">向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你</p>
-        <p>集齐全部专属卡片，即可兑换<span>88.88</span>元现金红包</p>
+        <p>集齐全部专属卡片，即可兑换<span v-for="item in content.normalCouponList">{{item.amount}}</span>元现金红包</p>
     </div>
     <p class="ruleInfo" @click="ruleClick()">活动规则详情</p>
     <div class="kong"></div>

@@ -5,6 +5,7 @@ var userName='';//获取用户名
 var currentUrl=window.location.href;
 var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
+urlName=urlName.replace(/\?/g,'&');
 var num;//卡片数量
 //获取数据
 let vm = new Vue({
@@ -41,7 +42,7 @@ let vm = new Vue({
                         var clone = $(".banner .bannerList li").first().clone();//克隆第一张图片
                         $(".banner .bannerList").append(clone);//复制到列表最后
                         var size = self.content.bannerList.length+1;
-                        var ulWidth=size*6.25+'rem';
+                        var ulWidth=size*7.5+'rem';
                         $(".banner .bannerList li").width(liWidth);
                         $(".banner .bannerList").width(ulWidth);
                         for (var j = 0; j < size-1; j++) {
@@ -57,12 +58,12 @@ let vm = new Vue({
                                 $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
                             }
                             if (i == -1) {
-                                $(".banner .bannerList").css({left: -(size - 1) * 6.25 + 'rem'});
+                                $(".banner .bannerList").css({left: -(size - 1) * 7.5 + 'rem'});
                                 $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
                                 $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
                                 i = size - 2;
                             }
-                            $(".banner .bannerList").stop().animate({left: -i * 6.25 + 'rem'}, 1000);
+                            $(".banner .bannerList").stop().animate({left: -i * 7.5 + 'rem'}, 1000);
                             $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
                             $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
                         }
