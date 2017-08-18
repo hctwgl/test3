@@ -1,11 +1,12 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import sun.awt.geom.AreaOp;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -24,6 +25,12 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
     @Resource
     AfResourceDao afResourceDao;
 
+    @Resource
+    AfBorrowCashDao afBorrowCashDao;
+
+    @Resource
+    AfUserAccountLogDao afUserAccountLogDao;
+
     private BigDecimal getAddMoney(){
         List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_MONEY");
         if(list != null && list.size()>0){
@@ -38,7 +45,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
     }
 
 
-
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      *
      * @param userId
@@ -47,9 +54,21 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
      */
     public int updateRecommendByBorrow(long userId, Date createTime){
         try {
+            logger.info("{updateRecommendByBorrow} userId="+userId);
             //不影响原来逻辑，不保持事物一样
             AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
             if (afRecommendUserDo != null && !afRecommendUserDo.isIs_loan()) {
+                Long count = 0L;
+                HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(userId);
+                logger.info("{update begin} userId="+userId);
+                try {
+                    count = (Long) map.get("count");
+                    if (count > 1) return 1;
+                }
+                catch (Exception e){
+                    logger.error("{update userBorrowError} userId="+userId);
+                }
+
                 afRecommendUserDo.setLoan_time(createTime);
                 BigDecimal addMoney = getAddMoney();
                 afRecommendUserDo.setPrize_money(addMoney);
@@ -60,10 +79,19 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
                 afUserAccountDo.setUserId(pid);
                 afUserAccountDo.setRebateAmount(addMoney);
                 afUserAccountDao.updateRebateAmount(afUserAccountDo);
+
+                AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
+                afUserAccountLogDo.setAmount(addMoney);
+                afUserAccountLogDo.setUserId(userId);
+                afUserAccountLogDo.setType("RECOMMEND_CASH");
+                afUserAccountLogDo.setRefId(String.valueOf( afRecommendUserDo.getId()));
+                afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+
             }
             return 1;
         }
         catch (Exception e){
+            logger.error("update userBorrowError userId="+userId);
             return 1;
         }
     }

@@ -36,16 +36,16 @@
 			)
 		VALUES
 		    (
-				#{user_id},
+				#{userId},
 				#{parentId},
-				#{is_delete},
+				#{isDelete},
 				#{origin},
-				#{is_loan},
+				#{isLoan},
 				NOW(),
 				NOW(),
-				#{prize_money},
-				#{loan_user_count},
-				#{recommend_count},
+				#{prizeMoney},
+				#{loanUserCount},
+				#{recommendCount},
 				NOW()
 			)
 	</insert>
@@ -60,8 +60,8 @@
 		UPDATE af_recommend_user
 		set is_loan = 1,
 		loan_user_count =1,
-		prize_money = #{prize_money},
-		loan_time = #{loan_time}
+		prize_money = #{prizeMoney},
+		loan_time = #{loanTime}
 		where id = #{id}
 	</update>
 

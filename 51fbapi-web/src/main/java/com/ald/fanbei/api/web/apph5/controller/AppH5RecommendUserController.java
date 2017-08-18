@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -187,31 +188,25 @@ public class AppH5RecommendUserController extends BaseController {
 
     @Resource
     AfOrderDao afOrderDao;
-
+    @Resource
+    AfBorrowCashDao afBorrowCashDao;
     @ResponseBody
     @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
     public String insertTestData(){
 
+//        AfRecommendUserDo afRecommendUserDo1 = new AfRecommendUserDo();
+//        afRecommendUserDo1.setUser_id(201582284L);
+//        afRecommendUserDo1.setParentId(13989455667L);
+//        afRecommendUserDao.addRecommendUser(afRecommendUserDo1);
+
+//        afRecommendUserService.updateRecommendByBorrow(201582284L,new Date());
+
+        HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(69399);
+        Long count = (Long)map.get("count");
+
         long orderId =  217730;
+        
 
-        AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
-        BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(afOrderDo.getBorrowRate());
-
-//        for (int i=0;i<30000;i++){
-//            long parentId = i;
-//            for(int j = 0;j<10;j++) {
-//                long userId = i*10 +j;
-//                AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
-//                afRecommendUserDo.setUser_id(userId);
-//                afRecommendUserDo.setParentId(parentId);
-//                if(j>4){
-//                    afRecommendUserDo.setIs_loan(true);
-//                    afRecommendUserDo.setLoan_time(new Date());
-//                    afRecommendUserDo.setLoan_user_count(1);
-//                }
-//                afRecommendUserDao.addRecommendUser(afRecommendUserDo);
-//            }
-//        }
         return  "success";
     }
 
