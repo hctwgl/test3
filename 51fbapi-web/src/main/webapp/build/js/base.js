@@ -118,9 +118,6 @@ function domainName() {
 //限制文字数量
 function txtFix(str,len){
     var char_length = 0;
-    if(str.length<=len){
-        return str
-    }else{
         for (var i = 0; i < str.length; i++){
             var son_str = str.charAt(i);
             encodeURI(son_str).length > 2 ? char_length += 2 : char_length += 1;
@@ -128,9 +125,10 @@ function txtFix(str,len){
                 var sub_len = (char_length == len) ? i+1 : i;
                 return str.substr(0, sub_len);
                 break;
+            }else{
+                return str
             }
         }
-    }
 }
 //图片懒加载
 window.lazy = (function(window, document, undefined) {
