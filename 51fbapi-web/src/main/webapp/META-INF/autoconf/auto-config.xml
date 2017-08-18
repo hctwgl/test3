@@ -88,7 +88,7 @@
 	    <!--测试打款地址  -->
 	    <property name="fbapi.ups.url" defaultValue="http://115.236.44.232:80/ups/main.html" description="ups请求地址" />
  	
- 		<property name="fbapi.risk.url" defaultValue="http://115.236.44.234" description="risk请求地址" />
+ 		<property name="fbapi.risk.url" defaultValue="http://testarc.51fanbei.com/" description="risk请求地址" />
  		<property name="fbapi.collection.url" defaultValue="http://192.168.101.92:8081" description="催收平台请求地址" />
 
 		
