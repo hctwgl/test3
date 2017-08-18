@@ -115,6 +115,7 @@ function domainName() {
     var domainName = protocol + '//' + host;
     return domainName;
 }
+
 //限制文字数量
 function txtFix(str,len){
     var char_length = 0;
@@ -131,8 +132,8 @@ function txtFix(str,len){
             }
         }
     }
-<<<<<<< HEAD
 }
+
 //图片懒加载
 window.lazy = (function(window, document, undefined) {
 
@@ -201,12 +202,8 @@ function formateTelNum(tel) {
     }
 }
 
-=======
-    return cut_str(i, len)
-}
 //字符串替换+换行
 function formatStr(str){
     str=str.replace(/<br\/>/g, "\n");
     return str;
 }
->>>>>>> version_activity_gg
