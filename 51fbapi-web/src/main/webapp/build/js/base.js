@@ -123,7 +123,7 @@ function txtFix(str,len){
     }else{
         for (var i = 0; i < str.length; i++){
             var son_str = str.charAt(i);
-            encodeURI(son_str).length > 2 ? char_length += 2 : char_length += 1;
+            encodeURI(son_str).length > 2 ? char_length += 1 : char_length += 0.5;
             if (char_length >= len){
                 var sub_len = (char_length == len) ? i+1 : i;
                 return str.substr(0, sub_len);
@@ -191,7 +191,7 @@ function formateTelNum(tel) {
         if (telLength < 11) {
             tel = tel;
         } else if (telLength >= 11) {
-            var telNum = tel.substring(4, 7);
+            var telNum = tel.substring(3, 7);
             tel = tel.replace(telNum, "****");
         }
         return tel;
