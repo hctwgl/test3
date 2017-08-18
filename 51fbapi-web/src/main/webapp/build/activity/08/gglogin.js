@@ -104,7 +104,7 @@ $(function () {
                         } else if (word == "S") {
                             window.location.href = urlName + "?userName=" + userName + "&itemsId=" + itemsId + "&activityId=" + activityId;
                         } else {
-                            window.location.href =urlName + "?activityId=" + activityId + "&userName=" + userName+ "&loginSource=" + loginSource;
+                            window.location.href =urlName + "?activityId=" + activityId + "&userName=" + userName+ "&loginSource=" + loginSource+ "&urlName=" + urlName;
                         }
                     } else if (data.url == "Login") {
                         requestMsg(data.msg);
