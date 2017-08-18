@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" id="css" type="text/css" href="/dist/css/app/goodsModel.css">
-    <title> </title>
 
 </head>
 <body>
 <div id="vueCon">
+    <title>{{content.data.title}}</title>
+
     <img class="banner" :src="content.data.bannerUrl">
     <div class="recommend">
         <h2>{{content.data.oneLevelGoodsInfo.title}}</h2>
