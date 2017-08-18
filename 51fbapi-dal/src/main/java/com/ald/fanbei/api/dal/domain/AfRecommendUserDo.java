@@ -14,7 +14,7 @@ public class AfRecommendUserDo extends AbstractSerial {
     /**
      * 用户ID
      */
-    private Long user_id;
+    private Long userId;
 
     /**
      * 推荐人ID
@@ -24,7 +24,7 @@ public class AfRecommendUserDo extends AbstractSerial {
     /**
      * 是否删除
      */
-    private boolean is_delete = false;
+    private boolean isDelete = false;
 
     /**
      * 来源 0 正常数据 ，1自造假数据
@@ -34,37 +34,37 @@ public class AfRecommendUserDo extends AbstractSerial {
     /**
      * 是否己借款
      */
-    private boolean is_loan = false;
+    private boolean isLoan = false;
 
     /**
      * 借款时间
      */
-    private Date loan_time;
+    private Date loanTime;
 
     /**
      * 创建时间
      */
-    private Date gmt_create;
+    private Date gmtCreate;
 
     /**
      * 奖励金额
      */
-    private BigDecimal prize_money = BigDecimal.valueOf(0);
+    private BigDecimal prizeMoney = BigDecimal.valueOf(0);
 
     /**
      * 借款人数（假数据用）
      */
-    private int  loan_user_count = 0;
+    private int  loanUserCount = 0;
 
     /**
      * 推荐人数（假数据用）
      */
-    private int recommend_count =1;
+    private int recommendCount =1;
 
     /**
      *
      */
-    private Date gmt_modified;
+    private Date gmtModified;
 
 
     public int getId() {
@@ -76,11 +76,11 @@ public class AfRecommendUserDo extends AbstractSerial {
     }
 
     public Long getUser_id() {
-        return user_id;
+        return userId;
     }
 
     public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+        this.userId = user_id;
     }
 
     public Long getParentId() {
@@ -92,11 +92,11 @@ public class AfRecommendUserDo extends AbstractSerial {
     }
 
     public boolean isIs_delete() {
-        return is_delete;
+        return isDelete;
     }
 
     public void setIs_delete(boolean is_delete) {
-        this.is_delete = is_delete;
+        this.isDelete = is_delete;
     }
 
     public byte getOrigin() {
@@ -108,58 +108,58 @@ public class AfRecommendUserDo extends AbstractSerial {
     }
 
     public boolean isIs_loan() {
-        return is_loan;
+        return isLoan;
     }
 
     public void setIs_loan(boolean is_loan) {
-        this.is_loan = is_loan;
+        this.isLoan = is_loan;
     }
 
     public Date getLoan_time() {
-        return loan_time;
+        return loanTime;
     }
 
     public void setLoan_time(Date loan_time) {
-        this.loan_time = loan_time;
+        this.loanTime = loan_time;
     }
 
     public Date getGmt_create() {
-        return gmt_create;
+        return gmtCreate;
     }
 
     public void setGmt_create(Date gmt_create) {
-        this.gmt_create = gmt_create;
+        this.gmtCreate = gmt_create;
     }
 
     public BigDecimal getPrize_money() {
-        return prize_money;
+        return prizeMoney;
     }
 
     public void setPrize_money(BigDecimal prize_money) {
-        this.prize_money = prize_money;
+        this.prizeMoney = prize_money;
     }
 
     public int getLoan_user_count() {
-        return loan_user_count;
+        return loanUserCount;
     }
 
     public void setLoan_user_count(int loan_user_count) {
-        this.loan_user_count = loan_user_count;
+        this.loanUserCount = loan_user_count;
     }
 
     public int getRecommend_count() {
-        return recommend_count;
+        return recommendCount;
     }
 
     public void setRecommend_count(int recommend_count) {
-        this.recommend_count = recommend_count;
+        this.recommendCount = recommend_count;
     }
 
     public Date getGmt_modified() {
-        return gmt_modified;
+        return gmtModified;
     }
 
     public void setGmt_modified(Date gmt_modified) {
-        this.gmt_modified = gmt_modified;
+        this.gmtModified = gmt_modified;
     }
 }

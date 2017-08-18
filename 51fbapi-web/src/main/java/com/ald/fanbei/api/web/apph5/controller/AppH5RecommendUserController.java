@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -192,6 +193,18 @@ public class AppH5RecommendUserController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
     public String insertTestData(){
+
+        afRecommendUserService.updateRecommendByBorrow(13989455668L,new Date());
+
+        AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(13989455668L);
+
+        afRecommendUserDo.setUser_id(9999999L);
+        afRecommendUserDo.setId(0);
+//        afRecommendUserDao.addRecommendUser(afRecommendUserDo);
+//
+//        afRecommendUserDo.setPrize_money(BigDecimal.valueOf(300));
+//        afRecommendUserDao.updateLoanById(afRecommendUserDo);
+
         HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(69399);
         Long count = (Long)map.get("count");
 

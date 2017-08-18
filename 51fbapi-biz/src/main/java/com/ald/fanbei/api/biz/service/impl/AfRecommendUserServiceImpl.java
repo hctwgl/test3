@@ -54,17 +54,19 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
      */
     public int updateRecommendByBorrow(long userId, Date createTime){
         try {
+            logger.info("{updateRecommendByBorrow} userId="+userId);
             //不影响原来逻辑，不保持事物一样
             AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
             if (afRecommendUserDo != null && !afRecommendUserDo.isIs_loan()) {
                 Long count = 0L;
                 HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(userId);
+                logger.info("{update begin} userId="+userId);
                 try {
                     count = (Long) map.get("count");
                     if (count > 1) return 1;
                 }
                 catch (Exception e){
-                    
+                    logger.error("{update userBorrowError} userId="+userId);
                 }
 
                 afRecommendUserDo.setLoan_time(createTime);
