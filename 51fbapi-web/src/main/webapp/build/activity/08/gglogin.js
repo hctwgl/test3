@@ -8,6 +8,7 @@ $(function () {
     var activityId = param['activityId'];
     var userItemsId = param['userItemsId'];
     var itemsId = param['itemsId'];
+    var loginSource = param['loginSource'];
 
     var token=formatDateTime()+Math.random().toString(36).substr(2);
     // 防止风控被拒
@@ -103,7 +104,7 @@ $(function () {
                         } else if (word == "S") {
                             window.location.href = urlName + "?userName=" + userName + "&itemsId=" + itemsId + "&activityId=" + activityId;
                         } else {
-                            window.location.href = "ggIndexShare" + "?activityId=" + activityId + "&userName=" + userName;
+                            window.location.href = "ggIndexShare" + "?activityId=" + activityId + "&userName=" + userName+ "&loginSource=" + loginSource;
                         }
                     } else if (data.url == "Login") {
                         requestMsg(data.msg);
@@ -133,7 +134,7 @@ $(function () {
     //注册
     $("#gg_register").click(function () {
         //  alert(word);
-        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName+ "&loginSource=" + loginSource;
     });
 
     //忘记密码
