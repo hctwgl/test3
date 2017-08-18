@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfLoanSupermarketTabService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfLoanSupermarketDao;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo;
@@ -38,7 +40,15 @@ import com.ald.fanbei.api.web.vo.AfLoanTapsAndShops;
 import com.ald.fanbei.api.web.vo.AfScrollbarVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
+/**
+ * 
+ * <p>Title:AppBorrowLoanShopController <p>
+ * <p>Description: <p>
+ * @Copyright (c)  浙江阿拉丁电子商务股份有限公司 All Rights Reserved. 
+ * @author qiao
+ * @date 2017年8月9日下午4:39:30
+ *
+ */
 @Controller
 @RequestMapping("/borrow")
 public class AppBorrowLoanShopController extends BaseController {
@@ -87,12 +97,16 @@ public class AppBorrowLoanShopController extends BaseController {
 					Map<String, Object> map = (Map<String, Object>) obj;
 					String content = (String) map.get("content");
 					if(StringUtils.isNotBlank(content)){
-						map.put("content", content+"&linkType=h5LoanBanner");
+						if(content.contains("=")){
+							map.put("content", content+"&linkType=h5LoanBanner");
+						}else{
+							map.put("content", content+"?linkType=h5LoanBanner");
+						}
 					}
 				}
 			}
 			
-			String contextPath = request.getScheme() +"://" + request.getServerName()  + ":" +request.getServerPort() +request.getContextPath();
+			String contextPath = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
 			//重新设置linkUrl作为埋点用
 			if(list!=null){
 				for(AfLoanTapsAndShops loanTapsAndShop:list){

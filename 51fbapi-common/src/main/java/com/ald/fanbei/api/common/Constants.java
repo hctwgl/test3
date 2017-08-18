@@ -14,6 +14,9 @@ public class Constants {
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
 	public static final long SECOND_OF_ONE_DAY = 24 * 60 * 60l;
+	
+	public static final int SECOND_OF_HALF_HOUR_INT = 30 * 60;
+	public static final int SECOND_OF_AN_HOUR_INT = 60 * 60;
 
 	public static final long SECOND_OF_ONE_WEEK = 7 * 24 * 60 * 60l;
 
@@ -76,6 +79,7 @@ public class Constants {
 	public static final String INVELOMENT_TYPE_TEST = "test";
 	public static final String INVELOMENT_TYPE_ONLINE = "online";
 	public static final String INVELOMENT_TYPE_PRE_ENV = "preEnv";
+	public static final String FORMAL_APP_IDENTIFY = "www";
 
 	public static final double DEFAULT_CHARGE_MIN = 1;
 	public static final double DEFAULT_CHARGE_MAX = 50;
@@ -116,8 +120,10 @@ public class Constants {
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
+
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
+	public static final String BOLUOME_LOGIN_ERROR_TIMES  = "boluome_login_error_times$";
 
 	// res type
 	public static final String RES_APP_QRCODE_URL = "APP_QRCODE_URL";
@@ -259,6 +265,7 @@ public class Constants {
 	public static final String CONFKEY_BOLUOME_PUSH_REFUND_URL = "fbapi.boluome.push.refund.url";
 	public static final String CONFKEY_BOLUOME_ORDER_SEARCH_URL = "fbapi.boluome.order.search.url";
 	public static final String CONFKEY_BOLUOME_ORDER_CANCEL_URL = "fbapi.boluome.order.cancel.url";
+	public static final String CONFKEY_BOLUOME_COUPON_URL = "fbapi.boluome.coupon.url";
 
 	// 依图
 	public static final String CONFKEY_YITU_URL = "fbapi.yitu.url";
@@ -290,6 +297,19 @@ public class Constants {
 	
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
+	
+	//H5用户以及token cookie
+	public static final String H5_USER_NAME_COOKIES_KEY = "userName";
+	public static final String H5_USER_TOKEN_COOKIES_KEY = "token";
+	
+	public static final String H5_CACHE_USER_NAME_COOKIES_KEY = "h5_cookie_userName";
+	public static final String H5_CACHE_USER_TOKEN_COOKIES_KEY = "h5_cookie_token";
+	
+	public static final String TIRPLE_DES_KEY             = "DO3Rz7we8IW5zb2m";
+	public static final String DEFAULT_CODE               = "UTF-8";
+	public static final String H5_OPEN_ID_COOKIES_KEY = "openid";
+	
+	
 
 	//商圈
 	public static final String DEFAULT_SALT = "51fb";
@@ -300,7 +320,7 @@ public class Constants {
 	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "ala_bororw_deliver_money_lock";
 
 	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
-
-
+	//催收系统
+	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
 
 }

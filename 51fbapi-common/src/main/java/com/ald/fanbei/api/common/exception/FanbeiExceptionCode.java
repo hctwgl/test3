@@ -73,8 +73,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_PASSWORD_ERROR_THIRD("USER_PASSWORD_ERROR_THIRD",1133,"user password error third","密码输入有误,剩余次数(3)"),
     USER_PASSWORD_ERROR_FOURTH("USER_PASSWORD_ERROR_FOURTH",1134,"user password error fourth","密码输入有误,剩余次数(2)"),
     USER_PASSWORD_ERROR_FIFTH("USER_PASSWORD_ERROR_FIFTH",1135,"user password error fifth","密码输入有误,剩余次数(1)"),
-    USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_FIFTH",1136,"user password error fifth","密码输入有误,剩余次数(6)"),
-    USER_PASSWORD_OLD_ERROR("USER_PASSWORD_OLD_ERROR",1137,"user password error fifth","旧密码输入有误"),
+    USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_SIXTH",1136,"user password error sixth","密码输入有误,剩余次数(6)"),
+    USER_PASSWORD_OLD_ERROR("USER_PASSWORD_OLD_ERROR",1137,"user password old error","旧密码输入有误"),
 
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
     //优惠券不可用，不能修改code
@@ -228,7 +228,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_CASH_REPAY_AMOUNT__ERROR("BORROW_CASH_REPAY_AMOUNT_BORROW_ERROR",2006,"borrow cash repay  borrow cash error","还款金额有误请重新检查"),
     BORROW_CASH_SWITCH_NO("BORROW_CASH_SWITCH_NO",2007,"borrow cash switch error","今日放款已达上限， 明天尽早哦！"),
     BORROW_CASH_MORE_ACCOUNT_ERROR("BORROW_CASH_MORE_ACCOUNT_ERROR",2008,"borrow cash  more  account  borrow error","借款金额超过可借金额，请下拉刷新后重新提交"),
-
+    HAVE_A_PROCESS_RENEWAL_DETAIL("HAVE_A_PROCESS_RENEWAL_DETAIL",2009,"borrow a process renewal record","存在处理中续期记录,请稍后重试"),
+    
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),
     ORDER_REFUND_TYPE_ERROR("ORDER_REFUND_TYPE_ERROR",3001,"order refund type error","此订单类型暂不支持"),
@@ -253,6 +254,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),
     USER_ADDRESS_NOT_EXIST("USER_ADDRESS_NOT_EXIST",5002,"user_address_not_exist","地址信息不存在"),
+    CASH_LIMIT("CASH_LIMIT", 5003, "param error", "目前提现进行维护中,请明日再进行尝试"),
 
     //订单
     ORDER_NOT_EXIST("ORDER_NOT_EXIST",6001,"order_not_exist","订单不存在"),

@@ -279,7 +279,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 					Map<String, Object> map = (Map<String, Object>) obj;
 					String content = (String) map.get("content");
 					if(StringUtils.isNotBlank(content)){
-						map.put("content", content+"&linkType=appLoanBanner");
+						if(content.contains("=")){
+							map.put("content", content+"&linkType=appLoanBanner");
+						}else{
+							map.put("content", content+"?linkType=appLoanBanner");
+						}
 					}
 				}
 			}

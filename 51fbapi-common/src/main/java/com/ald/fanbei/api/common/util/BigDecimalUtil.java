@@ -15,7 +15,7 @@ import java.math.RoundingMode;
  */
 public class BigDecimalUtil {
 
-    public static final BigDecimal ONE_HUNDRED = new BigDecimal("100.00");
+    public static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
 
     /**
      * 加法,保留小数点两位

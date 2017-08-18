@@ -3,6 +3,43 @@
 // 从分享链接中获取code
 var recommendCode = getUrl("recommendCode");
 
+var token=formatDateTime()+Math.random().toString(36).substr(2);
+
+// 防止风控被拒
+function formatDateTime() {
+    var date = new Date();
+    var y = date.getFullYear();
+    var m = date.getMonth() + 1;
+    m = m < 10 ? ('0' + m) : m;
+    var d = date.getDate();
+    d = d < 10 ? ('0' + d) : d;
+    var h = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    return y +  m +  d +h +minute+second;
+};
+
+
+// 同盾校验编号的sessionId
+var _fmOpt;
+(function() {
+    _fmOpt = {
+        partner: 'alading',
+        appName: 'alading_web',
+        token: token
+    };
+    var cimg = new Image(1,1);
+    cimg.onload = function() {
+        _fmOpt.imgLoaded = true;
+    };
+    cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
+    var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+    fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+    // alert(json.msg);
+})();
+
+
 
 var timerInterval ;
 var timerS = 60;
@@ -22,7 +59,6 @@ var vm=new Vue({
     el: '#inviteShare',
     methods:{
         getCode(){
-            console.log(222);
             var isState = $(this).attr("isState");
             var mobileNum = $("#tel").val();
 
@@ -34,20 +70,14 @@ var vm=new Vue({
                     dataType: "JSON",
                     data: {
                         mobile: mobileNum,
-                    },
-                    beforeSend: function(){
-                        $("#codeBtn").attr("isState",1);
-                        $("#codeBtn").text(timerS+" s");
-                        timerInterval = setInterval(timeFunction,1000);
+                        token: token
                     },
                     success: function(returnData){
-                        console.log(returnData);
                         if (returnData.success) {
                             console.log(returnData);
-
-                            // $("#register_codeBtn").attr("isState",1);
-                            // $("#register_codeBtn").text(timerS+" s");
-                            // timerInterval = setInterval(timeFunction,1000);
+                            $("#codeBtn").attr("isState",1);
+                            $("#codeBtn").text(timerS+" s");
+                            timerInterval = setInterval(timeFunction,1000);
                         } else {
                             requestMsg(returnData.msg);
                             $("#codeBtn").removeAttr("disabled");
@@ -86,7 +116,8 @@ var vm=new Vue({
                                         registerMobile: telNum,
                                         smsCode: VerifiCode,
                                         password: pwdMd5,
-                                        recommendCode: recommendCode
+                                        recommendCode: recommendCode,
+                                        token: token
                                     },
                                     success: function(returnData){
                                         if ( returnData.success ) {

@@ -1,13 +1,13 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -20,10 +20,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -184,38 +186,27 @@ public class AppH5RecommendUserController extends BaseController {
     }
 
 
-
-
-
+    @Resource
+    AfOrderDao afOrderDao;
+    @Resource
+    AfBorrowCashDao afBorrowCashDao;
     @ResponseBody
     @RequestMapping(value = "insertTestData", method = RequestMethod.GET)
     public String insertTestData(){
 
-        long userId = 178;
-        HashMap totalData = afRecommendUserService.getRecommedData(userId);
-        List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_BACK_IMG");
-        HashMap ret = new HashMap();
-        ret.put("userData",totalData);
-        ret.put("pic",list);
+//        AfRecommendUserDo afRecommendUserDo1 = new AfRecommendUserDo();
+//        afRecommendUserDo1.setUser_id(201582284L);
+//        afRecommendUserDo1.setParentId(13989455667L);
+//        afRecommendUserDao.addRecommendUser(afRecommendUserDo1);
 
-        String json = JSON.toJSONString(ret);
+//        afRecommendUserService.updateRecommendByBorrow(201582284L,new Date());
 
+        HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(69399);
+        Long count = (Long)map.get("count");
 
-//        for (int i=0;i<30000;i++){
-//            long parentId = i;
-//            for(int j = 0;j<10;j++) {
-//                long userId = i*10 +j;
-//                AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
-//                afRecommendUserDo.setUser_id(userId);
-//                afRecommendUserDo.setParentId(parentId);
-//                if(j>4){
-//                    afRecommendUserDo.setIs_loan(true);
-//                    afRecommendUserDo.setLoan_time(new Date());
-//                    afRecommendUserDo.setLoan_user_count(1);
-//                }
-//                afRecommendUserDao.addRecommendUser(afRecommendUserDo);
-//            }
-//        }
+        long orderId =  217730;
+        
+
         return  "success";
     }
 

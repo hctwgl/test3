@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -24,10 +24,13 @@ import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfAppUpgradeService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -40,6 +43,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
@@ -69,6 +73,9 @@ public abstract class BaseController {
     AfAppUpgradeService afAppUpgradeService;
     @Resource
     private BizCacheUtil bizCacheUtil;
+    
+    @Resource
+    AfShopService afShopService;
 
     /**
      * 解析request
@@ -116,6 +123,7 @@ public abstract class BaseController {
                     reqData = reqData.replace("\r", "").replace("\n", "").replace(" ", "");
                 }
                 if (biLogger.isInfoEnabled()) {
+                	String url = browsingAndCertification(request,reqData);
                     String req = "";
                     String userName = "no user";
                     if (requestDataVo == null) {
@@ -140,7 +148,7 @@ public abstract class BaseController {
 							"	rmtIP=", CommonUtil.getIpAddr(request), 
 							"	userName=", userName, 
 							"	", (calEnd.getTimeInMillis() - calStart.getTimeInMillis()), 
-							"	", request.getRequestURI(),
+							"	", url,
 							"	result=",exceptionresponse == null?9999:((ApiHandleResponse)exceptionresponse).getResult().getCode(), 
 							"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
 							"	", "", 
@@ -157,6 +165,30 @@ public abstract class BaseController {
         }
         return resultStr;
     }
+    
+    /**
+	 *逛逛和实名认证埋点
+	 * 
+	 * @param reqData
+	 * @param request
+	 * @return
+	 */
+		private String browsingAndCertification(HttpServletRequest request,
+				String reqData) {
+			// TODO Auto-generated method stub
+			String url = request.getRequestURI();
+			JSONObject result = JSONObject.parseObject(reqData);
+			if("/brand/getBrandUrl".equals(url)){
+				Long shopId = NumberUtil.objToLongDefault(result.get("shopId"), null);
+				AfShopDo afShopDo = afShopService.getShopById(shopId);
+				String type = afShopDo.getType();
+				url = url+"_"+type.toLowerCase();
+			}else if("/system/maidian".equals(url)){
+				String maidianEvent = ObjectUtils.toString(result.get("maidianEvent"), null);
+				url =  maidianEvent;
+			}
+			return url;
+		}
 
     /**
      * 验证参数
@@ -227,6 +259,92 @@ public abstract class BaseController {
         }
         return context;
     }
+    
+    /**
+	 * h5接口验证，验证基础参数、签名
+	 * @param request
+	 * @param needToken
+	 * @return
+	 */
+	protected FanbeiH5Context doH5Check(HttpServletRequest request,boolean needToken){
+		FanbeiH5Context webContext = new FanbeiH5Context();
+		
+		RequestDataVo requestDataVo = parseRequestData(StringUtils.EMPTY, request);
+		
+		checkH5Sign(request,webContext,requestDataVo, needToken);
+		
+		return webContext;
+	}
+	
+	/**
+	 * 验证 token
+	 * 
+	 * @param userName
+	 *            用户名
+	 * @param time
+	 *            时间戳
+	 * @param params
+	 *            所有请求参数
+	 * @param needToken
+	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要
+	 */
+	private void checkH5Sign(HttpServletRequest request, FanbeiH5Context h5Context,RequestDataVo requestDataVo, boolean needToken) {
+		//从cookie中取openid和token
+		Map<String,String> openidToken = getUserNameToken(request);
+    	String username = openidToken.get(Constants.H5_USER_NAME_COOKIES_KEY);
+    	String tokenCookie  = openidToken.get(Constants.H5_USER_TOKEN_COOKIES_KEY);
+		
+		if(logger.isDebugEnabled()){
+			logger.debug(" username = " + username + " token= " + tokenCookie);
+		}
+		if (needToken) {//需要登录的接口必须加token
+			if (tokenCookie == null) {
+				throw new FanbeiException("no login", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}
+			String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY +  username;
+			Object token = bizCacheUtil.getObject(tokenKey);
+			if (token == null || !tokenCookie.equals(token.toString()))  {
+				throw new FanbeiException("no login", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+			}
+			if(username != null){
+				AfUserDo userInfo = afUserService.getUserByUserName(username);
+				h5Context.setUserName(username);
+				h5Context.setUserId(userInfo.getRid());
+				h5Context.setLogin(true);
+			}
+		}else{//否则服务端判断是否有token,如果有说明登入过并且未过期
+			if(tokenCookie != null && username != null){
+				AfUserDo userInfo = afUserService.getUserByUserName(username);
+				h5Context.setUserName(username);
+				h5Context.setUserId(userInfo.getRid());
+				h5Context.setLogin(true);
+			}
+		}
+		return;
+	}
+	
+	private Map<String,String> getUserNameToken(HttpServletRequest request){
+    	Map<String,String> openidAndToken = new HashMap<>();
+    	Cookie[] cookies = request.getCookies();
+    	String userName = null;
+    	String token  = null;
+    	
+    	if(cookies != null && cookies.length > 0){
+    		for(Cookie item:cookies){
+    			if(StringUtils.equals(item.getName(), Constants.H5_USER_NAME_COOKIES_KEY)){
+    				userName = item.getValue();
+    				openidAndToken.put(Constants.H5_USER_NAME_COOKIES_KEY, userName);
+    				continue;
+    			}
+    			if(StringUtils.equals(item.getName(), Constants.H5_USER_TOKEN_COOKIES_KEY)){
+    				token = item.getValue();
+    				openidAndToken.put(Constants.H5_USER_TOKEN_COOKIES_KEY, token);
+    			}
+    		}
+    	}
+    	return openidAndToken;
+    }
+
 
     /**
      * h5接口验证，验证基础参数、签名
@@ -557,7 +675,7 @@ public abstract class BaseController {
         try {
             JSONObject param = new JSONObject();
 //			String userName = "no user";
-            if (StringUtil.isBlank(userName)) {
+            if (StringUtil.isBlank(userName)) { 
                 userName = "no user";
             }
             JSONObject temp = null;
@@ -592,7 +710,7 @@ public abstract class BaseController {
 	 * @param ext4 扩展参数4
 	 * @param ext5 扩展参数5
 	 */
-	private void doLog(String reqData,H5CommonResponse respData,String httpMethod,String rmtIp,String exeT,String inter,String userName,String ext1,String ext2,String ext3,String ext4,String ext5){
+	protected void doLog(String reqData,H5CommonResponse respData,String httpMethod,String rmtIp,String exeT,String inter,String userName,String ext1,String ext2,String ext3,String ext4,String ext5){
 		webbiLog.info(StringUtil.appendStrs(
 				"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
 				"	", "h",

@@ -115,27 +115,75 @@ function domainName() {
     var domainName = protocol + '//' + host;
     return domainName;
 }
+
 //限制文字数量
-function txtFix(i, len) {
-    function cut_str(str, len) {
-        var char_length = 0;
-        if (str.length <= len) {
-            return str
-        } else {
-            for (var i = 0; i < str.length; i++) {
-                var son_str = str.charAt(i);
-                encodeURI(son_str).length > 2 ? char_length += 1 : char_length += 0.5;
-                if (char_length >= len) {
-                    var sub_len = char_length == len ? i + 1 : i;
-                    return str.substr(0, sub_len);
-                    break;
-                }
+function txtFix(str,len){
+    var char_length = 0;
+    if(str.length<=len){
+        return str
+    }else{
+        for (var i = 0; i < str.length; i++){
+            var son_str = str.charAt(i);
+            encodeURI(son_str).length > 2 ? char_length += 2 : char_length += 1;
+            if (char_length >= len){
+                var sub_len = (char_length == len) ? i+1 : i;
+                return str.substr(0, sub_len);
+                break;
             }
         }
     }
-
-    return cut_str(i, len)
 }
+
+//图片懒加载
+window.lazy = (function(window, document, undefined) {
+
+    'use strict';
+
+    var store = [],
+        offset,
+        poll;
+
+    var _inView = function(el) {
+        var coords = el.getBoundingClientRect();
+        return ((coords.top >= 0 && coords.left >= 0 && coords.top) <= ((window.innerHeight || document.documentElement.clientHeight) + parseInt(offset)));
+    };
+
+    var _pollImages = function() {
+        for (var i = store.length; i--;) {
+            var self = store[i];
+            if (_inView(self)) {
+                self.src = self.getAttribute('lazy-src');
+                store.splice(i, 1);
+            }
+        }
+    };
+
+    var _throttle = function() {
+        clearTimeout(poll);
+        poll = setTimeout(_pollImages,0);
+    };
+
+    var init = function(of) {
+        var nodes = document.querySelectorAll('[lazy-src]');
+        offset = of || 0;
+        for (var i = 0; i < nodes.length; i++) {
+            store.push(nodes[i]);
+        }
+        _throttle();
+
+        if (document.addEventListener) {
+            window.addEventListener('scroll', _throttle, false);
+        } else {
+            window.attachEvent('onscroll', _throttle);
+        }
+    };
+
+    return {
+        init: init,
+        render: _throttle
+    };
+
+})(window, document);
 
 
 // 隐藏电话号码的中间四位
@@ -145,11 +193,17 @@ function formateTelNum(tel) {
         if (telLength < 11) {
             tel = tel;
         } else if (telLength >= 11) {
-            var telNum = tel.substring(4, 7);
+            var telNum = tel.substring(3, 7);
             tel = tel.replace(telNum, "****");
         }
         return tel;
     } else {
         return "";
     }
+}
+
+//字符串替换+换行
+function formatStr(str){
+    str=str.replace(/<br\/>/g, "\n");
+    return str;
 }

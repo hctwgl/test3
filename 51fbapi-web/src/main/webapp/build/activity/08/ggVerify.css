@@ -1,0 +1,66 @@
+body{
+    background-color:white;
+    
+}
+*{
+    box-sizing:border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    -webkit-box-sizing:border-box; /* Safari */
+    font-size:0.32rem;
+}
+#verify{
+    padding:0.33rem 0.12rem 0 0.12rem;
+}
+.phoneNumber{
+    position:relative;
+}
+.phoneNumber .phoneNumber-right{
+    width:100%;
+    height:1rem;
+    border:1px solid lightgray;
+    padding-left:10%;
+}
+.phoneNumber .phoneNumber-pic{
+    width:0.32rem;
+    height:0.48rem;   
+    position:absolute;
+    top:50%;
+    left:3%;
+    transform:translateY(-50%);
+}
+
+.mesg .mesg-right{
+    width:65%;
+    height:1rem;
+    border:1px solid lightgray;
+    padding-left:10%;
+}
+.mesg {
+    margin-top:0.28rem;
+    position:relative;
+}
+.mesg  .mesg-pic{
+    width:0.48rem;
+    height:0.48rem;
+    position:absolute;
+    top:50%;
+    left:2%;
+    transform:translateY(-50%);
+}
+.mesg  .btn{
+    width:30%;
+    height:1rem;
+    margin-left:3%;
+    font-size:0.32rem;
+    background-color:white;
+    border:1px solid lightgray;
+    color:orange
+}
+.nextStep{
+    width:100%;
+    height:0.8rem;
+    color:white;
+    background-color:#FF8D2D;
+    margin-top:10%;
+    border-radius:5px;
+}

@@ -16,6 +16,7 @@ public enum TongdunEventEnmu {
 	REGISTER_ANDROID("register_professional_android","android_regist","819453cc372b4e4d8d465ba19f2b0ba7"),
 	REGISTER_IOS("register_professional_ios","ios_regist","6d16b93b8da74ba9a522cb523bbf2fa6"),
 	REGISTER_WEB("register_professional_web","web_regist","d8e4d175ec074e6eac1b71331d2f6135"),
+	SMS_WEB("SMS_web_20170316","web_sms","d8e4d175ec074e6eac1b71331d2f6135"),
 	MARKETING_ANDROID("marketing_professional_android","android_marketing","819453cc372b4e4d8d465ba19f2b0ba7"),
 	MARKETING_IOS("marketing_professional_ios","ios_marketing","6d16b93b8da74ba9a522cb523bbf2fa6"),
 	MARKETING_WEB("marketing_professional_web","web_marketing","d8e4d175ec074e6eac1b71331d2f6135"),
@@ -25,8 +26,8 @@ public enum TongdunEventEnmu {
 	LOAN_ANDROID("loan_professional_and","android_loan","819453cc372b4e4d8d465ba19f2b0ba7"),
 	LOAN_IOS("loan_professional_ios","ios_loan","6d16b93b8da74ba9a522cb523bbf2fa6"),
 	ACTIVATE_ANDROID("Activate_android_20170316","android_activate","819453cc372b4e4d8d465ba19f2b0ba7"),
-
-	PROMOTION_REGISTER_WEB("promotion_register_web","web_marketing","d8e4d175ec074e6eac1b71331d2f6135");
+	PROMOTION_REGISTER_WEB("promotion_register_web","web_marketing","d8e4d175ec074e6eac1b71331d2f6135"),
+	ACTIVATE_IOS("Activate_ios_20170316","ios_active","6d16b93b8da74ba9a522cb523bbf2fa6");
 	
 	
 	private static Map<String,TongdunEventEnmu> menueMap = null;

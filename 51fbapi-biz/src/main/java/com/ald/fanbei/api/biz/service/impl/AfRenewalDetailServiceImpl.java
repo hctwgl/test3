@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -24,6 +25,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -80,6 +82,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	AfUserAccountLogDao afUserAccountLogDao;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	CollectionSystemUtil collectionSystemUtil;
 
 	@Override
 	public Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo) {
@@ -200,6 +204,13 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					//当续期成功时,同步逾期天数为0
 					dealWithSynchronizeOverduedOrder(afBorrowCashDo);
 					
+					//返呗续期通知接口，向催收平台同步续期信息
+					try {
+						CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(afBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
+						logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+					}catch(Exception e){
+						logger.error("向催收平台同步续期信息",e);
+					}
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -220,7 +231,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
 		boList.add(parseOverduedBorrowBo(borrowCashInfo.getBorrowNo(), 0,null));
 		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
-		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		try {
+			riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		} catch (Exception e) {
+			logger.error("续借成功时给风控传输数据出错", e);
+		}
+		
 		logger.info("dealWithSynchronizeOverduedOrder completed");
 	}
 	
