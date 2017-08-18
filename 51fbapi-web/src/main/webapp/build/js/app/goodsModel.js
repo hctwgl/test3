@@ -2,7 +2,6 @@
  * Created by nizhiwei-labtop on 2017/8/16.
  */
 let activityId=getUrl('activityId');
-let windowW = $(window).outerWidth();
 // // app调用web的方法
 // let shareData=[
 //     {title:'分期购物无忧 3/6/9/12免息',content:'分期无忧 拯救剁手党,90后消费哲学潮这里 我的 我的 都是我的！'},

@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" id="css" type="text/css" href="/dist/css/app/goodsModel.css">
+    <script>
+        var title=decodeURI(getUrl('title'));
+        if(title){
+            document.title=title;
+        }else{
+            document.title='商品列表';
 
+        }
+    </script>
 </head>
 <body>
 <div id="vueCon">
-    <title>{{content.data.title}}</title>
-
+    <title></title>
     <img class="banner" :src="content.data.bannerUrl">
     <div class="recommend">
         <h2>{{content.data.oneLevelGoodsInfo.title}}</h2>
