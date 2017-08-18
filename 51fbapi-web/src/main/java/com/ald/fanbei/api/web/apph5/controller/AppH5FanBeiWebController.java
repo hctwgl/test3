@@ -657,7 +657,8 @@ public class AppH5FanBeiWebController extends BaseController {
 					String accessUrl = afLoanSupermarket.getLinkUrl();
 					accessUrl = accessUrl.replaceAll("\\*", "\\&");
 					logger.info("贷款超市app点击banner请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+afUserDo.getRid());
-					String extraInfo = "appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
+					String sysModeId = request.getParameter("sysModeId");
+					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
 					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
 					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
 					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
