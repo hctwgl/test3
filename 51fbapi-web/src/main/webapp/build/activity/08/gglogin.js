@@ -9,7 +9,8 @@ $(function () {
     var userItemsId = param['userItemsId'];
     var itemsId = param['itemsId'];
     var loginSource = param['loginSource'];
-
+    console.log(param)
+    
     var token=formatDateTime()+Math.random().toString(36).substr(2);
     // 防止风控被拒
     function formatDateTime() {
@@ -93,7 +94,7 @@ $(function () {
                     password: password_md5,
                     activityId: activityId,
                     refUserName: userName,
-                    urlName: word,
+                    urlName: urlName,
                     token:token
                     
                 },
