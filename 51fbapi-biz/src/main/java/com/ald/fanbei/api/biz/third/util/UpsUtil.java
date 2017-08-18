@@ -705,6 +705,34 @@ public class UpsUtil extends AbstractThird {
     	return respPro.getProperty("result_code");
 	}
 	
+	/**
+	 * 查看微信支付流水订单信息
+	 * @param out_trade_no 支付流水
+	 * @return
+	 * @throws Exception
+	 */
+	public static String wxQueryOrder(String out_trade_no) throws Exception {
+    	
+		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_APPID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String mchId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_WX_MCHID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String certPath = ConfigProperties.get(Constants.CONFKEY_WX_CERTPATH);
+    	
+       
+    	Map<String,Object> param = new HashMap<String,Object>();
+    	param.put("appid", appId);
+    	param.put("mch_id", mchId);
+    	param.put("nonce_str", DigestUtil.MD5(UUID.randomUUID().toString()));
+    	param.put("out_trade_no", out_trade_no);
+    	
+    	String sign = WxSignBase.byteToHex(WxSignBase.MD5Digest((WxpayCore.toQueryString(param)).getBytes(Constants.DEFAULT_ENCODE)));
+    	param.put(WxpayConfig.KEY_SIGN, sign);
+    	String buildStr = WxpayCore.buildXMLBody(param);
+    	String result = WxpayCore.refundPost(WxpayConfig.WX_ORDERQUERY_API, buildStr,mchId,certPath);
+    	logger.info("wxRefund result = {}", result);
+    	Properties respPro = WxXMLParser.parseXML(result);
+    	return respPro.getProperty("result_code");
+	}
+	
 	//微信支付
 	public static Map<String,Object> buildWxpayTradeOrder(String orderNo,Long userId,String goodsName,BigDecimal totalFee,String attach) {
 		Map<String,Object> result = buildWxpayTradeOrderRepayment(orderNo,userId,goodsName,totalFee,attach,false);
