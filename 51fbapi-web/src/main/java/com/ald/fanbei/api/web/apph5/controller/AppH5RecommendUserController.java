@@ -199,15 +199,13 @@ public class AppH5RecommendUserController extends BaseController {
 //        afRecommendUserDo1.setParentId(13989455667L);
 //        afRecommendUserDao.addRecommendUser(afRecommendUserDo1);
 
-        afRecommendUserService.updateRecommendByBorrow(201582284L,new Date());
+//        afRecommendUserService.updateRecommendByBorrow(201582284L,new Date());
 
         HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(69399);
         Long count = (Long)map.get("count");
 
         long orderId =  217730;
-
-        AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
-        BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(afOrderDo.getBorrowRate());
+        
 
         return  "success";
     }
