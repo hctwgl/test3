@@ -9,7 +9,6 @@
             document.title=title;
         }else{
             document.title='商品列表';
-
         }
     </script>
 </head>
