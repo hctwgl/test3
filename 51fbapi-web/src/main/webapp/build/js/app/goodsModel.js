@@ -79,8 +79,10 @@ new Vue({
                 success:function (res) {
                     self.content = JSON.parse(res);
                     console.log(self.content);
+                    document.title='gg1';
+
                     self.$nextTick(function () {                              //dom渲染完成后执行
-                       document.title=self.content.data.title;
+                       document.title='gg';
                         $('body').css('background',self.content.data.bgColor);
                        $('.monthPrice').css('background',self.content.data.btnColor);
                         lazy.init()
