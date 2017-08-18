@@ -294,7 +294,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			bannerResultList = bannerList;
 		}
 
-		List<Object> _bannerResultList = new ArrayList<>();
+		/*List<Object> _bannerResultList = new ArrayList<>();
 		List<AfResourceDo> recommend_imgs = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");//获取活动图片
 		if(recommend_imgs != null && recommend_imgs.size()>0) {
 			for (AfResourceDo afResourceDo : recommend_imgs) {
@@ -309,13 +309,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				_bannerResultList.add(obj);
 			}
 
-		}
-
-
+		}*/
 
 		data.put("scrollbar", scrollbarVo);
-//		data.put("bannerList", bannerResultList);
-		data.put("bannerList", _bannerResultList);
+		data.put("bannerList", bannerResultList);
+		//data.put("bannerList", _bannerResultList);
 		data.put("inRejectLoan", inRejectLoan);
 		data.put("jumpToRejectPage", jumpToRejectPage);
 		data.put("jumpPageBannerUrl", jumpPageBannerUrl);
