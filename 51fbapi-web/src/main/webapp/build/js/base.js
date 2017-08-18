@@ -197,7 +197,7 @@ function formateTelNum(tel) {
         if (telLength < 11) {
             tel = tel;
         } else if (telLength >= 11) {
-            var telNum = tel.substring(4, 7);
+            var telNum = tel.substring(3, 7);
             tel = tel.replace(telNum, "****");
         }
         return tel;
