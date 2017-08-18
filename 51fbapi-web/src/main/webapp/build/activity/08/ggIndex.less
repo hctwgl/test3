@@ -183,16 +183,6 @@ body{
   left:0;
   top:0;
 }
-/*.ggIndex .cardList .card .cardMask{
-  position:absolute;
-  width:1.75rem;
-  height:2.52rem;
-  top:0;
-  left:0;
-  background: #211e1e;
-  opacity: .7;
-  border-radius: .1rem;
-}*/
 .ggIndex .cardList .card .num{
   position:absolute;
   background:#ffbc1b;
@@ -433,7 +423,8 @@ body{
 }
 .ggIndex .alertPresent .imgList .img{
   position: absolute;
-  transition: width 0.4s,height 0.4s,top 0.4s,left 0.4s,z-index 0.4s,opacity 0.4s;
+  /*transition: width .5s,height .5s,top .5s,left .5s,z-index 0.5s ;*/
+  transition: all .4s ease;
 }
 .ggIndex .alertPresent .imgList .img .cardMask{
   position: absolute;
@@ -444,6 +435,14 @@ body{
   background: #fff;
   opacity: .5;
   border-radius: 3%;
+}
+.ggIndex .alertPresent .imgList .img .cardBlur { 
+    filter: url(blur.svg#blur);
+    -webkit-filter: blur(.02rem);
+       -moz-filter: blur(.02rem);
+        -ms-filter: blur(.02rem);    
+            filter: blur(.02rem);  
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=5, MakeShadow=false);
 }
 .ggIndex .alertPresent .imgList .img .num{
   position:absolute;
@@ -467,7 +466,6 @@ body{
   top: 30%;
   left: -50%;
   z-index: 1;
-  opacity: .5;
 }
 .ggIndex .alertPresent .imgList .img2{
   width: 2.73rem;
@@ -475,18 +473,15 @@ body{
   top: .68rem;
   left: 0;
   z-index: 2;
- /* -webkit-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
-  -o-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
-  -moz-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
-  box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);*/
+  /*transition: all .2s linear;*/
 }
 .ggIndex .alertPresent .imgList .img3{
   width: 3.22rem;
   height: 4.79rem;
   top: 0.265rem;
-  left: 50%;
+  left: 23%;
   z-index: 3;
-  transform: translateX(-1.61rem);
+/*transition: all .3s linear;*/
 }
 .ggIndex .alertPresent .imgList .img4{
   width: 2.73rem;
@@ -494,10 +489,7 @@ body{
   top: .68rem;
   left: 54%;
   z-index: 2;
-  /*-webkit-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
-  -o-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
-  -moz-box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);
-  box-shadow:0 .02rem .09rem .03rem rgba(0,0,0,0.2);*/
+ /* transition: all .6s ease;*/
 }
 .ggIndex .alertPresent .imgList .img5{
   width: 40%;
@@ -505,7 +497,6 @@ body{
   top: 30%;
   left: 110%;
   z-index: 1;
-  opacity: .5;
 }
 .ggIndex .alertPresent .close{
   width:.56rem;
@@ -538,14 +529,6 @@ body{
   overflow: hidden;
   height:100%;
 }
-/*.gray {
-  -webkit-filter: grayscale(100%);
-  -moz-filter: grayscale(100%);
-  -ms-filter: grayscale(100%);
-  -o-filter: grayscale(100%);
-  filter: grayscale(100%);
-  filter: gray;
-}*/
 .ggIndex .alertFinalPrize{
   width:5.61rem;
   height:6.41rem;
