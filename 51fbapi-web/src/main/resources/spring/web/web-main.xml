@@ -171,6 +171,7 @@
 
 				<entry key="/user/signin" value-ref="signinApi" />
 
+
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />

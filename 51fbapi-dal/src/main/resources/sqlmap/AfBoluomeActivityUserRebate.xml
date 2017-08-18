@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_boluome_activity_user_rebate表:'第三方-上树请求记录模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserRebateDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,order_id,rebate,ref_order_id,ref_user_id,invite_rebate 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="boluomeActivityId != null and boluomeActivityId != ''">
+            AND boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="userName != null and userName != ''">
+            AND user_name = #{userName,jdbcType=VARCHAR}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId,jdbcType=INTEGER}
+        </if>
+        <if test="rebate != null and rebate != ''">
+            AND rebate = #{rebate,jdbcType=DECIMAL}
+        </if>
+        <if test="refOrderId != null and refOrderId != ''">
+            AND ref_order_id = #{refOrderId,jdbcType=INTEGER}
+        </if>
+        <if test="refUserId != null and refUserId != ''">
+            AND ref_user_id = #{refUserId,jdbcType=INTEGER}
+        </if>
+        <if test="inviteRebate != null and inviteRebate != ''">
+            AND invite_rebate = #{inviteRebate,jdbcType=DECIMAL}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_boluome_activity_user_rebate
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="boluomeActivityId != null">        
+	            boluome_activity_id,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="userName != null">        
+	            user_name,
+	        </if>
+	        <if test="orderId != null">        
+	            order_id,
+	        </if>
+	        <if test="rebate != null">        
+	            rebate,
+	        </if>
+	        <if test="refOrderId != null">        
+	            ref_order_id,
+	        </if>
+	        <if test="refUserId != null">        
+	            ref_user_id,
+	        </if>
+	        <if test="inviteRebate != null">        
+	            invite_rebate,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="boluomeActivityId != null" >
+		       #{boluomeActivityId,jdbcType=INTEGER},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="userName != null" >
+		       #{userName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="orderId != null" >
+		       #{orderId,jdbcType=INTEGER},
+		    </if>
+		    <if test="rebate != null" >
+		       #{rebate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="refOrderId != null" >
+		       #{refOrderId,jdbcType=INTEGER},
+		    </if>
+		    <if test="refUserId != null" >
+		       #{refUserId,jdbcType=INTEGER},
+		    </if>
+		    <if test="inviteRebate != null" >
+		       #{inviteRebate,jdbcType=DECIMAL},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo">
+        UPDATE af_boluome_activity_user_rebate
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="boluomeActivityId != null and boluomeActivityId != '' ">        
+                boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="userName != null and userName != '' ">        
+                user_name = #{userName,jdbcType=VARCHAR},                
+            </if>
+            <if test="orderId != null and orderId != '' ">        
+                order_id = #{orderId,jdbcType=INTEGER},                
+            </if>
+            <if test="rebate != null and rebate != '' ">        
+                rebate = #{rebate,jdbcType=DECIMAL},                
+            </if>
+            <if test="refOrderId != null and refOrderId != '' ">        
+                ref_order_id = #{refOrderId,jdbcType=INTEGER},                
+            </if>
+            <if test="refUserId != null and refUserId != '' ">        
+                ref_user_id = #{refUserId,jdbcType=INTEGER},                
+            </if>
+            <if test="inviteRebate != null and inviteRebate != '' ">        
+                invite_rebate = #{inviteRebate,jdbcType=DECIMAL}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_rebate
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_rebate
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_rebate
+        <include refid="commonCondition"/>
+    </select>
+
+	<select id="getRebateCountNumber"  resultType="com.ald.fanbei.api.dal.domain.query.AfBoluomeActivityUserRebateQuery"  parameterType="com.ald.fanbei.api.dal.domain.query.AfBoluomeActivityUserRebateQuery">
+       SELECT count(0) fanLiRecordTime  from af_boluome_activity_user_rebate user
+ 	    left JOIN 
+		af_boluome_activity_user_rebate  refUser 
+		on  
+			user.order_id = refUser.ref_order_id
+		where 
+			refUser.gmt_create 
+		BETWEEN 
+			#{lastTime} and #{orderTime}
+		AND 
+	   	 user.user_id = #{userId}
+	    AND  
+	    refUser. ref_user_id= #{refUserId} 
+    </select>
+    
+    <select id = "getBankList" resultType="com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo">
+    	SELECT
+			user_name,
+			SUM(rebate) + SUM(invite_rebate) AS total_rebate,
+			SUM(invite_rebate) AS invite_rebate
+		FROM
+			af_boluome_activity_user_rebate
+		WHERE
+			boluome_activity_id = 1
+		GROUP BY
+			user_name
+		ORDER BY
+			total_rebate;
+    </select>
+</mapper>
