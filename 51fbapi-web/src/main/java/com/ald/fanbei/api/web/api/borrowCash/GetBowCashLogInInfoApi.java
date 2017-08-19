@@ -206,17 +206,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 
 		data.put("bankDoubleRate", bankService.toString());
-		data.put("poundageRate", rate.get("poundage"));
 		data.put("overdueRate", rate.get("overduePoundage"));
 		data.put("maxAmount", calculateMaxAmount(usableAmount));
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 
-		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
-		if (poundageRateCash != null) {
-			data.put("poundageRate", poundageRateCash);
-		}
-		
 		data.put("lender", rate.get("lender"));
 
 		if (account != null) {
@@ -420,11 +414,16 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("showPacket", "Y");
 		try {
 			/**add by fmai 用户点击借钱页面时去风控获取用户的借钱手续费*/
-			getUserPoundageRate(userId, data, inRejectLoan, data.get("poundageRate").toString());
+			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
 		} catch (Exception e) {
 			logger.info("从风控获取分层用户额度失败：" + e);
 		}
-
+		
+		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
+		if (poundageRateCash != null) {
+			data.put("poundageRate", poundageRateCash);
+		}
+		
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -446,7 +445,6 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 				if (new BigDecimal(poundageRate).compareTo(userPoundageRate) < 0 && StringUtils.equals(inRejectLoan, YesNoStatus.NO.getCode())) {
 					data.put("showRatePopup", "Y");
-					data.put("poundageRate", poundageRate.toString());
 				}
 				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate, Constants.SECOND_OF_ONE_MONTH);
 				
