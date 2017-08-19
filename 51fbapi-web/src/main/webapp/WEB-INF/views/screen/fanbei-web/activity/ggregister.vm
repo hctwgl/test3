@@ -18,7 +18,9 @@
         <div class="phone">
             <span class="bicon"></span>
             <input type="tel" maxLength=11 minLength=11  placeholder="请输入登录手机号" id="mobile" class="pinp mobile">
-            <span class="xxicon mmicon"><img src="$src/fork.png" alt=""></span>
+            <span class="big-one">
+                <span class="xxicon mmicon"><img src="$src/fork.png" alt=""></span>
+            </span>
         </div>
         <div class="pcheck phone">
             <span class="bicon"></span>
@@ -28,7 +30,9 @@
         <div class="phone password">
             <span class="bicon"></span>
             <input type="password" maxLength=11 minLength=11  placeholder="请输入密码" id="pasicon"  class="pinp mobile" id="password">
-            <span class="xxicon pasicon"><img src="$src/fork.png" alt=""></span>
+            <span class="big-two">
+                <span class="xxicon pasicon"><img src="$src/fork.png" alt=""></span>
+            </span>
         </div>
         <div class="loginbtn">
             立即注册

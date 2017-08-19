@@ -68,13 +68,13 @@ $(function () {
 
     // 密碼叉叉點擊清楚所有文字
 
-    $('.mmicon').click(function(){
+    $('.big-one').click(function(){
         $("#mobile").val('');
         // console.log( $("#mobile").val());
         // $('.mmicon').css("display","none");
     });
 
-    $('.pasicon').click(function(){
+    $('.big-two').click(function(){
         $("#pasicon").val('');
         // console.log( $("#mobile").val());
         // $('.mmicon').css("display","none");
