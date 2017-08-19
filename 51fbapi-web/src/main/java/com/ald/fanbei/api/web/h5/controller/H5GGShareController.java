@@ -612,8 +612,8 @@ public class H5GGShareController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
-			String userName = context.getUserName();
-			 //String userName = request.getParameter("userName");
+			//TODO:String userName = context.getUserName();
+			 String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 			if (userId == null) {
@@ -629,7 +629,7 @@ public class H5GGShareController extends H5Controller {
 						.getById(resourceUserItemsId);// old卡片的内容
 				if (resourceUserItemsDo != null) {
 					//查看卡片是否过期 resourceUserItemsId
-					if (!resourceUserItemsDo.getStatus().equals("FROZEDN") ) {
+					if (!resourceUserItemsDo.getStatus().equals("FROZEN") ) {
 						if (resourceUserItemsDo.getStatus().equals("SENT")) {
 							return H5CommonResponse.getNewInstance(true, "卡片已被其他用户领取，不能领取").toString();
 						}
