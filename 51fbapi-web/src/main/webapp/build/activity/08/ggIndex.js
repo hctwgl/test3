@@ -26,7 +26,7 @@ let vm = new Vue({
                 url: "/H5GG/initHomePage",
                 data:{'activityId':activityId},
                 success: function (data) {
-                    $('.positionImg').fadeOut(2000);
+                    $('.positionImg').fadeOut(4000);
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
                     console.log(typeof(self.content.boluomeCouponList[0]))
