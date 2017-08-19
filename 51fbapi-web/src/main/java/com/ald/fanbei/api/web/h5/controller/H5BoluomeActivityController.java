@@ -104,7 +104,6 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			}
 		}
 		
-		
 		String cacheKey = Constants.BOLUOME_LOGIN_ERROR_TIMES + userName;
 		int errorCount =  NumberUtil.objToIntDefault((bizCacheUtil.getObject(cacheKey)), 0);
 		if(errorCount<5){
@@ -163,13 +162,13 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 				   //登录成功进行埋点
 					if(loginSource  != null ){
 						String login = "";
-					if("Z".equals(loginSource)){
+					if("ggpresents".equals(loginSource)){
 						login =  "zengsong";
 					}
-					if("F".equals(loginSource)){
+					if("ggIndexShare".equals(loginSource)){
 						login =  "fenxiang";
 					}
-					if("S".equals(loginSource)){
+					if("ggdemand".equals(loginSource)){
 						login =  "suoyao";
 					}
 					String reqData  = request.toString();
@@ -279,13 +278,13 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 			//注册成功进行埋点
 				if(registerSource != null ){
 					String register = "";
-				if("Z".equals(registerSource)){
+				if("ggpresents".equals(registerSource)){
 					register =  "zengsong";
 				}
-				if("F".equals(registerSource)){
+				if("ggIndexShare".equals(registerSource)){
 					register =  "fenxiang";
 				}
-				if("S".equals(registerSource)){
+				if("ggdemand".equals(registerSource)){
 					register =  "suoyao";
 			    }
 				String reqData  = request.toString();

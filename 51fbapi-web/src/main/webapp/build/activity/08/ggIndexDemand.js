@@ -37,10 +37,11 @@ $(function() {
                     for (var j = 0; j < presentCardList.length; j++) {
                         str += '<div class="img" name="'+presentCardList[j].name+'" rid="' + presentCardList[j].rid + '"><img src="' + presentCardList[j].iconUrl + '"></div>';
                     }
+                    $('.imgList').append(str);
+                    slideNub = $(".imgList .img").size();//获取轮播图片数量
+                    getData(slideNub);
                 }
-                $('.imgList').append(str);
-                slideNub = $(".imgList .img").size();//获取轮播图片数量
-                getData(slideNub)
+                
             },
             error: function () {
                 requestMsg("请求失败");
@@ -158,10 +159,10 @@ function k_touch() {
     }
     function touchEnd(event) {
         if (_end < -100) {
-            left();
+           // left();
             _end=0;
         }else if(_end > 100){
-            right();
+            //right();
             _end=0;
         }
     }
