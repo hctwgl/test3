@@ -48,8 +48,8 @@ public class SubmitShareActionApi implements ApiHandle {
 		if("gameShare".equals(sharePage)){
 			afGameChanceService.dealWithShareGame(context.getMobile());
 		}
-		if("ggShare".equals(sharePage)){
-			maidianLog.info(context.getUserName() + "ggShare");
+		if("ggIndexShare".equals(sharePage)){
+			maidianLog.info(context.getUserName() + "ggIndexShare");
 		}
 		return resp;
 	}
