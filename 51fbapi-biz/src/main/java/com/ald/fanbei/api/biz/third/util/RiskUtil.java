@@ -1751,7 +1751,6 @@ public class RiskUtil extends AbstractThird {
 		String url = getUrl() + "/modules/api/risk/userRate.htm";
 //		String url = "http://192.168.110.22:80/modules/api/risk/userRate.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
-
 		logThird(reqResult, "getUserLayRate", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
