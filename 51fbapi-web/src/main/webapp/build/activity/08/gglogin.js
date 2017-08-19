@@ -99,7 +99,7 @@ $(function () {
                     
                 },
                 success: function (data) {
-                    alert(urlName);
+                    // alert(urlName);
                     console.log(data)
                     if (data.success) {
                         if (word == "Z") {
