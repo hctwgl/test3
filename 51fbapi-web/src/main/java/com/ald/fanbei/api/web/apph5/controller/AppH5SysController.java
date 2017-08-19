@@ -234,6 +234,11 @@ public class AppH5SysController extends BaseController {
 		model.put("dayRate", bankService);
 		
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
+		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
+		if (poundageRateCash != null) {
+			poundage = new BigDecimal(poundageRateCash);
+		}
+		
 		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 		model.put("poundageRate", poundage);//手续费率
 		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
