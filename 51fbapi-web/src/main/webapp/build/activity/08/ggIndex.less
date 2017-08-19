@@ -437,12 +437,17 @@ body{
   opacity: .5;
   border-radius: 3%;
 }
-.ggIndex .alertPresent .imgList .img .cardBlur { 
+.ggIndex .alertPresent .imgList .img .cardBlur {
+  width:101%;
+  height:102%;
+  position: absolute;
+  left:-.3%;
+  top: 0;
     filter: url(blur.svg#blur);
     -webkit-filter: blur(.01rem);
-       -moz-filter: blur(.01rem);
-        -ms-filter: blur(.01rem);
-            filter: blur(.01rem);
+    -moz-filter: blur(.01rem);
+    -ms-filter: blur(.01rem);
+    filter: blur(.01rem);
     filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=3, MakeShadow=false);
 }
 .ggIndex .alertPresent .imgList .img .num{
@@ -474,7 +479,9 @@ body{
   top: .68rem;
   left:-1.7%;
   z-index: 2;
-  /*transition: all .2s linear;*/
+}
+.ggIndex .alertPresent .imgList .img2 .num{
+  display: none;
 }
 .ggIndex .alertPresent .imgList .img3{
   width: 3.22rem;
@@ -482,7 +489,9 @@ body{
   top: 0.265rem;
   left: 23%;
   z-index: 3;
-/*transition: all .3s linear;*/
+}
+.ggIndex .alertPresent .imgList .img3 .cardBlur{
+  display:none;
 }
 .ggIndex .alertPresent .imgList .img4{
   width: 2.73rem;
@@ -490,7 +499,9 @@ body{
   top: .68rem;
   left: 55%;
   z-index: 2;
- /* transition: all .6s ease;*/
+}
+.ggIndex .alertPresent .imgList .img4 .num{
+display: none;
 }
 .ggIndex .alertPresent .imgList .img5{
   width: 40%;
