@@ -165,6 +165,7 @@ public class APPH5GGShareController extends BaseController {
 							String url = getCouponUrl() + "?" + "app_id=" + app_id + "&user_id=" + user_id
 									+ "&campaign_id=" + campaign_id;
 							String reqResult = HttpUtil.doGet(url, 10);
+							logger.info("initHomePage getCouponUrl reqResult = {}", reqResult);
 							if (!StringUtil.isBlank(reqResult)) {
 								ThirdResponseBo thirdResponseBo = JSONObject.parseObject(reqResult,
 										ThirdResponseBo.class);
@@ -252,13 +253,14 @@ public class APPH5GGShareController extends BaseController {
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-			// doMaidianLog(request, resultStr);
+			logger.info("resultStr = {}", resultStr);
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
-			logger.error("活动点亮初始化数据失败", e);
+			logger.error("resultStr = {}", resultStr);
+			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", e,resultStr);
 		} catch (Exception exception) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
-			logger.error("活动点亮初始化数据失败", exception);
+			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", exception,resultStr);
 		}
 
 		return resultStr;
