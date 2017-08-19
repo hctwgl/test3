@@ -212,7 +212,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 
-		BigDecimal poundageRateCash = (BigDecimal) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
 		if (poundageRateCash != null) {
 			data.put("poundageRate", poundageRateCash);
 		}
