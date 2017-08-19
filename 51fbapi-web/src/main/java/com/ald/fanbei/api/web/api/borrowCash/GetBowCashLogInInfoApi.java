@@ -420,7 +420,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		
 		try {
 			/**add by fmai 用户点击借钱页面时去风控获取用户的借钱手续费*/
-			getUserPoundageRate(userId, data, inRejectLoan);
+			getUserPoundageRate(userId, data, inRejectLoan, data.get("poundageRate").toString());
 		} catch (Exception e) {
 			logger.info("从风控获取分层用户额度失败：" + e);
 		}
@@ -429,7 +429,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		return resp;
 	}
 
-	private void getUserPoundageRate(Long userId, Map<String, Object> data, String inRejectLoan) {
+	private void getUserPoundageRate(Long userId, Map<String, Object> data, String inRejectLoan, String poundage) {
 		Date saveRateDate =  (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
 //		if (saveRateDate==null || DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
 			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
@@ -437,11 +437,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 				logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);
 
-				BigDecimal poundageRateCash = (BigDecimal) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+				String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
 
 				BigDecimal userPoundageRate = BigDecimal.ZERO;
 				if (poundageRateCash != null) {  
-					userPoundageRate = poundageRateCash;
+					userPoundageRate = new BigDecimal(poundageRateCash);
 				}
 
 				if (new BigDecimal(poundageRate).compareTo(userPoundageRate) < 0 && StringUtils.equals(inRejectLoan, YesNoStatus.NO.getCode())) {
@@ -451,6 +451,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate, Constants.SECOND_OF_ONE_MONTH);
 				
 				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);				
+			} else {
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage, Constants.SECOND_OF_ONE_MONTH);
 			}
 //		}
 	}

@@ -84,9 +84,9 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 				rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
 			}
 			BigDecimal borrowCashPoundage = new BigDecimal(resource.getValue1());
-			BigDecimal poundageRateCash = (BigDecimal) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userDto.getUserId());
+			String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userDto.getUserId()).toString();
 			if (poundageRateCash != null) {
-				borrowCashPoundage = poundageRateCash;
+				borrowCashPoundage = new BigDecimal(poundageRateCash);
 			}
 			data.put("cashRate", new BigDecimal(resource.getValue()));
 			data.put("poundageRate", borrowCashPoundage);

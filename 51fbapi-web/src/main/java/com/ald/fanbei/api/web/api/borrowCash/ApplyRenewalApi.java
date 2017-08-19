@@ -84,9 +84,9 @@ public class ApplyRenewalApi implements ApiHandle {
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
 		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）
-		BigDecimal poundageRateCash = (BigDecimal) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + afBorrowCashDo.getUserId());
+		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + afBorrowCashDo.getUserId()).toString();
 		if (poundageRateCash != null) {
-			borrowCashPoundage = poundageRateCash;
+			borrowCashPoundage = new BigDecimal(poundageRateCash);
 		}
 		//未还金额
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
