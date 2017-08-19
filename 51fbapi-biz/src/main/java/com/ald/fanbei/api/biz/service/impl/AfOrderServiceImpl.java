@@ -683,12 +683,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 boluomeActivity(afOrder);
                             }
                         }
-						Date startTime = afBoluomeActivityDo.getGmtCreate();
-						Date endTime = afBoluomeActivityDo.getGmtEnd();
-						if(DateUtil.afterDay(endTime,afOrder.getGmtCreate()) && DateUtil.afterDay(afOrder.getGmtCreate(),startTime)){
-							boluomeActivity(afOrder);
-						}
-					     
 						break;
 					default:
 						logger.info(" status is {} ",afOrder.getStatus());
