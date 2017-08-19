@@ -9,8 +9,8 @@ $(function () {
     var userItemsId = param['userItemsId'];
     var itemsId = param['itemsId'];
     var loginSource = param['loginSource'];
-    // var word = param['loginSource'];
-
+    console.log(param)
+    
     var token=formatDateTime()+Math.random().toString(36).substr(2);
     // 防止风控被拒
     function formatDateTime() {
@@ -94,12 +94,12 @@ $(function () {
                     password: password_md5,
                     activityId: activityId,
                     refUserName: userName,
-                    urlName: word,
+                    urlName: urlName,
                     token:token
                     
                 },
                 success: function (data) {
-
+                    // alert(urlName);
                     console.log(data)
                     if (data.success) {
                         if (word == "Z") {
@@ -137,7 +137,7 @@ $(function () {
     //注册
     $("#gg_register").click(function () {
         //  alert(word);
-        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName+ "&loginSource=" + loginSource;
+        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName+ "&word=" + loginSource;
     });
 
     //忘记密码

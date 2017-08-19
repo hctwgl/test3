@@ -676,6 +676,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						AfBoluomeActivityDo activityDo = new AfBoluomeActivityDo();
 						activityDo.setStatus("O");
 						AfBoluomeActivityDo afBoluomeActivityDo =  afBoluomeActivityDao.getByCommonCondition(activityDo);
+						if(afBoluomeActivityDo !=null){
+                            Date startTime = afBoluomeActivityDo.getGmtCreate();
+                            Date endTime = afBoluomeActivityDo.getGmtEnd();
+                            if(DateUtil.afterDay(endTime,afOrder.getGmtCreate()) && DateUtil.afterDay(afOrder.getGmtCreate(),startTime)){
+                                boluomeActivity(afOrder);
+                            }
+                        }
 						Date startTime = afBoluomeActivityDo.getGmtCreate();
 						Date endTime = afBoluomeActivityDo.getGmtEnd();
 						if(DateUtil.afterDay(endTime,afOrder.getGmtCreate()) && DateUtil.afterDay(afOrder.getGmtCreate(),startTime)){
@@ -745,40 +752,35 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			  //给他人返利
 			    AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
 			    if(userLoginRecord!=null){    
-			    	Long refUserId = userLoginRecord.getRefUserId();
-			    	AfBoluomeActivityUserLoginDo refUserLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByRefUserId(refUserId);
-			    	if(refUserLoginRecord!=null && refUserLoginRecord.getUserId().equals(userId)){
-			    		
-			    		//最后绑定时间，和当前下单时间
-			    	   Date lastTime = refUserLoginRecord.getGmtCreate();
-			    	   Date orderTime = afOrder.getGmtCreate();
-			    	   AfBoluomeActivityUserRebateQuery userRebateQuery = new  AfBoluomeActivityUserRebateQuery();
-			    	   userRebateQuery.setLastTime(lastTime);
-			    	   userRebateQuery.setOrderTime(orderTime);
-			    	   userRebateQuery.setUserId(userId);
-			    	   userRebateQuery.setRefUserId(refUserLoginRecord.getRefUserId());
-			    	 //查询时间内是否有对应的返利记录
-			    	   AfBoluomeActivityUserRebateQuery RebateQueryResult  = afBoluomeActivityUserRebateDao.getRebateCountNumber(userRebateQuery);
-			    	   if(RebateQueryResult.getFanLiRecordTime()<1){
-							//进行返利
-							AfBoluomeActivityUserRebateDo refMessage = new AfBoluomeActivityUserRebateDo();
-							refMessage.setUserId(userId);
-							refMessage.setUserName(afUserDo.getUserName());
-							refMessage.setRefUserId(refUserLoginRecord.getRefUserId());
-							refMessage.setBoluomeActivityId(refUserLoginRecord.getBoluomeActivityId());
-							refMessage.setRefOrderId(afOrder.getRid());//id还是orderNo?
-							refMessage.setInviteRebate(afOrder.getRebateAmount()); 
-							ownRebate.setGmtCreate(nowTime);
-							ownRebate.setGmtModified(nowTime);
-						    afBoluomeActivityUserRebateDao.saveRecord(refMessage);
-							//更新账户金额
-							AfUserAccountDo refAccountInfo = new AfUserAccountDo();
-							refAccountInfo.setRebateAmount(afOrder.getRebateAmount());
-							refAccountInfo.setUserId(refUserLoginRecord.getRefUserId());
-							afUserAccountService.updateUserAccount(refAccountInfo);
-						}
+		    	   //最后绑定时间，和当前下单时间
+		    	   Date lastTime = userLoginRecord.getGmtCreate();
+		    	   Date orderTime = afOrder.getGmtCreate();
+		    	   AfBoluomeActivityUserRebateQuery userRebateQuery = new  AfBoluomeActivityUserRebateQuery();
+		    	   userRebateQuery.setLastTime(lastTime);
+		    	   userRebateQuery.setOrderTime(orderTime);
+		    	   userRebateQuery.setUserId(userId);
+		    	   userRebateQuery.setRefUserId(userLoginRecord.getRefUserId());
+		    	 //查询时间内是否有对应的返利记录
+		    	   AfBoluomeActivityUserRebateQuery RebateQueryResult  = afBoluomeActivityUserRebateDao.getRebateCountNumber(userRebateQuery);
+		    	   if(RebateQueryResult.getFanLiRecordTime()<1){
+						//进行返利
+						AfBoluomeActivityUserRebateDo refMessage = new AfBoluomeActivityUserRebateDo();
+						refMessage.setUserId(userId);
+						refMessage.setUserName(afUserDo.getUserName());
+						refMessage.setRefUserId(userLoginRecord.getRefUserId());
+						refMessage.setBoluomeActivityId(userLoginRecord.getBoluomeActivityId());
+						refMessage.setRefOrderId(afOrder.getRid());//id还是orderNo?
+						refMessage.setInviteRebate(afOrder.getRebateAmount()); 
+						ownRebate.setGmtCreate(nowTime);
+						ownRebate.setGmtModified(nowTime);
+					    afBoluomeActivityUserRebateDao.saveRecord(refMessage);
+						//更新账户金额
+						AfUserAccountDo refAccountInfo = new AfUserAccountDo();
+						refAccountInfo.setRebateAmount(afOrder.getRebateAmount());
+						refAccountInfo.setUserId(userLoginRecord.getRefUserId());
+						afUserAccountService.updateUserAccount(refAccountInfo);
 					}
-			    }	
+				}
 			 }
 		   }
 			return 0;
