@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170811")
+    #set($version="20170819")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <title>逛逛专享区</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">

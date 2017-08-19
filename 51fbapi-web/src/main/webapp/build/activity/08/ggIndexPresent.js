@@ -54,6 +54,10 @@ $(function(){
                             $('.imgList').append(str);
                             slideNub = $(".imgList .img").size();//获取轮播图片数量
                             getData(slideNub);
+                            numClick02=$('.img.img3').attr('numClick');
+                            if(numClick02>=2){
+                                $('.img.img3').find('.garyCard').css('display','none');
+                            }
                             $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
                             $('.img').click(function(){
                                 var index=$(this).index();
