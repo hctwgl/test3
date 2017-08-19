@@ -518,8 +518,8 @@ public abstract class BaseController {
         String userName = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_USERNAME));
         String sign = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN));
         String time = ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME));
-        logger.info("checkWebSign systemMap = {}",systemMap);
         TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+        logger.info("checkWebSign systemMap = {} ,token = {}",systemMap,token);
         if (logger.isDebugEnabled()) {
             logger.debug(userName + " token= " + token);
         }
