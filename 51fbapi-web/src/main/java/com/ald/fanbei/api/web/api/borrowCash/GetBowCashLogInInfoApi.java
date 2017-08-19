@@ -431,7 +431,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 	private void getUserPoundageRate(Long userId, Map<String, Object> data, String inRejectLoan) {
 		Date saveRateDate =  (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
-		if (saveRateDate==null || DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
+//		if (saveRateDate==null || DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
 			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
 			BigDecimal poundageRate = new BigDecimal(riskResp.getPoundageRate());
 			logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);
@@ -450,7 +450,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate, Constants.SECOND_OF_ONE_MONTH);
 			
 			bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);
-		}
+//		}
 	}
 
 	/**
