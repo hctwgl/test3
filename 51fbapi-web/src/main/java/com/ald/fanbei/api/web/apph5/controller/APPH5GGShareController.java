@@ -154,6 +154,7 @@ public class APPH5GGShareController extends BaseController {
 				for (AfBoluomeActivityCouponDo bCouponDo : bList) {
 					Long resourceId = bCouponDo.getCouponId();
 					AfResourceDo couponResourceDo = afResourceService.getResourceByResourceId(resourceId);
+					logger.info("initHomePage getCouponUrl resourceId = {},couponResourceDo = {}", resourceId,couponResourceDo);
 					if (couponResourceDo != null) {
 						String uri = couponResourceDo.getValue();
 						String[] pieces = uri.split("/");
