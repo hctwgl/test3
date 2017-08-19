@@ -292,6 +292,18 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			scrollbarVo = getAfScrollbarVo(resourceDo);
 		}else{
 			bannerResultList = bannerList;
+
+			List<AfResourceDo> recommend_imgs = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");//获取活动图片
+			if(recommend_imgs != null && recommend_imgs.size()>0) {
+				for (AfResourceDo afResourceDo : recommend_imgs) {
+					Map<String, Object> map = new HashMap();
+					map.put("imageUrl",afResourceDo.getValue()+"?name=RECOMMEND_IMG" );
+					map.put("titleName",afResourceDo.getName());
+					map.put("type","RECOMMEND_IMG");
+					bannerResultList.add(0,map);
+				}
+			}
+
 		}
 
 		/*List<Object> _bannerResultList = new ArrayList<>();
