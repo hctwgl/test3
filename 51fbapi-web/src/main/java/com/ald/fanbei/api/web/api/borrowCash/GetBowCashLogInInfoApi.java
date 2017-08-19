@@ -417,7 +417,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-		
+		data.put("showPacket", "Y");
 		try {
 			/**add by fmai 用户点击借钱页面时去风控获取用户的借钱手续费*/
 			getUserPoundageRate(userId, data, inRejectLoan, data.get("poundageRate").toString());
