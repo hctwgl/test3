@@ -613,7 +613,7 @@ public class H5GGShareController extends H5Controller {
 		try {
 			context = doH5Check(request, false);
 			String userName = context.getUserName();
-			// String userName = request.getParameter("userName");
+			 //String userName = request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
 			Long resourceUserItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));// 卡片主人的主键id
 			if (userId == null) {
@@ -628,11 +628,22 @@ public class H5GGShareController extends H5Controller {
 				AfBoluomeActivityUserItemsDo resourceUserItemsDo = afBoluomeActivityUserItemsService
 						.getById(resourceUserItemsId);// old卡片的内容
 				if (resourceUserItemsDo != null) {
+					//查看卡片是否过期 resourceUserItemsId
+					if (!resourceUserItemsDo.getStatus().equals("FROZEDN") ) {
+						if (resourceUserItemsDo.getStatus().equals("SENT")) {
+							return H5CommonResponse.getNewInstance(true, "卡片已被其他用户领取，不能领取").toString();
+						}
+						return H5CommonResponse.getNewInstance(true, "该卡片已经超时退给赠送者，不能领取").toString();
+					}
+					
+					
 					Long reourceUserId = resourceUserItemsDo.getUserId();
 					// 你没有权限领取此卡片
 					if (reourceUserId.equals(userId)) {
 						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
 					}
+					
+					
 					// 查看是否已经领走
 					AfBoluomeActivityUserItemsDo newUserItemsDoCondition = new AfBoluomeActivityUserItemsDo();
 					newUserItemsDoCondition.setUserId(userId);
@@ -640,12 +651,11 @@ public class H5GGShareController extends H5Controller {
 					newUserItemsDoCondition.setStatus("NORMAL");
 					List<AfBoluomeActivityUserItemsDo> list = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(newUserItemsDoCondition);
-					int length = list.size();
-					if (list == null || length == 0) {
-						//检查卡片是否过期（是否有FROZEN状态变成了NORMAL）
+					if (list == null || list.size() == 0) {
+						/*//检查卡片是否过期（是否有FROZEN状态变成了NORMAL）
 						if (resourceUserItemsDo.getStatus() == "NORMAL") {
 							return H5CommonResponse.getNewInstance(true, "改卡片已经超时退给赠送者，不能领取").toString();
-						}
+						}*/
 						// 领取卡片成功，修改原来的用户卡片状态，并且增加一条新的用户卡片记录
 						AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
 						insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
