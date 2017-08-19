@@ -82,7 +82,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 
                 AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
                 afUserAccountLogDo.setAmount(addMoney);
-                afUserAccountLogDo.setUserId(userId);
+                afUserAccountLogDo.setUserId(pid);
                 afUserAccountLogDo.setType("RECOMMEND_CASH");
                 afUserAccountLogDo.setRefId(String.valueOf( afRecommendUserDo.getId()));
                 afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
