@@ -868,9 +868,10 @@ public class H5GGShareController extends H5Controller {
 	public String doAskForItems(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		try {
+			
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
 			String userName = request.getParameter("friendName");
-
+			logger.info("method = /H5GGShare/ggAskForItems"+"itemsId=" +itemsId+"friendName"+userName);
 			Long userId = convertUserNameToUserId(userName);// 绱㈣浜虹殑鐢ㄦ埛id
 			AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
 			if (itemsDo != null) {
@@ -905,6 +906,7 @@ public class H5GGShareController extends H5Controller {
 					data.put("itemsDo", itemsDo);
 					data.put("fakeFinal", fakeFinal);
 					data.put("fakeJoin", fakeJoin);
+					logger.info("data=" + JSONObject.toJSONString(data));
 					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
 				}
 			}
