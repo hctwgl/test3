@@ -19,6 +19,8 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -47,6 +49,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("getConfirmBorrowInfoApi")
 public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHandle {
 
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
@@ -136,7 +140,11 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 			// BigDecimal serviceRate =bankService.add(poundageRate);
 			// BigDecimal serviceAmountDay = serviceRate.multiply(amount);
-
+			BigDecimal poundageRateCash = (BigDecimal) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+			if (poundageRateCash != null) {
+				poundageRate = poundageRateCash;
+			}
+			
 			BigDecimal serviceAmountDay = poundageRate.multiply(amount);// 新版本(v3.6) 服务费的计算 去掉利息
 
 			Integer day = NumberUtil.objToIntDefault(type, 0);

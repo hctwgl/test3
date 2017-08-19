@@ -24,6 +24,8 @@ import com.ald.fanbei.api.biz.service.AfRescourceLogService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
@@ -57,6 +59,8 @@ import com.alibaba.fastjson.JSONArray;
 @RequestMapping("/app/sys/")
 public class AppH5SysController extends BaseController {
 
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	@Resource
 	AfUserService afUserService;
 	@Resource
@@ -159,7 +163,12 @@ public class AppH5SysController extends BaseController {
 
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		BigDecimal overdue = bankService.add(poundage).add(overduePoundage);
-
+		
+		BigDecimal poundageRateCash = (BigDecimal) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		if (poundageRateCash != null) {
+			poundage = poundageRateCash;
+		}
+		
 		model.put("dayRate", bankService);//日利率
 		model.put("overdueRate", overdue);//逾期费率（日）
 		model.put("poundageRate", poundage);//手续费率

@@ -25,7 +25,9 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -62,6 +64,9 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("applyBorrowCashApi")
 public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 
@@ -252,7 +257,11 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
-
+		BigDecimal poundageRateCash = (BigDecimal) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		if (poundageRateCash != null) {
+			poundage = poundageRateCash;
+		}
+		
 		BigDecimal serviceRate = bankService;
 		BigDecimal poundageRate = poundage;
 		BigDecimal serviceAmountDay = serviceRate.multiply(amount);

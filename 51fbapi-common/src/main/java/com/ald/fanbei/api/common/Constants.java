@@ -19,6 +19,7 @@ public class Constants {
 	public static final int SECOND_OF_AN_HOUR_INT = 60 * 60;
 
 	public static final long SECOND_OF_ONE_WEEK = 7 * 24 * 60 * 60l;
+	public static final long SECOND_OF_ONE_MONTH = 30 * 24 * 60 * 60l;
 
 	public static final int MINITS_OF_2HOURS = 120;
 	public static final int MINITS_OF_HALF_HOUR = 30;
@@ -144,6 +145,8 @@ public class Constants {
 	public static final String RES_BORROW_CASH_RANGE = "BORROW_CASH_RANGE";
 	public static final String RES_BORROW_CASH_LIMIT_AMOUNT = "BORROW_CASH_LIMIT_AMOUNT";
 	public static final String RES_BORROW_TRADE = "BORROW_TRADE";
+	public static final String RES_BORROW_CASH_POUNDAGE_RATE = "RES_BORROW_CASH_POUNDAGE_RATE";
+	public static final String RES_BORROW_CASH_POUNDAGE_TIME = "RES_BORROW_CASH_POUNDAGE_TIME";
 	
 	public static final String RES_BRAND_SHOP = "BRAND_SHOP";
 	public static final String RES_CREDIT_SCORE_AMOUNT = "CREDIT_SCORE_AMOUNT";
