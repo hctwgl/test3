@@ -357,6 +357,7 @@ public abstract class BaseController {
         FanbeiWebContext webContext = new FanbeiWebContext();
         String appInfo = getAppInfo(request.getHeader("Referer"));
         //如果是测试环境
+        logger.info("doWebCheck appInfo = {}",appInfo);
         if (Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)) && StringUtil.isBlank(appInfo)) {
             String testUser = getTestUser(request.getHeader("Referer"));
             if (testUser != null && !"".equals(testUser)) {
@@ -548,6 +549,7 @@ public abstract class BaseController {
                 webContext.setLogin(true);
             }
         }
+        logger.info("signStrBefore = {}",signStrBefore);
         this.compareSign(signStrBefore, sign);
 
     }
