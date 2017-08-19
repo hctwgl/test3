@@ -208,6 +208,6 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,order_id,re
 		GROUP BY
 			user_name
 		ORDER BY
-			total_rebate;
+			total_rebate LIMIT 60 ;
     </select>
 </mapper>
