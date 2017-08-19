@@ -63,6 +63,7 @@ $(function(){
                                     $('.surePresent').css('background','#B3B3B3');
                                 }else{
                                     $('.surePresent').css('background','#fb9659');
+                                    $(this).find('.garyCard').css('display','none');
                                 }
                             })
                         }else{
@@ -83,7 +84,9 @@ $(function(){
         name = $('.img.img3').attr('name');
         itemsListRid=$('.img.img3').attr('rid');
         numClick02=$('.img.img3').attr('numClick');
-        if(numClick02>=2){
+        if(numClick02<2){
+            $(this).css('background','#B3B3B3');
+        } else{
             for(var i=0;i<userItemsList.length;i++){
                 itemsId=userItemsList[i].itemsId;
                 if(itemsId==itemsListRid){
