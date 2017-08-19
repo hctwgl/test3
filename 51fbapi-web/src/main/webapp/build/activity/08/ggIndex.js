@@ -26,7 +26,7 @@ let vm = new Vue({
                 url: "/H5GG/initHomePage",
                 data:{'activityId':activityId},
                 success: function (data) {
-                    $('.positionImg').fadeOut(2000);
+                    $('.positionImg').fadeOut(4000);
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
                     console.log(typeof(self.content.boluomeCouponList[0]))
@@ -238,7 +238,7 @@ function alaShareData(){
         "shareAppTitle": "消费有返利 领取51元大奖！",  // 分享的title
         'shareAppContent': "我正在51返呗玩场景点亮活动，你也一起来玩吧~",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/ggShare.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggIndexShare?loginSource=F&activityId="+activityId+"&userName="+userName,  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggIndexShare?loginSource=F&activityId="+activityId+"&userName="+userName+"&sharePage=ggIndexShare",  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggIndexShare" // 分享的页面
     };
