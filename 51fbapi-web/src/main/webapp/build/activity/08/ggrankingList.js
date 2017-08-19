@@ -7,17 +7,20 @@ var arr=[];
 arr=str.split("&");//获取?后面以&分隔的字符串
 var activityId=arr[0].slice(arr[0].indexOf("=")+1);//获取arr数组里面的具体值
 console.log(activityId) 
-//列表信息无缝滚动
+
+/*  //列表信息无缝滚动
 var $uList = $(".container ul");
 var timer = null;
+
 //触摸情动定时器
 $uList.hover(function () {
     clearInterval(timer);
 }, function () { //离开启动定时器
     timer = setInterval(function () {
         scrollList($uList);
-    }, 1101);
+    }, 1000);
 }).trigger("mouseleave"); //自动触发触摸事件
+
 //滚动动画
 function scrollList(obj) {
     //获得当前<li>的高度
@@ -31,7 +34,8 @@ function scrollList(obj) {
             marginTop: 0
         }).find("li:first").appendTo($uList);
     });
-};
+};  */
+
 
 //获取数据
 $(function () {
