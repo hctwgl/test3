@@ -63,7 +63,6 @@ $(function(){
                                     $('.surePresent').css('background','#B3B3B3');
                                 }else{
                                     $('.surePresent').css('background','#fb9659');
-                                    $(this).find('.garyCard').css('display','none')
                                 }
                             })
                         }else{
