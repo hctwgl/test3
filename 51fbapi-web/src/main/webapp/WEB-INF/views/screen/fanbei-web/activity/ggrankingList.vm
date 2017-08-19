@@ -23,7 +23,7 @@
                 <!-- 最多显示17条信息 !-->
                  <ul class="numberList" id='numberList'>
                  </ul>
-                 <ul class="numberList" id='numberList'>
+                 <ul class="numberList" id='numberList1'>
                  </ul>
         </div>
     </div>
