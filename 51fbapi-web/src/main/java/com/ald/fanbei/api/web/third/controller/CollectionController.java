@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.CollectionBorrowCashData;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 
 /**
  * @类现描述：和催收平台互调
@@ -29,6 +32,8 @@ public class CollectionController {
 	@Resource
 	CollectionSystemUtil collectionSystemUtil;
 	
+	@Resource
+	AfBorrowCashService borrowCashService;
 	/**
 	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
 	 * @param request
@@ -44,5 +49,28 @@ public class CollectionController {
 		logger.info("deal offlineRepayment begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
 		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data, sign);
 		return notifyRespBo;
+	}
+	@RequestMapping(value = { "/findBorrowCashByBorrowId"})
+	@ResponseBody
+	public CollectionBorrowCashData findBorrowCashByBorrowId(HttpServletRequest request, HttpServletResponse response){
+		String borrowNo = ObjectUtils.toString(request.getParameter("borrowNo"));
+		CollectionBorrowCashData data=new CollectionBorrowCashData();
+		try{
+		AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+		if(afBorrowCashDo==null) {
+			logger.error("afBorrowCashDo is null" );
+		}
+		data.setBorrowNo(afBorrowCashDo.getBorrowNo());
+		data.setAmount(afBorrowCashDo.getAmount());
+		data.setOverdueAmount(afBorrowCashDo.getOverdueAmount());
+		data.setOverdueDay(afBorrowCashDo.getOverdueDay());
+		data.setRenewalNum(afBorrowCashDo.getRenewalNum());
+		data.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
+		data.setRepayAmount(afBorrowCashDo.getRepayAmount());
+		data.setStatus(afBorrowCashDo.getStatus());
+		} catch(Exception e){
+			logger.error("error message " + e);
+		}
+		return data;
 	}
 }
