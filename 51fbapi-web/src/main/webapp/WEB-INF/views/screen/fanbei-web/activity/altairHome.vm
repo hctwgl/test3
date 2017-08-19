@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017081802")
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <title>七夕让爱加倍，不一样の套路</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/altairHome.css?version=$version">
+</head>
+<body>
+    <div id="altair">
+        <img :src="content.bannerImage">
+        <ul class="couponList clearfix">
+            <li  v-for="item in couponCont.couponInfoList" @click="couponClick(item)">
+                <div class="title">
+                    <span class="price">{{item.amount}}</span>
+                    <span v-if="item.limitAmount>0">满{{item.limitAmount}}元<br>可以使用</span>
+                    <span v-else>无门槛<br>可以使用</span>
+                </div>
+                <div class="btn">立即领取</div>
+            </li>
+        </ul>
+        <div class="recommend" style="background-color: #fe748e;">
+            <div class="title">
+                <h2></h2>
+                <p>给TA最深的悸动</p>
+            </div>
+            <ul class="clearfix">
+                <li v-for="item in list01" @click="goGoodsDetail(item)">
+                    <img :lazy-src="item.goodsIcon">
+                    <div class="txtContent">
+                        <p>{{txtFix(item.goodName,16)}}</p>
+                        <p class="price">活动价:￥{{item.saleAmount}}</p>
+                        <s>原价:￥{{item.priceAmount}}</s>
+                        <button class="button">返利:￥{{item.rebateAmount/2}}x2倍</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="LevelGoods" style="background-color: #fe748e;">
+            <div class="title">
+                <h2></h2>
+                <p>平淡中也需要点情趣</p>
+            </div>
+            <ul class="clearfix">
+                <li v-for="item in list02" @click="goGoodsDetail(item)">
+                    <p class="goodImg"><img :lazy-src="item.goodsIcon"></p>
+                    <p class="goodDes">{{txtFix(item.goodName,16)}}</p>
+                    <p class="fanPrice">￥{{item.saleAmount}}</p>
+                    <p class="originPrice">￥{{item.priceAmount}}</p>
+                    <p class="monthPrice">返利:￥{{item.rebateAmount/2}}x2倍</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script type="text/javascript" src="/dist/activity/08/altairHome.js?version=$version"></script>
+</body>
+</html>
