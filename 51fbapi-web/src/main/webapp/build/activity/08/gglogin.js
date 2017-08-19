@@ -137,7 +137,7 @@ $(function () {
     //注册
     $("#gg_register").click(function () {
         //  alert(word);
-        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName+ "&word=" + loginSource;
+        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName+ "&loginSource=" + loginSource;
     });
 
     //忘记密码
