@@ -136,6 +136,7 @@ public class AppH5SubjectController  extends BaseController{
 				qualityGoodsInfo.put("goodsIcon", qualityGoods.getGoodsIcon());
 				qualityGoodsInfo.put("goodsId", qualityGoods.getRid());
 				qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
+				qualityGoodsInfo.put("priceAmount", qualityGoods.getPriceAmount());
 				qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
 				qualityGoodsInfo.put("goodsType", "0");
 				String tags = qualityGoods.getTags();
@@ -285,6 +286,7 @@ public class AppH5SubjectController  extends BaseController{
 					activityGoodsInfo.put("goodsId", goodsDo.getRid());
 					activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
 					activityGoodsInfo.put("source", goodsDo.getSource());
+					activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
 					activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
 					activityGoodsInfo.put("activityName", activityName);
 					String tags = goodsDo.getTags();
@@ -335,6 +337,7 @@ public class AppH5SubjectController  extends BaseController{
 				qualityGoodsInfo.put("goodsId", qualityGoods.getRid());
 				qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
 				qualityGoodsInfo.put("source", qualityGoods.getSource());
+				qualityGoodsInfo.put("priceAmount", qualityGoods.getPriceAmount());
 				qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
 				qualityGoodsInfo.put("goodsType", "0");
 				String tags = qualityGoods.getTags();
@@ -421,6 +424,7 @@ public class AppH5SubjectController  extends BaseController{
 				subjectGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
 				subjectGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
 				subjectGoodsInfo.put("goodsId", goodsDo.getRid());
+				subjectGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
 				subjectGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
 				subjectGoodsInfo.put("thumbnailIcon",goodsDo.getThumbnailIcon());
 				subjectGoodsInfo.put("goodsType", "0");

@@ -15,7 +15,7 @@
         <meta name="apple-mobile-web-app-title" content="yes">
         <meta http-equiv="x-rim-auto-match" content="none">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <link rel="stylesheet" type="text/css" href="/common/css/reset.css">
+        <link rel="stylesheet" type="text/css" href="/dist/css/reset.css?version=$version">
         <link rel="stylesheet" type="text/css" href="/dist/css/base.css?version=$version">
         <script type="text/javascript" src="/common/js/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="/common/js/vue.min.js"></script>

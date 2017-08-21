@@ -40,7 +40,15 @@ import com.ald.fanbei.api.web.vo.AfLoanTapsAndShops;
 import com.ald.fanbei.api.web.vo.AfScrollbarVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
+/**
+ * 
+ * <p>Title:AppBorrowLoanShopController <p>
+ * <p>Description: <p>
+ * @Copyright (c)  浙江阿拉丁电子商务股份有限公司 All Rights Reserved. 
+ * @author qiao
+ * @date 2017年8月9日下午4:39:30
+ *
+ */
 @Controller
 @RequestMapping("/borrow")
 public class AppBorrowLoanShopController extends BaseController {

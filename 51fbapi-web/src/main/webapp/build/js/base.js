@@ -115,6 +115,7 @@ function domainName() {
     var domainName = protocol + '//' + host;
     return domainName;
 }
+
 //限制文字数量
 function txtFix(str,len){
     var char_length = 0;
@@ -123,7 +124,7 @@ function txtFix(str,len){
     }else{
         for (var i = 0; i < str.length; i++){
             var son_str = str.charAt(i);
-            encodeURI(son_str).length > 2 ? char_length += 2 : char_length += 1;
+            encodeURI(son_str).length > 2 ? char_length += 1 : char_length += 0.5;
             if (char_length >= len){
                 var sub_len = (char_length == len) ? i+1 : i;
                 return str.substr(0, sub_len);
@@ -132,6 +133,7 @@ function txtFix(str,len){
         }
     }
 }
+
 //图片懒加载
 window.lazy = (function(window, document, undefined) {
 
@@ -191,7 +193,7 @@ function formateTelNum(tel) {
         if (telLength < 11) {
             tel = tel;
         } else if (telLength >= 11) {
-            var telNum = tel.substring(4, 7);
+            var telNum = tel.substring(3, 7);
             tel = tel.replace(telNum, "****");
         }
         return tel;
@@ -200,3 +202,8 @@ function formateTelNum(tel) {
     }
 }
 
+//字符串替换+换行
+function formatStr(str){
+    str=str.replace(/<br\/>/g, "\n");
+    return str;
+}
