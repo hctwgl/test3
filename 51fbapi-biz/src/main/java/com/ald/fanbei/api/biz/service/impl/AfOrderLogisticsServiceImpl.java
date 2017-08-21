@@ -51,10 +51,14 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
         if (afOrderLogisticsDo != null) {
             afOrderLogisticsBo.setStateDesc(convertState(afOrderLogisticsDo.getState()));
             afOrderLogisticsBo.setShipperName(afOrderLogisticsDo.getShipperName());
-            afOrderLogisticsBo.setShipperCode(afOrderLogisticsDo.getLogisticCode());
+            afOrderLogisticsBo.setShipperCode(afOrderLogisticsDo.getShipperCode());
             List<KdniaoReqDataDataTraces> traces= JSONObject.parseArray( afOrderLogisticsDo.getTraces(), KdniaoReqDataDataTraces.class);
             if(traces.size()>0){
-                afOrderLogisticsBo.setNewestInfo(traces.get(traces.size()-1));
+                KdniaoReqDataDataTraces  last=new KdniaoReqDataDataTraces();
+                KdniaoReqDataDataTraces listLast=traces.get(traces.size()-1);
+                last.setAcceptStation(listLast.getAcceptStation());
+                last.setAcceptTime(listLast.getAcceptTime());
+                afOrderLogisticsBo.setNewestInfo(last);
             }else{
                 //如果没有就虚拟一条空的轨迹
                 KdniaoReqDataDataTraces  empty=new KdniaoReqDataDataTraces();
@@ -63,7 +67,7 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
                 afOrderLogisticsBo.setNewestInfo(empty);
             }
             if(isOutTraces>0){
-                afOrderLogisticsBo.setTracesInfo(afOrderLogisticsDo.getTraces());
+                afOrderLogisticsBo.setTracesInfo(traces);
             }
             return afOrderLogisticsBo;
         }else{
