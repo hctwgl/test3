@@ -63,7 +63,7 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
                 afOrderLogisticsBo.setNewestInfo(empty);
             }
             if(isOutTraces>0){
-                afOrderLogisticsBo.setTracesInfo(traces);
+                afOrderLogisticsBo.setTracesInfo(afOrderLogisticsDo.getTraces());
             }
             return afOrderLogisticsBo;
         }else{

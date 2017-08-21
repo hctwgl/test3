@@ -11,7 +11,7 @@ public class AfOrderLogisticsBo extends AbstractSerial {
     private String shipperName;
     private String shipperCode;
     private KdniaoReqDataDataTraces newestInfo;
-    private List<KdniaoReqDataDataTraces> tracesInfo;
+    private String tracesInfo;
     public String getStateDesc() {
         return stateDesc;
     }
@@ -36,11 +36,11 @@ public class AfOrderLogisticsBo extends AbstractSerial {
         this.newestInfo = newestInfo;
     }
 
-    public List<KdniaoReqDataDataTraces> getTracesInfo() {
+    public String getTracesInfo() {
         return tracesInfo;
     }
 
-    public void setTracesInfo(List<KdniaoReqDataDataTraces> tracesInfo) {
+    public void setTracesInfo(String tracesInfo) {
         this.tracesInfo = tracesInfo;
     }
 

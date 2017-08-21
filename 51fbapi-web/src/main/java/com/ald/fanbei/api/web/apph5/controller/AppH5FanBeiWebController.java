@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,14 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfShopService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -109,7 +103,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfLoanSupermarketService afLoanSupermarketService;
 	@Resource
 	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
-	
+	@Resource
+	AfOrderLogisticsService afOrderLogisticsService;
 	/**
 	 * 首页弹窗页面
 	 * @param request
@@ -918,7 +913,34 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
-	
+	/**
+	 * 获取物流信息
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "/getOrderLogistics" }, method =
+			RequestMethod.GET,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String getOrderLogistics(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext context = null;
+		try {
+			long orderId = NumberUtil.strToLong(request.getParameter("orderId").toString());
+			long isOutTraces = NumberUtil.strToLong(request.getParameter("traces")==null?
+					String.valueOf(0) :request.getParameter("traces").toString());
+			AfOrderLogisticsBo afOrderLogisticsBo= afOrderLogisticsService.getOrderLogisticsBo
+					(orderId,isOutTraces);
+			if(afOrderLogisticsBo!=null){
+				return H5CommonResponse.getNewInstance(true,"","",afOrderLogisticsBo).toString();
+			}else{
+				return H5CommonResponse.getNewInstance
+						(false,FanbeiExceptionCode.LOGISTICS_NOT_EXIST.getErrorMsg()).toString();
+			}
+
+		}catch(Exception e){
+			return H5CommonResponse.getNewInstance(false,e.toString()).toString();
+		}
+	}
 	
 	/**
 	 * 第三方链接跳转，记录pv，uv
