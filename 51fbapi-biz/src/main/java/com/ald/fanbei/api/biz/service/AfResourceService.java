@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
@@ -147,4 +144,16 @@ public interface AfResourceService {
 	 * @return: AfResourceDo
 	 */
 	AfResourceDo getScrollbarByType();
+
+	/**
+	 * 
+	 * @说明：在活动点亮中根据活动id获取假的人数
+	 * @param: @param string
+	 * @param: @return
+	 * @return: AfResourceDo
+	 */
+	AfResourceDo getFakePersonByActivityId(String string);
+	
+	AfResourceDo getGGSpecificBanner(String value2);
+	
 }
