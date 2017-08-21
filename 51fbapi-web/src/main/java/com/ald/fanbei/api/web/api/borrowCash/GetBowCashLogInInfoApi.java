@@ -431,9 +431,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			logger.info("从风控获取分层用户额度失败：" + e);
 		}
 		
-		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
-			data.put("poundageRate", poundageRateCash);
+			data.put("poundageRate", poundageRateCash.toString());
 		}
 		
 		resp.setResponseData(data);
