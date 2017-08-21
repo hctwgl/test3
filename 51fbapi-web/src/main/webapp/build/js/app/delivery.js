@@ -4,13 +4,16 @@
  */
 
 let finished = 0;//防止多次请求ajax
+let orderId = getUrl("orderId");
+let traces = getUrl("traces");
 
 var vm = new Vue({
-    el: '#inviteRank',
+    el: '#delivery',
     data: {
-        returnData: [],
-        month:"",
-        total:""
+        tracesInfo: [],
+        shipperName:"",
+        shipperCode:"",
+        stateDesc:""
     },
     created: function () {
         let _this = this;
@@ -20,14 +23,19 @@ var vm = new Vue({
         initial(){
             let _this = this;
             $.ajax({
-                url: '/fanbei-web/recommendListSort',
+                url: '/fanbei-web/getOrderLogistics',
                 dataType: 'json',
+                data:{
+                    'orderId':orderId,
+                    'traces':traces
+                },
                 type: 'post',
                 success: function (data) {
                     console.log(data);
-                    _this.returnData = data.datalist;
-                    _this.month = data.month;
-                    _this.total = data.total;
+                    _this.tracesInfo = data.datalist;
+                    _this.shipperName = data.shipperName;
+                    _this.shipperCode = data.shipperCode;
+                    _this.stateDesc = data.stateDesc;
                 },
                 error: function () {
                     requestMsg("请求失败");

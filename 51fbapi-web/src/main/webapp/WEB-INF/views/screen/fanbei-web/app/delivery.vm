@@ -7,13 +7,34 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/app/delivery.css?version=$version">
 </head>
 
-<body style="background: linear-gradient(to bottom,#fd5d2c, #ff4a2d);">
-<div id="inviteRank">
+<body style="background: #ededed">
+<div id="delivery">
     <div id="top">
-        <template v-if="month && month !=''">
-            <span class="topTitle">{{month}}月Top{{total}}</span>
-            <span class="divider"><i></i></span>
-        </template>
+        <ul>
+           <span class="state">
+                <span class="stateTitle">物流状态</span>
+                <template v-if="stateDesc && stateDesc !=''">
+                      <span class="stateDesc">{{stateDesc}}</span>
+                </template>
+            </span>
+        </ul>
+        <ul>
+            <span class="from">
+                <span class="fromTitle">承运来源:</span>
+                <template v-if="shipperName && shipperName !=''">
+                      <span class="shipperName">{{shipperName}}</span>
+                </template>
+        </span>
+        </ul>
+        <ul>
+            <span class="no">
+                <span class="noTitle">运单编号:</span>
+                <template v-if="shipperCode && shipperCode !=''">
+                      <span class="shipperCode">{{shipperCode}}</span>
+                </template>
+            </span>
+        </ul>
+
     </div>
 
     <div id="list" class="main_wrap listMainContent">
