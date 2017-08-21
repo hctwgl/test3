@@ -37,7 +37,7 @@ public class AfOrderListVo extends AbstractSerial {
 	private String businessName;
 	private Integer  nper;//分期数
 	private String numId;
-	
+	private int showLogistics;
 	public String getBusinessName() {
 		return businessName;
 	}
@@ -186,5 +186,12 @@ public class AfOrderListVo extends AbstractSerial {
 	public void setNumId(String numId) {
 		this.numId = numId;
 	}
-	
+
+	public int getShowLogistics() {
+		return showLogistics;
+	}
+
+	public void setShowLogistics(int showLogistics) {
+		this.showLogistics = showLogistics;
+	}
 }

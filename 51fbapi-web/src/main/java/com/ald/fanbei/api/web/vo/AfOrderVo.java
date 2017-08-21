@@ -70,7 +70,7 @@ public class AfOrderVo extends AbstractSerial {
 	
 	private BigDecimal quotaAmount;
 	private BigDecimal bankPayAmount;
-	
+	private int showLogistics;
 	public String getRefundTime() {
 		return refundTime;
 	}
@@ -361,5 +361,12 @@ public class AfOrderVo extends AbstractSerial {
 	public void setBankPayAmount(BigDecimal bankPayAmount) {
 		this.bankPayAmount = bankPayAmount;
 	}
-	
+
+	public int getShowLogistics() {
+		return showLogistics;
+	}
+
+	public void setShowLogistics(int showLogistics) {
+		this.showLogistics = showLogistics;
+	}
 }
