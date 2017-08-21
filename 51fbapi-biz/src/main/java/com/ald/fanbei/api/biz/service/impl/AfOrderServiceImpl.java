@@ -686,6 +686,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
 				Map<String, Object> resultMap = new HashMap<String, Object>();
 				AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
+				//微信支付
+				String wxPayOrderNo = orderInfo.getPayTradeNo();
 				try {
 					// 查卡号，用于调用风控接口
 					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
@@ -699,7 +701,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					if (payType.equals(PayType.WECHAT.getCode())) {
 						orderInfo.setPayType(PayType.WECHAT.getCode());
 						//如果查询出来，在支付，或者已经支付，则抛出正在处理中的状态
-						Map<String, String> wxResultMap  = 	upsUtil.wxQueryOrder(orderInfo.getPayTradeNo());
+						Map<String, String> wxResultMap  = 	upsUtil.wxQueryOrder(wxPayOrderNo);
 						String resultCode = wxResultMap.get(WxpayConfig.RESULT_CODE);
 						String tradeCode = wxResultMap.get(WxpayConfig.RESULT_CODE);
 						if (WxpayConfig.RESULT_CODE_SUCCESS.equals(resultCode) 
@@ -1158,9 +1160,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	
 	public int dealBrandOrderFail(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
-		if (!OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())) {
-			return 0;
-		}
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
@@ -1185,7 +1184,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setGmtPay(new Date());
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
-					boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 					logger.info("dealBrandOrder fail comlete , orderInfo = {} ", orderInfo);
 					return 1;
 				} catch (Exception e) {
@@ -1195,7 +1193,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
-		if (result == 1) {
+		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 		}
 		return result;
@@ -1755,7 +1753,7 @@ public int dealBrandPayCpOrderFail(final String payOrderNo, final String tradeNo
 			}
 		}
 	});
-	if (result == 1) {
+	if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 		boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 	}
 	
