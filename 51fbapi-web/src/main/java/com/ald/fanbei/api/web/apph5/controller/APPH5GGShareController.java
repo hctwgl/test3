@@ -916,7 +916,12 @@ public class APPH5GGShareController extends BaseController {
 				}
 
 				Map<String, Object> data = new HashMap<>();
+				Map<String, Integer> fakeMap = getFakePerson(activityId);
+				Integer fakeFinal = fakeMap.get("fakeFinal");
 				int rebateNumber = rankList.size();
+				if (fakeFinal != null) {
+					rebateNumber += fakeFinal;
+				}
 				data.put("rebateNumber", rebateNumber);
 				data.put("rankList", rankList);
 				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data).toString();
