@@ -18,4 +18,10 @@ public interface AfBoluomeActivityUserItemsService extends ParentService<AfBoluo
 
 	void deleteByRid(Long rid);
 
+	Integer geFakeJoin(Long activityId);
+
+	Integer getFakeFinal(Long activityId);
+
+	
+
 }

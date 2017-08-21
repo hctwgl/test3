@@ -212,5 +212,13 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
     WHERE
       id = #{rid};
     </select>
+    <select id="geFakeJoin" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    SELECT COUNT(DISTINCT(`user_name`)) FROM `af_boluome_activity_user_items` 
+	WHERE `boluome_activity_id` = #{activityId} and `is_delete` =0;
+    </select>
+    <select id="getFakeFinal" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    SELECT COUNT(DISTINCT(`user_name`)) FROM af_boluome_activity_result 
+	WHERE `boluome_activity_id` = #{activityId}  and `is_delete` =0;
+    </select>
     
 </mapper>

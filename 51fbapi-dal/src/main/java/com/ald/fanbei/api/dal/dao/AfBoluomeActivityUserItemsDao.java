@@ -22,6 +22,12 @@ public interface AfBoluomeActivityUserItemsDao extends BaseDao<AfBoluomeActivity
 
 	void deleteByRid(@Param("rid")Long rid);
 
+	Integer geFakeJoin(@Param("activityId")Long activityId);
+
+	Integer getFakeFinal(@Param("activityId")Long activityId);
+
+
+
     
 
 }
