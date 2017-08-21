@@ -658,6 +658,7 @@ public class AppH5FanBeiWebController extends BaseController {
 					accessUrl = accessUrl.replaceAll("\\*", "\\&");
 					logger.info("贷款超市app点击banner请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+afUserDo.getRid());
 					String sysModeId = request.getParameter("sysModeId");
+					String channel = getChannel(sysModeId);
 					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
 					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
 					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
@@ -666,6 +667,7 @@ public class AppH5FanBeiWebController extends BaseController {
 					afBusinessAccessRecordsDo.setRefId(afLoanSupermarket.getId());
 					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
 					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.APP_LOAN_BANNER.getCode());
+					afBusinessAccessRecordsDo.setChannel(channel);
 					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
 					model.put("redirectUrl", accessUrl);
 				}else{
@@ -692,6 +694,20 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 	}
 
+	/**
+	 * 截取请求最后的字符串代表渠道来源，www是app，其余的是马甲包
+	 * @param sysModeId
+	 * @return
+	 */
+	private String getChannel(String sysModeId){
+        if(sysModeId!=null) {
+            int lastIndex = sysModeId.lastIndexOf("_");
+            if (lastIndex!=-1){
+                return sysModeId.substring(++lastIndex);
+            }
+        }
+        return "";
+    }
 	/*
 	 * (non-Javadoc)
 	 * 
