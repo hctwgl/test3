@@ -55,7 +55,7 @@ public class BaseControllerTest extends AbstractJUnit4SpringContextTests {
 	protected MockHttpServletRequest request = new MockHttpServletRequest();
     
 //    protected static final String HTTPHOST       = "http://localhost:8070";
-    protected static final String HTTPHOST       = "http://localhost:8088";
+    protected static final String HTTPHOST       = "http://localhost:8086";
 
 	public static final String CHARSET        = "utf-8";
 
