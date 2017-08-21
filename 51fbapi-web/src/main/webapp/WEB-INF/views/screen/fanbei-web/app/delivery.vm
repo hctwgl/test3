@@ -15,19 +15,6 @@
             <span class="divider"><i></i></span>
         </template>
     </div>
-    <div id="navWrap">
-        <ul class="nav">
-            <li id="first">
-                <span>排行榜</span>
-            </li>
-            <li id="second">
-                <span>用户</span>
-            </li>
-            <li id="third">
-                <span>奖励/元</span>
-            </li>
-        </ul>
-    </div>
 
     <div id="list" class="main_wrap listMainContent">
         <template v-if="returnData && returnData !=''">
