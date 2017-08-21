@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="201708102130")
+    #set($version="201708212130")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>物流信息</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/delivery.css?version=$version">
@@ -37,29 +37,22 @@
 
     </div>
 
-    <div id="list" class="main_wrap listMainContent">
-        <template v-if="returnData && returnData !=''">
-            <ul v-for="(item,index) in returnData" class="item">
-                <li class="comRank rank1" v-if="index ==0">
-                    <span></span>
-                </li>
-                <li class="comRank rank2" v-else-if="index ==1">
-                    <span></span>
-                </li>
-                <li class="comRank rank3" v-else-if="index ==2">
-                    <span></span>
-                </li>
-                <li class="rank" v-else>
-                    <span>{{index+1}}</span>
-                </li>
-                <li class="account">
-                    <span>{{formateTelNum(item.user_name)}}</span>
-                </li>
-                <li class="amount">
-                    <span>{{item.sum_money}}</span>
-                </li>
+    <div id="list" class="main_wrap">
+        <template v-if="tracesInfo && tracesInfo !=''">
+            <ul v-for="(item,index) in tracesInfo" class="item">
+
+                <div class="contentLeft">
+                    <span class="verticalLineTop"></span>
+                    <span class="circle"></span>
+                    <span class="verticalLineBottom"></span>
+                </div>
+                <div class="contentRight">
+                    <div class="content">{{item.acceptStation}}</div>
+                    <div class="contentTime">{{item.acceptTime}}</div>
+                </div>
             </ul>
         </template>
+
     </div>
 </div>
 <script type="text/javascript" src="/dist/js/app/delivery.js?version=$version"></script>

@@ -29,13 +29,13 @@ var vm = new Vue({
                     'orderId':orderId,
                     'traces':traces
                 },
-                type: 'post',
+                type: 'get',
                 success: function (data) {
                     console.log(data);
-                    _this.tracesInfo = data.datalist;
-                    _this.shipperName = data.shipperName;
-                    _this.shipperCode = data.shipperCode;
-                    _this.stateDesc = data.stateDesc;
+                    _this.tracesInfo = data.data.tracesInfo;
+                    _this.shipperName = data.data.shipperName;
+                    _this.shipperCode = data.data.shipperCode;
+                    _this.stateDesc = data.data.stateDesc;
                 },
                 error: function () {
                     requestMsg("请求失败");
