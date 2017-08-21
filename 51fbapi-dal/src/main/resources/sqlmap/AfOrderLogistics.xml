@@ -140,7 +140,7 @@
         WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
-    <select id="getByOrderId" resultType="com.ald.fanbei.admin.dal.domain.AfOrderLogisticsDo">
+    <select id="getByOrderId" resultType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo">
         SELECT
         <include refid="queryFields" />
         FROM af_order_logistics
