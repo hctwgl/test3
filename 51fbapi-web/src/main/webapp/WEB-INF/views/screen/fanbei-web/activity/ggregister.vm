@@ -3,7 +3,7 @@
 <head>
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>我要注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggregister.css?version=$version">
@@ -18,7 +18,9 @@
         <div class="phone">
             <span class="bicon"></span>
             <input type="tel" maxLength=11 minLength=11  placeholder="请输入登录手机号" id="mobile" class="pinp mobile">
-            <span class="xxicon mmicon"><img src="$src/fork.png" alt=""></span>
+            <span class="big-one">
+                <span class="xxicon mmicon"><img src="$src/fork.png" alt=""></span>
+            </span>
         </div>
         <div class="pcheck phone">
             <span class="bicon"></span>
@@ -28,7 +30,9 @@
         <div class="phone password">
             <span class="bicon"></span>
             <input type="password" maxLength=11 minLength=11  placeholder="请输入密码" id="pasicon"  class="pinp mobile" id="password">
-            <span class="xxicon pasicon"><img src="$src/fork.png" alt=""></span>
+            <span class="big-two">
+                <span class="xxicon pasicon"><img src="$src/fork.png" alt=""></span>
+            </span>
         </div>
         <div class="loginbtn">
             立即注册

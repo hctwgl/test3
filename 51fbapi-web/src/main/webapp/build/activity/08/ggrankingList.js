@@ -1,23 +1,26 @@
 //获取页面名称传到登录页
 var currentUrl = window.location.href;
 //var currentUrl = "http://ggrankingList?activityId=1";
-var index01=currentUrl.indexOf("?");
-var str=currentUrl.substring(index01+1);//获取?后面的字符串
-var arr=[];
-arr=str.split("&");//获取?后面以&分隔的字符串
-var activityId=arr[0].slice(arr[0].indexOf("=")+1);//获取arr数组里面的具体值
-console.log(activityId) 
-//列表信息无缝滚动
+var index01 = currentUrl.indexOf("?");
+var str = currentUrl.substring(index01 + 1); //获取?后面的字符串
+var arr = [];
+arr = str.split("&"); //获取?后面以&分隔的字符串
+var activityId = arr[0].slice(arr[0].indexOf("=") + 1); //获取arr数组里面的具体值
+console.log(activityId)
+
+/*  //列表信息无缝滚动
 var $uList = $(".container ul");
 var timer = null;
+
 //触摸情动定时器
 $uList.hover(function () {
     clearInterval(timer);
 }, function () { //离开启动定时器
     timer = setInterval(function () {
         scrollList($uList);
-    }, 1101);
+    }, 1000);
 }).trigger("mouseleave"); //自动触发触摸事件
+
 //滚动动画
 function scrollList(obj) {
     //获得当前<li>的高度
@@ -31,7 +34,53 @@ function scrollList(obj) {
             marginTop: 0
         }).find("li:first").appendTo($uList);
     });
-};
+};  */
+
+
+/* function addKeyFrames() {
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    var keyFrames = '\
+    @keyframes moveup{\
+                0% {\
+                    transform:translateY(0);\
+                    -webkit-transform:translateY(0); \
+                }\
+                100% {\
+                    transform:translateY(-100%);\
+                    -webkit-transform:translateY(-100%);\
+                }\
+            } \
+            #rankingList .container .numberList{\
+     animation: moveup 50s  linear infinite; \
+}\
+    ';
+    style.innerHTML = keyFrames;
+    document.getElementsByTagName('head')[0].appendChild(style);
+} */
+
+
+
+function speed() {
+    //1.速度
+    var speed = 20;
+    //2.复制 demo1-->demo2
+    var cont = $(".numberList").html();
+    $("#numberList1").html(cont);
+    //3:创建方法定时执行
+    var t = $(".container").scrollTop();
+    //console.log(t)
+    if (t >= $(".numberList").height()) {
+        t = 0;
+    } else {
+        t++;
+    }
+    $(".container").scrollTop(t);
+    setTimeout("speed()", speed);
+}
+
+
+
 
 //获取数据
 $(function () {
@@ -40,13 +89,13 @@ $(function () {
         url: "/H5GGShare/listRank",
         dataType: 'JSON',
         data: {
-            activityId:activityId
+            activityId: activityId
         },
         success: function (data) {
             if (data.success) {
                 var rankList = data.data.rankList;
                 var html = "";
-                var Number="";
+                var Number = "";
                 //从rankingList这个数组
                 for (var i = 0; i < rankList.length; i++) {
                     html += ['<li class="list">',
@@ -59,10 +108,11 @@ $(function () {
                 $('.numberList').html(html)
                 console.log(data);
                 //从data.data这个对象 获取到高额返利的人数
-                Number+="<i class='number'>"+data.data.rebateNumber+"</i>";
+                Number += "<i class='number'>" + data.data.rebateNumber + "</i>";
                 console.log(Number);
                 $('.number').html(Number);
-               
+                // addKeyFrames();
+                speed();
             }
         }
     })

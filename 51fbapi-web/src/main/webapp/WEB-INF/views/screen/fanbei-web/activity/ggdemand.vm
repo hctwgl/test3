@@ -3,7 +3,7 @@
 <head>
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>索要</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggdemand.css?version=$version">
@@ -24,7 +24,7 @@
                 <p>向你索要<span class="combo"></span></p>
             </div>
             <div class="banner">
-                <img src="$src/exclusions1.jpg" alt="" class="banner-img">
+                <img src="$src/gg22.png" alt="" class="banner-img">
             </div>
             <div class="send">
                 <div class="presentCard ask">赠送好友</div>

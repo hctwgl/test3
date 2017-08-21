@@ -12,8 +12,7 @@ new Vue({
         couponCont: [],
         content: [],
         list01: {},
-        list02: {},
-        list03: {}
+        list02: {}
     },
     created:function () {
         this.init();
@@ -25,7 +24,6 @@ new Vue({
             $.ajax({  // 优惠券请求
                 type: 'post',
                 url: "/fanbei-web/activityCouponList",
-                // url: '/fanbei-web/couponCategoryInfo',
                 success: function (res) {
                     self.couponCont=(JSON.parse(res)).data;
                     console.log(self.couponCont);
@@ -47,7 +45,6 @@ new Vue({
 
                     self.list01=self.content.activityList[0].activityGoodsList;
                     self.list02=self.content.activityList[1].activityGoodsList;
-                    self.list03=self.content.activityList[2].activityGoodsList;
 
                     self.$nextTick(function () { //dom渲染完成后执行
                         lazy.init();

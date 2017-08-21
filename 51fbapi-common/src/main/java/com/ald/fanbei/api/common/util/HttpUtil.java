@@ -61,6 +61,7 @@ public class HttpUtil {
      * @return
      */
     public static String doGet(String url, int timeout) {
+    	logger.info("doGet url = {}", url);
         BufferedReader in = null;
         OutputStreamWriter out = null;
         String result = "";

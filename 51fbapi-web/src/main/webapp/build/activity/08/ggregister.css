@@ -140,3 +140,26 @@ text-align:left;
 .password{
     margin-top:0.28rem;
 }
+
+.big-one{
+    display:inline-block;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 1.24rem;
+    height: 100%;
+    right: .0;
+}
+.big-two{
+    display:inline-block;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 1.24rem;
+    height: 100%;
+    right: .0;
+}

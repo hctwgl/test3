@@ -206,8 +206,8 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,order_id,re
 		WHERE
 			boluome_activity_id = 1
 		GROUP BY
-			user_name
+			`user_name` 
 		ORDER BY
-			total_rebate;
+			total_rebate DESC LIMIT 60 ;
     </select>
 </mapper>

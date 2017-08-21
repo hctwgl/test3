@@ -20,7 +20,7 @@ $(function() {
             data: {activityId: activityId},
             success: function (returnData) {
                 var returnData = eval('(' + returnData + ')').data;
-                //console.log(returnData)
+                console.log(returnData)
                 if (returnData.loginUrl) {
                     location.href = returnData.loginUrl;
                 } else {

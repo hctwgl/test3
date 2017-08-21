@@ -178,6 +178,8 @@ public class Constants {
 	public static final String RES_BORROW_CASH_BASE_BANK_DOUBLE = "BORROW_CASH_BASE_BANK_DOUBLE";
 	//提现开关
 	public static final String RES_CASH_RECORD_SWITCH = "CASH_RECORD_SWITCH";
+	//信用卡认证
+	public static final String RES_CREDIT_CARD_SWITCH = "CREDIT_CARD_SWITCH";
 	// 为了审核定义字段
 	public static final String RES_IS_FOR_AUTH = "IS_FOR_AUTH";
 

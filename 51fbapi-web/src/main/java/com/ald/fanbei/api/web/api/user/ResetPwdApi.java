@@ -53,7 +53,7 @@ public class ResetPwdApi implements ApiHandle {
         }
         //判断验证码是否一致并且验证码是否已经做过验证
         String realCode = smsDo.getVerifyCode();
-        if(!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1){
+        if(!StringUtils.equals(verifyCode, realCode)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
         //判断验证码是否过期

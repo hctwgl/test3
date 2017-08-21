@@ -28,7 +28,7 @@
     <!--首页轮播图-->
     <div class="banner">
         <ul class="bannerList">
-            <div class="positionImg"><img src="$src/ggIndex.png"></div>
+            <div class="positionImg"><img src="$src/gg22.png"></div>
             <li v-for="item in content.bannerList"><img :src="item.value" @click="bannerClick()"></li>
         </ul>
         <ul class="num"></ul>
@@ -37,8 +37,12 @@
     <!--优惠券--start-->
     <div class="couponList clearFix">
         <div class="coupon"  v-for="item in content.boluomeCouponList" @click="couponClick(item)">
-           <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
             <p class="name" v-for="a in item.channels" v-if="a==='waimai_ele'">饿了么</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='dianying_kou'">抠电影</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='huafei_ofpay'">话费充值</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='coffee_linqu'">星巴克</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='jiudian_ctrip'">携程</p>
             <p class="amount" v-if="item.type===1">￥<span>{{item.value}}</span></p>
             <p class="amount" v-if="item.type===2">￥<span>{{item.discount*10}}</span>折</p>
             <p class="limitAmount white" v-if="item.threshold>0">满<span>{{item.threshold}}</span>元可用</p>

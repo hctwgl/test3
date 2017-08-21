@@ -44,15 +44,20 @@ $(function(){
 
                             for(var j=0;j<presentCardList.length;j++){//判断终极大奖蒙版
                                 if(presentCardList[j].num>=2){
-                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'">'+ '<p class="num">x'+(presentCardList[j].num-1)+'</p></div>';
+                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
                                 }else{
-                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
+                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
                                 }
+
                                 //console.log(num)
                             }//判断终极大奖蒙版
                             $('.imgList').append(str);
                             slideNub = $(".imgList .img").size();//获取轮播图片数量
                             getData(slideNub);
+                            numClick02=$('.img.img3').attr('numClick');
+                            if(numClick02>=2){
+                                $('.img.img3').find('.garyCard').css('display','none');
+                            }
                             $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
                             $('.img').click(function(){
                                 var index=$(this).index();
@@ -62,6 +67,7 @@ $(function(){
                                     $('.surePresent').css('background','#B3B3B3');
                                 }else{
                                     $('.surePresent').css('background','#fb9659');
+                                    $(this).find('.garyCard').css('display','none');
                                 }
                             })
                         }else{
@@ -82,7 +88,9 @@ $(function(){
         name = $('.img.img3').attr('name');
         itemsListRid=$('.img.img3').attr('rid');
         numClick02=$('.img.img3').attr('numClick');
-        if(numClick02>=2){
+        if(numClick02<2){
+            $(this).css('background','#B3B3B3');
+        } else{
             for(var i=0;i<userItemsList.length;i++){
                 itemsId=userItemsList[i].itemsId;
                 if(itemsId==itemsListRid){

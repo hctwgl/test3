@@ -31,36 +31,39 @@ $(function () {
     $(".btn").click(function () {
         var userName = $(".phoneNumber-right").val(); //获取手机号
         var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userName)); //手机号正则验证
-        // var mesg= $(".mesg-right").val();//获取验证码  
-        if (userck) {
-            // var password_md5 = String(CryptoJS.MD5(password));//md5加密
-            $.ajax({
-                url: "/H5GGShare/boluomeActivityForgetPwd",
-                type: 'POST',
-                dataType: 'JSON',
-                data: {
-                    mobile: userName,
-                },
-                success: function (data) {
-                    console.log(data)
-                    if (data.success) {
-                        $(".btn").attr("isState", 1);
-                        $(".btn").text(timerS + " s");
-                        timerInterval = setInterval(timeFunction, 1000);
+        // var mesg= $(".mesg-right").val();//获取验证码
+        var isState = $(".btn").attr('isState');//获取设置的状态码  
+        if (isState == 0 || !isState) {
+                if (userck) {
+                    // var password_md5 = String(CryptoJS.MD5(password));//md5加密
+                    $.ajax({
+                        url: "/H5GGShare/boluomeActivityForgetPwd",
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: {
+                            mobile: userName,
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            if (data.success) {
+                                $(".btn").attr("isState", 1);
+                                $(".btn").text(timerS + " s");
+                                timerInterval = setInterval(timeFunction, 1000);
 
-                    } else if (data.url == "ForgetPwd") {
-                        requestMsg(data.msg);
-                    }
+                            } else if (data.url == "ForgetPwd") {
+                                requestMsg(data.msg);
+                            }
+                        }
+
+                    })
+                } else {
+                    requestMsg("请填写正确的手机号");
                 }
+                localStorage.setItem("user", userName); //将手机号存储到本地
+                //    localStorage.setItem("mesg",mesg); //将短信验证码存储到本地 
 
-            })
-        } else {
-            requestMsg("请填写正确的手机号");
+                console.log(userName);
         }
-        localStorage.setItem("user", userName); //将手机号存储到本地
-        //    localStorage.setItem("mesg",mesg); //将短信验证码存储到本地 
-
-        console.log(userName);
 
     });
 
