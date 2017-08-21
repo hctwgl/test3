@@ -1,0 +1,2 @@
+"use strict";var finished=0,vm=new Vue({el:"#inviteRank",data:{returnData:[],month:"",total:""},created:function(){this.initial()},methods:{initial:function(){var t=this;$.ajax({url:"/fanbei-web/recommendListSort",dataType:"json",type:"post",success:function(n){console.log(n),t.returnData=n.datalist,t.month=n.month,t.total=n.total},error:function(){requestMsg("请求失败")}})}}});
+//# sourceMappingURL=../../_srcmap/js/app/delivery.js.map
