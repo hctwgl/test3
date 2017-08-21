@@ -4,7 +4,7 @@
     #set($version="201708102130")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>物流信息</title>
-    <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteRank.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/css/app/delivery.css?version=$version">
 </head>
 
 <body style="background: linear-gradient(to bottom,#fd5d2c, #ff4a2d);">
@@ -54,7 +54,7 @@
         </template>
     </div>
 </div>
-<script type="text/javascript" src="/dist/js/app/inviteRank.js?version=$version"></script>
+<script type="text/javascript" src="/dist/js/app/delivery.js?version=$version"></script>
 </body>
 </html>
 
