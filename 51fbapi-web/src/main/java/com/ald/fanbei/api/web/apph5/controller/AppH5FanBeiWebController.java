@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -940,7 +941,9 @@ public class AppH5FanBeiWebController extends BaseController {
 					String accessUrl = afLoanSupermarket.getLinkUrl();
 					accessUrl = accessUrl.replaceAll("\\*", "\\&");
 					logger.info("贷款超市app点击banner请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+afUserDo.getRid());
-					String extraInfo = "appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
+					String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
+					String channel = getChannel(sysModeId);
+					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
 					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
 					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
 					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
@@ -948,6 +951,7 @@ public class AppH5FanBeiWebController extends BaseController {
 					afBusinessAccessRecordsDo.setRefId(afLoanSupermarket.getId());
 					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
 					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.APP_LOAN_BANNER.getCode());
+					afBusinessAccessRecordsDo.setChannel(channel);
 					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
 					model.put("redirectUrl", accessUrl);
 				}else{
@@ -973,7 +977,15 @@ public class AppH5FanBeiWebController extends BaseController {
 			model.put("redirectUrl", "/static/error404.html");
 		}
 	}
-
+	private String getChannel(String sysModeId){
+        if(sysModeId!=null) {
+            int lastIndex = sysModeId.lastIndexOf("_");
+            if (lastIndex!=-1){
+                return sysModeId.substring(++lastIndex);
+            }
+        }
+        return "";
+    }
 	/*
 	 * (non-Javadoc)
 	 * 
