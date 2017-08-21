@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017081802")
+    #set($version="2017082101")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>七夕让爱加倍，不一样の套路</title>
@@ -20,7 +20,7 @@
                 <div class="btn">立即领取</div>
             </li>
         </ul>
-        <div class="recommend" style="background-color: #fe748e;">
+        <div class="recommend" style="background-color: #fe5d7c;">
             <div class="title">
                 <h2></h2>
                 <p>给TA最深的悸动</p>
@@ -37,7 +37,7 @@
                 </li>
             </ul>
         </div>
-        <div class="LevelGoods" style="background-color: #fe748e;">
+        <div class="LevelGoods" style="background-color: #fe5d7c;">
             <div class="title">
                 <h2></h2>
                 <p>平淡中也需要点情趣</p>
