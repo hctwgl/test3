@@ -920,7 +920,7 @@ public class AppH5FanBeiWebController extends BaseController {
 	 * @throws IOException
 	 */
 	@RequestMapping(value = { "/getOrderLogistics" }, method =
-			RequestMethod.GET,produces="application/json;charset=utf-8")
+			RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getOrderLogistics(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext context = null;
