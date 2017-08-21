@@ -728,8 +728,7 @@ public class UpsUtil extends AbstractThird {
 	    	String sign = WxSignBase.byteToHex(WxSignBase.MD5Digest((WxpayCore.toQueryString(param)).getBytes(Constants.DEFAULT_ENCODE)));
 	    	param.put(WxpayConfig.KEY_SIGN, sign);
 	    	String buildStr = WxpayCore.buildXMLBody(param);
-	    	String result;
-			result = WxpayCore.refundPost(WxpayConfig.WX_ORDERQUERY_API, buildStr,mchId,certPath);
+	    	String result = WxpayCore.refundPost(WxpayConfig.WX_ORDERQUERY_API, buildStr,mchId,certPath);
 	    	logger.info("wxRefund result = {}", result);
 	    	Properties respPro = WxXMLParser.parseXML(result);
 	    	resultMap.put("result_code", respPro.getProperty(WxpayConfig.RESULT_CODE));
