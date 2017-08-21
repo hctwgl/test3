@@ -1,10 +1,14 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.ibatis.annotations.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -12,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.CollectionBorrowCashData;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
+import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
+import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 
 /**
@@ -52,25 +59,34 @@ public class CollectionController {
 	}
 	@RequestMapping(value = { "/findBorrowCashByBorrowId"})
 	@ResponseBody
-	public CollectionBorrowCashData findBorrowCashByBorrowId(HttpServletRequest request, HttpServletResponse response){
+	public CollectionUpdateResqBo findBorrowCashByBorrowId(HttpServletRequest request, HttpServletResponse response){
 		String borrowNo = ObjectUtils.toString(request.getParameter("borrowNo"));
-		CollectionBorrowCashData data=new CollectionBorrowCashData();
+		Map<String,String> map=new HashMap();
+		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
 		try{
-		AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+		AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo("jq2017033015092200001");
 		if(afBorrowCashDo==null) {
 			logger.error("afBorrowCashDo is null" );
+			updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
 		}
-		data.setBorrowNo(afBorrowCashDo.getBorrowNo());
-		data.setAmount(afBorrowCashDo.getAmount());
-		data.setOverdueAmount(afBorrowCashDo.getOverdueAmount());
-		data.setOverdueDay(afBorrowCashDo.getOverdueDay());
-		data.setRenewalNum(afBorrowCashDo.getRenewalNum());
-		data.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
-		data.setRepayAmount(afBorrowCashDo.getRepayAmount());
-		data.setStatus(afBorrowCashDo.getStatus());
+		map.put("borrowNo",afBorrowCashDo.getBorrowNo());
+		map.put("amount",afBorrowCashDo.getAmount()+"");
+		map.put("overdueAmount",afBorrowCashDo.getOverdueAmount()+"");
+		map.put("overdueDay",afBorrowCashDo.getOverdueDay()+"");
+		map.put("renewalNum",afBorrowCashDo.getRenewalNum()+"");
+		map.put("sumRenewalPoundage",afBorrowCashDo.getSumRenewalPoundage()+"");
+		map.put("repayAmount",afBorrowCashDo.getRepayAmount()+"");
+		map.put("status",afBorrowCashDo.getStatus());
+		
+		String jsonString = JsonUtil.toJSONString(map);
+		updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
+		updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
+		updteBo.setSign(DigestUtil.MD5(jsonString));
+		updteBo.setData(jsonString);
 		} catch(Exception e){
 			logger.error("error message " + e);
 		}
-		return data;
+		return updteBo;
 	}
 }
