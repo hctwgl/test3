@@ -9,7 +9,8 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AfBusinessAccessRecordsRefType {
 
-	LOANSUPERMARKET("LOANSUPERMARKET", "借款超市访问");
+	LOANSUPERMARKET("LOANSUPERMARKET", "借款超市访问"),
+	LOANSUPERMARKET_BANNER("LOANSUPERMARKET_BANNER", "借款超市banner访问");
     
     private String code;
     private String name;
