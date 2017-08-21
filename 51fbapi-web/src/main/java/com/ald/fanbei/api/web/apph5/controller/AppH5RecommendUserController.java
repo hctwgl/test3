@@ -54,6 +54,8 @@ public class AppH5RecommendUserController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "getPrizeByLastMonth",produces = "text/html;charset=UTF-8")
     public String getPrizeByLastMonth(){
+        logger.info("url:getPrizeByLastMonth");
+
         Calendar calendar = Calendar.getInstance();
         Date date = new Date();//获取当前时间
         calendar.setTime(date);
@@ -78,6 +80,8 @@ public class AppH5RecommendUserController extends BaseController {
 
         String ret = JSON.toJSONString(retMap);
 //        String ret = JSON.toJSONString(mapList);
+
+        logger.info("url:getPrizeByLastMonth data:"+ret);
         return ret;
 
     }
@@ -108,6 +112,7 @@ public class AppH5RecommendUserController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "recommendListSort", method = RequestMethod.POST)
     public String getRecommendListSort(){
+        logger.info("url:recommendListSort");
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, 0);
         c.set(Calendar.DAY_OF_MONTH, 1);//设置为1号,当前日期既为本月第一天
@@ -145,6 +150,8 @@ public class AppH5RecommendUserController extends BaseController {
         map.put("datalist",list);
         String ret = JSON.toJSONString(map);
 //        String ret = JSON.toJSONString(list);
+
+        logger.info("url:recommendListSort data:"+ret);
         return ret;
     }
 

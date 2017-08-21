@@ -33,6 +33,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
@@ -73,6 +74,11 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBoluomeActivityDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeActivityItemsDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserItemsDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserLoginDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserRebateDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
@@ -87,6 +93,11 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -94,6 +105,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -102,6 +114,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.query.AfBoluomeActivityUserRebateQuery;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -184,10 +197,23 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Resource
 	AfTradeBusinessInfoDao afTradeBusinessInfoDao;
 	@Resource
+	AfBoluomeActivityUserLoginDao afBoluomeActivityUserLoginDao;
+	@Resource
+	AfBoluomeActivityUserRebateDao afBoluomeActivityUserRebateDao;
+	@Resource 
+	AfShopService afShopService;
+	@Resource
+	AfBoluomeActivityItemsDao afBoluomeActivityItemsDao;
+	@Resource
+	AfBoluomeActivityUserItemsDao afBoluomeActivityUserItemsDao;
+	@Resource
+	AfBoluomeActivityDao afBoluomeActivityDao;
+	@Resource
 	AfTradeOrderService afTradeOrderService;
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	
 	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
@@ -646,6 +672,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						orderDao.updateOrder(afOrder);
+				        //若在菠萝觅活动期间内则返利
+						AfBoluomeActivityDo activityDo = new AfBoluomeActivityDo();
+						activityDo.setStatus("O");
+						AfBoluomeActivityDo afBoluomeActivityDo =  afBoluomeActivityDao.getByCommonCondition(activityDo);
+						if(afBoluomeActivityDo !=null){
+                            Date startTime = afBoluomeActivityDo.getGmtCreate();
+                            Date endTime = afBoluomeActivityDo.getGmtEnd();
+                            if(DateUtil.afterDay(endTime,afOrder.getGmtCreate()) && DateUtil.afterDay(afOrder.getGmtCreate(),startTime)){
+                                boluomeActivity(afOrder);
+                            }
+                        }
 						break;
 					default:
 						logger.info(" status is {} ",afOrder.getStatus());
@@ -662,6 +699,89 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			}
 		});
 	}
+	public int boluomeActivity(final AfOrderDo afOrder){
+		//登陆者消费就返利和返卡片
+	    Long userId = afOrder.getUserId();
+		//查询商城id
+		AfShopDo afShopDo =new AfShopDo();
+		afShopDo.setType(afOrder.getSecType());
+		AfShopDo shop =  afShopService.getShopInfoBySecTypeOpen(afShopDo);
+		if (shop != null) {
+			Long shopId = shop.getRid();
+			//根据shopId查询卡片信息
+			AfBoluomeActivityItemsDo ItemsMessageSet = new AfBoluomeActivityItemsDo();
+			ItemsMessageSet.setRefId(shopId);
+			// ItemsMessageSet.setBoluomeActivityId(userLoginRecord.getBoluomeActivityId());
+			AfBoluomeActivityItemsDo afBoluomeActivityItemsDo  =  afBoluomeActivityItemsDao.getItemsInfo(ItemsMessageSet);
+			if(afBoluomeActivityItemsDo!= null){
+				//规则判断
+				BigDecimal actualAmount = afOrder.getActualAmount();
+				BigDecimal minConsumption=new BigDecimal(afBoluomeActivityItemsDo.getRuleJson());   
+				int res = actualAmount.compareTo(minConsumption);
+				if(res==1 || res == 0){
+					//添加自己返利记录
+					AfBoluomeActivityUserRebateDo ownRebate =new AfBoluomeActivityUserRebateDo();
+					ownRebate.setUserId(userId);
+					//根据useid获取username
+					AfUserDo afUserDo  = afUserDao.getUserById(userId);
+					ownRebate.setUserName(afUserDo.getUserName());
+					ownRebate.setOrderId(afOrder.getRid());//id还是orderNo?
+					ownRebate.setRebate(afOrder.getRebateAmount());
+					Date nowTime = new Date();
+					ownRebate.setGmtCreate(nowTime);
+					ownRebate.setGmtModified(nowTime);
+					ownRebate.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
+					afBoluomeActivityUserRebateDao.saveRecord(ownRebate);
+					
+					//添加卡片信息 
+					AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
+					userItemsDo.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
+					userItemsDo.setItemsId(afBoluomeActivityItemsDo.getRid());
+					userItemsDo.setSourceId((long) -1);
+					userItemsDo.setStatus("NORMAL");
+					userItemsDo.setUserId(userId);
+					userItemsDo.setUserName(afUserDo.getUserName()); 
+					userItemsDo.setGmtSended(nowTime);
+					afBoluomeActivityUserItemsDao.saveRecord(userItemsDo);
+					
+					//给他人返利
+					AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
+					if(userLoginRecord!=null){    
+						//最后绑定时间，和当前下单时间
+						Date lastTime = userLoginRecord.getGmtCreate();
+						Date orderTime = afOrder.getGmtCreate();
+						AfBoluomeActivityUserRebateQuery userRebateQuery = new  AfBoluomeActivityUserRebateQuery();
+						userRebateQuery.setLastTime(lastTime);
+						userRebateQuery.setOrderTime(orderTime);
+						userRebateQuery.setUserId(userId);
+						userRebateQuery.setRefUserId(userLoginRecord.getRefUserId());
+						//查询时间内是否有对应的返利记录
+						AfBoluomeActivityUserRebateQuery RebateQueryResult  = afBoluomeActivityUserRebateDao.getRebateCountNumber(userRebateQuery);
+						if(RebateQueryResult.getFanLiRecordTime()<1){
+							//进行返利
+							AfBoluomeActivityUserRebateDo refMessage = new AfBoluomeActivityUserRebateDo();
+							refMessage.setUserId(userId);
+							refMessage.setUserName(afUserDo.getUserName());
+							refMessage.setRefUserId(userLoginRecord.getRefUserId());
+							refMessage.setBoluomeActivityId(userLoginRecord.getBoluomeActivityId());
+							refMessage.setRefOrderId(afOrder.getRid());//id还是orderNo?
+							refMessage.setInviteRebate(afOrder.getRebateAmount()); 
+							ownRebate.setGmtCreate(nowTime);
+							ownRebate.setGmtModified(nowTime);
+							afBoluomeActivityUserRebateDao.saveRecord(refMessage);
+							//更新账户金额
+							AfUserAccountDo refAccountInfo = new AfUserAccountDo();
+							refAccountInfo.setRebateAmount(afOrder.getRebateAmount());
+							refAccountInfo.setUserId(userLoginRecord.getRefUserId());
+							afUserAccountService.updateUserAccount(refAccountInfo);
+						}
+					}
+				}
+			}
+		}
+		return 0;
+	}
+	
 	
 	private AfUserAccountLogDo buildUserAccount(BigDecimal amount,Long userId,Long orderId, AccountLogType logType){
 		//增加account变更日志
@@ -709,6 +829,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						// 微信支付
 						resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount, isSelf ? PayOrderSource.SELFSUPPORT_ORDER.getCode() : PayOrderSource.BRAND_ORDER.getCode());
 						resultMap.put("success", true);
+						//活动返利
 						return resultMap;
 					} else if (payType.equals(PayType.AGENT_PAY.getCode())) {
 						// 先做判断
@@ -768,6 +889,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							//#endregion
 							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap);
 						}
+						//verybo.getResult()=10,则成功，活动返利
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {//组合支付
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 						Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
@@ -850,6 +972,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
 						resultMap.put("resp", newMap);
 						resultMap.put("success", true);
+						//活动返利
+						
 					}
 					return resultMap;
 				} catch (FanbeiException exception) {

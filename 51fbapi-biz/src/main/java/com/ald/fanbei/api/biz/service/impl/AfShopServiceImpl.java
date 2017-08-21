@@ -45,4 +45,15 @@ public class AfShopServiceImpl implements AfShopService {
 		return null;
 	}
 
+	@Override
+	public AfShopDo getShopInfoBySecType(AfShopDo afShopDo) {
+		// TODO Auto-generated method stub
+		return afShopDao.getShopInfoBySecType(afShopDo);
+	}
+	@Override
+	public AfShopDo getShopInfoBySecTypeOpen(AfShopDo afShopDo) {
+		// TODO Auto-generated method stub
+		return afShopDao.getShopInfoBySecTypeOpen(afShopDo);
+	}
+
 }

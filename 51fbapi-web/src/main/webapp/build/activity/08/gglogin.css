@@ -1,0 +1,146 @@
+*{
+padding: 0;
+ margin: 0;
+box-sizing: border-box;
+}
+body{
+    background-color:white;
+}
+.login{
+/* background:#ffffff; */
+border-radius:0.33rem;
+/* width:6.8rem; */
+/* height:1059px; */
+padding: 0 0.6rem;
+}
+.topdiv{
+width:6.41rem;
+height: 3.65rem;
+position: relative;
+}
+.topimg{
+position: absolute;
+left: 50%;
+top: 50%;
+transform: translate(-50%,-50%);
+display: inline-block;
+/* background:red; */
+/* box-shadow:0 0 0.05rem 0 rgba(0,0,0,0.09); */
+width:1.62rem;
+height:1.8rem;
+}
+.topimg img{
+ text-shadow:0 0 0.05rem 0 rgba(0,0,0,0.09); 
+}
+.phone{
+ background:#ffffff;
+box-shadow:0 0.01rem 0.07rem 0 rgba(186,186,186,0.40);
+width:6.4rem;
+height:1rem;
+position: relative;
+padding-left: 1.08rem;
+
+}
+.yhinp{
+    /* display: none; */
+}
+.pinp{
+border:  none;
+outline: none;
+width: 100%;
+height: 100%;
+font-family:PingFangSC-Regular;
+font-size:0.32rem;
+/* color:#bfbfbf; */
+letter-spacing:-0.54px;
+text-align:left;
+}
+.xxicon{
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+/* background:#c0c0c0; */
+width:0.24rem;
+height:0.25rem;
+right: 0.17rem;
+display: none;
+}
+
+.bicon{
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+left: 0.55rem;
+background:#d8d8d8;
+width:0.18rem;
+height:0.18rem;
+border-radius:100%;
+
+}
+.pcheck{
+margin-top: 0.28rem;
+padding-right: 2.23rem;
+}
+.checkbtn{
+background:#ffffff;
+box-shadow:0 0.01rem 0.07rem 0 rgba(186,186,186,0.40);
+width:2.23rem;
+height:1.01rem;
+position: absolute;
+right: 0;
+top: 0;
+font-family:PingFangSC-Regular;
+font-size:0.32rem;
+color:#fe963b;
+letter-spacing:-0.54px;
+text-align:left;
+line-height: 1rem;
+text-align: center;
+}
+.loginbtn{
+margin-top: 0.9rem;
+width:6.41rem;
+height: 1.01rem;
+background:#fe963b;
+border-radius:0.04rem;
+line-height: 1.01rem;
+text-align: center;
+font-family:PingFangSC-Regular;
+font-size:0.32rem;
+color:#ffffff;
+/* letter-spacing:-0.54px; */
+text-align:center;
+}
+.lspdiv{
+margin-top: 0.27rem;
+width:6.41rem;
+
+}
+.clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
+.clearFix{zoom:1}
+.spl{
+float: left;
+font-family:PingFangSC-Regular;
+font-size:0.28remd;
+color:#4990e2;
+letter-spacing:-0.54px;
+text-align:left;
+}
+a{
+    color:#4990e2;
+}
+.spr{
+float: right;
+font-family:PingFangSC-Regular;
+font-size:0.28rem;
+color:#afafaf;
+letter-spacing:-0.54px;
+text-align:left;
+}
+.botimg{
+    width:100%;
+    margin-top:50%;
+}
+.gray{
+    background-color:gray;
+}
