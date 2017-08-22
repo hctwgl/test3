@@ -100,12 +100,11 @@ public class DigestUtil{
      * 
      *@param signStrBefore 需要计算的字符串
      *@return
-     * @throws UnsupportedEncodingException 
      */
-    public static String getDigestStr(String signStrBefore) throws UnsupportedEncodingException { 
+    public static String getDigestStr(String signStrBefore) { 
 		try {
 	    	MessageDigest md = MessageDigest.getInstance("SHA-256");
-	    	md.update(signStrBefore.getBytes("UTF-8"));
+	    	md.update(signStrBefore.getBytes());
 	        String tempStr = null; 
 	        StringBuilder stb = new StringBuilder(); 
 	        byte[] origBytes = md.digest();
@@ -427,12 +426,7 @@ public class DigestUtil{
 //        byte[] saltBytes = DigestUtil.generateSalt(DEFAULT_BYTES_SIZE);
 //        String salt = DigestUtil.encodeHex(saltBytes);
 //        System.out.println(salt);
-    	try {
-			System.out.println(DigestUtil.getDigestStr("hello1234"));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	System.out.println(DigestUtil.getDigestStr("hello1234"));
     }
 
 //    public static void main(String[] args) {
