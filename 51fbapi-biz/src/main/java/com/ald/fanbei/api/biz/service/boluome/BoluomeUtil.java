@@ -283,7 +283,7 @@ public class BoluomeUtil extends AbstractThird{
 		return orderCancelUrl;
 	}
 	public static OrderStatus parseOrderType(String orderStatusStr) {
-		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.退款成功 8.已取消 9.处理中 11.等待退款
+		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.退款成功 8.已取消 9.处理中 11.等待退款 12.支付中
 		int orderStatus = Integer.parseInt(orderStatusStr);
 		OrderStatus status = null;
 		if (orderStatus == 1 || orderStatus == 2) {
@@ -298,12 +298,15 @@ public class BoluomeUtil extends AbstractThird{
 			status = OrderStatus.WAITING_REFUND;
 		} else if (orderStatus == 8 || orderStatus == 7) {
 			status = OrderStatus.CLOSED;
+		}  else if (orderStatus == 12) {
+			status = OrderStatus.DEALING;
 		} 
+		
 		return status;
 	}
 	
 	public static PayStatus parsePayStatus(String orderStatusStr) {
-		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.已经退款 8.已取消 9.处理中 11.等待退款
+		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.已经退款 8.已取消 9.处理中 11.等待退款 12.支付中
 		int orderStatus = Integer.parseInt(orderStatusStr);
 		PayStatus status = null;
 		if (orderStatus == 1 || orderStatus == 2 || orderStatus == 8) {
@@ -313,6 +316,8 @@ public class BoluomeUtil extends AbstractThird{
 			status = PayStatus.PAYED;
 		} else if (orderStatus == 6 || orderStatus == 11 || orderStatus == 7) {
 			status = PayStatus.REFUND;
+		}else if (orderStatus == 12){
+			status = PayStatus.DEALING;
 		}
 		return status;
 	}

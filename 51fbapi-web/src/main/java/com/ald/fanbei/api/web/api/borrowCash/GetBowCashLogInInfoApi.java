@@ -428,6 +428,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			/**add by fmai 用户点击借钱页面时去风控获取用户的借钱手续费*/
 			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
 		} catch (Exception e) {
+			bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, rate.get("poundage").toString(), Constants.SECOND_OF_ONE_MONTH);
 			logger.info("从风控获取分层用户额度失败：" + e);
 		}
 		
