@@ -13,6 +13,8 @@ import com.ald.fanbei.api.dal.dao.AfOrderLogisticsDao;
 import com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo;
 import com.ald.fanbei.api.biz.service.AfOrderLogisticsService;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -67,7 +69,12 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
                 afOrderLogisticsBo.setNewestInfo(empty);
             }
             if(isOutTraces>0){
-                afOrderLogisticsBo.setTracesInfo(traces);
+                
+                List<KdniaoReqDataDataTraces> sortTraces=new ArrayList<KdniaoReqDataDataTraces>();
+                for (int i = traces.size()-1; i >=0; i--) {
+                    sortTraces.add(traces.get(i));
+                }
+                afOrderLogisticsBo.setTracesInfo(sortTraces);
             }
             return afOrderLogisticsBo;
         }else{
