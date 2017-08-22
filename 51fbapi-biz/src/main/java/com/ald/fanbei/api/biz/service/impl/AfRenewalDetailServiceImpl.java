@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
@@ -60,6 +61,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewalDetailService {
 	@Resource
 	UpsUtil upsUtil;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	@Resource
 	private JpushService pushService;
 	@Resource
@@ -264,6 +267,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
 		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）
+		
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		if (poundageRateCash != null) {
+			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
+		}
+		
 		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
 		BigDecimal baseBankRate = new BigDecimal(baseBankRateResource.getValue());// 央行基准利率
 
