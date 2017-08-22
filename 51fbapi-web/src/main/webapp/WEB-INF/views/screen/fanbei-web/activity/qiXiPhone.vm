@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017080301")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <title>自拍一步到位 最高返利239元</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/qiXiPhone.css">
+</head>
+<body>
+    <div id="selfHome">
+        <img :src="returnData.bannerUrl">
+        <div class="bigWrap">
+            <div class="bigBox" style="background-color: white;padding:0.04rem">
+                <div class="discountWrap" style="background-color: white; border:0.01rem solid #DFDBE1;">
+                    <!--<img src="$commonUrl/oppoHome1.png">!-->
+                    <div class="bannerUrl">
+                        <span class="center">
+                            <i class="centerBig">
+                                <img src="$commonUrl/heartF.png" alt="" class="left">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right">
+                            </i><br/>
+                            <i class="centerSmall">七夕送给心爱的她一份心意</i>
+                        </span>
+                    </div>
+                    <ul class="discount clearfix" style="background-color: white;">
+                        <li v-for="item in discountMap" @click="goGoodsDetail(item)" class="buyBtn">
+                            <img :src="item.goodsIcon">
+                            <div class="discountRight">
+                                <p class="discountRightTitle">{{item.goodName}}</p>
+                                <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
+                                <div class="priceWrap">
+                                    <span class="saleAmount">¥{{item.saleAmount}}</span>
+                                    <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
+                                </div>
+                                <span class="goBuyBtn">立即抢购</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!--<img src="$commonUrl/tangle.png" alt="" class="tangle">!-->
+            </div>
+            <div class="rebateWrap" style="background-color: white;">
+                <!--<img src="$commonUrl/oppoHome2.png">!-->
+                <div class="bannerUrl">
+                        <span class="center">
+                            <i class="centerBig">
+                                <img src="$commonUrl/heartF.png" alt="" class="left">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right">
+                            </i><br/>
+                            <i class="centerSmall">七夕送给心爱的她一份心意</i>
+                        </span>
+                    </div>
+                <ul class="rebate clearfix" style="background-color: white;">
+                    <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
+                        <img :src="item.goodsIcon">
+                        <div class="rebateRight">
+                            <p class="rebateRightTitle">{{item.goodName}}</p>
+                            <p class="remark">{{item.remark}}</p>
+                            <div class="priceWrap">
+                                <span class="saleAmount">¥{{item.saleAmount}}</span>
+                                <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/dist/activity/08/qiXiPhone.js"></script>
+</html>
