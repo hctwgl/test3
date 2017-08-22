@@ -38,7 +38,6 @@ import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
-import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
@@ -814,9 +813,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
-							
 							Map<String, Object> result = riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
-							resultMap.put("status", PayStatus.DEALING.getCode());
+							result.put("status", PayStatus.DEALING.getCode());
 							return result;
 						}
 					} else {
