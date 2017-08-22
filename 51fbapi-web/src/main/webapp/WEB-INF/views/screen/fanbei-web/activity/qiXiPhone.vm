@@ -11,7 +11,11 @@
     <div id="selfHome">
         <img :src="returnData.bannerUrl">
         <div class="bigWrap">
-            <div class="bigBox" style="background-color: white;padding:0.04rem">
+            <div class="bigBox" style="padding:0.04rem">
+            <div class="topLine"></div>
+            <div class="leftLine"></div>
+            <div class="bottomLine"></div>
+            <div class="rightLine"></div>
                 <div class="discountWrap" style="background-color: white; border:0.01rem solid #DFDBE1;">
                     <!--<img src="$commonUrl/oppoHome1.png">!-->
                     <div class="bannerUrl">
@@ -37,11 +41,15 @@
                         </li>
                     </ul>
                 </div>
-                <!--<img src="$commonUrl/tangle.png" alt="" class="tangle">!-->
+                <img src="$commonUrl/tangle.png" alt="" class="tangle">
             </div>
-            <div class="rebateWrap" style="background-color: white;">
+            <div class="rebateWrap" style="padding: 0.04rem;">
+                <div class="r-topLine"></div>
+                <div class="r-leftLine"></div>
+                <div class="r-bottomLine"></div>
+                <div class="r-rightLine"></div>
                 <!--<img src="$commonUrl/oppoHome2.png">!-->
-                <div class="bannerUrl">
+                <div class="bannerUrl" style="background-color: white;">
                         <span class="center">
                             <i class="centerBig">
                                 <img src="$commonUrl/heartF.png" alt="" class="left">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right">

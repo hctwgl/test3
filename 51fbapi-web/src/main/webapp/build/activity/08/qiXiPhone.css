@@ -16,19 +16,48 @@ img{
     min-height: 0.6rem;
     
 }
-.bigWrap{
 
-}
 .bigBox{
     margin-bottom:0.2rem;
     position:relative;
+}
+.topLine{
+    position: absolute;
+    width: 7.5rem;
+    border-top: 1px solid #95899D;
+    top:0.1rem;
+    left: 0.1rem;
+}
+.bottomLine{
+    position: absolute;
+    width: 7.3rem;
+    border-top: 1px solid #95899D;
+    bottom:0.1rem;
+    left: 0.1rem;
+}
+.leftLine{
+    position: absolute;
+    width: 1rem;
+    height:11.2rem;
+    border-left: 1px solid #95899D;
+    bottom:0.1rem;
+    left: 0.1rem;
+    
+}
+.rightLine{
+    position: absolute;
+    width: 1rem;
+    height:11.2rem;
+    border-right: 1px solid #95899D;
+    bottom:0.1rem;
+    right: 0.1rem;
 }
 .bigBox .tangle{
     width:0.28rem;
     height:0.1rem;
     position:absolute;
     right:0.01rem;
-    top:0.02rem;
+    top:0.03rem;
 }
 .bannerUrl{
     text-align:center;
@@ -118,7 +147,7 @@ img{
     
 }
 .rebate li:nth-child(2n+1){
-    margin: 0 0.24rem 0.24rem 0;
+    margin: 0 0.16rem 0.24rem 0;
 }
 .rebate img{
     width: 100%;
@@ -169,4 +198,38 @@ img{
 }
 .rebateAmount{
     color: #9B87A9;
+}
+.rebateWrap{
+    position:relative;
+}
+.r-topLine{
+    position: absolute;
+    width: 7.3rem;
+    border-top: 1px solid #95899D;
+    top:0.1rem;
+    left: 0.1rem;
+}
+.r-bottomLine{
+    position: absolute;
+    width: 7.3rem;
+    border-top: 1px solid #95899D;
+    bottom:0.1rem;
+    left: 0.1rem;
+}
+.r-leftLine{
+    position: absolute;
+    width: 1rem;
+    height:18.01rem;
+    border-left: 1px solid #95899D;
+    bottom:0.1rem;
+    left: 0.1rem;
+    
+}
+.r-rightLine{
+    position: absolute;
+    width: 1rem;
+    height:18.01rem;
+    border-right: 1px solid #95899D;
+    bottom:0.1rem;
+    right: 0.1rem;
 }
