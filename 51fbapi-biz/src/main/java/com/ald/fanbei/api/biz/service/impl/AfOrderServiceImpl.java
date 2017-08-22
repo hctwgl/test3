@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -943,7 +942,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
 							
-							return riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
+							Map<String, Object> result = riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
+							result.put("status", PayStatus.DEALING.getCode());
+							return result;
 						}
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
@@ -971,6 +972,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						newMap.put("tradeNo", respBo.getTradeNo());
 						newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
 						resultMap.put("resp", newMap);
+						resultMap.put("status", PayStatus.DEALING.getCode());
 						resultMap.put("success", true);
 						//活动返利
 						
@@ -1325,9 +1327,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	
 	public int dealBrandOrderFail(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
-		if (!OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())) {
-			return 0;
-		}
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
@@ -1361,6 +1360,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+		}
 		return result;
 	}
 	
@@ -1778,12 +1780,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 */
 	@Override
 	public int dealPayCpOrderFail(final String payOrderNo, final String tradeNo,final String payType) {
+		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					
-					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 					// 不处理新建，处理
 					if (orderInfo == null) {
 						return 0;
@@ -1842,7 +1844,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+		}
 		return result;
+	}
+
+	@Override
+	public int dealBrandPayCpOrderFail(String outTradeNo, String tradeNo, String code) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 }
