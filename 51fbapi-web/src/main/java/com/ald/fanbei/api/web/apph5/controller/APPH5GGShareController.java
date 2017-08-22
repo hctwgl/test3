@@ -336,30 +336,36 @@ public class APPH5GGShareController extends BaseController {
 			String fakeFinalStr = fakeResourceDo.getValue2();
 			Integer fakeFinal = new Integer(fakeFinalStr);
 
-			AfBoluomeActivityResultDo t = new AfBoluomeActivityResultDo();
+			Integer addFakeFinal = afBoluomeActivityUserItemsService.getFakeFinal(activityId);
+			if (addFakeFinal != null) {
+				fakeFinal += addFakeFinal;
+			}
+			/*AfBoluomeActivityResultDo t = new AfBoluomeActivityResultDo();
 			t.setBoluomeActivityId(activityId);
 			List<AfBoluomeActivityResultDo> listResult = afBoluomeActivityResultService.getListByCommonCondition(t);
 			if (listResult != null && listResult.size() > 0) {
 				fakeFinal += listResult.size();
 			}
-
+*/
 			// TOOD:resource +表中获取参与人数（user_items）
 			String fakeJoinStr = fakeResourceDo.getValue1();
 			Integer fakeJoin = new Integer(fakeJoinStr);
-			AfBoluomeActivityUserItemsDo itemsDo = new AfBoluomeActivityUserItemsDo();
+			Integer addFakeJoin = afBoluomeActivityUserItemsService.geFakeJoin(activityId);
+			if (addFakeJoin != null) {
+				fakeJoin += addFakeJoin;
+			}
+			/*AfBoluomeActivityUserItemsDo itemsDo = new AfBoluomeActivityUserItemsDo();
 			itemsDo.setBoluomeActivityId(activityId);
 			itemsDo.setStatus("NORMAL");
-			List<AfBoluomeActivityUserItemsDo> listItems = afBoluomeActivityUserItemsService
-					.getListByCommonCondition(itemsDo);
+			List<AfBoluomeActivityUserItemsDo> listItems = afBoluomeActivityUserItemsService.getListByCommonCondition(itemsDo);
 			if (listItems != null && listItems.size() > 0) {
 				fakeJoin += listItems.size();
-			}
+			}*/
 			resultMap.put("fakeFinal", fakeFinal);
 			resultMap.put("fakeJoin", fakeJoin);
 		}
 		return resultMap;
 	}
-
 	/**
 	 * 
 	 * @说明：赠送卡片(页面初始化) @param: @param request
@@ -910,7 +916,12 @@ public class APPH5GGShareController extends BaseController {
 				}
 
 				Map<String, Object> data = new HashMap<>();
+			/*	Map<String, Integer> fakeMap = getFakePerson(activityId);
+				Integer fakeFinal = fakeMap.get("fakeFinal");*/
 				int rebateNumber = rankList.size();
+				/*if (fakeFinal != null) {
+					rebateNumber += fakeFinal;
+				}*/
 				data.put("rebateNumber", rebateNumber);
 				data.put("rankList", rankList);
 				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data).toString();

@@ -343,6 +343,9 @@
 				<entry key="/trade/refund" value-ref="tradeRefundApi" />
 				<entry key="/trade/getIndexData" value-ref="getIndexDataApi" />
 				<entry key="/trade/orderInfo" value-ref="tradeOrderInfoApi" />
+
+				<!--订单物流信息相关-->
+				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
 			</map>
 		</constructor-arg>
 	</bean>

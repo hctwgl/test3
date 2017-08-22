@@ -304,6 +304,11 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		}
 		agentOrderDetailVo.setQuotaAmount(afOrderDo.getBorrowAmount());
 		agentOrderDetailVo.setBankPayAmount(afOrderDo.getBankAmount());
+		//update by renchunlei 2017-08-21
+		if(StringUtils.isNotBlank(afOrderDo.getLogisticsNo())){
+			//有物流单号就显示物流信息
+			agentOrderDetailVo.setShowLogistics(1);
+		}
 		return agentOrderDetailVo;
 	}
 	

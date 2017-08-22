@@ -47,4 +47,14 @@ public class AfBoluomeActivityUserItemsServiceImpl extends ParentServiceImpl<AfB
 			afBoluomeActivityUserItemsDao.deleteByRid(rid);
 			
 		}
+
+		@Override
+		public Integer geFakeJoin(Long activityId) {
+			return afBoluomeActivityUserItemsDao.geFakeJoin(activityId);
+		}
+
+		@Override
+		public Integer getFakeFinal(Long activityId) {
+			return afBoluomeActivityUserItemsDao.getFakeFinal(activityId);
+		}
 }

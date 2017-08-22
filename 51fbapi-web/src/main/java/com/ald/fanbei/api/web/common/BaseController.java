@@ -32,6 +32,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.ThirdPartyLinkChannel;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -625,7 +626,28 @@ public abstract class BaseController {
             }
             //第三方链接进入
             if(request.getRequestURI().equals("/fanbei-web/thirdPartyLink")){
-            	 maidianLog.info(StringUtil.appendStrs(
+            	String channel = null;
+            	String referer = request.getHeader("Referer");
+            	if(StringUtils.isNotBlank(referer)){
+            		int index = referer.indexOf("?");
+                    if(index!=-1){
+                        String paramStrs = referer.substring(++index);
+                        String[] params = paramStrs.split("&");
+                        for(String urlParam:params){
+                            if(StringUtils.isNotBlank(urlParam)){
+                                String vals[] = urlParam.split("=");
+                                if("channel".equals(vals[0])){
+                                	 if(vals.length==1){
+                                         channel = ThirdPartyLinkChannel.DEFAULT.getCode(); //防止人为的设置过大的数值
+                                     }else {
+                                         channel = ThirdPartyLinkChannel.getChannel(vals[1]);
+                                     }
+                                }
+                            }
+                        }
+                    }
+            	} 
+            	maidianLog.info(StringUtil.appendStrs(
      					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
      					"	", "h",
      					"	rmtIP=", CommonUtil.getIpAddr(request), 
@@ -637,7 +659,7 @@ public abstract class BaseController {
      					"	", "md", 
      					"	lsmNo=", request.getParameter("lsmNo"),
      					"	linkType=", request.getParameter("linkType"),
-     					"	", "",
+     					"	channel=", channel,
      					"	", "",
      					"	reqD=", param.toString(), 
      					"	resD=",respData==null?"null":respData.toString()));
