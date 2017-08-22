@@ -268,8 +268,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗V3.7.0新版上线 更新内容： \n1.用户提额全新上线 \n2.多种支付方式随心享，更有好礼相赠。您即将前往的下一站是【App Store】更新，如无更新按钮，请稍后重试或卸载后重新安装"),
 
     // SERVICE 9999
-    SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
+    SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误"),
 
+    //物流信息不存在
+    LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"Logistics_NOT_EXIST","物流信息不存在");
     /**
      * 错误码
      */
