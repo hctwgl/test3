@@ -140,9 +140,9 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 			// BigDecimal serviceRate =bankService.add(poundageRate);
 			// BigDecimal serviceAmountDay = serviceRate.multiply(amount);
-			String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
+			Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 			if (poundageRateCash != null) {
-				poundageRate = new BigDecimal(poundageRateCash);
+				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
 			
 			BigDecimal serviceAmountDay = poundageRate.multiply(amount);// 新版本(v3.6) 服务费的计算 去掉利息

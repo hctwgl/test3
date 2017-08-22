@@ -431,9 +431,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			logger.info("从风控获取分层用户额度失败：" + e);
 		}
 		
-		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
-			data.put("poundageRate", poundageRateCash);
+			data.put("poundageRate", poundageRateCash.toString());
 		}
 		
 		resp.setResponseData(data);
@@ -448,11 +448,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 				logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);
 
-				String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
+				Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 
 				BigDecimal userPoundageRate = BigDecimal.ZERO;
 				if (poundageRateCash != null) {  
-					userPoundageRate = new BigDecimal(poundageRateCash);
+					userPoundageRate = new BigDecimal(poundageRateCash.toString());
 				}
 
 				if (new BigDecimal(poundageRate).compareTo(userPoundageRate) < 0 && StringUtils.equals(inRejectLoan, YesNoStatus.NO.getCode())) {

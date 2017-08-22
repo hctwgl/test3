@@ -164,9 +164,9 @@ public class AppH5SysController extends BaseController {
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		BigDecimal overdue = bankService.add(poundage).add(overduePoundage);
 		
-		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
-			poundage = new BigDecimal(poundageRateCash);
+			poundage = new BigDecimal(poundageRateCash.toString());
 		}
 		
 		model.put("dayRate", bankService);//日利率
@@ -234,9 +234,9 @@ public class AppH5SysController extends BaseController {
 		model.put("dayRate", bankService);
 		
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
-		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId).toString();
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
-			poundage = new BigDecimal(poundageRateCash);
+			poundage = new BigDecimal(poundageRateCash.toString());
 		}
 		
 		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());

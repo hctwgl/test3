@@ -115,9 +115,9 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
 		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）
-		String poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + afBorrowCashDo.getUserId()).toString();
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + afBorrowCashDo.getUserId());
 		if (poundageRateCash != null) {
-			borrowCashPoundage = new BigDecimal(poundageRateCash);
+			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
 		}
 		//未还金额
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
