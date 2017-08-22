@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -33,6 +34,9 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("getCashConfirmInfoApi")
 public class GetCashConfirmInfoApi implements ApiHandle{
+	
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Resource
 	private AfUserAccountService afUserAccountService;
@@ -79,8 +83,13 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 				rangeBegin = NumberUtil.objToBigDecimalDefault(range[0], BigDecimal.ZERO);
 				rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
 			}
+			BigDecimal borrowCashPoundage = new BigDecimal(resource.getValue1());
+			Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userDto.getUserId());
+			if (poundageRateCash != null) {
+				borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
+			}
 			data.put("cashRate", new BigDecimal(resource.getValue()));
-			data.put("poundageRate",new BigDecimal(resource.getValue1()));
+			data.put("poundageRate", borrowCashPoundage);
 			data.put("minPoundage", rangeBegin);
 			data.put("maxPoundage", rangeEnd);
 		}
