@@ -703,7 +703,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//如果查询出来，在支付，或者已经支付，则抛出正在处理中的状态
 						Map<String, String> wxResultMap  = 	upsUtil.wxQueryOrder(wxPayOrderNo);
 						String resultCode = wxResultMap.get(WxpayConfig.RESULT_CODE);
-						String tradeCode = wxResultMap.get(WxpayConfig.RESULT_CODE);
+						String tradeCode = wxResultMap.get(WxpayConfig.TRADE_STATE);
 						if (WxpayConfig.RESULT_CODE_SUCCESS.equals(resultCode) 
 								&& (WxpayConfig.TRADE_STATE_SUCCESS.equals(tradeCode)
 									|| WxpayConfig.TRADE_STATE_USERPAYING.equals(tradeCode))) {
@@ -845,7 +845,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}
 						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
-						// 银行卡支付 代收
+//						 银行卡支付 代收
 						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
 						if (!respBo.isSuccess()) {
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
