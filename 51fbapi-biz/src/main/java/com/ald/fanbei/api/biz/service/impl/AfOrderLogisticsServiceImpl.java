@@ -51,7 +51,7 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
         if (afOrderLogisticsDo != null) {
             afOrderLogisticsBo.setStateDesc(convertState(afOrderLogisticsDo.getState()));
             afOrderLogisticsBo.setShipperName(afOrderLogisticsDo.getShipperName());
-            afOrderLogisticsBo.setShipperCode(afOrderLogisticsDo.getShipperCode());
+            afOrderLogisticsBo.setShipperCode(afOrderLogisticsDo.getLogisticCode());
             List<KdniaoReqDataDataTraces> traces= JSONObject.parseArray( afOrderLogisticsDo.getTraces(), KdniaoReqDataDataTraces.class);
             if(traces.size()>0){
                 KdniaoReqDataDataTraces  last=new KdniaoReqDataDataTraces();
