@@ -686,8 +686,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
 				Map<String, Object> resultMap = new HashMap<String, Object>();
 				AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
-				//微信支付
-				String wxPayOrderNo = orderInfo.getPayTradeNo();
 				try {
 					// 查卡号，用于调用风控接口
 					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
@@ -698,17 +696,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setGmtPay(currentDate);
 					orderInfo.setActualAmount(saleAmount);
 					orderInfo.setBankId(payId);
+					
 					if (payType.equals(PayType.WECHAT.getCode())) {
 						orderInfo.setPayType(PayType.WECHAT.getCode());
-						//如果查询出来，在支付，或者已经支付，则抛出正在处理中的状态
-						Map<String, String> wxResultMap  = 	upsUtil.wxQueryOrder(wxPayOrderNo);
-						String resultCode = wxResultMap.get(WxpayConfig.RESULT_CODE);
-						String tradeCode = wxResultMap.get(WxpayConfig.TRADE_STATE);
-						if (WxpayConfig.RESULT_CODE_SUCCESS.equals(resultCode) 
-								&& (WxpayConfig.TRADE_STATE_SUCCESS.equals(tradeCode)
-									|| WxpayConfig.TRADE_STATE_USERPAYING.equals(tradeCode))) {
-							throw new FanbeiException(FanbeiExceptionCode.ORDER_PAY_DEALING);
-						}
 						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						// 微信支付

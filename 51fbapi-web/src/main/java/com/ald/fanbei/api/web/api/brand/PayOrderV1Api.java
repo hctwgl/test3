@@ -18,15 +18,17 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
@@ -66,6 +68,8 @@ public class PayOrderV1Api implements ApiHandle {
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	UpsUtil upsUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -90,7 +94,7 @@ public class PayOrderV1Api implements ApiHandle {
 			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-
+		
 		if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 		}
@@ -115,6 +119,22 @@ public class PayOrderV1Api implements ApiHandle {
 					afOrderService.updateOrder(currUpdateOrder);
 				}
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			}
+		}
+		
+		//原来的微信支付号，以及原来的微信支付类型
+		String wxPayOrderNo = orderInfo.getPayTradeNo();
+		String wxPayType = orderInfo.getOrderType();
+		//用来判断之前的支付方式是否为微信支付
+		if (wxPayType.equals(PayType.WECHAT.getCode())) {
+			//如果查询出来，在支付，或者已经支付，则抛出正在处理中的状态
+			Map<String, String> wxResultMap  = 	upsUtil.wxQueryOrder(wxPayOrderNo);
+			String resultCode = wxResultMap.get(WxpayConfig.RESULT_CODE);
+			String tradeCode = wxResultMap.get(WxpayConfig.TRADE_STATE);
+			if (WxpayConfig.RESULT_CODE_SUCCESS.equals(resultCode) 
+					&& (WxpayConfig.TRADE_STATE_SUCCESS.equals(tradeCode)
+						|| WxpayConfig.TRADE_STATE_USERPAYING.equals(tradeCode))) {
+				throw new FanbeiException(FanbeiExceptionCode.ORDER_PAY_DEALING);
 			}
 		}
 
