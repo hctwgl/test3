@@ -124,7 +124,7 @@ public class PayOrderV1Api implements ApiHandle {
 		
 		//原来的微信支付号，以及原来的微信支付类型
 		String wxPayOrderNo = orderInfo.getPayTradeNo();
-		String wxPayType = orderInfo.getOrderType();
+		String wxPayType = orderInfo.getPayType();
 		//用来判断之前的支付方式是否为微信支付
 		if (wxPayType.equals(PayType.WECHAT.getCode())) {
 			//如果查询出来，在支付，或者已经支付，则抛出正在处理中的状态
