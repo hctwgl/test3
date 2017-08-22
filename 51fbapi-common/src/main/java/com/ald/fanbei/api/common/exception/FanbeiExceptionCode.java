@@ -269,7 +269,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误"),
     //物流信息不存在
-    LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"order_not_exist","物流信息不存在");
+    LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"Logistics_NOT_EXIST","物流信息找不到");
 
     /**
      * 错误码
