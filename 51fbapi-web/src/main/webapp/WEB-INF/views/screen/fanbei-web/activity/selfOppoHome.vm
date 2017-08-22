@@ -1,26 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082201")
+    #set($version="2017082203")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>七夕OPPO品牌日</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/selfHome.css?version=$version">
-##    <style>
-##        img[lazy-src]{
-##            background: url("http://f.51fanbei.com/h5/app/images/sys/bitmap.png") no-repeat center center;
-##            -webkit-background-size: 70%;
-##            background-size: 70%;
-##        }
-##    </style>
 </head>
 <body>
     <div id="selfHome" style="background-color: #9b87a9;">
         <img class="lazy" :data-original="returnData.bannerUrl">
-        <div class="discountWrap">
+        <div class="discountWrap clearfix">
             <img src="$commonUrl/oppoHome1.png">
             <ul class="discount clearfix">
-                <li v-for="item in discountMap" @click="goGoodsDetail(item)">
+                <li v-for="item in discountMap" @click="goGoodsDetail(item)" style="background-color:#efefef;">
                     <img class="lazy" :data-original="item.goodsIcon">
                     <div class="discountRight">
                         <p class="discountRightTitle">{{item.goodName}}</p>
@@ -37,7 +30,7 @@
         <div class="rebateWrap">
             <img src="$commonUrl/oppoHome2.png">
             <ul class="rebate clearfix">
-                <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
+                <li v-for="item in rebateMap" @click="goGoodsDetail(item)" style="background-color:#efefef;">
                     <img class="lazy" :data-original="item.goodsIcon">
                     <div class="rebateRight">
                         <p class="rebateRightTitle">{{item.goodName}}</p>

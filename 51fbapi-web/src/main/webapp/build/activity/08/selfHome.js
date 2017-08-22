@@ -26,13 +26,14 @@ var vm=new Vue({
                 data:{'activityId':activityId},
                 type: 'post',
                 success:function (data) {
-                    $(".loadingMask").addClass("hide");
-                    console.log(data);
+                    // $(".loadingMask").addClass("hide");
+                    console.debug(data);
                     _this.discountMap=data.data.recommendGoodsList.slice(0,3);
                     _this.rebateMap=data.data.recommendGoodsList.slice(3);
                     _this.returnData=data.data;
                     _this.$nextTick(function () {
                         // lazy.init();
+                        $(".loadingMask").fadeOut();
                         $("img.lazy").lazyload({
                             placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
                             effect : "fadeIn",  // 载入使用的效果

@@ -20,7 +20,7 @@
                 <div class="btn">立即领取</div>
             </li>
         </ul>
-        <div class="recommend" style="background-color: #fe748e;">
+        <div class="recommend" style="background-color: #fe5d7c;">
             <div class="title">
                 <h2></h2>
                 <p>给TA最深的悸动</p>
@@ -37,7 +37,7 @@
                 </li>
             </ul>
         </div>
-        <div class="LevelGoods" style="background-color: #fe748e;">
+        <div class="LevelGoods" style="background-color: #fe5d7c;">
             <div class="title">
                 <h2></h2>
                 <p>平淡中也需要点情趣</p>
