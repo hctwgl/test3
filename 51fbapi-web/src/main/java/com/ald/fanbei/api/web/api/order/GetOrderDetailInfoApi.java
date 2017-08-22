@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
@@ -114,6 +115,11 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 		vo.setMobile(order.getMobile());
 		if (StringUtil.equals(order.getPayStatus(), PayStatus.PAYED.getCode())) {
 			vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
+		}
+		//update by renchunlei 2017-08-21
+		if(StringUtils.isNotBlank(order.getLogisticsNo())){
+			//有物流单号就显示物流信息
+			vo.setShowLogistics(1);
 		}
 		vo.setAddress(order.getAddress());
 		vo.setConsignee(order.getConsignee());

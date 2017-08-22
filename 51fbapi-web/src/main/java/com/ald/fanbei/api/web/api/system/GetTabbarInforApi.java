@@ -48,7 +48,7 @@ public class GetTabbarInforApi implements ApiHandle {
 				.getConfigByTypesAndSecType(AfResourceType.IS_USE_IMG.getCode(), AfResourceSecType.IS_USE_IMG.getCode());
 				//app 在appstore 审核信息，如果还未审核，则用后台传的图片
 		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
-		boolean use = this.useImg(useImgDo, resourceInfo, requestDataVo, context);
+		boolean use = this.useImg(useImgDo, requestDataVo, context);
 		Map<String, Object> index = new HashMap<String, Object>();
 		for (AfResourceDo afResourceDo : tabbarlist) {
 			Map<String, Object> data = new HashMap<String, Object>();
@@ -139,42 +139,12 @@ public class GetTabbarInforApi implements ApiHandle {
 	/**
 	 * 是否使用后台传来的图片做菜单栏的图片
 	 * @param useImgDo 是否使用后台传图片
-	 * @param resourceInfo 是否审核通过
 	 * @return true:用后台的 ，false:用app本地的
 	 */
-	private boolean useImg(AfResourceDo useImgDo,AfResourceDo resourceInfo,RequestDataVo requestDataVo,FanbeiContext context){
+	private boolean useImg(AfResourceDo useImgDo,RequestDataVo requestDataVo,FanbeiContext context){
 		boolean use = true;
 		if(useImgDo!=null){
-			if(resourceInfo==null){
-				use = "1".equals(useImgDo.getValue())?true:false;
-			}else{
-				Map<String, Object> params = requestDataVo.getParams();
-				String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
-				if(requestDataVo.getId().startsWith("i")) {
-		        	String iosCheckVersion = resourceInfo.getValue();
-		        	if (StringUtils.isBlank(iosCheckVersion)) {
-		        		use = "1".equals(useImgDo.getValue())?true:false;
-		        	} else {
-		        		List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
-		        		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-		        		if(!array.contains(desVersion)){
-		        			use = "1".equals(useImgDo.getValue())?true:false;
-		        		}
-		        	}
-		        } else {
-		        //VALUE2是为了Android审核
-		        	String androidCheckVersion = resourceInfo.getValue2();
-		        	if (StringUtils.isBlank(androidCheckVersion)) {
-		        		use = "1".equals(useImgDo.getValue())?true:false;
-		        	} else {
-		        		List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
-		        		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-		        		if(!array.contains(desVersion)){
-		        			use = "1".equals(useImgDo.getValue())?true:false;
-		        		}
-		        	}
-		        }
-			}
+			 use = "1".equals(useImgDo.getValue())?true:false;
 		}
 		return use;
 	}
