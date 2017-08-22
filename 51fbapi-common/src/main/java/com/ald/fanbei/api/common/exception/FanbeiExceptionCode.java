@@ -210,6 +210,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     RISK_BORROW_OVERDUED("RISK_BORROW_OVERDUED",1917,"risk borrow overdued","风控逾期分期限制"),
     RISK_BORROW_CASH_OVERDUED("RISK_BORROW_CASH_OVERDUED",1918,"risk other rule","风控逾期借钱限制"),
     QUERY_OVERDUE_ORDER_ERROR("QUERY_OVERDUE_ORDER_ERROR",1919,"query overdue order error","查询逾期账单失败"),
+    RISK_USERLAY_RATE_ERROR("RISK_USERLAY_RATE_ERROR",1920,"risk userlay rate error","获取用户手续费率失败"),
     
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","借钱金额或者时间有误"),
