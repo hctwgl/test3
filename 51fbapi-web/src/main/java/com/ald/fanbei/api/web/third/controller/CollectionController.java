@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,10 +22,15 @@ import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类现描述：和催收平台互调
@@ -58,44 +64,42 @@ public class CollectionController {
 		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data, sign);
 		return notifyRespBo;
 	}
-	@RequestMapping(value = { "/findBorrowCashByBorrowNo"})
+	@RequestMapping(value = { "/findBorrowCashByBorrowNo"}, method = RequestMethod.POST)
 	@ResponseBody
 	public CollectionUpdateResqBo findBorrowCashByBorrowNo(HttpServletRequest request, HttpServletResponse response){
-		String data = ObjectUtils.toString(request.getParameter("data"));
+		String borrowNo = ObjectUtils.toString(request.getParameter("data"));
 		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
 		String sign1 = ObjectUtils.toString(request.getParameter("sign"));
-		logger.info("findBorrowCashByBorrowNo data="+data+",findBorrowCashByBorrowNo timestamp="+timestamp+",findBorrowCashByBorrowNo sign1="+sign1+"");
+		logger.info("findBorrowCashByBorrowNo data="+borrowNo+",timestamp="+timestamp+",sign1="+sign1+"");
 		
 		Map<String,String> map=new HashMap<String,String>();
 		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
 		try{
-			AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(data);
+			AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 			if(afBorrowCashDo==null) {
-				logger.error("afBorrowCashDo is null" );
+				logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null" );
 				updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
 				updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
 				return updteBo;
 			}
-			updteBo.setData(afBorrowCashDo.getBorrowNo());
-			String string = JsonUtil.toJSONString(updteBo.getData());
-			String sign2=DigestUtil.MD5(string);
+			String sign2=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign1, sign2)) {// 验签成功
-				map.put("userId", afBorrowCashDo.getUserId()+"");
-				map.put("borrowNo",afBorrowCashDo.getBorrowNo());
-				map.put("cardName", afBorrowCashDo.getCardName());
-				map.put("cardNumber", afBorrowCashDo.getCardNumber());
-				map.put("gmtArrival", afBorrowCashDo.getGmtArrival()+"");
-				map.put("amount",afBorrowCashDo.getAmount()+"");
+				map.put("consumer_no", afBorrowCashDo.getUserId()+"");
+				map.put("borrow_no",afBorrowCashDo.getBorrowNo());
+				map.put("card_name", afBorrowCashDo.getCardName());
+				map.put("card_number", afBorrowCashDo.getCardNumber());
+				map.put("gmt_arrival",  DateUtil.formatDateTime(afBorrowCashDo.getGmtArrival()));
 				map.put("type", afBorrowCashDo.getType());
-				map.put("rateAmount", afBorrowCashDo.getRateAmount()+"");
-				map.put("overdueAmount",afBorrowCashDo.getOverdueAmount()+"");
-				map.put("overdueDay",afBorrowCashDo.getOverdueDay()+"");
-				map.put("renewalNum",afBorrowCashDo.getRenewalNum()+"");
-				map.put("sumRenewalPoundage",afBorrowCashDo.getSumRenewalPoundage()+"");
-				map.put("repayAmount",afBorrowCashDo.getRepayAmount()+"");
+				map.put("amount",afBorrowCashDo.getAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				map.put("rate_amount", afBorrowCashDo.getRateAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				map.put("overdue_amount",afBorrowCashDo.getOverdueAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				map.put("repay_amount", ((afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue()))))).setScale(2, RoundingMode.HALF_UP)).multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				map.put("rest_amount", ((afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue()))))).subtract(afBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)).multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				map.put("overdue_day",afBorrowCashDo.getOverdueDay()+"");
+				map.put("renewal_num",afBorrowCashDo.getRenewalNum()+"");
+				map.put("repay_amount_sum",afBorrowCashDo.getRepayAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
 				map.put("status",afBorrowCashDo.getStatus());
-				map.put("gmtPlanRepayment", afBorrowCashDo.getGmtPlanRepayment()+"");
-				
+				map.put("gmt_plan_repayment", DateUtil.formatDateTime(afBorrowCashDo.getGmtPlanRepayment()));
 				String jsonString = JsonUtil.toJSONString(map);
 				updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
 				updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
@@ -108,8 +112,8 @@ public class CollectionController {
 			}
 		} catch(Exception e){
 			logger.error("error message " + e);
-			updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
-			updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
+			updteBo.setCode(FanbeiThirdRespCode.SYSTEM_ERROR.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.SYSTEM_ERROR.getMsg());
 			return updteBo;
 		}
 	}
