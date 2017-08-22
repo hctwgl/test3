@@ -547,8 +547,9 @@ public class UpsUtil extends AbstractThird {
 				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
 			authSignResp.setSuccess(true);
 			return authSignResp;
-		}else{
-			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+		} else {
+			authSignResp.setSuccess(false);
+			return authSignResp;
 		}
 	}
 	

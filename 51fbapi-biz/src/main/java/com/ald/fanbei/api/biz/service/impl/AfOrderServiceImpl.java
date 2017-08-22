@@ -628,6 +628,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			map = new HashMap<String,Object>();
 			UpsCollectRespBo respBo = upsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
 					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02",OrderType.MOBILE.getCode());
+			if (!respBo.isSuccess()) {
+				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			}
 			map.put("resp", respBo);
 		}
 		return map;
