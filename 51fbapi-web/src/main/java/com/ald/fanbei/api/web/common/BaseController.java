@@ -471,7 +471,13 @@ public abstract class BaseController {
      * @param sign
      */
     private void compareSign(String signStrBefore, String sign) {
-        String sha256Value = DigestUtil.getDigestStr(signStrBefore);
+        String sha256Value = null;
+		try {
+			sha256Value = DigestUtil.getDigestStr(signStrBefore);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         if (logger.isDebugEnabled())
             logger.debug("signStrBefore=" + signStrBefore + ",sha256Value=" + sha256Value + ",sign=" + sign);
         if (!StringUtils.equals(sign, sha256Value)) {
