@@ -266,5 +266,10 @@ public interface AfOrderService {
 	 */
 	
 	int dealPayCpOrderFail(String payOrderNo, String tradeNo,String payType);
+	/**
+	 * 处理菠萝觅组合支付失败的情况
+	 */
+
+	int dealBrandPayCpOrderFail(String outTradeNo, String tradeNo, String code);
 	
 }
