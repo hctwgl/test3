@@ -3,8 +3,7 @@
 * @Date:   2017-08-21 16:58:37
 * @title:  物流信息
 */
-
-@url: "http://f.51fanbei.com/h5/app/activity/07";
+@url: "http://f.51fanbei.com/h5/app/images/sys";
 
 
 #top {
@@ -56,12 +55,10 @@
   width: 0.92rem;
 }
 
-
 .main_wrap {
   position: relative;
   margin-bottom: 0.2rem;
 }
-
 
 .item{
   background-color: #fff;
@@ -88,23 +85,27 @@
 .firstCircle{
   width: 0.28rem;
   height: 0.28rem;
-  line-height: 0.28rem;
-  border-radius: 0.14rem;
-  -webkit-border-radius: 0.14rem;
-  background-color: #fe963b;
+  background: url("@{url}/devliery_oval.png");
   background-size: cover;
   -webkit-background-size: cover;
-  margin-top: 0.26rem;
-  margin-left:0.33rem;
+  position: absolute ;
+  top:30%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
 }
 
-.firstVerticalLineBottom{
-  position: absolute;
-  margin-top: 0.64rem;
+.firstVerticalLine{
+  position: absolute ;
+  left: 50%;
+  top:50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
   height: 100%;
-  margin-left: -0.2rem;
-  border:1px solid #f5f5f5;
+  width: 1px;
+  background-color: #f5f5f5;
 }
+
 .circleWrap{
   width: 0.42rem;
   height: 0.42rem;
@@ -116,6 +117,7 @@
   background-size: cover;
   -webkit-background-size: cover;
   position: relative;
+  margin-top: 0.46rem;
   top:30%;
   left: 50%;
   -webkit-transform: translate(-50%,-50%);
