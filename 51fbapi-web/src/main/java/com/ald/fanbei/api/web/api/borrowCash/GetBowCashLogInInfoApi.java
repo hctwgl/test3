@@ -434,6 +434,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
 			data.put("poundageRate", poundageRateCash.toString());
+		} else {
+			data.put("poundageRate", rate.get("poundage").toString());
 		}
 		
 		resp.setResponseData(data);
