@@ -31,8 +31,8 @@
             <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>
         </p>
     </div>
-    <script type="text/javascript" src="/common/js/core.js"></script>
-    <script type="text/javascript" src="/common/js/md5.js"></script>
+    <script type="text/javascript" src="/dist/js/core.js"></script>
+    <script type="text/javascript" src="/dist/js/md5.js"></script>
     <script type="text/javascript" src="/dist/js/app/inviteShare.js?version=$version"></script>
     <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </body>

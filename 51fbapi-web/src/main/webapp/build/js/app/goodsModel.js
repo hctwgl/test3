@@ -11,6 +11,7 @@ new Vue({
     },
     created:function () {
         this.logData();
+        loading();
     },
     methods:{
         buttonTxt(data){
@@ -45,6 +46,7 @@ new Vue({
                     self.$nextTick(function () {                              //dom渲染完成后执行
                         $('body').css('background',self.content.data.bgColor);
                         $('.monthPrice').css('background',self.content.data.btnColor);
+                        $(".loadingMask").fadeOut();
                         $("img.lazy").lazyload({
                             placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
                             effect : "fadeIn",  // 载入使用的效果

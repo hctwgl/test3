@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082301")
+    #set($version="2017082302")
     <meta charset="UTF-8">
     <link rel="stylesheet" id="css" type="text/css" href="/dist/css/app/goodsModel.css?version=$version">
     <script>
@@ -18,7 +18,7 @@
     <title></title>
     <img class="banner lazy" :data-original="content.data.bannerUrl">
     <div class="recommend">
-        <h2>{{content.data.oneLevelGoodsInfo.title}}</h2>
+        <h2 v-if="content.data.oneLevelGoodsInfo.title && content.data.oneLevelGoodsInfo.title!=''">{{content.data.oneLevelGoodsInfo.title}}</h2>
         <ul>
             <li v-for="data in content.data.oneLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
@@ -35,7 +35,7 @@
         </ul>
     </div>
     <div class="LevelGoods">
-        <h2>{{content.data.twoLevelGoodsInfo.title}}</h2>
+        <h2 v-if="content.data.twoLevelGoodsInfo.title && content.data.twoLevelGoodsInfo.title!=''">{{content.data.twoLevelGoodsInfo.title}}</h2>
         <ul class="clearfix">
             <li v-for="data in content.data.twoLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
@@ -52,7 +52,7 @@
         </ul>
     </div>
     <div class="LevelGoods">
-        <h2>{{content.data.threeLevelGoodsInfo.title}}</h2>
+        <h2 v-if="content.data.threeLevelGoodsInfo.title && content.data.threeLevelGoodsInfo.title!=''">{{content.data.threeLevelGoodsInfo.title}}</h2>
         <ul class="clearfix">
             <li v-for="data in content.data.threeLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
@@ -69,7 +69,7 @@
         </ul>
     </div>
     <div class="LevelGoods">
-        <h2>{{content.data.fourLevelGoodsInfo.title}}</h2>
+        <h2 v-if="content.data.fourLevelGoodsInfo.title && content.data.fourLevelGoodsInfo.title!=''">{{content.data.fourLevelGoodsInfo.title}}</h2>
         <ul class="clearfix">
             <li v-for="data in content.data.fourLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
