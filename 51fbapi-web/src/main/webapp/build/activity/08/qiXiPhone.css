@@ -25,14 +25,14 @@ img{
 .topLine{
     position: absolute;
     width: 7.5rem;
-    border-top: 1px solid #95899D;
+    border-top: 1px solid #9b83a8;
     top:0.1rem;
     left: 0.1rem;
 }
 .bottomLine{
     position: absolute;
     width: 7.3rem;
-    border-top: 1px solid #95899D;
+    border-top: 1px solid #9b83a8;
     bottom:0.1rem;
     left: 0.1rem;
 }
@@ -40,7 +40,7 @@ img{
     position: absolute;
     width: 1rem;
     height:11.2rem;
-    border-left: 1px solid #95899D;
+    border-left: 1px solid #9b83a8;
     bottom:0.1rem;
     left: 0.1rem;
     
@@ -49,7 +49,7 @@ img{
     position: absolute;
     width: 1rem;
     height:11.2rem;
-    border-right: 1px solid #95899D;
+    border-right: 1px solid #9b83a8;
     bottom:0.1rem;
     right: 0.1rem;
 }
@@ -206,14 +206,14 @@ img{
 .r-topLine{
     position: absolute;
     width: 7.3rem;
-    border-top: 1px solid #95899D;
+    border-top: 1px solid #9b83a8;
     top:0.1rem;
     left: 0.1rem;
 }
 .r-bottomLine{
     position: absolute;
     width: 7.3rem;
-    border-top: 1px solid #95899D;
+    border-top: 1px solid #9b83a8;
     bottom:0.1rem;
     left: 0.1rem;
 }
@@ -221,7 +221,7 @@ img{
     position: absolute;
     width: 1rem;
     height:18.01rem;
-    border-left: 1px solid #95899D;
+    border-left: 1px solid #9b83a8;
     bottom:0.1rem;
     left: 0.1rem;
     
@@ -230,7 +230,7 @@ img{
     position: absolute;
     width: 1rem;
     height:18.01rem;
-    border-right: 1px solid #95899D;
+    border-right: 1px solid #9b83a8;
     bottom:0.1rem;
     right: 0.1rem;
 }
