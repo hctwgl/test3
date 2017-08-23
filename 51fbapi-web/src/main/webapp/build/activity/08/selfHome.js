@@ -32,7 +32,7 @@ var vm=new Vue({
                     _this.rebateMap=data.data.recommendGoodsList.slice(3);
                     _this.returnData=data.data;
                     _this.$nextTick(function () {
-                        // lazy.init();
+                        lazy.init();
                         $(".loadingMask").fadeOut();
                         $("img.lazy").lazyload({
                             placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
