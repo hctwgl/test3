@@ -4,6 +4,8 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.common.kdniao.KdniaoReqDataDataTraces;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,25 +23,27 @@ import java.util.List;
 
 /**
  * '第三方-上树请求记录ServiceImpl
- * 
+ *
  * @author renchunlei
  * @version 1.0.0 初始化
  * @date 2017-08-21 09:28:02
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- 
+
 @Service("afOrderLogisticsService")
 public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogisticsDo, Long> implements AfOrderLogisticsService {
-	
+
     private static final Logger logger = LoggerFactory.getLogger(AfOrderLogisticsServiceImpl.class);
-   
+
     @Resource
     private AfOrderLogisticsDao afOrderLogisticsDao;
+    @Resource
+    private AfOrderDao afOrderDao;
 
-		@Override
-	public BaseDao<AfOrderLogisticsDo, Long> getDao() {
-		return afOrderLogisticsDao;
-	}
+    @Override
+    public BaseDao<AfOrderLogisticsDo, Long> getDao() {
+        return afOrderLogisticsDao;
+    }
 
     @Override
     public AfOrderLogisticsDo getByOrderId(Long orderId) {
@@ -49,40 +53,50 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
     @Override
     public AfOrderLogisticsBo getOrderLogisticsBo(long orderId, long isOutTraces) {
         AfOrderLogisticsDo afOrderLogisticsDo = getByOrderId(orderId);
-        AfOrderLogisticsBo afOrderLogisticsBo=new AfOrderLogisticsBo();
+        AfOrderLogisticsBo afOrderLogisticsBo = new AfOrderLogisticsBo();
         if (afOrderLogisticsDo != null) {
             afOrderLogisticsBo.setStateDesc(convertState(afOrderLogisticsDo.getState()));
             afOrderLogisticsBo.setShipperName(afOrderLogisticsDo.getShipperName());
             afOrderLogisticsBo.setShipperCode(afOrderLogisticsDo.getLogisticCode());
-            List<KdniaoReqDataDataTraces> traces= JSONObject.parseArray( afOrderLogisticsDo.getTraces(), KdniaoReqDataDataTraces.class);
-            if(traces.size()>0){
-                KdniaoReqDataDataTraces  last=new KdniaoReqDataDataTraces();
-                KdniaoReqDataDataTraces listLast=traces.get(traces.size()-1);
+            List<KdniaoReqDataDataTraces> traces = JSONObject.parseArray(afOrderLogisticsDo.getTraces(), KdniaoReqDataDataTraces.class);
+            if (traces.size() > 0) {
+                KdniaoReqDataDataTraces last = new KdniaoReqDataDataTraces();
+                KdniaoReqDataDataTraces listLast = traces.get(traces.size() - 1);
                 last.setAcceptStation(listLast.getAcceptStation());
                 last.setAcceptTime(listLast.getAcceptTime());
                 afOrderLogisticsBo.setNewestInfo(last);
-            }else{
+            } else {
                 //如果没有就虚拟一条空的轨迹
-                KdniaoReqDataDataTraces  empty=new KdniaoReqDataDataTraces();
+                KdniaoReqDataDataTraces empty = new KdniaoReqDataDataTraces();
                 empty.setAcceptTime(new Date());
                 empty.setAcceptStation("暂无物流轨迹");
                 afOrderLogisticsBo.setNewestInfo(empty);
             }
-            if(isOutTraces>0){
-                
-                List<KdniaoReqDataDataTraces> sortTraces=new ArrayList<KdniaoReqDataDataTraces>();
-                for (int i = traces.size()-1; i >=0; i--) {
+            if (isOutTraces > 0) {
+
+                List<KdniaoReqDataDataTraces> sortTraces = new ArrayList<KdniaoReqDataDataTraces>();
+                for (int i = traces.size() - 1; i >= 0; i--) {
                     sortTraces.add(traces.get(i));
                 }
                 afOrderLogisticsBo.setTracesInfo(sortTraces);
             }
             return afOrderLogisticsBo;
-        }else{
-            return null;
+        } else {
+            List<KdniaoReqDataDataTraces> emptyTraces = new ArrayList<KdniaoReqDataDataTraces>();
+            KdniaoReqDataDataTraces empty = new KdniaoReqDataDataTraces();
+            empty.setAcceptTime(new Date());
+            empty.setAcceptStation("暂无物流轨迹");
+            AfOrderDo afOrder = afOrderDao.getOrderById(orderId);
+            afOrderLogisticsBo.setShipperCode(afOrder.getLogisticsNo());
+            afOrderLogisticsBo.setNewestInfo(empty);
+            afOrderLogisticsBo.setTracesInfo(emptyTraces);
+            return afOrderLogisticsBo;
         }
     }
+
     /**
      * 枚举转换
+     *
      * @param state 状态值
      * @return 描述
      */
