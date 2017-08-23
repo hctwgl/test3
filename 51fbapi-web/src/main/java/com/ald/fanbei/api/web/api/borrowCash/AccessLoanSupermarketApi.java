@@ -49,6 +49,8 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 				//访问记入数据库处理
 				String extraInfo = "sysModeId="+requestDataVo.getId()+",appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
 				AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo(userId, CommonUtil.getIpAddr(request), AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode(), afLoanSupermarket.getId(), extraInfo);
+				String channel = getChannel(requestDataVo.getId());
+				afBusinessAccessRecordsDo.setChannel(channel);
 				afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
 			} catch (Exception e) {
 				logger.error("贷款超市访问入库异常-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+userId);
@@ -59,4 +61,14 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 		}
 		return resp;
 	}
+	
+	private String getChannel(String sysModeId){
+        if(sysModeId!=null) {
+            int lastIndex = sysModeId.lastIndexOf("_");
+            if (lastIndex!=-1){
+                return sysModeId.substring(++lastIndex);
+            }
+        }
+        return "";
+    }
 }
