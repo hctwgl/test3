@@ -20,9 +20,9 @@
             <img src="$commonUrl/channel17_01.png">
         #elseif( $!{style}==19 )
             <img src="$commonUrl/channel19_01.png">
-        #elseif( $!{style}==20 )
+        #elseif( $!{style}==20 || $!{style}==23 )
             <img src="$commonUrl/channel17_01.jpg">
-        #elseif( $!{style}==21 || $!{style}==23 )
+        #elseif( $!{style}==21 )
             <img src="$commonUrl/channel21_01.jpg">
         #else
             <img src="$commonUrl/channel$!{style}_01.jpg">
