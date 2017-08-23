@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/app/delivery.css?version=$version">
 </head>
 
-<body style="background: #ededed">
+<body style="background: #f5f5f5">
 <div id="delivery">
     <div id="top">
         <ul>
