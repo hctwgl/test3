@@ -492,7 +492,27 @@ public class TestController {
 		}
 		return "success";
 	}
-	
+
+	@RequestMapping(value = { "/jPushByType" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String jPushByType(int jumpType, String type,String userName){
+		PrintWriter out = null;
+		try {
+			jpushService.jPushByType(jumpType,type,userName);;
+		} catch (Exception e) {
+			logger.error("allowcateBrandCoupon", e);
+			return "fail";
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+		return "success";
+	}
+
+
+
+
 	@RequestMapping(value = { "/testJPush" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String testJPush(HttpServletRequest request, HttpServletResponse response) {
