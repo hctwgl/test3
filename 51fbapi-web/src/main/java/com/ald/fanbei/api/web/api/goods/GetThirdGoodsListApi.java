@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -20,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfUserSearchService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -63,11 +65,23 @@ public class GetThirdGoodsListApi implements ApiHandle {
 			if(StringUtil.isNotBlank(keyword) && null != context.getUserId()){
 				afUserSearchService.addUserSearch(getUserSearchDo(context.getUserId(), keyword));
 			}
+			final AfResourceDo virtualGoods = afResourceService.getSingleResourceBytype(AfResourceType.VirtualGoodsKeywords.getCode());
+			
+			
+			
 			final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
+
+			
 			if (CollectionUtils.isNotEmpty(list)) {
+				
+				
 				List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
 					@Override
 					public AfSearchGoodsVo convert(NTbkItem source) {
+						System.out.println(source.getTitle());
+						if(virtualGoods !=null&&isVirtualWithKey(source.getTitle() ,virtualGoods.getValue())){
+							return null;
+						}
 						if(null == resource){
 							return parseToVo(source,BigDecimal.ZERO,BigDecimal.ZERO);
 						}else{
@@ -76,6 +90,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 						}
 					}
 				});
+				
 				resp.addResponseData("goodsList", result);
 				resp.addResponseData("pageNo", buildParams.get("pageNo"));
 			}
@@ -84,7 +99,16 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		}
 		return resp;
 	}
-	
+	private boolean isVirtualWithKey(String key, String virtualGoodsValue){
+		List<String> virtual = StringUtil.splitToList(virtualGoodsValue,",") ;
+		for (String string : virtual) {
+			if(key.contains(string)){
+				return true;
+			}
+		}
+		return false;
+		
+	}
 	private AfSearchGoodsVo parseToVo(NTbkItem item,BigDecimal minRate,BigDecimal maxRate) {
 		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(item.getZkFinalPrice(), BigDecimal.ZERO);
 		BigDecimal minRebateAmount = saleAmount.multiply(minRate).setScale(2,BigDecimal.ROUND_HALF_UP);
