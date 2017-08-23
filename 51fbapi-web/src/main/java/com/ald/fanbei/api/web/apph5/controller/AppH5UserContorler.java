@@ -132,6 +132,8 @@ public class AppH5UserContorler extends BaseController {
 			String mobile=request.getParameter("mobile");
 			//获得图片验证码
 			Map<String, BufferedImage> map = ImageUtil.createRandomImage();
+			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
+
 			if (map.size() == 1) {
 				String code = "";
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -183,6 +185,7 @@ public class AppH5UserContorler extends BaseController {
 			String realCode=bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile).toString();
 
 			if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码正确
+				bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
