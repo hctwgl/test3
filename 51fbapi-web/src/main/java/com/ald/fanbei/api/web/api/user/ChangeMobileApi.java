@@ -49,8 +49,9 @@ public class ChangeMobileApi implements ApiHandle {
 	        	logger.error("changeMobile verifyCode or mobile is empty verifyCode = " + verifyCode + " mobile = " + mobile);
 	        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
 	        }
+	        AfUserDo userDo = afUserService.getUserByUserName(userName);
 	        //验证原手机验证码
-	        smsUtil.checkSmsByMobileAndType(userName,verifyCode, SmsType.MOBILE_BIND);
+	        smsUtil.checkSmsByMobileAndType(userDo.getMobile(),verifyCode, SmsType.MOBILE_BIND);
 	        AfUserDo afUserDo = new AfUserDo();
 			afUserDo.setRid(userId);
 			afUserDo.setMobile(mobile);
