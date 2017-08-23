@@ -54,7 +54,7 @@ $(function() {
         itemsId = $('.img.img3').attr('rid');
         name=$('.img.img3').attr('name');
         if (itemsId && itemsId != '') {
-            var dat='{"shareAppTitle":"消费有返利 领取51元大奖！","shareAppContent":"你的好友向你索要一张'+name+'卡片，快赠送给他/她吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
+            var dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友向你索要一张'+name+'卡，赠张专属卡送份心意，快赠送给Ta吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
             var base64 = BASE64.encoder(dat);
             //console.log(base64)
             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
@@ -166,20 +166,4 @@ function k_touch() {
             _end=0;
         }
     }
-}
-
-// app调用web的方法
-function alaShareData(){
-    var dataObj = { // 分享内容
-        "appLogin": "Y", // 是否需要登录，Y需要，N不需要
-        "type": "share", // 此页面的类型
-        "shareAppTitle": "消费有返利 领取51元大奖！",  // 分享的title
-        'shareAppContent': "你的好友向你索要一张"+name+"卡片，快赠送给他/她吧~",  // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/ggShare.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggdemand?loginSource=S&activityId="+activityId+"&userName="+userName+"&itemsId="+itemsId,  // 分享后的链接
-        "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
-        "sharePage": "ggdemand" // 分享的页面
-    };
-    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
-    return dataStr
 }

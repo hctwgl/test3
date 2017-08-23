@@ -3,7 +3,7 @@
  */
 
 
-@url: "http://f.51fanbei.com/h5/app/activity/07";
+@url: "http://f.51fanbei.com/h5/app/activity/08";
 *{
     box-sizing:border-box;
 }
@@ -25,14 +25,14 @@ img{
 .topLine{
     position: absolute;
     width: 7.5rem;
-    border-top: 1px solid #95899D;
+    border-top: 1px solid #9b83a8;
     top:0.1rem;
     left: 0.1rem;
 }
 .bottomLine{
     position: absolute;
     width: 7.3rem;
-    border-top: 1px solid #95899D;
+    border-top: 1px solid #9b83a8;
     bottom:0.1rem;
     left: 0.1rem;
 }
@@ -40,7 +40,7 @@ img{
     position: absolute;
     width: 1rem;
     height:11.2rem;
-    border-left: 1px solid #95899D;
+    border-left: 1px solid #9b83a8;
     bottom:0.1rem;
     left: 0.1rem;
     
@@ -49,7 +49,7 @@ img{
     position: absolute;
     width: 1rem;
     height:11.2rem;
-    border-right: 1px solid #95899D;
+    border-right: 1px solid #9b83a8;
     bottom:0.1rem;
     right: 0.1rem;
 }
@@ -66,15 +66,15 @@ img{
     padding:0.3rem 0;
 }
 .bannerUrl .left{
-    width:0.5rem;
-    height:0.2rem;
+    width:0.43rem;
+    height:0.33rem;
     position:absolute;
     left:-15%;
     top:4%;
 }
 .bannerUrl .right{
-    width:0.5rem;
-    height:0.2rem;
+    width:0.43rem;
+    height:0.33rem;
     position:absolute;
     right:-15%;
     top:4%;
@@ -182,7 +182,7 @@ img{
     transform: translateY(-50%);
     width: 0.3rem;
     height: 0.3rem;
-     background-image: url("@{url}/oppo4.png"); 
+     background-image: url("@{url}/back.png"); 
     border-radius:50%;
     -webkit-background-size: cover;
     background-size: cover;
@@ -206,14 +206,14 @@ img{
 .r-topLine{
     position: absolute;
     width: 7.3rem;
-    border-top: 1px solid #95899D;
+    border-top: 1px solid #9b83a8;
     top:0.1rem;
     left: 0.1rem;
 }
 .r-bottomLine{
     position: absolute;
     width: 7.3rem;
-    border-top: 1px solid #95899D;
+    border-top: 1px solid #9b83a8;
     bottom:0.1rem;
     left: 0.1rem;
 }
@@ -221,7 +221,7 @@ img{
     position: absolute;
     width: 1rem;
     height:18.01rem;
-    border-left: 1px solid #95899D;
+    border-left: 1px solid #9b83a8;
     bottom:0.1rem;
     left: 0.1rem;
     
@@ -230,7 +230,7 @@ img{
     position: absolute;
     width: 1rem;
     height:18.01rem;
-    border-right: 1px solid #95899D;
+    border-right: 1px solid #9b83a8;
     bottom:0.1rem;
     right: 0.1rem;
 }
