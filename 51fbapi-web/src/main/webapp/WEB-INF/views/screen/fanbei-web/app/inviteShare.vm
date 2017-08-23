@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082303")
+    #set($version="2017082304")
     #set($commonUrl="http://f.51fanbei.com/h5/app/images/user")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteShare.css?version=$version">

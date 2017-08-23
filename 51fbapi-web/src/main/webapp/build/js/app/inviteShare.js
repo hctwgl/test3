@@ -120,6 +120,10 @@ var vm=new Vue({
                     },
                     success: function(returnData){
                         if (returnData.success) {
+                            // 关闭弹窗
+                            $(".registerMask").addClass("hide");
+                            $(".imgVftCodeWrap").addClass("hide");
+                            // 倒计时
                             $("#codeBtn").attr("isState",1);
                             $("#codeBtn").text(timerS+" s");
                             timerInterval = setInterval(timeFunction,1000);
