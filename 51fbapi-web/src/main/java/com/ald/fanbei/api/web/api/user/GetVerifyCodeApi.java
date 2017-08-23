@@ -100,8 +100,8 @@ public class GetVerifyCodeApi implements ApiHandle {
 			if (afUserDo == null) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 			}
-
-			boolean resultMobileBind = smsUtil.sendMobileBindVerifyCode(mobile, afUserDo.getRid());
+			//给原手机发送验证码
+			boolean resultMobileBind = smsUtil.sendMobileBindVerifyCode(afUserDo.getMobile(), afUserDo.getRid());
 			if (!resultMobileBind) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
 			}
