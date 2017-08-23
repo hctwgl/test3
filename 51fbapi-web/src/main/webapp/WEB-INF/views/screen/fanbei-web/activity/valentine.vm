@@ -11,9 +11,10 @@
     <div class="banner"></div>
     <div class="couponList clearFix">
         <p class="line"></p>
-        <div class="coupon">
-            <p class="couponMoney"><span>￥</span><span>50</span>优惠券</p>
-            <p class="couponRule">满199元使用</p>
+        <div class="coupon" v-for="item in couponCont.couponInfoList" @click="couponClick(item)">
+            <p class="couponMoney"><span>￥</span><span>{{item.amount}}</span>优惠券</p>
+            <p class="couponRule" v-if="item.limitAmount>0">满{{item.limitAmount}}元使用</p>
+            <p class="couponRule" v-else>无门槛</p>
             <p class="get">立即领取</p>
         </div>
         <p class="line line02"></p>
@@ -35,7 +36,7 @@
                 <div class="right floatLeft" @click="goodClick(items.activityGoodsList[1])"><img class="lazy" :data-original="items.imgLeftUrl"></div>
                 <div class="left floatRight" @click="goodClick(items.activityGoodsList[1])">
                     <p class="flowerName">{{items.rightWord01}}</p>
-                    <p class="flowerDes">{{items.rightWord01}}</p>
+                    <p class="flowerDes">{{items.rightWord02}}</p>
                     <p class="flowerPrice">七夕价<span>￥{{items.activityGoodsList[1].saleAmount}}</span></p>
                     <p class="fanPrice">返利:￥{{items.activityGoodsList[1].rebateAmount}}</p>
                 </div>

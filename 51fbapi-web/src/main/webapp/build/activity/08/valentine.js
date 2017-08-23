@@ -21,8 +21,9 @@ new Vue({
         couponCont:{}
     },
     created: function () {
-        this.loginData()
-        this.logCoupon()
+        this.loginData();
+        this.logCoupon();
+        loading();
     },
     methods: {
         loginData(){
@@ -48,7 +49,7 @@ new Vue({
                     }
                     self.$nextTick(function () {
                         // lazy.init();
-                        //$(".loadingMask").fadeOut();
+                        $(".loadingMask").fadeOut();
                         $("img.lazy").lazyload({
                             placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
                             effect : "fadeIn",  // 载入使用的效果
@@ -76,19 +77,17 @@ new Vue({
                 url: "/fanbei-web/activityCouponInfo",
                 data:{'groupId':25},
                 success: function (data) {
-                    console.log(data)
-                    /*self.couponCont = eval('(' + data + ')').data;
-                    console.log(self.couponCont);*/
+                    self.couponCont = eval('(' + data + ')').data;
+                    console.log(self.couponCont);
                 },
                 error: function () {
                     requestMsg("请求失败");
                 }
             });
 
-        }
-        /*couponClick:function(e){
-            let self=this;
-            var couponId=e.couponId;
+        },
+        couponClick:function(item){
+            var couponId=item.couponId;
             //点击领券
             console.log(couponId);
             $.ajax({
@@ -102,7 +101,6 @@ new Vue({
                     if(returnData.success){
                         requestMsg("优惠劵领取成功");
                     }else{
-                        console.log(returnData)
                         var status = returnData.data["status"];
                         if (status == "USER_NOT_EXIST") { // 用户不存在
                             window.location.href = returnData.url;
@@ -124,7 +122,7 @@ new Vue({
                 }
             });
 
-        },*/
+        }
     }
 });
 
