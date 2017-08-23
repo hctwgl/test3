@@ -102,7 +102,6 @@ $(function(){
          	$("#register_codeBtn").text("获取验证码");
          	clearInterval(timerInterval);
          	timerS = 60;
-    		// $("#register_codeBtn").attr("isState",0);
         } else {
          	$("#register_codeBtn").text(timerS+" s");
         }
@@ -111,27 +110,30 @@ $(function(){
 	// 获取图形验证码
     $("#register_codeBtn").click(function(){
         var mobileNum = $("#register_mobile").val();
-        console.log(mobileNum);
-        $.ajax({
-            url: "/app/user/getImgCode",
-            type: "POST",
-            dataType: "JSON",
-            data: {mobile:mobileNum},
-            success: function (r) {
-                console.log(r);
-                // 显示弹窗
-                $(".registerMask").removeClass("hide");
-                $(".imgVftCodeWrap").removeClass("hide");
-                $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
-                $("#imgVftCodeClose").click(function(){ // 关闭弹窗
-                    $(".registerMask").addClass("hide");
-                    $(".imgVftCodeWrap").addClass("hide");
-                })
-            },
-            error: function () {
-                requestMsg("请求失败")
-            }
-        });
+        if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+            $.ajax({
+                url: "/app/user/getImgCode",
+                type: "POST",
+                dataType: "JSON",
+                data: {mobile:mobileNum},
+                success: function (r) {
+                    console.log(r);
+                    // 显示弹窗
+                    $(".registerMask").removeClass("hide");
+                    $(".imgVftCodeWrap").removeClass("hide");
+                    $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
+                    $("#imgVftCodeClose").click(function(){ // 关闭弹窗
+                        $(".registerMask").addClass("hide");
+                        $(".imgVftCodeWrap").addClass("hide");
+                    })
+                },
+                error: function () {
+                    requestMsg("请求失败")
+                }
+            });
+        } else{
+            requestMsg("请填写正确的手机号");
+        }
     });
 
     // 刷新重新获取图片验证

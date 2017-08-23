@@ -60,25 +60,29 @@ var vm=new Vue({
     methods:{
         getImgCode(){  // 获取图形验证码
             var mobileNum = $("#tel").val();
-            $.ajax({
-                url: "/app/user/getImgCode",
-                type: "POST",
-                dataType: "JSON",
-                data: {mobile:mobileNum},
-                success: function (r) {
-                    // 显示弹窗
-                    $(".registerMask").removeClass("hide");
-                    $(".imgVftCodeWrap").removeClass("hide");
-                    $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
-                    $("#imgVftCodeClose").click(function(){ // 关闭弹窗
-                        $(".registerMask").addClass("hide");
-                        $(".imgVftCodeWrap").addClass("hide");
-                    })
-                },
-                error: function () {
-                    requestMsg("请求失败")
-                }
-            });
+            if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+                $.ajax({
+                    url: "/app/user/getImgCode",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {mobile:mobileNum},
+                    success: function (r) {
+                        // 显示弹窗
+                        $(".registerMask").removeClass("hide");
+                        $(".imgVftCodeWrap").removeClass("hide");
+                        $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
+                        $("#imgVftCodeClose").click(function(){ // 关闭弹窗
+                            $(".registerMask").addClass("hide");
+                            $(".imgVftCodeWrap").addClass("hide");
+                        })
+                    },
+                    error: function () {
+                        requestMsg("请求失败")
+                    }
+                });
+            } else{
+                requestMsg("请填写正确的手机号");
+            }
         },
         getImgCodeRefresh(){  // 刷新重新获取图片验证
             var mobileNum = $("#tel").val();
