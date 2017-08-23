@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    #set($version="2017082301")
     <meta charset="UTF-8">
-    <link rel="stylesheet" id="css" type="text/css" href="/dist/css/app/goodsModel.css">
+    <link rel="stylesheet" id="css" type="text/css" href="/dist/css/app/goodsModel.css?version=$version">
     <script>
         var title=decodeURI(getUrl('title'));
         if(title){
@@ -15,14 +16,14 @@
 <body>
 <div id="vueCon">
     <title></title>
-    <img class="banner" :src="content.data.bannerUrl">
+    <img class="banner lazy" :data-original="content.data.bannerUrl">
     <div class="recommend">
         <h2>{{content.data.oneLevelGoodsInfo.title}}</h2>
         <ul>
             <li v-for="data in content.data.oneLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
-                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'">返利<span>￥{{data.rebateAmount}}</span></p>
-                    <img :lazy-src="data.goodsIcon">
+                    <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                    <img class="lazy" :data-original="data.goodsIcon">
                     <div class="txtContent">
                         <p>{{txtFix(data.goodName,20)}}</p>
                         <p class="price">活动价:￥{{data.saleAmount}}</p>
@@ -38,11 +39,13 @@
         <ul class="clearfix">
             <li v-for="data in content.data.twoLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
-                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'">返利<span>￥{{data.rebateAmount}}</span></p>
-                    <p class="goodImg"><img :lazy-src="data.goodsIcon"></p>
+                    <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                    <p class="goodImg"><img class="lazy" :data-original="data.goodsIcon"></p>
                     <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
-                    <p class="fanPrice">￥{{data.saleAmount}}</p>
-                    <p class="originPrice">￥{{data.priceAmount}}</p>
+                    <div class="goodPrice">
+                        <p class="fanPrice">￥{{data.saleAmount}}</p>
+                        <p class="originPrice">￥{{data.priceAmount}}</p>
+                    </div>
                     <p class="monthPrice">{{buttonTxt(data)}}</p>
                 </a>
             </li>
@@ -53,11 +56,13 @@
         <ul class="clearfix">
             <li v-for="data in content.data.threeLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
-                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'">返利<span>￥{{data.rebateAmount}}</span></p>
-                    <p class="goodImg"><img :lazy-src="data.goodsIcon"></p>
+                    <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                    <p class="goodImg"><img class="lazy" :data-original="data.goodsIcon"></p>
                     <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
-                    <p class="fanPrice">￥{{data.saleAmount}}</p>
-                    <p class="originPrice">￥{{data.priceAmount}}</p>
+                    <div class="goodPrice">
+                        <p class="fanPrice">￥{{data.saleAmount}}</p>
+                        <p class="originPrice">￥{{data.priceAmount}}</p>
+                    </div>
                     <p class="monthPrice">{{buttonTxt(data)}}</p>
                 </a>
             </li>
@@ -68,11 +73,13 @@
         <ul class="clearfix">
             <li v-for="data in content.data.fourLevelGoodsInfo.goodsList">
                 <a :href="content.data.notifyUrl+'&params={%22goodsId%22:%22'+data.goodsId+'%22}'">
-                    <p class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'">返利<span>￥{{data.rebateAmount}}</span></p>
-                    <p class="goodImg"><img :lazy-src="data.goodsIcon"></p>
+                    <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                    <p class="goodImg"><img class="lazy" :data-original="data.goodsIcon"></p>
                     <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
-                    <p class="fanPrice">￥{{data.saleAmount}}</p>
-                    <p class="originPrice">￥{{data.priceAmount}}</p>
+                    <div class="goodPrice">
+                        <p class="fanPrice">￥{{data.saleAmount}}</p>
+                        <p class="originPrice">￥{{data.priceAmount}}</p>
+                    </div>
                     <p class="monthPrice">{{buttonTxt(data)}}</p>
                 </a>
             </li>
@@ -80,5 +87,5 @@
     </div>
 </div>
 </body>
-<script type="text/javascript" src="/dist/js/app/goodsModel.js"></script>
+<script type="text/javascript" src="/dist/js/app/goodsModel.js?version=$version"></script>
 </html>

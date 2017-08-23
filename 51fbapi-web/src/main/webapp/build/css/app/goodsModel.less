@@ -1,6 +1,6 @@
 //@url: "https://fs.51fanbei.com/h5/app/activity/06";
 #vueCon{
-  background-color: #de2b08;
+  //background-color: #de2b08;
   text-align: center;
 }
 .button{
@@ -35,14 +35,14 @@ li{
   }
   .txtContent{
     float: right;
-    width: 3.58rem;
-    height: 2.3rem;
-    margin:.25rem 0.3rem .25rem 0;
+    width: 3.8rem;
+    height: 2.6rem;
+    padding: 0.2rem 0.3rem 0;
     color: #111;
     text-align: left;
     word-break: break-all;
     .price{
-      margin: .1rem 0;
+      margin-top: .1rem;
       color:#ed5a4d;
     }
     s{
@@ -51,10 +51,12 @@ li{
     }
     button{
       position: absolute;
-      bottom: 0.3rem;
+      bottom: 0.2rem;
       right: 0.3rem;
-      width: 3.58rem;
-      height: 0.54rem;
+      width: 3.8rem;
+      height: 0.6rem;
+      line-height:0.6rem;
+      text-align: center;
       border-radius: 0.04rem;
       color: #fff;
       font-size: 0.26rem;
@@ -64,54 +66,59 @@ li{
 
 /*yun*/
 .LevelGoods ul li{
-  width:3.5rem;
-  height:5.42rem;
+  position: relative;
+  width:3.52rem;
+  height:5.52rem;
   background:#fff;
-  margin:0 .2rem .14rem 0;
+  margin:0 .16rem .16rem 0;
   &:nth-child(2n){
     margin:0 0 .14rem 0;
   }
   float:left;
   .goodImg{
-    width:3.5rem;
-    height:3.5rem;
-    background:gray;
-  }
-  .goodImg img{
-    width:100%;
-    height:100%;
+    width:3.52rem;
+    height:3.52rem;
+    img{
+      width:100%;
+      height:100%;
+    }
   }
   .goodDes{
-    padding:0 .2rem;
+    padding:0.05rem .2rem 0;
     font-size:.28rem;
     color:#3c3c3c;
     line-height: .35rem;
     text-align: justify;
   }
-  .fanPrice{
-    font-size:.26rem;
-    color:#ef6d61;
-    display:inline-block;
-    line-height: .55rem;
-    padding-left:.2rem;
-    float:left;
-  }
-  .originPrice{
-    font-size:.26rem;
-    color:#bdbdbd;
-    text-decoration: line-through;
-    display:inline-block;
-    line-height: .55rem;
-    padding-right:.2rem;
-    float:right
-
+  .goodPrice{
+    width: 100%;
+    height: 0.6rem;
+    position: absolute;
+    bottom: 0.66rem;
+    .fanPrice{
+      font-size:.26rem;
+      color:#ef6d61;
+      display:inline-block;
+      line-height: .55rem;
+      padding-left:.2rem;
+      float:left;
+    }
+    .originPrice{
+      font-size:.26rem;
+      color:#bdbdbd;
+      text-decoration: line-through;
+      display:inline-block;
+      line-height: .55rem;
+      padding-right:.2rem;
+      float:right
+    }
   }
   .monthPrice{
     font-size:.26rem;
     color:#fff;
     background:#e45454;
-    height:.65rem;
-    line-height: .65rem;
+    height:.66rem;
+    line-height: .66rem;
     width:100%;
     text-align:center;
     position:absolute;
@@ -120,10 +127,10 @@ li{
   }
 }
 .fanMoney{
-  width:.65rem;
-  height:.71rem;
-  border-bottom-left-radius:.32rem ;
-  border-bottom-right-radius:.32rem ;
+  width:.75rem;
+  height:.72rem;
+  border-bottom-left-radius:.36rem ;
+  border-bottom-right-radius:.36rem ;
   background:#ff9900;
   color:#fff;
   font-size:.24rem;
@@ -132,8 +139,8 @@ li{
   position:absolute;
   padding-top:0.07rem;
   top:0;
-  left:.15rem;
-}
-.fanMoney span{
-  font-size:.16rem;
+  left:.16rem;
+  p:nth-child(2){
+    font-size:.16rem;
+  }
 }
