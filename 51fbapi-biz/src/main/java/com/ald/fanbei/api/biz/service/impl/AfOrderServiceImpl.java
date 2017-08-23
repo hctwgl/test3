@@ -627,6 +627,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			map = new HashMap<String,Object>();
 			UpsCollectRespBo respBo = upsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
 					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02",OrderType.MOBILE.getCode());
+			if (!respBo.isSuccess()) {
+				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			}
 			map.put("resp", respBo);
 		}
 		return map;
@@ -1849,34 +1852,33 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		return result;
 	}
-
 	/**
 	 * 处理菠萝觅组合支付失败的情况
 	 */
 	@Override
-	public int dealBrandPayCpOrderFail(final String payOrderNo, final String tradeNo,final String payType) {
+	public int dealBrandPayCpOrderFail(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					
+
 					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 					// 不处理新建，处理
 					if (orderInfo == null) {
 						return 0;
 					}
 					// 只处理订单处理中的状态
-					if (!orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()) ){
+					if (!orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
 						return 0;
 					}
-					logger.info("dealPayCpOrderFail fail begin , payOrderNo = {} and tradeNo = {}", new Object[] { payOrderNo, tradeNo});
-					
-					//恢复额度
-					
+					logger.info("dealPayCpOrderFail fail begin , payOrderNo = {} and tradeNo = {}", new Object[] { payOrderNo, tradeNo });
+
+					// 恢复额度
+
 					// 如果已经使用的额度大于要恢复的额度 才会给用户增加额度，防止重复回调造成重复给我用户增加额度问题
 					AfUserAccountDo userAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-					if(userAccountDo.getUsedAmount().compareTo(orderInfo.getBorrowAmount()) >=0) {
+					if (userAccountDo.getUsedAmount().compareTo(orderInfo.getBorrowAmount()) >= 0) {
 						// 恢复账户额度
 						AfUserAccountDo account = new AfUserAccountDo();
 						account.setUsedAmount(orderInfo.getBorrowAmount().negate());
@@ -1885,23 +1887,22 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						// 增加资金变化的记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL, orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
 					}
-					
+
 					// 恢复虚拟额度
 					AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();
 					queryVirtualAccountDo.setUserId(orderInfo.getUserId());
 					queryVirtualAccountDo.setOrderId(orderInfo.getRid());
 					AfUserVirtualAccountDo userVirtualAccountDo = afUserVirtualAccountService.getByCommonCondition(queryVirtualAccountDo);
-					if(userVirtualAccountDo !=null){
+					if (userVirtualAccountDo != null) {
 						userVirtualAccountDo.setStatus(YesNoStatus.NO.getCode());
 						afUserVirtualAccountService.updateById(userVirtualAccountDo);
 					}
-					
+
 					// 如果使用了优惠卷，恢复优惠卷
-					if(orderInfo.getUserCouponId() != null && orderInfo.getUserCouponId() != 0){
-	                    afUserCouponDao.updateUserCouponSatusNouseById(orderInfo.getUserCouponId());
+					if (orderInfo.getUserCouponId() != null && orderInfo.getUserCouponId() != 0) {
+						afUserCouponDao.updateUserCouponSatusNouseById(orderInfo.getUserCouponId());
 					}
 
-						
 					// 处理订单
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
@@ -1923,7 +1924,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 		}
-		
+
 		return result;
 	}
 	

@@ -445,12 +445,12 @@ public class SmsUtil extends AbstractThird {
 	 */
 	private static SmsResult sendSmsToDhst(String mobiles, String content) {
 		SmsResult result = new SmsResult();
-//		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-//				Constants.INVELOMENT_TYPE_TEST)) {
-//			result.setSucc(true);
-//			result.setResultStr("test");
-//			return result;
-//		}
+		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+				Constants.INVELOMENT_TYPE_TEST)) {
+			result.setSucc(true);
+			result.setResultStr("test");
+			return result;
+		}
 		Map<String, String> paramsMap = new HashMap<String, String>();
 		paramsMap.put("account", ACCOUNT);
 		paramsMap.put("password", DigestUtil.MD5(getPassword()).toLowerCase());
@@ -542,10 +542,10 @@ public class SmsUtil extends AbstractThird {
 	 * @return
 	 */
 	private int addSmsRecord(SmsType smsType, String mobile, String verifyCode, Long userId, SmsResult smsResult) {
-//		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-//				Constants.INVELOMENT_TYPE_TEST)) {
-//			verifyCode = TEST_VERIFY_CODE;
-//		}
+		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+				Constants.INVELOMENT_TYPE_TEST)) {
+			verifyCode = TEST_VERIFY_CODE;
+		}
 		AfSmsRecordDo recordDo = new AfSmsRecordDo();
 		recordDo.setSendAccount(mobile);
 		recordDo.setUserId(userId);

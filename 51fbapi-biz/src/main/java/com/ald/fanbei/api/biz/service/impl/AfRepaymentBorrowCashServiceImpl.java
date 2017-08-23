@@ -37,6 +37,8 @@ import com.ald.fanbei.api.common.enums.OfflinePayType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -190,6 +192,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
 			if (!respBo.isSuccess()) {
 				dealRepaymentFail(payTradeNo, "");
+				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
 		} else if (cardId == -2) {// 余额支付
@@ -487,8 +490,27 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					bcashDo.setRid(afBorrowCashDo.getRid());
 					bcashDo.setRepayAmount(haveRepayAmount);
 					
-					// 还款的时候 需要判断是否能还清利息 同时修改累计利息 
-					BigDecimal tempRepayAmount = repayAmount;
+					//本次还款用于处理利息和逾期费的金额，默认为0
+					BigDecimal tempRepayAmount = BigDecimal.ZERO;
+					
+					if(YesNoStatus.YES.getCode().equals(isBalance) ){
+						//平账方式，撤回之前标记的已还利息、已还逾期费。改为本金为主，有额外剩余金额，分别记入利息和逾期费
+						afBorrowCashDo.setRateAmount(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), afBorrowCashDo.getRateAmount()));
+						afBorrowCashDo.setSumRate(BigDecimal.ZERO);
+						
+						afBorrowCashDo.setOverdueAmount(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount()));
+						afBorrowCashDo.setSumOverdue(BigDecimal.ZERO);
+						
+						if(haveRepayAmount.compareTo(afBorrowCashDo.getAmount())>0){
+							//本金外额外剩余金额
+							tempRepayAmount = haveRepayAmount.subtract(afBorrowCashDo.getAmount());
+						}
+					}else{
+						//正常还款非平账方式，直接拿本次还款金额处理利息和手续费
+						tempRepayAmount = repayAmount;
+					}
+					
+					//判断是否能还清利息 同时修改累计利息 
 					if (tempRepayAmount.compareTo(afBorrowCashDo.getRateAmount()) > 0) {
 						bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), afBorrowCashDo.getRateAmount()));
 						bcashDo.setRateAmount(BigDecimal.ZERO);
@@ -499,7 +521,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						tempRepayAmount = BigDecimal.ZERO;
 					}
 					
-					// 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 start
+					// 判断是否能还清滞纳金 同时修改累计滞纳金
 					if (tempRepayAmount.compareTo(afBorrowCashDo.getOverdueAmount()) > 0) {
 						bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount()));
 						bcashDo.setOverdueAmount(BigDecimal.ZERO);
