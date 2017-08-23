@@ -184,12 +184,12 @@ public class AppH5UserContorler extends BaseController {
 			//发送短信前,加入图片验证码验证
 			String realCode=bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile).toString();
 
-			if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码正确
-				bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
+			if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码不正确
+
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
-
+			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
 
 			boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
 			if (!resultReg) {
