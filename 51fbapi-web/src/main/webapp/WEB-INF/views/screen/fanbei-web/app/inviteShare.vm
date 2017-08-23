@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017081705")
+    #set($version="2017082302")
     #set($commonUrl="http://f.51fanbei.com/h5/app/images/user")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteShare.css?version=$version">
@@ -15,7 +15,7 @@
                 <li><input type="text" id="tel" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
                 <li class="clearfix">
                     <input type="text" id="VerifiCode" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
-                    <button class="codeBtn" id="codeBtn" @click="getCode()">点击获取</button>
+                    <button class="codeBtn" id="codeBtn" @click="getImgCode()">点击获取</button>
                 </li>
                 <li><input type="password" id="password" placeholder="请设置登陆密码" name="words" maxlength="18"></li>
                 <li @click="goRegister()"><button class="submitBtn" id="submitBtn">立即注册</button></li>
@@ -29,6 +29,16 @@
         <p class="registered clearfix">
             <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>
         </p>
+        <div class="registerMask hide"></div>
+        <div class="imgVftCodeWrap hide">
+            <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
+            <div class="imgVftCodeInput clearfix">
+                <input type="text" class="imgVftCode" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+                <img id="imgVftCodeWrapImg" src="">
+                <span class="imgVftCodeRefresh" @click="getImgCodeRefresh()"><i></i></span>
+            </div>
+            <button class="imgVftCodeSbumit" @click="getCode()">确定</button>
+        </div>
     </div>
     <script type="text/javascript" src="/dist/js/core.js"></script>
     <script type="text/javascript" src="/dist/js/md5.js"></script>

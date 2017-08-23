@@ -58,6 +58,50 @@ function timeFunction(){ // 60s倒计时
 var vm=new Vue({
     el: '#inviteShare',
     methods:{
+        getImgCode(){
+            var mobileNum = $("#tel").val();
+            $.ajax({
+                url: "/app/user/getImgCode",
+                type: "POST",
+                dataType: "JSON",
+                data: {mobile:mobileNum},
+                success: function (r) {
+                    // 显示弹窗
+                    $(".registerMask").removeClass("hide");
+                    $(".imgVftCodeWrap").removeClass("hide");
+                    $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
+                    $("#imgVftCodeClose").click(function(){ // 关闭弹窗
+                        $(".registerMask").addClass("hide");
+                        $(".imgVftCodeWrap").addClass("hide");
+                    })
+                },
+                error: function () {
+                    requestMsg("请求失败")
+                }
+            });
+        },
+        getImgCodeRefresh(){
+            var mobileNum = $("#tel").val();
+            $.ajax({
+                url: "/app/user/getImgCode",
+                type: "POST",
+                dataType: "JSON",
+                data: {mobile:mobileNum},
+                success: function (r) {
+                    // 显示弹窗
+                    $(".registerMask").removeClass("hide");
+                    $(".imgVftCodeWrap").removeClass("hide");
+                    $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
+                    $("#imgVftCodeClose").click(function(){ // 关闭弹窗
+                        $(".registerMask").addClass("hide");
+                        $(".imgVftCodeWrap").addClass("hide");
+                    })
+                },
+                error: function () {
+                    requestMsg("请求失败")
+                }
+            });
+        },
         getCode(){
             var isState = $(this).attr("isState");
             var mobileNum = $("#tel").val();
