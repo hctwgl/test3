@@ -136,9 +136,7 @@ function txtFix(str,len){
 
 //图片懒加载
 window.lazy = (function(window, document, undefined) {
-
     'use strict';
-
     var store = [],
         offset,
         poll;
@@ -206,4 +204,14 @@ function formateTelNum(tel) {
 function formatStr(str){
     str=str.replace(/<br\/>/g, "\n");
     return str;
+}
+
+// 加载loading图
+function loading(){
+    function loadDoc(){
+        var html="";
+        html+='<div class="loadingMask"><i class="loading"></i></div>';
+        return html;
+    }
+    $("body").append(loadDoc());
 }

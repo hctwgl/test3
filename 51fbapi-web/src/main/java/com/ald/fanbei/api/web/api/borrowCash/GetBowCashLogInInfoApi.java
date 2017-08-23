@@ -428,6 +428,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			/**add by fmai 用户点击借钱页面时去风控获取用户的借钱手续费*/
 			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
 		} catch (Exception e) {
+			bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, rate.get("poundage").toString(), Constants.SECOND_OF_ONE_MONTH);
 			logger.info("从风控获取分层用户额度失败：" + e);
 		}
 		
@@ -449,7 +450,6 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			String poundageRate = riskResp.getPoundageRate();
 			if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 				logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);
-				
 				Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 
 				BigDecimal userPoundageRate = BigDecimal.ZERO;
