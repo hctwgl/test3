@@ -38,8 +38,8 @@
       	</div>
         <p class="account"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号</a></p>
 		</div>
-		<script type="text/javascript" src="/common/js/core.js"></script>
-		<script type="text/javascript" src="/common/js/md5.js"></script>
+		<script type="text/javascript" src="/dist/js/core.js"></script>
+		<script type="text/javascript" src="/dist/js/md5.js"></script>
 		<script type="text/javascript" src="/dist/js/layer.js?version=$version"></script>
 		<script type="text/javascript" src="/dist/js/base.js?version=$version"></script>
 		<script type="text/javascript" src="/dist/js/user/register.js?version=$version"></script>
