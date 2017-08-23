@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017080301")
+    #set($version="2017082301")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>七夕购机更优惠</title>
