@@ -96,7 +96,13 @@ body{
 }
 .money p:nth-child(2) span{
   color:#fe963b;
-  margin-left:0.1rem;
+  /* margin-left:0.1rem; */
+}
+.money .combo{
+    margin-left:1%;
+}
+.money .demand{
+    margin-left:-1%;
 }
 .banner img{
     width:6.25rem;

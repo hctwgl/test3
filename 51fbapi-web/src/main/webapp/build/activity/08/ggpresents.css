@@ -97,11 +97,12 @@ body {
 .money p:nth-child(2) {
     font-size: .5rem;
     padding-top: .3rem;
+    text-align:center;
 }
 
 .money p:nth-child(2) span {
     color: #fe963b;
-    margin-right: 0.3rem;
+    margin-right: 0.1rem;
 }
 
 .banner img {
