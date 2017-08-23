@@ -42,13 +42,14 @@
             <ul v-for="(item,index) in tracesInfo" class="item">
                 <div class="contentLeft">
                     <li v-if="index ==0">
+                        <span class="firstVerticalLine"></span>
                         <span class="firstCircle"></span>
-                        <span class="firstVerticalLineBottom"></span>
                     </li>
-                    <li  v-else>
-                        <span class="verticalLineTop"></span>
-                        <span class="circle"></span>
-                        <span class="verticalLineBottom"></span>
+                    <li v-else>
+                        <span class="verticalLine"></span>
+                        <div class="circleWrap">
+                            <span class="circle"></span>
+                        </div>
                     </li>
 
                 </div>
