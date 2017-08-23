@@ -75,4 +75,5 @@
     </div>
 </body>
 <script type="text/javascript" src="/dist/activity/08/qiXiPhone.js"></script>
+<script type="text/javascript" src="/dist/js/jquery.lazyload.js"></script>
 </html>
