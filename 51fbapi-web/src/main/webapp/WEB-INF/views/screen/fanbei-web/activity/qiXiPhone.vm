@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="selfHome">
-        <img :src="returnData.bannerUrl">
+        <img :src="returnData.bannerUrl" class="lazy">
         <div class="bigWrap">
             <div class="bigBox" style="padding:0.04rem">
             <div class="topLine"></div>
@@ -21,14 +21,14 @@
                     <div class="bannerUrl">
                         <span class="center">
                             <i class="centerBig">
-                                <img src="$commonUrl/heartF.png" alt="" class="left">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right">
+                                <img src="$commonUrl/heartF.png" alt="" class="left" class="lazy">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right" class="lazy">
                             </i><br/>
                             <i class="centerSmall">七夕送给心爱的她一份心意</i>
                         </span>
                     </div>
                     <ul class="discount clearfix" style="background-color: white;">
                         <li v-for="item in discountMap" @click="goGoodsDetail(item)" class="buyBtn">
-                            <img :src="item.goodsIcon">
+                            <img :src="item.goodsIcon" class="lazy">
                             <div class="discountRight">
                                 <p class="discountRightTitle">{{item.goodName}}</p>
                                 <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
@@ -41,7 +41,7 @@
                         </li>
                     </ul>
                 </div>
-                <img src="$commonUrl/tangle.png" alt="" class="tangle">
+                <img src="$commonUrl/tangle.png" alt="" class="tangle" class="lazy">
             </div>
             <div class="rebateWrap" style="padding: 0.04rem;">
                 <div class="r-topLine"></div>
@@ -52,14 +52,14 @@
                 <div class="bannerUrl" style="background-color: white;">
                         <span class="center">
                             <i class="centerBig">
-                                <img src="$commonUrl/heartF.png" alt="" class="left">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right">
+                                <img src="$commonUrl/heartF.png" alt="" class="left" class="lazy">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right" class="lazy">
                             </i><br/>
                             <i class="centerSmall">七夕送给心爱的她一份心意</i>
                         </span>
                     </div>
                 <ul class="rebate clearfix" style="background-color: white;">
                     <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
-                        <img :src="item.goodsIcon">
+                        <img :src="item.goodsIcon" class="lazy">
                         <div class="rebateRight">
                             <p class="rebateRightTitle">{{item.goodName}}</p>
                             <p class="remark">{{item.remark}}</p>
