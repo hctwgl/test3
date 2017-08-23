@@ -58,7 +58,7 @@ function timeFunction(){ // 60s倒计时
 var vm=new Vue({
     el: '#inviteShare',
     methods:{
-        getImgCode(){
+        getImgCode(){  // 获取图形验证码
             var mobileNum = $("#tel").val();
             $.ajax({
                 url: "/app/user/getImgCode",
@@ -80,7 +80,7 @@ var vm=new Vue({
                 }
             });
         },
-        getImgCodeRefresh(){
+        getImgCodeRefresh(){  // 刷新重新获取图片验证
             var mobileNum = $("#tel").val();
             $.ajax({
                 url: "/app/user/getImgCode",
@@ -102,9 +102,10 @@ var vm=new Vue({
                 }
             });
         },
-        getCode(){
+        getCode(){  // 获取验证码
             var isState = $(this).attr("isState");
             var mobileNum = $("#tel").val();
+            var verifyImgCode=$("#imgVftCode").val();
 
             if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
                 $("#codeBtn").attr("disabled",true);
@@ -114,11 +115,11 @@ var vm=new Vue({
                     dataType: "JSON",
                     data: {
                         mobile: mobileNum,
-                        token: token
+                        token: token,
+                        verifyImgCode:verifyImgCode
                     },
                     success: function(returnData){
                         if (returnData.success) {
-                            console.log(returnData);
                             $("#codeBtn").attr("isState",1);
                             $("#codeBtn").text(timerS+" s");
                             timerInterval = setInterval(timeFunction,1000);
@@ -135,7 +136,7 @@ var vm=new Vue({
                 requestMsg("请填写正确的手机号");
             }
         },
-        goRegister(){
+        goRegister(){  // 立即注册
 
             var pwdLength = ($("#password").val()).length;
             var pwdMd5 = String(CryptoJS.MD5($("#password").val())); // md5加密

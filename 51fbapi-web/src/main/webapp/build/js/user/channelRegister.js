@@ -134,7 +134,7 @@ $(function(){
         });
     });
 
-    // 刷新更改图片验证
+    // 刷新重新获取图片验证
     $("#imgVftCodeRefresh").click(function(){
         var mobileNum = $("#register_mobile").val();
         $.ajax({
@@ -181,7 +181,6 @@ $(function(){
                     verifyImgCode:verifyImgCode
       			},
       			success: function(returnData){
-      				console.log(returnData);
       				if (returnData.success) {
       				    // 关闭弹窗
                         $(".registerMask").addClass("hide");

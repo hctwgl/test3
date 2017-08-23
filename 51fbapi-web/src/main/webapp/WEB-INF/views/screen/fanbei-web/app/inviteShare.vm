@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082302")
+    #set($version="2017082303")
     #set($commonUrl="http://f.51fanbei.com/h5/app/images/user")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteShare.css?version=$version">
@@ -33,7 +33,7 @@
         <div class="imgVftCodeWrap hide">
             <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
             <div class="imgVftCodeInput clearfix">
-                <input type="text" class="imgVftCode" maxlength="4" placeholder="请输入短信验证码">
+                <div class="imgVftCodeDiv"><input type="text" class="imgVftCode" maxlength="4" placeholder="请输入"></div>
                 <img id="imgVftCodeWrapImg" src="">
                 <span class="imgVftCodeRefresh" @click="getImgCodeRefresh()"><i></i></span>
             </div>
