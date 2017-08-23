@@ -121,6 +121,8 @@ public class Constants {
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
+	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
+	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
