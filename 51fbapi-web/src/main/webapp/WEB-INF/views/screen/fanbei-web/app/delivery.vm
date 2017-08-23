@@ -40,11 +40,17 @@
     <div id="list" class="main_wrap">
         <template v-if="tracesInfo && tracesInfo !=''">
             <ul v-for="(item,index) in tracesInfo" class="item">
-
                 <div class="contentLeft">
-                    <span class="verticalLineTop"></span>
-                    <span class="circle"></span>
-                    <span class="verticalLineBottom"></span>
+                    <li v-if="index ==0">
+                        <span class="firstCircle"></span>
+                        <span class="firstVerticalLineBottom"></span>
+                    </li>
+                    <li  v-else>
+                        <span class="verticalLineTop"></span>
+                        <span class="circle"></span>
+                        <span class="verticalLineBottom"></span>
+                    </li>
+
                 </div>
                 <div class="contentRight">
                     <div class="content">{{item.acceptStation}}</div>
