@@ -542,10 +542,10 @@ public class SmsUtil extends AbstractThird {
 	 * @return
 	 */
 	private int addSmsRecord(SmsType smsType, String mobile, String verifyCode, Long userId, SmsResult smsResult) {
-//		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-//				Constants.INVELOMENT_TYPE_TEST)) {
-//			verifyCode = TEST_VERIFY_CODE;
-//		}
+		if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+				Constants.INVELOMENT_TYPE_TEST)) {
+			verifyCode = TEST_VERIFY_CODE;
+		}
 		AfSmsRecordDo recordDo = new AfSmsRecordDo();
 		recordDo.setSendAccount(mobile);
 		recordDo.setUserId(userId);
