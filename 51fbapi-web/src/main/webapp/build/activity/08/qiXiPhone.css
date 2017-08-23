@@ -11,6 +11,7 @@
 body{
     background-color: #9B87A9;
     box-sizing:border-box;
+    overflow-x:hidden;
 }
 img{
     min-height: 0.6rem;
