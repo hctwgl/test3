@@ -1,4 +1,5 @@
-
+var modelId=getUrl('modelId');
+var groupId=getUrl('groupId');
 //获取数据
 new Vue({
     el: '#valentine',
@@ -32,7 +33,7 @@ new Vue({
             $.ajax({
                 url:'/fanbei-web/partActivityInfo',
                 type:'post',
-                data:{'modelId':97},
+                data:{'modelId':modelId},
                 success:function(data){
                     //console.log(data)
                     self.content = eval('(' + data + ')').data.activityList.slice(0,5);
@@ -75,7 +76,7 @@ new Vue({
             $.ajax({
                 type: 'post',
                 url: "/fanbei-web/activityCouponInfo",
-                data:{'groupId':25},
+                data:{'groupId':groupId},
                 success: function (data) {
                     self.couponCont = eval('(' + data + ')').data;
                     console.log(self.couponCont);
