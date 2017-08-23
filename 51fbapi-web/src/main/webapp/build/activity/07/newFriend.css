@@ -1,0 +1,157 @@
+#vueCon {
+  moz-user-select: -moz-none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.wrap {
+  padding: .18rem 0;
+  background: white;
+  margin-top: .01rem;
+  width: 7.5rem;
+  height: 3.3rem;
+  moz-user-select: -moz-none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.wrap .btn {
+  font-size: 0.32rem;
+  color: white;
+  width: 100%;
+  height: 0.86rem;
+  background-color: #b0b0b0;
+  text-align: center;
+  line-height: 0.86rem;
+  margin: 0.32rem 0.16rem;
+}
+.coupon {
+  margin: 0 0 .16rem .16rem;
+  border-radius: .08rem;
+  float: left;
+  width: 3.51rem;
+  height: 1.61rem;
+  background: url("http://f.51fanbei.com/h5/app/activity/07/newCouple.png") no-repeat;
+  background-size: cover;
+  position: relative;
+}
+.coupon .left {
+  width: 2.18rem;
+  height: 1.61rem;
+  text-align: center;
+  color: #fff;
+  float: left;
+}
+.coupon .left p {
+  font-size: .3rem;
+  line-height: 2rem;
+  display: inline-block;
+}
+.coupon .left p span {
+  font-size: .9rem;
+  line-height: 1.61rem;
+}
+.coupon .right {
+  width: 1.32rem;
+  height: 1.61rem;
+  text-align: center;
+  line-height: 1.61rem;
+  float: right;
+  position: relative;
+}
+.coupon .right .right-one {
+  font-size: 0.36rem;
+}
+.coupon .right .right-two {
+  font-size: 0.16rem;
+}
+.coupon .right p {
+  display: inline-block;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+}
+.coupon .right p:nth-child(1) {
+  font-size: .36rem;
+  padding-top: .13rem;
+  overflow: hidden;
+  height: .5rem;
+  line-height: .5rem;
+}
+.coupon .right p:nth-child(2) {
+  font-size: .16rem;
+}
+.coupon .right p:nth-child(3) {
+  font-size: .16rem;
+  color: #eb3b49;
+  position: absolute;
+  right: 0rem;
+  bottom: .18rem;
+}
+.recommend {
+  width: 100%;
+  height: 1.2rem;
+  background: #fff;
+  line-height: 1.2rem;
+  font-size: .32rem;
+  text-align: center;
+  margin: .2rem 0 .03rem 0;
+}
+.productList li {
+  width: 100%;
+  height: 2.92rem;
+  background: #fff;
+  margin-bottom: .03rem;
+}
+.productImg {
+  width: 2.92rem;
+  height: 2.92rem;
+  float: left;
+}
+.productList li .productRight {
+  width: 3.6rem;
+  float: left;
+  padding: .55rem 0 0 6%;
+}
+.productList li p {
+  display: inline-block;
+}
+.productList li .productRight .productDes {
+  font-size: .3rem;
+  line-height: .38rem;
+}
+.productList li .productRight .buyPrice {
+  height: .38rem;
+  line-height: .38rem;
+  padding-top: .18rem;
+  font-size: .28rem;
+  color: #999999;
+}
+.fan {
+  width: 0.28rem;
+  height: 0.28rem;
+  padding: .01rem;
+  line-height: 0.28rem;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #f94014;
+  color: #fff;
+  font-size: 0.16rem;
+  top: -0.06rem;
+  position: relative;
+}
+.productList li .productRight .fanPrice {
+  font-size: .26rem;
+  color: #f94014;
+}
+.monthPrice {
+  font-size: .28rem;
+  color: #f94014;
+  padding-top: .2rem;
+}
