@@ -33,7 +33,7 @@
         <div class="imgVftCodeWrap hide">
             <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
             <div class="imgVftCodeInput clearfix">
-                <input type="text" class="imgVftCode" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+                <input type="text" class="imgVftCode" maxlength="4" placeholder="请输入短信验证码">
                 <img id="imgVftCodeWrapImg" src="">
                 <span class="imgVftCodeRefresh" @click="getImgCodeRefresh()"><i></i></span>
             </div>
