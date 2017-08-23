@@ -108,10 +108,10 @@ $(function(){
         }
 	};
 
-    var mobileNum = $("#register_mobile").val();
-
 	// 获取图形验证码
     $("#register_codeBtn").click(function(){
+        var mobileNum = $("#register_mobile").val();
+        console.log(mobileNum);
         $.ajax({
             url: "/app/user/getImgCode",
             type: "POST",
@@ -136,6 +136,7 @@ $(function(){
 
     // 刷新更改图片验证
     $("#imgVftCodeRefresh").click(function(){
+        var mobileNum = $("#register_mobile").val();
         $.ajax({
             url: "/app/user/getImgCode",
             type: "POST",
