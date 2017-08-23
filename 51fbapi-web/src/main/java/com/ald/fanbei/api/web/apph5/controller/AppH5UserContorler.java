@@ -3,15 +3,22 @@
  */
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.util.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,10 +40,6 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfPromotionChannelDo;
@@ -61,6 +64,8 @@ import com.alibaba.fastjson.JSON;
 @RequestMapping("/app/user/")
 public class AppH5UserContorler extends BaseController {
 
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	// @Resource
 	// AfUserAccountDao afUserAccountDao;
 	@Resource
@@ -114,6 +119,41 @@ public class AppH5UserContorler extends BaseController {
 		doMaidianLog(request,H5CommonResponse.getNewInstance(true,JSON.toJSONString(model)));
 	}
 
+	/**
+	 * 获取图片验证码
+	 * @param request
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "/getImgCode" }, method =
+			RequestMethod.POST,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String getImgCode(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			String mobile=request.getParameter("mobile");
+			//获得图片验证码
+			Map<String, BufferedImage> map = ImageUtil.createRandomImage();
+			if (map.size() == 1) {
+				String code = "";
+				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+				for (Map.Entry<String, BufferedImage> entry : map.entrySet()) {
+					code = entry.getKey();
+					ImageIO.write(entry.getValue(), "jpeg", byteArrayOutputStream);
+				}
+				if (StringUtil.isNotBlank(code)) {
+					byte[] imageByteArray = byteArrayOutputStream.toByteArray();
+					String image = Base64.encodeBytes(imageByteArray);
+					//将验证码放入redis
+					bizCacheUtil.saveObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile, code, 30 * 60l);
+					return H5CommonResponse.getNewInstance(true,"","",image).toString();
+				}
+			}
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.toString()).toString();
+
+		} catch (Exception e) {
+			logger.error("h5 getImgCode is error", e);
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.toString()).toString();
+		}
+	}
 	@ResponseBody
 	@RequestMapping(value = "getRegisterSmsCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String getRegisterSmsCode(HttpServletRequest request, ModelMap model) throws IOException {
@@ -124,19 +164,30 @@ public class AppH5UserContorler extends BaseController {
 			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
 			String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
+			String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
+
 			try {
 				tongdunUtil.getPromotionSmsResult(token,channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
 			} catch (Exception e) {
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
-			
+
 			AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
 
 			if (afUserDo != null) {
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_HAS_REGIST_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
+			//发送短信前,加入图片验证码验证
+			String realCode=bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile).toString();
+
+			if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码正确
+				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null);
+				return resp.toString();
+			}
+
+
 			boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
 			if (!resultReg) {
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null);
