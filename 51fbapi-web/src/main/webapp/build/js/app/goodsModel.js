@@ -55,6 +55,13 @@ new Vue({
                     })
                 }
             })
+        },
+        goGoodsDetail(item){
+            if ( item.source=="SELFSUPPORT" ) {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
+            } else {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
+            }
         }
     }
 });
