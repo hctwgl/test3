@@ -66,17 +66,17 @@ img{
     padding:0.3rem 0;
 }
 .bannerUrl .left{
-    width:0.43rem;
+    width:0.7rem;
     height:0.33rem;
     position:absolute;
-    left:-15%;
+    left:-20%;
     top:4%;
 }
 .bannerUrl .right{
-    width:0.43rem;
+    width:0.7rem;
     height:0.33rem;
     position:absolute;
-    right:-15%;
+    right:-20%;
     top:4%;
 }
 .bannerUrl .centerBig{
