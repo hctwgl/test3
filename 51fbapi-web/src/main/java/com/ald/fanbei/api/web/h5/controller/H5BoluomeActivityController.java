@@ -96,6 +96,8 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		String password = ObjectUtils.toString(request.getParameter("password"),"").toString();
 		Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 		String refUseraName = ObjectUtils.toString(request.getParameter("refUserName"),"").toString();
+		String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
+		
 		AfUserDo UserDo = afUserService.getUserByUserName(userName);
 		AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
 		if(loginSource == null ||"".equals(loginSource)){
@@ -122,6 +124,12 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		}
 		if (StringUtils.equals(UserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_FROZEN_ERROR.getDesc(), "Login", "").toString();
+		}
+		try {
+			tongdunUtil.getPromotionLoginResult(tongduanToken,null,null,CommonUtil.getIpAddr(request),userName, userName, "");
+		} catch (Exception e) {
+			return  H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR.getDesc(), "Login", null).toString();
+			
 		}
 		// check password
 		String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
