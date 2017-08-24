@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
@@ -40,6 +41,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankDidiRiskService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.service.BoluomeService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
@@ -147,6 +149,8 @@ public class TestController {
 	BizCacheUtil bizCacheUtil;
 	@Resource 
 	BoluomeUtil boluomeUtil;
+	@Resource
+	BoluomeService boluomeService;
 	@Resource
 	AfUserLoginLogDao afUserLoginLogDao;
 	@Resource
@@ -714,6 +718,15 @@ public class TestController {
 		}
 		return "success";
 	}
+	
+	@RequestMapping(value = { "/getCardInfo" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String getCardInfo(HttpServletRequest request, HttpServletResponse response) {
+		
+		BoluomeGetDidiRiskInfoRespBo rsp = boluomeService.getRiskInfo("1000000140251", "PAY_INFO");
+		return rsp.toString();
+	}
+	
 	
 	/**
 	 * 

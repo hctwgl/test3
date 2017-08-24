@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,user_id,user_bank_id,uuid,ip,lat,lng,wifi_mac 
+        id rid,gmt_create,user_id,user_bank_id,uuid,inet_ntoa(ip) ip,lat,lng,wifi_mac 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -26,11 +26,8 @@
         <if test="uuid != null and uuid != ''">
             AND uuid = #{uuid,jdbcType=VARCHAR}
         </if>
-        <if test="ip != null and ip != ''">
-            AND ip = #{ip,jdbcType=VARCHAR}
-        </if>
         <if test="lat != null and lat != ''">
-            AND lat = #{lat,jdbcType=DECIMAL}
+            AND lat = inet_ntoa(#{lat,jdbcType=DECIMAL})
         </if>
         <if test="lng != null and lng != ''">
             AND lng = #{lng,jdbcType=DECIMAL}
@@ -88,7 +85,7 @@
 		       #{uuid,jdbcType=VARCHAR},
 		    </if>
 		    <if test="ip != null" >
-		       #{ip,jdbcType=VARCHAR},
+		       inet_aton(#{ip,jdbcType=VARCHAR}),
 		    </if>
 		    <if test="lat != null" >
 		       #{lat,jdbcType=DECIMAL},
@@ -118,7 +115,7 @@
                 uuid = #{uuid,jdbcType=VARCHAR},                
             </if>
             <if test="ip != null and ip != '' ">        
-                ip = #{ip,jdbcType=VARCHAR},                
+                ip = inet_aton(#{ip,jdbcType=VARCHAR}),
             </if>
             <if test="lat != null and lat != '' ">        
                 lat = #{lat,jdbcType=DECIMAL},                
