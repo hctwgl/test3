@@ -5,6 +5,7 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 
 /**
  * 
@@ -19,6 +20,8 @@ public interface AfActivityGoodsService {
 	List<AfGoodsDo> listRecommendGoodsByActivityId(Long activityId, Integer appVersion);
 	
 	AfActivityGoodsDo getActivityGoodsByGoodsId(Long goodsId);
+
+	List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(Long activityId, Integer appVersion);
 
 	
 }

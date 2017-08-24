@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.api.brand;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -20,14 +19,17 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
 import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -70,6 +72,8 @@ public class PayOrderV1Api implements ApiHandle {
 	AfBorrowBillService afBorrowBillService;
 	@Resource
 	IPTransferUtil iPTransferUtil;
+	@Resource
+	UpsUtil upsUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -96,7 +100,7 @@ public class PayOrderV1Api implements ApiHandle {
 			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-
+		
 		if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 		}
@@ -115,10 +119,28 @@ public class PayOrderV1Api implements ApiHandle {
 					currUpdateOrder.setRid(orderInfo.getRid());
 					currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
 					currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+					//支付失败
+					//boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 					currUpdateOrder.setStatusRemark(Constants.PAY_ORDER_PASSWORD_ERROR);
 					afOrderService.updateOrder(currUpdateOrder);
 				}
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			}
+		}
+		
+		//原来的微信支付号，以及原来的微信支付类型
+		String wxPayOrderNo = orderInfo.getPayTradeNo();
+		String wxPayType = orderInfo.getPayType();
+		//用来判断之前的支付方式是否为微信支付
+		if (wxPayType.equals(PayType.WECHAT.getCode())) {
+			//如果查询出来，在支付，或者已经支付，则抛出正在处理中的状态
+			Map<String, String> wxResultMap  = 	upsUtil.wxQueryOrder(wxPayOrderNo);
+			String resultCode = wxResultMap.get(WxpayConfig.RESULT_CODE);
+			String tradeCode = wxResultMap.get(WxpayConfig.TRADE_STATE);
+			if (WxpayConfig.RESULT_CODE_SUCCESS.equals(resultCode) 
+					&& (WxpayConfig.TRADE_STATE_SUCCESS.equals(tradeCode)
+						|| WxpayConfig.TRADE_STATE_USERPAYING.equals(tradeCode))) {
+				throw new FanbeiException(FanbeiExceptionCode.ORDER_PAY_DEALING);
 			}
 		}
 
@@ -144,24 +166,32 @@ public class PayOrderV1Api implements ApiHandle {
 			}
 			
 			String payType = PayType.AGENT_PAY.getCode();
+			    //代付
 			if (payId < 0) {
 				payType = PayType.WECHAT.getCode();
 			} else if (payId > 0) {
 				payType = PayType.BANK.getCode();
+				//银行卡
 			}
 			
 			if (StringUtil.equals(YesNoStatus.YES.getCode(), isCombinationPay)) {
 				payType = PayType.COMBINATION_PAY.getCode();
+				//组合
 			}
 			
 			Map<String, Object> result = afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 			
-			String success = result.get("success").toString();
-			if (StringUtils.isNotBlank(success)) {
-//				dealWithPayOrderRiskFailed(result, resp);
-				if (Boolean.parseBoolean(success)) {
-					if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) && payId.intValue() == 0) {
-						riskUtil.payOrderChangeAmount(orderInfo.getRid());
+			Object success = result.get("success");
+			Object payStatus = result.get("status");
+			if (success != null) {
+				if (Boolean.parseBoolean(success.toString())) {
+					//判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
+					if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) ) {
+						if (payId.intValue() == 0) {
+							riskUtil.payOrderChangeAmount(orderInfo.getRid());
+						} else if (payId > 0 &&  PayStatus.DEALING.getCode().equals(payStatus.toString())) {
+							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
+						}
 					}
 				} else {
 					FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
@@ -170,7 +200,6 @@ public class PayOrderV1Api implements ApiHandle {
 					return response;
 				}	
 			}
-				
 			resp.setResponseData(result);
 			
 		} catch (FanbeiException exception) {
@@ -182,39 +211,4 @@ public class PayOrderV1Api implements ApiHandle {
 		return resp;
 	}
 	
-//	/**
-//	 * 处理风控逾期订单处理
-//	 * @param result
-//	 * @param resp
-//	 */
-//	private void dealWithPayOrderRiskFailed(Map<String, Object> result, ApiHandleResponse resp) {
-//		String success = result.get("success").toString();
-//		//如果代付，风控支付是不通过的，找出其原因
-//		if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {
-//			String verifyBoStr = (String) result.get("verifybo");
-//			RiskVerifyRespBo riskResp = JSONObject.parseObject(verifyBoStr, RiskVerifyRespBo.class);
-//			String rejectCode = riskResp.getRejectCode();
-//			RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
-//			switch (erorrCode) {
-//			case AUTH_AMOUNT_LIMIT:
-//				throw new FanbeiException("pay order failed", FanbeiExceptionCode.RISK_AUTH_AMOUNT_LIMIT);
-//			case OVERDUE_BORROW:
-//			{
-//				String borrowNo = riskResp.getBorrowNo();
-//				AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-//				Long billId = afBorrowBillService.getOverduedAndNotRepayBill(borrowInfo.getRid());
-//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_OVERDUED));
-//				resp.addResponseData("billId", billId == null ? 0 : billId);
-//			}
-//				break;
-//			case OVERDUE_BORROW_CASH:
-//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_BORROW_CASH_OVERDUED));
-//				break;
-//			case OTHER_RULE:
-//				resp.setResult(new AppResponse(FanbeiExceptionCode.RISK_OTHER_RULE));
-//			default:
-//				break;
-//			}
-//		}
-//	}
 }

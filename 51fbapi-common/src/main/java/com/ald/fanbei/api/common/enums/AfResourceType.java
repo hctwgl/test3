@@ -62,6 +62,7 @@ public enum AfResourceType {
 	BorrowTopBanner("BORROW_TOP_BANNER", "借钱页面顶部轮播"),
 	BorrowShopBanner("BORROW_SHOP_BANNER", "借贷超市轮播"),
 	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
+	GGTopBanner("GG_TOP_BANNER","逛逛活动点亮顶部轮播"),
 
 	
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置"),
@@ -78,17 +79,18 @@ public enum AfResourceType {
 	ORDER_SEARCH_CONDITION("ORDER_SEARCH_CONDITION","订单筛选条件"),
 	
 	VIRTUAL_GOODS_SERVICE_PROVIDER("VIRTUAL_GOODS_SERVICE_PROVIDER", "虚拟商品供应商"),
-	
+	VirtualGoodsKeywords("VIRTUAL_GOODS_KEYWORDS", "虚拟商品关键字"),
+
 	SMS_TEMPLATE("SMS_TEMPLATE","短信模板"),
 	SMS_LIMIT("SMS_LIMIT","短信限制"),
 	
 	//app端 借钱按钮高亮显示时长配置
-	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间");
+	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间"),
+	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片");
 	
 
 
-	 private String    code;
-
+	private String code;
     private String name;
     AfResourceType(String code, String name) {
         this.code = code;

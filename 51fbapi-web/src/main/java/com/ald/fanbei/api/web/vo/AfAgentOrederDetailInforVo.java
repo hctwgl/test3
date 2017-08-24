@@ -62,7 +62,7 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	private String isCanDelOrder;
 	private BigDecimal quotaAmount;
 	private BigDecimal bankPayAmount;
-	
+	private int showLogistics;
 	public String getCouponName() {
 		return couponName;
 	}
@@ -362,5 +362,12 @@ public class AfAgentOrederDetailInforVo extends AbstractSerial {
 	public void setBankPayAmount(BigDecimal bankPayAmount) {
 		this.bankPayAmount = bankPayAmount;
 	}
-	
+
+	public int getShowLogistics() {
+		return showLogistics;
+	}
+
+	public void setShowLogistics(int showLogistics) {
+		this.showLogistics = showLogistics;
+	}
 }

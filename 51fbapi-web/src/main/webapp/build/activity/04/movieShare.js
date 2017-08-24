@@ -24,7 +24,9 @@ function shareBtn() {
         data:{'sceneId':'8139','userName':userName},
         type: 'post',
         success:function (data) {
-            data=eval('(' + data + ')');
+            // data=eval('(' + data + ')');
+            data=JSON.parse(data);
+            console.log(data);
             if(data.success){
                 requestMsg("领劵成功")
             }else{

@@ -13,6 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -34,7 +35,10 @@ public class BizCacheUtil extends AbstractThird {
 
 	@Resource
 	private RedisTemplate<String, Object> redisTemplate;
-
+	
+	@Resource(name = "redisTemplate")  
+    private SetOperations<String, Object> setOps;
+	
 	/**
 	 * 保存到缓存，过期时间为默认过期时间
 	 * 
@@ -321,4 +325,31 @@ public class BizCacheUtil extends AbstractThird {
 		}
 	}
 	
+	/**
+	 * 数据类型为List的数据写入缓存
+	 * 
+	 * @param key
+	 *            写入缓存数据的key
+	 * @param seriObjList
+	 *            需要写入缓存的数据
+	 */
+	public void saveRedistSet(final String key, final List<String> seriObjList) {
+		try {
+			setOps.add(key, seriObjList.toArray());
+		} catch (Exception e) {
+			logger.error("saveRedistSet" + key, e);
+		}
+	}
+	
+	public void saveRedistSetOne(final String key,final String value){
+		try {
+			setOps.add(key, value);
+		} catch (Exception e) {
+			logger.error("saveRedistSetOne" + key, e);
+		}
+	}
+	
+	public Boolean isRedisSetValue(final String key,final Object value){
+		return setOps.isMember(key, value);
+	}
 }

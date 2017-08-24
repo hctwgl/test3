@@ -56,7 +56,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/address/addressList","/address/addAddress","/address/updateInfo","/address/deleteAddress","/mine/commitCode",
-    	"/coupon/couponList","/mine/getInviteInfo","/mine/getOrderListCount","/mine/getSettingInfo","/order/payResultOfAlipay"
+    	"/coupon/couponList","/mine/getInviteInfo","/mine/getOrderListCount","/mine/getSettingInfo","/order/payResultOfAlipay","/order/getOrderLogistics"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String mineRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -104,7 +104,8 @@ public class FanbeiController extends BaseController {
     		"/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail",
     		"/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode",
     		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
-    		"/user/submitShareAction","/user/getImageCode"
+    		"/user/submitShareAction","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
+            "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

@@ -4,7 +4,7 @@
     #set($version="2017052302")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/07")
 <title>借贷超市</title>
-<link rel="stylesheet" type="text/css" href="/common/css/swiper-3.4.2.min.css">
+<link rel="stylesheet" type="text/css" href="/dist/css/swiper-3.4.2.min.css">
 <link rel="stylesheet" type="text/css" href="/dist/activity/07/otherBorrow.css">
 </head>
 <body>
@@ -38,7 +38,7 @@
                     <div class="left">
                         <img class="img" :src="item.iconUrl">
                         <div class="name">{{item.lsmName}}</div>
-                        <div class="text">{{txtFix(item.lsmIntro,11)}}</div>
+                        <div class="text">{{txtFix(item.lsmIntro,22)}}</div>
                     </div>
                     <div class="right" v-if="item.marketPoint">
                         <div class="num">{{sp(item.marketPoint,0)}}</div>
@@ -50,6 +50,6 @@
     </div>
 </div>
 </body>
-<script type="text/javascript" src="/common/js/swiper-3.4.2.jquery.min.js"></script>
+<script type="text/javascript" src="/dist/js/swiper-3.4.2.jquery.min.js"></script>
 <script src="/dist/activity/07/otherBorrow.js"></script>
 </html>

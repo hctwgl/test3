@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    #set($version="201708212130")
+    #set($commonUrl="http://f.51fanbei.com/h5")
+    <title>物流信息</title>
+    <link rel="stylesheet" type="text/css" href="/dist/css/app/delivery.css?version=$version">
+</head>
+
+<body style="background: #f5f5f5">
+<div id="delivery">
+    <div id="top">
+        <ul>
+           <span class="state">
+                <span class="stateTitle">物流状态</span>
+                <template v-if="stateDesc && stateDesc !=''">
+                      <span class="stateDesc">{{stateDesc}}</span>
+                </template>
+            </span>
+        </ul>
+        <ul>
+            <span class="from">
+                <span class="fromTitle">承运来源:</span>
+                <template v-if="shipperName && shipperName !=''">
+                      <span class="shipperName">{{shipperName}}</span>
+                </template>
+        </span>
+        </ul>
+        <ul>
+            <span class="no">
+                <span class="noTitle">运单编号:</span>
+                <template v-if="shipperCode && shipperCode !=''">
+                      <span class="shipperCode">{{shipperCode}}</span>
+                </template>
+            </span>
+        </ul>
+
+    </div>
+
+    <div id="list" class="main_wrap">
+        <template v-if="tracesInfo && tracesInfo !=''">
+            <ul v-for="(item,index) in tracesInfo" class="item">
+                <div class="contentLeft">
+                    <li v-if="index ==0">
+                        <span class="firstVerticalLine"></span>
+                        <span class="firstCircle"></span>
+                    </li>
+                    <li v-else>
+                        <span class="verticalLine"></span>
+                        <div class="circleWrap">
+                            <span class="circle"></span>
+                        </div>
+                    </li>
+
+                </div>
+                <div class="contentRight">
+                    <div class="content">{{item.acceptStation}}</div>
+                    <div class="contentTime">{{item.acceptTime}}</div>
+                </div>
+            </ul>
+        </template>
+
+    </div>
+</div>
+<script type="text/javascript" src="/dist/js/app/delivery.js?version=$version"></script>
+</body>
+</html>
+

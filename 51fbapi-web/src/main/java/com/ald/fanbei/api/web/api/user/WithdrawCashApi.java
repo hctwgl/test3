@@ -13,16 +13,20 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfCashRecordService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -48,6 +52,8 @@ public class WithdrawCashApi implements ApiHandle {
 	AfCashRecordService afCashRecordService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -58,7 +64,12 @@ public class WithdrawCashApi implements ApiHandle {
 		BigDecimal amount = new BigDecimal(ObjectUtils.toString(requestDataVo.getParams().get("amount")));
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		AfCashRecordDo afCashRecordDo = new AfCashRecordDo();
-
+		
+		//增加提现开关
+		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_CASH_RECORD_SWITCH);
+		if (resourceInfo != null && resourceInfo.getValue().equals(YesNoStatus.NO.getCode())) {
+			throw new FanbeiException("cash switch is not open", FanbeiExceptionCode.CASH_LIMIT);
+		}
 		if (userId == null || StringUtils.isEmpty(account) || StringUtils.isEmpty(type)) {
 			throw new FanbeiException("user id or account or type is  empty", FanbeiExceptionCode.PARAM_ERROR);
 		}

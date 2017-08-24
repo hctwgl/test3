@@ -127,5 +127,9 @@ public interface AfResourceDao {
 	List<AfResourceDo> selectActivityConfig();
 
 	List<AfResourceDo> getScrollbarByType();
+	List<AfResourceDo> getActivieResourceByType(@Param("type") String type);
+	List<AfResourceDo> getFakePersonByActivityId(@Param("activityId")String activityId);
+
+	AfResourceDo getGGSpecificBanner(@Param("value2")String value2);
 
 }

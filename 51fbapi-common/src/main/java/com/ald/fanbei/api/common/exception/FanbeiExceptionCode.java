@@ -9,7 +9,9 @@ package com.ald.fanbei.api.common.exception;
 public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
-    
+
+
+
     // PARAM_CODE 1001-1099
     PARAM_ERROR("PARAM_ERROR", 1001, "param error", "参数错误"),
     REQUEST_PARAM_NOT_EXIST("REQUEST_PARAM_NOT_EXIST", 1002, "request param is invalid", "请求参数缺失"),
@@ -71,8 +73,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_PASSWORD_ERROR_THIRD("USER_PASSWORD_ERROR_THIRD",1133,"user password error third","密码输入有误,剩余次数(3)"),
     USER_PASSWORD_ERROR_FOURTH("USER_PASSWORD_ERROR_FOURTH",1134,"user password error fourth","密码输入有误,剩余次数(2)"),
     USER_PASSWORD_ERROR_FIFTH("USER_PASSWORD_ERROR_FIFTH",1135,"user password error fifth","密码输入有误,剩余次数(1)"),
-    USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_FIFTH",1136,"user password error fifth","密码输入有误,剩余次数(6)"),
-    USER_PASSWORD_OLD_ERROR("USER_PASSWORD_OLD_ERROR",1137,"user password error fifth","旧密码输入有误"),
+    USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_SIXTH",1136,"user password error sixth","密码输入有误,剩余次数(6)"),
+    USER_PASSWORD_OLD_ERROR("USER_PASSWORD_OLD_ERROR",1137,"user password old error","旧密码输入有误"),
+    CHANGE_BIND_MOBILE_LIMIT("CHANGE_BIND_MOBILE_LIMIT",1138,"chnage bind mobile limit","该功能正在维护中,如需改绑请联系客服:0571-88193918"),
 
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
     //优惠券不可用，不能修改code
@@ -208,11 +211,13 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     RISK_BORROW_OVERDUED("RISK_BORROW_OVERDUED",1917,"risk borrow overdued","风控逾期分期限制"),
     RISK_BORROW_CASH_OVERDUED("RISK_BORROW_CASH_OVERDUED",1918,"risk other rule","风控逾期借钱限制"),
     QUERY_OVERDUE_ORDER_ERROR("QUERY_OVERDUE_ORDER_ERROR",1919,"query overdue order error","查询逾期账单失败"),
+    RISK_USERLAY_RATE_ERROR("RISK_USERLAY_RATE_ERROR",1920,"risk userlay rate error","获取用户手续费率失败"),
     
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","借钱金额或者时间有误"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
-    
+    BORROW_ERROR("BORROW_ERROR",7001,"borrow_errow","借款回调修改异常"),
+
     BORROW_CASH_NOT_EXIST_ERROR("BORROW_CASH_NOT_EXIST_ERROR",2002,"borrow cash not exist","借钱信息不存在"),
     BORROW_CASH_REPAY_NOT_EXIST_ERROR("BORROW_CASH_REPAY_NOT_EXIST_ERROR",2003,"borrow cash repay not exist","还钱信息不存在或已删除"),
    
@@ -225,7 +230,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_CASH_REPAY_AMOUNT__ERROR("BORROW_CASH_REPAY_AMOUNT_BORROW_ERROR",2006,"borrow cash repay  borrow cash error","还款金额有误请重新检查"),
     BORROW_CASH_SWITCH_NO("BORROW_CASH_SWITCH_NO",2007,"borrow cash switch error","今日放款已达上限， 明天尽早哦！"),
     BORROW_CASH_MORE_ACCOUNT_ERROR("BORROW_CASH_MORE_ACCOUNT_ERROR",2008,"borrow cash  more  account  borrow error","借款金额超过可借金额，请下拉刷新后重新提交"),
-
+    HAVE_A_PROCESS_RENEWAL_DETAIL("HAVE_A_PROCESS_RENEWAL_DETAIL",2009,"borrow a process renewal record","存在处理中续期记录,请稍后重试"),
+    
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),
     ORDER_REFUND_TYPE_ERROR("ORDER_REFUND_TYPE_ERROR",3001,"order refund type error","此订单类型暂不支持"),
@@ -250,15 +256,22 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
     CHANG_DEFAULT_ADDRESS_ERROR("CHANG_DEFAULT_ADDRESS_ERROR",5001,"change default address error","亲,不能取消默认地址"),
     USER_ADDRESS_NOT_EXIST("USER_ADDRESS_NOT_EXIST",5002,"user_address_not_exist","地址信息不存在"),
+    CASH_LIMIT("CASH_LIMIT", 5003, "param error", "目前提现进行维护中,请明日再进行尝试"),
 
     //订单
     ORDER_NOT_EXIST("ORDER_NOT_EXIST",6001,"order_not_exist","订单不存在"),
+
+
+
+
 
     //系统升级该code不能随便修改
     SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗V3.7.0新版上线 更新内容： \n1.用户提额全新上线 \n2.多种支付方式随心享，更有好礼相赠。您即将前往的下一站是【App Store】更新，如无更新按钮，请稍后重试或卸载后重新安装"),
 
     // SERVICE 9999
-    SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误");
+    SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误"),
+    //物流信息不存在
+    LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"order_not_exist","物流信息不存在");
 
     /**
      * 错误码
@@ -317,5 +330,4 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     public String getErrorMsg() {
         return errorMsg;
     }
-
 }

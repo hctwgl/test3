@@ -238,6 +238,7 @@ public class SmsUtil extends AbstractThird {
 		return smsResult.isSucc();
 	}
 
+	
 	/**
 	 * 绑定手机发送短信验证码
 	 * 

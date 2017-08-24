@@ -250,7 +250,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		}
 		afBorrowCashService.addBorrowCash(afBorrowCashDo);
 		//3.7.6 借过款的放入缓存，借钱按钮不需要高亮显示
-		bizCacheUtil.saveObject(Constants.HAVE_BORROWED+userId, "1");
+		bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED,String.valueOf(userId));
 		
 		Long borrowId = afBorrowCashDo.getRid();
 
@@ -266,6 +266,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 
 			String cardNo = card.getCardNumber();
 			String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+			cashDo.setUserId(userId);
+			cashDo.setGmtCreate(new Date(System.currentTimeMillis()));
 			cashDo.setRishOrderNo(riskOrderNo);
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 			afBorrowCashService.updateBorrowCash(cashDo);
@@ -403,7 +405,10 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
-
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		if (poundageRateCash != null) {
+			poundage = new BigDecimal(poundageRateCash.toString());
+		}
 		BigDecimal serviceRate = bankService;
 		BigDecimal poundageRate = poundage;
 		BigDecimal serviceAmountDay = serviceRate.multiply(amount);

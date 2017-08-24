@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>排行榜单</title>
+    <link rel="stylesheet" href="/dist/activity/08/ggrankingList.css">
+</head>
+<body>
+     <div id="rankingList">
+        <div class="header"><span class="point left"></span>排行榜单<span class="point right"></span></div>
+        <div class="rebate">
+            <span class="rebate-left">消费返利榜</span>
+            <span class="rebate-right">共有<i class="number"></i>人获得高额返利</span>
+        </div>
+        <div class="phoneNumber">
+            <span class="phone-left">手机号</span>
+            <span class="phone-center">总返利</span>
+            <span class="phone-right">邀请好友返利</span>
+        </div>
+        <div class="container">
+                <!-- 最多显示17条信息 !-->
+                 <ul class="numberList" id='numberList'>
+                 </ul>
+                 <ul class="numberList" id='numberList1'>
+                 </ul>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="/dist/activity/08/ggrankingList.js?"></script>
+</html>

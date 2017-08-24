@@ -15,6 +15,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -37,6 +38,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("applyRenewalApi")
 public class ApplyRenewalApi implements ApiHandle {
 
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
@@ -81,6 +84,10 @@ public class ApplyRenewalApi implements ApiHandle {
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
 		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + afBorrowCashDo.getUserId());
+		if (poundageRateCash != null) {
+			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
+		}
 		//未还金额
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());

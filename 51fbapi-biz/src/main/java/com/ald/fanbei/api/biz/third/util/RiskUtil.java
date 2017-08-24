@@ -48,6 +48,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -175,6 +176,8 @@ public class RiskUtil extends AbstractThird {
 	AfOrderService afOrderService;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
 	private static String getUrl() {
 		if (url == null) {
@@ -211,6 +214,7 @@ public class RiskUtil extends AbstractThird {
 	 *            --地址
 	 * @return
 	 */
+	@Deprecated
 	public RiskRespBo register(String consumerNo, String realName, String phone, String idNo, String email,
 			String alipayNo, String address) {
 		RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
@@ -248,6 +252,7 @@ public class RiskUtil extends AbstractThird {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public void batchRegister(int pageSize, String userName) {
 		int count = afUserAccountService.getUserAccountCountWithHasRealName();
 		int pageCount = (int) Math.ceil(count / pageSize) + 1;
@@ -279,6 +284,7 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 
+	
 	/**
 	 * 用户信息修改
 	 * 
@@ -380,8 +386,8 @@ public class RiskUtil extends AbstractThird {
 			directory = directoryCache.toString();
 		}
 		AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
-		int userId = Integer.parseInt(oldUserInfo.getValue());
-		int consumerId = Integer.parseInt(consumerNo);
+		Long userId = Long.parseLong(oldUserInfo.getValue());
+		Long consumerId = Long.parseLong(consumerNo);
 		if ("ALL".equals(event) && !StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode()) && consumerId <= userId) {
 			event = "REAUTH";
 		}
@@ -407,7 +413,8 @@ public class RiskUtil extends AbstractThird {
 			riskResp.setSuccess(true);
 			return riskResp;
 		} else {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+			riskResp.setSuccess(false);
+			return riskResp;
 		}
 	}
 	
@@ -624,40 +631,30 @@ public class RiskUtil extends AbstractThird {
 				orderInfo.setClosedReason("风控审批不通过");
 				orderInfo.setGmtClosed(new Date());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
-					if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-						try {
-							//菠萝觅风控拒绝的订单自动取消
-							boluomeUtil.cancelOrder(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), orderInfo.getClosedReason());
-							orderDao.updateOrder(orderInfo);
-						} catch (UnsupportedEncodingException e) {
-							logger.info("cancel Order error");
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
+					AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
+					afAgentOrderDo.setClosedReason("风控审批失败");
+					afAgentOrderDo.setGmtClosed(new Date());
+					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
+					
+					//添加关闭订单释放优惠券
+					if(afAgentOrderDo.getCouponId()>0){
+						AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
+						
+						if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
+							couponDo.setStatus(CouponStatus.NOUSE.getCode());
+							afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
 						}
-					} else {
-						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-							AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
-							afAgentOrderDo.setClosedReason("风控审批失败");
-							afAgentOrderDo.setGmtClosed(new Date());
-							afAgentOrderService.updateAgentOrder(afAgentOrderDo);
-							
-							//添加关闭订单释放优惠券
-							if(afAgentOrderDo.getCouponId()>0){
-								AfUserCouponDo couponDo =	afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
-								
-								if(couponDo!=null&&couponDo.getGmtEnd().after(new Date())){
-									couponDo.setStatus(CouponStatus.NOUSE.getCode());
-									afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
-								}
-								else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
-									couponDo.setStatus(CouponStatus.EXPIRE.getCode());
-									afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
-								}
-							}
-							orderDao.updateOrder(orderInfo);
-						}
-						if(StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
-							orderDao.updateOrder(orderInfo);
+						else if(couponDo !=null &&couponDo.getGmtEnd().before(new Date())){
+							couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+							afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
 						}
 					}
+					orderDao.updateOrder(orderInfo);
+				}
+				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
+					orderDao.updateOrder(orderInfo);
+				}
 				jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 //			}
 			return resultMap;
@@ -824,10 +821,11 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal au_amount = new BigDecimal(limitAmount);
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
 			String result = obj.getString("result");
+			String orderNo = obj.getString("orderNo");
 			
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
 			//风控异步回调的话，以第一次异步回调成功为准
-			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
 				if (StringUtils.equals("10", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
@@ -1743,4 +1741,37 @@ public class RiskUtil extends AbstractThird {
 		}
 		return 0;
 	}
+	/**
+	 * 获取用户分层利率
+	 * @param consumerNo 用户ID
+	 * @return
+	 */
+	public RiskVerifyRespBo getUserLayRate(String consumerNo) {
+		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/userRate.htm";
+//		String url = "http://192.168.110.22:80/modules/api/risk/userRate.htm";
+		String reqResult = HttpUtil.post(url, reqBo);
+		logThird(reqResult, "getUserLayRate", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
+		}
+
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+		riskResp.setOrderNo(reqBo.getOrderNo());
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			JSONObject dataObj = JSON.parseObject(riskResp.getData());
+			String result = dataObj.getString("result");
+			riskResp.setSuccess(true);
+			riskResp.setResult(result);
+			riskResp.setConsumerNo(consumerNo);
+			riskResp.setPoundageRate(dataObj.getString("rate"));
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
+		}
+	}
+	
 }

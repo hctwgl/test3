@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
@@ -37,12 +38,11 @@ import com.ald.fanbei.api.biz.service.AfContactsOldService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankDidiRiskService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
-import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -59,6 +59,7 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -73,7 +74,6 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.dao.AfUserLoginLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -81,13 +81,10 @@ import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
-import com.ald.fanbei.api.dal.domain.query.AfUserBankQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -142,14 +139,8 @@ public class TestController {
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
-	@Resource
-	IPTransferUtil iPTransferUtil;
-	@Resource
-	AfUserLoginLogDao afUserLoginLogDao;
-	@Resource
-	AfUserBankDidiRiskService afUserBankDidiRiskService;
-	
-
+	@Resource 
+	BoluomeUtil boluomeUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -501,14 +492,13 @@ public class TestController {
 		}
 		return "success";
 	}
-	
-	@RequestMapping(value = { "/testJPush" }, method = RequestMethod.POST)
+
+	@RequestMapping(value = { "/jPushByType" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String testJPush(HttpServletRequest request, HttpServletResponse response) {
+	public String jPushByType(int jumpType, String type,String userName){
 		PrintWriter out = null;
 		try {
-			String userName = request.getParameter("userName");
-			jpushService.pushHeaderImage(userName);;
+			jpushService.jPushByType(jumpType,type,userName);;
 		} catch (Exception e) {
 			logger.error("allowcateBrandCoupon", e);
 			return "fail";
@@ -519,34 +509,17 @@ public class TestController {
 		}
 		return "success";
 	}
-	
-	@RequestMapping(value = { "/createDidiBankCardInfo" }, method = RequestMethod.POST)
+
+
+
+
+	@RequestMapping(value = { "/testJPush" }, method = RequestMethod.POST)
 	@ResponseBody
-	public String createDidiBankCardInfo(HttpServletRequest request, HttpServletResponse response) {
+	public String testJPush(HttpServletRequest request, HttpServletResponse response) {
 		PrintWriter out = null;
 		try {
-			AfUserBankQuery query = new AfUserBankQuery();
-			
-			query.setPageNo(1);
-			query.setPageSize(50);
-			query.setFull(true);
-			afUserBankcardDao.getUserBankList(query);
-			for (int i = 1; i <= query.getTotalPage(); i++ ) {
-				query.setPageNo(i);
-				List<AfUserBankcardDo> list = afUserBankcardDao.getUserBankList(query);
-				for (AfUserBankcardDo cardInfo : list) {
-					try {
-						AfUserDo userInfo = afUserDao.getUserById(cardInfo.getUserId());
-						AfUserLoginLogDo logInfo = afUserLoginLogDao.getUserLastLoginInfo(userInfo.getUserName());
-						String ip = logInfo.getLoginIp();
-						AfUserBankDidiRiskDo info = BuildInfoUtil.buildUserBankDidiRiskInfo(logInfo.getLoginIp(), iPTransferUtil.getLat(ip), iPTransferUtil.getLng(ip), cardInfo.getUserId(), cardInfo.getRid(), logInfo.getUuid(),"");
-						afUserBankDidiRiskService.saveRecord(info);
-						
-					} catch (Exception e) {
-						// TODO: handle exception
-					}
-				}
-			}
+			String userName = request.getParameter("userName");
+			jpushService.pushHeaderImage(userName);;
 		} catch (Exception e) {
 			logger.error("allowcateBrandCoupon", e);
 			return "fail";
@@ -573,6 +546,15 @@ public class TestController {
 			}
 		}
 		return "success";
+	}
+	@RequestMapping(value = { "/testOrderPay" }, method = RequestMethod.POST)
+	@ResponseBody
+	public BoluomePushPayResponseBo testOrderPay(HttpServletRequest request, HttpServletResponse response) {
+	  long orderId=198649;
+		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
+		BoluomePushPayResponseBo b  = 	boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+		
+		return b;
 	}
 	
 	private void pickBrandCoupon(String userName, String brandUrl) {
@@ -665,13 +647,14 @@ public class TestController {
 	@ResponseBody
 	public void initBorrowCache()
 	{
+		logger.info("initBorrowCache,start");
 		List<String> ids = afBorrowCashService.getBorrowedUserIds();
 		if(ids!=null){
-			for(String id:ids)
-				bizCacheUtil.saveObject(Constants.HAVE_BORROWED+id,"1");
+			bizCacheUtil.saveRedistSet(Constants.HAVE_BORROWED, ids);
 		}
+		logger.info("initBorrowCache,end");
 	}
-
+	
 	public String getVirtualCode(Map<String, Object> resultMap) {
 		if (resultMap == null) {
 			return null;
@@ -741,8 +724,6 @@ public class TestController {
 		borrow.setFreeNper(freeNper);
 		return borrow;
 	}
-	
-	
 	
 	
 }

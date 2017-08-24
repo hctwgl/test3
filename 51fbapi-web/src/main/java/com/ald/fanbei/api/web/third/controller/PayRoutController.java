@@ -136,7 +136,8 @@ public class PayRoutController {
     	}
     	return "succ";
     }
-    
+
+
     @RequestMapping(value = {"/delegatePay"}, method = RequestMethod.POST)
     @ResponseBody
 	public String delegatePay(HttpServletRequest request, HttpServletResponse response){
@@ -164,7 +165,8 @@ public class PayRoutController {
         			Long rid = NumberUtil.objToLong(result);
         			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
         			afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
-        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+//        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+        			afBorrowCashService.borrowSuccess(afBorrowCashDo);
         		} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
         			//退款记录
         			AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
@@ -326,7 +328,7 @@ public class PayRoutController {
 				}else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
 					afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
 				}else if(OrderType.BOLUOMECP.getCode().equals(merPriv)||OrderType.SELFSUPPORTCP.getCode().equals(merPriv)||OrderType.AGENTCPBUY.getCode().equals(merPriv)){ 
-					afOrderService.dealPayCpOrderFail(outTradeNo,tradeNo, PayType.COMBINATION_PAY.getCode());
+					afOrderService.dealBrandPayCpOrderFail(outTradeNo,tradeNo, PayType.COMBINATION_PAY.getCode());
 				}
 			}
 			return "SUCCESS";

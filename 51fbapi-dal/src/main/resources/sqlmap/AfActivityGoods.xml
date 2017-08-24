@@ -17,6 +17,11 @@
 		g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,g.commission_amount,g.commission_rate,g.tags,g.interest_tags,g.remark
 	</sql>
 	
+	<sql id="newEncoreGoodsSqlField">
+		g.id rid,g.gmt_create,g.gmt_modified,g.creator,g.modifier,g.name,g.goods_icon,g.goods_url,g.thumbnail_icon,g.open_id,g.num_id,g.price_amount,g.sale_amount,g.primary_category_id,
+		g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,g.commission_amount,g.commission_rate,g.tags,g.interest_tags,g.remark,m.title_type,m.double_rebate
+	</sql>
+	
 	<select id="listActivityGoodsByActivityId" resultType="AfActivityGoodsDto" parameterType="java.lang.Long">
 		SELECT 
 		<include refid="activityGoodsSqlField"></include>,
@@ -103,6 +108,53 @@
 		ORDER BY m.gmt_create DESC
 	</select>
 	
+	
+	
+	
+	<select id="listNewEncoreGoodsByActivityId" resultType="AfEncoreGoodsDto" parameterType="java.lang.Long">
+		SELECT 
+		<include refid="newEncoreGoodsSqlField"></include>
+		FROM
+			af_goods g ,af_activity_model m
+		WHERE
+			m.activity_id = #{activityId}
+		AND
+			m.goods_id = g.id	
+		AND
+			m.goods_type = 2
+		AND 
+			g.is_delete = 0
+		AND
+			m.is_delete = 0
+		AND
+			m.title_type != 0
+		AND
+		((g.source = 'SELFSUPPORT' AND g.id > 121461) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
+		ORDER BY m.gmt_create DESC
+	</select>
+	
+	<select id="listNewEncoreGoodsByActivityIdLT371" resultType="AfEncoreGoodsDto" parameterType="java.lang.Long">
+		SELECT 
+		<include refid="newEncoreGoodsSqlField"></include>
+		FROM
+			af_goods g ,af_activity_model m
+		WHERE
+			m.activity_id = #{activityId}
+		AND
+			m.goods_id = g.id	
+		AND
+			m.goods_type = 2
+		AND 
+			g.is_delete = 0
+		AND
+			m.is_delete = 0
+		AND
+			m.title_type != 0
+		AND
+		((g.source = 'SELFSUPPORT' AND 121461 > g.id) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
+		ORDER BY m.gmt_create DESC
+	</select>
+	
 	<select id="listRecommendGoodsByActivityIdLT371" resultType="AfGoodsDo" parameterType="java.lang.Long">
 		SELECT 
 		<include refid="goodsSqlField"></include>
@@ -132,7 +184,6 @@
 			is_delete = 0
 		AND
 			goods_id = #{goodsId}
-	
 	
 	</select>
 </mapper>

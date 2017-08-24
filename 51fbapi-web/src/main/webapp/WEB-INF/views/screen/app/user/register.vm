@@ -28,6 +28,7 @@
           	<input type="password" class="register_password" id="register_password" placeholder="请输入登陆密码" name="words" maxlength="18" onkeyup="changeBtn()">
           	<i class="register_passwordEyeClosed"></i>
           </li>
+			<li> <input type="text" id="recommendCode" name="recommendCode"></li>
         </ul>
       	<div class="register_submitBtn_wrap"><button class="register_submitBtn btnc_cf" onkeyup="changeBtn()">完成注册并下载App</button></div>
       	<div class="register_checkbox clearfix">
@@ -37,8 +38,8 @@
       	</div>
         <p class="account"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号</a></p>
 		</div>
-		<script type="text/javascript" src="/common/js/core.js"></script>
-		<script type="text/javascript" src="/common/js/md5.js"></script>
+		<script type="text/javascript" src="/dist/js/core.js"></script>
+		<script type="text/javascript" src="/dist/js/md5.js"></script>
 		<script type="text/javascript" src="/dist/js/layer.js?version=$version"></script>
 		<script type="text/javascript" src="/dist/js/base.js?version=$version"></script>
 		<script type="text/javascript" src="/dist/js/user/register.js?version=$version"></script>

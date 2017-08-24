@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -24,8 +25,10 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
@@ -33,6 +36,8 @@ import com.ald.fanbei.api.common.enums.AfRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
@@ -59,6 +64,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	@Resource
 	UpsUtil upsUtil;
 	@Resource
+	BizCacheUtil bizCacheUtil;
+	@Resource
 	private JpushService pushService;
 	@Resource
 	AfUserAccountDao afUserAccountDao;
@@ -80,6 +87,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	AfUserAccountLogDao afUserAccountLogDao;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	CollectionSystemUtil collectionSystemUtil;
 
 	@Override
 	public Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo) {
@@ -97,11 +106,11 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.RENEWAL_PAY.getCode());
 		} else if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
-			if (respBo.isSuccess()) {
-				dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
-			} else {
+			if (!respBo.isSuccess()) {
 				dealRenewalFail(payTradeNo, "");
+				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
 		} else if (cardId == -2) {// 余额支付
@@ -201,6 +210,13 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					//当续期成功时,同步逾期天数为0
 					dealWithSynchronizeOverduedOrder(afBorrowCashDo);
 					
+					//返呗续期通知接口，向催收平台同步续期信息
+					try {
+						CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(afBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
+						logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+					}catch(Exception e){
+						logger.error("向催收平台同步续期信息",e);
+					}
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -221,7 +237,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		List<RiskOverdueBorrowBo> boList = new ArrayList<RiskOverdueBorrowBo>();
 		boList.add(parseOverduedBorrowBo(borrowCashInfo.getBorrowNo(), 0,null));
 		logger.info("dealWithSynchronizeOverduedOrder begin orderNo = {} , boList = {}", orderNo, boList);
-		riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		try {
+			riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+		} catch (Exception e) {
+			logger.error("续借成功时给风控传输数据出错", e);
+		}
+		
 		logger.info("dealWithSynchronizeOverduedOrder completed");
 	}
 	
@@ -249,6 +270,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
 		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）
+		
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		if (poundageRateCash != null) {
+			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
+		}
+		
 		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
 		BigDecimal baseBankRate = new BigDecimal(baseBankRateResource.getValue());// 央行基准利率
 

@@ -2,11 +2,14 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+
+import javax.swing.plaf.basic.BasicScrollPaneUI;
 
 /**
  * @类描述：
@@ -141,4 +144,6 @@ public interface AfBorrowCashDao {
 	 * @return
 	 */
 	List<String> getBorrowedUserIds();
+
+	HashMap getBorrowCashByRemcommend(@Param("user_id")long user_id);
 }

@@ -31,8 +31,18 @@
 		card_number ,
 		card_name)
 		VALUES (
-		NOW(),
-		NOW(),
+		<if test="gmtCreate ==null ">
+			NOW(),
+		</if>
+		<if test="gmtCreate !=null ">
+			#{gmtCreate},
+		</if>
+		<if test="gmtModified ==null ">
+			NOW(),
+		</if>
+		<if test="gmtModified !=null ">
+			#{gmtModified},
+		</if>
 		#{name},
 		#{repayNo},
 		#{repaymentAmount},
