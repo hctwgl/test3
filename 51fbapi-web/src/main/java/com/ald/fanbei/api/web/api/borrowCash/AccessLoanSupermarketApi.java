@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
@@ -63,10 +64,17 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 	}
 	
 	private String getChannel(String sysModeId){
-        if(sysModeId!=null) {
+		if(sysModeId!=null) {
             int lastIndex = sysModeId.lastIndexOf("_");
             if (lastIndex!=-1){
-                return sysModeId.substring(++lastIndex);
+                String lasterStr = sysModeId.substring(++lastIndex);
+                if(NumberUtils.isNumber(lasterStr))
+                {
+                	return "www"; //早期不是www后缀
+                }
+                else{
+                	return lasterStr;
+                }
             }
         }
         return "";

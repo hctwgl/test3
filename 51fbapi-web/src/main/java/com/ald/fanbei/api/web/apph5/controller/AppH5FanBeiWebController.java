@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -1000,10 +1002,17 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 	}
 	private String getChannel(String sysModeId){
-        if(sysModeId!=null) {
+		if(sysModeId!=null) {
             int lastIndex = sysModeId.lastIndexOf("_");
             if (lastIndex!=-1){
-                return sysModeId.substring(++lastIndex);
+                String lasterStr = sysModeId.substring(++lastIndex);
+                if(NumberUtils.isNumber(lasterStr))
+                {
+                	return "www"; //早期不是www后缀，兼容旧版本
+                }
+                else{
+                	return lasterStr;
+                }
             }
         }
         return "";
