@@ -79,7 +79,8 @@ public enum AfResourceType {
 	ORDER_SEARCH_CONDITION("ORDER_SEARCH_CONDITION","订单筛选条件"),
 	
 	VIRTUAL_GOODS_SERVICE_PROVIDER("VIRTUAL_GOODS_SERVICE_PROVIDER", "虚拟商品供应商"),
-	
+	VirtualGoodsKeywords("VIRTUAL_GOODS_KEYWORDS", "虚拟商品关键字"),
+
 	SMS_TEMPLATE("SMS_TEMPLATE","短信模板"),
 	SMS_LIMIT("SMS_LIMIT","短信限制"),
 	

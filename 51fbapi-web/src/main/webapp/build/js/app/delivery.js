@@ -29,7 +29,7 @@ var vm = new Vue({
                     'orderId':orderId,
                     'traces':traces
                 },
-                type: 'get',
+                type: 'post',
                 success: function (data) {
                     console.log(data);
                     _this.tracesInfo = data.data.tracesInfo;

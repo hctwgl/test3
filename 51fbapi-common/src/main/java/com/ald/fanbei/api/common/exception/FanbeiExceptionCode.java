@@ -329,5 +329,4 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     public String getErrorMsg() {
         return errorMsg;
     }
-
 }

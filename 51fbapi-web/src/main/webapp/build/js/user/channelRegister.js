@@ -102,18 +102,72 @@ $(function(){
          	$("#register_codeBtn").text("获取验证码");
          	clearInterval(timerInterval);
          	timerS = 60;
-    		// $("#register_codeBtn").attr("isState",0);
         } else {
          	$("#register_codeBtn").text(timerS+" s");
         }
 	};
 
-	// 获取验证码
-	$("#register_codeBtn").click(function(){
+	// 获取图形验证码
+    $("#register_codeBtn").click(function(){
+        var mobileNum = $("#register_mobile").val();
+        if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+            $.ajax({
+                url: "/app/user/getImgCode",
+                type: "POST",
+                dataType: "JSON",
+                data: {mobile:mobileNum},
+                success: function (r) {
+                    console.log(r);
+                    // 显示弹窗
+                    $(".registerMask").removeClass("hide");
+                    $(".imgVftCodeWrap").removeClass("hide");
+                    $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
+                    $("#imgVftCodeClose").click(function(){ // 关闭弹窗
+                        $(".registerMask").addClass("hide");
+                        $(".imgVftCodeWrap").addClass("hide");
+                    })
+                },
+                error: function () {
+                    requestMsg("请求失败")
+                }
+            });
+        } else{
+            requestMsg("请填写正确的手机号");
+        }
+    });
+
+    // 刷新重新获取图片验证
+    $("#imgVftCodeRefresh").click(function(){
+        var mobileNum = $("#register_mobile").val();
+        $.ajax({
+            url: "/app/user/getImgCode",
+            type: "POST",
+            dataType: "JSON",
+            data: {mobile:mobileNum},
+            success: function (r) {
+                console.log(r);
+                // 显示弹窗
+                $(".registerMask").removeClass("hide");
+                $(".imgVftCodeWrap").removeClass("hide");
+                $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
+                $("#imgVftCodeClose").click(function(){ // 关闭弹窗
+                    $(".registerMask").addClass("hide");
+                    $(".imgVftCodeWrap").addClass("hide");
+                })
+            },
+            error: function () {
+                requestMsg("请求失败")
+            }
+        });
+    });
+
+    // 获取验证码
+	$("#imgVftCodeSbumit").click(function(){
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
 		var channelCode = $("#channelCode").val();
 		var pointCode = $("#pointCode").val();
+		var verifyImgCode=$("#imgVftCode").val();
 
 		if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
 			$("#register_codeBtn").attr("disabled",true);
@@ -125,11 +179,15 @@ $(function(){
       				mobile: mobileNum,
       				token: token,
 					channelCode: channelCode,
-					pointCode: pointCode
+					pointCode: pointCode,
+                    verifyImgCode:verifyImgCode
       			},
       			success: function(returnData){
-      				console.log(returnData);
       				if (returnData.success) {
+      				    // 关闭弹窗
+                        $(".registerMask").addClass("hide");
+                        $(".imgVftCodeWrap").addClass("hide");
+                        // 倒计时
                         $("#register_codeBtn").attr("isState",1);
     					$("#register_codeBtn").text(timerS+" s");
                	        timerInterval = setInterval(timeFunction,1000);
@@ -153,10 +211,6 @@ $(function(){
 		var register_password = $("#register_password").val();
 		var password_md5 = String(CryptoJS.MD5(register_password));
 		var passwordLength = register_password.length;
-
-		// 正则判断密码为6-18位字母+字符的组合
-		// var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
-		// var password = pwdReg.test(register_password);
 
         // 正则判断密码为6-18位字母+字符的组合
         var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
