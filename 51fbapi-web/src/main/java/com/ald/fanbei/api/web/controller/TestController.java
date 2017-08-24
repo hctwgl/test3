@@ -38,11 +38,13 @@ import com.ald.fanbei.api.biz.service.AfContactsOldService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserBankDidiRiskService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -74,6 +76,7 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.dao.AfUserLoginLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -81,10 +84,13 @@ import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
+import com.ald.fanbei.api.dal.domain.query.AfUserBankQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -141,6 +147,12 @@ public class TestController {
 	BizCacheUtil bizCacheUtil;
 	@Resource 
 	BoluomeUtil boluomeUtil;
+	@Resource
+	AfUserLoginLogDao afUserLoginLogDao;
+	@Resource
+	IPTransferUtil iPTransferUtil;
+	@Resource
+	AfUserBankDidiRiskService afUserBankDidiRiskService;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -663,6 +675,44 @@ public class TestController {
 			return null;
 		} 
 		return resultMap.get(Constants.VIRTUAL_CODE).toString();
+	}
+	
+	@RequestMapping(value = { "/createDidiBankCardInfo" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String createDidiBankCardInfo(HttpServletRequest request, HttpServletResponse response) {
+		PrintWriter out = null;
+		try {
+			AfUserBankQuery query = new AfUserBankQuery();
+			
+			query.setPageNo(1);
+			query.setPageSize(50);
+			query.setFull(true);
+			afUserBankcardDao.getUserBankList(query);
+			for (int i = 1; i <= query.getTotalPage(); i++ ) {
+				query.setPageNo(i);
+				List<AfUserBankcardDo> list = afUserBankcardDao.getUserBankList(query);
+				for (AfUserBankcardDo cardInfo : list) {
+					try {
+						AfUserDo userInfo = afUserDao.getUserById(cardInfo.getUserId());
+						AfUserLoginLogDo logInfo = afUserLoginLogDao.getUserLastLoginInfo(userInfo.getUserName());
+						String ip = logInfo.getLoginIp();
+						AfUserBankDidiRiskDo info = BuildInfoUtil.buildUserBankDidiRiskInfo(logInfo.getLoginIp(), iPTransferUtil.getLat(ip), iPTransferUtil.getLng(ip), cardInfo.getUserId(), cardInfo.getRid(), logInfo.getUuid(),"");
+						afUserBankDidiRiskService.saveRecord(info);
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("allowcateBrandCoupon", e);
+			return "fail";
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+		return "success";
 	}
 	
 	/**
