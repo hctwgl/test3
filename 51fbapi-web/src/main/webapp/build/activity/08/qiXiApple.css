@@ -55,7 +55,7 @@ img {
 }
 .discount li {
   width: 7.0rem;
-  height: 4.4rem;
+  height: 2.4rem;
   background-color: #fff;
   margin-bottom: 0.5rem;
 }
@@ -183,7 +183,7 @@ img {
 }
 li:nth-child(2) .stripe {
   float: right;
-  margin-right: 0.18rem;
+  margin-right: -0.1rem;
 }
 li:nth-child(2) .discountRight {
   margin-left: -0.4rem;
