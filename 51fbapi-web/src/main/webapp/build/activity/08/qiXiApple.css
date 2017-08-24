@@ -55,14 +55,14 @@ img {
 }
 .discount li {
   width: 7.0rem;
-  height: 3.36rem;
+  height: 4.4rem;
   background-color: #fff;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.5rem;
 }
 .discount img {
   float: left;
-  width: 2.8rem;
-  height: 3.2rem;
+  width: 3.28rem;
+  height: 4.4rem;
   -webkit-background-size: cover;
   background-size: cover;
   margin-top: 0.18rem;
@@ -74,8 +74,8 @@ img {
 .discountRight {
   position: relative;
   float: right;
-  width: 4.2rem;
-  height: 2.8rem;
+  width: 3.44rem;
+  height: 4.4rem;
   padding: 0.34rem 0.6rem 0;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -95,8 +95,8 @@ img {
 }
 .discountRight .goBuyBtn {
   position: absolute;
-  left: 48%;
-  bottom: 0.22rem;
+  left: 58%;
+  bottom: 1.8rem;
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   width: 2.78rem;
@@ -176,8 +176,8 @@ img {
 .stripe {
   float: left;
   background-image: url("http://f.51fanbei.com/h5/app/activity/08/product.png");
-  width: 2.8rem;
-  height: 3.36rem;
+  width: 3.44rem;
+  height: 4.53rem;
   -webkit-background-size: cover;
   background-size: cover;
 }
