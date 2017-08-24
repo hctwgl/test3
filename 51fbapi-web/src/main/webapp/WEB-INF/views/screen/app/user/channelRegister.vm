@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082201")
+    #set($version="20170824031")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -147,6 +147,15 @@
         #elseif( $!{style}==18 )
             <div class="downloadBtn"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"></a></div>
         #end
+        <div class="imgVftCodeWrap hide">
+            <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
+            <div class="imgVftCodeInput clearfix">
+                <div class="imgVftCodeDiv"><input type="text" class="imgVftCode" id="imgVftCode" maxlength="4" placeholder="请输入"></div>
+                <div class="imgVftCodeWrapImgDiv"><img id="imgVftCodeWrapImg" src=""></div>
+                <span class="imgVftCodeRefresh" id="imgVftCodeRefresh"><i></i></span>
+            </div>
+            <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
+        </div>
         <div class="channelRegister_copyright
 			#if( $!{style}==2 || $!{style}==4 )
 				copyright2

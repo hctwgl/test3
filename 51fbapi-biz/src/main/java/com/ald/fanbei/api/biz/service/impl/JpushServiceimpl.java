@@ -620,5 +620,36 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			logger.info("alipayRiskFail error", e);
 		}	
 	}	
-	
+
+
+	public  void jPushByType(int jumpType, String type,String userName){
+		try {
+
+			if(userName == null && userName.equals("")){
+				userName = StringUtils.EMPTY;
+			}
+
+			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes("APP_POP_IMAGE_"+type);
+			AfResourceDo afResourceDo = resourceDoList.get(0);
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("gameShareSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE,  String.valueOf(jumpType));
+			extras.put(DATA, afResourceDo.getValue() + "," + type);
+
+			if(userName.equals("") ){
+				jpushUtil.pushMessageByAlias(afResourceDo.getValue1(),afResourceDo.getValue2(),extras,new String[]{userName}, true);
+			}
+			else{
+				jpushUtil.pushMessageByAlias(afResourceDo.getValue1(),afResourceDo.getValue2(),extras,new String[]{userName}, false);
+			}
+
+		} catch (Exception e) {
+			logger.info("gameShareSuccess error", e);
+		}
+	}
+
+
 }

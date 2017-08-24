@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/app/delivery.css?version=$version">
 </head>
 
-<body style="background: #ededed">
+<body style="background: #f5f5f5">
 <div id="delivery">
     <div id="top">
         <ul>
@@ -40,11 +40,18 @@
     <div id="list" class="main_wrap">
         <template v-if="tracesInfo && tracesInfo !=''">
             <ul v-for="(item,index) in tracesInfo" class="item">
-
                 <div class="contentLeft">
-                    <span class="verticalLineTop"></span>
-                    <span class="circle"></span>
-                    <span class="verticalLineBottom"></span>
+                    <li v-if="index ==0">
+                        <span class="firstVerticalLine"></span>
+                        <span class="firstCircle"></span>
+                    </li>
+                    <li v-else>
+                        <span class="verticalLine"></span>
+                        <div class="circleWrap">
+                            <span class="circle"></span>
+                        </div>
+                    </li>
+
                 </div>
                 <div class="contentRight">
                     <div class="content">{{item.acceptStation}}</div>
