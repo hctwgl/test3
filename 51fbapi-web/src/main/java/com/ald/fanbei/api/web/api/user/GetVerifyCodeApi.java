@@ -93,19 +93,21 @@ public class GetVerifyCodeApi implements ApiHandle {
 			}
 			break;
 		case MOBILE_BIND:// 更换手机号
-			String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
-
-			afUserDo = afUserService.getUserByUserName(userName);
-
-			if (afUserDo == null) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-			}
-			//给原手机发送验证码
-			boolean resultMobileBind = smsUtil.sendMobileBindVerifyCode(afUserDo.getMobile(), afUserDo.getRid());
-			if (!resultMobileBind) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
-			}
-			break;
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_BIND_MOBILE_LIMIT);
+			 
+//			String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
+//
+//			afUserDo = afUserService.getUserByUserName(userName);
+//
+//			if (afUserDo == null) {
+//				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+//			}
+//
+//			boolean resultMobileBind = smsUtil.sendMobileBindVerifyCode(mobile, afUserDo.getRid());
+//			if (!resultMobileBind) {
+//				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
+//			}s
+//			break;
 		default:
 			break;
 		}
