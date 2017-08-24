@@ -310,19 +310,29 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 
 	}
 	
-	//菠萝觅活动忘记密码获取验证码
+	//菠萝觅活动忘记密码获取短信验证码
 	@ResponseBody
 	@RequestMapping(value = "/boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String boluomeActivityForgetPwd(HttpServletRequest request, ModelMap model) throws IOException {
 		String resultStr = "";
 		try{
 		String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+		String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
 		AfUserDo afUserDo = new AfUserDo(); 
 		afUserDo = afUserService.getUserByUserName(mobile);
 	
 		if (afUserDo == null) {
 			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "ForgetPwd", null).toString();
 		}
+		//发送短信前,加入图片验证码验证
+		String realCode=bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile).toString();
+
+		if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码不正确
+
+			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null).toString();
+			return resultStr;
+		}
+		bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
 		if (afUserDo != null) {
 			boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
 		if (!resultForget) {
