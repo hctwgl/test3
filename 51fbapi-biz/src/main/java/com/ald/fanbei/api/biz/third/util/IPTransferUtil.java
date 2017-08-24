@@ -18,7 +18,7 @@ import com.maxmind.geoip.LookupService;
 @Component("iPTransferUtil")
 public class IPTransferUtil extends AbstractThird{
 	
-	private static final String IP_DAT_URL = "/home/aladin/project/tomcat/ipData/GeoLiteCity.dat";
+	private static final String IP_DAT_URL = "/home/ald/project/jar/ipData/GeoLiteCity.dat";
 	
 	public IPTransferBo parseIpToLatAndLng(String ip){
 		IPTransferBo bo = new IPTransferBo();
