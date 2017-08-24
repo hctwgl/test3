@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082201")
+    #set($version="20170824031")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -16,13 +16,11 @@
             <img src="$commonUrl/channel$!{style}_01.png">
         #elseif( $!{style}==14 )
             <img src="$commonUrl/channel7_01.jpg">
-        #elseif( $!{style}==17 )
-            <img src="$commonUrl/channel17_01.png">
-        #elseif( $!{style}==19 )
+        #elseif( $!{style}==17 || $!{style}==19 )
             <img src="$commonUrl/channel19_01.png">
-        #elseif( $!{style}==20 )
+        #elseif( $!{style}==20 || $!{style}==23 )
             <img src="$commonUrl/channel17_01.jpg">
-        #elseif( $!{style}==21 || $!{style}==23 )
+        #elseif( $!{style}==21 )
             <img src="$commonUrl/channel21_01.jpg">
         #else
             <img src="$commonUrl/channel$!{style}_01.jpg">
@@ -147,6 +145,15 @@
         #elseif( $!{style}==18 )
             <div class="downloadBtn"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"></a></div>
         #end
+        <div class="imgVftCodeWrap hide">
+            <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
+            <div class="imgVftCodeInput clearfix">
+                <div class="imgVftCodeDiv"><input type="text" class="imgVftCode" id="imgVftCode" maxlength="4" placeholder="请输入"></div>
+                <div class="imgVftCodeWrapImgDiv"><img id="imgVftCodeWrapImg" src=""></div>
+                <span class="imgVftCodeRefresh" id="imgVftCodeRefresh"><i></i></span>
+            </div>
+            <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
+        </div>
         <div class="channelRegister_copyright
 			#if( $!{style}==2 || $!{style}==4 )
 				copyright2
@@ -178,8 +185,8 @@
         #end
         </div>
     </div>
-    <script type="text/javascript" src="/common/js/core.js"></script>
-    <script type="text/javascript" src="/common/js/md5.js"></script>
+    <script type="text/javascript" src="/dist/js/core.js"></script>
+    <script type="text/javascript" src="/dist/js/md5.js"></script>
     <script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
     <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </body>

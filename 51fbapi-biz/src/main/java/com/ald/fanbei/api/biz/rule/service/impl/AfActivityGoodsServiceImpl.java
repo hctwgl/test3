@@ -14,6 +14,7 @@ import com.ald.fanbei.api.dal.dao.AfActivityGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 
 /**
  * @类描述：
@@ -43,6 +44,13 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 	public AfActivityGoodsDo getActivityGoodsByGoodsId(Long goodsId) {
 		
 		return afActivityGoodsDao.getActivityGoodsByGoodsId(goodsId);
+	}
+
+	@Override
+	public List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(Long activityId, Integer appVersion) {
+		return appVersion < 371 ? afActivityGoodsDao.listNewEncoreGoodsByActivityIdLT371(activityId)
+				: afActivityGoodsDao.listNewEncoreGoodsByActivityId(activityId);
+		
 	}
 	
 	

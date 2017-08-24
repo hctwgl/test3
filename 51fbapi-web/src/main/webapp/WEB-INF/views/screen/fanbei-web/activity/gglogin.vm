@@ -37,8 +37,8 @@
             <img src="$src/pic-2.png" alt="">
     </div>       
 </body>
-<script type="text/javascript" src="/common/js/core.js"></script>
-<script type="text/javascript" src="/common/js/md5.js"></script>
+<script type="text/javascript" src="/dist/js/core.js"></script>
+<script type="text/javascript" src="/dist/js/md5.js"></script>
 <script type="text/javascript" src="/dist/activity/08/gglogin.js"></script>
 </body>
 </html>

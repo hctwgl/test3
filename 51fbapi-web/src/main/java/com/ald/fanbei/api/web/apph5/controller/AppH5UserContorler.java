@@ -8,7 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -64,8 +63,9 @@ import com.alibaba.fastjson.JSON;
 @Controller
 @RequestMapping("/app/user/")
 public class AppH5UserContorler extends BaseController {
+
 	@Resource
-	private BizCacheUtil bizCacheUtil;
+	BizCacheUtil bizCacheUtil;
 	// @Resource
 	// AfUserAccountDao afUserAccountDao;
 	@Resource
@@ -118,6 +118,7 @@ public class AppH5UserContorler extends BaseController {
 		model.put("registerRule", notifyUrl);
 		doMaidianLog(request,H5CommonResponse.getNewInstance(true,JSON.toJSONString(model)));
 	}
+
 	/**
 	 * 获取图片验证码
 	 * @param request
@@ -131,6 +132,8 @@ public class AppH5UserContorler extends BaseController {
 			String mobile=request.getParameter("mobile");
 			//获得图片验证码
 			Map<String, BufferedImage> map = ImageUtil.createRandomImage();
+			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
+
 			if (map.size() == 1) {
 				String code = "";
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -164,7 +167,7 @@ public class AppH5UserContorler extends BaseController {
 			String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
 			String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
-		
+
 			try {
 				tongdunUtil.getPromotionSmsResult(token,channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
 			} catch (Exception e) {
@@ -181,11 +184,12 @@ public class AppH5UserContorler extends BaseController {
 			//发送短信前,加入图片验证码验证
 			String realCode=bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile).toString();
 
-			if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码正确
+			if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码不正确
+
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
-
+			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
 
 			boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
 			if (!resultReg) {
