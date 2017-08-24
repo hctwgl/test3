@@ -139,5 +139,11 @@ public interface AfOrderDao {
 	
 	
 	List<AfOrderDo> get20170801ExceptionOrder();
+
+	/**
+	 * 获得当天有效借款订单数
+	 * @return
+	 */
+	Integer getDealAmount(Long userId);
 	
 }

@@ -856,5 +856,22 @@
 	<update id="deleteOrder" parameterType="java.lang.Long" >
 		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
 	</update>
-	
+	<select id = "getDealAmount" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		SELECT
+			COUNT(*) 
+		FROM
+			af_order
+		WHERE
+			pay_type IN ('AP', 'CP')
+		AND STATUS IN (
+			'AGENCYCOMPLETED',
+			'PAID',
+			'FINISHED',
+			'REBATED',
+			'REVIEW',
+			'DELIVERED'
+		)
+		AND DATE(gmt_create) = DATE(NOW())
+		AND user_id = #{userId};
+	</select>
 </mapper>

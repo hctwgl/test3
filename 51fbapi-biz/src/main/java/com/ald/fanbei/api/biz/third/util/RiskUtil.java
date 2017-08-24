@@ -435,12 +435,15 @@ public class RiskUtil extends AbstractThird {
 	 * @param time 时间
 	 * @param productName 商品名称
 	 * @param virtualCode 商品编号
+	 *增加里那个字段 
+	 *@param SecSence 二级场景
+	 *@param ThirdSencem 三级场景
 	 * @return
 	 */
 	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, 
 			String scene, String cardNo, String appName, String ipAddress, 
 			String blackBox, String orderNo, String phone, BigDecimal amount, 
-			BigDecimal poundage, String time,String productName,String virtualCode) {
+			BigDecimal poundage, String time,String productName,String virtualCode,String SecSence,String ThirdSencem) {
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if(!"Y".equals(userAuth.getRiskStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -468,6 +471,11 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("time", time);
 		eventObj.put("virtualCode", virtualCode);
 		eventObj.put("productName", productName);
+		//增加3个参数，配合风控策略的改变
+		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo));
+		eventObj.put("dealAmount", dealAmount);
+		eventObj.put("SecSence", SecSence);
+		eventObj.put("ThirdSencem", ThirdSencem);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
@@ -499,6 +507,18 @@ public class RiskUtil extends AbstractThird {
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
+	}
+	/**
+	 * @author qiaopan
+	 * 获得当天有效借款订单数
+	 * @return
+	 */
+	private Integer getDealAmount(Long userId){
+		Integer result = afOrderService.getDealAmount(userId);
+		if (result == null) {
+			result = 0 ;
+		}
+		return result;
 	}
 
 	/**
