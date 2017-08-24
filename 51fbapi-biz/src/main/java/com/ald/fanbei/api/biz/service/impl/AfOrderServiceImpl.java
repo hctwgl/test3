@@ -1363,7 +1363,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
-		
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 		}
@@ -1784,12 +1783,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 */
 	@Override
 	public int dealPayCpOrderFail(final String payOrderNo, final String tradeNo,final String payType) {
+		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					
-					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 					// 不处理新建，处理
 					if (orderInfo == null) {
 						return 0;
@@ -1848,9 +1847,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+		}
 		return result;
 	}
-	
 	/**
 	 * 处理菠萝觅组合支付失败的情况
 	 */

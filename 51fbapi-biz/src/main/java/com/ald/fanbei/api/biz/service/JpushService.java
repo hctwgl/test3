@@ -210,5 +210,7 @@ public interface JpushService {
 	/**
 	 *  支付宝认证失败推送
 	 */
-	public void alipayRiskFault(String userName);		
+	public void alipayRiskFault(String userName);
+
+	void jPushByType(int jumpType, String type,String userName);
 }

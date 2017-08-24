@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017081802")
+    #set($version="2017082101")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>七夕让爱加倍，不一样の套路</title>
