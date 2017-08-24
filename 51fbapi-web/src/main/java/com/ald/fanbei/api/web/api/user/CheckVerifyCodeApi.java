@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -52,9 +53,9 @@ public class CheckVerifyCodeApi implements ApiHandle {
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
         }
         AfSmsRecordDo afSmsRecordDo = afSmsRecordService.getLatestByMobileCode(userName,verifyCode);
-        
+
         if (afSmsRecordDo == null) {
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ERROR); 
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
         }
         //验证图片验证码
         String imageCode = ObjectUtils.toString(requestDataVo.getParams().get("imageCode"));
@@ -75,6 +76,17 @@ public class CheckVerifyCodeApi implements ApiHandle {
 
         smsUtil.checkSmsByMobileAndType(userName, verifyCode,SmsType.findByCode(type));
 
+        /**
+         * 判断推荐人
+         */
+        String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"));
+        // 判断邀请码是否为空
+        if (StringUtil.isNotEmpty(recommendCode)) {
+            AfUserDo recommendUserDo = afUserService.getUserByRecommendCode(recommendCode);
+            if (recommendUserDo == null) {
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CODE_NOT_EXIST);
+            }
+        }
         return resp;
     }
     

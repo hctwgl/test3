@@ -56,6 +56,13 @@ import java.util.Date;
      * 备注说明
      */
     private String remark;
+    
+    /**
+     * 渠道
+     * www ：来自 app
+     * 其余的是来自马甲包 
+     */
+    private String channel;
 
 
     public AfBusinessAccessRecordsDo() {
@@ -218,5 +225,15 @@ import java.util.Date;
     public void setRemark(String remark){
       this.remark = remark;
     }
+
+
+	public String getChannel() {
+		return channel;
+	}
+
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
 
 }

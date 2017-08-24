@@ -227,8 +227,8 @@ public class AppH5CouponController extends BaseController {
 	@ResponseBody
     public String activityCouponInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
-    		// FanbeiWebContext context = doWebCheck(request, false);
-    		// context = doWebCheck(request, false);
+    		FanbeiWebContext context = doWebCheck(request, false);
+    		context = doWebCheck(request, false);
     		JSONObject jsonObj = new JSONObject();
     		// 获取活动优惠券组信息
     		String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
@@ -238,7 +238,7 @@ public class AppH5CouponController extends BaseController {
     		// 根据Id获取分组优惠券
     		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
     		String coupons = couponCategory.getCoupons();
-    		
+    		List<Map<String,Object>> couponList = new ArrayList<Map<String,Object>>();
     		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
     		for(int i = 0; i < couponsArray.size(); i++){
     			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
@@ -264,7 +264,9 @@ public class AppH5CouponController extends BaseController {
     			} else {
     				couponInfoMap.put("gmtEnd", 0);
     			}
+    			couponList.add(couponInfoMap);
     		}
+    		jsonObj.put("couponInfoList",couponList);
     		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
     		
     	} catch (Exception e) {

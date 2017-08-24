@@ -18,7 +18,7 @@
         <button class="btn">完成</button>
 </div>
 </body>
-<script type="text/javascript" src="/common/js/core.js"></script>
-<script type="text/javascript" src="/common/js/md5.js"></script>
+<script type="text/javascript" src="/dist/js/core.js"></script>
+<script type="text/javascript" src="/dist/js/md5.js"></script>
 <script tyep="text/javascript" src="/dist/activity/08/ggForgetP.js"></script>
 </html>

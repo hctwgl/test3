@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo;
 
 /**
@@ -17,4 +18,6 @@ public interface AfOrderLogisticsService extends ParentService<AfOrderLogisticsD
      * @return
      */
     AfOrderLogisticsDo getByOrderId(Long orderId);
+
+    AfOrderLogisticsBo getOrderLogisticsBo(long orderId, long isOutTraces);
 }

@@ -19,6 +19,7 @@ public class Constants {
 	public static final int SECOND_OF_AN_HOUR_INT = 60 * 60;
 
 	public static final long SECOND_OF_ONE_WEEK = 7 * 24 * 60 * 60l;
+	public static final long SECOND_OF_ONE_MONTH = 30 * 24 * 60 * 60l;
 
 	public static final int MINITS_OF_2HOURS = 120;
 	public static final int MINITS_OF_HALF_HOUR = 30;
@@ -120,7 +121,9 @@ public class Constants {
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
-
+	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
+	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
+	
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
 	public static final String BOLUOME_LOGIN_ERROR_TIMES  = "boluome_login_error_times$";
@@ -144,6 +147,8 @@ public class Constants {
 	public static final String RES_BORROW_CASH_RANGE = "BORROW_CASH_RANGE";
 	public static final String RES_BORROW_CASH_LIMIT_AMOUNT = "BORROW_CASH_LIMIT_AMOUNT";
 	public static final String RES_BORROW_TRADE = "BORROW_TRADE";
+	public static final String RES_BORROW_CASH_POUNDAGE_RATE = "RES_BORROW_CASH_POUNDAGE_RATE";
+	public static final String RES_BORROW_CASH_POUNDAGE_TIME = "RES_BORROW_CASH_POUNDAGE_TIME";
 	
 	public static final String RES_BRAND_SHOP = "BRAND_SHOP";
 	public static final String RES_CREDIT_SCORE_AMOUNT = "CREDIT_SCORE_AMOUNT";

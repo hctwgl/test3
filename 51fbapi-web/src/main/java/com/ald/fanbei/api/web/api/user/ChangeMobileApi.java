@@ -44,12 +44,14 @@ public class ChangeMobileApi implements ApiHandle {
 
 	        String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 	        String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
+	        String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
 	        if(StringUtil.isBlank(verifyCode) || StringUtil.isBlank(mobile)){
 	        	logger.error("changeMobile verifyCode or mobile is empty verifyCode = " + verifyCode + " mobile = " + mobile);
 	        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
 	        }
-
-	        smsUtil.checkSmsByMobileAndType(mobile,verifyCode, SmsType.MOBILE_BIND);
+	        AfUserDo userDo = afUserService.getUserByUserName(userName);
+	        //验证原手机验证码
+	        smsUtil.checkSmsByMobileAndType(userDo.getMobile(),verifyCode, SmsType.MOBILE_BIND);
 	        AfUserDo afUserDo = new AfUserDo();
 			afUserDo.setRid(userId);
 			afUserDo.setMobile(mobile);

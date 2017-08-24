@@ -13,22 +13,19 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
+import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfShopService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -108,7 +105,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfLoanSupermarketService afLoanSupermarketService;
 	@Resource
 	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
-	
+	@Resource
+	AfOrderLogisticsService afOrderLogisticsService;
 	/**
 	 * 首页弹窗页面
 	 * @param request
@@ -917,7 +915,34 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
-	
+	/**
+	 * 获取物流信息
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "/getOrderLogistics" }, method =
+			RequestMethod.POST,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String getOrderLogistics(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext context = null;
+		try {
+			long orderId = NumberUtil.strToLong(request.getParameter("orderId").toString());
+			long isOutTraces = NumberUtil.strToLong(request.getParameter("traces")==null?
+					String.valueOf(0) :request.getParameter("traces").toString());
+			AfOrderLogisticsBo afOrderLogisticsBo= afOrderLogisticsService.getOrderLogisticsBo
+					(orderId,isOutTraces);
+			if(afOrderLogisticsBo!=null){
+				return H5CommonResponse.getNewInstance(true,"","",afOrderLogisticsBo).toString();
+			}else{
+				return H5CommonResponse.getNewInstance
+						(false,FanbeiExceptionCode.LOGISTICS_NOT_EXIST.getErrorMsg()).toString();
+			}
+
+		}catch(Exception e){
+			return H5CommonResponse.getNewInstance(false,e.toString()).toString();
+		}
+	}
 	
 	/**
 	 * 第三方链接跳转，记录pv，uv
@@ -940,14 +965,17 @@ public class AppH5FanBeiWebController extends BaseController {
 					String accessUrl = afLoanSupermarket.getLinkUrl();
 					accessUrl = accessUrl.replaceAll("\\*", "\\&");
 					logger.info("贷款超市app点击banner请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+afUserDo.getRid());
-					String extraInfo = "appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
+					String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
+					String channel = getChannel(sysModeId);
+					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
 					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
 					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
 					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
-					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
+					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET_BANNER.getCode());
 					afBusinessAccessRecordsDo.setRefId(afLoanSupermarket.getId());
 					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
 					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.APP_LOAN_BANNER.getCode());
+					afBusinessAccessRecordsDo.setChannel(channel);
 					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
 					model.put("redirectUrl", accessUrl);
 				}else{
@@ -973,7 +1001,22 @@ public class AppH5FanBeiWebController extends BaseController {
 			model.put("redirectUrl", "/static/error404.html");
 		}
 	}
-
+	private String getChannel(String sysModeId){
+		if(sysModeId!=null) {
+            int lastIndex = sysModeId.lastIndexOf("_");
+            if (lastIndex!=-1){
+                String lasterStr = sysModeId.substring(++lastIndex);
+                if(NumberUtils.isNumber(lasterStr))
+                {
+                	return "www"; //早期不是www后缀，兼容旧版本
+                }
+                else{
+                	return lasterStr;
+                }
+            }
+        }
+        return "";
+    }
 	/*
 	 * (non-Javadoc)
 	 * 

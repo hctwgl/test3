@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
@@ -41,6 +42,7 @@ import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -57,6 +59,7 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -71,11 +74,8 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
-import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
-import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
@@ -139,6 +139,8 @@ public class TestController {
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource 
+	BoluomeUtil boluomeUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -490,7 +492,27 @@ public class TestController {
 		}
 		return "success";
 	}
-	
+
+	@RequestMapping(value = { "/jPushByType" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String jPushByType(int jumpType, String type,String userName){
+		PrintWriter out = null;
+		try {
+			jpushService.jPushByType(jumpType,type,userName);;
+		} catch (Exception e) {
+			logger.error("allowcateBrandCoupon", e);
+			return "fail";
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+		return "success";
+	}
+
+
+
+
 	@RequestMapping(value = { "/testJPush" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String testJPush(HttpServletRequest request, HttpServletResponse response) {
@@ -524,6 +546,15 @@ public class TestController {
 			}
 		}
 		return "success";
+	}
+	@RequestMapping(value = { "/testOrderPay" }, method = RequestMethod.POST)
+	@ResponseBody
+	public BoluomePushPayResponseBo testOrderPay(HttpServletRequest request, HttpServletResponse response) {
+	  long orderId=198649;
+		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
+		BoluomePushPayResponseBo b  = 	boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+		
+		return b;
 	}
 	
 	private void pickBrandCoupon(String userName, String brandUrl) {

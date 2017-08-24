@@ -106,7 +106,7 @@ $(function(){
                     success: function (returnData) {
                         returnData = eval('(' + returnData + ')');
                         if(returnData.success){
-                            var dat='{"shareAppTitle":"消费有返利 领取51元大奖！","shareAppContent":"你的好友赠送了一张'+name+'卡片给你，快领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
+                            var dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友赠送了一张'+name+'卡给你，助你赢得51元现金大奖，速来领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
                             var base64 = BASE64.encoder(dat);
                             //console.log(base64)
                             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
@@ -228,19 +228,5 @@ function k_touch() {
     }
 }
 
-// app调用web的方法
-function alaShareData(){
-    var dataObj = { // 分享内容
-        "appLogin": "Y", // 是否需要登录，Y需要，N不需要
-        "type": "share", // 此页面的类型
-        "shareAppTitle": "消费有返利 领取51元大奖！",  // 分享的title
-        'shareAppContent': "你的好友赠送了一张"+name+"卡片给你，快领走吧~",  // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/ggShare.png",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggpresents?loginSource=Z&userName="+userName+"&activityId="+activityId+"&userItemsId="+cardRid,  // 分享后的链接
-        "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
-        "sharePage": "ggpresents" // 分享的页面
-    };
-    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
-    return dataStr;
-};
+
 

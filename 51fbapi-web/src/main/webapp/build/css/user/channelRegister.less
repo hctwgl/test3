@@ -317,11 +317,40 @@ input,button{
 	top: 50%;
 	left: 0.2rem;
 	-webkit-transform: translateY(-50%);
-	-ms-transform: translateY(-50%);
-	-o-transform: translateY(-50%);
 	transform: translateY(-50%);
 }
 
+/* 样式22 */
+.channelRegister22 li{
+	position: relative;
+	width: 5.32rem;
+	height: 0.72rem;
+	line-height: 0.72rem;
+	margin: 0 auto 0.38rem;
+}
+.channelRegister22 li:nth-child(3){
+	margin-bottom: 0.48rem;
+}
+.channelRegister22 li:nth-child(4) button{
+	font-size: 0.3rem;
+}
+.channelRegister22 .register_verification{
+	width: 3.0rem;
+}
+.channelRegister22 .register_codeBtn_right{
+	width: 1.8rem;
+	height:	0.7rem;
+	font-size: 0.28rem;
+	float: right;
+}
+.channelRegister22 input{
+	font-size: 0.28rem;
+	position: absolute;
+	top: 50%;
+	left: 0.2rem;
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
 
 
 input::-webkit-input-placeholder{
@@ -411,6 +440,102 @@ input:-ms-input-placeholder{
 	background-size: cover;
 	margin-right: 10px;
 }
+
+// 图形验证码
+.imgVftCodeWrap{
+	width: 5.64rem;
+	height: 3.7rem;
+	background-color: #fff;
+	border-radius: 0.2rem;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	z-index: 10;
+	font-size: 0.3rem;
+	padding: 0.26rem;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+.imgVftCodeTitle{
+	position: relative;
+}
+.imgVftCodeTitle p{
+	margin-bottom: 0.36rem;
+	text-align: center;
+}
+.imgVftCodeTitle span{
+	width: 0.5rem;
+	height: 0.5rem;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+.imgVftCodeTitle i{
+	width: 0.24rem;
+	height: 0.24rem;
+	background-image: url("https://fs.51fanbei.com/h5/app/images/user/shanc.png");
+	-webkit-background-size: cover;
+	background-size: cover;
+}
+.imgVftCodeInput{
+	position: relative;
+}
+.imgVftCodeDiv{
+	width: 4.3rem;
+	height: 1.08rem;
+	line-height: 1.08rem;
+	text-align: left;
+	border: 1px solid #ddd;
+	padding-left: 0.2rem;
+}
+.imgVftCode{
+	font-size: 0.28rem;
+}
+.imgVftCodeWrapImgDiv{
+	width: 8.0em;
+	height: 1.0rem;
+	overflow: hidden;
+	position: absolute;
+	top: 50%;
+	right: 0.6rem;
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+.imgVftCodeWrapImgDiv img{
+	-webkit-background-size: cover;
+	background-size: cover;
+}
+.imgVftCodeInput span{
+	width: 0.6rem;
+	height: 0.5rem;
+	position: absolute;
+	top: 50%;
+	right: 0;
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+.imgVftCodeInput i{
+	width: 0.31rem;
+	height: 0.35rem;
+	background-image: url("https://fs.51fanbei.com/h5/common/refresh.png");
+	-webkit-background-size: cover;
+	background-size: cover;
+	margin-left: 0.3rem;
+}
+.imgVftCodeSbumit{
+	width: 4.62rem;
+	height: 0.8rem;
+	line-height: 0.8rem;
+	text-align: center;
+	background:#fe963b;
+	border-radius: 0.1rem;
+	color: #fff;
+	font-size: 0.32rem;
+	margin: 0.4rem 0.25rem 0;
+}
+
 
 /* 协议 */
 .channelRegister9 .register_checkbox{
@@ -532,6 +657,10 @@ input:-ms-input-placeholder{
   }
 .copyright17{
 	background-color: #86e6f4;
+	color: #fff;
+}
+.copyright22{
+	background-color: #a3b2ff;
 	color: #fff;
 }
 

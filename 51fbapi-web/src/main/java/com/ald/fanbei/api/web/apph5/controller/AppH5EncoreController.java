@@ -40,6 +40,7 @@ import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -200,6 +201,128 @@ public class AppH5EncoreController extends BaseController {
     		}
         	jsonObj.put("recommendGoodsList", recommendGoodsList);
         	
+        	return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
+    	} catch (Exception e){
+    		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+    	}
+    	
+    }
+    
+    
+    @RequestMapping(value = "newEncoreActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+    public String newEncoreActivityInfo(HttpServletRequest request, ModelMap model) throws IOException {
+         String URL = URLDecoder.decode(request.getHeader("Referer"), "UTF-8");
+         String appInfoStr = URL.substring(URL.indexOf("{"));
+         JSONObject appInfo = JSONObject.parseObject(appInfoStr); 
+         Integer appVersion = Integer.parseInt(appInfo.get("appVersion").toString());
+         Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
+         if(activityId == 0) {
+    		return H5CommonResponse.getNewInstance(false, "请上送活动id").toString();
+         }
+         try{
+    		JSONObject jsonObj = new JSONObject();
+        	String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+    		jsonObj.put("notifyUrl", notifyUrl);
+    		// 获取活动信息
+    		AfActivityDo activityInfo =afActivityService.getActivityById(activityId);
+    		if(activityInfo == null) {
+    			return H5CommonResponse.getNewInstance(false, "活动信息不存在！id=" + activityId).toString();
+    		}
+    		jsonObj.put("bannerUrl", activityInfo.getIconUrl());
+    		jsonObj.put("currentTime", System.currentTimeMillis());
+    		jsonObj.put("validStartTime", activityInfo.getGmtStart().getTime());
+    		jsonObj.put("validEndTime", activityInfo.getGmtEnd().getTime());
+    		jsonObj.put("bgColor", activityInfo.getBgColor());
+    		jsonObj.put("btnColor", activityInfo.getBtnColor());
+    		Map<String,Object> oneLevelGoodsInfo = new HashMap<String,Object>();
+    		Map<String,Object> twoLevelGoodsInfo = new HashMap<String,Object>();
+    		Map<String,Object> threeLevelGoodsInfo = new HashMap<String,Object>();
+    		Map<String,Object> fourLevelGoodsInfo = new HashMap<String,Object>();
+    		oneLevelGoodsInfo.put("title", activityInfo.getTitle1());
+    		twoLevelGoodsInfo.put("title", activityInfo.getTitle2());
+    		threeLevelGoodsInfo.put("title", activityInfo.getTitle3());
+    		fourLevelGoodsInfo.put("title", activityInfo.getTitle4());
+    		
+    		List<Map<String,Object>> oneLevelGoods = new ArrayList<Map<String,Object>>();
+    		List<Map<String,Object>> twoLevelGoods = new ArrayList<Map<String,Object>>();
+    		List<Map<String,Object>> threeLevelGoods = new ArrayList<Map<String,Object>>();
+    		List<Map<String,Object>> fourLevelGoods = new ArrayList<Map<String,Object>>();
+    		
+    		//获取借款分期配置信息
+            AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            JSONArray array = JSON.parseArray(resource.getValue());
+            //删除2分期
+            if (array == null) {
+                throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+            }
+            removeSecondNper(array);
+    		// 获取活动商品
+    		List<AfEncoreGoodsDto> activityGoodsDoList = afActivityGoodsService.listNewEncoreGoodsByActivityId(activityId, appVersion);
+    		for(AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
+    			Map<String, Object> goodsInfo = new HashMap<String, Object>();
+    			goodsInfo.put("goodName",goodsDo.getName());
+    			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+    			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+    			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+    			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+    			goodsInfo.put("goodsId", goodsDo.getRid());
+    			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+    			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+    			goodsInfo.put("source", goodsDo.getSource());
+    			String doubleRebate = goodsDo.getDoubleRebate();
+    			goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
+    			goodsInfo.put("goodsType", "0");
+    			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+    			// 如果是分期免息商品，则计算分期
+    			Long goodsId = goodsDo.getRid();
+				AfSchemeGoodsDo  schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch(Exception e){
+					logger.error(e.toString());
+				}
+				if(schemeGoodsDo != null){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					JSONArray interestFreeArray = null;
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						goodsInfo.put("goodsType", "1");
+						Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+						goodsInfo.put("nperMap", nperMap);
+					}
+				}
+				Integer titeType = goodsDo.getTitleType();
+				switch (titeType) {
+				case 1:
+					oneLevelGoods.add(goodsInfo);
+					break;
+				case 2:
+					twoLevelGoods.add(goodsInfo);
+					break;
+				case 3:
+					threeLevelGoods.add(goodsInfo);
+					break;
+				case 4:
+					fourLevelGoods.add(goodsInfo);
+					break;
+				}
+				oneLevelGoodsInfo.put("goodsList", oneLevelGoods);
+	    		twoLevelGoodsInfo.put("goodsList", twoLevelGoods);
+	    		threeLevelGoodsInfo.put("goodsList", threeLevelGoods);
+	    		fourLevelGoodsInfo.put("goodsList", fourLevelGoods);
+	    		
+	    		jsonObj.put("oneLevelGoodsInfo", oneLevelGoodsInfo);
+	    		jsonObj.put("twoLevelGoodsInfo", twoLevelGoodsInfo);
+	    		jsonObj.put("threeLevelGoodsInfo", threeLevelGoodsInfo);
+	    		jsonObj.put("fourLevelGoodsInfo", fourLevelGoodsInfo);
+    		}
         	return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
     	} catch (Exception e){
     		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
