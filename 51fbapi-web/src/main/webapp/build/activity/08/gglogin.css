@@ -11,7 +11,7 @@ body{
 border-radius:0.33rem;
 /* width:6.8rem; */
 /* height:1059px; */
-padding: 0 0.6rem;
+padding: 0 0.55rem;
 }
 .topdiv{
 width:6.41rem;
@@ -139,7 +139,7 @@ text-align:left;
 }
 .botimg{
     width:100%;
-    margin-top:50%;
+    margin-top:41%;
 }
 .gray{
     background-color:gray;
