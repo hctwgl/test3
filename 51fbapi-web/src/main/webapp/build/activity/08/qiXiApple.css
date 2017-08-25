@@ -77,22 +77,21 @@ img {
 .discountRight {
   position: relative;
   float: right;
-  width: 3.44rem;
   height: 4.4rem;
-  padding: 0.34rem 0.6rem 0;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   line-height: 0.5rem;
 }
 .discountRightTitle {
-  width: 100%;
+  width: 2.34rem;
   height: 0.5rem;
   overflow: hidden;
   color: #735D4F;
-  margin-top: 30%;
+  margin: 30% 0 0 16%;
 }
 .priceAmount {
   color: #999;
+  padding-left: 16%;
 }
 .priceAmount span {
   text-decoration: line-through;
@@ -140,6 +139,7 @@ img {
 }
 .priceWrap {
   width: 3.3rem;
+  padding-left: 16%;
 }
 .priceWrap span:nth-child(2) {
   position: relative;

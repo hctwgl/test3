@@ -20,14 +20,14 @@ var vm=new Vue({
         initial(){
             let _this=this;
             $.ajax({
-                url: '/fanbei-web/encoreActivityInfo',
+                url: '/fanbei-web/newEncoreActivityInfo',
                 dataType:'json',
                 data:{'activityId':activityId},
                 type: 'post',
                 success:function (data) {
                     console.log(data);
-                    _this.discountMap=data.data.recommendGoodsList.slice(0,3);
-                    _this.rebateMap=data.data.recommendGoodsList.slice(3);
+                    _this.discountMap=data.data.oneLevelGoodsInfo.goodsList.slice(0,3);
+                    _this.rebateMap=data.data.twoLevelGoodsInfo.goodsList.slice(0,4);
                     _this.returnData=data.data;
                      _this.$nextTick(function () {
                          $(".loadingMask").fadeOut();
