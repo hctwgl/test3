@@ -166,8 +166,8 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 	
 	public CollectionOperatorNotifyRespBo offlineRepaymentNotify(String timestamp, String data, String sign) {
-		//响应数据,默认成功
-		CollectionOperatorNotifyRespBo notifyRespBo = new CollectionOperatorNotifyRespBo(FanbeiThirdRespCode.SUCCESS); 
+		// 响应数据,默认成功
+		CollectionOperatorNotifyRespBo notifyRespBo = new CollectionOperatorNotifyRespBo(FanbeiThirdRespCode.SUCCESS);
 		try {
 			CollectionOperatorNotifyReqBo reqBo = new CollectionOperatorNotifyReqBo();
 			reqBo.setData(data);
@@ -183,21 +183,21 @@ public class CollectionSystemUtil extends AbstractThird {
 				String restAmount = obj.getString("rest_amount");
 				String tradeNo = obj.getString("trade_no");
 				String isBalance = obj.getString("is_balance");
-				
-				//参数校验
-				if(StringUtil.isAllNotEmpty(repayNo,borrowNo,repayType,repayTime,repayAmount,restAmount,tradeNo,isBalance)){
-					//业务处理
+
+				// 参数校验
+				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance)) {
+					// 业务处理
 					String respCode = afRepaymentBorrowCashService.dealOfflineRepaymentSucess(repayNo, borrowNo, repayType, repayTime, NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO), NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo, isBalance);
 					FanbeiThirdRespCode respInfo = FanbeiThirdRespCode.findByCode(respCode);
 					notifyRespBo.resetMsgInfo(respInfo);
-				}else{
+				} else {
 					notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
 				}
-			}else{
+			} else {
 				notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
 			}
 		} catch (Exception e) {
-			logger.error("offlineRepaymentNotify error",e);
+			logger.error("offlineRepaymentNotify error", e);
 			notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SYSTEM_ERROR);
 		}
 		String resDataJson = JsonUtil.toJSONString(notifyRespBo);
