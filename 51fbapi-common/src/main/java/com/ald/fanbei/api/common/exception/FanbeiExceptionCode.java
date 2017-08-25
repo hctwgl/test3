@@ -242,7 +242,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     PUSH_BRAND_ORDER_STATUS_FAILED("PUSH_BRAND_ORDER_STATUS_FAILED",4003,"push brand order status failed","推送品牌订单消息失败"),
     PICK_BRAND_COUPON_FAILED("PICK_BRAND_COUPON_FAILED",4004,"pick brand coupon failed","领取优惠券失败"),
     
-    
+    TONGTUN_FENGKONG_REGISTER_PWD_ERROR("TONGTUN_FENGKONG_REGISTER_PWD_ERROR",4007,"tongtun fengkong error","您要找回的手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
     TONGTUN_FENGKONG_REGIST_ERROR("TONGTUN_FENGKONG_REGIST_ERROR",4004,"tongtun fengkong error","您注册手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
     TONGTUN_FENGKONG_LOGIN_ERROR("TONGTUN_FENGKONG_LOGIN_ERROR",4005,"tongtun login fengkong error","您登录手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
     TONGTUN_FENGKONG_TRADE_ERROR("TONGTUN_FENGKONG_TRADE_ERROR",4006,"tongtun trade fengkong error","您投资手机号存在安全风险，如有疑问请联系客服:0571-88193918"),

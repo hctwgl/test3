@@ -245,7 +245,7 @@ public class TongdunUtil extends AbstractThird {
 			// tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
-			logger.error("getLoginResult", e);
+			logger.error("getRegistResult", e);
 			return;
 		}
 		if (StringUtil.isBlank(registSwitch) || "0".equals(registSwitch)) {// 验证开关关闭
