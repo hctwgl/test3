@@ -11,6 +11,9 @@ body {
 img {
   min-height: 0.6rem;
 }
+.bigWrap {
+  overflow-x: hidden;
+}
 .bigBox {
   margin-bottom: 0.2rem;
   position: relative;
