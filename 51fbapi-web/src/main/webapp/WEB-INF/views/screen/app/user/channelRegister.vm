@@ -1,49 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170824031")
+    #set($version="2017082501")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
 </head>
 <body>
-    <input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
-    <input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
-    <input type="hidden" id="style" value="$!{style}">
+<input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
+<input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
+<input type="hidden" id="style" value="$!{style}">
 
-    <div class="channelRegister_wrap">
-        #if( $!{style}==9 || $!{style}==11 || $!{style}==12 || $!{style}==15 || $!{style}==16 || $!{style}==18 || $!{style}==22 )
-            <img src="$commonUrl/channel$!{style}_01.png">
-        #elseif( $!{style}==14 )
-            <img src="$commonUrl/channel7_01.jpg">
-        #elseif( $!{style}==17 )
-            <img src="$commonUrl/channel17_01.png">
-        #elseif( $!{style}==19 )
-            <img src="$commonUrl/channel19_01.png">
-        #elseif( $!{style}==20 || $!{style}==23 )
-            <img src="$commonUrl/channel17_01.jpg">
-        #elseif( $!{style}==21 )
-            <img src="$commonUrl/channel21_01.jpg">
-        #else
-            <img src="$commonUrl/channel$!{style}_01.jpg">
-        #end
-        <div class="channelRegisterWrap
+<div class="channelRegister_wrap">
+    #if( $!{style}==9 || $!{style}==11 || $!{style}==12 || $!{style}==15 || $!{style}==16 || $!{style}==18 || $!{style}==22 )
+        <img src="$commonUrl/channel$!{style}_01.png">
+    #elseif( $!{style}==14 )
+        <img src="$commonUrl/channel7_01.jpg">
+    #elseif( $!{style}==17 )
+        <img src="$commonUrl/channel17_001.png">
+    #elseif( $!{style}==19 )
+        <img src="$commonUrl/channel19_01.png">
+    #elseif( $!{style}==20 || $!{style}==23 )
+        <img src="$commonUrl/channel17_01.jpg">
+    #elseif( $!{style}==21 )
+        <img src="$commonUrl/channel21_01.jpg">
+    #else
+        <img src="$commonUrl/channel$!{style}_01.jpg">
+    #end
+    <div class="channelRegisterWrap
         #if( $!{style}==18 )
             hide
         #end
         ">
-            #if( $!{style}==7 || $!{style}==9 || $!{style}==12 || $!{style}==22 )
-                <img src="$commonUrl/channel$!{style}_02.png">
-            #elseif( $!{style}==11 || $!{style}==14 )
-                <img src="$commonUrl/channel7_02.png">
-            #elseif( $!{style}==15 || $!{style}==16 )
-                <img src="$commonUrl/channel15_02.png">
-            #elseif( $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==23 )
-                <img src="$commonUrl/channel17_02.jpg">
-            #else
+        #if( $!{style}==7 || $!{style}==9 || $!{style}==12 || $!{style}==22 )
+            <img src="$commonUrl/channel$!{style}_02.png">
+        #elseif( $!{style}==11 || $!{style}==14 )
+            <img src="$commonUrl/channel7_02.png">
+        #elseif( $!{style}==15 || $!{style}==16 )
+            <img src="$commonUrl/channel15_02.png">
+        #elseif( $!{style}==17)
+            <img src="$commonUrl/channel17_002.png">
+        #elseif( $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==23 )
+            <img src="$commonUrl/channel17_02.jpg">
+        #else
             <img src="$commonUrl/channel$!{style}_02.jpg">
-            #end
-           <ul class="clearfix
+        #end
+        <ul class="clearfix
 			    #if( $!{style}==7 || $!{style}==10 || $!{style}==11 || $!{style}==14 )
 				    channelRegister78
                 #elseif( $!{style}==15 || $!{style}==16 )
@@ -58,72 +60,101 @@
 				    channelRegister
 			    #end
 		   ">
-                <li><input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
-                #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
-                    <li><input type="password" class=" register_password" id="register_password" placeholder="请输入密码" name="words" maxlength="18"></li>
-                #else
+            <li><input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11"
+                       placeholder="请输入注册手机号"></li>
+            #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
+                <li><input type="password" class=" register_password" id="register_password" placeholder="请输入密码"
+                           name="words" maxlength="18"></li>
+            #else
                 <li class="clearfix">
-                    <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+                    <input type="text" class="register_verification" id="register_verification" maxlength="6"
+                           pattern="[0-9]*" placeholder="请输入短信验证码">
                     <button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
                 </li>
-                #end
-                #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
+            #end
+            #if( $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
                 <li class="clearfix">
-                    <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
+                    <input type="text" class="register_verification" id="register_verification" maxlength="6"
+                           pattern="[0-9]*" placeholder="请输入短信验证码">
                     <button class="register_codeBtn_right" id="register_codeBtn" style="
-                    #if( $!{style}==10 )
-                      color: #ffe402;
-                    #end
-                  ">点击获取</button>
+                        #if( $!{style}==10 )
+                            color: #ffe402;
+                        #elseif( $!{style}==17 )
+                             color: #ffffff;
+                        #end
+                            ">点击获取
+                    </button>
                 </li>
-                #else
-                <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码" name="words" maxlength="18"></li>
-                #end
-                <li>
-                    #if( $!{style}==10 || $!{style}==12 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==23 )
+            #else
+                <li><input type="password" class=" register_password" id="register_password" placeholder="请输入登录密码"
+                           name="words" maxlength="18"></li>
+            #end
+            <li>
+                #if( $!{style}==10 || $!{style}==12 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==23 )
                     <button class="register_submitBtn" id="register_submitBtn"></button>
-                    #else
+                #else
                     <button class="register_submitBtn" id="register_submitBtn">立即注册</button>
-                    #end
-                </li>
-                <div class="clearfix register_checkbox">
+                #end
+            </li>
+            <div class="clearfix register_checkbox">
+                #if( $!{style}==17 )
+                    <input type="checkbox" class="input_check input_check17" id="input_check" checked="checked">
+                #else
                     <input type="checkbox" class="input_check" id="input_check" checked="checked">
-                    <label for="input_check"></label>
-                    #if( $!{style}==21 )
-                        <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolBrwSpm">《借款超人用户注册协议》</a></p>
-                    #elseif( $!{style}==22 )
-                        <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolBrwPlatform">《借钱平台用户注册协议》</a></p>
-                    #else
-                        <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
-                    #end
-                </div>
-                #if( $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==17 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
+                #end
+
+                <label for="input_check"></label>
+                #if( $!{style}==21 )
+                    <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolBrwSpm">《借款超人用户注册协议》</a></p>
+                #elseif( $!{style}==22 )
+                    <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolBrwPlatform">《借钱平台用户注册协议》</a>
+                    </p>
+                #elseif( $!{style}==17 )
+                    <p class="clearfix" style="color:#949494;"><span>阅读并同意</span><a href="/app/sys/registerProtocol"
+                                                                                    style="color:#949494;">《51返呗用户注册协议》</a>
+                    </p>
+                #else
+                    <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+                #end
+            </div>
+            #if( $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==17 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
                 <p class="clearfix" style="width: 3.0rem; margin: 0.2rem auto 0; color: #fff; font-size: 0.3rem;">
-                    <span style="float:left;margin-right:0.1rem;">已注册用户</span>
-                    #if( $!{style}==21 )
-                        <a href="javascript:void(0)" id="borrowSuperman" style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
-                    #elseif( $!{style}==22 )
-                        <a href="javascript:void(0)" id="BrwPlatform" style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
+                    #if( $!{style}==17 )
+                        <span style="float:left;margin-right:0.1rem;color:#949494;">已注册用户</span>
                     #else
-                        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
+                        <span style="float:left;margin-right:0.1rem;">已注册用户</span>
+                    #end
+
+                    #if( $!{style}==21 )
+                        <a href="javascript:void(0)" id="borrowSuperman"
+                           style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
+                    #elseif( $!{style}==22 )
+                        <a href="javascript:void(0)" id="BrwPlatform"
+                           style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
+                    #elseif( $!{style}==17 )
+                        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"
+                           style="float:left;color:#914033;text-decoration:underline;">直接登录</a>
+                    #else
+                        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"
+                           style="float:left;color:#ffe500;text-decoration:underline;">直接登录</a>
                     #end
                 </p>
-                #end
-            </ul>
-        </div>
-        <div class="registerMask hide"></div>
-        #if( $!{style}==4 || $!{style}==13 )
+            #end
+        </ul>
+    </div>
+    <div class="registerMask hide"></div>
+    #if( $!{style}==4 || $!{style}==13 )
         <img src="$commonUrl/channel$!{style}_03.jpg">
-        #elseif( $!{style}==7 )
+    #elseif( $!{style}==7 )
         <img src="$commonUrl/channel$!{style}_03.png">
-        #elseif( $!{style}==15 || $!{style}==16 || $!{style}==19 || $!{style}==20 )
+    #elseif( $!{style}==15 || $!{style}==16 || $!{style}==19 || $!{style}==20 )
         <div class="registerSuss8 hide">
             <p>注册成功，立即下载【51返呗】</p>
             <p>借钱新口子，最高5000元任你借</p>
             <p>30分钟内登录，领取30元还款抵用券</p>
             <span id="downloadApp">点击下载</span>
         </div>
-        #elseif( $!{style}==9 )
+    #elseif( $!{style}==9 )
         <div class="channel9_rule">
             <p><i></i><span>活动规则</span></p>
             <p>1.活动时间：2017年6月9日--2017年6月25日；</p>
@@ -133,7 +164,7 @@
 
             <p>如有任何疑问，请拨打51返呗客服热线：0571-88193918</p>
         </div>
-        #elseif( $!{style}==10 )
+    #elseif( $!{style}==10 )
         <img src="$commonUrl/channel$!{style}_03.jpg">
         <div class="registerSuss8 hide">
             <p>注册成功，立即下载【51返呗】</p>
@@ -141,22 +172,23 @@
             <p>30分钟内登录，领取30元还款抵用券</p>
             <span id="downloadApp">点击下载</span>
         </div>
-        #elseif( $!{style}==12 )
+    #elseif( $!{style}==12 )
         <img src="$commonUrl/channel$!{style}_03.png">
         <div class="registerSuss12 hide"><img id="downloadApp" src="$commonUrl/channel$!{style}_04.png"></div>
-        #elseif( $!{style}==18 )
-            <div class="downloadBtn"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"></a></div>
-        #end
-        <div class="imgVftCodeWrap hide">
-            <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
-            <div class="imgVftCodeInput clearfix">
-                <div class="imgVftCodeDiv"><input type="text" class="imgVftCode" id="imgVftCode" maxlength="4" placeholder="请输入"></div>
-                <div class="imgVftCodeWrapImgDiv"><img id="imgVftCodeWrapImg" src=""></div>
-                <span class="imgVftCodeRefresh" id="imgVftCodeRefresh"><i></i></span>
-            </div>
-            <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
+    #elseif( $!{style}==18 )
+        <div class="downloadBtn"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"></a></div>
+    #end
+    <div class="imgVftCodeWrap hide">
+        <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
+        <div class="imgVftCodeInput clearfix">
+            <div class="imgVftCodeDiv"><input type="text" class="imgVftCode" id="imgVftCode" maxlength="4"
+                                              placeholder="请输入"></div>
+            <div class="imgVftCodeWrapImgDiv"><img id="imgVftCodeWrapImg" src=""></div>
+            <span class="imgVftCodeRefresh" id="imgVftCodeRefresh"><i></i></span>
         </div>
-        <div class="channelRegister_copyright
+        <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
+    </div>
+    <div class="channelRegister_copyright
 			#if( $!{style}==2 || $!{style}==4 )
 				copyright2
 			#elseif( $!{style}==7 || $!{style}==11 || $!{style}==14 )
@@ -185,11 +217,13 @@
         #elseif( $!{style}==23 )
             京ICP备16006674号-1
         #end
-        </div>
     </div>
-    <script type="text/javascript" src="/dist/js/core.js"></script>
-    <script type="text/javascript" src="/dist/js/md5.js"></script>
-    <script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
-    <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
+</div>
+<script type="text/javascript" src="/dist/js/core.js"></script>
+<script type="text/javascript" src="/dist/js/md5.js"></script>
+<script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
+<div style="display:none">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script>
+</div>
 </body>
 </html>
