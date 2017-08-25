@@ -245,7 +245,7 @@ public class TongdunUtil extends AbstractThird {
 			// tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
-			logger.error("getLoginWebResult", e);
+			logger.error("getLoginResult", e);
 			return;
 		}
 		if (StringUtil.isBlank(registSwitch) || "0".equals(registSwitch)) {// 验证开关关闭
@@ -364,7 +364,7 @@ public class TongdunUtil extends AbstractThird {
 			// tongdunEvent.getClientOperate(), ip, respStr, source);
 			apiResp = JSONObject.parseObject(respStr);
 		} catch (Exception e) {
-			logger.error("getLoginResult", e);
+			logger.error("getRegisterResult", e);
 			return;
 		}
 		String promotionSwitch = resourceValueWhithType(AfResourceType.promotionTongdunSwitch.getCode());
@@ -375,6 +375,44 @@ public class TongdunUtil extends AbstractThird {
 				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
 			logger.info("手机号码为：【" + accountMobile + "】的用户在渠道【"+channleCode+"】位置【"+pointCode+"】网页注册获取验证码时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
 			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
+		}
+	}
+	
+	/**
+	 * 网页忘记密码获取短信验证码
+	 * @param sessionId
+	 * @param channleCode
+	 * @param pointCode
+	 * @param ip
+	 * @param accountMobile
+	 * @param accountLogin
+	 * @param source
+	 */
+	public void getPromotionForgetPwdSmsResult(String sessionId, String channleCode, String pointCode, String ip, String accountMobile, String accountLogin, String source) {
+		TongdunEventEnmu tongdunEvent = TongdunEventEnmu.SMS_WEB;
+
+		accountLogin = accountMobile;
+		Map<String, Object> params = getCommonWebParam(tongdunEvent, sessionId, ip, accountLogin, accountMobile);
+		params.put("channleCode", channleCode);
+		params.put("pointCode", pointCode);
+		JSONObject apiResp = null;
+		try {
+			String respStr = invoke(params);
+			// this.addTdFraud(accountLogin, accountMobile,
+			// tongdunEvent.getClientOperate(), ip, respStr, source);
+			apiResp = JSONObject.parseObject(respStr);
+		} catch (Exception e) {
+			logger.error("getForgetPwdResult", e);
+			return;
+		}
+		String promotionSwitch = resourceValueWhithType(AfResourceType.promotionTongdunSwitch.getCode());
+		if (StringUtil.isBlank(promotionSwitch) || "0".equals(promotionSwitch)) {// 验证开关关闭
+			return;
+		}
+		if (apiResp != null && apiResp.get("final_decision") != null
+				&& resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
+			logger.info("手机号码为：【" + accountMobile + "】的用户在渠道【"+channleCode+"】位置【"+pointCode+"】网页忘记密码获取验证码时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
+			throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGISTER_PWD_ERROR);
 		}
 	}
 	
