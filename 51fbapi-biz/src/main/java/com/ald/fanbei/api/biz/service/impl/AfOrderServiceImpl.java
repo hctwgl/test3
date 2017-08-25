@@ -15,7 +15,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
-import org.junit.Test;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -807,20 +806,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public int deleteOrder(Long id) {
 		return orderDao.deleteOrder(id);
 	}
-	
-	@Test
-	public void test() {
-	
-		Long payId = new Long("0");
-		Integer nper = 3;
-		String payType = "AP";
-		BigDecimal saleAmount = new BigDecimal("438");
-		AfOrderServiceImpl serviceImpl = new AfOrderServiceImpl();
-		Map<String, Object> result = serviceImpl.payBrandOrder(payId, payType, 218171L, 90755L, "DM17082500009", "", "2017新款女装真丝连衣裙夏 OL职业短袖A字裙重磅桑蚕丝女中裙F37", saleAmount, nper, "iso", "192.168.102.1");
-		System.out.println(result);	
-			
-	
-	}
+
 	@Override
 	public Map<String, Object> payBrandOrder(final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress) {
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
