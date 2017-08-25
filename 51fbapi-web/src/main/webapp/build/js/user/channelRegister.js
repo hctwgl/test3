@@ -23,7 +23,7 @@ if( style==21 ){
     document.title="借钱平台注册";
     $("#BrwPlatform").click(function(){  // 更换已登陆链接
         if ( os==1 ){
-            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.ala.borrowMoney";
         }else if( os==2 ){
             window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E9%92%B1%E5%B9%B3%E5%8F%B0-%E5%B0%8F%E9%A2%9D%E6%9E%81%E9%80%9F%E7%8E%B0%E9%87%91%E5%80%9F%E8%B4%B7/id1259127316?mt=8";
         }
@@ -281,7 +281,7 @@ $(function(){
                                             }
 										} else if( style==22 ){
                                             if ( os==1 ){
-                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.ala.borrowMoney";
                                             }else if( os==2 ){
                                                 window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E9%92%B1%E5%B9%B3%E5%8F%B0-%E5%B0%8F%E9%A2%9D%E6%9E%81%E9%80%9F%E7%8E%B0%E9%87%91%E5%80%9F%E8%B4%B7/id1259127316?mt=8";
                                             }
