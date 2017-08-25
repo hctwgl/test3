@@ -140,6 +140,10 @@ $(function () {
                     success: function (data) {
                         console.log(data)
                         if (data.success) {
+                            // 关闭弹窗
+                            $(".registerMask").addClass("hide");
+                            $(".imgVftCodeWrap").addClass("hide");
+                            // 倒计时
                             $(".btn").attr("isState", 1);
                             $(".btn").text(timerS + " s");
                             timerInterval = setInterval(timeFunction, 1000);
