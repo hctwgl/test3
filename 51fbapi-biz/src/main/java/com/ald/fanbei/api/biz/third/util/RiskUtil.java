@@ -443,7 +443,7 @@ public class RiskUtil extends AbstractThird {
 	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, 
 			String scene, String cardNo, String appName, String ipAddress, 
 			String blackBox, String orderNo, String phone, BigDecimal amount, 
-			BigDecimal poundage, String time,String productName,String virtualCode,String SecSence,String ThirdSencem) {
+			BigDecimal poundage, String time,String productName,String virtualCode,String SecSence,String ThirdSence) {
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if(!"Y".equals(userAuth.getRiskStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -475,7 +475,7 @@ public class RiskUtil extends AbstractThird {
 		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo));
 		eventObj.put("dealAmount", dealAmount);
 		eventObj.put("SecSence", SecSence);
-		eventObj.put("ThirdSencem", ThirdSencem);
+		eventObj.put("ThirdSence", ThirdSence);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
