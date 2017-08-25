@@ -57,13 +57,17 @@
 				<li><i>还款方式</i><i>到期一次性还本付息</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
 				<li><i>还款日</i><i>#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
+
+        		<li><i>本金还款部分</i><i>¥</i></li>
+        		<li><i>大写金额</i><i>元</i></li>
+
 				<li><i>手续费率</i><i>#if($!{poundageRate}){{changeRate($!{poundageRate})}}#end</i></li>
 				<li><i>逾期手续费率</i><i>#if($!{overduePoundageRate}){{changeRate($!{overduePoundageRate})}}#end</i></li>
 			</ul><br>
 
 			<span>第二条 续借约定</span><br>
 			1、甲乙双方对本协议所述续借相关信息全部认可，乙方同意甲方的续借申请，延长甲方借款期限。<br>
-			2、在本协议签署前，甲方须还清原始借款利息、逾期费用，并支付续借手续费（具体费用清单以平台展示页面为准）。<br>
+        	2、在本协议签署前，甲方须还清原始借款利息、逾期费用、该次本金还款部分，并支付续借手续费（具体费用清单以平台展示页面为准）。<br>
 			3、 本协议签署生效之日开始计息，且甲方不得以任何理由拒绝履行本协议项下的还款义务。<br><br>
 
 			<span>第三条 还款</span><br>
