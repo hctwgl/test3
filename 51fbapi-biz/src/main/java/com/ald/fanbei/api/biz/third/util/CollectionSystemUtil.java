@@ -15,6 +15,7 @@ import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
@@ -43,6 +44,9 @@ public class CollectionSystemUtil extends AbstractThird {
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
+	@Resource
+	CommitRecordUtil commitRecordUtil;
+
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
@@ -99,17 +103,22 @@ public class CollectionSystemUtil extends AbstractThird {
 		data.setSign(DigestUtil.MD5(json));
 		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
-		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
-		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException("consumerRepayment fail , reqResult is null");
-		}else{
-			logger.info("consumerRepayment req success,reqResult"+reqResult);
-		}
-		CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
-		if (respInfo != null) {
-			return respInfo;
-		} else {
-			throw new FanbeiException("consumerRepayment fail , respInfo info is null");
+		try{
+			String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
+			if (StringUtil.isBlank(reqResult)) {
+				throw new FanbeiException("consumerRepayment fail , reqResult is null");
+			}else{
+				logger.info("consumerRepayment req success,reqResult"+reqResult);
+			}
+			CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
+			if (respInfo != null && StringUtil.equals("200", respInfo.getCode())) {
+				return respInfo;
+			} else {
+				throw new FanbeiException("renewalNotify fail , respInfo info is "+JSONObject.toJSONString(respInfo));
+			}
+		}catch(Exception e){
+			commitRecordUtil.addRecord("repayment", borrowNo, json, getUrl()+"/api/getway/repayment/repaymentAchieve");
+			throw new FanbeiException("consumerRepayment fail Exception is "+e+",consumerRepayment send again");
 		}
 	}
 
@@ -136,18 +145,24 @@ public class CollectionSystemUtil extends AbstractThird {
 		data.setSign(DigestUtil.MD5(json));
 		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
-		String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/renewalAchieve", data);
-		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException("renewalNotify fail , reqResult is null");
-		}else{
-			logger.info("renewalNotify req success,reqResult"+reqResult);
+		try{
+			String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/renewalAchieve", data);	
+			if (StringUtil.isBlank(reqResult)) {
+				throw new FanbeiException("renewalNotify fail , reqResult is null");
+			}else{
+				logger.info("renewalNotify req success,reqResult"+reqResult);
+			}
+			CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
+			if (respInfo != null && StringUtil.equals("200", respInfo.getCode())) {
+				return respInfo;
+			} else {
+				throw new FanbeiException("renewalNotify fail , respInfo info is "+JSONObject.toJSONString(respInfo));
+			}
+		}catch(Exception e){
+			commitRecordUtil.addRecord("renewal", borrowNo, json, getUrl()+"/api/getway/repayment/renewalAchieve");
+			throw new FanbeiException("renewalNotify fail Exception is "+e+",renewalNotify send again");
 		}
-		CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
-		if (respInfo != null) {
-			return respInfo;
-		} else {
-			throw new FanbeiException("renewalNotify fail , respInfo info is null");
-		}
+
 	}
 	
 	public CollectionOperatorNotifyRespBo offlineRepaymentNotify(String timestamp, String data, String sign) {
