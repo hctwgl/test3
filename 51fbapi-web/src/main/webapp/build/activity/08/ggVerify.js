@@ -148,7 +148,7 @@ $(function () {
                             $(".btn").text(timerS + " s");
                             timerInterval = setInterval(timeFunction, 1000);
 
-                        } else if (data.url == "ForgetPwd") {
+                        } else {
                             requestMsg(data.msg);
                         }
                     },

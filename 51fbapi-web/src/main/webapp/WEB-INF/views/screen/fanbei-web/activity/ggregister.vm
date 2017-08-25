@@ -30,7 +30,7 @@
         </div>
         <div class="phone password">
             <span class="bicon"></span>
-            <input type="password" maxLength=11 minLength=11  placeholder="请输入密码" id="pasicon"  class="pinp mobile" id="password">
+            <input type="password" maxLength=18 minLength=6  placeholder="请输入密码" class="pinp mobile" id="password">
             <span class="big-two">
                 <span class="xxicon pasicon"><img src="$src/fork.png" alt=""></span>
             </span>
