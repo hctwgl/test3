@@ -190,7 +190,7 @@ img {
 }
 li:nth-child(2) .stripe {
   float: right;
-  margin-right: -0.1rem;
+  margin-right: 0rem;
 }
 li:nth-child(2) .discountRight {
   margin-left: -0.4rem;
