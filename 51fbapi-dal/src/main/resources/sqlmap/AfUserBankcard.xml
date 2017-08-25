@@ -176,6 +176,8 @@
 			af_user_bankcard
 		WHERE
 			is_delete=0 
+		AND
+			id 	<![CDATA[>]]> 369053
 	</select>
 	
 </mapper>
