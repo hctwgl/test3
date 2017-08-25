@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -95,6 +96,7 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.ald.fanbei.api.dal.domain.query.AfUserBankQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 @Controller
 public class TestController {
@@ -689,27 +691,35 @@ public class TestController {
 			AfUserBankQuery query = new AfUserBankQuery();
 			
 			query.setPageNo(1);
-			query.setPageSize(50);
+			query.setPageSize(1000);
 			query.setFull(true);
 			afUserBankcardDao.getUserBankList(query);
+			List<AfUserBankDidiRiskDo> tempList;
 			for (int i = 1; i <= query.getTotalPage(); i++ ) {
 				query.setPageNo(i);
 				List<AfUserBankcardDo> list = afUserBankcardDao.getUserBankList(query);
-				for (AfUserBankcardDo cardInfo : list) {
-					try {
-						AfUserDo userInfo = afUserDao.getUserById(cardInfo.getUserId());
-						AfUserLoginLogDo logInfo = afUserLoginLogDao.getUserLastLoginInfo(userInfo.getUserName());
-						String ip = logInfo.getLoginIp();
-						AfUserBankDidiRiskDo info = BuildInfoUtil.buildUserBankDidiRiskInfo(logInfo.getLoginIp(), iPTransferUtil.getLat(ip), iPTransferUtil.getLng(ip), cardInfo.getUserId(), cardInfo.getRid(), logInfo.getUuid(),"");
-						afUserBankDidiRiskService.saveRecord(info);
-						
-					} catch (Exception e) {
-						// TODO: handle exception
+				tempList = new ArrayList<AfUserBankDidiRiskDo>();
+				try {
+					for (AfUserBankcardDo cardInfo : list) {
+						 	try {
+						 		AfUserDo userInfo = afUserDao.getUserById(cardInfo.getUserId());
+						 		AfUserLoginLogDo logInfo = afUserLoginLogDao.getUserLastLoginInfo(userInfo.getUserName());
+						 		String ip = logInfo.getLoginIp();
+						 		AfUserBankDidiRiskDo info = BuildInfoUtil.buildUserBankDidiRiskInfo(logInfo.getLoginIp(), iPTransferUtil.getLat(ip), iPTransferUtil.getLng(ip), cardInfo.getUserId(), cardInfo.getRid(), logInfo.getUuid(),"");
+						 		tempList.add(info);
+							} catch (Exception e) {
+								logger.error("createDidiBankCardInfo in save failed e = {}", e);
+							}
 					}
+					if (CollectionUtils.isNotEmpty(tempList)) {
+						afUserBankDidiRiskService.saveRecordList(tempList);
+					}
+				} catch (Exception e) {
+					logger.error("createDidiBankCardInfo save failed e = {}", e);
 				}
 			}
 		} catch (Exception e) {
-			logger.error("allowcateBrandCoupon", e);
+			logger.error("allowcateBrandCoupon error e = {}", e);
 			return "fail";
 		} finally {
 			if (out != null) {

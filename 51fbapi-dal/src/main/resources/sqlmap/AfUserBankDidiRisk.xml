@@ -99,6 +99,31 @@
         </trim>
     </insert>
     
+    
+    <insert id="saveRecordList" parameterType="java.util.List" keyProperty="rid">
+        INSERT INTO af_user_bank_didi_risk
+        		(
+		            user_id,
+		            user_bank_id,
+		            uuid,
+		            ip,
+		            lat,
+		            lng
+	            )
+        VALUES
+        	<foreach collection="items" item="item" separator=",">
+		       (
+			       #{item.userId,jdbcType=INTEGER},
+			       #{item.userBankId,jdbcType=INTEGER},
+			       #{item.uuid,jdbcType=VARCHAR},
+			       inet_aton(#{item.ip,jdbcType=INTEGER}),
+			       #{item.lat,jdbcType=DECIMAL},
+			       #{item.lng,jdbcType=DECIMAL}
+			   )
+      		</foreach>
+        
+    </insert>
+    
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo">
         UPDATE af_user_bank_didi_risk
           <set>

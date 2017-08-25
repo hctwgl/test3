@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo;
 
 /**
@@ -12,4 +14,6 @@ import com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo;
  */
 public interface AfUserBankDidiRiskService extends ParentService<AfUserBankDidiRiskDo, Long>{
 
+	int saveRecordList(List<AfUserBankDidiRiskDo> list);
+	
 }
