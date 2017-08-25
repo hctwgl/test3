@@ -97,7 +97,7 @@ img {
 .discountRight .goBuyBtn {
   position: absolute;
   left: 58%;
-  bottom: 1rem;
+  bottom: 25%;
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   width: 2.78rem;
