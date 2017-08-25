@@ -1,0 +1,202 @@
+/**
+ * Created by yoe on 2017/8/3.
+ */
+
+
+@url: "http://f.51fanbei.com/h5/app/activity/08";
+*{
+    box-sizing:border-box;
+}
+
+body{
+    box-sizing:border-box;
+    overflow-x:hidden;
+}
+img{
+    min-height: 0.6rem;
+    
+}
+
+.bigBox{
+    margin-bottom:0.2rem;
+    position:relative;
+}
+.bigBox .tangle{
+    width:0.28rem;
+    height:0.1rem;
+    position:absolute;
+    right:0.01rem;
+    top:0.03rem;
+}
+.bannerUrl{
+    text-align:center;
+    color:#9E80B1;
+    padding:0.3rem 0 0;
+    background-color:#ECECEC;
+}
+.bannerUrl .left{
+    width:0.7rem;
+    height:0.33rem;
+    position:absolute;
+    left:-20%;
+    top:4%;
+}
+.bannerUrl .right{
+    width:0.7rem;
+    height:0.33rem;
+    position:absolute;
+    right:-20%;
+    top:4%;
+}
+.bannerUrl .centerBig{
+    font-size:0.6rem;
+    position:relative;
+}
+.bannerUrl .centerSmall{
+    font-size:0.15rem;
+}
+.discount,.rebate{
+    padding: 0.25rem;
+}
+.discount li{
+    width: 7.0rem;
+    height: 2.4rem;
+    background-color: #fff;
+    margin-bottom: 0.5rem;
+}
+.discount img{
+    float: left;
+    width: 3.28rem;
+    height: 4.4rem;
+    -webkit-background-size: cover;
+    background-size: cover;
+    margin-top:0.18rem;
+    margin-left:0.18rem;
+}
+.discount .buyBtn{
+    background-color: #ECECEC;
+}
+.discountRight{
+    position: relative;
+    float: right;
+    width: 3.44rem;
+    height: 4.4rem;
+    padding: 0.34rem 0.6rem 0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    line-height: 0.5rem;
+}
+.discountRightTitle{
+    width: 100%;
+    height: 0.5rem;
+    overflow: hidden;
+    color:#735D4F;
+    margin-top:30%;
+}
+.priceAmount{
+    color: #999;
+}
+.priceAmount span{
+    text-decoration: line-through;
+}
+.discountRight .goBuyBtn{
+    position: absolute;
+    left: 58%;
+    bottom: 1rem;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    width: 2.78rem;
+    height: 0.56rem;
+    line-height: 0.56rem;
+    text-align: center;
+    border-radius: 0.08rem;
+    color: #fff;
+    background-color: #D6555C;
+}
+
+.rebate li{
+    float: left;
+    width: 3.36rem;
+    background-color:white; 
+    
+}
+.rebate li:nth-child(2n+1){
+    margin: 0 0.16rem 0.24rem 0;
+}
+.rebate img{
+    width: 100%;
+    height: 3.36rem;
+    -webkit-background-size: cover;
+    background-size: cover;
+}
+.rebateRight{
+    padding: 0.25rem 0.25rem 0;
+    height: 1.7rem;
+    color: #111;
+    position: relative;
+}
+.rebateRightTitle{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0.1rem;
+    color:#745D4F;
+}
+
+.priceWrap span:nth-child(2){
+    position: relative;
+    padding-left: 0.4rem;
+}
+.priceWrap i{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 0.3rem;
+    height: 0.3rem;
+     background-image: url("@{url}/backMoney.png"); 
+    border-radius:50%;
+    -webkit-background-size: cover;
+    background-size: cover;
+}
+.rebate .priceWrap{
+    position: absolute;
+    bottom: 0.25rem;
+    left: 0.25rem;
+}
+.remark {
+    margin-top: 0.02rem;
+    color: #d6323b;
+    color: #999;
+}
+.rebateAmount{
+    color: #d6555c;
+}
+.rebateWrap{
+    position:relative;
+}
+
+.buyPhone{
+    width:60%;
+    height:100%;
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+.stripe{
+    float:left;
+    background-image: url("@{url}/product.png");
+    width:3.44rem;
+    height:4.53rem;
+    -webkit-background-size: cover;
+    background-size:cover;
+}
+li:nth-child(2) .stripe{
+    float:right;
+    margin-right:-0.1rem;
+} 
+li:nth-child(2) .discountRight{
+    margin-left:-0.4rem;
+    float:left;
+}
+
