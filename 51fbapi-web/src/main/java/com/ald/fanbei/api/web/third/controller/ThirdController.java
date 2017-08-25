@@ -101,12 +101,11 @@ public class ThirdController extends AbstractThird{
 
         AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
         try {
-            result = checkSignAndParam(params,"getDidiRiskInfo");
+//            result = checkSignAndParam(params,"getDidiRiskInfo");
             String orderId = params.get(ThirdCore.ORDER_ID);
             String type = params.get(ThirdCore.TYPE);
-            
-            
-            BoluomeGetDidiRiskInfoRespBo respInfo = boluomeService.getRiskInfo(orderId, type);
+            Long userId = NumberUtil.objToLongDefault(params.get(ThirdCore.USER_ID), null);
+            BoluomeGetDidiRiskInfoRespBo respInfo = boluomeService.getRiskInfo(orderId, type, userId);
             result.setData(respInfo);
         } catch (FanbeiException e) {
         	logger.error("getDidiRiskInfo failed : {}", e);
@@ -128,6 +127,7 @@ public class ThirdController extends AbstractThird{
     	if ("getDidiRiskInfo".equals(method) && (StringUtils.isEmpty(params.get(ThirdCore.ORDER_ID)) 
     			|| StringUtils.isEmpty(params.get(ThirdCore.TIME_STAMP))
     		    || StringUtils.isEmpty(params.get(ThirdCore.SIGN))
+    		    || StringUtils.isEmpty(params.get(ThirdCore.USER_ID))
     			)) {
     		throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
     	}
@@ -169,12 +169,14 @@ public class ThirdController extends AbstractThird{
         String timestamp = requestParams.getString(ThirdCore.TIME_STAMP);
         String sign = requestParams.getString(ThirdCore.SIGN);
         String type = requestParams.getString(ThirdCore.TYPE);
+        String userId = requestParams.getString(ThirdCore.USER_ID);
 
         params.put(ThirdCore.APP_KEY, appKey);
         params.put(ThirdCore.ORDER_ID, orderId);
         params.put(ThirdCore.TIME_STAMP, timestamp);
         params.put(ThirdCore.SIGN, sign);
         params.put(ThirdCore.TYPE, type);
+        params.put(ThirdCore.USER_ID, userId);
         return params;
     }
 

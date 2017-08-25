@@ -50,26 +50,32 @@ public class BoloumeServiceImpl implements BoluomeService {
 	IPTransferUtil iPTransferUtil;
 	
 	@Override
-	public BoluomeGetDidiRiskInfoRespBo getRiskInfo(String orderId, String type) {
+	public BoluomeGetDidiRiskInfoRespBo getRiskInfo(String orderId, String type, Long userId) {
 		BoluomeGetDidiRiskInfoRespBo resp = new BoluomeGetDidiRiskInfoRespBo();
-		AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
-		if (orderInfo == null) {
-			throw new FanbeiException(FanbeiExceptionCode.ORDER_NOT_EXIST);
+		AfUserDo userInfo = afUserService.getUserById(userId);
+		if (userInfo == null) {
+			throw new FanbeiException(FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
-		//获取payInfo
-		BoluomeGetDidiRiskInfoPayInfoBo pay_info = getPayInfo(orderInfo);
-		//获取绑卡信息
-		BoluomeGetDidiRiskInfoCardInfoBo card_info = getCardInfo(orderInfo);
-		//获取登陆相关信息
-		BoluomeGetDidiRiskInfoLoginInfoBo login_info = getLoginInfo(orderInfo);
-		
 		if ("PASSAGE_INFO".equals(type)) {
+			//获取绑卡信息
+			BoluomeGetDidiRiskInfoCardInfoBo card_info = getCardInfo(type,null,userInfo);
+			//获取登陆相关信息
+			BoluomeGetDidiRiskInfoLoginInfoBo login_info = getLoginInfo(userInfo);
 			resp.setCard_info(card_info);
 			resp.setLogin_info(login_info);
 		} else if("PAY_INFO".equals(type)){
+			AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
+			if (orderInfo == null) {
+				throw new FanbeiException(FanbeiExceptionCode.ORDER_NOT_EXIST);
+			}
+			//获取绑卡信息
+			BoluomeGetDidiRiskInfoCardInfoBo card_info = getCardInfo(type,orderInfo,userInfo);
+			//获取payInfo
+			BoluomeGetDidiRiskInfoPayInfoBo pay_info = getPayInfo(orderInfo);
 			resp.setCard_info(card_info);
 			resp.setPay_Info(pay_info);
 		}
+		
 		return resp;
 	}
 	
@@ -86,21 +92,20 @@ public class BoloumeServiceImpl implements BoluomeService {
 		return pay_info;
 	}
 	
-	private BoluomeGetDidiRiskInfoCardInfoBo getCardInfo(AfOrderDo orderInfo) {
+	private BoluomeGetDidiRiskInfoCardInfoBo getCardInfo(String type, AfOrderDo orderInfo, AfUserDo userInfo) {
 		BoluomeGetDidiRiskInfoCardInfoBo card_info = new BoluomeGetDidiRiskInfoCardInfoBo();
 		//当为微信支付，或者额度支付，获取默认滴滴风控银行卡信息
 		AfUserBankDidiRiskDo conditionInfo = new AfUserBankDidiRiskDo();
-		Long userId = orderInfo.getUserId();
-		conditionInfo.setUserId(userId);
-		if (orderInfo.getBankId() <= 0) {
-			conditionInfo.setUserBankId(0l);
-		} else {
-			conditionInfo.setUserBankId(orderInfo.getBankId());
+		Long userId = userInfo.getRid();
+		Long bankId = 0l;
+		//当PAY_INFO 一定为bankId
+		if ("PAY_INFO".equals(type)){
+			bankId = orderInfo.getBankId();
 		}
+		conditionInfo.setUserBankId(bankId <= 0 ? 0l : bankId);
 		AfUserBankDidiRiskDo bankInfo =afUserBankDidiRiskService.getByCommonCondition(conditionInfo);
 		//当用户没有绑卡，给个默认值
 		if (bankInfo == null) {
-			AfUserDo userInfo = afUserService.getUserById(userId);
 			AfUserLoginLogDo loginInfo = afUserLoginLogService.getUserLastLoginInfo(userInfo.getUserName());
 			//用户id MD5加密
 			card_info.setPeople_id(DigestUtil.MD5(userId + StringUtils.EMPTY));
@@ -113,7 +118,7 @@ public class BoloumeServiceImpl implements BoluomeService {
 			card_info.setIp(loginInfo.getLoginIp());
 			card_info.setLat(ipResult.getLatitude());
 			card_info.setLng(ipResult.getLongitude());
-			String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+orderInfo.getUserId();
+			String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+userInfo.getRid();
 			Object wifiMac = bizCacheUtil.getObject(loginWifiMacKey);
 			card_info.setWifi_mac(wifiMac != null ? wifiMac.toString() : StringUtils.EMPTY);
 			card_info.setTime(loginInfo.getGmtCreate().getTime());
@@ -134,10 +139,8 @@ public class BoloumeServiceImpl implements BoluomeService {
 		return card_info;
 	}
 	
-	private BoluomeGetDidiRiskInfoLoginInfoBo getLoginInfo(AfOrderDo orderInfo) {
+	private BoluomeGetDidiRiskInfoLoginInfoBo getLoginInfo(AfUserDo userInfo) {
 		BoluomeGetDidiRiskInfoLoginInfoBo login_info = new BoluomeGetDidiRiskInfoLoginInfoBo();
-		Long userId = orderInfo.getUserId();
-		AfUserDo userInfo = afUserService.getUserById(userId);
 		AfUserLoginLogDo userLoginInfo = afUserLoginLogService.getUserLastLoginInfo(userInfo.getUserName());
 		String ip = userLoginInfo.getLoginIp();
 		//转换ip
@@ -148,7 +151,7 @@ public class BoloumeServiceImpl implements BoluomeService {
 		login_info.setLat(ipResult.getLongitude());
 		login_info.setSource("app");
 		login_info.setTime(userLoginInfo.getGmtCreate().getTime());
-		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+orderInfo.getUserId();
+		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+userInfo.getRid();
 		Object wifiMac = bizCacheUtil.getObject(loginWifiMacKey);
 		login_info.setWifi_mac(wifiMac != null ? wifiMac.toString() : StringUtils.EMPTY);
 		return login_info;

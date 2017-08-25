@@ -12,7 +12,7 @@ import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
  */
 public interface BoluomeService {
 	
-	BoluomeGetDidiRiskInfoRespBo getRiskInfo(String orderId, String type);
+	BoluomeGetDidiRiskInfoRespBo getRiskInfo(String orderId, String type, Long userId);
 	
 	
 }
