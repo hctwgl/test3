@@ -729,15 +729,6 @@ public class TestController {
 		return "success";
 	}
 	
-	@RequestMapping(value = { "/getCardInfo" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String getCardInfo(HttpServletRequest request, HttpServletResponse response) {
-		
-		BoluomeGetDidiRiskInfoRespBo rsp = boluomeService.getRiskInfo("1000000140251", "PAY_INFO");
-		return rsp.toString();
-	}
-	
-	
 	/**
 	 * 
 	 * @param name 分期名称
