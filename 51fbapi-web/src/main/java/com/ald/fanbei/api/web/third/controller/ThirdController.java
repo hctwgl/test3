@@ -25,8 +25,10 @@ import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.AppResponse;
@@ -162,7 +164,7 @@ public class ThirdController extends AbstractThird{
     
     private Map<String, String> buildDidiRiskParam(JSONObject requestParams) {
         Map<String, String> params = new HashMap<String, String>();
-        String appKey = "1d397480-dbce-4d87-b48c-a34b55ee310d";
+        String appKey = ConfigProperties.get(Constants.CONFKEY_THIRD_BOLUOME_APPKEY);
         String orderId = requestParams.getString(ThirdCore.ORDER_ID);
         String timestamp = requestParams.getString(ThirdCore.TIME_STAMP);
         String sign = requestParams.getString(ThirdCore.SIGN);
