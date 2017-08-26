@@ -188,7 +188,7 @@ body {
 
 #presents .presents-bottom .presents-bottom-left {
     float: right;
-    margin-right: 15%;
+    margin-right: 1rem;
 }
 
 #presents .presents-bottom .presents-bottom-left p {
