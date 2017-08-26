@@ -237,7 +237,7 @@ function alaShareData(){
         "type": "share", // 此页面的类型
         "shareAppTitle": "全民集卡片 领取51元大奖",  // 分享的title
         'shareAppContent': "我正在51返呗收集卡片，集齐可领取51元现金红包！消费有返利又可以赚钱，快来参加啦~",  // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/ggShare.png",  // 分享右边小图
+        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/gg31.png",  // 分享右边小图
         "shareAppUrl": domainName+"/fanbei-web/activity/ggIndexShare?loginSource=F&activityId="+activityId+"&userName="+userName+"&sharePage=ggIndexShare",  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggIndexShare" // 分享的页面

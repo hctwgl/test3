@@ -54,7 +54,7 @@ $(function() {
         itemsId = $('.img.img3').attr('rid');
         name=$('.img.img3').attr('name');
         if (itemsId && itemsId != '') {
-            var dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友向你索要一张'+name+'卡，赠张专属卡送份心意，快赠送给Ta吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
+            var dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友向你索要一张'+name+'卡，赠张专属卡送份心意，快赠送给Ta吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/gg31.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
             var base64 = BASE64.encoder(dat);
             //console.log(base64)
             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
