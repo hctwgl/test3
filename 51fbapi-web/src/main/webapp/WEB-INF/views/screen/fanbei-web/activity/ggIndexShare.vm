@@ -76,7 +76,7 @@
     <div class="demandCard ask" @click="demandClick()">我要索要卡片</div>
     <div class="progress">
         <div class="left"></div>
-        <p class="p01">完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利</p>
+        <p class="p01">每个场景完成1笔订单，且消费满足限制条件时，均可得到1张该场景的专属卡片，更有高额返利<span>(消费可选择直接支付或分期)</span></p>
         <p class="p02">向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你</p>
         <p>集齐全部专属卡片，即可领取终极大奖<span v-for="item in content.normalCouponList">{{item.amount}}</span>元现金红包</p>
     </div>
