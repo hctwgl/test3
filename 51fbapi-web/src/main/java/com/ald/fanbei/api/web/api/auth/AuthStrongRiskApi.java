@@ -11,24 +11,13 @@ import java.util.Random;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
-import com.ald.fanbei.api.biz.service.AfCouponSceneService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfGameConfService;
-import com.ald.fanbei.api.biz.service.AfGameResultService;
-import com.ald.fanbei.api.biz.service.AfGameService;
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
@@ -107,8 +96,9 @@ public class AuthStrongRiskApi implements ApiHandle {
 	
 	@Resource
 	private CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
-	
-	
+
+	@Resource
+	AfRecommendUserService afRecommendUserService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -185,6 +175,10 @@ public class AuthStrongRiskApi implements ApiHandle {
 							// ignore error
 							logger.error("getAuthPrize=>" + e.getMessage());
 						}
+
+						//#region  新增需求 实名认证成功后 给钱10块钱给推荐人
+						afRecommendUserService.updateRecommendCash(userId);
+						//#endregion
 					}
 					
 					bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());

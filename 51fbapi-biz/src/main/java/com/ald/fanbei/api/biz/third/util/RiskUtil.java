@@ -830,9 +830,7 @@ public class RiskUtil extends AbstractThird {
 					}
 	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
 	      			smsUtil.sendRiskSuccess(userAccountDo.getUserName());
-					//#region  新增需求 实名认证成功后 给钱10块钱给推荐人
-					afRecommendUserService.updateRecommendCash(consumerNo);
-					//#endregion
+
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
