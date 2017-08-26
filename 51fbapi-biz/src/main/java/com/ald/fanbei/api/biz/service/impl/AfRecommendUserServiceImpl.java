@@ -96,6 +96,39 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
         }
     }
 
+    /**
+     * 通过强风控就给推荐人加10块钱
+     * @param userId
+     * @return
+     */
+    public int updateRecommendCash(long userId){
+        try {
+            AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
+            if (afRecommendUserDo != null) {
+                long pid = afRecommendUserDo.getParentId();
+                AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+                afUserAccountDo.setUserId(pid);
+                afUserAccountDo.setRebateAmount(BigDecimal.valueOf(10));
+                afUserAccountDao.updateRebateAmount(afUserAccountDo);
+
+                AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
+                afUserAccountLogDo.setAmount(BigDecimal.valueOf(10));
+                afUserAccountLogDo.setUserId(pid);
+                afUserAccountLogDo.setType("RECOMMEND_CASH_RISK");
+                afUserAccountLogDo.setRefId(String.valueOf( afRecommendUserDo.getId()));
+                afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+            }
+            return 1;
+        }
+        catch (Exception e){
+            logger.error("update updateRecommendCash e="+e);
+            logger.error("update updateRecommendCash userId="+userId);
+            return 1;
+        }
+    }
+
+
+
 
     public HashMap getRecommedData(long userId){
         return  afRecommendUserDao.getRecommedData(userId);

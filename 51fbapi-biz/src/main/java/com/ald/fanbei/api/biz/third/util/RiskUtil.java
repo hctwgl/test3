@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -42,21 +43,6 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfAuthContactsService;
-import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -178,7 +164,10 @@ public class RiskUtil extends AbstractThird {
 	AfUserVirtualAccountService afUserVirtualAccountService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-	
+
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -841,6 +830,9 @@ public class RiskUtil extends AbstractThird {
 					}
 	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
 	      			smsUtil.sendRiskSuccess(userAccountDo.getUserName());
+					//#region  新增需求 实名认证成功后 给钱10块钱给推荐人
+					afRecommendUserService.updateRecommendCash(consumerNo);
+					//#endregion
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
