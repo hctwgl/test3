@@ -3,8 +3,7 @@
 * @Date:   2017-08-21 16:58:37
 * @title:  物流信息
 */
-
-@url: "http://f.51fanbei.com/h5/app/activity/07";
+@url: "http://f.51fanbei.com/h5/app/images/sys";
 
 
 #top {
@@ -56,12 +55,10 @@
   width: 0.92rem;
 }
 
-
 .main_wrap {
   position: relative;
   margin-bottom: 0.2rem;
 }
-
 
 .item{
   background-color: #fff;
@@ -69,47 +66,93 @@
 }
 
 .contentLeft{
-  width: 0.47rem;
+  width: 0.94rem;
   height: 1.64rem;
   position: absolute;
-  margin-left: 0.1rem;
 }
 .contentRight{
-  left: 0.47rem;
-  right: 0;
-  height: 1.64rem;
+  left: 0.94rem;
+  height: 1.65rem;
   position: absolute;
   color: #0f1218;
-  border-bottom: 2px solid #afafaf;
-}
-.circle{
-  width: 0.2rem;
-  height: 0.2rem;
-  margin-top: 0.46rem;
-  text-align: center;
-  line-height: 0.2rem;
-  border-radius: 0.1rem;
-  background-color: #ff2054;
-  background-size: cover;
-  -webkit-background-size: cover;
-}
-.verticalLineTop{
-  position: absolute;
-  height: 0.3rem;
-  margin-left: 0.05rem;
-  border:1px solid #ff2054;
+  border-bottom: 1px solid #f5f5f5;
+
 }
 
-.verticalLineBottom{
-  position: absolute;
-  margin-top: 0.8rem;
-  height: 0.84rem;
-  margin-left: -0.15rem;
-  border:1px solid #ff2054;
+.item:last-child{
+  border-bottom: 1px solid #ffffff;
+}
+.firstCircle{
+  width: 0.28rem;
+  height: 0.28rem;
+  background: url("@{url}/devliery_oval.png");
+  background-size: cover;
+  -webkit-background-size: cover;
+  position: absolute ;
+  top:30%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+}
+
+.firstVerticalLine{
+  position: absolute ;
+  left: 50%;
+  top:50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  height: 100%;
+  width: 1px;
+  background-color: #f5f5f5;
+}
+
+.circleWrap{
+  width: 0.42rem;
+  height: 0.42rem;
+  line-height: 0.42rem;
+  border-radius: 0.21rem;
+  -webkit-border-radius: 0.21rem;
+  -webkit-border-radius: 0.21rem;
+  background-color: #fff;
+  background-size: cover;
+  -webkit-background-size: cover;
+  position: relative;
+  margin-top: 0.46rem;
+  top:30%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  z-index: 10;
+}
+.circle{
+  width: 0.14rem;
+  height: 0.14rem;
+  line-height: 0.14rem;
+  border-radius: 0.07rem;
+  -webkit-border-radius: 0.07rem;
+  background-color: #f5f5f5;
+  background-size: cover;
+  -webkit-background-size: cover;
+  position: absolute ;
+  top:50%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+}
+
+
+.verticalLine{
+  position: absolute ;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  height: 100%;
+  width: 1px;
+  background-color: #f5f5f5;
 }
 .content{
   color: #565656;
-  margin-top: 0.3rem;
+  margin-top: 0.23rem;
   margin-right: 0.48rem;
   font-size: 0.26rem;
   vertical-align: middle;

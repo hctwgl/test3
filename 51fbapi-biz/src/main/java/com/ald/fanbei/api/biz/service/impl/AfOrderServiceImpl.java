@@ -243,21 +243,28 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							if(null == goods){
 								Map<String, Object> params = new HashMap<String, Object>();
 								params.put(TaobaoApiUtil.OPEN_IID, goodsObj.getString("auction_id"));
+								
 								List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
-								XItem item = nTbkItemList.get(0);
-								if (item != null) {
+								if(nTbkItemList !=null && nTbkItemList.get(0) !=null){
+									XItem item = nTbkItemList.get(0);
+
 									logger.info("createOrderTrade_content item is not null");
 									orderType = item.getMall() ? OrderType.TMALL.getCode() : OrderType.TAOBAO.getCode();
 									numId = item.getOpenId() + StringUtils.EMPTY;
-								} else {
+									
+								}else{
 									//默认值
 									TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(goodsObj.getString("auction_id"));
 									logger.info("createOrderTrade_content item is null res = {}", res);
 									JSONObject resObj = JSON.parseObject(res.getBody());
-									JSONObject sellerInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data").getJSONObject("seller_info");
-									orderType = sellerInfo.getString("seller_type").toUpperCase();
+									if(resObj.getJSONObject("tae_item_detail_get_response")!=null){
+										JSONObject sellerInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data").getJSONObject("seller_info");
+										orderType = sellerInfo.getString("seller_type").toUpperCase();
+									}
+									
 									numId = StringUtils.EMPTY;
 								}
+								
 							}else{
 								goodsId = goods.getRid();
 								orderType = goods.getSource();
@@ -265,7 +272,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							}
 							AfOrderDo order = buildFullInfo(0l, obj.getString("order_id"), goodsObj.getString("detail_order_id"), StringUtils.EMPTY, OrderStatus.NEW.getCode(), 0l, orderType, 
 									StringUtils.EMPTY, goodsId, goodsObj.getString("auction_id"), numId, goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, 
-									priceAmount, priceAmount, priceAmount, obj.getString("shop_title"), PayStatus.NOTPAY.getCode(), StringUtils.EMPTY, StringUtils.EMPTY, null, StringUtils.EMPTY, null, StringUtils.EMPTY, null, BigDecimal.ZERO, BigDecimal.ZERO, 0l, null); 
+									priceAmount, priceAmount, priceAmount, obj.getString("shop_title"), PayStatus.NOTPAY.getCode(), StringUtils.EMPTY, StringUtils.EMPTY, null, StringUtils.EMPTY, null, StringUtils.EMPTY, null, BigDecimal.ZERO, BigDecimal.ZERO, 0l, null,"",0L); 
 							orderList.add(order);
 						}
 						logger.info("createOrderTrade_content orderList = {}" ,orderList);
@@ -546,7 +553,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	private AfOrderDo buildFullInfo(Long userId,String orderNo,String thirdOrderNo,String thirdDetailUrl,String status,Long userCouponId, String orderType,
 			String secType, Long goodsId, String openId, String numId, String goodsName, String goodsIcon, Integer count, BigDecimal priceAmount, BigDecimal saleAmount,
 			BigDecimal actualAmount, String shopName, String payStatus, String payType, String payTradeNo, Date gmtPay, String tradeNo, Date gmtRebated, String mobile,
-			Date gmtFinished, BigDecimal rebateAmount, BigDecimal commissionAmount, Long bankId, Date gmtPayEnd) {
+			Date gmtFinished, BigDecimal rebateAmount, BigDecimal commissionAmount, Long bankId, Date gmtPayEnd,String goodsPriceName,Long goodsPriceId) {
 		AfOrderDo orderDo = new AfOrderDo();
 		orderDo.setUserId(userId);
 		orderDo.setOrderNo(orderNo);
@@ -578,6 +585,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		orderDo.setCommissionAmount(commissionAmount);
 		orderDo.setBankId(bankId);
 		orderDo.setGmtPayEnd(gmtPayEnd);
+		orderDo.setGoodsPriceId(goodsPriceId);
+		orderDo.setGoodsPriceName(goodsPriceName);;
 		return orderDo;
 	}
 
@@ -1363,7 +1372,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
-		
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
 		}
@@ -1784,12 +1792,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 */
 	@Override
 	public int dealPayCpOrderFail(final String payOrderNo, final String tradeNo,final String payType) {
+		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					
-					AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 					// 不处理新建，处理
 					if (orderInfo == null) {
 						return 0;
@@ -1848,9 +1856,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		});
+		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+		}
 		return result;
 	}
-	
 	/**
 	 * 处理菠萝觅组合支付失败的情况
 	 */

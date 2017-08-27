@@ -243,12 +243,8 @@
 			order_type , 
 			sec_type , 
 			goods_id , 
-			<if test="goodsPriceName != null">
 		       goods_price_name,
-		    </if>
-	        <if test="goodsPriceId != null">
 	            goods_price_id,
-	        </if>
 			open_id , 
 			num_id , 
 			goods_name , 
@@ -285,12 +281,8 @@
     		#{item.orderType},
     		#{item.secType},
     		#{item.goodsId},
-            <if test="goodsPriceName != null">
-                #{goodsPriceName},
-            </if>
-            <if test="goodsPriceId != null">
-                #{goodsPriceId},
-            </if>
+            #{item.goodsPriceName},
+            #{item.goodsPriceId},
     		#{item.openId},
     		#{item.numId},
     		#{item.goodsName},
@@ -614,7 +606,7 @@
 		SELECT
 			id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 			status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
-			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,logistics_no,
 			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,status_remark,goods_price_name,bank_amount,borrow_amount
 		FROM
 			af_order

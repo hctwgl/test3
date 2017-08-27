@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017081601")
+    #set($version="2017082301")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>Apple助力七夕 惊喜双倍返</title>
@@ -17,7 +17,7 @@
 <body>
     <div id="selfHome" style="background-color:#fddbe6;">
         <img :lazy-src="returnData.bannerUrl">
-        <div class="discountWrap">
+        <div class="discountWrap selfAppleHome">
             <img src="$commonUrl/appleHome1.png">
             <ul class="discount clearfix">
                 <li v-for="item in discountMap" @click="goGoodsDetail(item)">
@@ -34,7 +34,7 @@
                 </li>
             </ul>
         </div>
-        <div class="rebateWrap">
+        <div class="rebateWrap selfAppleHome">
             <img src="$commonUrl/appleHome2.png">
             <ul class="rebate clearfix">
                 <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
@@ -53,4 +53,5 @@
     </div>
 </body>
 <script type="text/javascript" src="/dist/activity/08/selfHome.js?version=$version"></script>
+<script type="text/javascript" src="/dist/js/jquery.lazyload.js"></script>
 </html>

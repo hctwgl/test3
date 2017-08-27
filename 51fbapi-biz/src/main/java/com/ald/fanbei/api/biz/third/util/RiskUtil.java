@@ -203,6 +203,7 @@ public class RiskUtil extends AbstractThird {
 	 *            --地址
 	 * @return
 	 */
+	@Deprecated
 	public RiskRespBo register(String consumerNo, String realName, String phone, String idNo, String email,
 			String alipayNo, String address) {
 		RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
@@ -240,6 +241,7 @@ public class RiskUtil extends AbstractThird {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public void batchRegister(int pageSize, String userName) {
 		int count = afUserAccountService.getUserAccountCountWithHasRealName();
 		int pageCount = (int) Math.ceil(count / pageSize) + 1;
@@ -400,7 +402,8 @@ public class RiskUtil extends AbstractThird {
 			riskResp.setSuccess(true);
 			return riskResp;
 		} else {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+			riskResp.setSuccess(false);
+			return riskResp;
 		}
 	}
 	

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="/common/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="/dist/css/reset.css">
     <title></title>
     <style>
         .main{
@@ -27,7 +27,7 @@
 </head>
 <body>
     <div class="main">
-        <img src="http://f.51fanbei.com/h5/pc/vest/vest1.jpg">
+        <img id="one" src="http://f.51fanbei.com/h5/pc/vest/vest1.jpg">
         <img src="http://f.51fanbei.com/h5/pc/vest/vest2.jpg">
         <img src="http://f.51fanbei.com/h5/pc/vest/vest3.jpg">
         <img src="http://f.51fanbei.com/h5/pc/vest/vest4.jpg">
@@ -37,7 +37,7 @@
         <img src="http://f.51fanbei.com/h5/pc/vest/vest8.jpg">
         <img src="http://f.51fanbei.com/h5/pc/vest/vest10.jpg">
         <div class="copyrightWrap">
-            <p>版权所有</p>
+            <!--<p>版权所有</p>-->
             <p class="copyright" id="copyright"></p>
         </div>
     </div>
@@ -56,16 +56,25 @@
     var channelCode=getUrl("channelCode");
     if ( channelCode==1 ){
         document.title="快急送-小额信用借款，随借随还，利息低额度高";
-        document.getElementById("copyright").innerHTML="Yangzhou Grapefruit Nationwide Financial Services Inc.";
+        document.getElementById("copyright").innerHTML="版权所有 快急送 <br> Yangzhou Grapefruit Nationwide Financial Services Inc.";
     }else if( channelCode==2 ){
         document.title="钱有路白金版-小额信用借款，随借随还，利息低额度高";
-        document.getElementById("copyright").innerHTML="Yangzhou Grapefruit Nationwide Financial Services Inc.";
+        document.getElementById("copyright").innerHTML="版权所有 钱有路白金版 <br> Yangzhou Grapefruit Nationwide Financial Services Inc.";
     }else if( channelCode==3 ){
-        document.title="向钱贷白金版-小额信用借款，随借随还，利息低额度高";
-        document.getElementById("copyright").innerHTML="Kang Yu Sheng Hong (XIAMEN) Financial Service Co.,Ltd.";
+        document.title="向钱贷款-小额信用借款，随借随还，利息低额度高";
+        document.getElementById("one").src="http://f.51fanbei.com/h5/pc/vest/vest1_3.jpg";
+        document.getElementById("copyright").innerHTML="版权所有 向钱贷款 <br> Kang Yu Sheng Hong (XIAMEN) Financial Service Co.,Ltd.";
     }else if( channelCode==4 ){
         document.title="速贷专家-小额信用借款，随借随还，利息低额度高";
-        document.getElementById("copyright").innerHTML="Yangzhou Grapefruit Nationwide Financial Services Inc.";
+        document.getElementById("one").src="http://f.51fanbei.com/h5/pc/vest/vest1_4.jpg";
+        document.getElementById("copyright").innerHTML="版权所有 速贷专家 <br> Wantong Mutual Benefit (Beijing) Financial Service Outsourcing Co., Ltd.";
+    }else if( channelCode==5 ){
+        document.title="借款超人-小额信用借款，随借随还，利息低额度高";
+        document.getElementById("copyright").innerHTML="版权所有 借款超人 <br> Yangzhou Grapefruit Nationwide Financial Services Inc.";
+    }else if( channelCode==6 ){
+        document.title="还卡贷-小额信用借款，随借随还，利息低额度高";
+        document.getElementById("one").src="http://f.51fanbei.com/h5/pc/vest/vest1_6.jpg";
+        document.getElementById("copyright").innerHTML="版权所有 还卡贷 <br> 厦门才生财金融技术服务有限公司";
     }
 
 

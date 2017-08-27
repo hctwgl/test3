@@ -425,6 +425,14 @@ public abstract class BaseController {
 
         // 验证签名
         Map<String, Object> systemMap = requestDataVo.getSystem();
+        //针对ios的379版本的升级接口不做处理
+        if("/system/appUpgrade".equals(requestDataVo.getMethod())){
+        	logger.info(StringUtil.appendStrs("id=",requestDataVo.getId(),",appUpgrade context=" ,context));
+        }
+        if("/system/appUpgrade".equals(requestDataVo.getMethod()) && "379".equals(systemMap.get(Constants.REQ_SYS_NODE_VERSION))&& (requestDataVo.getId() != null && requestDataVo.getId().startsWith("i_"))){
+        	logger.info(StringUtil.appendStrs("id=",requestDataVo.getId(),",appUpgrade not check sign"));
+        	return context;
+        }
         this.checkSign(context.getAppVersion() + "", ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE)), context.getUserName(),
                 ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN)), ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME)), requestDataVo.getParams(), beforeLogin);
 
@@ -714,7 +722,25 @@ public abstract class BaseController {
                 String paraName = (String) enu.nextElement();
                 param.put(paraName, request.getParameter(paraName));
             }
-			this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI(),userName,"","","","","");
+
+            String ext1 = "";
+            String ext2 = "";
+            String ext3 = "";
+            String ext4 = "";
+            String ext5 = "";
+            if("/app/user/getRegisterSmsCode".equals(request.getRequestURI())){
+    			ext1 = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
+    			ext2 = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
+    			ext3 = respData!=null?respData.getMsg():"";
+    			ext4 = ObjectUtils.toString(request.getParameter("token"), "").toString();
+            }
+            if("/app/user/commitChannelRegister".equals(request.getRequestURI())){
+            	ext1 = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
+            	ext2 = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
+    			ext3 = respData!=null?respData.getMsg():"";
+            	ext4 = ObjectUtils.toString(request.getParameter("token"), "").toString();
+            }
+			this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT+"", request.getRequestURI(),userName,ext1,ext2,ext3,ext4,ext5);
         } catch (Exception e) {
             logger.error("do log exception", e);
         }

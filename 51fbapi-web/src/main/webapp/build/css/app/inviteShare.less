@@ -20,28 +20,46 @@ input,button{
   transform: translateX(-50%);
 }
 .inviteShareCont li{
-  width: 6.0rem;
+  width: 5.4rem;
   height: 0.8rem;
   line-height: 0.8rem;
   text-align: left;
-  margin: 0 auto 0.2rem;
+  margin: 0 auto 0.25rem;
   padding-left: 0.2rem;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
-.inviteShareCont li:nth-child(2) input{
-   width: 3.6rem;
- }
-.inviteShareCont li:nth-child(2) button{
-  width: 2.1rem;
-  height: 100%;
-  color: #a62c0d;
+.inviteShareCont .passwordWrap{
+  margin-bottom: 0.3rem;
 }
-.inviteShareCont li:nth-child(3){
-  margin-bottom: 0.68rem;
+.inviteShareCont .VerifiCodeWrap{
+  height:0.75rem;
+  margin-bottom: 0.6rem;
 }
+.inviteShareCont .VerifiCodeWrap input{
+  width: 3.0rem;
+}
+.inviteShareCont .VerifiCodeWrap button{
+  width: 1.8rem;
+  height: 0.8rem;
+  margin-left: 0.3rem;
+  color: #fff;
+}
+
+//.inviteShareCont li:nth-child(2) input{
+//   width: 3.6rem;
+// }
+//.inviteShareCont li:nth-child(2) button{
+//  width: 2.1rem;
+//  height: 100%;
+//  color: #a62c0d;
+//}
+//.inviteShareCont li:nth-child(3){
+//  margin-bottom: 0.68rem;
+//}
 .inviteShareCont li:last-child{
   padding-left: 0;
+  margin-bottom: 0;
 }
 .inviteShareCont li:last-child button{
   width: 100%;
@@ -55,7 +73,7 @@ input,button{
 /* 协议 */
 .checkbox{
   position: relative;
-  width: 5.9rem;
+  width: 5.4rem;
   height: .36rem;
   line-height: .36rem;
   margin: 0 auto;
@@ -82,7 +100,7 @@ input,button{
   height: 0.26rem;
   -webkit-background-size: cover;
   background-size: cover;
-  border: 1px solid #fff;
+  background-color: #949494;
   border-radius: 0.08rem;
 }
 .inputCheck:checked+label:after {
@@ -103,21 +121,21 @@ input,button{
   float: left;
   font-size: 0.24rem;
   margin-left: 0.4rem;
-  color: #fff;
-  padding-left: 10px;
+  color: #949494;
+  padding-left: 0.1rem;
 }
 .checkbox span,.checkbox a{
   float: left;
 }
 .checkbox a{
-  color: #fff;
+  color: #949494;
 }
 
 
 // 已登陆
 .registered{
   width: 7.5rem;
-  height: 1.5rem;
+  height: 0.8rem;
   font-size: 0.3rem;
   position: relative;
 }
@@ -129,4 +147,120 @@ input,button{
   transform: translate(-50%,-50%);
   color:#ffe500;
   text-decoration:underline;
+}
+
+
+// 图形验证码
+.registerMask{
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0.8;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.imgVftCodeWrap{
+  width: 5.64rem;
+  height: 3.7rem;
+  background-color: #fff;
+  border-radius: 0.2rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  font-size: 0.3rem;
+  padding: 0.26rem;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.imgVftCodeTitle{
+  position: relative;
+}
+.imgVftCodeTitle p{
+  margin-bottom: 0.36rem;
+  text-align: center;
+}
+.imgVftCodeTitle span{
+  width: 0.5rem;
+  height: 0.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.imgVftCodeTitle i{
+  width: 0.24rem;
+  height: 0.24rem;
+  background-image: url("https://fs.51fanbei.com/h5/app/images/user/shanc.png");
+  -webkit-background-size: cover;
+  background-size: cover;
+}
+.imgVftCodeInput{
+  position: relative;
+}
+.imgVftCodeDiv{
+  width: 4.3rem;
+  height: 1.08rem;
+  line-height: 1.08rem;
+  text-align: left;
+  border: 1px solid #ddd;
+  padding-left: 0.2rem;
+}
+.imgVftCode{
+  font-size: 0.28rem;
+}
+.imgVftCodeWrapImgDiv{
+  width: 8.0em;
+  height: 1.0rem;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.imgVftCodeWrapImgDiv img{
+  -webkit-background-size: cover;
+  background-size: cover;
+}
+//.imgVftCodeInput img{
+//  width: 1.3rem;
+//  height: 0.7rem;
+//  -webkit-background-size: cover;
+//  background-size: cover;
+//  position: absolute;
+//  top: 50%;
+//  right: 0.6rem;
+//  -webkit-transform: translateY(-50%);
+//  transform: translateY(-50%);
+//}
+.imgVftCodeInput span{
+  width: 0.6rem;
+  height: 0.5rem;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.imgVftCodeInput i{
+  width: 0.31rem;
+  height: 0.35rem;
+  background-image: url("https://fs.51fanbei.com/h5/common/refresh.png");
+  -webkit-background-size: cover;
+  background-size: cover;
+  margin-left: 0.3rem;
+}
+.imgVftCodeSbumit{
+  width: 4.62rem;
+  height: 0.8rem;
+  line-height: 0.8rem;
+  text-align: center;
+  background:#fe963b;
+  border-radius: 0.1rem;
+  color: #fff;
+  font-size: 0.32rem;
+  margin: 0.4rem 0.25rem 0;
 }
