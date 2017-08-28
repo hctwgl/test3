@@ -35,8 +35,8 @@ $(function () {
                 $('.banner').html(pic);
                 light += '<span class="light">' + data.data.fakeFinal + '</span>';
                 $('.light').html(light);
-                combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
-                $('.combo').html(combo);
+                // combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
+                $('.combo').html(data.data.itemsDo.name);
                 detail+='<p class="ruleCont">'+data.data.description+'</p>'
                 $('.ruleCont').html(detail);
 
