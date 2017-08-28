@@ -59,7 +59,7 @@
 				<li><i>还款日</i><i>#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
 
         		<li><i>本金还款部分</i><i>#if($!{repayAmountLower})￥$!{repayAmountLower}#end</i></li>
-        		<li><i>大写金额</i><i>$!{repayAmountCapital}元</i></li>
+        		<li><i>大写金额</i><i>$!{repayAmountCapital}</i></li>
 
 				<li><i>手续费率</i><i>#if($!{poundageRate}){{changeRate($!{poundageRate})}}#end</i></li>
 				<li><i>逾期手续费率</i><i>#if($!{overduePoundageRate}){{changeRate($!{overduePoundageRate})}}#end</i></li>
