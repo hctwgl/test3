@@ -144,6 +144,6 @@ public interface AfOrderDao {
 	 * 获得当天有效借款订单数
 	 * @return
 	 */
-	Integer getDealAmount(Long userId);
+	Integer getDealAmount(@Param("userId")Long userId ,@Param("orderType") String orderType);
 	
 }

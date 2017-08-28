@@ -276,6 +276,6 @@ public interface AfOrderService {
 	 * 获得当天有效借款订单数
 	 * @return
 	 */
-	Integer getDealAmount(Long userId);
+	Integer getDealAmount(Long userId,String orderType);
 	
 }

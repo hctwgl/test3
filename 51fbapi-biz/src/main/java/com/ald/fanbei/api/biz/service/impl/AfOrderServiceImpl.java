@@ -891,13 +891,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							_vcode = "99";
 						}
 						logger.info("verify userId" + userId);
-
-						String codeForSecond = null;
-						String codeForThird = null;
-						codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
-						codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
 						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
-						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,codeForSecond,codeForThird);
+						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,orderInfo.getOrderType(),orderInfo.getSecType());
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
@@ -1948,9 +1943,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public Integer getDealAmount(Long userId) {
+	public Integer getDealAmount(Long userId ,String orderType) {
 		
-		return orderDao.getDealAmount(userId);
+		return orderDao.getDealAmount(userId,orderType);
 	}
 	
 }

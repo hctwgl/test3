@@ -848,7 +848,7 @@
 	<update id="deleteOrder" parameterType="java.lang.Long" >
 		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
 	</update>
-	<select id = "getDealAmount" resultType="java.lang.Integer" parameterType="java.lang.Long">
+	<select id = "getDealAmount" resultType="java.lang.Integer" >
 		SELECT
 			COUNT(*) 
 		FROM
@@ -863,6 +863,9 @@
 			'REVIEW',
 			'DELIVERED'
 		)
+		
+		and is_delete = 0
+		and order_type = #{orderType}
 		AND DATE(gmt_create) = DATE(NOW())
 		AND user_id = #{userId};
 	</select>

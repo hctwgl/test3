@@ -71,6 +71,8 @@ import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
+import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
@@ -476,10 +478,15 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("virtualCode", virtualCode);
 		eventObj.put("productName", productName);
 		//增加3个参数，配合风控策略的改变
-		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo));
+		String codeForSecond = null;
+		String codeForThird = null;
+		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
+		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
+		
+		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),ThirdSence);
 		eventObj.put("dealAmount", dealAmount);
-		eventObj.put("SecSence", SecSence);
-		eventObj.put("ThirdSence", ThirdSence);
+		eventObj.put("SecSence", codeForSecond);
+		eventObj.put("ThirdSence", codeForThird);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
@@ -517,8 +524,8 @@ public class RiskUtil extends AbstractThird {
 	 * 获得当天有效借款订单数
 	 * @return
 	 */
-	private Integer getDealAmount(Long userId){
-		Integer result = afOrderService.getDealAmount(userId);
+	private Integer getDealAmount(Long userId,String orderType){
+		Integer result = afOrderService.getDealAmount(userId,orderType);
 		if (result == null) {
 			result = 0 ;
 		}
