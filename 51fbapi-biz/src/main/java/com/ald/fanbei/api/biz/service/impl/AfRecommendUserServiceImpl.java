@@ -105,6 +105,11 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
         try {
             AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
             if (afRecommendUserDo != null) {
+
+                afRecommendUserDo.setLoan_time(null);
+                afRecommendUserDo.setPrize_money(BigDecimal.valueOf(10));
+                afRecommendUserDao.updateLoanById(afRecommendUserDo);
+
                 long pid = afRecommendUserDo.getParentId();
                 AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
                 afUserAccountDo.setUserId(pid);
