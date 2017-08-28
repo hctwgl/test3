@@ -140,4 +140,10 @@ public interface AfOrderDao {
 	
 	List<AfOrderDo> get20170801ExceptionOrder();
 	
+	/**
+	 * 获取店铺名未空的订单
+	 * @return
+	 */
+	List<AfOrderDo> getNotShopNameByAgentBuyOrder();
+	
 }

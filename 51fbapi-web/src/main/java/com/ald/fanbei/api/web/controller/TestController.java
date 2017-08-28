@@ -45,6 +45,7 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
@@ -64,6 +65,8 @@ import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -87,6 +90,7 @@ import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.taobao.api.domain.XItem;
 
 @Controller
 public class TestController {
@@ -141,6 +145,8 @@ public class TestController {
 	BizCacheUtil bizCacheUtil;
 	@Resource 
 	BoluomeUtil boluomeUtil;
+	@Resource
+	private TaobaoApiUtil taobaoApiUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -459,6 +465,52 @@ public class TestController {
 		} catch (Exception e) {
 			logger.info("wxRefund error:",e);
 			message = "There is no trade can refund!";
+		}
+		return message;
+	}
+	
+	@RequestMapping(value = { "/changeShopName" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+	@ResponseBody
+	public String changeShopName(@RequestBody String body, HttpServletRequest request, HttpServletResponse response){
+		String message = "succ!";
+		try {
+			JSONObject json = JSONObject.parseObject(body);
+			String scret = json.getString("scret");
+			if(!"zsdERfds2123".equals(scret)){
+				throw new RuntimeException("秘钥不对");
+			}
+			 List<AfOrderDo> list = afOrderDao.getNotShopNameByAgentBuyOrder();
+			  List<String> orderNumIdsList = CollectionConverterUtil.convertToListFromList(list,
+                      new Converter<AfOrderDo, String>() {
+                          @Override
+                          public String convert(AfOrderDo source) {
+                              return source.getNumId();
+                          }
+                      });
+			  Map<String, Object> params = new HashMap<String, Object>();
+				params.put("numIid",StringUtil.turnListToStr(orderNumIdsList) );
+				List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+				
+				for (XItem xItem : nTbkItemList) {
+					String orderType = xItem.getMall()?"TMALL" : "TAOBAO";
+					String nick = xItem.getNick();
+					if(xItem.getOpenId()!=0){
+						for (AfOrderDo orderDo : list) {
+							if(StringUtils.equals(xItem.getOpenId()+"", orderDo.getNumId()) ){
+								AfOrderDo orderN = new  AfOrderDo();
+								orderN.setRid(orderDo.getRid());
+								orderN.setShopName(nick);
+								orderN.setSecType(orderType);
+								afOrderDao.updateOrder(orderN);
+							}
+						}
+					}
+
+				}
+
+		} catch (Exception e) {
+			logger.info("changeShopName error:",e);
+			message = "There is  changeShopName ";
 		}
 		return message;
 	}

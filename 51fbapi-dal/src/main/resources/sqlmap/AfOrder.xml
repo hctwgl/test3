@@ -849,4 +849,12 @@
 		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
 	</update>
 	
+	<select id="getNotShopNameByAgentBuyOrder"  resultType="AfOrderDo">
+		SELECT 	
+				<include refid="queryFields"/>
+ 	 	FROM `af_order`
+ 	 	WHERE 
+ 	 	 	`order_type` ='AGENTBUY' AND shop_name ='' LIMIT 50
+	</select>
+	
 </mapper>
