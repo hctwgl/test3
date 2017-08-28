@@ -3,8 +3,7 @@
 * @Date:   2017-08-18 15:37:34
 */
 
-let modelId=decodeURI(getUrl('modelId'));
-modelId=modelId.replace(/\s+/g,"");
+let modelId=getUrl('modelId');
 
 new Vue({
     el:'#altair',
