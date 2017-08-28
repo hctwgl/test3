@@ -48,7 +48,7 @@ public class ApplyRenewalApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -59,19 +59,19 @@ public class ApplyRenewalApi implements ApiHandle {
 		if (afBorrowCashDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
-		
+
 		AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
 		if (null != afRepaymentBorrowCashDo && StringUtils.equals(afRepaymentBorrowCashDo.getStatus(), "P")) {
 			throw new FanbeiException("There is a repayment is processing", FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
-		} 
-		
+		}
+
 		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo);
-		
+
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(afBorrowCashDo.getUserId());
-		
+
 		data.put("rebateAmount", userDto.getRebateAmount());
 		data.put("jfbAmount", userDto.getJfbAmount());
-		
+
 		resp.setResponseData(data);
 
 		return resp;
@@ -88,19 +88,27 @@ public class ApplyRenewalApi implements ApiHandle {
 		if (poundageRateCash != null) {
 			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
 		}
-		//未还金额
-		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
-		// 本期手续费  = 未还金额 * 续期天数 * 借钱手续费率（日）
-		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
-		// 续期应缴费用(利息+手续费+滞纳金)
-		BigDecimal renewalPayAmount = afBorrowCashDo.getRateAmount().add(poundage).add(afBorrowCashDo.getOverdueAmount());
+		
+		AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+		BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
+		BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
 
+		
+		// 续借本金
+		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
+		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
+		// 本期手续费 = 未还金额 * 续期天数 * 借钱手续费率（日）
+		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
+
+		// 续期应缴费用(利息+手续费+滞纳金+要还本金)
+		BigDecimal renewalPayAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount(), capital);
+				
 		data.put("rid", afBorrowCashDo.getRid());
 		data.put("rateAmount", afBorrowCashDo.getRateAmount());// 上期利息
 		data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());// 滞纳金
 		data.put("poundage", poundage);// 本期手续费
-		data.put("renewalPayAmount", renewalPayAmount);
+		data.put("capital", capital);// 续借需要支付本金
+		data.put("renewalPayAmount", renewalPayAmount);// 续期应缴费用
 		data.put("renewalAmount", waitPaidAmount);// 续期金额
 		data.put("renewalDay", allowRenewalDay);// 续期天数
 		return data;

@@ -275,7 +275,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String borrowTime = sdf.format(new Date(System.currentTimeMillis()));
 			RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress, blackBox, riskOrderNo, 
-					accountDo.getUserName(), amount, afBorrowCashDo.getPoundage(), borrowTime, "借钱",StringUtil.EMPTY_STRING);
+					accountDo.getUserName(), amount, afBorrowCashDo.getPoundage(), borrowTime, "借钱",StringUtil.EMPTY_STRING,null,null);
 			
 			if (verybo.isSuccess()) {
 				delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult());

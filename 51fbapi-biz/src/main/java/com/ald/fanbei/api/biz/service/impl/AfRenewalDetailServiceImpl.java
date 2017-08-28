@@ -91,14 +91,14 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	CollectionSystemUtil collectionSystemUtil;
 
 	@Override
-	public Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo) {
+	public Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo) {
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRenewalBorrowCashNo(now);
 		final String payTradeNo = repayNo;
 
 		String name = Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH;
 
-		final AfRenewalDetailDo renewalDetail = buildRenewalDetailDo(afBorrowCashDo, jfbAmount, repaymentAmount, repayNo, actualAmount, rebateAmount, borrow, cardId, payTradeNo, userId);
+		final AfRenewalDetailDo renewalDetail = buildRenewalDetailDo(afBorrowCashDo, jfbAmount, repaymentAmount, repayNo, actualAmount, rebateAmount, capital, borrow, cardId, payTradeNo, userId);
 		Map<String, Object> map = new HashMap<String, Object>();
 		afRenewalDetailDao.addRenewalDetail(renewalDetail);
 
@@ -168,7 +168,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					
 					//未还金额
 					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-					BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+					BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(afRenewalDetailDo.getCapital());
 					
 					BigDecimal rateAmount = BigDecimalUtil.multiply(waitPaidAmount, afRenewalDetailDo.getBaseBankRate(), bankDouble, new BigDecimal(afRenewalDetailDo.getRenewalDay()).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP));
 
@@ -184,7 +184,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 						afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 					}
 
-					afBorrowCashDo.setRepayAmount(afBorrowCashDo.getRepayAmount().add(afRenewalDetailDo.getPriorInterest()).add(afRenewalDetailDo.getPriorOverdue()));// 累计已还款金额
+					afBorrowCashDo.setRepayAmount(BigDecimalUtil.add(afBorrowCashDo.getRepayAmount(), afRenewalDetailDo.getPriorInterest(), afRenewalDetailDo.getPriorOverdue(), afRenewalDetailDo.getCapital()));// 累计已还款金额
 					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getSumOverdue().add(afBorrowCashDo.getOverdueAmount()));// 累计滞纳金
 					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);// 滞纳金置0
 					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));// 累计利息
@@ -264,7 +264,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		return accountLog;
 	}
 
-	private AfRenewalDetailDo buildRenewalDetailDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, Long borrowId, Long cardId, String payTradeNo, Long userId) {
+	private AfRenewalDetailDo buildRenewalDetailDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrowId, Long cardId, String payTradeNo, Long userId) {
 
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
@@ -281,7 +281,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 		//未还金额
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
 		// 本期手续费  = 未还金额 * 续期天数 * 借钱手续费率（日）
 		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
 		
@@ -302,7 +302,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		afRenewalDetailDo.setActualAmount(actualAmount);
 		afRenewalDetailDo.setPoundageRate(borrowCashPoundage);// 借钱手续费率（日）
 		afRenewalDetailDo.setBaseBankRate(baseBankRate);// 央行基准利率
-
+		afRenewalDetailDo.setCapital(capital);
+		
 		if (cardId == -2) {
 			afRenewalDetailDo.setCardNumber("");
 			afRenewalDetailDo.setCardName(Constants.DEFAULT_USER_ACCOUNT);

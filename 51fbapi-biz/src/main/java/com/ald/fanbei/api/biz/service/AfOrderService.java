@@ -271,5 +271,11 @@ public interface AfOrderService {
 	 */
 
 	int dealBrandPayCpOrderFail(String outTradeNo, String tradeNo, String code);
+
+	/**
+	 * 获得当天有效借款订单数
+	 * @return
+	 */
+	Integer getDealAmount(Long userId);
 	
 }

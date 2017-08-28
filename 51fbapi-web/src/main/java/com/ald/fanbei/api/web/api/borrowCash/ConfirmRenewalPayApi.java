@@ -119,24 +119,29 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 		if (poundageRateCash != null) {
 			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
 		}
-		//未还金额
+		AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+		BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
+		BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+		
+		//续借本金
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
 		// 本期手续费  = 未还金额 * 续期天数 * 借钱手续费率（日）
 		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
-		// 续期应缴费用(利息+手续费+滞纳金)
-		BigDecimal repaymentAmount = afBorrowCashDo.getRateAmount().add(poundage).add(afBorrowCashDo.getOverdueAmount());
+		
+		// 续期应缴费用(利息+手续费+滞纳金+要还本金)
+		BigDecimal repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount(), capital);
 		
 		BigDecimal actualAmount = BigDecimalUtil.subtract(repaymentAmount, jfb).subtract(userAmount);
 				
 		Map<String, Object> map;
 		if (cardId == -2) {// 余额支付
-			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, borrowId, cardId, userId, "", userDto);
+			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto);
 
 			resp.addResponseData("refId", map.get("refId"));
 			resp.addResponseData("type", map.get("type"));
 		} else if (cardId == -1) {// 微信支付
-			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, borrowId, cardId, userId, "", userDto);
+			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto);
 
 			resp.setResponseData(map);
 		} else if (cardId > 0) {// 银行卡支付
@@ -144,7 +149,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 			if (null == card) {
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+			map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto);
 
 			// 代收
 			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
