@@ -97,11 +97,12 @@ body {
 .money p:nth-child(2) {
     font-size: .5rem;
     padding-top: .3rem;
+    text-align:center;
 }
 
 .money p:nth-child(2) span {
     color: #fe963b;
-    margin-right: 0.3rem;
+    margin-right: 0.1rem;
 }
 
 .banner img {
@@ -187,11 +188,11 @@ body {
 
 #presents .presents-bottom .presents-bottom-left {
     float: right;
-    margin-right: 15%;
+    margin-right: 1rem;
 }
 
 #presents .presents-bottom .presents-bottom-left p {
-    margin-bottom: 0.58rem;
+    margin-bottom: 0.4rem;
     font-size: 0.3rem;
     position: relative;
 }
@@ -271,4 +272,7 @@ body {
 ::-webkit-scrollbar{
     width: 0;
     height:0;
+}
+.cost{
+    font-size:0.28rem;
 }

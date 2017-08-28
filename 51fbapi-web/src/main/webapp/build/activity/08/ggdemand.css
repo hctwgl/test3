@@ -96,7 +96,13 @@ body{
 }
 .money p:nth-child(2) span{
   color:#fe963b;
-  margin-left:0.1rem;
+  /* margin-left:0.1rem; */
+}
+.money .combo{
+    margin-left:1%;
+}
+.money .demand{
+    margin-left:-1%;
 }
 .banner img{
     width:6.25rem;
@@ -175,10 +181,10 @@ body{
 
 #presents .presents-bottom .presents-bottom-left {
     float: right;
-    margin-right: 15%;
+    margin-right: 1rem;
 }
 #presents .presents-bottom .presents-bottom-left p{
-    margin-bottom:0.58rem;
+    margin-bottom:0.4rem;
     font-size:0.3rem;
     position:relative;
 }
@@ -257,4 +263,7 @@ body{
 ::-webkit-scrollbar{
     width: 0;
     height:0;
+}
+.cost{
+    font-size:0.28rem;
 }

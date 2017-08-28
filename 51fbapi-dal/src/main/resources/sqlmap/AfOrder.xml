@@ -243,12 +243,8 @@
 			order_type , 
 			sec_type , 
 			goods_id , 
-			<if test="goodsPriceName != null">
 		       goods_price_name,
-		    </if>
-	        <if test="goodsPriceId != null">
 	            goods_price_id,
-	        </if>
 			open_id , 
 			num_id , 
 			goods_name , 
@@ -285,12 +281,8 @@
     		#{item.orderType},
     		#{item.secType},
     		#{item.goodsId},
-            <if test="goodsPriceName != null">
-                #{goodsPriceName},
-            </if>
-            <if test="goodsPriceId != null">
-                #{goodsPriceId},
-            </if>
+            #{item.goodsPriceName},
+            #{item.goodsPriceId},
     		#{item.openId},
     		#{item.numId},
     		#{item.goodsName},

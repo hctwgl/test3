@@ -547,6 +547,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 								afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						
+						bcashDo.setRateAmount(BigDecimal.ZERO);
+						bcashDo.setOverdueAmount(BigDecimal.ZERO);
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 					}
 					afBorrowCashService.updateBorrowCash(bcashDo);

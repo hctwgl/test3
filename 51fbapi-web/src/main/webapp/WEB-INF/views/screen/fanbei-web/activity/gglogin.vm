@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    #set($version="2017082401")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
@@ -31,7 +32,7 @@
         <div class="lspdiv clearFix">
             <span class="spl"><span id="gg_register" >我要注册</span></span>
             <span class="spr"><span id="gg_forget" >忘记密码</span></span>
-        </a>   
+        </div>
     </div>
     <div class="botimg">
             <img src="$src/pic-2.png" alt="">

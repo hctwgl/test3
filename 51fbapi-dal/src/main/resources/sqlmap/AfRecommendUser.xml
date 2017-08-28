@@ -72,8 +72,14 @@
 
 	<select id="getRecommendListByUserId" resultType="HashMap">
 		select
-		a.*,b.user_name
-		from af_recommend_user a  left join af_user b on a.user_id = b.id  where parentId = #{userId} and origin = 0 ORDER BY gmt_create desc limit #{pageIndex},#{pageSize}
+		a.id,a.user_id,a.parentId,a.is_delete,a.origin,a.is_loan,a.loan_time,a.gmt_create,case c.risk_status
+													when 'A' THEN a.prize_money
+													else a.prize_money +10
+													end  'prize_money',
+        a.loan_user_count,a.recommend_count,a.gmt_modified,b.user_name
+		from af_recommend_user a  left join af_user b on a.user_id = b.id
+				LEFT JOIN af_user_auth c on a.user_id = c.user_id
+		where parentId = #{userId} and origin = 0 ORDER BY gmt_create desc limit #{pageIndex},#{pageSize}
 	</select>
 
 	<select id="getRecommendListSort" resultType="HashMap">

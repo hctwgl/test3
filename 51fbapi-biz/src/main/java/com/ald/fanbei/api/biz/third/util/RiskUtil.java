@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -178,7 +179,10 @@ public class RiskUtil extends AbstractThird {
 	AfUserVirtualAccountService afUserVirtualAccountService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-	
+
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);

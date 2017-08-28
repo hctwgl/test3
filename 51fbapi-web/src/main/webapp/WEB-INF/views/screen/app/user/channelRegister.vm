@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170824031")
+    #set($version="2017082503")
     #set($commonUrl="https://fs.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -17,7 +17,7 @@
     #elseif( $!{style}==14 )
         <img src="$commonUrl/channel7_01.jpg">
     #elseif( $!{style}==17 )
-        <img src="$commonUrl/channel17_001.png">
+        <img src="$commonUrl/channel17_0001.png">
     #elseif( $!{style}==19 )
         <img src="$commonUrl/channel19_01.png">
     #elseif( $!{style}==20 || $!{style}==23 )

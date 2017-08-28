@@ -425,6 +425,14 @@ public abstract class BaseController {
 
         // 验证签名
         Map<String, Object> systemMap = requestDataVo.getSystem();
+        //针对ios的379版本的升级接口不做处理
+        if("/system/appUpgrade".equals(requestDataVo.getMethod())){
+        	logger.info(StringUtil.appendStrs("id=",requestDataVo.getId(),",appUpgrade context=" ,context));
+        }
+        if("/system/appUpgrade".equals(requestDataVo.getMethod()) && "379".equals(systemMap.get(Constants.REQ_SYS_NODE_VERSION))&& (requestDataVo.getId() != null && requestDataVo.getId().startsWith("i_"))){
+        	logger.info(StringUtil.appendStrs("id=",requestDataVo.getId(),",appUpgrade not check sign"));
+        	return context;
+        }
         this.checkSign(context.getAppVersion() + "", ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE)), context.getUserName(),
                 ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN)), ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME)), requestDataVo.getParams(), beforeLogin);
 
