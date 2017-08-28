@@ -988,7 +988,7 @@ public class RiskUtil extends AbstractThird {
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
-			if (StringUtil.equals("50", result)) {
+			if (StringUtil.equals("50", result)) {//50是定时任务 推送超时
 				//不做任何更新
 				return 0;
 			}

@@ -4,13 +4,13 @@
 	<sql id="queryFields">
 		id rid, gmt_create, gmt_modified, borrow_id, status, gmt_plan_repayment, 
 		renewal_amount, prior_interest, prior_overdue, next_poundage, jfb_amount, rebate_amount,
-		actual_amount, user_id, card_name,card_number, pay_trade_no, trade_no, renewal_day, poundage_rate, base_bank_rate
+		actual_amount, user_id, card_name,card_number, pay_trade_no, trade_no, renewal_day, poundage_rate, base_bank_rate, capital
 	</sql>
 	
 	<insert id="addRenewalDetail" parameterType="AfRenewalDetailDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_renewal_detail(gmt_create, gmt_modified, borrow_id, status, gmt_plan_repayment, 
 		renewal_amount, prior_interest, prior_overdue, next_poundage, jfb_amount, rebate_amount,
-		actual_amount, user_id, card_name,card_number, pay_trade_no, trade_no, renewal_day, poundage_rate, base_bank_rate)
+		actual_amount, user_id, card_name,card_number, pay_trade_no, trade_no, renewal_day, poundage_rate, base_bank_rate, capital)
 		VALUES (
 		NOW(),
 		NOW(),
@@ -31,7 +31,8 @@
 		#{tradeNo},
 		#{renewalDay},
 		#{poundageRate},
-		#{baseBankRate}
+		#{baseBankRate},
+		#{capital}
 		)
 	</insert>
 	
@@ -121,4 +122,5 @@
 			<include refid="queryFields"/> 
 		from af_renewal_detail WHERE borrow_id=#{borrowId} ORDER BY gmt_create DESC LIMIT 1 
 	</select>	
+	
 </mapper>
