@@ -41,6 +41,7 @@ import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
@@ -95,10 +96,19 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
+		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		List<Object> bannerList = new ArrayList<Object>();
+		List<Object> bannerListForShop = new ArrayList<Object>();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
-		//另一个banner
-		List<Object> bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
+		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		    //另一个banner
+		    bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
+		}else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowTopBanner.getCode()));
+		   //另一个banner
+		    bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowShopBanner.getCode()));
+		}
 		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();

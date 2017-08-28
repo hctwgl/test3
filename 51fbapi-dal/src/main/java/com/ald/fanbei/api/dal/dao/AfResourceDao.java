@@ -128,4 +128,8 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getScrollbarByType();
 
+	List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code);
+
+	//List<AfResourceDo> getHomeIndexListByOrderbyOnPreEnv(String code);
+
 }

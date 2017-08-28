@@ -147,4 +147,8 @@ public interface AfResourceService {
 	 * @return: AfResourceDo
 	 */
 	AfResourceDo getScrollbarByType();
+
+	List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code);
+
+//	List<AfResourceDo> getHomeIndexListByOrderbyOnPreEnv(String code);
 }

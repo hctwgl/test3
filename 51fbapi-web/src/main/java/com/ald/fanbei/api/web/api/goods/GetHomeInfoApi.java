@@ -54,48 +54,74 @@ public class GetHomeInfoApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
+		List<Object> bannerSecList = new ArrayList<Object>();
+		List<Object> one2OneList = new ArrayList<Object>();
+		List<Object> one2ManyList = new ArrayList<Object>();
+		List<Object> one2TwoList = new ArrayList<Object>();
+		List<Object> one2TwoList2 = new ArrayList<Object>();
+		List<Object> homeActivityList = new ArrayList<Object>();
+		List<Object> navigationList = new ArrayList<Object>();
 		//正式环境和预发布环境区分
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
-		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
-			bannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()));
-		}
-		List<Object> bannerSecList = new ArrayList<Object>();
+		
 		if(context.getAppVersion() >= 363){
 			bannerSecList = getObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
 		}
-		List<Object> one2OneList = getObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
-		
-		List<Object> one2ManyList = getOne2ManyObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
-		
-		List<Object> one2TwoList = getOne2ManyObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
-		
-		List<Object> one2TwoList2 = getOne2ManyObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo2.getCode()));
-		
-		List<Object> homeActivityList = getOne2ManyObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
-		
-		List<Object> navigationList = getObjectWithResourceDolist(
+            		one2OneList = getObjectWithResourceDolist(
+            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
+            		
+            	        one2ManyList = getOne2ManyObjectWithResourceDolist(
+            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
+            		
+            		one2TwoList = getOne2ManyObjectWithResourceDolist(
+            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
+            		
+            		one2TwoList2 = getOne2ManyObjectWithResourceDolist(
+            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo2.getCode()));
+            		
+            		homeActivityList = getOne2ManyObjectWithResourceDolist(
+            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
+            		
+            		navigationList = getObjectWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
-
-		data.put("bannerList", bannerList);
-		data.put("bannerSecList", bannerSecList);
-		data.put("homeActivityList",homeActivityList);
-		data.put("one2ManyList", one2ManyList);
-		data.put("one2TwoList", one2TwoList);
-		data.put("one2OneList", one2OneList);
-		data.put("navigationList", navigationList);
-		data.put("one2TwoList2",one2TwoList2);
+		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+			bannerList = getObjectWithResourceDolist(
+				afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()));
+			if(context.getAppVersion() >= 363){
+			     bannerSecList = getObjectWithResourceDolist(
+				afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeSecondBanner.getCode()));
+		    }
+        		one2OneList = getObjectWithResourceDolist(
+        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneImage.getCode()));
+        		
+        	        one2ManyList = getOne2ManyObjectWithResourceDolist(
+        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToMany.getCode()));
+        		
+        		one2TwoList = getOne2ManyObjectWithResourceDolist(
+        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToTwo.getCode()));
+        		
+        		one2TwoList2 = getOne2ManyObjectWithResourceDolist(
+        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToTwo2.getCode()));
+        		
+        		homeActivityList = getOne2ManyObjectWithResourceDolist(
+        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeActivity.getCode()));
+        		//预发线上未区分
+        		navigationList = getObjectWithResourceDolist(
+        				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
+		}
 		
+    		data.put("bannerList", bannerList);
+    		data.put("bannerSecList", bannerSecList);
+    		data.put("homeActivityList",homeActivityList);
+    		data.put("one2ManyList", one2ManyList);
+    		data.put("one2TwoList", one2TwoList);
+    		data.put("one2OneList", one2OneList);
+    		data.put("navigationList", navigationList);
+    		data.put("one2TwoList2",one2TwoList2);
 		
-
 		resp.setResponseData(data);
 		return resp;
 	}
