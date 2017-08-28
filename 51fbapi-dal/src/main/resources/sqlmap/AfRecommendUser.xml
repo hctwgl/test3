@@ -58,10 +58,11 @@
 
 	<update id="updateLoanById" parameterType="AfRecommendUserDo">
 		UPDATE af_recommend_user
-		set is_loan = 1,
-		loan_user_count =1,
+		set
 		prize_money = prize_money + #{prizeMoney}
 		<if test="loanTime != null">
+			,is_loan = 1
+			,loan_user_count =1
 			,loan_time = #{loanTime}
 		</if>
 		where id = #{id}
