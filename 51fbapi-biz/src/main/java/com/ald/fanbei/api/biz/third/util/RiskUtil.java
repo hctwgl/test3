@@ -483,7 +483,7 @@ public class RiskUtil extends AbstractThird {
 		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
 		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
 		
-		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),ThirdSence);
+		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),SecSence);
 		eventObj.put("dealAmount", dealAmount);
 		eventObj.put("SecSence", codeForSecond);
 		eventObj.put("ThirdSence", codeForThird);
