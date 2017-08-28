@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082403")
+    #set($version="2017082501")
     #set($commonUrl="http://f.51fanbei.com/h5/app/images/user")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteShare.css?version=$version">
 </head>
 <body>
     <div id="inviteShare" class="inviteShare">
-        <img src="$commonUrl/inviteShare1.png">
+        <img src="$commonUrl/inviteShare01.png">
         <div class="inviteShareContWrap">
-            <img src="$commonUrl/inviteShare2.png">
+            <img src="$commonUrl/inviteShare02.png">
             <ul class="inviteShareCont">
                 <li><input type="text" id="tel" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
-                <li class="clearfix">
+                <li class="passwordWrap"><input type="password" id="password" placeholder="请设置登陆密码" name="words" maxlength="18"></li>
+                <li class="VerifiCodeWrap clearfix">
                     <input type="text" id="VerifiCode" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
                     <button class="codeBtn" id="codeBtn" @click="getImgCode()">点击获取</button>
                 </li>
-                <li><input type="password" id="password" placeholder="请设置登陆密码" name="words" maxlength="18"></li>
-                <li @click="goRegister()"><button class="submitBtn" id="submitBtn">立即注册</button></li>
+                <li @click="goRegister()"><button class="submitBtn" id="submitBtn"></button></li>
+                <div class="checkbox clearfix">
+                    <input type="checkbox" class="inputCheck" id="inputCheck" checked="checked">
+                    <label for="inputCheck"></label>
+                    <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+                </div>
+                <p class="registered clearfix">
+                    <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>
+                </p>
             </ul>
+
         </div>
-        <div class="checkbox clearfix">
-            <input type="checkbox" class="inputCheck" id="inputCheck" checked="checked">
-            <label for="inputCheck"></label>
-            <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
-        </div>
-        <p class="registered clearfix">
-            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>
-        </p>
+
         <div class="registerMask hide"></div>
         <div class="imgVftCodeWrap hide">
             <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
