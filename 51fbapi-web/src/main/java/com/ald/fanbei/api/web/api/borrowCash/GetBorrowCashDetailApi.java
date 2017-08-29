@@ -116,10 +116,6 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 				}
 			}
 	
-			
-
-			
-			
 			long currentTime = System.currentTimeMillis();
 			Date nowDate = DateUtil.getEndOfDate(new Date(currentTime));
 			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate, afBorrowCashDo.getGmtPlanRepayment());
