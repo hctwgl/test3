@@ -332,6 +332,9 @@ public class Constants {
 	
 
 	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "ala_apply_borrow_cash_lock";
+	
+	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
+	
 	//催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
 
