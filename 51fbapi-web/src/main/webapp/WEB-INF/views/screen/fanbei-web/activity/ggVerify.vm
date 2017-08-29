@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    #set($version="2017082502")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
@@ -20,6 +21,17 @@
             <button class="btn" isState=0>获取验证码</button>
         </div>
         <button class="nextStep">下一步</button>
+    </div>
+    <!--弹窗-->
+    <div class="registerMask hide"></div>
+    <div class="imgVftCodeWrap hide">
+        <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
+        <div class="imgVftCodeInput clearfix">
+            <div class="imgVftCodeDiv"><input type="text" class="imgVftCode" id="imgVftCode" maxlength="4" placeholder="请输入"></div>
+            <div class="imgVftCodeWrapImgDiv"><img id="imgVftCodeWrapImg" src=""></div>
+            <span class="imgVftCodeRefresh" id="imgVftCodeRefresh"><i></i></span>
+        </div>
+        <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
     </div>
 </body>
 <script type="text/javascript" src="/dist/activity/08/ggVerify.js"></script>

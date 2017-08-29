@@ -22,7 +22,7 @@
             </div>
             <div class="money">
                 <p><i class="friend"></i>在51返呗点亮场景</p>
-                <p><span class="combo"></span>送给你</p>
+                <p><span class="combo"></span><span class="give">送给你</span></p>
             </div>
             <div class="banner">
                 <img src="" alt="" class="banner-img">
@@ -43,7 +43,7 @@
             </div>
             <div class="presents-bottom-left">
                 <p class="word-one">
-                    <span>完成1笔消费订单且满足消费规<br/>则时,即可获得1张场景专属卡片<br/>更有高额返利</span>
+                    <span>每个场景完成1笔订单，且消费<br/>满足限制条件时，均可得到1张<br/>该场景的专属卡片，更有高额返<br/>利（<i class="cost">消费可选选择直接支付或分<i><br/></i class="cost">期</i>）</span>
                 </p>
                 <p class="word-two">
                     <span>向好友索要、与好友互换,即可<br/>获取不同种类的专属卡片;分享<br/>后,好友消费后更有同等返利给<br/>到你</span>

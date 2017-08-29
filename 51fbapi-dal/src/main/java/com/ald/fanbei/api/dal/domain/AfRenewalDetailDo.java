@@ -31,10 +31,12 @@ public class AfRenewalDetailDo extends AbstractSerial {
 	private String payTradeNo;// 平台提供给三方支付的交易流水号
 	private String tradeNo;// 第三方的交易流水号
 	private int renewalDay;// 续期天数
+	
 	private Long userId;// 用户编号
 	private BigDecimal poundageRate;// 借钱手续费率（日）
 	private BigDecimal baseBankRate;// 央行基准利率
-
+	private BigDecimal capital;//每次续期需缴本金
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -203,9 +205,17 @@ public class AfRenewalDetailDo extends AbstractSerial {
 		this.renewalDay = renewalDay;
 	}
 
+	public BigDecimal getCapital() {
+		return capital;
+	}
+
+	public void setCapital(BigDecimal capital) {
+		this.capital = capital;
+	}
+
 	@Override
 	public String toString() {
-		return "AfRenewalDetailDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", borrowId=" + borrowId + ", status=" + status + ", gmtPlanRepayment=" + gmtPlanRepayment + ", renewalAmount=" + renewalAmount + ", priorInterest=" + priorInterest + ", priorOverdue=" + priorOverdue + ", nextPoundage=" + nextPoundage + ", jfbAmount=" + jfbAmount + ", rebateAmount=" + rebateAmount + ", actualAmount=" + actualAmount + ", cardName=" + cardName + ", cardNumber=" + cardNumber + ", payTradeNo=" + payTradeNo + ", tradeNo=" + tradeNo + ", renewalDay=" + renewalDay + ", userId=" + userId + ", poundageRate=" + poundageRate + ", baseBankRate=" + baseBankRate + "]";
+		return "AfRenewalDetailDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", borrowId=" + borrowId + ", status=" + status + ", gmtPlanRepayment=" + gmtPlanRepayment + ", renewalAmount=" + renewalAmount + ", priorInterest=" + priorInterest + ", priorOverdue=" + priorOverdue + ", nextPoundage=" + nextPoundage + ", jfbAmount=" + jfbAmount + ", rebateAmount=" + rebateAmount + ", actualAmount=" + actualAmount + ", cardName=" + cardName + ", cardNumber=" + cardNumber + ", payTradeNo=" + payTradeNo + ", tradeNo=" + tradeNo + ", renewalDay=" + renewalDay + ", userId=" + userId + ", poundageRate=" + poundageRate + ", baseBankRate=" + baseBankRate + ", capital=" + capital + "]";
 	}
 
 }

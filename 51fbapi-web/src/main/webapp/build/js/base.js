@@ -215,3 +215,28 @@ function loading(){
     }
     $("body").append(loadDoc());
 }
+
+// 弹窗msg
+function promptMsg(txt) {
+    var wrap=document.createElement('div');
+    $(wrap).css({
+        'position': 'fixed',
+        'top':'50%',
+        'left':'50%',
+        'transform':'translate(-50%,-50%)',
+        'max-width':'50%',
+        'padding':'.2rem .4rem',
+        'color':'white',
+        'background': 'rgba(0,0,0,0.7)',
+        'border-radius':' .3rem',
+        'display': 'none'
+    });
+    $(wrap).html(txt);
+    $('body').append($(wrap));
+    $(wrap).fadeIn();
+    setTimeout(function () {
+        $(wrap).fadeOut(function () {
+            $(wrap).remove();
+        });
+    },1000)
+}

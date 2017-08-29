@@ -139,6 +139,12 @@ public interface AfOrderDao {
 	
 	
 	List<AfOrderDo> get20170801ExceptionOrder();
+
+	/**
+	 * 获得当天有效借款订单数
+	 * @return
+	 */
+	Integer getDealAmount(@Param("userId")Long userId ,@Param("orderType") String orderType);
 	
 	/**
 	 * 获取店铺名未空的订单

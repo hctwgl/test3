@@ -58,6 +58,8 @@ import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
+import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
@@ -889,9 +891,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							_vcode = "99";
 						}
 						logger.info("verify userId" + userId);
-
 						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
-						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode);
+						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,orderInfo.getOrderType(),orderInfo.getSecType());
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
@@ -937,8 +938,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
+						String codeForSecond = null;
+						String codeForThird = null;
+						codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
+						codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
 						// 通过弱风控后才进行后续操作
-						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap));
+						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap),codeForSecond,codeForThird);
 						if (verybo.isSuccess()) {
 							logger.info("combination_pay result is true");
 							orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
@@ -1935,6 +1940,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 
 		return result;
+	}
+
+	@Override
+	public Integer getDealAmount(Long userId ,String orderType) {
+		
+		return orderDao.getDealAmount(userId,orderType);
 	}
 	
 }

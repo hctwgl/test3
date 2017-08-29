@@ -849,6 +849,31 @@
 		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
 	</update>
 	
+	<select id = "getDealAmount" resultType="java.lang.Integer" >
+		SELECT
+			COUNT(*) 
+		FROM
+			af_order
+		WHERE
+			pay_type IN ('AP', 'CP')
+		AND STATUS IN (
+			'AGENCYCOMPLETED',
+			'PAID',
+			'FINISHED',
+			'REBATED',
+			'REVIEW',
+			'DELIVERED'
+		)
+		
+		and is_delete = 0
+		and order_type = #{orderType}
+		<![CDATA[
+		AND gmt_create > =  DATE_SUB(NOW(),INTERVAL 24 HOUR)
+		 ]]>
+		
+		AND user_id = #{userId};
+	</select>
+	
 	<select id="getNotShopNameByAgentBuyOrder"  resultType="AfOrderDo">
 		SELECT 	
 				<include refid="queryFields"/>
