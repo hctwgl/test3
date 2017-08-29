@@ -57,6 +57,9 @@
         <li><i>还款方式</i><i>到期一次性还本付息</i></li>
         <li><i>借款用途</i><i>个人消费</i></li>
         <li><i>还款日</i><i>#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
+
+    #if($!{repayAmountLower})<li><i>本金还款部分</i><i>￥$!{repayAmountLower}</i></li>#end
+#if($!{repayAmountCapital})<li><i>大写金额</i><i>$!{repayAmountCapital}</i></li>#end
         <li><i>手续费率</i><i>#if($!{poundageRate}){{changeRate($!{poundageRate})}}#end</i></li>
         <li><i>逾期手续费率</i><i>#if($!{overduePoundageRate}){{changeRate($!{overduePoundageRate})}}#end</i></li>
     </ul><br>
