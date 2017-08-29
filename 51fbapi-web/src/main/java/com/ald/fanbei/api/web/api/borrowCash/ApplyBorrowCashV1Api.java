@@ -53,7 +53,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -217,14 +216,13 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 
 		}
-		///// 临时处理，如果当天内有申请，以最后一条的状态为准 end hy 2017年5月11日09:54:20//////
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
+		boolean isGetLock = bizCacheUtil.getLock(lockKey, "1");
+		
+		if (!isGetLock) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+		}
 		try {
-			boolean isGetLock = bizCacheUtil.getLock(lockKey, "1");
-
-			if (!isGetLock) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
-			}
 			boolean isCanBorrow = afBorrowCashService.isCanBorrowCash(userId);
 
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
