@@ -58,8 +58,8 @@
         <li><i>借款用途</i><i>个人消费</i></li>
         <li><i>还款日</i><i>#if($!{repaymentDay})$dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
 
-    #if($!{repayAmountLower})<li><i>本金还款部分</i><i>￥$!{repayAmountLower}</i></li>#end
-#if($!{repayAmountCapital})<li><i>大写金额</i><i>$!{repayAmountCapital}</i></li>#end
+        <li v-if="ver>=380"><i>本金还款部分</i><i>#if($!{repayAmountLower})￥$!{repayAmountLower}#end</i></li>
+        <li v-if="ver>=380"><i>大写金额</i><i>$!{repayAmountCapital}</i></li>
         <li><i>手续费率</i><i>#if($!{poundageRate}){{changeRate($!{poundageRate})}}#end</i></li>
         <li><i>逾期手续费率</i><i>#if($!{overduePoundageRate}){{changeRate($!{overduePoundageRate})}}#end</i></li>
     </ul><br>
@@ -131,6 +131,9 @@
 <script type="text/javascript">
     new Vue({
         el:'.fenqiServiceProtocol',
+        data:{
+            ver:getUrl('appVersion')||379
+        }
         methods:{
             changeRate: function(num){ // 利率截取最后两位小数
                 var rate=num;
