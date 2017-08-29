@@ -144,6 +144,6 @@ public interface AfOrderDao {
 	 * 获取店铺名未空的订单
 	 * @return
 	 */
-	List<AfOrderDo> getNotShopNameByAgentBuyOrder();
+	List<AfOrderDo> getNotShopNameByAgentBuyOrder(@Param("pageNo") Long pageNo);
 	
 }

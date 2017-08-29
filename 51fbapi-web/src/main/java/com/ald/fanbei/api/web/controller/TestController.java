@@ -475,11 +475,13 @@ public class TestController {
 		String message = "succ!";
 		try {
 			JSONObject json = JSONObject.parseObject(body);
+			String pageNo = json.getString("pageNo");
+
 			String scret = json.getString("scret");
 			if(!"zsdERfds2123".equals(scret)){
 				throw new RuntimeException("秘钥不对");
 			}
-			 List<AfOrderDo> list = afOrderDao.getNotShopNameByAgentBuyOrder();
+			 List<AfOrderDo> list = afOrderDao.getNotShopNameByAgentBuyOrder(Long.valueOf(pageNo));
 			  List<String> orderNumIdsList = CollectionConverterUtil.convertToListFromList(list,
                       new Converter<AfOrderDo, String>() {
                           @Override

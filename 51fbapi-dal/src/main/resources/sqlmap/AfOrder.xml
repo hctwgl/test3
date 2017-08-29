@@ -854,7 +854,7 @@
 				<include refid="queryFields"/>
  	 	FROM `af_order`
  	 	WHERE 
- 	 	 	`order_type` ='AGENTBUY' AND shop_name ='' LIMIT 50
+ 	 	 	`order_type` ='AGENTBUY' AND shop_name =''  LIMIT #{pageNo}, 50
 	</select>
 	
 </mapper>
