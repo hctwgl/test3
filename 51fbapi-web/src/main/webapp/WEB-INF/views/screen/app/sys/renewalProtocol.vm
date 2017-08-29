@@ -133,7 +133,7 @@
         el:'.fenqiServiceProtocol',
         data:{
             ver:getUrl('appVersion')||379
-        }
+        },
         methods:{
             changeRate: function(num){ // 利率截取最后两位小数
                 var rate=num;
