@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -122,7 +123,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 			long currentTime = System.currentTimeMillis();
 			Date nowDate = DateUtil.getEndOfDate(new Date(currentTime));
 			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate, afBorrowCashDo.getGmtPlanRepayment());
-			BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
+			BigDecimal waitPaidAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
 			// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 			if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) >= 0) {
 				data.put("renewalDay", allowRenewalDay);
@@ -131,6 +132,14 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 				if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
 					data.put("renewalStatus", "Y");
 				} 
+			}
+			
+			//当待还本金小于等于第一次续期时待还本金的10%时，不再显示续期入口
+			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
+			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+			if (waitPaidAmount.compareTo(capital) <= 0) {
+				data.put("renewalStatus", "N");
 			}
 		}
 		
