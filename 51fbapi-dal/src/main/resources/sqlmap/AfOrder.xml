@@ -868,7 +868,7 @@
 		and is_delete = 0
 		and order_type = #{orderType}
 		<![CDATA[
-		AND gmt_create > =  DATE_SUB(NOW(),INTERVAL 24 HOUR)
+		AND gmt_create >=  DATE_SUB(NOW(),INTERVAL 24 HOUR)
 		 ]]>
 		
 		AND user_id = #{userId};
