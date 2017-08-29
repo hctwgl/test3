@@ -175,6 +175,7 @@
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
 				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
+				<entry key="/goods/getHomeInfoV1" value-ref="getHomeInfoV1Api" />
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
