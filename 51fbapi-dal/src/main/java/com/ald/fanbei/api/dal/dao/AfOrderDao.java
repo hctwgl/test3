@@ -146,4 +146,10 @@ public interface AfOrderDao {
 	 */
 	Integer getDealAmount(@Param("userId")Long userId ,@Param("orderType") String orderType);
 	
+	/**
+	 * 获取店铺名未空的订单
+	 * @return
+	 */
+	List<AfOrderDo> getNotShopNameByAgentBuyOrder(@Param("pageNo") Long pageNo);
+	
 }

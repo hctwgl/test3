@@ -848,6 +848,7 @@
 	<update id="deleteOrder" parameterType="java.lang.Long" >
 		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
 	</update>
+	
 	<select id = "getDealAmount" resultType="java.lang.Integer" >
 		SELECT
 			COUNT(*) 
@@ -872,4 +873,13 @@
 		
 		AND user_id = #{userId};
 	</select>
+	
+	<select id="getNotShopNameByAgentBuyOrder"  resultType="AfOrderDo">
+		SELECT 	
+				<include refid="queryFields"/>
+ 	 	FROM `af_order`
+ 	 	WHERE 
+ 	 	 	`order_type` ='AGENTBUY' AND shop_name =''  LIMIT #{pageNo}, 50
+	</select>
+	
 </mapper>

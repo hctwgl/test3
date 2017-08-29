@@ -58,10 +58,13 @@
 
 	<update id="updateLoanById" parameterType="AfRecommendUserDo">
 		UPDATE af_recommend_user
-		set is_loan = 1,
-		loan_user_count =1,
-		prize_money = #{prizeMoney},
-		loan_time = #{loanTime}
+		set
+		prize_money = prize_money + #{prizeMoney}
+		<if test="loanTime != null">
+			,is_loan = 1
+			,loan_user_count =1
+			,loan_time = #{loanTime}
+		</if>
 		where id = #{id}
 	</update>
 
@@ -72,13 +75,9 @@
 
 	<select id="getRecommendListByUserId" resultType="HashMap">
 		select
-		a.id,a.user_id,a.parentId,a.is_delete,a.origin,a.is_loan,a.loan_time,a.gmt_create,case c.risk_status
-													when 'A' THEN a.prize_money
-													else a.prize_money +10
-													end  'prize_money',
+		a.id,a.user_id,a.parentId,a.is_delete,a.origin,a.is_loan,a.loan_time,a.gmt_create,a.prize_money,
         a.loan_user_count,a.recommend_count,a.gmt_modified,b.user_name
 		from af_recommend_user a  left join af_user b on a.user_id = b.id
-				LEFT JOIN af_user_auth c on a.user_id = c.user_id
 		where parentId = #{userId} and origin = 0 ORDER BY gmt_create desc limit #{pageIndex},#{pageSize}
 	</select>
 
