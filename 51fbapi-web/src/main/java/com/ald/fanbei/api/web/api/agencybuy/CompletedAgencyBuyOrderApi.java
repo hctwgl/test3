@@ -7,7 +7,10 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.rebate.RebateContext;
+import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -29,7 +32,8 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	
 	@Resource
 	AfOrderService afOrderService;
-	
+	@Resource
+	RebateContext rebateContext;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -46,6 +50,8 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		if(appVersion<371){
 			//如果为自营订单,不改变订单状态,直接返回操作成功
 			if(StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
+				//自营确认收货走返利
+				rebateContext.rebate(orderInfo);
 				logger.info("自营订单用户点击确认收货,系统对订单不做修改记录.orderId="+orderId+",userId="+userId);
 				return resp;
 			}else{
@@ -58,20 +64,26 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				}
 			}
 		}else{
-			if(OrderStatus.DELIVERED.getCode().equals(orderInfo.getStatus())){
-				AfOrderDo afOrderDo = new AfOrderDo();
-				afOrderDo.setRid(orderId);
-				afOrderDo.setStatus(OrderStatus.FINISHED.getCode());
-				afOrderDo.setGmtFinished(new Date());
-				afOrderDo.setLogisticsInfo("已签收");
-				if(afOrderService.updateOrder(afOrderDo) > 0){
-					return resp;
-				}else{
-					logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);
-				}
+			if(StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
+				//自营确认收货走返利处理，由于返利在确认收货收货状态之后，所以直接修改为返利成功即可
+				rebateContext.rebate(orderInfo);
 			}else{
-				logger.info("completedAgencyBuyOrder fail,order status not support.orderId="+orderId);
+				if(OrderStatus.DELIVERED.getCode().equals(orderInfo.getStatus())){
+					AfOrderDo afOrderDo = new AfOrderDo();
+					afOrderDo.setRid(orderId);
+					afOrderDo.setStatus(OrderStatus.FINISHED.getCode());
+					afOrderDo.setGmtFinished(new Date());
+					afOrderDo.setLogisticsInfo("已签收");
+					if(afOrderService.updateOrder(afOrderDo) > 0){
+						return resp;
+					}else{
+						logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);
+					}
+				}else{
+					logger.info("completedAgencyBuyOrder fail,order status not support.orderId="+orderId);
+				}
 			}
+
 		}
 		return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 	}

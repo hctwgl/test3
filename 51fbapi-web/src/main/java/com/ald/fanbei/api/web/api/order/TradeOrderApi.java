@@ -1,10 +1,7 @@
 package com.ald.fanbei.api.web.api.order;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTradeOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -16,6 +13,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -48,6 +46,8 @@ public class TradeOrderApi implements ApiHandle {
     AfResourceService afResourceService;
     @Resource
     AfTradeOrderService afTradeOrderService;
+    @Resource
+    AfTradeBusinessInfoService afTradeBusinessInfoService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -80,6 +80,14 @@ public class TradeOrderApi implements ApiHandle {
             // 保存手续费信息
             BorrowRateBo borrowRate = afResourceService.borrowRateWithResourceForTrade(nper);
             afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+        }
+
+        //计算返利信息
+        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(businessId);
+        if (afTradeBusinessInfoDo.getRebatePercent().compareTo(BigDecimal.ZERO) > 0 && afTradeBusinessInfoDo.getRebateMax().compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal rebateAmount=  afOrder.getActualAmount().multiply(afTradeBusinessInfoDo.getRebatePercent());
+            rebateAmount=rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax())<0 ?rebateAmount: afTradeBusinessInfoDo.getRebateMax();
+            afOrder.setRebateAmount(rebateAmount);
         }
         afOrderService.createOrder(afOrder);
 

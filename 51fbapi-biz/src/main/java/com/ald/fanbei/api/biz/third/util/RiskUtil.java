@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -133,6 +134,8 @@ public class RiskUtil extends AbstractThird {
 	UpsUtil upsUtil;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	RebateContext rebateContext;
 	@Resource
 	TongdunUtil tongdunUtil;
 	@Resource
@@ -1290,7 +1293,11 @@ public class RiskUtil extends AbstractThird {
 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
-						
+						if (orderInfo.getOrderType().equals(OrderType.TRADE)) {
+							logger.error("TRADE Rebate process");
+							//商圈订单付款后直接进行返利,并且将订单修改集中
+							rebateContext.rebate(orderInfo);
+						}
 						if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
 						}
