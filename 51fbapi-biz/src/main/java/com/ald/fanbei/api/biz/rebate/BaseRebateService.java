@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public abstract class BaseRebateService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -85,7 +87,9 @@ public abstract class BaseRebateService {
         afUserAccountLogDao.addUserAccountLog(accountLog);
         //修改账户表
         afUserAccountDao.updateRebateAmount(accountInfo);
-       //todo 返利已经到账 smsUtil.sendRebate();
+       //返利已经到账通知
+        smsUtil.sendRebate(accountInfo.getUserName(), new Date(),orderInfo.getRebateAmount());
+
         return true;
     }
 }
