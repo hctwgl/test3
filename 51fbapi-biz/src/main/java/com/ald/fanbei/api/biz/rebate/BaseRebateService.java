@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.rebate;
 
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -21,6 +22,8 @@ public abstract class BaseRebateService {
     AfUserAccountDao afUserAccountDao;
     @Resource
     AfUserAccountLogDao afUserAccountLogDao;
+    @Resource
+    SmsUtil smsUtil;
     /**
      * 是否可以进行返利的前置数据验证
      *
@@ -82,6 +85,7 @@ public abstract class BaseRebateService {
         afUserAccountLogDao.addUserAccountLog(accountLog);
         //修改账户表
         afUserAccountDao.updateRebateAmount(accountInfo);
+       //todo 返利已经到账 smsUtil.sendRebate();
         return true;
     }
 }

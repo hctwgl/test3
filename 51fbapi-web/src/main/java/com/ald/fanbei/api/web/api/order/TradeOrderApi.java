@@ -85,7 +85,7 @@ public class TradeOrderApi implements ApiHandle {
         //计算返利信息
         AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(businessId);
         if (afTradeBusinessInfoDo.getRebatePercent().compareTo(BigDecimal.ZERO) > 0 && afTradeBusinessInfoDo.getRebateMax().compareTo(BigDecimal.ZERO) > 0) {
-            BigDecimal rebateAmount=  afOrder.getActualAmount().multiply(afTradeBusinessInfoDo.getRebatePercent());
+            BigDecimal rebateAmount=  afOrder.getActualAmount().multiply(afTradeBusinessInfoDo.getRebatePercent()).divide(new BigDecimal(100),2,BigDecimal.ROUND_HALF_UP);
             rebateAmount=rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax())<0 ?rebateAmount: afTradeBusinessInfoDo.getRebateMax();
             afOrder.setRebateAmount(rebateAmount);
         }

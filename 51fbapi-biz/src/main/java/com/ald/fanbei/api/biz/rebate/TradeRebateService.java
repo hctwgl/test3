@@ -27,8 +27,8 @@ public class TradeRebateService extends BaseRebateService {
 
     @Override
     public boolean rebate(AfOrderDo orderInfo) {
-        //自营商品在确认收货时，直接返利
-        //成单时,自营商品会自动返利金额写入 Order表中。而且必须使用成单时的金额，方式商品表中的有变动
+        //扫码支付后，自动结算商户返利信息
+        //金额以成单时计算的的金额为准
         BigDecimal rebateAmount = orderInfo.getRebateAmount();
         orderInfo.setStatus(OrderStatus.REBATED.getCode());
         orderInfo.setGmtRebated(new Date());
