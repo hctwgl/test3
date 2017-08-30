@@ -11,6 +11,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -26,10 +28,6 @@ import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayStatus;
-import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfAgentOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
@@ -193,6 +191,11 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 							String title = item.getTitle();
 							String pictUrl = item.getPicUrl();
 							String nick = item.getNick();
+							//计算预计返利信息，这里是预计返利
+							BigDecimal tkRate=	new BigDecimal(item.getTkRate());
+							AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.AppRebateRate.getCode());
+							BigDecimal rebateAmount= afOrder.getActualAmount().multiply(tkRate).divide(new BigDecimal(10000)).multiply(new BigDecimal(resource.getValue()));
+							afOrder.setRebateAmount(rebateAmount);
 							afOrder.setSecType(orderType);
 							afOrder.setShopName(nick);
 							afOrder.setGoodsName(title);

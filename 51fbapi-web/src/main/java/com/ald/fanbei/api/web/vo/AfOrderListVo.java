@@ -17,6 +17,7 @@ public class AfOrderListVo extends AbstractSerial {
 	private Long orderId;
 	private String orderNo;
 	private String orderStatus;
+	private String secOrderType;
 	private String goodsIcon;
 	private String goodsName;
 	private BigDecimal rebateAmount;
@@ -193,5 +194,13 @@ public class AfOrderListVo extends AbstractSerial {
 
 	public void setShowLogistics(int showLogistics) {
 		this.showLogistics = showLogistics;
+	}
+
+	public String getSecOrderType() {
+		return secOrderType;
+	}
+
+	public void setSecOrderType(String secOrderType) {
+		this.secOrderType = secOrderType;
 	}
 }
