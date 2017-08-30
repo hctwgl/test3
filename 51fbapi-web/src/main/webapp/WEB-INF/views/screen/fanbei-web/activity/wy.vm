@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017061505")
+    #set($commonUrl="https://img.51fanbei.com/h5/app/activity/wy")
+	<meta charset="UTF-8">
+	<title>51返呗</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/wy/wy.css">
+</head>
+<body>
+
+<img src="$commonUrl/a1.png">
+<img src="$commonUrl/a2.png">
+<img src="$commonUrl/a3.png">
+<img src="$commonUrl/a4.png">
+<img src="$commonUrl/a5.png">
+<img onclick="go()" style="position: absolute;top: 6.2rem;width: 2rem;height: 1.58rem;left: 3rem;" src="$commonUrl/gif3.gif">
+<img src="$commonUrl/a6.png">
+<img src="$commonUrl/a7.png">
+<img src="$commonUrl/a8.png">
+<img src="$commonUrl/d1.png">
+<img src="$commonUrl/d2.png">
+<img src="$commonUrl/d3.png">
+<img src="$commonUrl/d4.png">
+<img src="$commonUrl/d5.png">
+<img src="$commonUrl/d6.png">
+<script type="text/javascript" src="/dist/activity/wy/wy.js"></script>
+</body>
+<script>
+	function go() {
+	    $.ajax({
+			url:'/fanbei-web/postMaidianInfo',
+			type:'post',
+			data:{maidianInfo:'/fanbei-web/activity/wy?type=btn'},
+			success:function (data) {
+				console.log(data)
+            }
+		});
+		window.location.href='wyRegister'
+    }
+</script>
+</html>

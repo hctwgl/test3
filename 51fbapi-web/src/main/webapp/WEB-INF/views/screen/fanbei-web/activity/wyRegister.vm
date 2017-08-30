@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($version="2017061505")
+    #set($commonUrl="https://img.51fanbei.com/h5/app/activity/wy")
+	<meta charset="UTF-8">
+	<title>51返呗</title>
+	<link rel="stylesheet" type="text/css" href="/dist/activity/wy/wy.css">
+</head>
+<body>
+<img src="$commonUrl/c1.png">
+<img src="$commonUrl/c2.png">
+<img src="$commonUrl/c3.png">
+<img src="$commonUrl/c4.png">
+<img src="$commonUrl/c5.png">
+<img src="$commonUrl/c6.png">
+<img src="$commonUrl/c7.png">
+<img src="$commonUrl/c8.png">
+<img src="$commonUrl/c9.png">
+<img src="$commonUrl/d1.png">
+<img src="$commonUrl/d2.png">
+<img src="$commonUrl/d3.png">
+<img src="$commonUrl/d4.png">
+<img src="$commonUrl/d5.png">
+<img src="$commonUrl/d6.png">
+<div class="register">
+	<input type="text" class="mobile" id="mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入手机号领取红包">
+    <input type="password" class="password" id="password" placeholder="请设置登录密码" name="words" maxlength="18">
+    <input type="text" class="verification" id="verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证密码">
+	<span class="codeBtn">点击获取</span>
+    <button class="submit">确认领取</button>
+	<input type="checkbox" class="input_check" id="input_check" checked>
+	<a class="protocol" href="/app/sys/registerProtocol"></a>
+	<a class="al" href="/app/sys/registerProtocol"></a>
+</div>
+
+<div class="imgVftCodeWrap hide">
+    <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
+    <div class="imgVftCodeInput clearfix">
+        <div class="imgVftCodeDiv"><input type="text" class="imgVftCode" id="imgVftCode" maxlength="4" placeholder="请输入"></div>
+        <div class="imgVftCodeWrapImgDiv"><img id="imgVftCodeWrapImg" style="width: auto" src=""></div>
+        <span class="imgVftCodeRefresh" id="imgVftCodeRefresh"><i></i></span>
+    </div>
+    <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
+</div>
+
+<div class="success">
+    <img src="$commonUrl/b5.png">
+    <img src="$commonUrl/b6.png">
+    <img src="$commonUrl/b7.png">
+    <img src="$commonUrl/b8.png">
+    <img src="$commonUrl/b9.png">
+	<button class="btn goBtn" onclick="goApp()">前往使用</button>
+	<button class="btn shareBtn" style="top:4.65rem">分享</button>
+</div>
+<script type="text/javascript" src="/dist/activity/wy/wy.js"></script>
+</body>
+</html>
