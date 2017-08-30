@@ -154,7 +154,19 @@
 		ORDER BY
 		r1.sort ,r1.id , r2.sort
 	</select>
-
+	
+	<select id="getCarouselToManyResourceOrderByBytype" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource 
+		WHERE
+		type = #{type}
+		AND
+		ORDER BY
+		sort,id
+	</select>
+	
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />

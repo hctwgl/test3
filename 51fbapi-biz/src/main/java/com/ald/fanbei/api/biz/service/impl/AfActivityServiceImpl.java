@@ -48,6 +48,11 @@ public class AfActivityServiceImpl  implements AfActivityService {
 	public int updateActivity(AfActivityDo activityDo) {
 		return afActivityDao.updateActivity(activityDo);
 	}
+
+	@Override
+	public List<AfActivityDo> listAllHomeActivity() {
+		return afActivityDao.listAllHomeActivity();
+	}
 	
 	
 }

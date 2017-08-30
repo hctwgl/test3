@@ -28,6 +28,7 @@ public class AfActivityDo extends AbstractSerial{
 	private String title4;
 	private String bgColor;
 	private String btnColor;
+	private String tag;
 	
 	public Long getId() {
 		return id;
@@ -119,4 +120,11 @@ public class AfActivityDo extends AbstractSerial{
 	public void setBtnColor(String btnColor) {
 		this.btnColor = btnColor;
 	}
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	
 }

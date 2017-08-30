@@ -50,6 +50,18 @@
 			is_delete=0
 	</select>
 	
+	<select id="listAllHomeActivity"  resultType="AfActivityDo">
+		SELECT
+			<include refid="activitySqlField"/>
+		FROM
+			af_activity 
+		WHERE
+			is_delete = 0
+		AND
+			type = 3
+	</select>
+	
+	
 	<update id="updateActivity" parameterType="AfActivityDo">
 		UPDATE af_activity SET gmt_modified = NOW() 
 			<if test="name != null">
@@ -79,4 +91,5 @@
 		WHERE
 			id = #{activityId}
 	</update>
+	
 </mapper>

@@ -130,4 +130,6 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getActivieResourceByType(@Param("type") String type);
 
+	List<AfResourceDo> getCarouselToManyResourceOrderByBytype(@Param("type")String type);
+
 }

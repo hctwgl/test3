@@ -23,5 +23,6 @@ public interface AfActivityService {
 
 	int updateActivity(AfActivityDo activityDo);
 
+	List<AfActivityDo> listAllHomeActivity();
 
 }

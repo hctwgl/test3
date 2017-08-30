@@ -187,6 +187,21 @@
 	
 	</select>
 	
-	
-	
+	<select id="listHomeActivityGoodsByActivityId" resultType="AfGoodsDto" parameterType="java.lang.Long">
+		SELECT 
+		m.id mid,<include refid="goodsSqlField"></include>
+		FROM
+			af_goods g ,af_activity_model m
+		WHERE
+			m.activity_id = #{activityId}
+		AND
+			m.goods_id = g.id	
+		AND
+			m.goods_type = 2
+		AND 
+			g.is_delete = 0
+		AND
+			m.is_delete = 0
+		ORDER BY m.gmt_create DESC
+	</select>
 </mapper>
