@@ -21,10 +21,7 @@
             </li>
         </ul>
         <div class="recommend" style="background-color: #fe5d7c;">
-            <div class="title">
-                <h2></h2>
-                <p>给TA最深的悸动</p>
-            </div>
+            <img src="$commonUrl/altair3.png" style="background-color: #fe5d7c;">
             <ul class="clearfix">
                 <li v-for="item in list01" @click="goGoodsDetail(item)">
                     <img :lazy-src="item.goodsIcon">
@@ -38,10 +35,7 @@
             </ul>
         </div>
         <div class="LevelGoods" style="background-color: #fe5d7c;">
-            <div class="title">
-                <h2></h2>
-                <p>平淡中也需要点情趣</p>
-            </div>
+            <img src="$commonUrl/altair4.png" style="background-color: #fe5d7c;">
             <ul class="clearfix">
                 <li v-for="item in list02" @click="goGoodsDetail(item)">
                     <p class="goodImg"><img :lazy-src="item.goodsIcon"></p>
