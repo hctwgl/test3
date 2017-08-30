@@ -28,7 +28,7 @@
 </body>
 <script>
 	function go() {
-	    $.ajax({
+	    jQuery.ajax({
 			url:'/fanbei-web/postMaidianInfo',
 			type:'post',
 			data:{maidianInfo:'/fanbei-web/activity/wy?type=btn'},
