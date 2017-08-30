@@ -48,8 +48,6 @@ $(function(){
                                 }else{
                                     str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
                                 }
-
-                                //console.log(num)
                             }//判断终极大奖蒙版
                             $('.imgList').append(str);
                             slideNub = $(".imgList .img").size();//获取轮播图片数量
@@ -152,6 +150,7 @@ function getData(slideNub){
 }
 //右滑动
 function right(){
+    alert(0)
     var fy = new Array();
     for(var i=0;i<slideNub;i++){
         fy[i]=$(".imgList .img[data-slide-imgId="+i+"]").attr("class");
@@ -167,7 +166,7 @@ function right(){
 }
 //左滑动
 function left(){
-
+    alert(0)
     var fy = new Array();
     for(var i=0;i<slideNub;i++){
         fy[i]=$(".imgList .img[data-slide-imgId="+i+"]").attr("class");
@@ -183,6 +182,7 @@ function left(){
 }
 //轮播图片左右图片点击翻页
 function imgClickFy(){
+    alert(0)
     $(".imgList .img").removeAttr("onclick");
     $(".imgList .img2").attr("onclick","left()");
     $(".imgList .img4").attr("onclick","right()");
@@ -201,12 +201,12 @@ function k_touch() {
         var touch = event.targetTouches[0];
         _end = (_start - touch.pageX);
     }
-    function touchEnd(event) {
+    function touchEnd() {
         if (_end < -100) {
-            //left();
+            left();
             _end=0;
         }else if(_end > 100){
-            //right();
+            right();
             _end=0;
         }
     }
