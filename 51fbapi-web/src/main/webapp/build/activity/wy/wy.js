@@ -3,6 +3,7 @@
  */
 var timerInterval ;
 var timerS = 60;
+// var token=formatDateTime()+Math.random().toString(36).substr(2);
 function timeFunction(){ // 60s倒计时
     timerS--;
     if (timerS<=0) {
@@ -150,9 +151,9 @@ $("#imgVftCodeSbumit").click(function(){
             dataType: "JSON",
             data: {
                 mobile: mobileNum,
-                token: token,
-                channelCode: channelCode,
-                pointCode: pointCode,
+                // token: token,
+                // channelCode: channelCode,
+                // pointCode: pointCode,
                 verifyImgCode:verifyImgCode
             },
             success: function(returnData){
