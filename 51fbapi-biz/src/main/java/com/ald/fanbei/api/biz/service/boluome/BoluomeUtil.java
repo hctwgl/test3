@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.boluome;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -19,6 +20,8 @@ import com.ald.fanbei.api.biz.bo.BoluomePushPayRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundResponseBo;
+import com.ald.fanbei.api.biz.bo.BrandCouponRequestBo;
+import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderPushLogService;
 import com.ald.fanbei.api.biz.service.AfShopService;
@@ -69,7 +72,16 @@ public class BoluomeUtil extends AbstractThird{
 	private static String pushRefundUrl = null;
 	private static String orderSearchUrl = null;
 	private static String orderCancelUrl = null;
+	private static String couponListUrl = null;
+	private static String activityCouponList = null;
 	private static Long SUCCESS_CODE = 1000L;
+	private static Integer DEALFT_PAGE_SIZE = 10;
+	
+//	private static final String USED_COUPON = "usedCoupons";
+//	private static final String EXPIRED_COUPON = "expiredCoupons";
+	private static final String NEXT_PAGE_INDEX = "nextPageIndex";
+	private static final String DATA = "data";
+	private static final String AVAILABLE_COUPON = "availableCoupons";
 
 	public BoluomePushPayResponseBo pushPayStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
 		BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
@@ -282,6 +294,63 @@ public class BoluomeUtil extends AbstractThird{
 		}
 		return orderCancelUrl;
 	}
+	
+	private static String getCouponListUrl() {
+		if(couponListUrl==null){
+			couponListUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/api/promotion/get_coupon_list";
+			return couponListUrl;
+		}
+		return couponListUrl;
+	}
+	
+	private static String getActivityCouponList() {
+		if(couponListUrl==null){
+			couponListUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/api/promotion/get_coupon_list";
+			return couponListUrl;
+		}
+		return couponListUrl;
+	}
+	
+	/**
+	 * @param userId 用户id
+	 * @param type 优惠券类型
+	 * @param pageIndex 第几页
+	 * @param pageSize 一页多少个数 最大20个
+	 * @return
+	 */
+	public List<BrandCouponResponseBo> getCouponList(Long userId, Integer type, Integer pageIndex, Integer pageSize, String couponType) {
+		BrandCouponRequestBo request = new BrandCouponRequestBo();
+		request.setUserId(userId + StringUtils.EMPTY);
+		request.setType(type);
+		request.setPageIndex(pageIndex);
+		request.setPageSize(DEALFT_PAGE_SIZE);
+		String resultString = HttpUtil.doHttpPost(getCouponListUrl(), JSONObject.toJSONString(request));
+		JSONObject resultJson = JSONObject.parseObject(resultString);
+		JSONObject data = resultJson.getJSONObject(DATA);
+		String availableCouponStr = data.getString(couponType);
+		return JSONObject.parseArray(availableCouponStr, BrandCouponResponseBo.class);
+	}
+	
+	/**
+	 * @param userId 用户id
+	 * @param type 优惠券类型
+	 * @param pageIndex 第几页
+	 * @param pageSize 唯一标识
+	 * @return nextPage 当nextPage为0时表示没有下一页了
+	 */
+	public Integer hasNextPage(Long userId, Integer type, Integer pageIndex, Integer pageSize, String couponType) {
+		BrandCouponRequestBo request = new BrandCouponRequestBo();
+		request.setUserId(userId + StringUtils.EMPTY);
+		request.setType(type);
+		request.setPageIndex(pageIndex);
+		request.setPageSize(pageSize);
+		String resultString = HttpUtil.doHttpPost(getCouponListUrl(), JSONObject.toJSONString(request));
+		JSONObject resultJson = JSONObject.parseObject(resultString);
+		JSONObject data = resultJson.getJSONObject(DATA);
+		Integer nextPage = data.getInteger(NEXT_PAGE_INDEX);
+		return nextPage;
+	}
+	
 	public static OrderStatus parseOrderType(String orderStatusStr) {
 		//1.已经下单 2.待支付 3.已支付 4.已完成 6.退款中 7.退款成功 8.已取消 9.处理中 11.等待退款 12.支付中
 		int orderStatus = Integer.parseInt(orderStatusStr);
