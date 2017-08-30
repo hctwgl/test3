@@ -18,8 +18,8 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	private int threshold;
 	private float value;
 	private int effective_day;
-	private int sts;
-	private int ets;
+	private Long sts;
+	private Long ets;
 	private float discount;
 	private List<String> channels;
 	private String sceneId ;
@@ -84,24 +84,28 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	public void setValue(float value) {
 		this.value = value;
 	}
+	/**
+	 * @return
+	 */
 	public int getEffective_day() {
 		return effective_day;
+	}
+	public Long getSts() {
+	    return sts;
+	}
+	public void setSts(Long sts) {
+	    this.sts = sts;
+	}
+	public Long getEts() {
+	    return ets;
+	}
+	public void setEts(Long ets) {
+	    this.ets = ets;
 	}
 	public void setEffective_day(int effective_day) {
 		this.effective_day = effective_day;
 	}
-	public int getSts() {
-		return sts;
-	}
-	public void setSts(int sts) {
-		this.sts = sts;
-	}
-	public int getEts() {
-		return ets;
-	}
-	public void setEts(int ets) {
-		this.ets = ets;
-	}
+	
 	public float getDiscount() {
 		return discount;
 	}
