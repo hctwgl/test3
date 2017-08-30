@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017082302")
-    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
+    #set($commonUrl="https://img.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>七夕Apple品牌日</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/qiXiApple.css">
