@@ -1,5 +1,4 @@
 //索要卡片弹窗动画
-var touch = true;           //touch=true为开启触摸滑动
 var slideNub;               //轮播图片数量
 var protocol = window.location.protocol;//域名
 var host = window.location.host;
@@ -7,6 +6,7 @@ var domainName = protocol+'//'+host;
 var itemsId;//索要的卡片主键
 var activityId=getUrl("activityId");//获取活动Id
 var userName = "";//获取用户名
+var hasTouchInit=false;//是否初始化过滑动事件监听
 if(getInfo().userName){
   userName=getInfo().userName;
 };
@@ -102,7 +102,7 @@ function getData(slideNub){
             }
         }
     }
-    if(touch){
+    if(!hasTouchInit){
         k_touch();
     }
     imgClickFy();
@@ -158,12 +158,13 @@ function k_touch() {
         _end = (_start - touch.pageX);
     }
     function touchEnd(event) {
-        if (_end < -100) {
+        if (_end < -50) {
             left();
             _end=0;
-        }else if(_end > 100){
+        }else if(_end > 50){
             right();
             _end=0;
         }
     }
+    hasTouchInit=true;
 }
