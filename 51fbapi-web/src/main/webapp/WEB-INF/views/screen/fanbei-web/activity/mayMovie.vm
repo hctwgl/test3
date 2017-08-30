@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="20008")
-	#set($src="https://fs.51fanbei.com/h5/app/activity/05")
+	#set($src="http://f.51fanbei.com/h5/app/activity/05")
 	<title>5月热片</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/05/mayMovie.css?version=$version">
 </head>

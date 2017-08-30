@@ -15,7 +15,7 @@ function alaShareData(){
         'type': 'share', // 此页面的类型
         'shareAppTitle': 'OPPO R11预约返利300福利',  // 分享的title
         'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300福利！有，且只在51返呗 GO>>>',  // 分享的内容
-        'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+        'shareAppImage': 'http://f.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
         'shareAppUrl': domainName+'/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
         'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'oppoR11' // 分享的页面
@@ -33,7 +33,7 @@ window.onload=function(){
         data: {userName: userName},
         success: function(returnData){
             if (returnData.data.isHaveReservationRecord == "Y") {
-                $("#btn").attr('src', 'https://fs.51fanbei.com/h5/app/activity/06/oppo2_2.png');
+                $("#btn").attr('src', 'http://f.51fanbei.com/h5/app/activity/06/oppo2_2.png');
             }
         },
         error: function(){
@@ -103,7 +103,7 @@ new Vue({
     el: '#oppoR11',
     data: {
         show: [true,false,false,false,],
-        bannerlist: 'https://fs.51fanbei.com/h5/app/activity/06/oppo12_31.png',
+        bannerlist: 'http://f.51fanbei.com/h5/app/activity/06/oppo12_31.png',
         url: 'https://app.51fanbei.com/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"120751"}',
         content: '¥2999 日供 ¥8.2起'
     },
@@ -146,7 +146,7 @@ new Vue({
             this.show.splice(e-1, 1, true);  // 点击当前的为true
 
             // 手机的bannerlist
-            this.bannerlist="https://fs.51fanbei.com/h5/app/activity/06/oppo12_3"+e+".png";
+            this.bannerlist="http://f.51fanbei.com/h5/app/activity/06/oppo12_3"+e+".png";
 
             // 手机的privateGoodsId
             let privateGoodsId=[120751,120790,120791,120792];

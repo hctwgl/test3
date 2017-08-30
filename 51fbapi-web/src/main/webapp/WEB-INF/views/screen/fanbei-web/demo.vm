@@ -26,7 +26,7 @@
   //     "type": "share", // 此页面的类型
   //     "shareAppTitle": "51返呗618购物狂欢节攻略来啦！",  // 分享的title
   //     'shareAppContent': "分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！",  // 分享的内容
-  //     "shareAppImage": "https://fs.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
+  //     "shareAppImage": "http://f.51fanbei.com/h5/common/icon/midyearCorner.png",  // 分享右边小图
   //     "shareAppUrl": apihost+"/activity/06/feastRaiders",  // 分享后的链接
   //     "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
   //     "sharePage": "gameShare" // 分享的页面
@@ -44,7 +44,7 @@
 //     bombBox: function(){ // 规则弹窗
 //       // 获取cookie中的apihost
 //       var apihost = getCookie("apihost");
-//       window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"51返呗618购物狂欢节攻略来啦！","shareAppContent":"分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/activity/06/feastRaiders","isSubmit":"Y","sharePage":"gameShare"}';
+//       window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"51返呗618购物狂欢节攻略来啦！","shareAppContent":"分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！","shareAppImage":"http://f.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+apihost+'/activity/06/feastRaiders","isSubmit":"Y","sharePage":"gameShare"}';
 //     }
 //   }
 // });

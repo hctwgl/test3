@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	#set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<title>年中盛宴攻略</title>
 	<style type="text/css">
@@ -48,7 +48,7 @@
 				'type': 'share', // 此页面的类型
 				'shareAppTitle': '51返呗618购物狂欢节攻略来啦！',  // 分享的title
 				'shareAppContent': '分期免息“购”优惠，嗨购全球高佣好货，你要的攻略在这里！',  // 分享的内容
-				'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+				'shareAppImage': 'http://f.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
 				'shareAppUrl': 'https://app.51fanbei.com/fanbei-web/activity/feastRaidersShare',  // 分享后的链接
 				'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
 				'sharePage': 'feastRaidersShare' // 分享的页面
