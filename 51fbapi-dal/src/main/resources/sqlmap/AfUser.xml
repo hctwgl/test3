@@ -42,7 +42,7 @@
 			#{registerChannelId},
 			#{registerChannelPointId}
 			<if test="majiabaoName != null">
-				#{majiabaoName}
+				,#{majiabaoName}
 			</if>
 		)
 	</insert>
