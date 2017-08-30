@@ -77,7 +77,7 @@ public class AppGoodsControler extends BaseController {
 	@RequestMapping(value = { "goodsListModel" }, method = RequestMethod.GET)
 	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
 		Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
-        
+        doWebCheck(request, false);
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
 				.getModelH5ItemListByModelIdAndModelType(modelId, H5ItemModelType.BANNER.getCode()));
 		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService.getModelH5ItemCategoryListByModelIdAndModelType(modelId);
@@ -284,8 +284,18 @@ public class AppGoodsControler extends BaseController {
 
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			RequestDataVo reqVo = new RequestDataVo();
+
+			JSONObject jsonObj = JSON.parseObject(requestData);
+			reqVo.setId(jsonObj.getString("id"));
+			reqVo.setMethod(request.getRequestURI());
+			reqVo.setSystem(jsonObj);
+
+			return reqVo;
+		} catch (Exception e) {
+			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
 	}
 
 	@Override
