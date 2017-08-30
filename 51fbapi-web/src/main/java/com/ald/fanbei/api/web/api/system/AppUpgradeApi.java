@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.web.api.system;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +36,17 @@ public class AppUpgradeApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Integer versionCode =  NumberUtil.objToIntDefault(requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_VERSION), -1);
 		JSONObject data = new JSONObject();
-		AfAppUpgradeDo appInfo = afAppUpgradeService.getNewestAppUpgradeVersion(versionCode);
+		String idName = requestDataVo.getId();
+		String name =idName.substring(idName.lastIndexOf("_")+1);
+	    Pattern pattern = Pattern.compile("^[0-9]*$");
+	    Matcher matcher = pattern.matcher(name);
+		   
+		if(matcher.matches()){
+			name ="www";
+		}
+		String type = idName.substring(0, 1).toUpperCase();
+		AfAppUpgradeDo appInfo = afAppUpgradeService.getNewestAppUpgradeVersion(versionCode,name,type);
+
 		if (appInfo != null) {
 			data.put("version", appInfo.getVersionCode());
 			data.put("appUrl", appInfo.getApkUrl());
