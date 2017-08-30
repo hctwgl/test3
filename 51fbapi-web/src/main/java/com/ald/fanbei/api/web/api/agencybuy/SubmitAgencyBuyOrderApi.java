@@ -106,11 +106,27 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setNumId(numId);
 		afOrder.setOpenId(openId);
 		afOrder.setUserCouponId(couponId);
+		
 		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if (addressDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
+		afOrder.setConsignee(addressDo.getConsignee());
+		String address = addressDo.getProvince() !=null?addressDo.getProvince():"";
+		if(addressDo.getCity()!=null){
+			address=address.concat(addressDo.getCity());
+
+		}
+		if(addressDo.getCounty()!=null){
+			address=address.concat(addressDo.getCounty());
+
+		}
+		if(addressDo.getAddress()!=null){
+			address=address.concat(addressDo.getAddress());
+		}
+		afOrder.setAddress(address);//将地址添加到订单表里
+		afOrder.setConsigneeMobile(addressDo.getMobile());
 		afAgentOrderDo.setAddress(addressDo.getAddress());
 		afAgentOrderDo.setProvince(addressDo.getProvince());
 		afAgentOrderDo.setCity(addressDo.getCity());

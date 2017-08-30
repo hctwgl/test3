@@ -60,4 +60,7 @@ public interface AfRecommendUserService {
 
     HashMap getRecommendSharedById(String id);
 
+    int updateRecommendCash(long userId);
+
+
 }

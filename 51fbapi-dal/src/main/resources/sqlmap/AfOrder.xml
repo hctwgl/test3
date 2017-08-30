@@ -243,12 +243,8 @@
 			order_type , 
 			sec_type , 
 			goods_id , 
-			<if test="goodsPriceName != null">
 		       goods_price_name,
-		    </if>
-	        <if test="goodsPriceId != null">
 	            goods_price_id,
-	        </if>
 			open_id , 
 			num_id , 
 			goods_name , 
@@ -285,12 +281,8 @@
     		#{item.orderType},
     		#{item.secType},
     		#{item.goodsId},
-            <if test="goodsPriceName != null">
-                #{goodsPriceName},
-            </if>
-            <if test="goodsPriceId != null">
-                #{goodsPriceId},
-            </if>
+            #{item.goodsPriceName},
+            #{item.goodsPriceId},
     		#{item.openId},
     		#{item.numId},
     		#{item.goodsName},
@@ -856,5 +848,38 @@
 	<update id="deleteOrder" parameterType="java.lang.Long" >
 		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
 	</update>
+	
+	<select id = "getDealAmount" resultType="java.lang.Integer" >
+		SELECT
+			COUNT(*) 
+		FROM
+			af_order
+		WHERE
+			pay_type IN ('AP', 'CP')
+		AND STATUS IN (
+			'AGENCYCOMPLETED',
+			'PAID',
+			'FINISHED',
+			'REBATED',
+			'REVIEW',
+			'DELIVERED'
+		)
+		
+		and is_delete = 0
+		and order_type = #{orderType}
+		<![CDATA[
+		AND gmt_create >=  DATE_SUB(NOW(),INTERVAL 24 HOUR)
+		 ]]>
+		
+		AND user_id = #{userId};
+	</select>
+	
+	<select id="getNotShopNameByAgentBuyOrder"  resultType="AfOrderDo">
+		SELECT 	
+				<include refid="queryFields"/>
+ 	 	FROM `af_order`
+ 	 	WHERE 
+ 	 	 	`order_type` ='AGENTBUY' AND shop_name =''  LIMIT #{pageNo}, 50
+	</select>
 	
 </mapper>
