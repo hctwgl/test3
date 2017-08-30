@@ -35,9 +35,10 @@ public class AppH5MaidianController extends BaseController {
     public String postMaidianInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
     		doWebCheck(request, false);
+    		String maidianInfo = request.getParameter("maidianInfo");
         	// 获取埋点标识
     		H5CommonResponse resp = H5CommonResponse.getNewInstance(true,"","",model);
-    		doMaidianLog(request, resp);
+    		doMaidianLog(request, resp,maidianInfo);
     		return resp.toString();
     	} catch (Exception e){
     		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
