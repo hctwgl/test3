@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -48,6 +49,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -69,6 +71,8 @@ import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
+import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
@@ -175,7 +179,12 @@ public class RiskUtil extends AbstractThird {
 	AfOrderService afOrderService;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
-	
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -211,6 +220,7 @@ public class RiskUtil extends AbstractThird {
 	 *            --地址
 	 * @return
 	 */
+	@Deprecated
 	public RiskRespBo register(String consumerNo, String realName, String phone, String idNo, String email,
 			String alipayNo, String address) {
 		RiskRegisterReqBo reqBo = new RiskRegisterReqBo();
@@ -248,6 +258,7 @@ public class RiskUtil extends AbstractThird {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public void batchRegister(int pageSize, String userName) {
 		int count = afUserAccountService.getUserAccountCountWithHasRealName();
 		int pageCount = (int) Math.ceil(count / pageSize) + 1;
@@ -279,6 +290,7 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 
+	
 	/**
 	 * 用户信息修改
 	 * 
@@ -380,8 +392,8 @@ public class RiskUtil extends AbstractThird {
 			directory = directoryCache.toString();
 		}
 		AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
-		int userId = Integer.parseInt(oldUserInfo.getValue());
-		int consumerId = Integer.parseInt(consumerNo);
+		Long userId = Long.parseLong(oldUserInfo.getValue());
+		Long consumerId = Long.parseLong(consumerNo);
 		if ("ALL".equals(event) && !StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode()) && consumerId <= userId) {
 			event = "REAUTH";
 		}
@@ -407,7 +419,8 @@ public class RiskUtil extends AbstractThird {
 			riskResp.setSuccess(true);
 			return riskResp;
 		} else {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
+			riskResp.setSuccess(false);
+			return riskResp;
 		}
 	}
 	
@@ -428,12 +441,15 @@ public class RiskUtil extends AbstractThird {
 	 * @param time 时间
 	 * @param productName 商品名称
 	 * @param virtualCode 商品编号
+	 *增加里那个字段 
+	 *@param SecSence 二级场景
+	 *@param ThirdSencem 三级场景
 	 * @return
 	 */
 	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, 
 			String scene, String cardNo, String appName, String ipAddress, 
 			String blackBox, String orderNo, String phone, BigDecimal amount, 
-			BigDecimal poundage, String time,String productName,String virtualCode) {
+			BigDecimal poundage, String time,String productName,String virtualCode,String SecSence,String ThirdSence) {
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if(!"Y".equals(userAuth.getRiskStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -461,6 +477,16 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("time", time);
 		eventObj.put("virtualCode", virtualCode);
 		eventObj.put("productName", productName);
+		//增加3个参数，配合风控策略的改变
+		String codeForSecond = null;
+		String codeForThird = null;
+		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
+		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
+		
+		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),SecSence);
+		eventObj.put("dealAmount", dealAmount);
+		eventObj.put("SecSence", codeForSecond);
+		eventObj.put("ThirdSence", codeForThird);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
@@ -468,7 +494,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
-//		String url = "http://192.168.110.22:80" + "/modules/api/risk/weakRiskVerify.htm";
+		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -492,6 +518,18 @@ public class RiskUtil extends AbstractThird {
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
+	}
+	/**
+	 * @author qiaopan
+	 * 获得当天有效借款订单数
+	 * @return
+	 */
+	private Integer getDealAmount(Long userId,String orderType){
+		Integer result = afOrderService.getDealAmount(userId,orderType);
+		if (result == null) {
+			result = 0 ;
+		}
+		return result;
 	}
 
 	/**
@@ -814,10 +852,11 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal au_amount = new BigDecimal(limitAmount);
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
 			String result = obj.getString("result");
+			String orderNo = obj.getString("orderNo");
 			
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
 			//风控异步回调的话，以第一次异步回调成功为准
-			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
 				if (StringUtils.equals("10", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
@@ -960,7 +999,7 @@ public class RiskUtil extends AbstractThird {
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
-			if (StringUtil.equals("50", result)) {
+			if (StringUtil.equals("50", result)) {//50是定时任务 推送超时
 				//不做任何更新
 				return 0;
 			}
@@ -1733,4 +1772,37 @@ public class RiskUtil extends AbstractThird {
 		}
 		return 0;
 	}
+	/**
+	 * 获取用户分层利率
+	 * @param consumerNo 用户ID
+	 * @return
+	 */
+	public RiskVerifyRespBo getUserLayRate(String consumerNo) {
+		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/userRate.htm";
+//		String url = "http://192.168.110.22:80/modules/api/risk/userRate.htm";
+		String reqResult = HttpUtil.post(url, reqBo);
+		logThird(reqResult, "getUserLayRate", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
+		}
+
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+		riskResp.setOrderNo(reqBo.getOrderNo());
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			JSONObject dataObj = JSON.parseObject(riskResp.getData());
+			String result = dataObj.getString("result");
+			riskResp.setSuccess(true);
+			riskResp.setResult(result);
+			riskResp.setConsumerNo(consumerNo);
+			riskResp.setPoundageRate(dataObj.getString("rate"));
+			return riskResp;
+		} else {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
+		}
+	}
+	
 }

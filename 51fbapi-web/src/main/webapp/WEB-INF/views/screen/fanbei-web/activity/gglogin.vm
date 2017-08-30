@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017082401")
+    #set($src="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/gglogin.css?version=$version">
+</head>
+<body>
+    <div id="login" class="login">
+        <div class="topdiv">
+            <div class="topimg">
+                <img src="$src/51icon.png" alt="">
+            </div>
+        </div>       
+        <div class="phone">
+            <span class="bicon"></span>
+            <input maxLength=11 minLength=11 type="tel" id='yhinp' placeholder="请输入登录手机号" class="pinp">
+            <span class="xxicon"><img src="$src/fork.png" alt=""></span>
+        </div>
+        <div class="pcheck phone">
+            <span class="bicon"></span>
+            <input maxlength="18"  type="password"   placeholder="请输入密码"  class="check pinp">
+            <!--<span class="checkbtn">获取验证码</span>!-->
+        </div>
+        <div class="loginbtn">
+            立即登录
+        </div>
+        <div class="lspdiv clearFix">
+            <span class="spl"><span id="gg_register" >我要注册</span></span>
+            <span class="spr"><span id="gg_forget" >忘记密码</span></span>
+        </div>
+    </div>
+    <div class="botimg">
+            <img src="$src/pic-2.png" alt="">
+    </div>       
+</body>
+<script type="text/javascript" src="/dist/js/core.js"></script>
+<script type="text/javascript" src="/dist/js/md5.js"></script>
+<script type="text/javascript" src="/dist/activity/08/gglogin.js"></script>
+</body>
+</html>

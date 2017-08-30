@@ -38,6 +38,8 @@ import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
@@ -158,6 +160,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //				repaymentD.setPayTradeNo(payTradeNo);
 //				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
 //			}
+			if (!respBo.isSuccess()) {
+				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			}
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
 			afRepaymentDao.addRepayment(repayment);
@@ -418,7 +423,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
 
 					// 变更还款记录未还款状态
-					afRepaymentDao.updateRepayment(RepaymentStatus.NEW.getCode(), tradeNo, repayment.getRid());
+					afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), tradeNo, repayment.getRid());
 					
 					
 					return 1;

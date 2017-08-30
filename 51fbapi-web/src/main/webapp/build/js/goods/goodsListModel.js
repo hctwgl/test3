@@ -14,10 +14,11 @@ let finished = 0;//防止多次请求ajax
 
 //填充商品数据
 let addModel = function addModel(goodsList,dom,state) {
-    let con='',html = '';
+    let html = '';
     if(goodsList.length>0){
         // 下拉的时候加载
         for (let j = 0; j < goodsList.length; j++) {
+            let con='';
             // 售价
             var saleAmount = toDecimal2(goodsList[j].saleAmount);
             var amountAmountSplitArr = saleAmount.split(".");

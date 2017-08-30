@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
@@ -92,7 +93,11 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setOrderNo(order.getOrderNo());
 		vo.setNper(order.getNper());
 		vo.setNumId(order.getNumId());
-		
+		//update by renchunlei 2017-08-21
+		if(StringUtils.isNotBlank(order.getLogisticsNo())){
+			 //有物流单号就显示物流信息
+			vo.setShowLogistics(1);
+		}
 		String status =  order.getStatus();
 		if (context.getAppVersion() < 364){
 			if (status.equals(OrderStatus.DEALING.getCode())) {
@@ -107,7 +112,7 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setRebateAmount(order.getRebateAmount());
 		vo.setType(order.getOrderType());
 		vo.setSaleAmount(order.getSaleAmount());
-		
+
 		vo.setActualAmount(order.getActualAmount());
 		vo.setCouponAmount(order.getSaleAmount().subtract(order.getActualAmount()));
 		vo.setPayType(order.getPayType());

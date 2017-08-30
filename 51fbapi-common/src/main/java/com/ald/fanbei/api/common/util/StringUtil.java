@@ -37,6 +37,27 @@ public class StringUtil extends StringUtils {
     }
 
     /**
+     *判断所有传入参数是否非空，当传入参数长度为0，或者任意有一个为空，则返回false，所有都非空，则返回true
+     * @param strArr
+     * @return
+     */
+    public static boolean isAllNotEmpty(String... strArr) {
+    	boolean isAllNotEmpty = true;
+    	 if (strArr == null || strArr.length < 1) {
+    		 isAllNotEmpty = false;
+             return isAllNotEmpty;
+         }
+    	 
+        for (String str : strArr) {
+            if(str==null || str.length()==0){
+            	isAllNotEmpty = false;
+            	break;
+            }
+        }
+        return isAllNotEmpty;
+    }
+    
+    /**
      * 把list按分隔符转换成字符串
      * 
      * @param strList
@@ -219,9 +240,9 @@ public class StringUtil extends StringUtils {
 			return null;
 		}
 		if(flagStr.startsWith("i_")){
-			return ClientTypeEnum.ANDROID;
-		}else if(flagStr.startsWith("a_")){
 			return ClientTypeEnum.IOS;
+		}else if(flagStr.startsWith("a_")){
+			return ClientTypeEnum.ANDROID;
 		}
 		return null;
 	}

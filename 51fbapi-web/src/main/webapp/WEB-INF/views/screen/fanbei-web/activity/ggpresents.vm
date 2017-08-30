@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($src="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>赠送页面</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggpresents.css?version=$version">
+</head>
+<body>
+    <div id="presents">
+        <div class="presents-top">
+            <div class="box" id="scroll_div">
+                <div class="personAmount" id="scroll_begin"><p>已有<span class="light"></span>人点亮所有场景</p><p><span class="light"></span>人集齐所有卡片</p></div>
+                <div class="personAmount" id="scroll_end"></div>     
+                <!--<div class="personAmount"><p>已有<span class="light"></span>22222222222</p></div>!-->
+            </div>
+            <div class="header">
+                <div class="logo"><img src="$src/gg01.png"></div>
+                <p class="joinAmount"><span class="join"></span>人参与</p>
+            </div>
+            <div class="money">
+                <p><i class="friend"></i>在51返呗点亮场景</p>
+                <p><span class="combo"></span><span class="give">送给你</span></p>
+            </div>
+            <div class="banner">
+                <img src="" alt="" class="banner-img">
+            </div>
+            <div class="send">
+                <div class="presentCard ask">领走卡片</div>
+                <div class="demandCard ask">我也要点亮</div>
+            </div>
+        </div>
+        <div class="presents-bottom clearFix">
+            <div class="presents-bottom-right">
+                <div class="line">
+                    <span class="number-one">1</span>
+                    <span class="number-two">2</span>
+                    <span class="number-three">3</span>
+                </div>
+                
+            </div>
+            <div class="presents-bottom-left">
+                <p class="word-one">
+                    <span>每个场景完成1笔订单，且消费<br/>满足限制条件时，均可得到1张<br/>该场景的专属卡片，更有高额返<br/>利（<i class="cost">消费可选选择直接支付或分<i><br/></i class="cost">期</i>）</span>
+                </p>
+                <p class="word-two">
+                    <span>向好友索要、与好友互换,即可<br/>获取不同种类的专属卡片;分享<br/>后,好友消费后更有同等返利给<br/>到你</span>
+                </p>
+                <p class="word-three">
+                    <span>集齐全部专属卡片，即可领取<br/>终极大奖51元现金红包</span>
+                </p>
+                <div class="rules"><a href="#">活动规则详情</a></div>
+            </div>
+        </div>
+        <!--活动规则弹框!-->
+        <div class="mask">
+            <div class="alertRule">
+                <p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
+                <p class="ruleCont"></p>
+                <p class="close">X</p>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/dist/activity/08/ggpresents.js"></script>
+</html>

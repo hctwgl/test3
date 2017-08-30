@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017082301")
+    #set($src="https://img.51fanbei.com/h5/app/activity/08")
+    <title>约惠七夕 购浪漫</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/valentine.css?version=$version">
+</head>
+<body>
+<div id="valentine">
+    <div class="banner"></div>
+    <div class="couponList clearFix">
+        <p class="line"></p>
+        <div class="coupon" v-for="item in couponCont.couponInfoList" @click="couponClick(item)">
+            <p class="couponMoney"><span>￥</span><span>{{item.amount}}</span>优惠券</p>
+            <p class="couponRule" v-if="item.limitAmount>0">满{{item.limitAmount}}元使用</p>
+            <p class="couponRule" v-else>无门槛</p>
+            <p class="get">立即领取</p>
+        </div>
+        <p class="line line02"></p>
+    </div>
+    <ul class="flowerList">
+        <li v-for="items in content">
+            <div class="flowerTitle">
+                <p class="titleName"><span></span><span>{{items.titleName}}</span><span></span></p>
+                <p class="titleDes">{{items.titleDes}}</p>
+            </div>
+            <div class="flower clearFix">
+                <div class="left floatLeft" @click="goodClick(items.activityGoodsList[0])">
+                    <p class="flowerName">{{items.leftWord01}}</p>
+                    <p class="flowerDes">{{items.leftWord02}}</p>
+                    <p class="flowerPrice">七夕价<span>￥{{items.activityGoodsList[0].saleAmount}}</span></p>
+                    <p class="fanPrice">返利:￥{{items.activityGoodsList[0].rebateAmount}}</p>
+                </div>
+                <div class="right floatRight" @click="goodClick(items.activityGoodsList[0])"><img class="lazy" :data-original="items.imgRightUrl"></div>
+                <div class="right floatLeft" @click="goodClick(items.activityGoodsList[1])"><img class="lazy" :data-original="items.imgLeftUrl"></div>
+                <div class="left floatRight" @click="goodClick(items.activityGoodsList[1])">
+                    <p class="flowerName">{{items.rightWord01}}</p>
+                    <p class="flowerDes">{{items.rightWord02}}</p>
+                    <p class="flowerPrice">七夕价<span>￥{{items.activityGoodsList[1].saleAmount}}</span></p>
+                    <p class="fanPrice">返利:￥{{items.activityGoodsList[1].rebateAmount}}</p>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+</body>
+<script type="text/javascript" src="/dist/activity/08/valentine.js?version=$version"></script>
+<script type="text/javascript" src="/dist/js/jquery.lazyload.js"></script>
+</html>

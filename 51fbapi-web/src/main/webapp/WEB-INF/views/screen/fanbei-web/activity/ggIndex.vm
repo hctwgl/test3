@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017082301")
+    #set($src="http://f.51fanbei.com/h5/app/activity/08")
+    <title>逛逛专享区</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
+</head>
+<body>
+<div id="ggIndex" class="ggIndex">
+    <!--人数左右移动--start-->
+    <div class="personAmount">
+        <div class="amountCont">
+            <div class="cont cont1">
+                <p><span>{{content.fakeFinal}}</span>人集齐所有卡片</p>
+            </div>
+            <div class="cont cont2"></div>
+        </div>
+    </div><!--人数左右移动--end-->
+    <div class="header">
+        <div class="logo"><img src="$src/gg01.png"></div>
+        <p class="joinAmount" @click="joinAmountClick()"><span>{{content.fakeJoin}}</span>人参与</p>
+    </div>
+    <div class="money">
+        <p>领取<span v-for="item in content.normalCouponList">{{item.amount}}</span>元现金红包</p>
+    </div>
+    <!--首页轮播图-->
+    <div class="banner">
+        <ul class="bannerList">
+            <div class="positionImg"><img src="$src/gg22.png"></div>
+            <li v-for="item in content.bannerList"><img :src="item.value" @click="bannerClick(item)"></li>
+        </ul>
+        <ul class="num"></ul>
+    </div>
+    <!--首页轮播图--end-->
+    <div class="highPrize">高额红包及返利，消费更划算</div>
+    <!--优惠券--start-->
+    <div class="couponList clearFix">
+        <div class="coupon"  v-for="item in content.boluomeCouponList" @click="couponClick(item)">
+            <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='waimai_ele'">饿了么</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='dianying_kou'">抠电影</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='huafei_ofpay'">话费充值</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='coffee_linqu'">星巴克</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='jiudian_ctrip'">携程</p>
+            <p class="amount" v-if="item.type===1">￥<span>{{item.value}}</span></p>
+            <p class="amount" v-if="item.type===2">￥<span>{{item.discount*10}}</span>折</p>
+            <p class="limitAmount white" v-if="item.threshold>0">满<span>{{item.threshold}}</span>元可用</p>
+            <p class="limitAmount white" v-else>无门槛</p>
+            <p class="validTime white" v-if="item.term_type===1">有效期<span>{{item.effective_day}}</span>天</p>
+        </div>
+    </div>
+    <!--卡片list-->
+    <div class="cardList clearFix">
+        <div class="card" v-for="item in content.itemsList" @click="cardClick(item)">
+            <img :src="item.logo">
+            <img :src="fixImgUrl(item.rid)" class="gray" v-if="item.num===0">
+            <img :src="fixImgUrl(item.rid)" class="gray" style="display: none">
+            <p class="num" style="display: none">x{{item.num}}</p>
+        </div>
+    </div>
+    <div class="finalPrize finalPrize01" @click="finalPrize()" v-show="!finalPrizeMask">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
+    </div>
+    <div class="finalPrize finalPrize02" v-show="finalPrizeMask">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
+    </div>
+    <div class="alertFinalPrize">
+        <img src="$src/gg19.jpg">
+        <p class="prizeWord01">恭喜红包领取成功！</p>
+        <p class="prizeWord02">请前往“我的-返利金额”查看</p>
+        <p class="know" @click="close()"></p>
+        <p class="closePrize" @click="close()"></p>
+    </div>
+    <div class="presentCard ask">我要赠送卡片</div>
+    <div class="demandCard ask">我要索要卡片</div>
+    <div class="progress">
+       <div class="left"></div>
+       <p class="p01">每个场景完成1笔订单，且消费满足限制条件时，均可得到1张该场景的专属卡片，更有高额返利<span>(消费可选择直接支付或分期)</span></p>
+        <p class="p02">向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你</p>
+        <p>集齐全部专属卡片，即可领取终极大奖<span v-for="item in content.normalCouponList">{{item.amount}}</span>元现金红包</p>
+    </div>
+    <p class="ruleInfo" @click="ruleClick()">活动规则详情</p>
+    <div class="kong"></div>
+    <div class="mask" @click="close()"></div>
+    <!--活动规则弹窗-->
+    <div class="alertRule">
+        <p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
+        <p class="ruleCont" v-html="content.despcription"></p>
+        <p class="close" @click="close()">X</p>
+    </div>
+    <!--赠送或索要卡片弹窗-->
+    <div class="alertPresent">
+        <p class="title demandTitle">请选择你要索要的卡片</p>
+        <p class="title presentTitle"><span>我在51返呗搜集到了</span><br/><span>e顿健康餐</span><span>送给你</span></p>
+        <div class="imgCont">
+            <p class="bg"></p>
+            <div id="slide" class="imgList" class="index-slide" alt="star">
+
+            </div>
+        </div>
+        <p class="previous" onclick="left()"></p>
+        <p class="next" onclick="right()"></p>
+        <p class="sure surePresent">确定赠送</p>
+        <p class="sure sureDemand">确定索要</p>
+        #*<p class="close" @click="close()">X</p>*#
+    </div>
+</div>
+#*<script type="text/javascript" src="/dist/activity/08/ggIndexAnimate.js?version=$version"></script>*#
+<script type="text/javascript" src="/dist/js/base64.js"></script>
+<script type="text/javascript" src="/dist/activity/08/ggIndexPresent.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/ggIndexDemand.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
+
+</body>
+</html>

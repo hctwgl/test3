@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfActivityDao">
 	
 	<sql id="activitySqlField">
-		id,is_delete,gmt_create,gmt_modified,name,type,icon_url,gmt_start,gmt_end
+		id,is_delete,gmt_create,gmt_modified,name,type,icon_url,gmt_start,gmt_end,title1,title2,title3,title4,bg_color,btn_color
 	</sql>
 	
 	<insert id="addActivity" parameterType="AfActivityDo" keyProperty="id" useGeneratedKeys="true" >

@@ -24,6 +24,8 @@ import com.ald.fanbei.api.biz.service.AfRescourceLogService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
@@ -57,6 +59,8 @@ import com.alibaba.fastjson.JSONArray;
 @RequestMapping("/app/sys/")
 public class AppH5SysController extends BaseController {
 
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	@Resource
 	AfUserService afUserService;
 	@Resource
@@ -159,7 +163,12 @@ public class AppH5SysController extends BaseController {
 
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		BigDecimal overdue = bankService.add(poundage).add(overduePoundage);
-
+		
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		if (poundageRateCash != null) {
+			poundage = new BigDecimal(poundageRateCash.toString());
+		}
+		
 		model.put("dayRate", bankService);//日利率
 		model.put("overdueRate", overdue);//逾期费率（日）
 		model.put("poundageRate", poundage);//手续费率
@@ -225,6 +234,11 @@ public class AppH5SysController extends BaseController {
 		model.put("dayRate", bankService);
 		
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		if (poundageRateCash != null) {
+			poundage = new BigDecimal(poundageRateCash.toString());
+		}
+		
 		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 		model.put("poundageRate", poundage);//手续费率
 		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
@@ -266,6 +280,8 @@ public class AppH5SysController extends BaseController {
 				}
 				model.put("renewalAmountLower", afRenewalDetailDo.getRenewalAmount());//续借金额小写
 				model.put("renewalAmountCapital", toCapital(afRenewalDetailDo.getRenewalAmount().doubleValue()));//续借金额大写	
+				model.put("repayAmountLower", afRenewalDetailDo.getCapital());//续借金额小写
+				model.put("repayAmountCapital", toCapital(afRenewalDetailDo.getCapital().doubleValue()));//续借金额大写	
 //				Date gmtRenewalBegin = afRenewalDetailDo.getGmtCreate();
 //				Date gmtRenewalEnd = DateUtil.addDays(gmtRenewalBegin, afRenewalDetailDo.getRenewalDay());
 			} else {
@@ -287,6 +303,11 @@ public class AppH5SysController extends BaseController {
 				}
 				model.put("renewalAmountLower", renewalAmount);//续借金额小写
 				model.put("renewalAmountCapital", toCapital(renewalAmount.doubleValue()));//续借金额大写	
+				AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+				BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
+				BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+				model.put("repayAmountLower", capital);//续借金额小写
+				model.put("repayAmountCapital", toCapital(capital.doubleValue()));//续借金额大写	
 			}
 		}
 		

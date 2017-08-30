@@ -161,8 +161,16 @@
 				<entry key="/user/getUserCounponListType" value-ref="getUserCounponListTypeApi" />
 				<entry key="/user/submitShareAction" value-ref="submitShareActionApi" />
 				<entry key="/user/getImageCode" value-ref="getImageCodeApi" />
+				<entry key="/user/getRecommedData" value-ref="getRecommedDataApi" />
+				<entry key="/user/getRecommendListByUserId" value-ref="getRecommendListByUserIdApi" />
+				<entry key="/user/getActivieResourceByType" value-ref="getActivieResourceByTypeApi" />
+				<entry key="/user/getRecommendListSort" value-ref="getRecommendListSortApi" />
+				<entry key="/user/getPrizeUser" value-ref="getPrizeUserApi"/>
+				<entry key="/user/addRecommendShared" value-ref="addRecommendSharedApi" />
+				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 
 				<entry key="/user/signin" value-ref="signinApi" />
+
 
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
@@ -335,6 +343,9 @@
 				<entry key="/trade/refund" value-ref="tradeRefundApi" />
 				<entry key="/trade/getIndexData" value-ref="getIndexDataApi" />
 				<entry key="/trade/orderInfo" value-ref="tradeOrderInfoApi" />
+
+				<!--订单物流信息相关-->
+				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
 			</map>
 		</constructor-arg>
 	</bean>

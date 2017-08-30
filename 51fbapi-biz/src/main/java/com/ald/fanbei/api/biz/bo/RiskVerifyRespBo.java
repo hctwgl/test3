@@ -19,6 +19,8 @@ public class RiskVerifyRespBo extends RiskRespBo {
 	private String rejectCode;//不通过原因
 	
 	private String borrowNo;//借款编号
+	
+	private String poundageRate;//手续费率
 
 	public String getResult() {
 		return result;
@@ -97,6 +99,14 @@ public class RiskVerifyRespBo extends RiskRespBo {
 	 */
 	public void setBorrowNo(String borrowNo) {
 		this.borrowNo = borrowNo;
+	}
+	
+	public String getPoundageRate() {
+		return poundageRate;
+	}
+	
+	public void setPoundageRate(String poundageRate) {
+		this.poundageRate = poundageRate;
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

@@ -427,6 +427,22 @@ public class AfResourceServiceImpl implements AfResourceService {
 //	    // TODO Auto-generated method stub
 //	    return afResourceDao.getHomeIndexListByOrderbyOnPreEnv(code);
 //	}
+	public AfResourceDo getFakePersonByActivityId(String string) {
+		AfResourceDo resourceDo = new AfResourceDo();
+		List<AfResourceDo> list = afResourceDao.getFakePersonByActivityId(string);
+		if (list != null && list.size() > 0 ) {
+			resourceDo = list.get(0);
+		}
+		return resourceDo;
+		
+	}
+
+	@Override
+	public AfResourceDo getGGSpecificBanner(String value2) {
+		
+		return afResourceDao.getGGSpecificBanner(value2);
+		
+	}
 
 	
 }

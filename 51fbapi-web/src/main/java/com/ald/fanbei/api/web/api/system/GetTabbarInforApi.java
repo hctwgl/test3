@@ -15,6 +15,7 @@ import com.ald.fanbei.api.biz.bo.CheckVersionBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -42,11 +43,19 @@ public class GetTabbarInforApi implements ApiHandle {
 	}
 	
 	private Map<String, Object> getObjectWithResourceDolist(FanbeiContext context,List<AfResourceDo> tabbarlist,RequestDataVo requestDataVo) {
+		//是否使用后台传来的图片，否的话菜单图片用app本地图片
+		AfResourceDo useImgDo = afResourceService
+				.getConfigByTypesAndSecType(AfResourceType.IS_USE_IMG.getCode(), AfResourceSecType.IS_USE_IMG.getCode());
+				//app 在appstore 审核信息，如果还未审核，则用后台传的图片
+		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
+		boolean use = this.useImg(useImgDo, requestDataVo, context);
 		Map<String, Object> index = new HashMap<String, Object>();
 		for (AfResourceDo afResourceDo : tabbarlist) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("title", afResourceDo.getName());
+			if(use){
 			data.put("imageUrl", afResourceDo.getValue());
+			}
 			data.put("titleColor", afResourceDo.getValue1());
 			
 			if(StringUtils.equals(afResourceDo.getSecType(), "HOME_NOMAL")){
@@ -74,15 +83,15 @@ public class GetTabbarInforApi implements ApiHandle {
 				index.put("mainSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_NOMAL")){
-				handleIosBorow(context,requestDataVo,data);
+				handleIosBorow(context,requestDataVo,data,resourceInfo);
 				index.put("borrowNomal", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_SELECTED")){
-				handleIosBorow(context,requestDataVo,data);
+				handleIosBorow(context,requestDataVo,data,resourceInfo);
 				index.put("borrowSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_HIGHLIGHT")){
-				handleIosBorow(context,requestDataVo,data);
+				handleIosBorow(context,requestDataVo,data,resourceInfo);
 				index.put("borrowHighLight", data);
 			}
 			
@@ -96,10 +105,9 @@ public class GetTabbarInforApi implements ApiHandle {
 	 * @param requestDataVo
 	 * @param data
 	 */
-	private void handleIosBorow(FanbeiContext context,RequestDataVo requestDataVo,Map<String, Object> data) {
+	private void handleIosBorow(FanbeiContext context,RequestDataVo requestDataVo,Map<String, Object> data,AfResourceDo resourceInfo) {
 		
 		 Map<String, Object> params = requestDataVo.getParams();
-	        AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
 	        String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
 	        if (resourceInfo == null) {
 	        	data.put("title", "借钱");
@@ -126,6 +134,19 @@ public class GetTabbarInforApi implements ApiHandle {
         		data.put("title", array.contains(desVersion) ? "搜呗" : "借钱");
         	}
         }
+	}
+	
+	/**
+	 * 是否使用后台传来的图片做菜单栏的图片
+	 * @param useImgDo 是否使用后台传图片
+	 * @return true:用后台的 ，false:用app本地的
+	 */
+	private boolean useImg(AfResourceDo useImgDo,RequestDataVo requestDataVo,FanbeiContext context){
+		boolean use = true;
+		if(useImgDo!=null){
+			 use = "1".equals(useImgDo.getValue())?true:false;
+		}
+		return use;
 	}
 
 }

@@ -4,7 +4,6 @@
     #set($version="20170562302")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>$!{modelName}</title>
-    <!-- <link rel="stylesheet" type="text/css" href="$commonUrl/common/css/swiper-3.4.2.min.css"> -->
     <link rel="stylesheet" type="text/css" href="/dist/css/goods/goodsListModel.css?version=$version">
 </head>
 <body>
@@ -54,8 +53,7 @@
             </div>
         </div>
     #end
-    <script type="text/javascript" src="/common/js/jquery-2.2.4.min.js"></script>
-    <!-- <script type="text/javascript" src="$commonUrl/common/js/swiper-3.4.2.jquery.min.js"></script> -->
+    <script type="text/javascript" src="/dist/js/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/dist/js/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>

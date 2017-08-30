@@ -131,5 +131,10 @@ public interface AfResourceDao {
 	List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code);
 
 	//List<AfResourceDo> getHomeIndexListByOrderbyOnPreEnv(String code);
+	
+	List<AfResourceDo> getActivieResourceByType(@Param("type") String type);
+	List<AfResourceDo> getFakePersonByActivityId(@Param("activityId")String activityId);
+
+	AfResourceDo getGGSpecificBanner(@Param("value2")String value2);
 
 }

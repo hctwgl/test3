@@ -13,26 +13,24 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
+import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfShopService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -107,7 +105,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfLoanSupermarketService afLoanSupermarketService;
 	@Resource
 	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
-	
+	@Resource
+	AfOrderLogisticsService afOrderLogisticsService;
 	/**
 	 * 首页弹窗页面
 	 * @param request
@@ -117,7 +116,7 @@ public class AppH5FanBeiWebController extends BaseController {
 	@RequestMapping(value = { "homepagePop" }, method = RequestMethod.GET)
 	public void homepagePop(HttpServletRequest request, ModelMap model) throws IOException {
 		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.RES_APP_POP_IMAGE);
-		model.put("redirectUrl", resourceDo.getName());
+		model.put("redirectUrl", resourceDo.getValue2());
 		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
 	}
 
@@ -269,9 +268,290 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @author qiao
+	 * @说明：逛逛活动点亮过程中的领券
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pickBoluomeCouponV1", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickBoluomeCouponV1(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
+			FanbeiWebContext context = new FanbeiWebContext();
+			context = doWebCheck(request, false);
+			String userName = context.getUserName();
+			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
+			if (sceneId == null) {
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+			}
+			
+			if (StringUtils.isEmpty(userName)) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "没有登录", notifyUrl,null )
+						.toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "没有登录", notifyUrl,null )
+						.toString();
+			}
+			
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+			if (resourceInfo == null) {
+				logger.error("couponSceneId is invalid");
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+			}
+			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
+			
+			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+			
+			if (DateUtil.beforeDay(new Date(), gmtStart)) {
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+			}
+			if (DateUtil.afterDay(new Date(), gmtEnd)) {
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+			}
+			
+			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			JSONObject resultJson = JSONObject.parseObject(resultString);
+			String code = resultJson.getString("code");
+			
+			if ("10222".equals(code) ||  "10206".equals(code)) {
+				return H5CommonResponse.getNewInstance(true, "您已领过优惠券，快去使用吧~").toString();
+			} else if ("10305".equals(code)){
+				return H5CommonResponse.getNewInstance(true, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
+			}
+			else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
+			} 
+			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+
+		} catch (Exception e) {
+			logger.error("pick brand coupon failed , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+		}
+
+	}
+	/**
+	 * @author qiao
+	 * @说明：进去场景
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getBrandUrlV1", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String getBrandUrlV1(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
+			//String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			FanbeiWebContext context = doWebCheck(request, true);
+		
+			if (context.isLogin()) {
+				String userName = context.getUserName();
+				Map<String, String> buildParams = new HashMap<String, String>();
+				if (shopId == null) {
+					logger.error("shopId is empty");
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+				}
+				
+				AfShopDo shopInfo = afShopService.getShopById(shopId);
+				if (shopInfo ==  null) {
+					logger.error("shopId is invalid");
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+				}
+				AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+				if (StringUtils.isEmpty(userName) || afUserDo == null) {
+					String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+					return H5CommonResponse
+							.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+							.toString();
+				}
+				String shopUrl = shopInfo.getShopUrl() + "?";
+				
+				buildParams.put(BoluomeCore.CUSTOMER_USER_ID, afUserDo.getRid() + StringUtil.EMPTY);
+				buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, afUserDo.getMobile());
+				buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() + StringUtil.EMPTY);
+				
+				String sign =  BoluomeCore.buildSignStr(buildParams);
+				buildParams.put(BoluomeCore.SIGN, sign);
+				String paramsStr = BoluomeCore.createLinkString(buildParams);
+				
+				return H5CommonResponse.getNewInstance(true, "成功", shopUrl + paramsStr, null).toString();
+			} else {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+						.toString();
+			}
+		} catch (FanbeiException e) {
+			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+			return H5CommonResponse
+					.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+					.toString();
+		} catch (Exception e) {
+			logger.error("getBrandUrl , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, "操作失败", "", null).toString();
+		}
+
+	}
+	
 	@ResponseBody
 	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickBoluomeCoupon(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
+			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
+			if (sceneId == null) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+			}
+			
+			if (StringUtils.isEmpty(userName)) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
+			
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+			if (resourceInfo == null) {
+				logger.error("couponSceneId is invalid");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+			}
+			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
+			
+			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+			
+			if (DateUtil.beforeDay(new Date(), gmtStart)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+			}
+			if (DateUtil.afterDay(new Date(), gmtEnd)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+			}
+			
+			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			JSONObject resultJson = JSONObject.parseObject(resultString);
+			String code = resultJson.getString("code");
+			//10222代表已经一天只能领取一张
+			if ("10222".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, "今日已领取，请明日再来！", null, null).toString();
+			} else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+			} 
+			return H5CommonResponse.getNewInstance(true, "领券成功，有效期3天", "", null).toString();
+
+		} catch (Exception e) {
+			logger.error("pick brand coupon failed , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+		}
+
+	}
+	/**
+	 * @author qiao
+	 * @说明： 领券优惠券
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pickBoluomeCouponForWeb", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickBoluomeCouponForWeb(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
+			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
+			if (sceneId == null) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+			}
+			
+			if (StringUtils.isEmpty(userName)) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "登陆后才能领取优惠券", notifyUrl,null )
+						.toString();
+			}
+			
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+			if (resourceInfo == null) {
+				logger.error("couponSceneId is invalid");
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+			}
+			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
+			
+			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+			
+			if (DateUtil.beforeDay(new Date(), gmtStart)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+			}
+			if (DateUtil.afterDay(new Date(), gmtEnd)) {
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+			}
+			
+			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			JSONObject resultJson = JSONObject.parseObject(resultString);
+			String code = resultJson.getString("code");
+			//10222代表已经一天只能领取一张
+			if ("10222".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, "今日已领取，请明日再来！", null, null).toString();
+			} else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(false, resultJson.getString("msg")).toString();
+			} 
+			return H5CommonResponse.getNewInstance(true, "领券成功，有效期3天", "", null).toString();
+
+		} catch (Exception e) {
+			logger.error("pick brand coupon failed , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+		}
+
+	}
+	/**
+	 * @author qiao
+	 * @说明： 领券优惠券
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pickBoluomeCouponForApp", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickBoluomeCouponForApp(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
 			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
 			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
@@ -528,6 +808,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
 		}
 	}
+
 	
 	
 	/**
@@ -634,7 +915,34 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
-	
+	/**
+	 * 获取物流信息
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "/getOrderLogistics" }, method =
+			RequestMethod.POST,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String getOrderLogistics(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext context = null;
+		try {
+			long orderId = NumberUtil.strToLong(request.getParameter("orderId").toString());
+			long isOutTraces = NumberUtil.strToLong(request.getParameter("traces")==null?
+					String.valueOf(0) :request.getParameter("traces").toString());
+			AfOrderLogisticsBo afOrderLogisticsBo= afOrderLogisticsService.getOrderLogisticsBo
+					(orderId,isOutTraces);
+			if(afOrderLogisticsBo!=null){
+				return H5CommonResponse.getNewInstance(true,"","",afOrderLogisticsBo).toString();
+			}else{
+				return H5CommonResponse.getNewInstance
+						(false,FanbeiExceptionCode.LOGISTICS_NOT_EXIST.getErrorMsg()).toString();
+			}
+
+		}catch(Exception e){
+			return H5CommonResponse.getNewInstance(false,e.toString()).toString();
+		}
+	}
 	
 	/**
 	 * 第三方链接跳转，记录pv，uv
@@ -657,14 +965,17 @@ public class AppH5FanBeiWebController extends BaseController {
 					String accessUrl = afLoanSupermarket.getLinkUrl();
 					accessUrl = accessUrl.replaceAll("\\*", "\\&");
 					logger.info("贷款超市app点击banner请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+afUserDo.getRid());
-					String extraInfo = "appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
+					String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
+					String channel = getChannel(sysModeId);
+					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",lsmName="+afLoanSupermarket.getLsmName()+",accessUrl="+accessUrl;
 					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
 					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
 					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
-					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
+					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET_BANNER.getCode());
 					afBusinessAccessRecordsDo.setRefId(afLoanSupermarket.getId());
 					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
 					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.APP_LOAN_BANNER.getCode());
+					afBusinessAccessRecordsDo.setChannel(channel);
 					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
 					model.put("redirectUrl", accessUrl);
 				}else{
@@ -690,7 +1001,22 @@ public class AppH5FanBeiWebController extends BaseController {
 			model.put("redirectUrl", "/static/error404.html");
 		}
 	}
-
+	private String getChannel(String sysModeId){
+		if(sysModeId!=null) {
+            int lastIndex = sysModeId.lastIndexOf("_");
+            if (lastIndex!=-1){
+                String lasterStr = sysModeId.substring(++lastIndex);
+                if(NumberUtils.isNumber(lasterStr))
+                {
+                	return "www"; //早期不是www后缀，兼容旧版本
+                }
+                else{
+                	return lasterStr;
+                }
+            }
+        }
+        return "";
+    }
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -706,20 +1032,19 @@ public class AppH5FanBeiWebController extends BaseController {
 	
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        try {
-            RequestDataVo reqVo = new RequestDataVo();
-            
-            JSONObject jsonObj = JSON.parseObject(requestData);
-            reqVo.setId(jsonObj.getString("id"));
-            reqVo.setMethod(request.getRequestURI());
-            reqVo.setSystem(jsonObj);
-            
-            return reqVo;
-        } catch (Exception e) {
-            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-        }
-	}
+		try {
+			RequestDataVo reqVo = new RequestDataVo();
 
+			JSONObject jsonObj = JSON.parseObject(requestData);
+			reqVo.setId(jsonObj.getString("id"));
+			reqVo.setMethod(request.getRequestURI());
+			reqVo.setSystem(jsonObj);
+
+			return reqVo;
+		} catch (Exception e) {
+			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * 

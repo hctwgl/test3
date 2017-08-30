@@ -12,13 +12,22 @@ console.log(os);
 if( style==21 ){
     document.title="借款超人注册";
 
-    $("#borrowSuperman").click(function(){  // 更换协议内容
+    $("#borrowSuperman").click(function(){  // 更换已登陆链接
         if ( os==1 ){
-            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www.borrowSuperman";
+            window.location.href="http://f.51fanbei.com/online/jiekuancaoren_v3.7.1.apk";
         }else if( os==2 ){
             window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%85%8D%E6%81%AF%E5%B0%8F%E9%A2%9D%E5%80%9F%E8%B4%B7%E6%89%8B%E6%9C%BA%E8%BD%AF%E4%BB%B6/id1263792729?mt=8";
         }
 	})
+}else if( style==22 ){
+    document.title="借钱平台注册";
+    $("#BrwPlatform").click(function(){  // 更换已登陆链接
+        if ( os==1 ){
+            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.ala.borrowMoney";
+        }else if( os==2 ){
+            window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E9%92%B1%E5%B9%B3%E5%8F%B0-%E5%B0%8F%E9%A2%9D%E6%9E%81%E9%80%9F%E7%8E%B0%E9%87%91%E5%80%9F%E8%B4%B7/id1259127316?mt=8";
+        }
+    })
 }
 
 
@@ -93,18 +102,72 @@ $(function(){
          	$("#register_codeBtn").text("获取验证码");
          	clearInterval(timerInterval);
          	timerS = 60;
-    		// $("#register_codeBtn").attr("isState",0);
         } else {
          	$("#register_codeBtn").text(timerS+" s");
         }
 	};
 
-	// 获取验证码
-	$("#register_codeBtn").click(function(){
+	// 获取图形验证码
+    $("#register_codeBtn").click(function(){
+        var mobileNum = $("#register_mobile").val();
+        if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+            $.ajax({
+                url: "/app/user/getImgCode",
+                type: "POST",
+                dataType: "JSON",
+                data: {mobile:mobileNum},
+                success: function (r) {
+                    console.log(r);
+                    // 显示弹窗
+                    $(".registerMask").removeClass("hide");
+                    $(".imgVftCodeWrap").removeClass("hide");
+                    $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
+                    $("#imgVftCodeClose").click(function(){ // 关闭弹窗
+                        $(".registerMask").addClass("hide");
+                        $(".imgVftCodeWrap").addClass("hide");
+                    })
+                },
+                error: function () {
+                    requestMsg("请求失败")
+                }
+            });
+        } else{
+            requestMsg("请填写正确的手机号");
+        }
+    });
+
+    // 刷新重新获取图片验证
+    $("#imgVftCodeRefresh").click(function(){
+        var mobileNum = $("#register_mobile").val();
+        $.ajax({
+            url: "/app/user/getImgCode",
+            type: "POST",
+            dataType: "JSON",
+            data: {mobile:mobileNum},
+            success: function (r) {
+                console.log(r);
+                // 显示弹窗
+                $(".registerMask").removeClass("hide");
+                $(".imgVftCodeWrap").removeClass("hide");
+                $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
+                $("#imgVftCodeClose").click(function(){ // 关闭弹窗
+                    $(".registerMask").addClass("hide");
+                    $(".imgVftCodeWrap").addClass("hide");
+                })
+            },
+            error: function () {
+                requestMsg("请求失败")
+            }
+        });
+    });
+
+    // 获取验证码
+	$("#imgVftCodeSbumit").click(function(){
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
 		var channelCode = $("#channelCode").val();
 		var pointCode = $("#pointCode").val();
+		var verifyImgCode=$("#imgVftCode").val();
 
 		if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
 			$("#register_codeBtn").attr("disabled",true);
@@ -116,11 +179,15 @@ $(function(){
       				mobile: mobileNum,
       				token: token,
 					channelCode: channelCode,
-					pointCode: pointCode
+					pointCode: pointCode,
+                    verifyImgCode:verifyImgCode
       			},
       			success: function(returnData){
-      				console.log(returnData);
       				if (returnData.success) {
+      				    // 关闭弹窗
+                        $(".registerMask").addClass("hide");
+                        $(".imgVftCodeWrap").addClass("hide");
+                        // 倒计时
                         $("#register_codeBtn").attr("isState",1);
     					$("#register_codeBtn").text(timerS+" s");
                	        timerInterval = setInterval(timeFunction,1000);
@@ -144,10 +211,6 @@ $(function(){
 		var register_password = $("#register_password").val();
 		var password_md5 = String(CryptoJS.MD5(register_password));
 		var passwordLength = register_password.length;
-
-		// 正则判断密码为6-18位字母+字符的组合
-		// var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
-		// var password = pwdReg.test(register_password);
 
         // 正则判断密码为6-18位字母+字符的组合
         var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
@@ -212,11 +275,17 @@ $(function(){
 											});
 										} else if( style==21 ){
                                             if ( os==1 ){
-                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www.borrowSuperman";
+                                                window.location.href="http://f.51fanbei.com/online/jiekuancaoren_v3.7.1.apk";
                                             }else if( os==2 ){
                                                 window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%85%8D%E6%81%AF%E5%B0%8F%E9%A2%9D%E5%80%9F%E8%B4%B7%E6%89%8B%E6%9C%BA%E8%BD%AF%E4%BB%B6/id1263792729?mt=8";
                                             }
-										} else {
+										} else if( style==22 ){
+                                            if ( os==1 ){
+                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.ala.borrowMoney";
+                                            }else if( os==2 ){
+                                                window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E9%92%B1%E5%B9%B3%E5%8F%B0-%E5%B0%8F%E9%A2%9D%E6%9E%81%E9%80%9F%E7%8E%B0%E9%87%91%E5%80%9F%E8%B4%B7/id1259127316?mt=8";
+                                            }
+                                        } else {
                                             $("#register_submitBtn").attr("disabled",true);
                                             window.location.href = returnData.url;
                                         }

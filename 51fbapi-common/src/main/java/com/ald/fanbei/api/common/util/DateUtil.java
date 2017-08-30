@@ -10,8 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ald.fanbei.api.common.Constants;
-
 /**
  * 
  *@类描述：日期相关工具类
@@ -107,6 +105,7 @@ public class DateUtil {
      * </pre>
      */
     public static final String DATE_TIME_FULL              = "yyyy-MM-dd HH:mm:ss.SSS";
+    public static final String DATE_TIME_FULL_ALL              = "yyyyMMddHHmmssSSS";
     
     public static final String NO_END_DATE_FORMAT          = "9999-12-31 23:59:59";
     
@@ -542,6 +541,17 @@ public class DateUtil {
 
     public static String getDateTimeFull(Date date) {
         return formatDate(date, DATE_TIME_FULL);
+    }
+    
+    public static String getDateTimeFullAll(Date date) {
+    	if(date==null){
+    		return "";
+    	}
+    	try {
+    		return formatDate(date, DATE_TIME_FULL_ALL);
+		} catch (Exception e) {
+			return "";
+		}
     }
 
     public static String getDateTimePattern() {
@@ -1116,7 +1126,6 @@ public class DateUtil {
     	
     	Date date = new Date(System.currentTimeMillis());
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	Date arrivalStart = DateUtil.getStartOfDate(date);
     	Integer day = 7;
     	Date arrivalEnd = DateUtil.getEndOfDate(date);
 		Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
@@ -1168,4 +1177,19 @@ public class DateUtil {
         return new Date(cal.getTime().getTime());
     }
     
+    /**
+     * 返回yyyy-MM-dd HH:mm:ss格式日期
+     * @return
+     */
+    public static Date parseDateTimeShortExpDefault(String dateStr,Date defaultDate) {
+    	if(dateStr == null || dateStr.length()==0){
+    		return defaultDate;
+    	}
+    	SimpleDateFormat parser = new SimpleDateFormat(DATE_TIME_SHORT);
+    	try {
+    		return parser.parse(dateStr);
+    	} catch (ParseException e) {
+    		return defaultDate;
+    	}
+    }
 }
