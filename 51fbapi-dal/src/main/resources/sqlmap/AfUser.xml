@@ -24,8 +24,10 @@
 			mobile,
 			recommend_id,
 			register_channel_id,
-			register_channel_point_id,
-			majiabao_name
+			register_channel_point_id
+			<if test="majiabaoName != null">
+				,majiabao_name
+			</if>
 		)
 		VALUES
 		(
@@ -38,8 +40,10 @@
 			#{mobile},
 			#{recommendId},
 			#{registerChannelId},
-			#{registerChannelPointId},
-			#{majiabaoName}
+			#{registerChannelPointId}
+			<if test="majiabaoName != null">
+				#{majiabaoName}
+			</if>
 		)
 	</insert>
 	
