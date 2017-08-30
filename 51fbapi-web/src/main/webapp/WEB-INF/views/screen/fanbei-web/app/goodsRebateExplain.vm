@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	#set($commonUrl="https://img.51fanbei.com/h5/app/images/sys")
+	<meta charset="UTF-8">
+	<title>商品返利说明</title>
+	<style type="text/css">
+		.goodsRebateExplain{
+			padding: 0.3rem 0.5rem;
+			text-align: Justify;
+			text-justify: inter-ideograph;
+			moz-user-select: -moz-none;
+			-moz-user-select: none;
+			-o-user-select: none;
+			-khtml-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		.title{
+			width: 5.26rem;
+			height: 0.68rem;
+			line-height: 0.68rem;
+			background-color: #FF2B50;
+			text-align: center;
+			margin: 0 auto 0.5rem;
+			border-radius: 0.34rem;
+			color: #fff;
+		}
+		h2{
+			margin-bottom: 0.25rem;
+		}
+		img{
+			margin-bottom: 0.6rem;
+		}
+		p{
+			line-height: 0.5rem;
+		}
+	</style>
+</head>
+<body style="background-color: #fff;">
+	<div class="goodsRebateExplain">
+		<p class="title">最高返利15%</p>
+		<h2>返利流程</h2>
+		<img src="$commonUrl/rebate.png">
+		<p>
+			温馨提示<br>
+			1、在51返呗购买任意商品均可享受返利，返利最高可达实际支付金额的15%。<br>
+			2、在51返呗购买任意商品均可使用信用分期支付。0首付，最高可享受12期免息。<br>
+			3、分期支付的商品同样享受返利，返利金额和以其他方式支付所获得的返利金额一致。<br>
+		</p>
+	</div>
+	
+</body>
+</html>

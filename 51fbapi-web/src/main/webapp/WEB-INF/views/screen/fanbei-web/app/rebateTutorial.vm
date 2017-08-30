@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    	#set($commonUrl="https://img.51fanbei.com/h5/app/images/sys")
+		<title>详细教程</title>
+    </head>
+    <body>
+		<img src="$commonUrl/rebateTutorial_bg1.png">
+		<img src="$commonUrl/rebateTutorial_bg2.jpg">
+		<img src="$commonUrl/rebateTutorial_bg3.jpg">
+    </body>
+</html>
