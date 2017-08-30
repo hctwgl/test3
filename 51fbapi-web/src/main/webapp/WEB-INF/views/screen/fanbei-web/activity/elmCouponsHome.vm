@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	#set($version="2017071801")
-	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
+	#set($commonUrl="https://img.51fanbei.com/h5/app/activity/07")
 	<meta charset="UTF-8">
 	<title>美食暑假大放价</title>
 	<style type="text/css">
