@@ -53,4 +53,12 @@ public interface AfUserDao {
 	 * @return
 	 */
 	List<AfUserInvitationDto> getRecommendUserByRecommendId(@Param("recommendId")Long recommendId,@Param("start")Integer start,@Param("end")Integer end);
+
+	/**
+	 * 根据用户id批量得到用户电话
+	 * @param userId
+	 * 
+	 * @return
+	 * **/
+	List<String> getUserNameByUserId(List<String> users);
 }

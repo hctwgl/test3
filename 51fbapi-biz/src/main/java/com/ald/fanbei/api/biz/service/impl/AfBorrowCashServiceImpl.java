@@ -1,11 +1,14 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -13,8 +16,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
@@ -52,11 +60,19 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
-
+	@Resource
+	AfUserService afUserService;
 	@Resource
 	AfRecommendUserService afRecommendUserService;
-
-
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	@Resource
+	SmsUtil smsUtil;
+	@Resource
+	AfUserAccountService afUserAccountService;
+	@Resource
+	JpushService jpushService;
+	
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -75,6 +91,30 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
 				logger.info("borrowSuccess--begin");
+				//fmf 借款金额加入缓存
+				BigDecimal amount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
+				if(amount.compareTo(new BigDecimal(1000000000)) == -1 || amount.compareTo(new BigDecimal(1000000000)) == 0) {
+					amount=amount.add(afBorrowCashDo.getAmount());
+					if(amount.compareTo(new BigDecimal(1000000000)) == 1){
+						List<String> users=new ArrayList<String>();
+						users.add(afBorrowCashDo.getUserId()+"");
+						List<String> userName = afUserService.getUserNameByUserId(users);
+						//发送短信
+						try{
+							smsUtil.sendBorrowCashActivitys(userName.get(0),"恭喜成为最幸运“破十亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。 回T退订");
+						}catch(Exception e){
+							logger.info("sendBorrowCashActivitys is fail,"+e);
+						}
+						//推送消息
+						jpushService.pushBorrowCashActivitys(userName.get(0), "10000","One");
+						// 给用户账号打钱
+						afUserAccountService.updateBorrowCashActivity(10000, users);
+						//保存破十亿中奖用户
+						bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60*60*24*7);
+					}
+					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60);
+				}
+				
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
 				logger.info("user_id="+ afBorrowCashDo.getUserId());
 				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
@@ -174,6 +214,21 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Override
 	public List<String> getBorrowedUserIds() {
 		return afBorrowCashDao.getBorrowedUserIds();
+	}
+	
+	@Override
+	public BigDecimal getBorrowCashSumAmount() {
+		return afBorrowCashDao.getBorrowCashSumAmount();
+	}
+	
+	@Override
+	public List<String> getRandomUser() {
+		return afBorrowCashDao.getRandomUser();
+	}
+
+	@Override
+	public List<String> getNotRandomUser(List<String> userId) {
+		return afBorrowCashDao.getNotRandomUser(userId);
 	}
 
 }

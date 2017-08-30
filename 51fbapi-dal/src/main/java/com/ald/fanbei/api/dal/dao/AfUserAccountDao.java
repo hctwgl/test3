@@ -89,4 +89,16 @@ public interface AfUserAccountDao {
 	int changeAmount(@Param("userId") Long userId, @Param("amount") BigDecimal amount);
 
 	int updateRebateAmount(AfUserAccountDo afUserAccountDo);
+	
+	/**
+	 * 借钱抽奖活动给中奖用户打钱
+	 * 
+	 * @param money
+	 * @param List<String> userId
+	 * 
+	 * **/
+	
+	int updateBorrowCashActivity(@Param("money") int money,@Param("userId") List<String> userId);
+	
+	
 }

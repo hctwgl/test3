@@ -213,4 +213,11 @@ public interface JpushService {
 	public void alipayRiskFault(String userName);
 
 	void jPushByType(int jumpType, String type,String userName);
+	
+	/**
+	 * 借钱抽奖奖励
+	 * 
+	 * @param userName
+	 */
+	public void pushBorrowCashActivitys(String userName,String money,String type);
 }

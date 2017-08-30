@@ -651,5 +651,30 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 	}
 
+	@Override
+	public void pushBorrowCashActivitys(String userName,String money,String type) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("pushBorrowCashActivitys,pid=", pid));
+			String msgContext = null;
+			if(type.equals("One")){
+				msgContext ="恭喜成为最幸运“破十亿”用户，10000元现金红包已发放，立即前往";
+			} else if (type.equals("Win")){
+				msgContext = "哇！幸运值爆棚的你在“破十亿”活动中获得"+money+"元现金红包，快去看看吧";
+			} else {
+				msgContext = "又有10位幸运用户已获得"+money+"元现金红包，快来看看有你吗";
+			}
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "231");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("借钱抽奖活动", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("pushBorrowCashActivitys error", e);
+		}
+		
+	}
+
 
 }

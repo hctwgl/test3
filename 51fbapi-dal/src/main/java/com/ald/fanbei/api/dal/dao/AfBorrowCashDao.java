@@ -1,6 +1,7 @@
 
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -146,4 +147,25 @@ public interface AfBorrowCashDao {
 	List<String> getBorrowedUserIds();
 
 	HashMap getBorrowCashByRemcommend(@Param("user_id")long user_id);
+
+	/**
+	 * 借钱活动
+	 * 
+	 * @return
+	 * **/
+	BigDecimal getBorrowCashSumAmount();
+	
+	/**
+	 * 获取随机用户
+	 * 
+	 * @return
+	 * **/
+	List<String> getRandomUser();
+	
+	/**
+	 * 获取未中奖用户id
+	 * @param userId
+	 * @return
+	 * **/
+	List<String> getNotRandomUser(List<String> userId);
 }

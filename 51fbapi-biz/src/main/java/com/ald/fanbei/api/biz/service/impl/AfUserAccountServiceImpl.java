@@ -242,4 +242,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		return afUserAccountDao.getUserAccountInfoByUserName(userName);
 	}
 
+	@Override
+	public int updateBorrowCashActivity(int money, List<String> userId) {
+		return afUserAccountDao.updateBorrowCashActivity(money, userId);
+	}
+
 }

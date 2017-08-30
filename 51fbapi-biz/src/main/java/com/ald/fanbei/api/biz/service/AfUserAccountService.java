@@ -9,6 +9,8 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 /**
  * 
  * @类描述：
@@ -115,4 +117,16 @@ public interface AfUserAccountService {
 	 * @return
 	 */
 	AfUserAccountDo getUserAccountInfoByUserName(String userName);
+	
+
+	/**
+	 * 借钱抽奖活动给中奖用户打钱
+	 * 
+	 * @param money
+	 * @param List<String> userId
+	 * 
+	 * **/
+	
+	int updateBorrowCashActivity(@Param("money") int money,@Param("userId") List<String> userId);
+	
 }

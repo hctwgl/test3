@@ -48,4 +48,11 @@ public interface AfUserService {
 	
 	List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId,Integer start,Integer end);
 
+	/**
+	 * 根据用户id批量得到用户电话
+	 * @param userId
+	 * 
+	 * @return
+	 * **/
+	List<String> getUserNameByUserId(List<String> users);
 }
