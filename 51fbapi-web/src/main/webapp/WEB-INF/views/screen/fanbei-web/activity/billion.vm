@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>借钱10亿活动</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/billion.css?version=$version">
+</head>
+<body>
+    <div id="billion">
+        <div id="money"></div>
+        <div id="time"></div>
+        <div id="rule">
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/dist/activity/08/billion.js?version=$version"></script>
+</html>
