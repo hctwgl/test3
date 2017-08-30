@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017082301")
-    #set($src="https://img.51fanbei.com/h5/app/activity/08")
+    #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <title>约惠七夕 购浪漫</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/valentine.css?version=$version">
 </head>
