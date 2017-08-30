@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017071005")
-    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/07")
     <meta charset="UTF-8">
     <title>游戏点劵</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/07/gamePoint.css">

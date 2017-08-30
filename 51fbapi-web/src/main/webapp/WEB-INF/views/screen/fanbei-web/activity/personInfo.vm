@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	#set($version="20170607")
-	#set($src="https://fs.51fanbei.com/h5/app/activity/06")
+	#set($src="http://f.51fanbei.com/h5/app/activity/06")
     <title>提交资料</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/light7.min.css?version=$version">
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/personInfo.css?version=$version">

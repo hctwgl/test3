@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
     	#set($version="2017062603")
-		#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+		#set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
 		<title>注册</title>
 		<link rel="stylesheet" type="text/css" href="/dist/activity/06/gameRegister.css">
     </head>
@@ -43,8 +43,8 @@
 		<img src="$commonUrl/gameRegister8.png">
 		<a class="login" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"></a>
 	</div>
-		<script type="text/javascript" src="/common/js/core.js"></script>
-		<script type="text/javascript" src="/common/js/md5.js"></script>
+		<script type="text/javascript" src="/dist/js/core.js"></script>
+		<script type="text/javascript" src="/dist/js/md5.js"></script>
 		<script type="text/javascript" src="/dist/activity/06/gameRegister.js?version=2017062004"></script>
     </body>
 </html>

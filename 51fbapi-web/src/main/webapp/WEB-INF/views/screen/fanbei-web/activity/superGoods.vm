@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 	#set($version="2017062601")
-	#set($src="https://fs.51fanbei.com/h5/app/activity/06")
+	#set($src="http://f.51fanbei.com/h5/app/activity/06")
     <title>最惠一波 超级返利拍</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/superGoods.css?version=$version">
 </head>
 <body>
-<div id="superGoods">
+<div v-cloak id="superGoods">
     <div class="banner">
         <img :src='content.bannerUrl'>
         <div style="height:.04rem;background: white;width:100%"></div>

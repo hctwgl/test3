@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="20170710")
-    #set($src="https://fs.51fanbei.com/h5/app/activity/07")
+    #set($src="http://f.51fanbei.com/h5/app/activity/07")
     <meta charset="UTF-8">
     <title>神券限时抢</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/07/robCoupon.css?version=$version">

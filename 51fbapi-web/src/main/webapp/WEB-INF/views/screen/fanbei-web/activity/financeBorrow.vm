@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	#set($version="2017061701")
-	#set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+	#set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
 	<title>提额狂欢</title>
 	<style type="text/css">
 		.financeBorrowTitleBtn{
