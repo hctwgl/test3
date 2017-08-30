@@ -35,38 +35,8 @@ let vm = new Vue({
                         $(".cont2").html(cont);
                         wordMove();//左右移动动画
                     })
-                    //首页轮播
                     self.$nextTick(function () {
-                        var i = 0;
-                        var liWidth=6.25+'rem';
-                        var clone = $(".banner .bannerList li").first().clone();//克隆第一张图片
-                        $(".banner .bannerList").append(clone);//复制到列表最后
-                        var size = self.content.bannerList.length+1;
-                        var ulWidth=size*7.5+'rem';
-                        $(".banner .bannerList li").width(liWidth);
-                        $(".banner .bannerList").width(ulWidth);
-                        for (var j = 0; j < size-1; j++) {
-                            $(".banner .num").append("<li></li>");
-                        }
-                        $(".banner .num li").first().addClass("on");
-                        setInterval(function () { i++; move();},4000);
-                        function move() {
-                            if (i == size) {
-                                $(".banner .bannerList").animate({left: '0'}, 0);
-                                $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
-                                i = 1;
-                                $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
-                            }
-                            if (i == -1) {
-                                $(".banner .bannerList").css({left: -(size - 1) * 7.5 + 'rem'});
-                                $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
-                                $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
-                                i = size - 2;
-                            }
-                            $(".banner .bannerList").stop().animate({left: -i * 7.5 + 'rem'}, 1000);
-                            $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
-                            $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
-                        }
+                        self.imgSwiper();//首页轮播
                     //判断蒙版
                       for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
                           num=self.content.itemsList[j].num;
@@ -85,6 +55,15 @@ let vm = new Vue({
                     })
                 }
             })
+        },
+        //轮播
+        imgSwiper(){
+            let mySwiper = new Swiper ('.banner', {
+                loop: true,
+                speed:1000,
+                autoplay :2000,
+                autoplayDisableOnInteraction : false
+            });
         },
         //点击参与人数进入排行榜
         joinAmountClick:function(){

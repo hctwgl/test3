@@ -26,67 +26,44 @@ let vm = new Vue({
                 url: "/H5GG/initHomePage",
                 data:{'activityId':activityId},
                 success: function (data) {
-                    $('.positionImg').fadeOut(4000);
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
-                    console.log(typeof(self.content.boluomeCouponList[0]))
+                    console.log(typeof(self.content.boluomeCouponList[0]));
                     self.$nextTick(function () {
                         var cont = $(".cont1").html();
                         $(".cont2").html(cont);
                         wordMove();//左右移动动画
                     })
-                    //首页轮播
                     self.$nextTick(function () {
-                        var i = 0;
-                        var liWidth=6.25+'rem';
-                        var clone = $(".banner .bannerList li").first().clone();//克隆第一张图片
-                        $(".banner .bannerList").append(clone);//复制到列表最后
-                        var size = self.content.bannerList.length+1;
-                        var ulWidth=size*7.5+'rem';
-                        $(".banner .bannerList li").width(liWidth);
-                        $(".banner .bannerList").width(ulWidth);
-                        for (var j = 0; j < size-1; j++) {
-                            $(".banner .num").append("<li></li>");
-                        }
-                        $(".banner .num li").first().addClass("on");
-                        setInterval(function () { i++; move();},4000);
-                        function move() {
-                            if (i == size) {
-                                $(".banner .bannerList").animate({left: '0'}, 0);
-                                $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
-                                i = 1;
-                                $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
-                            }
-                            if (i == -1) {
-                                $(".banner .bannerList").css({left: -(size - 1) * 7.5 + 'rem'});
-                                $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
-                                $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
-                                i = size - 2;
-                            }
-                            $(".banner .bannerList").stop().animate({left: -i * 7.5 + 'rem'}, 1000);
-                            $(".banner .bannerList").find('li').eq(i - 1).css('opacity', 0);
-                            $(".banner .bannerList").find('li').eq(i).css('opacity', 1);
-                        }
-                      //判断蒙版
-                      for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
-                          num=self.content.itemsList[j].num;
-                          if(num>=2){
-                              $('.card').eq(j).find('.num').css('display','block');
-                              $('.presentCard').attr('present','Y');
-                          }                
-                      }
-                       for(var j=0;j<self.content.itemsList.length;j++){//是否可领取终极大奖
+                        self.imgSwiper();//首页轮播
+                        //判断蒙版
+                        for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
                             num=self.content.itemsList[j].num;
-                            if(num==0){   
+                            if(num>=2){
+                                $('.card').eq(j).find('.num').css('display','block');
+                                $('.presentCard').attr('present','Y');
+                            }
+                        }
+                        for(var j=0;j<self.content.itemsList.length;j++){//是否可领取终极大奖
+                            num=self.content.itemsList[j].num;
+                            if(num==0){
                                 self.finalPrizeMask=true;
                                 break;
                             }
                         }
-                        
 
                     })
                 }
             })
+        },
+        //轮播
+        imgSwiper(){
+            let mySwiper = new Swiper ('.banner', {
+                loop: true,
+                speed:1000,
+                autoplay :2000,
+                autoplayDisableOnInteraction : false
+            });
         },
         //点击参与人数进入排行榜
         joinAmountClick:function(){
@@ -117,22 +94,22 @@ let vm = new Vue({
         //点击优惠券
         couponClick:function(e){
             var sceneId=e.sceneId;
-                $.ajax({
-                    url: "/fanbei-web/pickBoluomeCouponV1",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {'sceneId':sceneId},
-                    success: function(returnData){
-                        if(returnData.success){
-                            requestMsg(returnData.msg);
-                        }else{
-                            window.location.href=returnData.url;
-                        }
-                    },
-                    error: function(){
-                        requestMsg("请求失败");
+            $.ajax({
+                url: "/fanbei-web/pickBoluomeCouponV1",
+                type: "POST",
+                dataType: "JSON",
+                data: {'sceneId':sceneId},
+                success: function(returnData){
+                    if(returnData.success){
+                        requestMsg(returnData.msg);
+                    }else{
+                        window.location.href=returnData.url;
                     }
-                });
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            });
 
         },
         //点击卡片
