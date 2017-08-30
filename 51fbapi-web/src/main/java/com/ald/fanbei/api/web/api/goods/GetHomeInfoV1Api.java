@@ -90,7 +90,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		
 		// 获取轮播 +N信息
 		Map<String,Object> midBanner2Many = getCarouselToManyWithResourceDoList(
-				afResourceService.getCarouselToManyResourceOrderByBytype(AfResourceType.HomeCarouseToMany.getCode()));
+				afResourceService.getCarouselToManyResourceOrderByType(AfResourceType.HomeCarouseToMany.getCode()));
 		// 获取首页活动信息
 		//获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -156,8 +156,50 @@ public class GetHomeInfoV1Api implements ApiHandle {
     		activityInfoList.add(activityData);
 		}
 		// 更多商品
-		
-		
+		AfActivityDo moreActivity = afActivityService.getHomeMoreActivity();
+		List<Map<String,Object>> moreGoodsList = new ArrayList<Map<String,Object>>();
+		List<AfEncoreGoodsDto> moreGoodsDoList = afActivityGoodsService.listHomeActivityGoodsByActivityId(moreActivity.getId());
+		for(AfEncoreGoodsDto goodsDo : moreGoodsDoList) {
+			Map<String, Object> goodsInfo = new HashMap<String, Object>();
+			goodsInfo.put("goodName",goodsDo.getName());
+			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+			goodsInfo.put("goodsId", goodsDo.getRid());
+			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+			goodsInfo.put("source", goodsDo.getSource());
+			String doubleRebate = goodsDo.getDoubleRebate();
+			goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
+			goodsInfo.put("goodsType", "0");
+			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+			// 如果是分期免息商品，则计算分期
+			Long goodsId = goodsDo.getRid();
+			AfSchemeGoodsDo  schemeGoodsDo = null;
+			try {
+				schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+			} catch(Exception e){
+				logger.error(e.toString());
+			}
+			if(schemeGoodsDo != null){
+				AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+				String interestFreeJson = interestFreeRulesDo.getRuleJson();
+				JSONArray interestFreeArray = null;
+				if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+					interestFreeArray = JSON.parseArray(interestFreeJson);
+				}
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+				
+				if(nperList!= null){
+					goodsInfo.put("goodsType", "1");
+					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+					goodsInfo.put("nperMap", nperMap);
+				}
+			}
+			moreGoodsList.add(goodsInfo);
+		}
 		// 顶部轮播
 		data.put("topBannerList", topBannerList);
 		// 快速导航
@@ -166,7 +208,10 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		data.put("one2TwoInfoList", one2TwoInfoList);
 		// 轮播+N
 		data.put("midBanner2Many", midBanner2Many);
-		
+		// 首页活动商品
+		data.put("activityInfoList", activityInfoList);
+		// 更多商品
+		data.put("moreGoodsList", moreGoodsList);
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -251,7 +296,6 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				one2TwoInfo.put("bannerList", bannerList);
 				one2TwoInfoList.add(one2TwoInfo);
 			}
-			
 		}
 		return one2TwoInfoList;
 	}
@@ -280,8 +324,5 @@ public class GetHomeInfoV1Api implements ApiHandle {
 
 		return bannerList;
 	}
-
-	
-
 
 }

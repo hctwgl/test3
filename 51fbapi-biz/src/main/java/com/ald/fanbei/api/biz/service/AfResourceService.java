@@ -148,5 +148,5 @@ public interface AfResourceService {
 	 */
 	AfResourceDo getScrollbarByType();
 
-	List<AfResourceDo> getCarouselToManyResourceOrderByBytype(String code);
+	List<AfResourceDo> getCarouselToManyResourceOrderByType(String code);
 }

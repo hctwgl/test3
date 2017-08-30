@@ -59,6 +59,21 @@
 			is_delete = 0
 		AND
 			type = 3
+		AND
+			tag != 'MORE'
+	</select>
+	
+	<select id="getHomeMoreActivity"  resultType="AfActivityDo">
+		SELECT
+			<include refid="activitySqlField"/>
+		FROM
+			af_activity 
+		WHERE
+			is_delete = 0
+		AND
+			type = 3
+		AND
+			tag = 'MORE'
 	</select>
 	
 	

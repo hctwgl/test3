@@ -25,4 +25,6 @@ public interface AfActivityService {
 
 	List<AfActivityDo> listAllHomeActivity();
 
+	AfActivityDo getHomeMoreActivity();
+
 }

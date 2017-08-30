@@ -34,4 +34,6 @@ public interface AfActivityGoodsDao {
 
 	List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(@Param("activityId")Long activityId);
 
+	List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(@Param("activityId")Long activityId);
+
 }

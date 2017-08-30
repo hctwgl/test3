@@ -155,7 +155,7 @@
 		r1.sort ,r1.id , r2.sort
 	</select>
 	
-	<select id="getCarouselToManyResourceOrderByBytype" resultType="AfResourceDo">
+	<select id="getCarouselToManyResourceOrderByType" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
 		FROM
@@ -163,8 +163,9 @@
 		WHERE
 		type = #{type}
 		AND
+		is_delete = 0
 		ORDER BY
-		sort,id
+		sort ,id
 	</select>
 	
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">

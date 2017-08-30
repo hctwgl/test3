@@ -187,9 +187,9 @@
 	
 	</select>
 	
-	<select id="listHomeActivityGoodsByActivityId" resultType="AfGoodsDto" parameterType="java.lang.Long">
+	<select id="listHomeActivityGoodsByActivityId" resultType="AfEncoreGoodsDto" parameterType="java.lang.Long">
 		SELECT 
-		m.id mid,<include refid="goodsSqlField"></include>
+		<include refid="newEncoreGoodsSqlField"></include>
 		FROM
 			af_goods g ,af_activity_model m
 		WHERE

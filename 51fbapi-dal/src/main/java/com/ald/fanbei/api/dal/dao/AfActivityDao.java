@@ -25,4 +25,6 @@ public interface AfActivityDao {
 
 	List<AfActivityDo> listAllHomeActivity();
 
+	AfActivityDo getHomeMoreActivity();
+
 }

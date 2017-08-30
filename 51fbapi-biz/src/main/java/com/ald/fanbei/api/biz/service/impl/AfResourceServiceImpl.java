@@ -418,13 +418,13 @@ public class AfResourceServiceImpl implements AfResourceService {
 	}
 
 	@Override
-	public List<AfResourceDo> getCarouselToManyResourceOrderByBytype(String type) {
+	public List<AfResourceDo> getCarouselToManyResourceOrderByType(String type) {
 		List<AfResourceDo> list;
 		HashMap<String, List<AfResourceDo>> data = (HashMap<String, List<AfResourceDo>>) bizCacheUtil
 				.getObject(CacheConstants.RESOURCE.HOME_CAROUSEL_TO_MANY_TYPE_LIST.getCode());
 		data = (data == null ? new HashMap<String, List<AfResourceDo>>() : data);
 		if (data.get(type) == null) {
-			list = afResourceDao.getCarouselToManyResourceOrderByBytype(type);
+			list = afResourceDao.getCarouselToManyResourceOrderByType(type);
 			data.put(type, list);
 			bizCacheUtil.saveObject(CacheConstants.RESOURCE.HOME_CAROUSEL_TO_MANY_TYPE_LIST.getCode(), data);
 		} else {
