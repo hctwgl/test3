@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017083001")
+    #set($version="2017083003")
     #set($commonUrl="https://img.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
@@ -187,12 +187,14 @@
 				copyright15
             #elseif( $!{style}==10 )
 				copyright10
-			#elseif( $!{style}==1 ||  $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==23 )
+			#elseif( $!{style}==1 ||  $!{style}==19 || $!{style}==20 || $!{style}==21 )
 			    copyright19
 			#elseif( $!{style}==18 )
 				hide
 			#elseif( $!{style}==22 )
 			    copyright22
+			#elseif( $!{style}==23 )
+			    copyright23
 			#else
 				copyright$!{style}
 			#end
@@ -205,7 +207,7 @@
         #if( $!{style}==2 || $!{style}==7 )
             浙ICP备16001312号-3
         #elseif( $!{style}==23 )
-            京ICP备16006674号-1<br>理财有风险，投资需谨慎，放款时间、金额因个人情况而不同
+            京ICP备16006674号-1  理财有风险，投资需谨慎，放款时间、金额因个人情况而不同
         #end
     </div>
 </div>
