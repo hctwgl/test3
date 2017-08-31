@@ -9,8 +9,7 @@
 </head>
 
 <body>
-<div id="couponCenter">
-
+<div id="myCouponList">
     <div id="content">
         <div id="tabCont">
             <ul class="contList">
