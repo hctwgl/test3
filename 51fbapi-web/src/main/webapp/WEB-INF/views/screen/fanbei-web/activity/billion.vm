@@ -10,10 +10,29 @@
 </head>
 <body>
     <div id="billion">
-        <div id="money"></div>
-        <div id="time"></div>
+        <div id="money">
+            <p class="tenThousand">9998万</p>
+            <p class="tenMillion">10亿大趴&nbsp;&nbsp;狂送万元现金</p>
+            <p class="circle">
+                <span class="circleOne">
+                    <i class="date">9.4</i>
+                    <i class="circleMoney">600元</i>
+                </span>
+            </p>
+            <p class="btn">立即借钱</p>
+        </div>
+        <div id="time">
+            <p class="timeMoney">600元现金</p>
+            <p class="award">开奖倒计时</p>
+            <p class="countDown">05:55:55</p>            
+        </div>
         <div id="rule">
-
+            <p class="ruleHead">活动规则</p> 
+            <p>1. 活动期间，将从每日借款成功用户中随机抽取10名赠送现金红包；</p>
+            <p>2. 每日中奖名单将于次日上午10点在活动页进行公布，破10亿用户将在累积借款金额破10亿时，即时公布，敬请留意；</p>
+            <p>3. 本次活动现金红包均发放至“我的-返现”；</p>
+            <p>4. 活动期间禁止任何作弊行为，包括但并不限于通过软件进行批量操作、刷单等行为，一经发现平台将有权取消其奖励；</p>
+            <p>5. 本活动最终解释权归51返呗所有，如有疑问，请拨打客服热线400-002-5151或联系在线客服咨询。</p>                       
         </div>
     </div>
 </body>
