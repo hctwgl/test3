@@ -44,12 +44,12 @@ var _fmOpt;
 function timeFunction(){ // 60s倒计时
     timerS--;
     if (timerS<=0) {
-        $("#register_codeBtn").removeAttr("disabled");
-        $("#register_codeBtn").text("获取验证码");
+        $(".codeBtn").removeAttr("disabled");
+        $(".codeBtn").text("点击获取");
         clearInterval(timerInterval);
         timerS = 60;
     } else {
-        $("#register_codeBtn").text(timerS+" s");
+        $(".codeBtn").text(timerS+" s");
     }
 }
 // 提交注册
