@@ -22,8 +22,8 @@ public class BrandCouponResponseBo extends AbstractSerial{
 	private String[] channels;//优惠券适用的服务
 	private Integer mutex; //互斥
 	private Integer type;//类型
-	private Float sts;//开始时间
-	private Float ets;//结束时间
+	private Long sts;//开始时间
+	private Long ets;//结束时间
 	/**
 	 * @return the id
 	 */
@@ -123,32 +123,24 @@ public class BrandCouponResponseBo extends AbstractSerial{
 	/**
 	 * @return the sts
 	 */
-	public Float getSts() {
-		return sts;
-	}
-	/**
-	 * @param sts the sts to set
-	 */
-	public void setSts(Float sts) {
-		this.sts = sts;
-	}
-	/**
-	 * @return the ets
-	 */
-	public Float getEts() {
-		return ets;
-	}
-	/**
-	 * @param ets the ets to set
-	 */
-	public void setEts(Float ets) {
-		this.ets = ets;
-	}
+	
 	/**
 	 * @return the value
 	 */
 	public Float getValue() {
 		return value;
+	}
+	public Long getSts() {
+	    return sts;
+	}
+	public void setSts(Long sts) {
+	    this.sts = sts;
+	}
+	public Long getEts() {
+	    return ets;
+	}
+	public void setEts(Long ets) {
+	    this.ets = ets;
 	}
 	/**
 	 * @param value the value to set

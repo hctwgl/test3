@@ -236,6 +236,7 @@ public class H5GGShareController extends H5Controller {
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
+			
 
 			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
@@ -291,8 +292,12 @@ public class H5GGShareController extends H5Controller {
 		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
 		t.setBoluomeActivityId(activityId);
 		List<AfBoluomeActivityItemsDo> resultList = afBoluomeActivityItemsService.getListByCommonCondition(t);
-		if (resultList != null && resultList.size() > 0) {
-			for (AfBoluomeActivityItemsDo itemsDo : resultList) {
+		//选出特殊的那个itemsDo
+		AfBoluomeActivityItemsDo specificDo = null;
+		int specificIndex = 0 ;
+		if (resultList != null && resultList.size() > 3) {
+			for (int i = 0 ; i < resultList.size();i++) {
+				AfBoluomeActivityItemsDo itemsDo = resultList.get(i);
 				Long itemsId = itemsDo.getRid();
 				AfBoluomeActivityUserItemsDo conditionUserItems = new AfBoluomeActivityUserItemsDo();
 				conditionUserItems.setItemsId(itemsId);
@@ -302,9 +307,21 @@ public class H5GGShareController extends H5Controller {
 				List<AfBoluomeActivityUserItemsDo> numList = afBoluomeActivityUserItemsService
 						.getListByCommonCondition(conditionUserItems);
 				if (numList != null && numList.size() > 0) {
-					itemsDo.setNum(numList.size());
+					int num = numList.size();
+					itemsDo.setNum(num);
+					if (num > 1 && specificDo ==null ) {
+						specificDo = itemsDo;
+						specificIndex = i;
+					}
 				}
 			}
+			if (specificDo != null) {
+				AfBoluomeActivityItemsDo tempDo = new AfBoluomeActivityItemsDo();
+				tempDo = resultList.get(2);
+				resultList.set(2, specificDo);
+				resultList.set(specificIndex, tempDo);
+			}
+			
 		}
 		return resultList;
 	}
@@ -421,7 +438,7 @@ public class H5GGShareController extends H5Controller {
 
 		try {
 			context = doH5Check(request, false);
-			Long userId = context.getUserId();
+			Long userId = context.getUserId();//68885L;//
 			if (userId == null) {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
@@ -441,7 +458,7 @@ public class H5GGShareController extends H5Controller {
 
 					for (Long itemsId : tempItemsList) {
 						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
-						t.setSourceUserId(userId);
+						t.setUserId(userId);
 						t.setBoluomeActivityId(activityId);
 						t.setItemsId(itemsId);
 						t.setStatus("NORMAL");

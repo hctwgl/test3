@@ -3,7 +3,6 @@ if(getInfo().userName){
     userName=getInfo().userName;
 };
 //赠送卡片弹窗动画
-var touch = true;           //touch=true为开启触摸滑动
 var slideNub;               //轮播图片数量
 // var domainName = domainName();//域名
 var protocol = window.location.protocol;
@@ -17,6 +16,8 @@ var itemsId;
 var userItemsList;
 var numClick01;
 var numClick02;
+var numClick03;//左右滑动时img3卡片数量
+var hasTouchInit=false;//是否初始化过滑动事件监听
 $(function(){
     $('.presentCard').click(function(){
             $.ajax({
@@ -143,14 +144,13 @@ function getData(slideNub){
             }
         }
     }
-    if(touch){
+    if(!hasTouchInit){
         k_touch();
     }
     imgClickFy();
 }
 //右滑动
 function right(){
-    alert(0)
     var fy = new Array();
     for(var i=0;i<slideNub;i++){
         fy[i]=$(".imgList .img[data-slide-imgId="+i+"]").attr("class");
@@ -163,10 +163,16 @@ function right(){
         }
     }
     imgClickFy();
+    numClick03=$('.img.img3').attr('numClick');
+    //alert(numClick03)//可知img3卡片数量
+    if(numClick03<2){
+        $('.surePresent').css('background','#B3B3B3');
+    }else{
+        $('.surePresent').css('background','#fb9659');
+    }
 }
 //左滑动
 function left(){
-    alert(0)
     var fy = new Array();
     for(var i=0;i<slideNub;i++){
         fy[i]=$(".imgList .img[data-slide-imgId="+i+"]").attr("class");
@@ -179,10 +185,16 @@ function left(){
         }
     }
     imgClickFy();
+    numClick03=$('.img.img3').attr('numClick');
+    //alert(numClick03)//可知img3卡片数量
+    if(numClick03<2){
+        $('.surePresent').css('background','#B3B3B3');
+    }else{
+        $('.surePresent').css('background','#fb9659');
+    }
 }
 //轮播图片左右图片点击翻页
 function imgClickFy(){
-    alert(0)
     $(".imgList .img").removeAttr("onclick");
     $(".imgList .img2").attr("onclick","left()");
     $(".imgList .img4").attr("onclick","right()");
@@ -202,14 +214,15 @@ function k_touch() {
         _end = (_start - touch.pageX);
     }
     function touchEnd() {
-        if (_end < -100) {
+        if (_end < -50) {
             left();
             _end=0;
-        }else if(_end > 100){
+        }else if(_end > 50){
             right();
             _end=0;
         }
     }
+    hasTouchInit=true;
 }
 
 
