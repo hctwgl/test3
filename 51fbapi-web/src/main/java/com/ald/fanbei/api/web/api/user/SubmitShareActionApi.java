@@ -70,12 +70,4 @@ public class SubmitShareActionApi implements ApiHandle {
 		
 		return resp;
 	}
-
-	public static void main(String[] args) {
-		String sharePage = "ggpresents_userItemsId_5";
-		String[] strings = sharePage.split("_");
-		System.out.println(strings[0]);
-		System.out.println(strings[1]);
-		System.out.println(strings[2]);
-	}
 }
