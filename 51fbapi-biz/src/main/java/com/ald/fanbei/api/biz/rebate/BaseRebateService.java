@@ -38,16 +38,16 @@ public abstract class BaseRebateService {
         }
         //只有那几种状态能进行返利,基础验证
         if (
-                afOrderDo.getStatus().equals(OrderStatus.CLOSED) ||
-                        afOrderDo.getStatus().equals(OrderStatus.AGENCYCOMPLETED) ||
-                        afOrderDo.getStatus().equals(OrderStatus.DEAL_REFUNDING) ||
-                        afOrderDo.getStatus().equals(OrderStatus.DEALING) ||
-                        afOrderDo.getStatus().equals(OrderStatus.NEW) ||
-                        afOrderDo.getStatus().equals(OrderStatus.PAYFAIL) ||
-                        afOrderDo.getStatus().equals(OrderStatus.REBATED) ||
-                        afOrderDo.getStatus().equals(OrderStatus.REVIEW) ||
-                        afOrderDo.getStatus().equals(OrderStatus.WAITING_REFUND) ||
-                        afOrderDo.getStatus().equals(OrderStatus.NEW)) {
+                afOrderDo.getStatus().equals(OrderStatus.CLOSED.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.AGENCYCOMPLETED.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.DEAL_REFUNDING.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.DEALING.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.NEW.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.PAYFAIL.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.REBATED.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.REVIEW.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.WAITING_REFUND.getCode()) ||
+                        afOrderDo.getStatus().equals(OrderStatus.NEW.getCode())) {
             logger.error("invalid order state:"+ afOrderDo.getStatus());
             return false;
         }
