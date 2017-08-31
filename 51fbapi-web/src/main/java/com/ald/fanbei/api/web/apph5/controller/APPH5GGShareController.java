@@ -271,8 +271,12 @@ public class APPH5GGShareController extends BaseController {
 		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
 		t.setBoluomeActivityId(activityId);
 		List<AfBoluomeActivityItemsDo> resultList = afBoluomeActivityItemsService.getListByCommonCondition(t);
-		if (resultList != null && resultList.size() > 0) {
-			for (AfBoluomeActivityItemsDo itemsDo : resultList) {
+		//选出特殊的那个itemsDo
+		AfBoluomeActivityItemsDo specificDo = null;
+		int specificIndex = 0 ;
+		if (resultList != null && resultList.size() > 3) {
+			for (int i = 0 ; i < resultList.size();i++) {
+				AfBoluomeActivityItemsDo itemsDo = resultList.get(i);
 				Long itemsId = itemsDo.getRid();
 				AfBoluomeActivityUserItemsDo conditionUserItems = new AfBoluomeActivityUserItemsDo();
 				conditionUserItems.setItemsId(itemsId);
@@ -282,9 +286,19 @@ public class APPH5GGShareController extends BaseController {
 				List<AfBoluomeActivityUserItemsDo> numList = afBoluomeActivityUserItemsService
 						.getListByCommonCondition(conditionUserItems);
 				if (numList != null && numList.size() > 0) {
-					itemsDo.setNum(numList.size());
+					int num = numList.size();
+					itemsDo.setNum(num);
+					if (num>1 && specificDo !=null ) {
+						specificDo = itemsDo;
+						specificIndex = i;
+					}
 				}
 			}
+			AfBoluomeActivityItemsDo tempDo = new AfBoluomeActivityItemsDo();
+			tempDo = resultList.get(2);
+			resultList.set(2, specificDo);
+			resultList.set(specificIndex, tempDo);
+			
 		}
 		return resultList;
 	}
