@@ -28,7 +28,14 @@ let vm = new Vue({
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
-                    console.log(typeof(self.content.boluomeCouponList[0]));
+                    self.$nextTick(function () {
+                        for(var k=0;k<self.content.boluomeCouponList.length;k++){
+                            console.log(self.content.boluomeCouponList[k].isHas)
+                            if(self.content.boluomeCouponList[k].isHas=='Y'){
+                                $('.coupon').eq(k).addClass('changeGray');
+                            }
+                        }
+                    })
                     self.$nextTick(function () {
                         var cont = $(".cont1").html();
                         $(".cont2").html(cont);
@@ -92,8 +99,10 @@ let vm = new Vue({
             })
         },
         //点击优惠券
-        couponClick:function(e){
-            var sceneId=e.sceneId;
+        couponClick:function(index){
+            //alert(index)
+            let self = this;
+            var sceneId=self.content.boluomeCouponList[index].sceneId;
             $.ajax({
                 url: "/fanbei-web/pickBoluomeCouponV1",
                 type: "POST",
@@ -101,9 +110,9 @@ let vm = new Vue({
                 data: {'sceneId':sceneId},
                 success: function(returnData){
                     if(returnData.success){
-                        if(e.isHas=='N'){
+                        if(self.content.boluomeCouponList[index].isHas=='N'){
                            requestMsg(returnData.msg);
-                           e.isHas='Y';
+                           $('.coupon').eq(index).addClass('changeGray');
                        }else{
                            requestMsg(returnData.msg);
                        }
