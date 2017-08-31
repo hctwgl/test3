@@ -101,13 +101,12 @@ let vm = new Vue({
                 data: {'sceneId':sceneId},
                 success: function(returnData){
                     if(returnData.success){
-                        requestMsg(returnData.msg);
-                        /*if(e.isHas=='N'){
+                        if(e.isHas=='N'){
                            requestMsg(returnData.msg);
                            e.isHas='Y';
                        }else{
                            requestMsg(returnData.msg);
-                       }*/
+                       }
                     }else{
                         window.location.href=returnData.url;
                     }
