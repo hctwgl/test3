@@ -150,7 +150,7 @@ $(".codeBtn").click(function(){
                 })
             },
             error: function () {
-                requestMsg("请求失败")
+                requestMsg("哎呀，出错了！")
             }
         });
     } else{
@@ -178,7 +178,7 @@ $("#imgVftCodeRefresh").click(function(){
             })
         },
         error: function () {
-            requestMsg("请求失败")
+            requestMsg("哎呀，出错了！")
         }
     });
 });
@@ -202,11 +202,11 @@ $("#imgVftCodeSbumit").click(function(){
                 verifyImgCode:verifyImgCode
             },
             success: function(returnData){
+                // 关闭弹窗
+                $('.shadow').hide();
+                $(".registerMask").addClass("hide");
+                $(".imgVftCodeWrap").addClass("hide");
                 if (returnData.success) {
-                    // 关闭弹窗
-                    $('.shadow').hide();
-                    $(".registerMask").addClass("hide");
-                    $(".imgVftCodeWrap").addClass("hide");
                     // 倒计时
                     $(".codeBtn").attr("isState",1).text(timerS+" s");
                     timerInterval = setInterval(timeFunction,1000);
@@ -224,7 +224,7 @@ $("#imgVftCodeSbumit").click(function(){
                 }
             },
             error: function(){
-                requestMsg("请求失败");
+                requestMsg("哎呀，出错了！");
             }
         })
     } else{
