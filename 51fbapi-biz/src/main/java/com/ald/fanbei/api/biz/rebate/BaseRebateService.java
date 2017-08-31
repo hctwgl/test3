@@ -75,9 +75,9 @@ public abstract class BaseRebateService {
      */
     protected  boolean addRebateAmount(BigDecimal rebateAmount,AfOrderDo orderInfo){
         //用户账户操作
-        AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-        accountInfo.setRebateAmount(rebateAmount.add(accountInfo.getRebateAmount()));
-
+        AfUserAccountDo accountInfo = new AfUserAccountDo();
+        accountInfo.setRebateAmount(rebateAmount);
+        accountInfo.setUserId(orderInfo.getUserId());
         AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
         accountLog.setRefId(orderInfo.getRid() + StringUtils.EMPTY);
         accountLog.setUserId(orderInfo.getUserId());

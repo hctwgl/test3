@@ -94,6 +94,7 @@ public class GetOrderListApi implements ApiHandle{
 		vo.setNper(order.getNper());
 		vo.setNumId(order.getNumId());
 		vo.setSecOrderType(order.getSecType());
+		vo.setCount(order.getCount());
 		//update by renchunlei 2017-08-21
 		if(StringUtils.isNotBlank(order.getLogisticsNo())){
 			 //有物流单号就显示物流信息

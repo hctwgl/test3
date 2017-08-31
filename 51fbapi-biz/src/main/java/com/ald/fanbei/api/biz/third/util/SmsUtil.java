@@ -439,9 +439,7 @@ public class SmsUtil extends AbstractThird {
      * @param content
      */
     public void sendRebate(String mobile, Date date, BigDecimal amount) {
-        if (!CommonUtil.isMobile(mobile)) {
-            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
-        }
+        
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
         sendSmsToDhst(mobile, String.format(REBATE_COMPLETED, simpleDateFormat.format(new Date()), amount));
     }
