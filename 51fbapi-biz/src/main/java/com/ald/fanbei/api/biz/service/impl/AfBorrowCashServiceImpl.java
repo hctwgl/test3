@@ -24,6 +24,7 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
@@ -31,6 +32,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 
 /**
  * @类描述：
@@ -91,28 +93,44 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
 				logger.info("borrowSuccess--begin");
-				//fmf 借款金额加入缓存
+				//fmf 借钱抽奖活动借款金额加入缓存
 				BigDecimal amount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
-				if(amount.compareTo(new BigDecimal(1000000000)) == -1 || amount.compareTo(new BigDecimal(1000000000)) == 0) {
+				if(amount.compareTo(new BigDecimal(1500000000)) == -1 || amount.compareTo(new BigDecimal(1500000000)) == 0) {
 					amount=amount.add(afBorrowCashDo.getAmount());
-					if(amount.compareTo(new BigDecimal(1000000000)) == 1){
+					if(amount.compareTo(new BigDecimal(1500000000)) == 1){
 						List<String> users=new ArrayList<String>();
 						users.add(afBorrowCashDo.getUserId()+"");
 						List<String> userName = afUserService.getUserNameByUserId(users);
 						//发送短信
 						try{
-							smsUtil.sendBorrowCashActivitys(userName.get(0),"恭喜成为最幸运“破十亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。 回T退订");
+							smsUtil.sendBorrowCashActivitys(userName.get(0),"恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。 回T退订");
 						}catch(Exception e){
-							logger.info("sendBorrowCashActivitys is fail,"+e);
+							logger.info("sendBorrowCashActivitys Billion_Win_User is fail,"+e);
 						}
 						//推送消息
-						jpushService.pushBorrowCashActivitys(userName.get(0), "10000","One");
+						try{
+							jpushService.pushBorrowCashActivitys(userName.get(0), "10000","One");
+						}catch(Exception e){
+							logger.info("pushBorrowCashActivitys Billion_Win_User is fail,"+e);
+						}
 						// 给用户账号打钱
 						afUserAccountService.updateBorrowCashActivity(10000, users);
+						//af_user_account_log添加记录
+						AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
+						userAccountLog.setAmount(afBorrowCashDo.getAmount());
+						userAccountLog.setUserId(afBorrowCashDo.getUserId());
+						userAccountLog.setType("borrow_Activitys");
+						userAccountLog.setRefId(" ");
+						try{
+							afUserAccountLogDao.addUserAccountLog(userAccountLog);
+						}catch(Exception e){
+							throw new FanbeiException("addUserAccountLog "+afBorrowCashDo.getUserId()+" is fail,"+e);
+						}
 						//保存破十亿中奖用户
 						bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60*60*24*7);
+					} else {
+						bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60*60*24*7);
 					}
-					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60);
 				}
 				
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);

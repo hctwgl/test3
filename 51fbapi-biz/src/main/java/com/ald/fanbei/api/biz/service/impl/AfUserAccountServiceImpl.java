@@ -22,6 +22,7 @@ import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
@@ -244,6 +245,18 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 
 	@Override
 	public int updateBorrowCashActivity(int money, List<String> userId) {
+		for (String string : userId) {
+			AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
+			userAccountLog.setAmount(new BigDecimal(money));
+			userAccountLog.setUserId(Long.parseLong(string));
+			userAccountLog.setType("borrow_Activitys");
+			userAccountLog.setRefId(" ");
+			try{
+				afUserAccountLogDao.addUserAccountLog(userAccountLog);
+			}catch(Exception e){
+				throw new FanbeiException("addUserAccountLog "+userId+" is fail,"+e);
+			}
+		}
 		return afUserAccountDao.updateBorrowCashActivity(money, userId);
 	}
 

@@ -330,5 +330,8 @@ public class Constants {
 	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
 	//催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
+	//15亿抽奖活动
+	public static final String BORROWCASH_ACTIVITYS_TYPR="BorrowCash_ To_Draw";
+	public static final String BORROWCASH_ACTIVITYS_SECTYPR="BorrowCash_Activitys";
 
 }

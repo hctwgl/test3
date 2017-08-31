@@ -40,6 +40,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.GoodsReservationWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -480,15 +481,22 @@ public class AppH5ActivityController extends BaseController {
 			FanbeiContext context, HttpServletRequest httpServletRequest) {
 		return null;
 	}
-
+	@RequestMapping(value ="/toActivitiesPage", produces = "text/html;charset=UTF-8")
+	public String toActivitiesPage(Model model){
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
+		String time = resource.getValue().substring(5);
+		model.addAttribute("startTime",time);
+		return "";
+	}
+	
 	@RequestMapping(value ="/borrowCashActivities", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String borrowCashActivities(Model model) {
+	public String borrowCashActivities() {
 		try {
 			BigDecimal sumAmount = (BigDecimal) bizCacheUtil
 					.getObject("BorrowCash_Sum_Amount");
 			if (sumAmount != null) {
-				model.addAttribute("sumAmount", sumAmount+"");
+				//H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "", sumAmount+"");
 				return sumAmount+"";
 			}
 		} catch (Exception e) {
@@ -500,11 +508,11 @@ public class AppH5ActivityController extends BaseController {
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis save is fail" + e);
 		}
-		model.addAttribute("sumAmount", sumAmount+"");
+		//H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "", sumAmount+"");
 		return sumAmount+"";
 	}
 
-	@RequestMapping(value ="/randomUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value ="/randomUser",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String randomUser(HttpServletRequest request,ModelMap model) {
 		String winAmount = request.getParameter("winAmount");
@@ -514,7 +522,7 @@ public class AppH5ActivityController extends BaseController {
 		List<String> userNames = afUserService.getUserNameByUserId(users);	//得到中奖用户user_name
 		List<String> list2=afUserService.getUserNameByUserId(list1);
 		String jsonString = JsonUtil.toJSONString(userNames);
-		//每日中奖用户外推送
+		//每日中奖用户推送
 		for (String userName : userNames) {
 			try{
 				jpushService.pushBorrowCashActivitys(userName, winAmount,"Win");
@@ -533,79 +541,72 @@ public class AppH5ActivityController extends BaseController {
 		//发送短信
 		for (String userName : userNames) {
 			try{
-				smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十亿”活动中获得***元现金红包，快去查收惊喜吧。回T退订");
+				smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得"+winAmount+"元现金红包，快去查收惊喜吧。回T退订");
 			}catch(Exception e){
 				logger.info("sendBorrowCashActivitys "+userName+" is fails," +e);
 			}
 		}
 		//给用户账号打钱
-		int amunt = Integer.parseInt(winAmount);
-		afUserAccountService.updateBorrowCashActivity(amunt, users);
+		int amount = Integer.parseInt(winAmount);
+		try{
+			afUserAccountService.updateBorrowCashActivity(amount, users);
+		}catch(FanbeiException e){
+			logger.info("sendBorrowCashActivitys is fails," +e);
+		}
 		//中奖用户存入缓存
 		try{
 			bizCacheUtil.saveObject(winAmount+"_Win_User", jsonString, 60*60*24*7);
 		} catch (Exception e) {
 			logger.info("randomUser redis save is fail,"+jsonString+"" + e);
 		}
-		/*if(winAmount.equals("600")){
-			bizCacheUtil.saveObject("Six_Hundred_Win_User", jsonString, 60);
-		} else if(winAmount.equals("700")){
-			bizCacheUtil.saveObject("Seven_Hundred_Win_User", jsonString, 60);
-		} else if(winAmount.equals("800")){
-			bizCacheUtil.saveObject("Eight_Hundred_Win_User", jsonString, 60);
-		} else if(winAmount.equals("900")){
-			bizCacheUtil.saveObject("Nine_Hundred_Win_User", jsonString, 60);
-		} else {
-			bizCacheUtil.saveObject("Thousand_Win_User", jsonString, 60);
-		}*/
-
 		return jsonString;
 	}
 
-	@RequestMapping(value ="/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value ="/getWinUser",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String getWinUser(Model model) {
 		try {
-			String amount = (String) bizCacheUtil.getObject("600_Win_User");
-			List<String> list = JSONObject.parseObject(amount, List.class);
+			String users = (String) bizCacheUtil.getObject("600_Win_User");
+			List<String> list = JSONObject.parseObject(users, List.class);
 			model.addAttribute("Six_Hundred", list);
 		} catch (Exception e) {
 			logger.error("600_Win_User get is fail");
 		}
+		
 		try {
-			String amount = (String) bizCacheUtil.getObject("700_Win_User");
-			List<String> list = JSONObject.parseObject(amount, List.class);
+			String users = (String) bizCacheUtil.getObject("700_Win_User");
+			List<String> list = JSONObject.parseObject(users, List.class);
 			model.addAttribute("Seven_Hundred", list);
 		} catch (Exception e) {
 			logger.error("700_Win_User get is fail");
 		}
+		
 		try {
-			String amount = (String) bizCacheUtil.getObject("800_Win_User");
-			List<String> list = JSONObject.parseObject(amount, List.class);
+			String users = (String) bizCacheUtil.getObject("800_Win_User");
+			List<String> list = JSONObject.parseObject(users, List.class);
 			model.addAttribute("Eight_Hundred", list);
-			for (String string : list) {
-				System.out.println(string);
-			}
 		} catch (Exception e) {
 			logger.error("800_Win_User get is fail");
 		}
+		
 		try {
-			String amount = (String) bizCacheUtil.getObject("900_Win_User");
-			List<String> list = JSONObject.parseObject(amount, List.class);
+			String users = (String) bizCacheUtil.getObject("900_Win_User");
+			List<String> list = JSONObject.parseObject(users, List.class);
 			model.addAttribute("Nine_Hundred", list);
 		} catch (Exception e) {
 			logger.error("900_Win_User get is fail");
 		}
+		
 		try {
-			String amount = (String) bizCacheUtil.getObject("1000_Win_User");
-			List<String> list = JSONObject.parseObject(amount, List.class);
+			String users = (String) bizCacheUtil.getObject("1000_Win_User");
+			List<String> list = JSONObject.parseObject(users, List.class);
 			model.addAttribute("Thousand", list);
 		} catch (Exception e) {
 			logger.error("1000_Win_User get is fail");
 		}
 	
-		return null;
+		return "";
 	}
-	@RequestMapping(value ="/getBillionWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value ="/getBillionWinUser",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getBillionWinUser(){
 		String amount=null;
