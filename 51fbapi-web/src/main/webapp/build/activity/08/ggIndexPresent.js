@@ -97,7 +97,7 @@ $(function(){
                 }
             }
             cardRid=arr[0];
-            let dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友赠送了一张'+name+'卡给你，助你赢得51元大奖，速来领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/gg31.png","shareAppUrl":"'+ domainName + '/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
+            let dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友赠送了一张'+name+'卡给你，助你赢得51元大奖，速来领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/gg31.png","shareAppUrl":"'+ domainName + '/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents_userItemsId_'+cardRid+'"}';
             let base64 = BASE64.encoder(dat);
             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
         }
@@ -169,6 +169,7 @@ function right(){
         $('.surePresent').css('background','#B3B3B3');
     }else{
         $('.surePresent').css('background','#fb9659');
+        $('.img.img3').find('.garyCard').css('display','none');
     }
 }
 //左滑动
@@ -191,6 +192,7 @@ function left(){
         $('.surePresent').css('background','#B3B3B3');
     }else{
         $('.surePresent').css('background','#fb9659');
+        $('.img.img3').find('.garyCard').css('display','none');
     }
 }
 //轮播图片左右图片点击翻页
