@@ -62,7 +62,8 @@ public class LoginApi implements ApiHandle {
 //	JpushService jpushService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
-	
+	@Resource
+	JpushService jpushService;
 	
 
 	@Override
@@ -142,6 +143,11 @@ public class LoginApi implements ApiHandle {
 //		}
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
+		int userCount = afUserLoginLogService.getCountByUserName(userName);
+		//当用户登录日志为1的时候，发送推送
+		if(userCount == 1){
+			jpushService.jPushCoupon("COUPON_POPUPS",userName);
+		}
 		// reset fail count to 0 and record login ip phone msg
 		AfUserDo temp = new AfUserDo();
 		temp.setFailCount(0);
