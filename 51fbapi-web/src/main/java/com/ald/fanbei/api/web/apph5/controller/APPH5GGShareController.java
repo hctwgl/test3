@@ -304,7 +304,7 @@ public class APPH5GGShareController extends BaseController {
 				if (numList != null && numList.size() > 0) {
 					int num = numList.size();
 					itemsDo.setNum(num);
-					if (num>1 && specificDo !=null ) {
+					if (num > 1 && specificDo ==null ) {
 						specificDo = itemsDo;
 						specificIndex = i;
 					}
