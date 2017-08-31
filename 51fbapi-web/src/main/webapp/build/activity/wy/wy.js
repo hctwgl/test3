@@ -202,11 +202,11 @@ $("#imgVftCodeSbumit").click(function(){
                 verifyImgCode:verifyImgCode
             },
             success: function(returnData){
+                // 关闭弹窗
+                $('.shadow').hide();
+                $(".registerMask").addClass("hide");
+                $(".imgVftCodeWrap").addClass("hide");
                 if (returnData.success) {
-                    // 关闭弹窗
-                    $('.shadow').hide();
-                    $(".registerMask").addClass("hide");
-                    $(".imgVftCodeWrap").addClass("hide");
                     // 倒计时
                     $(".codeBtn").attr("isState",1).text(timerS+" s");
                     timerInterval = setInterval(timeFunction,1000);
