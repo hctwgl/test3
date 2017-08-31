@@ -53,6 +53,8 @@ public class SetRegisterPwdApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		String requestId = requestDataVo.getId();
+		String majiabaoName = requestId.substring(requestId.lastIndexOf("_") + 1, requestId.length());
 		String userName = context.getUserName();
 		String passwordSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
@@ -145,6 +147,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 			AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 			userDo.setRecommendId(userRecommendDo.getRid());
 		}
+		userDo.setMajiabaoName(majiabaoName);
 		afUserService.addUser(userDo);
 
 		Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
