@@ -50,7 +50,7 @@
             <p class="limitAmount white" v-else>无门槛</p>
             <p class="validTime white" v-if="item.term_type===1">有效期<span>{{item.effective_day}}</span>天</p>
         </div>
-        <div class="coupon"  v-for="item in content.boluomeCouponList" @click="couponClick(item)">
+        <div class="coupon"  v-for="item in content.boluomeCouponList" @click="couponClick(item)" v-if="!item.isHas||item.isHas===''||item.isHas==='N'">
             <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
             <p class="name" v-for="a in item.channels" v-if="a==='waimai_ele'">饿了么</p>
             <p class="name" v-for="a in item.channels" v-if="a==='dianying_kou'">抠电影</p>
