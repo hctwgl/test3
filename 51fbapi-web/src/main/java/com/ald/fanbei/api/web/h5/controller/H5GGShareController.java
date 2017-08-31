@@ -35,12 +35,12 @@ import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
-import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -56,12 +56,9 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
-import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.druid.util.StringUtils;
@@ -106,6 +103,8 @@ public class H5GGShareController extends H5Controller {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	BoluomeUtil boluomeUtil;
 	private static String couponUrl = null;
 
 	@Resource
@@ -128,6 +127,7 @@ public class H5GGShareController extends H5Controller {
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = " ";
 		FanbeiH5Context context = new FanbeiH5Context();
+		context = doH5Check(request, false);
 		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
 		try {
@@ -191,6 +191,14 @@ public class H5GGShareController extends H5Controller {
 											//字符串转为json对象
 											BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(rString,
 													BoluomeCouponResponseBo.class);
+											Long userId = context.getUserId();
+											if (userId != null) {
+												if (boluomeUtil.isUserHasCoupon(url, userId, 1)) {
+													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
+												} else {
+													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
+												}
+											}
 											boluomeCouponList.add(BoluomeCouponResponseBo);
 
 										}
@@ -227,7 +235,6 @@ public class H5GGShareController extends H5Controller {
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			context = doH5Check(request, false);
 
 			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
