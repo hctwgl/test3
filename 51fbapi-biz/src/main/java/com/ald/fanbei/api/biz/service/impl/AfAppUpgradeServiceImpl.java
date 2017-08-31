@@ -44,7 +44,7 @@ public class AfAppUpgradeServiceImpl implements AfAppUpgradeService {
         }
         result = afAppUpgradeDao.getNewestVersionBySpecify(versionCode,channelCode,type);
 		if(result != null){
-			bizCacheUtil.saveObject(cacheKey, result, Constants.SECOND_OF_THREE);
+			bizCacheUtil.saveObject(cacheKey, result, Constants.SECOND_OF_TEN_MINITS);
 		}
         return result;
 	}
