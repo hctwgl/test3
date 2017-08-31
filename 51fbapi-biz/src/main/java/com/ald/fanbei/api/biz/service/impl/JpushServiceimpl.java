@@ -678,7 +678,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		try {
 			logger.info("jPushCoupon type=>" + type + " userName=>" + userName);
 			//String userName = StringUtils.EMPTY;
-			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes("APP_POP_IMAGE");
+			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes("COUPON_POPUPS");
 			AfResourceDo afResourceDo = resourceDoList.get(0);
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("gameShareSuccess,pid=", pid));
