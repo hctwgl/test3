@@ -145,9 +145,10 @@ public class AuthStrongRiskApi implements ApiHandle {
 
 			String cardNo = card.getCardNumber();
 			String riskOrderNo = riskUtil.getOrderNo("regi", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+			AfUserAuthDo authDo = new AfUserAuthDo();
+			authDo.setUserId(context.getUserId());
+			authDo.setGmtRisk(new Date());
 			try {
-				AfUserAuthDo authDo = new AfUserAuthDo();
-				authDo.setUserId(context.getUserId());
 				authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
 				afUserAuthService.updateUserAuth(authDo);
 				
@@ -189,6 +190,8 @@ public class AuthStrongRiskApi implements ApiHandle {
 					}
 				}
 			} catch (Exception e) {
+				authDo.setRiskStatus(RiskStatus.A.getCode());
+				afUserAuthService.updateUserAuth(authDo);
 				logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
 				throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 			}

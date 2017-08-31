@@ -6,7 +6,7 @@ let vue=new Vue({
     el:'#vueCon',
     data:{
         content:{
-            imgUrl:'https://fs.51fanbei.com/h5/app/activity/05/mayMovie_01_2.jpg'
+            imgUrl:'https://img.51fanbei.com/h5/app/activity/05/mayMovie_01_2.jpg'
         },
         barShow:true
     },

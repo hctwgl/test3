@@ -35,10 +35,10 @@ public class BizCacheUtil extends AbstractThird {
 
 	@Resource
 	private RedisTemplate<String, Object> redisTemplate;
-	
-	@Resource(name = "redisTemplate")  
-    private SetOperations<String, Object> setOps;
-	
+
+	@Resource(name = "redisTemplate")
+	private SetOperations<String, Object> setOps;
+
 	/**
 	 * 保存到缓存，过期时间为默认过期时间
 	 * 
@@ -78,7 +78,7 @@ public class BizCacheUtil extends AbstractThird {
 			logger.error("saveObject", e);
 		}
 	}
-	
+
 	public void saveObjectForever(final String key, final Serializable seriObj) {
 		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || seriObj == null) {
 			return;
@@ -142,6 +142,39 @@ public class BizCacheUtil extends AbstractThird {
 					return connection.setNX(redisTemplate.getStringSerializer().serialize(key), value.getBytes());
 				}
 			});
+		} catch (Exception e) {
+			logger.error("getLock error", e);
+			return false;
+		}
+	}
+
+	/**
+	 * 锁住某个key值30S，需要解锁时删除即可
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public boolean getLock30Second(final String key, final String value) {
+		if (!BIZ_CACHE_SWITCH) {
+			return false;
+		}
+		try {
+			Boolean flag = (Boolean) redisTemplate.execute(new RedisCallback<Object>() {
+				@Override
+				public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+					return connection.setNX(redisTemplate.getStringSerializer().serialize(key), value.getBytes());
+				}
+			});
+			if (flag) {
+				redisTemplate.execute(new RedisCallback<Object>() {
+					@Override
+					public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+						return connection.expire(redisTemplate.getStringSerializer().serialize(key), Constants.SECOND_OF_THREE);
+					}
+				});
+			}
+			return flag;
 		} catch (Exception e) {
 			logger.error("getLock error", e);
 			return false;
@@ -324,7 +357,7 @@ public class BizCacheUtil extends AbstractThird {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 数据类型为List的数据写入缓存
 	 * 
@@ -340,16 +373,16 @@ public class BizCacheUtil extends AbstractThird {
 			logger.error("saveRedistSet" + key, e);
 		}
 	}
-	
-	public void saveRedistSetOne(final String key,final String value){
+
+	public void saveRedistSetOne(final String key, final String value) {
 		try {
 			setOps.add(key, value);
 		} catch (Exception e) {
 			logger.error("saveRedistSetOne" + key, e);
 		}
 	}
-	
-	public Boolean isRedisSetValue(final String key,final Object value){
+
+	public Boolean isRedisSetValue(final String key, final Object value) {
 		return setOps.isMember(key, value);
 	}
 }

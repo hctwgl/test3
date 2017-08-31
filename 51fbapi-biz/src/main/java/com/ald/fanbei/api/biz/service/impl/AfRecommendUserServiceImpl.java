@@ -17,162 +17,159 @@ import java.util.List;
 @Service("afRecommendUserService")
 public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 
-    @Resource
-    AfRecommendUserDao afRecommendUserDao;
-    @Resource
-    AfUserAccountDao afUserAccountDao;
+	@Resource
+	AfRecommendUserDao afRecommendUserDao;
+	@Resource
+	AfUserAccountDao afUserAccountDao;
 
-    @Resource
-    AfResourceDao afResourceDao;
+	@Resource
+	AfResourceDao afResourceDao;
 
-    @Resource
-    AfBorrowCashDao afBorrowCashDao;
+	@Resource
+	AfBorrowCashDao afBorrowCashDao;
 
-    @Resource
-    AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
 
-    private BigDecimal getAddMoney(){
-        List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_MONEY");
-        if(list != null && list.size()>0){
-            try{
-                return new BigDecimal( Double.parseDouble( list.get(0).getValue()));
-            }
-            catch (Exception e){
+	private BigDecimal getAddMoney() {
+		List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_MONEY");
+		if (list != null && list.size() > 0) {
+			try {
+				return new BigDecimal(Double.parseDouble(list.get(0).getValue()));
+			} catch (Exception e) {
 
-            }
-        }
-        return new BigDecimal(50);
-    }
+			}
+		}
+		return new BigDecimal(50);
+	}
 
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-    /**
-     *
-     * @param userId
-     * @param createTime
-     * @return
-     */
-    public int updateRecommendByBorrow(long userId, Date createTime){
-        try {
-            logger.info("{updateRecommendByBorrow} userId="+userId);
-            //不影响原来逻辑，不保持事物一样
-            AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
-            if (afRecommendUserDo != null && !afRecommendUserDo.isIs_loan()) {
-                Long count = 0L;
-                HashMap map =  afBorrowCashDao.getBorrowCashByRemcommend(userId);
-                logger.info("{update begin} userId="+userId);
-                try {
-                    count = (Long) map.get("count");
-                    if (count > 1) return 1;
-                }
-                catch (Exception e){
-                    logger.error("{update userBorrowError} userId="+userId);
-                }
+	/**
+	 *
+	 * @param userId
+	 * @param createTime
+	 * @return
+	 */
+	public int updateRecommendByBorrow(long userId, Date createTime) {
+		try {
+			logger.info("{updateRecommendByBorrow} userId=" + userId);
+			// 不影响原来逻辑，不保持事物一样
+			AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
+			if (afRecommendUserDo != null && !afRecommendUserDo.isIs_loan()) {
+				Long count = 0L;
+				HashMap map = afBorrowCashDao.getBorrowCashByRemcommend(userId);
+				logger.info("{update begin} userId=" + userId);
+				try {
+					count = (Long) map.get("count");
+					if (count > 1)
+						return 1;
+				} catch (Exception e) {
+					logger.error("{update userBorrowError} userId=" + userId);
+				}
 
-                afRecommendUserDo.setLoan_time(createTime);
-                BigDecimal addMoney = getAddMoney();
-                afRecommendUserDo.setPrize_money(addMoney);
-                afRecommendUserDao.updateLoanById(afRecommendUserDo);
-                //修改返现金额
-                long pid = afRecommendUserDo.getParentId();
-                AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-                afUserAccountDo.setUserId(pid);
-                afUserAccountDo.setRebateAmount(addMoney);
-                afUserAccountDao.updateRebateAmount(afUserAccountDo);
+				afRecommendUserDo.setLoan_time(createTime);
+				BigDecimal addMoney = getAddMoney();
+				afRecommendUserDo.setPrize_money(addMoney);
+				afRecommendUserDao.updateLoanById(afRecommendUserDo);
+				// 修改返现金额
+				long pid = afRecommendUserDo.getParentId();
+				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+				afUserAccountDo.setUserId(pid);
+				afUserAccountDo.setRebateAmount(addMoney);
+				afUserAccountDao.updateRebateAmount(afUserAccountDo);
 
-                AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
-                afUserAccountLogDo.setAmount(addMoney);
-                afUserAccountLogDo.setUserId(pid);
-                afUserAccountLogDo.setType("RECOMMEND_CASH");
-                afUserAccountLogDo.setRefId(String.valueOf( afRecommendUserDo.getId()));
-                afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+				AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
+				afUserAccountLogDo.setAmount(addMoney);
+				afUserAccountLogDo.setUserId(pid);
+				afUserAccountLogDo.setType("RECOMMEND_CASH");
+				afUserAccountLogDo.setRefId(String.valueOf(afRecommendUserDo.getId()));
+				afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
 
-            }
-            return 1;
-        }
-        catch (Exception e){
-            logger.error("update userBorrowError userId="+userId);
-            return 1;
-        }
-    }
+			}
+			return 1;
+		} catch (Exception e) {
+			logger.error("update userBorrowError userId=" + userId);
+			return 1;
+		}
+	}
 
-    /**
-     * 通过强风控就给推荐人加10块钱
-     * @param userId
-     * @return
-     */
-    public int updateRecommendCash(long userId){
-        try {
-            AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
-            if (afRecommendUserDo != null) {
+	/**
+	 * 通过强风控就给推荐人加10块钱
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public int updateRecommendCash(long userId) {
+		try {
+			AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserById(userId);
+			if (afRecommendUserDo != null) {
 
-                afRecommendUserDo.setLoan_time(null);
-                afRecommendUserDo.setPrize_money(BigDecimal.valueOf(10));
-                afRecommendUserDao.updateLoanById(afRecommendUserDo);
+				afRecommendUserDo.setLoan_time(null);
+				afRecommendUserDo.setPrize_money(BigDecimal.valueOf(10));
+				afRecommendUserDao.updateLoanById(afRecommendUserDo);
 
-                long pid = afRecommendUserDo.getParentId();
-                AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-                afUserAccountDo.setUserId(pid);
-                afUserAccountDo.setRebateAmount(BigDecimal.valueOf(10));
-                afUserAccountDao.updateRebateAmount(afUserAccountDo);
+				long pid = afRecommendUserDo.getParentId();
+				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+				afUserAccountDo.setUserId(pid);
+				afUserAccountDo.setRebateAmount(BigDecimal.valueOf(10));
+				afUserAccountDao.updateRebateAmount(afUserAccountDo);
 
-                AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
-                afUserAccountLogDo.setAmount(BigDecimal.valueOf(10));
-                afUserAccountLogDo.setUserId(pid);
-                afUserAccountLogDo.setType("RECOMMEND_CASH_RISK");
-                afUserAccountLogDo.setRefId(String.valueOf( afRecommendUserDo.getId()));
-                afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
-            }
-            return 1;
-        }
-        catch (Exception e){
-            logger.error("update updateRecommendCash e="+e);
-            logger.error("update updateRecommendCash userId="+userId);
-            return 1;
-        }
-    }
+				AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
+				afUserAccountLogDo.setAmount(BigDecimal.valueOf(10));
+				afUserAccountLogDo.setUserId(pid);
+				afUserAccountLogDo.setType("RECOMMEND_RISK");
+				afUserAccountLogDo.setRefId(String.valueOf(afRecommendUserDo.getId()));
+				afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+			}
+			return 1;
+		} catch (Exception e) {
+			logger.error("update updateRecommendCash userId=" + userId, e);
+			return 1;
+		}
+	}
 
+	public HashMap getRecommedData(long userId) {
+		return afRecommendUserDao.getRecommedData(userId);
+	}
 
+	public List<HashMap> getRecommendListByUserId(long userId, int pageIndex, int pageSize) {
+		pageIndex = pageSize * pageIndex;
+		return afRecommendUserDao.getRecommendListByUserId(userId, pageIndex, pageSize);
+	}
 
+	public List<HashMap> getRecommendListSort(Date startTime, Date endTime) {
+		return afRecommendUserDao.getRecommendListSort(startTime, endTime);
+	}
 
-    public HashMap getRecommedData(long userId){
-        return  afRecommendUserDao.getRecommedData(userId);
-    }
+	/**
+	 * 获取活动对应的图片或奖品
+	 * 
+	 * @param type
+	 *            RECOMMEND_IMG||RECOMMEND_PRIZE
+	 * @return
+	 */
+	public List<AfResourceDo> getActivieResourceByType(String type) {
+		return afResourceDao.getActivieResourceByType(type);
+	}
 
+	/**
+	 * 获取中奖名单
+	 * 
+	 * @param datamonth
+	 *            月份
+	 * @return
+	 */
+	public List<HashMap> getPrizeUser(String datamonth) {
+		return afRecommendUserDao.getPrizeUser(datamonth);
+	}
 
-    public List<HashMap> getRecommendListByUserId(long userId, int pageIndex, int pageSize){
-        pageIndex = pageSize* pageIndex;
-        return afRecommendUserDao.getRecommendListByUserId(userId,pageIndex,pageSize);
-    }
+	public int addRecommendShared(AfRecommendShareDo afRecommendShareDo) {
+		return afRecommendUserDao.addRecommendShared(afRecommendShareDo);
+	}
 
-    public List<HashMap> getRecommendListSort(Date startTime,Date endTime){
-        return afRecommendUserDao.getRecommendListSort(startTime,endTime);
-    }
-
-    /**
-     * 获取活动对应的图片或奖品
-     * @param type  RECOMMEND_IMG||RECOMMEND_PRIZE
-     * @return
-     */
-    public List<AfResourceDo> getActivieResourceByType(String type){
-        return afResourceDao.getActivieResourceByType(type);
-    }
-
-    /**
-     * 获取中奖名单
-     * @param datamonth  月份
-     * @return
-     */
-    public List<HashMap> getPrizeUser( String datamonth){
-        return afRecommendUserDao.getPrizeUser(datamonth);
-    }
-
-    public int addRecommendShared(AfRecommendShareDo afRecommendShareDo){
-        return  afRecommendUserDao.addRecommendShared(afRecommendShareDo);
-    }
-
-    public HashMap getRecommendSharedById(String id){
-        return  afRecommendUserDao.getRecommendSharedById(id);
-    }
+	public HashMap getRecommendSharedById(String id) {
+		return afRecommendUserDao.getRecommendSharedById(id);
+	}
 
 }

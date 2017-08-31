@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="201705251700")
-    #set($src="https://fs.51fanbei.com/h5/app/activity/05")
+    #set($src="http://f.51fanbei.com/h5/app/activity/05")
     <title>加勒比海盗5</title>
     <style type="text/css">
         .movieBg{position:absolute;height:38.82rem;}
