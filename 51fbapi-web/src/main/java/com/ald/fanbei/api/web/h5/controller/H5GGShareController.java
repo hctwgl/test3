@@ -306,10 +306,12 @@ public class H5GGShareController extends H5Controller {
 					}
 				}
 			}
-			AfBoluomeActivityItemsDo tempDo = new AfBoluomeActivityItemsDo();
-			tempDo = resultList.get(2);
-			resultList.set(2, specificDo);
-			resultList.set(specificIndex, tempDo);
+			if (specificDo != null) {
+				AfBoluomeActivityItemsDo tempDo = new AfBoluomeActivityItemsDo();
+				tempDo = resultList.get(2);
+				resultList.set(2, specificDo);
+				resultList.set(specificIndex, tempDo);
+			}
 			
 		}
 		return resultList;

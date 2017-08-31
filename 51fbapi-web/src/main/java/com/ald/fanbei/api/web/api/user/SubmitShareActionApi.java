@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
+import static org.hamcrest.CoreMatchers.containsString;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -48,7 +50,23 @@ public class SubmitShareActionApi implements ApiHandle {
 		if("ggIndexShare".equals(sharePage)){
 			maidianLog.info(context.getUserName() + "ggIndexShare");
 		}
+		
+		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
+		String[] strings = sharePage.split("_");
+		if (strings != null && strings.length == 3) {
+			String strUserItemsId = strings[2];
+			Long userItemsId = Long.parseLong(strUserItemsId);
+			//进行冻结卡片
+		}
+		
 		return resp;
 	}
 
+	public static void main(String[] args) {
+		String sharePage = "ggpresents_userItemsId_5";
+		String[] strings = sharePage.split("_");
+		System.out.println(strings[0]);
+		System.out.println(strings[1]);
+		System.out.println(strings[2]);
+	}
 }
