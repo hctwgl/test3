@@ -19,7 +19,6 @@ public interface AfUserService {
 	 */
 	int addUser(AfUserDo afUserDo);
 
-	int newAddUser(AfUserDo afUserDo);
 	
 	/**
 	 * 根据用户id获取用户信息

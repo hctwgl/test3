@@ -145,7 +145,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 			AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 			userDo.setRecommendId(userRecommendDo.getRid());
 		}
-		afUserService.newAddUser(userDo);
+		afUserService.addUser(userDo);
 
 		Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 		String inviteCode = Long.toString(invteLong, 36);
