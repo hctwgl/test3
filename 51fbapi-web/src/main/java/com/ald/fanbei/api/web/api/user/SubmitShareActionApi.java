@@ -11,10 +11,16 @@ import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
+<<<<<<< HEAD
+=======
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+>>>>>>> 11896cd3d12e24fb32cfee6e6ee9e8534cdd4230
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.h5.controller.H5GGShareController;
 
 /**
  *@类现描述：客户端提交分享行为，针对某些h5页面用户去分享时服务端需要记录是否分享、分享了之后需要做一些业务。针对需要服务端统计分享的页面客户端需把分享的行为告诉服务端
@@ -48,9 +54,21 @@ public class SubmitShareActionApi implements ApiHandle {
 		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
 		String[] strings = sharePage.split("_");
 		if (strings != null && strings.length == 3) {
-			String strUserItemsId = strings[2];
-			Long userItemsId = Long.parseLong(strUserItemsId);
-			//进行冻结卡片
+			String sharePagee = strings[0];
+			if ("ggpresents".equals(sharePagee)) {
+				String strUserItemsId = strings[2];
+				Long userItemsId = Long.parseLong(strUserItemsId);
+				//进行冻结卡片
+				H5GGShareController h5ggShareController = new H5GGShareController();
+				try {
+					h5ggShareController.updateUserItemsStatus(userItemsId, "FROZEN");
+				} catch (Exception e) {
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+					
+				}
+				
+			}
+			
 		}
 		
 		return resp;

@@ -35,12 +35,12 @@ import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -56,9 +56,12 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
+import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.druid.util.StringUtils;
@@ -103,8 +106,6 @@ public class H5GGShareController extends H5Controller {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserCouponService afUserCouponService;
-	@Resource
-	BoluomeUtil boluomeUtil;
 	private static String couponUrl = null;
 
 	@Resource
@@ -191,7 +192,6 @@ public class H5GGShareController extends H5Controller {
 											//字符串转为json对象
 											BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(rString,
 													BoluomeCouponResponseBo.class);
-											
 											Long userId = context.getUserId();
 											if (userId != null) {
 												if (boluomeUtil.isUserHasCoupon(url, userId, 1)) {
@@ -542,13 +542,22 @@ public class H5GGShareController extends H5Controller {
 	 *             status
 	 * @return: void
 	 */
-	private void updateUserItemsStatus(Long userItemsId, String status) {
-		AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();// afBoluomeActivityUserItemsService.getById(userItemsId);
-		resourceDo.setRid(userItemsId);
-		resourceDo.setStatus(status);
-		resourceDo.setGmtModified(new Date());
-		afBoluomeActivityUserItemsService.updateById(resourceDo);
-
+	public void updateUserItemsStatus(Long userItemsId, String status) throws Exception{
+		// 检测是否有这个userItemsId的卡片，若有，则更新状态
+		try{
+			AfBoluomeActivityUserItemsDo perviousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+			if (perviousDo != null) {
+				AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();
+				resourceDo.setRid(userItemsId);
+				resourceDo.setStatus(status);
+				resourceDo.setGmtModified(new Date());
+				afBoluomeActivityUserItemsService.updateById(resourceDo);
+			}
+		
+		}catch (Exception e) {
+			logger.error("update userItems status erro");
+			e.printStackTrace();
+		}
 	}
 
 	/**
