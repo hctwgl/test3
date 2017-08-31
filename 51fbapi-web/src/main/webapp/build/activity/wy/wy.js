@@ -3,7 +3,44 @@
  */
 var timerInterval ;
 var timerS = 60;
-// var token=formatDateTime()+Math.random().toString(36).substr(2);
+var channelCode = getUrl('channelCode');
+var pointCode = getUrl('pointCode');
+var token=formatDateTime()+Math.random().toString(36).substr(2);
+
+// 防止风控被拒
+function formatDateTime() {
+    var date = new Date();
+    var y = date.getFullYear();
+    var m = date.getMonth() + 1;
+    m = m < 10 ? ('0' + m) : m;
+    var d = date.getDate();
+    d = d < 10 ? ('0' + d) : d;
+    var h = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    return y +  m +  d +h +minute+second;
+};
+
+
+// 同盾校验编号的sessionId
+var _fmOpt;
+(function() {
+    _fmOpt = {
+        partner: 'alading',
+        appName: 'alading_web',
+        token: token
+    };
+    var cimg = new Image(1,1);
+    cimg.onload = function() {
+        _fmOpt.imgLoaded = true;
+    };
+    cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
+    var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+    fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+    // alert(json.msg);
+})();
+
 function timeFunction(){ // 60s倒计时
     timerS--;
     if (timerS<=0) {
@@ -26,9 +63,6 @@ $(".submit").click(function(){
     var password = pwdReg.test(register_password);
     var mobileNum = $("#mobile").val();
     var register_verification = $("#verification").val();
-    // var channelCode = $("#channelCode").val();
-    // var pointCode = $("#pointCode").val();
-
     var isState = $(".codeBtn").attr("isState");
 
     if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
@@ -42,6 +76,8 @@ $(".submit").click(function(){
                             dataType: 'JSON',
                             data: {
                                 registerMobile: mobileNum,
+                                channelCode: channelCode,
+                                pointCode: pointCode,
                                 smsCode: register_verification,
                                 password: password_md5
                             },
@@ -79,6 +115,12 @@ $(".submit").click(function(){
     } else{
         requestMsg("请填写正确的手机号");
     }
+});
+//图片懒加载
+$("img.lazy").lazyload({
+    placeholder : "https://img.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
+    effect : "fadeIn",  // 载入使用的效果
+    threshold: 200 // 提前开始加载
 });
 
 // 获取图形验证码
@@ -139,10 +181,7 @@ $("#imgVftCodeRefresh").click(function(){
 $("#imgVftCodeSbumit").click(function(){
     var isState = $(this).attr("isState");
     var mobileNum = $("#mobile").val();
-    var channelCode = $("#channelCode").val();
-    var pointCode = $("#pointCode").val();
     var verifyImgCode=$("#imgVftCode").val();
-
     if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
         $("#codeBtn").attr("disabled",true);
         $.ajax({
@@ -151,9 +190,9 @@ $("#imgVftCodeSbumit").click(function(){
             dataType: "JSON",
             data: {
                 mobile: mobileNum,
-                // token: token,
-                // channelCode: channelCode,
-                // pointCode: pointCode,
+                token: token,
+                channelCode: channelCode,
+                pointCode: pointCode,
                 verifyImgCode:verifyImgCode
             },
             success: function(returnData){

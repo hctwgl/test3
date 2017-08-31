@@ -16,13 +16,13 @@
 <img src="$commonUrl/c6.png">
 <img src="$commonUrl/c7.png">
 <img src="$commonUrl/c8.png">
-<img src="$commonUrl/c9.png">
-<img src="$commonUrl/d1.png">
-<img src="$commonUrl/d2.png">
-<img src="$commonUrl/d3.png">
-<img src="$commonUrl/d4.png">
-<img src="$commonUrl/d5.png">
-<img src="$commonUrl/d6.png">
+<img class="lazy" data-original="$commonUrl/c9.png">
+<img class="lazy" data-original="$commonUrl/d1.png">
+<img class="lazy" data-original="$commonUrl/d2.png">
+<img class="lazy" data-original="$commonUrl/d3.png">
+<img class="lazy" data-original="$commonUrl/d4.png">
+<img class="lazy" data-original="$commonUrl/d5.png">
+<img class="lazy" data-original="$commonUrl/d6.png">
 <div class="register">
 	<input type="text" class="mobile" id="mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入手机号领取红包">
     <input type="password" class="password" id="password" placeholder="请设置登录密码" name="words" maxlength="18">
@@ -31,7 +31,7 @@
     <button class="submit">确认领取</button>
 	<input type="checkbox" class="input_check" id="input_check" checked>
 	<a class="protocol" href="/app/sys/registerProtocol"></a>
-	<a class="al" href="/app/sys/registerProtocol"></a>
+	<div class="al"  onclick="goApp()"></div>
 </div>
 
 <div class="imgVftCodeWrap hide">
@@ -53,6 +53,8 @@
 	<button class="btn goBtn" onclick="goApp()">前往使用</button>
 	<button class="btn shareBtn" style="top:4.65rem">分享</button>
 </div>
+<script type="text/javascript" src="/dist/js/core.js"></script>
+<script type="text/javascript" src="/dist/js/md5.js"></script>
 <script type="text/javascript" src="/dist/activity/wy/wy.js"></script>
 </body>
 </html>

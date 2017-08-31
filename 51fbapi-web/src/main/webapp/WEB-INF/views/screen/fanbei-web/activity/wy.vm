@@ -17,16 +17,21 @@
 <img onclick="go()" style="position: absolute;top: 6.2rem;width: 2rem;height: 1.58rem;left: 3rem;" src="$commonUrl/gif3.gif">
 <img src="$commonUrl/a6.png">
 <img src="$commonUrl/a7.png">
-<img src="$commonUrl/a8.png">
-<img src="$commonUrl/d1.png">
-<img src="$commonUrl/d2.png">
-<img src="$commonUrl/d3.png">
-<img src="$commonUrl/d4.png">
-<img src="$commonUrl/d5.png">
-<img src="$commonUrl/d6.png">
+<img class="lazy" data-original="$commonUrl/a8.png">
+<img class="lazy" data-original="$commonUrl/d1.png">
+<img class="lazy" data-original="$commonUrl/d2.png">
+<img class="lazy" data-original="$commonUrl/d3.png">
+<img class="lazy" data-original="$commonUrl/d4.png">
+<img class="lazy" data-original="$commonUrl/d5.png">
+<img class="lazy" data-original="$commonUrl/d6.png">
 <script type="text/javascript" src="/dist/activity/wy/wy.js"></script>
 </body>
 <script>
+    $("img.lazy").lazyload({
+        placeholder : "https://img.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
+        effect : "fadeIn",  // 载入使用的效果
+        threshold: 200 // 提前开始加载
+    });
 	function go() {
 	    jQuery.ajax({
 			url:'/fanbei-web/postMaidianInfo',
@@ -36,7 +41,7 @@
 				console.log(data)
             }
 		});
-		window.location.href='wyRegister'
+		window.location.href='wyRegister?channelCode=wwyy&pointCode=wwyy'
     }
 </script>
 </html>
