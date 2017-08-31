@@ -565,6 +565,23 @@ public class TestController {
 	}
 
 
+	@RequestMapping(value = { "/jPushCoupon" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String jPushCoupon(String type,String userName){
+		PrintWriter out = null;
+		try {
+			jpushService.jPushCoupon(type,userName);
+		} catch (Exception e) {
+			logger.error("allowcateBrandCoupon", e);
+			return "fail";
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+		return "success";
+	}
+
 
 
 	@RequestMapping(value = { "/testJPush" }, method = RequestMethod.POST)

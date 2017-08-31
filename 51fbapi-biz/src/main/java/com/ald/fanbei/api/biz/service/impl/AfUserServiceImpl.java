@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.AfFeedBackService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 	@Resource
 	AfRecommendUserDao afRecommendUserDao;
+	@Resource
+	JpushService jpushService;
 
 
 	@Resource
@@ -66,7 +69,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId());
-
+					//极光首次登陆红包弹窗
+					jpushService.jPushCoupon("COUPON_POPUPS",afUserDo.getUserName());
 			        long recommendId = afUserDo.getRecommendId();
 
 					//#region add by hongzhengpei

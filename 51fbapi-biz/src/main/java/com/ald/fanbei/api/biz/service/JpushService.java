@@ -213,4 +213,7 @@ public interface JpushService {
 	public void alipayRiskFault(String userName);
 
 	void jPushByType(int jumpType, String type,String userName);
+	//注册新用户弹窗
+	void jPushCoupon(String type,String userName);
+
 }
