@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -14,6 +15,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserItemsDao;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -30,6 +32,8 @@ public class SubmitShareActionApi implements ApiHandle {
 	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
 	@Resource
 	private AfGameChanceService afGameChanceService;
+	@Resource
+	AfBoluomeActivityUserItemsService afBoluomeActivityUserItemsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -56,9 +60,8 @@ public class SubmitShareActionApi implements ApiHandle {
 				String strUserItemsId = strings[2];
 				Long userItemsId = Long.parseLong(strUserItemsId);
 				//进行冻结卡片
-				H5GGShareController h5ggShareController = new H5GGShareController();
 				try {
-					h5ggShareController.updateUserItemsStatus(userItemsId, "FROZEN");
+					afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
 				} catch (Exception e) {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 					
