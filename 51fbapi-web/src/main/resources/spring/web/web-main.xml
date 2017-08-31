@@ -96,6 +96,7 @@
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
 				<value>/goods/getHomeInfo</value>
+				<value>/goods/getHomeInfoV1</value>
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
 				<value>/goods/getThirdGoodsList</value>

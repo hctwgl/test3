@@ -156,6 +156,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
     		activityInfoList.add(activityData);
 		}
 		// 更多商品
+		Map<String ,Object> moreGoodsInfo = new HashMap<String,Object>();
 		AfActivityDo moreActivity = afActivityService.getHomeMoreActivity();
 		List<Map<String,Object>> moreGoodsList = new ArrayList<Map<String,Object>>();
 		List<AfEncoreGoodsDto> moreGoodsDoList = afActivityGoodsService.listHomeActivityGoodsByActivityId(moreActivity.getId());
@@ -200,6 +201,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			}
 			moreGoodsList.add(goodsInfo);
 		}
+		moreGoodsInfo.put("moreGoodsList", moreGoodsList);
+		moreGoodsInfo.put("titleName", "更多商品");
 		// 顶部轮播
 		data.put("topBannerList", topBannerList);
 		// 快速导航
@@ -211,7 +214,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		// 首页活动商品
 		data.put("activityInfoList", activityInfoList);
 		// 更多商品
-		data.put("moreGoodsList", moreGoodsList);
+		data.put("moreGoodsInfo", moreGoodsInfo);
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -272,12 +275,21 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				// 获取活动信息
 				AfResourceDo activityInfo = afResourceService.getResourceByResourceId(Long.parseLong(value4));
 				String name = activityInfo.getName(); //活动名称
-				one2TwoInfo.put("title", name);
+				one2TwoInfo.put("titleName", name);
 				for(AfResourceDo secResDo : rescList) {
 					if(value4.equals(secResDo.getValue4())) {
 						Map<String, Object> data = new HashMap<String, Object>();
 						data.put("imageUrl", afResourceDo.getValue());
 						data.put("titleName", afResourceDo.getName());
+						String descs = secResDo.getDescription();
+						if(!StringUtils.isEmpty(descs)) {
+							String[] levelTitles = descs.split("\\|");
+							if(levelTitles.length > 1) {
+								data.put("oneLevelTitle", levelTitles[0]);
+								data.put("twoLevelTitle", levelTitles[1]);
+							}
+						}
+						
 						if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
 							data.put("type", afResourceDo.getSecType());
 							// 对首页充值的版本兼容修改
