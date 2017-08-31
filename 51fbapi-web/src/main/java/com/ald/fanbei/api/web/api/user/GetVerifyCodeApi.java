@@ -92,16 +92,6 @@ public class GetVerifyCodeApi implements ApiHandle {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
 			}
 			break;
-		case LOGIN:
-			afUserDo = afUserService.getUserByUserName(mobile);
-			if (afUserDo == null) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-			}
-			boolean resultLogin = smsUtil.sendLoginVerifyCode(mobile,afUserDo.getRid());
-			if (!resultLogin) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
-			}
-			break;
 		case MOBILE_BIND:// 更换手机号
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_BIND_MOBILE_LIMIT);
 			 

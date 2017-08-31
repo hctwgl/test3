@@ -13,7 +13,6 @@ import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
@@ -29,7 +28,6 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.AppResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfUserVo;
 import com.alibaba.fastjson.JSONObject;
@@ -64,8 +62,6 @@ public class LoginApi implements ApiHandle {
 //	JpushService jpushService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
-	@Resource
-	RiskUtil riskUtil;
 	
 	
 
@@ -138,14 +134,14 @@ public class LoginApi implements ApiHandle {
 			FanbeiExceptionCode errorCode = getErrorCountCode(errorCount + 1);
 			return new ApiHandleResponse(requestDataVo.getId(), errorCode);
 		}
-		//
 //		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
 //			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
 //			//向推荐人推送消息
 //			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
 //			jpushService.gameShareSuccess(user.getUserName());
 //		}
-		
+		loginDo.setResult("true");
+		afUserLoginLogService.addUserLoginLog(loginDo);
 		// reset fail count to 0 and record login ip phone msg
 		AfUserDo temp = new AfUserDo();
 		temp.setFailCount(0);
@@ -153,20 +149,6 @@ public class LoginApi implements ApiHandle {
 		temp.setUserName(userName);
 		afUserService.updateUser(temp);
 
-		//调用风控可信接口
-		boolean riskSucc = riskUtil.verifyLogin(userName, requestDataVo.getId());
-		if(!riskSucc){
-			loginDo.setResult("false:需要验证登录短信");
-			afUserLoginLogService.addUserLoginLog(loginDo);
-			JSONObject jo = new JSONObject();
-			jo.put("needVerify",true);
-			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_UNTRUST_ERROW);
-			resp.setResponseData(jo); //失败了返回需要短信验证
-			return resp;
-		}
-		
-		loginDo.setResult("true");
-		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
 		String token = UserUtil.generateToken(userName);
 		TokenBo tokenBo = new TokenBo();
@@ -188,6 +170,7 @@ public class LoginApi implements ApiHandle {
 		}else{
 			jo.put("borrowed", "N");
 		}
+		
 		
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {

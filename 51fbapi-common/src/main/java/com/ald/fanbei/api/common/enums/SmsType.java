@@ -20,7 +20,6 @@ public enum SmsType {
     SET_PAY_PWD("P", "设置支付"),
     BANK_CARD("B", "银行卡"),
 
-    LOGIN("L", "登录"),
     COMMON("C","通用");
 
     private String code;
