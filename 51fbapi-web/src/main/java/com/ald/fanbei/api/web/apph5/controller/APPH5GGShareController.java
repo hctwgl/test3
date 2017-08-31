@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
+import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityItemsService;
@@ -192,9 +193,11 @@ public class APPH5GGShareController extends BaseController {
 											if (StringUtil.isBlank(userName)) {
 												userName = request.getParameter("userName");
 											}
+											List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(uri);
+											BrandActivityCouponResponseBo bo = activityCouponList.get(0);
 											if (userName != null) {
 												Long userId = convertUserNameToUserId(userName);
-												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)) {
+												if (boluomeUtil.isUserHasCoupon(uri, userId, 1) || bo.getDistributed() >= bo.getTotal()) {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 												} else {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
