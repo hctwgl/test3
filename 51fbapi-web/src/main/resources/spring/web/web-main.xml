@@ -168,6 +168,7 @@
 				<entry key="/user/getPrizeUser" value-ref="getPrizeUserApi"/>
 				<entry key="/user/addRecommendShared" value-ref="addRecommendSharedApi" />
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
+				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
 
 				<entry key="/user/signin" value-ref="signinApi" />
 

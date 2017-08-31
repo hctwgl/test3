@@ -1764,4 +1764,33 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 	
+	/**
+	 * 登录可信验证码
+	 * @param userName
+	 * @param device
+	 * @return
+	 */
+	public boolean verifyLogin(String userName,String device){
+		
+		Map<String,String> reqBo = new HashMap<String, String>();
+		reqBo.put("signInfo", SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
+		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
+		String reqResult = HttpUtil.post(url, reqBo);
+
+		logThird(reqResult, "verifyLogin", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
+
+		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			riskResp.setSuccess(true);
+			return true;
+		} else {
+//			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			return false;
+		}
+	}
+	
 }
