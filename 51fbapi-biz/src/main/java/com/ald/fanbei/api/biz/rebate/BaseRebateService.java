@@ -74,6 +74,11 @@ public abstract class BaseRebateService {
      * @return
      */
     protected  boolean addRebateAmount(BigDecimal rebateAmount,AfOrderDo orderInfo){
+
+        AfUserAccountLogDo existItem= afUserAccountLogDao.getByRefAndType(orderInfo.getRid(),UserAccountLogType.REBATE_CASH.getCode());
+        if(existItem!=null){
+           return false;
+        }
         //用户账户操作
         AfUserAccountDo accountInfo = new AfUserAccountDo();
         accountInfo.setRebateAmount(rebateAmount);

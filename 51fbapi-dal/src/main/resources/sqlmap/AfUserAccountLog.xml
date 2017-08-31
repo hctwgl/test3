@@ -57,4 +57,11 @@
 		AND 
 			al.type=#{type} 
 	</select>
+	<select id="getByRefAndType" resultType="com.ald.fanbei.api.dal.domain.AfUserAccountLogDo" >
+		SELECT
+		al.id
+		FROM af_user_account_log as al
+		 where  al.ref_id=  #{rid} and al.type= #{type}
+		limit 0,1
+	</select>
 </mapper>
