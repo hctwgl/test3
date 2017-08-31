@@ -8,14 +8,15 @@
 	<link rel="stylesheet" type="text/css" href="/dist/activity/wy/wy.css">
 </head>
 <body>
-<img src="$commonUrl/c1.png">
-<img src="$commonUrl/c2.png">
-<img src="$commonUrl/c3.png">
-<img src="$commonUrl/c4.png">
-<img src="$commonUrl/c5.png">
-<img src="$commonUrl/c6.png">
-<img src="$commonUrl/c7.png">
-<img src="$commonUrl/c8.png">
+<div class="loadingMask"><i class="loading"></i></div>
+<img class="first" src="$commonUrl/c1.png">
+<img class="first" src="$commonUrl/c2.png">
+<img class="first" src="$commonUrl/c3.png">
+<img class="first" src="$commonUrl/c4.png">
+<img class="first" src="$commonUrl/c5.png">
+<img class="first" src="$commonUrl/c6.png">
+<img class="first" src="$commonUrl/c7.png">
+<img class="first" src="$commonUrl/c8.png">
 <img class="lazy" data-original="$commonUrl/c9.png">
 <img class="lazy" data-original="$commonUrl/d1.png">
 <img class="lazy" data-original="$commonUrl/d2.png">
@@ -33,7 +34,7 @@
 	<a class="protocol" href="/app/sys/registerProtocol"></a>
 	<div class="al"  onclick="goApp()"></div>
 </div>
-
+<div class="shadow"></div>
 <div class="imgVftCodeWrap hide">
     <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
     <div class="imgVftCodeInput clearfix">
@@ -53,6 +54,18 @@
 	<button class="btn goBtn" onclick="goApp()">前往使用</button>
 	<button class="btn shareBtn" style="top:4.65rem">分享</button>
 </div>
+<script>
+    $(".first").each(function() {
+        var img = $(this);
+        img.load(function () {
+            $(".loadingMask").fadeOut();
+            console.log(2)
+        });
+        setTimeout(function () {
+            $(".loadingMask").fadeOut();
+        },1000)
+    });
+</script>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
 <script type="text/javascript" src="/dist/activity/wy/wy.js"></script>

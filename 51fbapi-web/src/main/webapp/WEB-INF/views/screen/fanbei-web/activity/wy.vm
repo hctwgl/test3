@@ -8,16 +8,16 @@
 	<link rel="stylesheet" type="text/css" href="/dist/activity/wy/wy.css">
 </head>
 <body>
-
-<img src="$commonUrl/a1.png">
-<img src="$commonUrl/a2.png">
-<img src="$commonUrl/a3.png">
-<img src="$commonUrl/a4.png">
-<img src="$commonUrl/a5.png">
+<div class="loadingMask"><i class="loading"></i></div>
+<img class="first" src="$commonUrl/a1.png">
+<img class="first" src="$commonUrl/a2.png">
+<img class="first" src="$commonUrl/a3.png">
+<img class="first" src="$commonUrl/a4.png">
+<img class="first" src="$commonUrl/a5.png">
+<img class="first" src="$commonUrl/a6.png">
+<img class="first" src="$commonUrl/a7.png">
+<img class="first" src="$commonUrl/a8.png">
 <img onclick="go()" style="position: absolute;top: 6.2rem;width: 2rem;height: 1.58rem;left: 3rem;" src="$commonUrl/gif3.gif">
-<img src="$commonUrl/a6.png">
-<img src="$commonUrl/a7.png">
-<img class="lazy" data-original="$commonUrl/a8.png">
 <img class="lazy" data-original="$commonUrl/d1.png">
 <img class="lazy" data-original="$commonUrl/d2.png">
 <img class="lazy" data-original="$commonUrl/d3.png">
@@ -27,6 +27,16 @@
 <script type="text/javascript" src="/dist/activity/wy/wy.js"></script>
 </body>
 <script>
+    $(".first").each(function() {
+        var img = $(this);
+        img.load(function () {
+            $(".loadingMask").fadeOut();
+            console.log(2)
+        });
+        setTimeout(function () {
+            $(".loadingMask").fadeOut();
+        },1000)
+    });
     $("img.lazy").lazyload({
         placeholder : "https://img.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
         effect : "fadeIn",  // 载入使用的效果
