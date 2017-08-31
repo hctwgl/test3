@@ -70,11 +70,40 @@ label, button { cursor: pointer; }
 .omg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 span { display: inline-block; }
 
-/*共用懒加载*/
-img[lazy-src]{
-	background: #f1f1f1 url("http://f.51fanbei.com/h5/app/images/sys/bitmap.png") no-repeat center center;
-	-webkit-background-size: 70%;
-	background-size: 70%;
+/*共用隐藏*/
+.hide{
+	display: none;
+}
+
+/*防止vue代码直接显示*/
+[v-cloak] {
+	display: none;
+}
+
+/*协议公用的样式*/
+.protocol{
+	padding: 0.2rem;
+	line-height: 0.48rem;
+	text-align: Justify;
+	text-justify: inter-ideograph;
+	h2{
+		text-align: center;
+		margin-bottom: 0.2rem;
+	}
+	span{
+		font-weight: bold;
+	}
+}
+
+/*公用的缺省页*/
+.nullPrompt {
+	text-align: center;
+	color: #666;
+	img{
+		width: 2.4rem;
+		height: 2.14rem;
+		margin: 2.4rem auto 0.5rem;
+	}
 }
 
 /*loading样式*/
@@ -100,7 +129,4 @@ img[lazy-src]{
 	transform: translate(-50%,-50%);
 }
 
-/*共用隐藏*/
-.hide{
-	display: none;
-}
+

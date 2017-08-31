@@ -391,7 +391,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "204");
-			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getName());
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getValue2());
 			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, false);
 		} catch (Exception e) {
 			logger.info("gameShareSuccess error", e);
@@ -410,7 +410,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "204");
-			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getName());
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getValue2());
 			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, true);
 		} catch (Exception e) {
 			logger.info("gameShareSuccess error", e);

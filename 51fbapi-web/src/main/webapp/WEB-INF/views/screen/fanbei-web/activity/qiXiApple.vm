@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017082302")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
+    <title>七夕Apple品牌日</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/08/qiXiApple.css">
+</head>
+<body>
+    <div id="selfHome">
+        <img :data-original="returnData.bannerUrl" class="lazy">
+        <div class="bigWrap">
+                <div class="discountWrap">
+                    <div class="bannerUrl">
+                    <img src="$commonUrl/qiXiApple.png" class="buyPhone">
+                    </div>
+                    <ul class="discount clearfix" style="background-color: #ECECEC;">
+                        <li v-for="item in discountMap" @click="goGoodsDetail(item)" class="buyBtn">
+                            <div class="stripe">
+                                <img :data-original="item.goodsIcon" class="lazy">
+                            </div>
+                            <div class="discountRight">
+                                <p class="discountRightTitle">{{item.goodName}}</p>
+                                <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
+                                <div class="priceWrap">
+                                    <span class="saleAmount">¥{{item.saleAmount}}</span>
+                                    <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
+                                </div>
+                                <span class="goBuyBtn">立即抢购</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="rebateWrap">
+                <div class="bannerUrl" style="background-color: #ECECEC;">
+                    <img src="$commonUrl/qiXiApple.png" class="buyPhone">
+                </div>
+                <ul class="rebate clearfix" style="background-color: #ECECEC;">
+                    <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
+                        <img :data-original="item.goodsIcon" class="lazy">
+                        <div class="rebateRight">
+                            <p class="rebateRightTitle">{{item.goodName}}</p>
+                            <p class="remark">{{item.remark}}</p>
+                            <div class="priceWrap">
+                                <span class="saleAmount">¥{{item.saleAmount}}</span>
+                                <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/dist/activity/08/qiXiApple.js"></script>
+<script type="text/javascript" src="/dist/js/jquery.lazyload.js"></script>
+</html>

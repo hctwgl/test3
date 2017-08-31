@@ -141,7 +141,7 @@ public class AppGoodsControler extends BaseController {
 	        goodsList.add(goodsInfoMap);
 		}
 		
-		doMaidianLog(request,H5CommonResponse.getNewInstance(true,""));
+		doMaidianLog(request,H5CommonResponse.getNewInstance(true,"","",model));
 		logger.info("list++++++====" + JSON.toJSONString(goodsList));
 
 		model.put("goodsList", goodsList);

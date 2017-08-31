@@ -156,6 +156,7 @@ public class Constants {
 	public static final String APPLY_BRROW_CASH_WHITE_LIST = "APPLY_BRROW_CASH_WHITE_LIST";
 	public static final String RES_REFUND_RATE = "REFUND_RATE";
 	public static final String RES_BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
+	public static final String RENEWAL_CAPITAL_RATE = "RENEWAL_CAPITAL_RATE";
 	public static final String RES_APP_POP_IMAGE        =  "APP_POP_IMAGE"; //首页弹窗配置
 	public static final String RES_GAME_AWARD_OF_CATCH_DOLL = "GAME_AWARD_OF_CATCH_DOLL"; //抓娃娃游戏发奖 
 	public static final String RES_GAME_CATCH_DOLL_CLIENT_RATE = "GAME_CATCH_DOLL_CLIENT_RATE";//抓娃娃游戏客户端抓中概率
@@ -328,6 +329,12 @@ public class Constants {
 	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "ala_bororw_deliver_money_lock";
 
 	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
+	
+
+	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "ala_apply_borrow_cash_lock";
+	
+	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
+	
 	//催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
 

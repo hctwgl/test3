@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -70,6 +71,8 @@ import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
+import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
@@ -178,7 +181,10 @@ public class RiskUtil extends AbstractThird {
 	AfUserVirtualAccountService afUserVirtualAccountService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-	
+
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -435,12 +441,15 @@ public class RiskUtil extends AbstractThird {
 	 * @param time 时间
 	 * @param productName 商品名称
 	 * @param virtualCode 商品编号
+	 *增加里那个字段 
+	 *@param SecSence 二级场景
+	 *@param ThirdSencem 三级场景
 	 * @return
 	 */
 	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, 
 			String scene, String cardNo, String appName, String ipAddress, 
 			String blackBox, String orderNo, String phone, BigDecimal amount, 
-			BigDecimal poundage, String time,String productName,String virtualCode) {
+			BigDecimal poundage, String time,String productName,String virtualCode,String SecSence,String ThirdSence) {
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if(!"Y".equals(userAuth.getRiskStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -468,6 +477,16 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("time", time);
 		eventObj.put("virtualCode", virtualCode);
 		eventObj.put("productName", productName);
+		//增加3个参数，配合风控策略的改变
+		String codeForSecond = null;
+		String codeForThird = null;
+		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
+		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
+		
+		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),SecSence);
+		eventObj.put("dealAmount", dealAmount);
+		eventObj.put("SecSence", codeForSecond);
+		eventObj.put("ThirdSence", codeForThird);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
@@ -475,7 +494,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
-//		String url = "http://192.168.110.22:80" + "/modules/api/risk/weakRiskVerify.htm";
+		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -499,6 +518,18 @@ public class RiskUtil extends AbstractThird {
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
+	}
+	/**
+	 * @author qiaopan
+	 * 获得当天有效借款订单数
+	 * @return
+	 */
+	private Integer getDealAmount(Long userId,String orderType){
+		Integer result = afOrderService.getDealAmount(userId,orderType);
+		if (result == null) {
+			result = 0 ;
+		}
+		return result;
 	}
 
 	/**
@@ -968,7 +999,7 @@ public class RiskUtil extends AbstractThird {
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
-			if (StringUtil.equals("50", result)) {
+			if (StringUtil.equals("50", result)) {//50是定时任务 推送超时
 				//不做任何更新
 				return 0;
 			}

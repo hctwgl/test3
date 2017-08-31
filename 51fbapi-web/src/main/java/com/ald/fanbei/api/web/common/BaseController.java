@@ -242,7 +242,7 @@ public abstract class BaseController {
             throw new FanbeiException("系统维护中", FanbeiExceptionCode.SYSTEM_REPAIRING_ERROR);
         }
         String idName = requestDataVo.getId();
-        if (idName.startsWith("i")) {
+        if (idName.startsWith("i")&&context.getAppVersion()<379) {
             String[] strs = idName.split("_");
             String name = idName.substring(idName.lastIndexOf("_") + 1);
             if (strs.length == 3) {
@@ -425,6 +425,14 @@ public abstract class BaseController {
 
         // 验证签名
         Map<String, Object> systemMap = requestDataVo.getSystem();
+        //针对ios的379版本的升级接口不做处理
+        if("/system/appUpgrade".equals(requestDataVo.getMethod())){
+        	logger.info(StringUtil.appendStrs("id=",requestDataVo.getId(),",appUpgrade context=" ,context));
+        }
+        if("/system/appUpgrade".equals(requestDataVo.getMethod()) && "379".equals(systemMap.get(Constants.REQ_SYS_NODE_VERSION))&& (requestDataVo.getId() != null && requestDataVo.getId().startsWith("i_"))){
+        	logger.info(StringUtil.appendStrs("id=",requestDataVo.getId(),",appUpgrade not check sign"));
+        	return context;
+        }
         this.checkSign(context.getAppVersion() + "", ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE)), context.getUserName(),
                 ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN)), ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME)), requestDataVo.getParams(), beforeLogin);
 

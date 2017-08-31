@@ -235,6 +235,16 @@ public class AppH5CouponController extends BaseController {
     		if(groupId == null) {
     			throw new FanbeiException("groupId can't be null or empty.");
     		}
+    		
+    		// 判断用户是否登录
+    		boolean isLogin = false;
+    		String userName = context.getUserName();
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			Long userId = 0l;
+			if(userDo != null) {
+				isLogin = true;
+				userId = userDo.getRid();
+			}
     		// 根据Id获取分组优惠券
     		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
     		String coupons = couponCategory.getCoupons();
@@ -252,6 +262,13 @@ public class AppH5CouponController extends BaseController {
     			couponInfoMap.put("amount", afCouponDo.getAmount());
     			couponInfoMap.put("useRange", afCouponDo.getUseRange());
     			couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
+    			couponInfoMap.put("drawStatus", "N");
+    			if(isLogin) {
+    				int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId, Long.parseLong(couponId));
+    				if(count > 0) {
+    					couponInfoMap.put("drawStatus", "Y");
+    				}
+    			}
     			Date gmtStart = afCouponDo.getGmtStart();
     			if( gmtStart != null){
     				couponInfoMap.put("gmtStart", gmtStart.getTime());
