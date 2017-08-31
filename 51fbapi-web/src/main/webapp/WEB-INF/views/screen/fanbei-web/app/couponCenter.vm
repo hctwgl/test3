@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     #set($version="20170717")
-    #set($src="https://fs.51fanbei.com/h5/app/activity/07")
+    #set($src="http://f.51fanbei.com/h5/app/activity/07")
     <meta charset="UTF-8">
     <title>领券中心</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/07/couponCenter.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/css/app/couponCenter.css?version=$version">
 </head>
 
 <body>
@@ -67,6 +67,6 @@
    </div> 
 </div>
 </div>
-<script src="/dist/activity/07/couponCenter.js?version=$version"></script>
+<script src="/dist/js/app/couponCenter.js?version=$version"></script>
 </body>
 </html>

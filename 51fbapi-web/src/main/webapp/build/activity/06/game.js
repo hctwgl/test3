@@ -23,7 +23,7 @@ function alaShareData(){
         'type': 'share', // 此页面的类型
         'shareAppTitle': '引爆年中抓娃娃，100%中大奖',  // 分享的title
         'shareAppContent': '抓娃娃次数无上限100%中奖，集齐5娃，平分1亿大奖，最高888红包雨在等你，有且只在51返呗！',  // 分享的内容
-        'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+        'shareAppImage': 'http://f.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
         'shareAppUrl': urlHost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode,  // 分享后的链接
         'isSubmit': 'Y', // 是否需要向后台提交数据，Y需要，N不需要
         'sharePage': 'gameShare' // 分享的页面
@@ -63,23 +63,23 @@ function dataInit() {
 
                 //底部娃娃数量显示
                 if(data.data.item1Count>0){
-                    $('#toys').find('img').eq(0).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll1.png');
+                    $('#toys').find('img').eq(0).attr('src','http://f.51fanbei.com/h5/app/activity/06/ni_boll1.png');
                     $('#toys').find('span').eq(0).html(data.data.item1Count)
                 }
                 if(data.data.item2Count>0){
-                    $('#toys').find('img').eq(1).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll2.png');
+                    $('#toys').find('img').eq(1).attr('src','http://f.51fanbei.com/h5/app/activity/06/ni_boll2.png');
                     $('#toys').find('span').eq(1).html(data.data.item2Count)
                 }
                 if(data.data.item3Count>0){
-                    $('#toys').find('img').eq(2).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll3.png');
+                    $('#toys').find('img').eq(2).attr('src','http://f.51fanbei.com/h5/app/activity/06/ni_boll3.png');
                     $('#toys').find('span').eq(2).html(data.data.item3Count)
                 }
                 if(data.data.item4Count>0){
-                    $('#toys').find('img').eq(3).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll4.png');
+                    $('#toys').find('img').eq(3).attr('src','http://f.51fanbei.com/h5/app/activity/06/ni_boll4.png');
                     $('#toys').find('span').eq(3).html(data.data.item4Count)
                 }
                 if(data.data.item5Count>0){
-                    $('#toys').find('img').eq(4).attr('src','https://fs.51fanbei.com/h5/app/activity/06/ni_boll5.png');
+                    $('#toys').find('img').eq(4).attr('src','http://f.51fanbei.com/h5/app/activity/06/ni_boll5.png');
                     $('#toys').find('span').eq(4).html(data.data.item5Count)
                 }
 
@@ -231,7 +231,7 @@ class game{
     }
     reset(){
         $('#scroll').animate({marginLeft:this.init.num+'rem'},0,'linear');
-        $('#claw').css('backgroundImage','url(https://fs.51fanbei.com/h5/app/activity/06/ni_claw1.png)');  //还原钩子
+        $('#claw').css('backgroundImage','url(http://f.51fanbei.com/h5/app/activity/06/ni_claw1.png)');  //还原钩子
         this.num=this.init.num;
         this.time=this.init.time;
         clearInterval(this.timeStart);
@@ -244,7 +244,7 @@ class game{
         let dollNum=[1,2,3,4,5,1,2,3,4,5];
         let con='';
         for(let i=0;i<dollNum.length;i++){
-            con+=`<span data-prop="${dollNum[i]}" class="doll"><div class="doll-main" style="background-image: url('https://fs.51fanbei.com/h5/app/activity/06/ni_boll${dollNum[i]}.png')"></div></span>`
+            con+=`<span data-prop="${dollNum[i]}" class="doll"><div class="doll-main" style="background-image: url('http://f.51fanbei.com/h5/app/activity/06/ni_boll${dollNum[i]}.png')"></div></span>`
         }
         $('#scroll').html(con)
     }
@@ -306,7 +306,7 @@ class game{
                 if(dollLeft>(clawLeft-10) && dollLeft<(clawLeft+35)){          //判断钩子与娃娃是否重合，减的越大越偏右
                     let dataProp=doll.attr('data-prop');
                     if(Math.floor(Math.random()*100+1)<clientRate){                 //随机能否抓到娃娃
-                        $('#claw').css('backgroundImage','url(https://fs.51fanbei.com/h5/app/activity/06/ni_claw2.png)'); //钩子变为收缩样式
+                        $('#claw').css('backgroundImage','url(http://f.51fanbei.com/h5/app/activity/06/ni_claw2.png)'); //钩子变为收缩样式
                         doll.find('.doll-main').css({position:'absolute',left:'2.47rem'})       //娃娃脱离文档流并跟着上升
                             .animate({top:'-2.2rem'},800,function () {
                                 $('.doll[data-prop='+dataProp+']').css('visibility','hidden');
@@ -334,7 +334,7 @@ $('#startBtn').click(function () {
             $('.getState').html('机会用完啦').show();
             $('.jushuo').show();
             $('.tryAgain').html('分享增加1次机会').click(function () {
-                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"引爆年中抓娃娃，100％中大奖","shareAppContent":"抓娃娃次数无上限100％中奖，集齐5娃，平分1亿大奖，最高888红包雨在等你，有且只在51返呗！","shareAppImage":"https://fs.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+urlHost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"引爆年中抓娃娃，100％中大奖","shareAppContent":"抓娃娃次数无上限100％中奖，集齐5娃，平分1亿大奖，最高888红包雨在等你，有且只在51返呗！","shareAppImage":"http://f.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+urlHost+'/fanbei-web/activity/gameShare?recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"gameShare"}';
             });
             $('#alert').show();
             $('#shadow').show();

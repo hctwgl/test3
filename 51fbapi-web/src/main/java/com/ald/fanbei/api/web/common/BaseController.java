@@ -242,7 +242,7 @@ public abstract class BaseController {
             throw new FanbeiException("系统维护中", FanbeiExceptionCode.SYSTEM_REPAIRING_ERROR);
         }
         String idName = requestDataVo.getId();
-        if (idName.startsWith("i")) {
+        if (idName.startsWith("i")&&context.getAppVersion()<379) {
             String[] strs = idName.split("_");
             String name = idName.substring(idName.lastIndexOf("_") + 1);
             if (strs.length == 3) {

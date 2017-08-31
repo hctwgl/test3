@@ -16,7 +16,7 @@ public interface AfAppUpgradeDao {
 	
 	AfAppUpgradeDo getMaxAppUpgradeVersion();
 	
-	AfAppUpgradeDo getNewestVersionBySpecify(@Param("versionCode")Integer versionCode);
+	AfAppUpgradeDo getNewestVersionBySpecify(@Param("versionCode")Integer versionCode,@Param("appCode")String appCode,@Param("type")String type);
 	
 	/**
 	 * iOS获取最新版本

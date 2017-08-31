@@ -33,12 +33,12 @@
 			<include refid="queryAllFields" />
 		FROM af_app_upgrade 
 		WHERE is_delete = 0 
-		AND status = 'O' AND upgrade_range = 'P' AND type ='A'
+		AND status = 'O' AND type =#{type} AND app_code= #{appCode}
 		AND #{versionCode} BETWEEN min_version AND max_version 
 		ORDER BY version_code DESC
 		LIMIT 1
 	</select>
-	  <select id="getNewestIOSVersionBySpecify" resultType="AfAppUpgradeDo">
+	<select id="getNewestIOSVersionBySpecify" resultType="AfAppUpgradeDo">
 		SELECT
 			<include refid="queryAllFields" />
 		FROM af_app_upgrade 
