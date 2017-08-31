@@ -193,7 +193,7 @@ public class H5GGShareController extends H5Controller {
 													BoluomeCouponResponseBo.class);
 											Long userId = context.getUserId();
 											if (userId != null) {
-												if (boluomeUtil.isUserHasCoupon(url, userId, 1)) {
+												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)) {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 												} else {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());

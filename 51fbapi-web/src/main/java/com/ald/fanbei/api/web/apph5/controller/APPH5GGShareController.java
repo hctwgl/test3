@@ -30,11 +30,13 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -51,7 +53,6 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.BoluomeUserRebateBankDo;
-import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -96,6 +97,8 @@ public class APPH5GGShareController extends BaseController {
 	AfBoluomeActivityResultService afBoluomeActivityResultService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	BoluomeUtil boluomeUtil;
 	private static String couponUrl = null;
 
 	@Resource
@@ -118,6 +121,7 @@ public class APPH5GGShareController extends BaseController {
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = " ";
 		FanbeiWebContext context = new FanbeiWebContext();
+		context = doWebCheck(request, false);
 		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
 		try {
@@ -183,6 +187,19 @@ public class APPH5GGShareController extends BaseController {
 											//字符串转为json对象
 											BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(rString,
 													BoluomeCouponResponseBo.class);
+											String userName = context.getUserName();
+											// 为了兼容从我也要点亮中调用主页接口
+											if (StringUtil.isBlank(userName)) {
+												userName = request.getParameter("userName");
+											}
+											if (userName != null) {
+												Long userId = convertUserNameToUserId(userName);
+												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)) {
+													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
+												} else {
+													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
+												}
+											}
 											boluomeCouponList.add(BoluomeCouponResponseBo);
 
 										}
@@ -219,7 +236,6 @@ public class APPH5GGShareController extends BaseController {
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			context = doWebCheck(request, false);
 			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
 			// 为了兼容从我也要点亮中调用主页接口
