@@ -652,7 +652,8 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	}
 
 	public  void jPushCoupon(String type,String userName){
-		try {
+		/*try {
+			logger.info("jPushCoupon type=>" + type + " userName=>" + userName);
 			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes(type);
 			AfResourceDo afResourceDo = resourceDoList.get(0);
 			String pid = userName + "_" + System.currentTimeMillis();
@@ -661,9 +662,32 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE,"204");
-			extras.put(DATA, afResourceDo.getValue());
+			extras.put(DATA, afResourceDo.getValue() + "," + "http://www.baidu.com");
 			jpushUtil.pushMessageByAlias(afResourceDo.getValue1(),afResourceDo.getValue2(),extras,new String[]{userName}, false);
+			logger.info("pushMessageByAlias argus=>");
+			logger.info(afResourceDo.getValue1());
+			logger.info(afResourceDo.getValue2());
+			logger.info(extras.toString());
+			logger.info(userName);
 		}catch(Exception e){
+			logger.info("gameShareSuccess error", e);
+		}
+		*/
+
+
+		try {
+			//String userName = StringUtils.EMPTY;
+			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes("APP_POP_IMAGE");
+			AfResourceDo afResourceDo = resourceDoList.get(0);
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("gameShareSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "204");
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getValue2());
+			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, true);
+		} catch (Exception e) {
 			logger.info("gameShareSuccess error", e);
 		}
 	}
