@@ -71,46 +71,13 @@ let vm = new Vue({
             var shopUrl = e.shopUrl;
             var couponType = e.type;
             //只有现金券、满减券、会场券时，券状态有去用券 可点击跳转 其他不可
-            if (e.isDraw == 'N' && (couponType == 'FULLVOUCHER' || couponType == 'CASH' || couponType == 'ACTIVITY')) {
+            if (couponType == 'FULLVOUCHER' || couponType == 'CASH' || couponType == 'ACTIVITY') {
                 //去用券
                 if (shopUrl) {
                     window.location.href = shopUrl;
                 } else {
                     window.location.href = '/fanbei-web/opennative?name=APP_HOME';
                 }
-            } else if (e.isDraw == 'Y') {
-                //点击领券
-                //console.log(1)
-                $.ajax({
-                    url: "/fanbei-web/pickCoupon",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        couponId: couponId
-                    },
-                    success: function (returnData) {
-                        if (returnData.success) {
-                            requestMsg("优惠劵领取成功");
-                            e.isDraw = 'N';
-                        } else {
-                            var status = returnData.data["status"];
-                            if (status == "USER_NOT_EXIST") { // 用户不存在
-                                window.location.href = returnData.url;
-                            }
-                            if (status == "OVER") { // 优惠券个数超过最大领券个数
-                                requestMsg(returnData.msg);
-                                requestMsg("优惠券个数超过最大领券个数");
-                            }
-                            if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                                requestMsg(returnData.msg);
-                                $(".couponLi").eq(i).css('display', 'none');
-                            }
-                        }
-                    },
-                    error: function () {
-                        requestMsg("请求失败");
-                    }
-                });
             }
         }//couponClick--
 
