@@ -19,12 +19,10 @@ let vm = new Vue({
                 data: {'status': "NOUSE"},
                 url: "/fanbei-web/getMineCouponInfo",
                 success: function (data) {
-                    self.content = data.data;
+                    self.content = eval('(' + data + ')').data;
                     console.log(self.content);
                     //计算排序与即将到期
                     var diff = 0;
-
-                    //console.log(couponCategory.couponInfoList)
                     //即将到期
                     for (var j = 0; j < self.content.couponList.length; j++) {
                         var currentTime = self.content.couponList[j].currentTime;
