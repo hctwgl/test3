@@ -533,13 +533,22 @@ public class H5GGShareController extends H5Controller {
 	 *             status
 	 * @return: void
 	 */
-	private void updateUserItemsStatus(Long userItemsId, String status) {
-		AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();// afBoluomeActivityUserItemsService.getById(userItemsId);
-		resourceDo.setRid(userItemsId);
-		resourceDo.setStatus(status);
-		resourceDo.setGmtModified(new Date());
-		afBoluomeActivityUserItemsService.updateById(resourceDo);
-
+	public void updateUserItemsStatus(Long userItemsId, String status) throws Exception{
+		// 检测是否有这个userItemsId的卡片，若有，则更新状态
+		try{
+			AfBoluomeActivityUserItemsDo perviousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+			if (perviousDo != null) {
+				AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();
+				resourceDo.setRid(userItemsId);
+				resourceDo.setStatus(status);
+				resourceDo.setGmtModified(new Date());
+				afBoluomeActivityUserItemsService.updateById(resourceDo);
+			}
+		
+		}catch (Exception e) {
+			logger.error("update userItems status erro");
+			e.printStackTrace();
+		}
 	}
 
 	/**
