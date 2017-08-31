@@ -427,7 +427,7 @@ public class H5GGShareController extends H5Controller {
 
 		try {
 			context = doH5Check(request, false);
-			Long userId = context.getUserId();
+			Long userId = context.getUserId();//68885L;//
 			if (userId == null) {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
@@ -447,7 +447,7 @@ public class H5GGShareController extends H5Controller {
 
 					for (Long itemsId : tempItemsList) {
 						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
-						t.setSourceUserId(userId);
+						t.setUserId(userId);
 						t.setBoluomeActivityId(activityId);
 						t.setItemsId(itemsId);
 						t.setStatus("NORMAL");
