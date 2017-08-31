@@ -84,6 +84,7 @@ $(".submit").click(function(){
                             success: function(returnData){
                                 if (returnData.success) {
                                     $('.success').show();
+                                    $('#more').hide();
                                     $.ajax({
                                         url:'/fanbei-web/postMaidianInfo',
                                         type:'post',
@@ -126,7 +127,6 @@ $("img.lazy").lazyload({
 
 // 获取图形验证码
 $(".codeBtn").click(function(){
-    $('.shadow').show();
     let mobileNum = $("#mobile").val();
     if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
         $.ajax({
@@ -137,6 +137,9 @@ $(".codeBtn").click(function(){
             success: function (r) {
                 console.log(r);
                 // 显示弹窗
+                $('.shadow').show();
+                $('#imgVftCode').val('');
+
                 $(".registerMask").removeClass("hide");
                 $(".imgVftCodeWrap").removeClass("hide");
                 $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
