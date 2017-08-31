@@ -82,7 +82,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 		}
 		
 		String lockKey = Constants.CACHEKEY_APPLY_RENEWAL_LOCK + userId;
-		boolean isGetLock = bizCacheUtil.getLock(lockKey, "1");
+		boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
 		
 		if (!isGetLock) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
