@@ -15,11 +15,31 @@
             <p class="tenMillion">10亿大趴&nbsp;&nbsp;狂送万元现金</p>
             <p class="circle">
                 <span class="circleOne">
-                    <i class="date">9.4</i>
+                    <i class="date">9.4</i><br/>
+                    <i class="circleMoney">600元</i>
+                </span>
+                <span class="circleTwo">
+                    <i class="date">9.5</i><br/>
+                    <i class="circleMoney">600元</i>
+                </span>
+                <span class="circleThree">
+                    <i class="date">9.6</i><br/>
+                    <i class="circleMoney">600元</i>
+                </span>
+                <span class="circleFour">
+                    <i class="date">9.7</i><br/>
+                    <i class="circleMoney">600元</i>
+                </span>
+                <span class="circleFive">
+                    <i class="date">9.8</i><br/>
+                    <i class="circleMoney">600元</i>
+                </span>
+                <span class="circleSix">
+                    <i class="date">9.9</i><br/>
                     <i class="circleMoney">600元</i>
                 </span>
             </p>
-            <p class="btn">立即借钱</p>
+            <p class="btn"><span>立即借钱</span></p>
         </div>
         <div id="time">
             <p class="timeMoney">600元现金</p>
