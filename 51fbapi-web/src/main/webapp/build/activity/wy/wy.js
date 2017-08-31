@@ -150,7 +150,7 @@ $(".codeBtn").click(function(){
                 })
             },
             error: function () {
-                requestMsg("请求失败")
+                requestMsg("哎呀，出错了！")
             }
         });
     } else{
@@ -178,7 +178,7 @@ $("#imgVftCodeRefresh").click(function(){
             })
         },
         error: function () {
-            requestMsg("请求失败")
+            requestMsg("哎呀，出错了！")
         }
     });
 });
@@ -224,7 +224,7 @@ $("#imgVftCodeSbumit").click(function(){
                 }
             },
             error: function(){
-                requestMsg("请求失败");
+                requestMsg("哎呀，出错了！");
             }
         })
     } else{

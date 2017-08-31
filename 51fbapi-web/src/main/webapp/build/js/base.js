@@ -8,13 +8,31 @@
 
 
 // 公用弹框内容
-function requestMsg(msg) {
-    layer.open({
-        content: msg,
-        skin: 'msg',
-        time: 2
+// 弹窗msg
+function requestMsg(txt) {
+    var wrap=document.createElement('div');
+    $(wrap).css({
+        'position': 'fixed',
+        'top':'50%',
+        'left':'50%',
+        'transform':'translate(-50%,-50%)',
+        'max-width':'50%',
+        'padding':'.2rem .4rem',
+        'color':'white',
+        'background': 'rgba(0,0,0,0.7)',
+        'border-radius':' .08rem',
+        'display': 'none'
     });
+    $(wrap).html(txt);
+    $('body').append($(wrap));
+    $(wrap).fadeIn();
+    setTimeout(function () {
+        $(wrap).fadeOut(function () {
+            $(wrap).remove();
+        });
+    },1500)
 }
+
 
 // 获取当前页面的URL 对其带的参数进行处理
 function getUrl(para) {
@@ -216,27 +234,3 @@ function loading(){
     $("body").append(loadDoc());
 }
 
-// 弹窗msg
-function promptMsg(txt) {
-    var wrap=document.createElement('div');
-    $(wrap).css({
-        'position': 'fixed',
-        'top':'50%',
-        'left':'50%',
-        'transform':'translate(-50%,-50%)',
-        'max-width':'50%',
-        'padding':'.2rem .4rem',
-        'color':'white',
-        'background': 'rgba(0,0,0,0.7)',
-        'border-radius':' .3rem',
-        'display': 'none'
-    });
-    $(wrap).html(txt);
-    $('body').append($(wrap));
-    $(wrap).fadeIn();
-    setTimeout(function () {
-        $(wrap).fadeOut(function () {
-            $(wrap).remove();
-        });
-    },1000)
-}
