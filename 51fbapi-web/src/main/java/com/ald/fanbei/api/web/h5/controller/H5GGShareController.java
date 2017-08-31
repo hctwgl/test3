@@ -128,7 +128,6 @@ public class H5GGShareController extends H5Controller {
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = " ";
 		FanbeiH5Context context = new FanbeiH5Context();
-		context = doH5Check(request, false);
 		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
 		try {
@@ -192,14 +191,6 @@ public class H5GGShareController extends H5Controller {
 											//字符串转为json对象
 											BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(rString,
 													BoluomeCouponResponseBo.class);
-											Long userId = context.getUserId();
-											if (userId != null) {
-												if (boluomeUtil.isUserHasCoupon(url, userId, 1)) {
-													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
-												} else {
-													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
-												}
-											}
 											boluomeCouponList.add(BoluomeCouponResponseBo);
 
 										}
@@ -236,7 +227,7 @@ public class H5GGShareController extends H5Controller {
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
-			
+			context = doH5Check(request, false);
 
 			// TODO:获取登录着的userName或者id
 			String userName = context.getUserName();
@@ -543,15 +534,26 @@ public class H5GGShareController extends H5Controller {
 	 * @return: void
 	 */
 	public void updateUserItemsStatus(Long userItemsId, String status) throws Exception{
-		// 检测是否有这个userItemsId的卡片，若有，则更新状态
 		try{
-			AfBoluomeActivityUserItemsDo perviousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
-			if (perviousDo != null) {
-				AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();
-				resourceDo.setRid(userItemsId);
-				resourceDo.setStatus(status);
-				resourceDo.setGmtModified(new Date());
-				afBoluomeActivityUserItemsService.updateById(resourceDo);
+			// 检测是否有这个userItemsId的卡片，若有，则更新状态
+			AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+			if (prevousDo != null) {
+
+				//验证这个用户是否拥有多余1张的此卡片
+				AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
+				t.setUserId(prevousDo.getUserId());
+				t.setBoluomeActivityId(prevousDo.getBoluomeActivityId());
+				t.setItemsId(prevousDo.getItemsId());
+				t.setStatus("NORMAL");
+				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+						.getListByCommonCondition(t);
+				if (userItemsList != null && userItemsList.size() > 1) {
+					AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();
+					resourceDo.setRid(userItemsId);
+					resourceDo.setStatus(status);
+					resourceDo.setGmtModified(new Date());
+					afBoluomeActivityUserItemsService.updateById(resourceDo);
+				}
 			}
 		
 		}catch (Exception e) {
