@@ -23,6 +23,7 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	private float discount;
 	private List<String> channels;
 	private String sceneId ;
+	private String isHas;//用户是否拥有 Y, 代表拥有 N 代表没有拥有
 	
 	public String getSceneId() {
 		return sceneId;
@@ -112,7 +113,18 @@ public class BoluomeCouponResponseBo extends AbstractSerial{
 	public void setDiscount(float discount) {
 		this.discount = discount;
 	}
-
+	/**
+	 * @return the isHas
+	 */
+	public String getIsHas() {
+		return isHas;
+	}
+	/**
+	 * @param isHas the isHas to set
+	 */
+	public void setIsHas(String isHas) {
+		this.isHas = isHas;
+	}
 	
 
 }

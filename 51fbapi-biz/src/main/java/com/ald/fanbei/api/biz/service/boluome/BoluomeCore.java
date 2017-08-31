@@ -42,6 +42,16 @@ public class BoluomeCore extends AbstractThird{
 	public static final String CHANNEL  = "channel";
 	public static final String REFUND_NO = "refundNo";
 	public static final String REASON = "reason";
+	public static final String NEXT_PAGE_INDEX = "nextPageIndex";
+	public static final String DATA = "data";
+	public static final String AVAILABLE_COUPON = "availableCoupons";
+	public static final String USED_COUPON = "usedCoupons";
+	public static final String EXPIRED_COUPON = "expiredCoupons";
+	public static final String APP_ID = "app_id";
+	public static final String CAMPAIGN_ID = "campaign_id";
+	public static Integer DEALFT_PAGE_SIZE = 10;
+	public static final String ACTIVITY_COUPONS = "activity_coupons";
+	
 
     /** 
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
@@ -84,7 +94,7 @@ public class BoluomeCore extends AbstractThird{
 
         for (String key : sArray.keySet()) {
             String value = sArray.get(key);
-            if (StringUtils.isEmpty(value) || key.equalsIgnoreCase(SIGN)) {
+            if (StringUtils.isEmpty(value) || key.equalsIgnoreCase(SIGN) || key.equalsIgnoreCase(APP_KEY)) {
                 continue;
             }
             result.put(key, value);

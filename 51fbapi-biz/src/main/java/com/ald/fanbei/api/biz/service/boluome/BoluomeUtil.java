@@ -3,10 +3,13 @@ package com.ald.fanbei.api.biz.service.boluome;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +23,9 @@ import com.ald.fanbei.api.biz.bo.BoluomePushPayRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundResponseBo;
-import com.ald.fanbei.api.biz.bo.BrandCouponRequestBo;
+import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
+import com.ald.fanbei.api.biz.bo.BrandUserCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderPushLogService;
 import com.ald.fanbei.api.biz.service.AfShopService;
@@ -73,15 +77,8 @@ public class BoluomeUtil extends AbstractThird{
 	private static String orderSearchUrl = null;
 	private static String orderCancelUrl = null;
 	private static String couponListUrl = null;
-	private static String activityCouponList = null;
+	private static String activityCouponListUrl = null;
 	private static Long SUCCESS_CODE = 1000L;
-	private static Integer DEALFT_PAGE_SIZE = 10;
-	
-//	private static final String USED_COUPON = "usedCoupons";
-//	private static final String EXPIRED_COUPON = "expiredCoupons";
-	private static final String NEXT_PAGE_INDEX = "nextPageIndex";
-	private static final String DATA = "data";
-	private static final String AVAILABLE_COUPON = "availableCoupons";
 
 	public BoluomePushPayResponseBo pushPayStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
 		BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
@@ -304,31 +301,137 @@ public class BoluomeUtil extends AbstractThird{
 	}
 	
 	private static String getActivityCouponList() {
-		if(couponListUrl==null){
-			couponListUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/api/promotion/get_coupon_list";
-			return couponListUrl;
+		if(activityCouponListUrl==null){
+			activityCouponListUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_SERVER_API_URL) + "/bss/v1/apps/campaigns/all_coupons";
+			return activityCouponListUrl;
 		}
-		return couponListUrl;
+		return activityCouponListUrl;
 	}
 	
 	/**
 	 * @param userId 用户id
-	 * @param type 优惠券类型
+	 * @param type 优惠券类型 1可使用的 2已经使用的 3过期的 4 全部的
 	 * @param pageIndex 第几页
 	 * @param pageSize 一页多少个数 最大20个
 	 * @return
 	 */
-	public List<BrandCouponResponseBo> getCouponList(Long userId, Integer type, Integer pageIndex, Integer pageSize, String couponType) {
-		BrandCouponRequestBo request = new BrandCouponRequestBo();
+	public List<BrandCouponResponseBo> getUserCouponList(Long userId, Integer type, Integer pageIndex, Integer pageSize) {
+		BrandUserCouponRequestBo request = new BrandUserCouponRequestBo();
 		request.setUserId(userId + StringUtils.EMPTY);
 		request.setType(type);
 		request.setPageIndex(pageIndex);
-		request.setPageSize(DEALFT_PAGE_SIZE);
+		request.setPageSize(BoluomeCore.DEALFT_PAGE_SIZE);
 		String resultString = HttpUtil.doHttpPost(getCouponListUrl(), JSONObject.toJSONString(request));
 		JSONObject resultJson = JSONObject.parseObject(resultString);
-		JSONObject data = resultJson.getJSONObject(DATA);
-		String availableCouponStr = data.getString(couponType);
-		return JSONObject.parseArray(availableCouponStr, BrandCouponResponseBo.class);
+		JSONObject data = resultJson.getJSONObject(BoluomeCore.DATA);
+		String couponStr = StringUtils.EMPTY;
+		if (type == 1) {
+			couponStr = data.getString(BoluomeCore.AVAILABLE_COUPON);
+		} else if (type == 2){
+			couponStr = data.getString(BoluomeCore.USED_COUPON);
+		} else if (type == 3) {
+			couponStr = data.getString(BoluomeCore.EXPIRED_COUPON);
+		}
+		return JSONObject.parseArray(couponStr, BrandCouponResponseBo.class);
+	}
+	
+	/**
+	 * 
+	 * @param url 领取优惠券地址
+	 * @return
+	 */
+	public List<BrandActivityCouponResponseBo> getActivityCouponList(String url) {
+		try {
+			Map<String, String> map = parseAppIdAndCampaignId(url);
+			if (map == null) {
+				return null;
+			}
+			String app_id = map.get(BoluomeCore.APP_ID);
+			String campaign_id = map.get(BoluomeCore.CAMPAIGN_ID);
+			Map<String, String> buildParams = new HashMap<String, String>();
+			buildParams.put(BoluomeCore.APP_ID, app_id);
+			buildParams.put(BoluomeCore.CAMPAIGN_ID, campaign_id);
+			buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis()+ StringUtils.EMPTY);
+			
+			String sign = BoluomeCore.builOrderSign(buildParams);
+			buildParams.put(BoluomeCore.SIGN, sign);
+			buildParams.put(BoluomeCore.APP_KEY, AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) );
+			String paramsStr = BoluomeCore.createLinkString(buildParams);
+			String requestUrl = getActivityCouponList() + "?" +  paramsStr;
+			
+			String resultString = HttpUtil.doGet(requestUrl, 10);
+			
+			JSONObject resultJson = JSONObject.parseObject(resultString);
+			if (resultJson != null && "0".equals(resultJson.getString("code"))) {
+				String jsonStr = resultJson.getJSONArray(BoluomeCore.DATA).getJSONObject(0).getJSONArray(BoluomeCore.ACTIVITY_COUPONS).toJSONString();
+				return JSONObject.parseArray(jsonStr, BrandActivityCouponResponseBo.class);
+			}
+			return null;
+		} catch (UnsupportedEncodingException e) {
+			logger.error("getActivityCouponList error ,e = {}",e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 
+	 * @param url 要领取的优惠券
+	 * @param userId 用户id
+	 * @param type 优惠券类型，1可使用，2未使用，3已过期
+	 * @return
+	 */
+	public boolean isUserHasCoupon(String url, Long userId, Integer type) {
+		Map<String, String> map = parseAppIdAndCampaignId(url);
+		if (map == null) {
+			return false;
+		}
+		List<BrandActivityCouponResponseBo> activityCouponList = getActivityCouponList(url);
+		if (CollectionUtils.isEmpty(activityCouponList)) {
+			return false;
+		}
+		Integer nextPageNo = 1;
+		boolean constains = false;
+		do {
+			List<BrandCouponResponseBo> couponList = getUserCouponList(userId, type, nextPageNo, BoluomeCore.DEALFT_PAGE_SIZE);
+			if (CollectionUtils.isNotEmpty(couponList)) {
+				for (BrandCouponResponseBo userCoupon : couponList) {
+					for (BrandActivityCouponResponseBo activityCoupon : activityCouponList) {
+						if (activityCoupon.getActivity_coupon_id().equals(userCoupon.getActivityCouponId())) {
+							constains = true;
+							break;
+						}
+					}
+					if (constains) {
+						break;
+					}
+				}
+			}
+		} while ((nextPageNo = getNextPageNo(userId, type, 1, BoluomeCore.DEALFT_PAGE_SIZE)) > 0);
+		return constains;
+	}
+	
+	
+		
+	/**
+	 * 解析
+	 * @param url
+	 * @return
+	 */
+	private Map<String, String> parseAppIdAndCampaignId(String url) {
+		Map<String, String> result = new HashMap<String, String>();
+		if (StringUtils.isEmpty(url)) {
+			return null;
+		}
+		String[] pieces = url.split("/");
+		String app_id = pieces[6];
+		String campaign_id = pieces[8];
+		result.put(BoluomeCore.APP_ID, app_id);
+		result.put(BoluomeCore.CAMPAIGN_ID, campaign_id);
+		
+		return result;
+		
 	}
 	
 	/**
@@ -338,16 +441,16 @@ public class BoluomeUtil extends AbstractThird{
 	 * @param pageSize 唯一标识
 	 * @return nextPage 当nextPage为0时表示没有下一页了
 	 */
-	public Integer hasNextPage(Long userId, Integer type, Integer pageIndex, Integer pageSize, String couponType) {
-		BrandCouponRequestBo request = new BrandCouponRequestBo();
+	public Integer getNextPageNo(Long userId, Integer type, Integer pageIndex, Integer pageSize) {
+		BrandUserCouponRequestBo request = new BrandUserCouponRequestBo();
 		request.setUserId(userId + StringUtils.EMPTY);
 		request.setType(type);
 		request.setPageIndex(pageIndex);
 		request.setPageSize(pageSize);
 		String resultString = HttpUtil.doHttpPost(getCouponListUrl(), JSONObject.toJSONString(request));
 		JSONObject resultJson = JSONObject.parseObject(resultString);
-		JSONObject data = resultJson.getJSONObject(DATA);
-		Integer nextPage = data.getInteger(NEXT_PAGE_INDEX);
+		JSONObject data = resultJson.getJSONObject(BoluomeCore.DATA);
+		Integer nextPage = data.getInteger(BoluomeCore.NEXT_PAGE_INDEX);
 		return nextPage;
 	}
 	

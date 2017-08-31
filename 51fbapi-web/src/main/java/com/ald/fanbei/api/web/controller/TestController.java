@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
+import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
@@ -707,6 +709,19 @@ public class TestController {
 			bizCacheUtil.saveRedistSet(Constants.HAVE_BORROWED, ids);
 		}
 		logger.info("initBorrowCache,end");
+	}
+	
+	
+	@RequestMapping(value = { "/boluomeCoupon" }, method = RequestMethod.GET)
+	@ResponseBody
+	public void boluomeCoupon()
+	{
+		List<BrandCouponResponseBo> list = boluomeUtil.getUserCouponList(68885L, 1, 1, 20);
+		logger.info("boluomeCoupon,start");
+		List<BrandActivityCouponResponseBo> list1 = boluomeUtil.getActivityCouponList("https://dev-api.otosaas.com/bss/v1/apps/157/campaigns/775/give");
+		logger.info("boluomeCoupon,end");
+		System.out.println(boluomeUtil.isUserHasCoupon("https://dev-api.otosaas.com/bss/v1/apps/157/campaigns/775/give", 68885L, 1));
+		
 	}
 	
 	public String getVirtualCode(Map<String, Object> resultMap) {
