@@ -69,8 +69,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId());
-					//极光首次登陆红包弹窗
-					jpushService.jPushCoupon("COUPON_POPUPS",afUserDo.getUserName());
+
+
 			        long recommendId = afUserDo.getRecommendId();
 
 					//#region add by hongzhengpei
@@ -93,6 +93,10 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		});
 
 	}
+
+
+
+
 
 	@Override
 	public AfUserDo getUserById(Long userId) {
