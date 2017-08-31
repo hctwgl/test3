@@ -243,7 +243,6 @@ public class AppH5CouponController extends BaseController {
     	try{
     		// FIXME
     		FanbeiWebContext context = doWebCheck(request, false);
-    		context = doWebCheck(request, false);
     		JSONObject data = new JSONObject();
     		String userName = context.getUserName();
     		AfUserDo userDo = afUserService.getUserByUserName(userName);
