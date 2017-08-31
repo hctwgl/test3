@@ -92,6 +92,12 @@ let vm = new Vue({
                         //console.log(returnData)
                         if(returnData.success){
                             requestMsg(returnData.msg);
+                            /*if(e.isHas=='N'){
+                            requestMsg(returnData.msg);
+                            e.isHas='Y';
+                        }else{
+                            requestMsg(returnData.msg);
+                        }*/
                         }else{
                             requestMsg(returnData.msg);
                         }
