@@ -11,38 +11,45 @@
 <body>
     <div id="billion">
         <div id="money">
-            <img src=""$commonUrl/banner.png"" alt="">
-            <img src="" alt="">
-            <p class="tenThousand">9998万</p>
-            <p class="tenMillion">10亿大趴&nbsp;&nbsp;狂送万元现金</p>
-            <p class="circle">
-                <span class="circleOne">
-                    <i class="date">9.4</i><br/>
-                    <i class="circleMoney">600元</i>
-                </span>
-                <span class="circleTwo">
-                    <i class="date">9.5</i><br/>
-                    <i class="circleMoney">600元</i>
-                </span>
-                <span class="circleThree">
-                    <i class="date">9.6</i><br/>
-                    <i class="circleMoney">600元</i>
-                </span>
-                <span class="circleFour">
-                    <i class="date">9.7</i><br/>
-                    <i class="circleMoney">600元</i>
-                </span>
-                <span class="circleFive">
-                    <i class="date">9.8</i><br/>
-                    <i class="circleMoney">600元</i>
-                </span>
-                <span class="circleSix">
-                    <i class="date">9.9</i><br/>
-                    <i class="circleMoney">600元</i>
-                </span>
-            </p>
+            <div class="imgOne">
+               <img class="totalMoney" src="$commonUrl/billion_06.gif" alt="">
+            </div>
+            <div class="imgTwo">
+                <p class="circle">
+                    <span class="circleOne">
+                        <i class="date">9月4日</i><br/>
+                        <i class="circleMoney">600元</i>
+                    </span>
+                    <span class="circleTwo">
+                        <i class="date change">9月5日</i><br/>
+                        <i class="circleMoney change">700元</i>
+                    </span>
+                    <span class="circleThree">
+                        <i class="date">9月6日</i><br/>
+                        <i class="circleMoney">800元</i>
+                    </span>
+                    <span class="circleFour">
+                        <i class="date">9月7日</i><br/>
+                        <i class="circleMoney">900元</i>
+                    </span>
+                    <span class="circleFive">
+                        <i class="date">9月8日</i><br/>
+                        <i class="circleMoney">1000元</i>
+                    </span>
+                    <!--<span class="circleSix">
+                        <i class="date">9.9</i><br/>
+                        <i class="circleMoney">600元</i>
+                    </span>!-->
+                </p>
+            </div>
         </div>
         <div id="time">
+            <img src="$commonUrl/billion_05.png" alt="">
+            <div class="oneLine">
+                <i class="left"><i>.</i><i>.</i><i>.</i></i>
+                <i class="right"><i>.</i><i>.</i><i>.</i></i>
+            </div>
+            <div class="twoLine"></div>
             <p class="timeMoney">600元现金</p>
             <p class="award">开奖倒计时</p>
             <p class="countDown">05:55:55</p>            
@@ -54,7 +61,10 @@
             <p>3. 本次活动现金红包均发放至“我的-返现”；</p>
             <p>4. 活动期间禁止任何作弊行为，包括但并不限于通过软件进行批量操作、刷单等行为，一经发现平台将有权取消其奖励；</p>
             <p>5. 本活动最终解释权归51返呗所有，如有疑问，请拨打客服热线400-002-5151或联系在线客服咨询。</p> 
-            <p class="btn"><span>立即借钱</span></p>                      
+            <p class="btn">
+                <img src="$commonUrl/billion_03.png" alt="">
+                <!--<span>立即借钱</span>!-->
+            </p>                      
         </div>
     </div>
 </body>

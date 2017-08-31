@@ -4,7 +4,26 @@ body {
 }
 #money {
   text-align: center;
-  border-bottom: 1px solid gray;
+}
+#money .imgOne {
+  width: 100%;
+  height: 5.1rem;
+  background-image: url("http://f.51fanbei.com/h5/app/activity/08/billion_01.png");
+  background-size: cover;
+  position: relative;
+}
+#money .imgOne .totalMoney {
+  width: 100%;
+  height: 0.9rem;
+  position: absolute;
+  bottom: 1.3rem;
+}
+#money .imgTwo {
+  width: 100%;
+  height: 5.1rem;
+  background-image: url("http://f.51fanbei.com/h5/app/activity/08/billion_02.png");
+  background-size: cover;
+  position: relative;
 }
 #money .tenThousand {
   font-size: 0.8rem;
@@ -16,32 +35,82 @@ body {
 }
 #money .circle {
   margin-bottom: 1.5rem;
+  position: absolute;
+  top: -1rem;
+  left: 15%;
+}
+.change {
+  color: #ffdb00;
 }
 #money .circle span {
   margin-left: 0.2rem;
+}
+#money .circle span .circleMoney {
+  font-size: 0.3rem;
+  color: #ff4f38;
+}
+#money .circle span .date {
+  font-size: 0.24rem;
+  color: #ff4f38;
 }
 #money .circle span:first-child {
   margin-left: 0;
 }
 #money .circle span .date {
-  border: 1px solid gray;
-  width: 0.8rem;
-  height: 0.8rem;
   text-align: center;
   line-height: 0.8rem;
-  line-height: rem;
-  border-radius: 50%;
   margin-bottom: 0.2rem;
 }
 #time {
   text-align: center;
   padding: 0.8rem 0;
 }
+#time .oneLine {
+  width: 7.21rem;
+  height: 0.4rem;
+  line-height: 0.4rem;
+  background-color: #f72b36;
+  margin-left: 0.15rem;
+  margin-bottom: 0.08rem;
+  position: relative;
+}
+#time .twoLine {
+  width: 7.21rem;
+  height: 0.2rem;
+  line-height: 0.4rem;
+  background-color: #f72b36;
+  margin-left: 0.15rem;
+}
+#time .oneLine .left {
+  position: absolute;
+  left: 0.78rem;
+  font-size: 0.5rem;
+  top: -0.15rem;
+}
+#time .oneLine .left i {
+  margin-left: 0.1rem;
+}
+#time .oneLine .left i:first-child {
+  margin-left: 0;
+}
+#time .oneLine .right {
+  position: absolute;
+  right: 0.78rem;
+  font-size: 0.5rem;
+  top: -0.15rem;
+}
+#time .oneLine .right i {
+  margin-left: 0.1rem;
+}
+#time .oneLine .right i:first-child {
+  margin-left: 0;
+}
 #time .timeMoney {
   margin-bottom: 0.26rem;
   font-size: 0.36rem;
   color: #fff107;
   font-weight: 500;
+  margin-top: 1.46rem;
 }
 #time .award {
   margin-bottom: 0.24rem;
@@ -57,20 +126,15 @@ body {
   padding: 0.8rem 0.5rem;
   position: relative;
 }
-.btn span {
+.btn {
   position: absolute;
-  bottom: 0.2rem;
+  bottom: -0.5rem;
   left: 50%;
   transform: translateX(-50%);
   width: 5.4rem;
   height: 0.88rem;
   border-radius: 0.42rem;
   text-align: center;
-  line-height: 0.88rem;
-  background-color: #fd8025;
-  font-size: 0.36rem;
-  font-weight: 700;
-  color: #f31010;
 }
 #rule p {
   margin-bottom: 0.1rem;
@@ -80,9 +144,6 @@ body {
   text-align: center;
   font-size: 0.32rem;
   margin-bottom: 0.55rem;
-}
-#rule p:last-child {
-  margin-bottom: 1rem;
 }
 #rule .ruleHead i {
   width: 0.2rem;
