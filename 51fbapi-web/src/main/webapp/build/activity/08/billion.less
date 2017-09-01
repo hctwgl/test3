@@ -4,6 +4,17 @@ body{
     color:white;
     position:relative;
 }
+.clearFix:after {
+    display: block;
+    clear: both;
+    content: "";
+    visibility: hidden;
+    height: 0
+}
+
+.clearFix {
+    zoom: 1;
+}
 //首页部分
 #money{
     text-align:center;
@@ -68,11 +79,14 @@ body{
     line-height: 0.8rem;
     margin-bottom: 0.2rem;
 }
-//中奖名单部分
+//开奖倒计时
 #time{
     text-align:center;
     // border-bottom:1px solid gray;
     padding:0.8rem 0;
+}
+#time img{
+    margin-bottom:0.32rem;
 }
 #time .oneLine{
     width:7.21rem;
@@ -131,6 +145,27 @@ body{
     font-weight: 500;
     margin-bottom:1.72rem;
 }
+//现金中奖用户
+#time .winningUser{
+    width: 4.31rem;
+    height: 4.04rem;
+    background-color: #ff3844;
+    padding-top: 0.27rem;
+    text-align: center;
+}
+.winningUser h3{
+    margin-bottom: 0.51rem;
+}
+.winningUser .right{
+        margin-left: 0.4rem;
+}
+.winningUser   button{
+    background-color: #ff3844;
+    color: white;
+    margin-top: 0.59rem;
+    font-size: 0.2rem;
+}
+
 //活动规则部分
 #rule{
     padding:0.8rem 0.5rem;
