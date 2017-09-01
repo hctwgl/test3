@@ -322,7 +322,7 @@
 		WHERE
 			`is_delete`=0
 		AND 
-			`status` ="TRANSED"
+			`status` IN ("TRANSED","FINSH")
 	</select>
 	
 	<select id="getRandomUser" resultType="String">
@@ -338,7 +338,7 @@
         AND 
         	 `gmt_create`  BETWEEN date_format(date_sub(curdate(),interval 1 day),'%Y-%m-%d %00:%00:%00') AND date_format(date_sub(curdate(),interval 1 day),'%Y-%m-%d %23:%59:%59')      
         ORDER BY 
-         Rand() limit 1
+         Rand() limit 10
 	</select>
 	
 	<select id="getNotRandomUser" parameterType="java.util.List" resultType="String">

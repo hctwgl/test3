@@ -3,6 +3,8 @@ package com.ald.fanbei.api.web.apph5.controller;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -91,23 +93,17 @@ public class AppH5ActivityController extends BaseController {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	JpushService jpushService;
-	
-	
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/reserveActivityGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	public String reserveActivityGoods(HttpServletRequest request,
-			ModelMap model) throws IOException {
+	public String reserveActivityGoods(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
-			String userName = ObjectUtils.toString(
-					request.getParameter("userName"), "").toString();
+			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 			AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 			Map<String, Object> returnData = new HashMap<String, Object>();
 
-			Long activityId = NumberUtil.objToLongDefault(
-					request.getParameter("activityId"), null);
-			Long goodsId = NumberUtil.objToLongDefault(
-					request.getParameter("goodsId"), null);
+			Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), null);
+			Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), null);
 			// Long rsvNums =
 			// NumberUtil.objToLongDefault(request.getParameter("rsvNums"), 1L);
 			Long rsvNums = 1L;
@@ -115,57 +111,30 @@ public class AppH5ActivityController extends BaseController {
 			String sendMsgStatus = "";
 			String sendMsgInfo = "";
 			if (afUserDo == null) {
-				String notifyUrl = ConfigProperties
-						.get(Constants.CONFKEY_NOTIFY_HOST)
-						+ opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				returnData.put("status",
-						GoodsReservationWebFailStatus.UserNotexist.getCode());
-				return H5CommonResponse.getNewInstance(false,
-						GoodsReservationWebFailStatus.UserNotexist.getName(),
-						notifyUrl, returnData).toString();
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				returnData.put("status", GoodsReservationWebFailStatus.UserNotexist.getCode());
+				return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.UserNotexist.getName(), notifyUrl, returnData).toString();
 			}
 
 			// 前端没传递时，活动相关设置
 			if (activityId == null || goodsId == null) {
 				// 默认走的是oppo预约,获取配置中的oppo活动信息
-				AfResourceDo activityResource = afResourceService
-						.getConfigByTypesAndSecType(
-								AfResourceType.ReservationActivity.getCode(),
-								AfResourceSecType.OppoReservationActivity
-										.getCode());
-				if (activityResource == null
-						|| StringUtil.isEmpty(activityResource.getValue3())) {
-					returnData
-							.put("status",
-									GoodsReservationWebFailStatus.ReservationConfigInvalid
-											.getCode());
-					return H5CommonResponse
-							.getNewInstance(
-									false,
-									GoodsReservationWebFailStatus.ReservationConfigInvalid
-											.getName(), "", returnData)
-							.toString();
+				AfResourceDo activityResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceSecType.OppoReservationActivity.getCode());
+				if (activityResource == null || StringUtil.isEmpty(activityResource.getValue3())) {
+					returnData.put("status", GoodsReservationWebFailStatus.ReservationConfigInvalid.getCode());
+					return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationConfigInvalid.getName(), "", returnData).toString();
 				}
 
 				// 解析对应值
-				Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject
-						.parse(activityResource.getValue3());
-				goodsId = NumberUtil.objToLongDefault(
-						jsonObjRes.get("goodsId"), 0L);
+				Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(activityResource.getValue3());
+				goodsId = NumberUtil.objToLongDefault(jsonObjRes.get("goodsId"), 0L);
 				activityId = activityResource.getRid();
 			}
 
-			AfResourceDo currActivityResource = afResourceService
-					.getResourceByResourceId(activityId);
+			AfResourceDo currActivityResource = afResourceService.getResourceByResourceId(activityId);
 			if (currActivityResource == null) {
-				returnData.put("status",
-						GoodsReservationWebFailStatus.ReservationActNotExist
-								.getCode());
-				return H5CommonResponse.getNewInstance(
-						false,
-						GoodsReservationWebFailStatus.ReservationActNotExist
-								.getName(), "", returnData).toString();
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationActNotExist.getCode());
+				return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationActNotExist.getName(), "", returnData).toString();
 			}
 
 			// AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
@@ -179,119 +148,70 @@ public class AppH5ActivityController extends BaseController {
 			// .toString();
 			// }
 
-			if (!AfCounponStatus.O.getCode().equals(
-					currActivityResource.getValue4())) {
-				returnData.put("status",
-						GoodsReservationWebFailStatus.ReservationClosed
-								.getCode());
-				return H5CommonResponse.getNewInstance(
-						false,
-						GoodsReservationWebFailStatus.ReservationClosed
-								.getName(), "", returnData).toString();
+			if (!AfCounponStatus.O.getCode().equals(currActivityResource.getValue4())) {
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationClosed.getCode());
+				return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationClosed.getName(), "", returnData).toString();
 			}
 			// 解析对应配置并校验
-			Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject
-					.parse(currActivityResource.getValue3());
-			Date startTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil
-					.null2Str(jsonObjRes.get("startTime")));
-			Date endTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil
-					.null2Str(jsonObjRes.get("endTime")));
-			sendMsgStatus = StringUtil
-					.null2Str(jsonObjRes.get("sendMsgStatus"));
+			Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(currActivityResource.getValue3());
+			Date startTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("startTime")));
+			Date endTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("endTime")));
+			sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
 			sendMsgInfo = StringUtil.null2Str(jsonObjRes.get("sendMsgInfo"));
 
 			// 活动开始结束校验
 			Date currDate = new Date();
 			if (!DateUtil.compareDate(currDate, startTime)) {
-				returnData.put("status",
-						GoodsReservationWebFailStatus.ReservationNotStart
-								.getCode());
-				return H5CommonResponse.getNewInstance(
-						false,
-						GoodsReservationWebFailStatus.ReservationNotStart
-								.getName(), "", returnData).toString();
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationNotStart.getCode());
+				return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationNotStart.getName(), "", returnData).toString();
 			}
 
 			if (DateUtil.compareDate(currDate, endTime)) {
-				returnData.put("status",
-						GoodsReservationWebFailStatus.ReservationHaveFinish
-								.getCode());
-				return H5CommonResponse.getNewInstance(
-						false,
-						GoodsReservationWebFailStatus.ReservationHaveFinish
-								.getName(), "", returnData).toString();
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationHaveFinish.getCode());
+				return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationHaveFinish.getName(), "", returnData).toString();
 			}
 
 			String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
-			AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(
-					afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo,
-					new Date(), new Date(),
-					AfGoodsReservationStatus.SUCCESS.getCode(), "");
+			AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
 
-			Integer revCountNums = afGoodsReservationService
-					.getRevCountNumsByQueryCondition(afGoodsReservationDo);
+			Integer revCountNums = afGoodsReservationService.getRevCountNumsByQueryCondition(afGoodsReservationDo);
 			if (revCountNums > 0) {
 				// 同活动同商品只允许一次预约
-				logger.warn("用户预约商品次数超限,预约失败。userId:" + afUserDo.getRid()
-						+ ",activityId:" + activityId + ",goodsId" + goodsId
-						+ ",revCountNums" + revCountNums);
-				returnData.put("status",
-						GoodsReservationWebFailStatus.ReservationTimesOverrun
-								.getCode());
-				return H5CommonResponse.getNewInstance(
-						false,
-						GoodsReservationWebFailStatus.ReservationTimesOverrun
-								.getName(), "", returnData).toString();
+				logger.warn("用户预约商品次数超限,预约失败。userId:" + afUserDo.getRid() + ",activityId:" + activityId + ",goodsId" + goodsId + ",revCountNums" + revCountNums);
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationTimesOverrun.getCode());
+				return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationTimesOverrun.getName(), "", returnData).toString();
 			}
 
-			if (!(afGoodsReservationService
-					.addGoodsReservation(afGoodsReservationDo) > 0)) {
-				returnData
-						.put("status",
-								GoodsReservationWebFailStatus.ReservationFail
-										.getCode());
-				return H5CommonResponse
-						.getNewInstance(
-								false,
-								GoodsReservationWebFailStatus.ReservationFail
-										.getName(), "", returnData).toString();
+			if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationFail.getCode());
+				return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", returnData).toString();
 			}
 
 			// 预约成功，短信通知
-			if (StringUtil.isBlank(sendMsgStatus)
-					|| sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
+			if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
 				try {
-					boolean result = smsUtil.sendGoodsReservationSuccessMsg(
-							afUserDo.getMobile(), sendMsgInfo);
+					boolean result = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(), sendMsgInfo);
 					if (result == false) {
-						logger.error("活动产品预约成功消息通知发送失败userId："
-								+ afUserDo.getRid());
+						logger.error("活动产品预约成功消息通知发送失败userId：" + afUserDo.getRid());
 					}
 				} catch (Exception e) {
-					logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid()
-							+ ",", e);
+					logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid() + ",", e);
 				}
 			}
 
 			returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
-			return H5CommonResponse.getNewInstance(true,
-					FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData)
-					.toString();
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
 		} catch (Exception e) {
-			return H5CommonResponse.getNewInstance(false,
-					GoodsReservationWebFailStatus.ReservationFail.getName(),
-					"", null).toString();
+			return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", null).toString();
 		}
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/reserveActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	public String reserveActivityInfo(HttpServletRequest request, ModelMap model)
-			throws IOException {
+	public String reserveActivityInfo(HttpServletRequest request, ModelMap model) throws IOException {
 		Map<String, Object> returnData = new HashMap<String, Object>();
 		try {
-			String userName = ObjectUtils.toString(
-					request.getParameter("userName"), "").toString();
+			String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 			AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
 			Long activityId = 0L;
@@ -300,26 +220,15 @@ public class AppH5ActivityController extends BaseController {
 			String isCanReservation = YesNoStatus.NO.getCode();
 			String activityStatus = AfCounponStatus.O.getCode();
 
-			AfResourceDo activityResource = afResourceService
-					.getConfigByTypesAndSecType(
-							AfResourceType.ReservationActivity.getCode(),
-							AfResourceSecType.OppoReservationActivity.getCode());
-			if (activityResource == null
-					|| StringUtil.isEmpty(activityResource.getValue3())) {
-				returnData.put("status",
-						GoodsReservationWebFailStatus.ReservationConfigInvalid
-								.getCode());
-				return H5CommonResponse.getNewInstance(
-						false,
-						GoodsReservationWebFailStatus.ReservationConfigInvalid
-								.getName(), "", returnData).toString();
+			AfResourceDo activityResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceSecType.OppoReservationActivity.getCode());
+			if (activityResource == null || StringUtil.isEmpty(activityResource.getValue3())) {
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationConfigInvalid.getCode());
+				return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationConfigInvalid.getName(), "", returnData).toString();
 			}
 
 			// 解析对应值
-			Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject
-					.parse(activityResource.getValue3());
-			goodsId = NumberUtil
-					.objToLongDefault(jsonObjRes.get("goodsId"), 0L);
+			Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(activityResource.getValue3());
+			goodsId = NumberUtil.objToLongDefault(jsonObjRes.get("goodsId"), 0L);
 			activityId = activityResource.getRid();
 			activityStatus = activityResource.getValue4();
 
@@ -327,11 +236,8 @@ public class AppH5ActivityController extends BaseController {
 			String endTime = StringUtil.null2Str(jsonObjRes.get("endTime"));
 
 			if (afUserDo != null) {
-				AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(
-						afUserDo.getRid(), activityId, goodsId,
-						AfGoodsReservationStatus.SUCCESS.getCode());
-				Integer revCountNums = afGoodsReservationService
-						.getRevCountNumsByQueryCondition(afGoodsReservationDo);
+				AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, AfGoodsReservationStatus.SUCCESS.getCode());
+				Integer revCountNums = afGoodsReservationService.getRevCountNumsByQueryCondition(afGoodsReservationDo);
 				if (revCountNums == 0) {
 					isCanReservation = YesNoStatus.YES.getCode();
 				} else {
@@ -342,8 +248,7 @@ public class AppH5ActivityController extends BaseController {
 			Date startTimeDate = DateUtil.parseDateyyyyMMddHHmmss(startTime);
 			Date endTimeDate = DateUtil.parseDateyyyyMMddHHmmss(endTime);
 			// 活动开关校验
-			if (!AfCounponStatus.O.getCode().equals(
-					activityResource.getValue4())) {
+			if (!AfCounponStatus.O.getCode().equals(activityResource.getValue4())) {
 				isCanReservation = YesNoStatus.NO.getCode();
 			}
 
@@ -366,31 +271,23 @@ public class AppH5ActivityController extends BaseController {
 			returnData.put("isCanReservation", isCanReservation);
 			returnData.put("isHaveReservationRecord", isHaveReservationRecord);
 
-			return H5CommonResponse.getNewInstance(true,
-					FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData)
-					.toString();
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
 		} catch (Exception e) {
 			returnData.put("status", FanbeiExceptionCode.FAILED.getCode());
-			return H5CommonResponse.getNewInstance(false,
-					FanbeiExceptionCode.FAILED.getCode(), "", returnData)
-					.toString();
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData).toString();
 		}
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/getSelfSupportGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	public String getSelfSupportGoodsInfo(HttpServletRequest request,
-			ModelMap model) throws IOException {
+	public String getSelfSupportGoodsInfo(HttpServletRequest request, ModelMap model) throws IOException {
 		Map<String, Object> returnData = new HashMap<String, Object>();
 		String URL = URLDecoder.decode(request.getHeader("Referer"), "UTF-8");
 		String appInfoStr = URL.substring(URL.indexOf("{"));
 		JSONObject appInfo = JSONObject.parseObject(appInfoStr);
-		Integer appVersion = Integer.parseInt(appInfo.get("appVersion")
-				.toString());
-		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)
-				+ opennative + H5OpenNativeType.GoodsInfo.getCode();
-		Integer pageNo = NumberUtil.objToIntDefault(
-				request.getParameter("pageNo"), 1);
+		Integer appVersion = Integer.parseInt(appInfo.get("appVersion").toString());
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.GoodsInfo.getCode();
+		Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
 		try {
 			AfGoodsQuery query = new AfGoodsQuery();
 			query.setPageSize(PAGE_SIZE);
@@ -398,21 +295,16 @@ public class AppH5ActivityController extends BaseController {
 			query.setSource(AfGoodsSource.SELFSUPPORT.getCode());
 			query.setAppVersion(appVersion);
 			// 获取自营商品信息列表
-			List<AfGoodsDo> goodsDoList = afGoodsService
-					.getCateGoodsList(query);
+			List<AfGoodsDo> goodsDoList = afGoodsService.getCateGoodsList(query);
 			List<AfGoodsVo> goodsList = getGoodsList(goodsDoList);
 			returnData.put("goodsList", goodsList);
 			returnData.put("notifyUrl", notifyUrl);
 
 			returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
-			return H5CommonResponse.getNewInstance(true,
-					FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData)
-					.toString();
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
 		} catch (Exception e) {
 			returnData.put("status", FanbeiExceptionCode.FAILED.getCode());
-			return H5CommonResponse.getNewInstance(false,
-					FanbeiExceptionCode.FAILED.getCode(), "", returnData)
-					.toString();
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData).toString();
 		}
 	}
 
@@ -431,18 +323,10 @@ public class AppH5ActivityController extends BaseController {
 			vo.setGoodsIcon(afGoods.getGoodsIcon());
 			vo.setGoodsName(afGoods.getName());
 			vo.setRemark(StringUtil.null2Str(afGoods.getRemark()));
-			vo.setPriceAmount(afGoods.getPriceAmount().setScale(2,
-					BigDecimal.ROUND_HALF_UP)
-					+ "");
-			vo.setRealAmount(afGoods.getRealAmount().setScale(2,
-					BigDecimal.ROUND_HALF_UP)
-					+ "");
-			vo.setRebateAmount(afGoods.getRebateAmount().setScale(2,
-					BigDecimal.ROUND_HALF_UP)
-					+ "");
-			vo.setSaleAmount(afGoods.getSaleAmount().setScale(2,
-					BigDecimal.ROUND_HALF_UP)
-					+ "");
+			vo.setPriceAmount(afGoods.getPriceAmount().setScale(2, BigDecimal.ROUND_HALF_UP) + "");
+			vo.setRealAmount(afGoods.getRealAmount().setScale(2, BigDecimal.ROUND_HALF_UP) + "");
+			vo.setRebateAmount(afGoods.getRebateAmount().setScale(2, BigDecimal.ROUND_HALF_UP) + "");
+			vo.setSaleAmount(afGoods.getSaleAmount().setScale(2, BigDecimal.ROUND_HALF_UP) + "");
 			vo.setNumId(afGoods.getNumId());
 			goodsVoList.add(vo);
 		}
@@ -450,120 +334,144 @@ public class AppH5ActivityController extends BaseController {
 	}
 
 	@Override
-	public String checkCommonParam(String reqData, HttpServletRequest request,
-			boolean isForQQ) {
+	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		return null;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.ald.fanbei.api.web.common.BaseController#parseRequestData(java.lang.
-	 * String, javax.servlet.http.HttpServletRequest)
+	 * @see com.ald.fanbei.api.web.common.BaseController#parseRequestData(java.lang. String, javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	public RequestDataVo parseRequestData(String requestData,
-			HttpServletRequest request) {
+	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
 		return null;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.ald.fanbei.api.web.common.BaseController#doProcess(com.ald.fanbei.api
-	 * .web.common.RequestDataVo, com.ald.fanbei.api.common.FanbeiContext,
-	 * javax.servlet.http.HttpServletRequest)
+	 * @see com.ald.fanbei.api.web.common.BaseController#doProcess(com.ald.fanbei.api .web.common.RequestDataVo, com.ald.fanbei.api.common.FanbeiContext, javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo,
-			FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		return null;
 	}
-	@RequestMapping(value ="/toActivitiesPage", produces = "text/html;charset=UTF-8")
-	public String toActivitiesPage(Model model){
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
-		String time = resource.getValue().substring(5);
-		model.addAttribute("startTime",time);
-		return "";
+
+	@RequestMapping(value = "/toActivitiesPage", produces = "text/html;charset=UTF-8")
+	public String toActivitiesPage(Model model) {
+		//bizCacheUtil.delCache("Start_Time");
+		String Time = (String) bizCacheUtil.getObject("Start_Time");
+		if(StringUtil.isBlank(Time)){
+			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
+			Date date1=null;   
+			try {
+			    	String date = resource.getValue();
+			    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+					date1 = sdf.parse(date);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			if(date1 != null){
+				String d1 = DateUtil.formatAndMonthAndDay(date1);
+				Date d2 = DateUtil.addDays(date1,1);
+				String date2 = DateUtil.formatAndMonthAndDay(d2);
+				Date d3 = DateUtil.addDays(d2,1);
+				String date3 = DateUtil.formatAndMonthAndDay(d3);
+				Date d4 = DateUtil.addDays(d3,1);
+				String date4 = DateUtil.formatAndMonthAndDay(d4);
+				Date d5 = DateUtil.addDays(d4,1);
+				String date5 = DateUtil.formatAndMonthAndDay(d5);
+				Map<String,String> date=new HashMap<String,String>();
+				date.put("date1", d1);
+				date.put("date2", date2);
+				date.put("date3", date3);
+				date.put("date4", date4);
+				date.put("date5", date5);
+				bizCacheUtil.saveObject("Start_Time", JsonUtil.toJSONString(date), 60 * 60 * 24 * 7);
+				model.addAllAttributes(date);
+			}
+			return "fanbei-web/activity/billion";
+		}
+		Map<String,String> date = JSONObject.parseObject(Time, Map.class);
+		model.addAllAttributes(date);
+		return "fanbei-web/activity/billion";
 	}
-	
-	@RequestMapping(value ="/borrowCashActivities", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+
+	@RequestMapping(value = "/borrowCashActivities", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String borrowCashActivities() {
+		BigDecimal sumAmount=null;
 		try {
-			BigDecimal sumAmount = (BigDecimal) bizCacheUtil
-					.getObject("BorrowCash_Sum_Amount");
+			sumAmount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
 			if (sumAmount != null) {
-				//H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "", sumAmount+"");
-				return sumAmount+"";
+				return sumAmount + "";
 			}
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis get is fail" + e);
 		}
-		BigDecimal sumAmount = afBorrowCashService.getBorrowCashSumAmount();
+		sumAmount = afBorrowCashService.getBorrowCashSumAmount();
 		try {
-			bizCacheUtil.saveObject("BorrowCash_Sum_Amount", sumAmount, 60*60*24*7);
+			bizCacheUtil.saveObject("BorrowCash_Sum_Amount", sumAmount, 60 * 60 * 24 * 7);
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis save is fail" + e);
 		}
-		//H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "", sumAmount+"");
-		return sumAmount+"";
+		// H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "", sumAmount+"");
+		return sumAmount + "";
 	}
 
-	@RequestMapping(value ="/randomUser",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/randomUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String randomUser(HttpServletRequest request,ModelMap model) {
+	public String randomUser(HttpServletRequest request, ModelMap model) {
 		String winAmount = request.getParameter("winAmount");
-		
-		List<String> users = afBorrowCashService.getRandomUser();	//得到中奖用户id
-		List<String> list1=afBorrowCashService.getNotRandomUser(users);//得到当天未中奖用户id
-		List<String> userNames = afUserService.getUserNameByUserId(users);	//得到中奖用户user_name
-		List<String> list2=afUserService.getUserNameByUserId(list1);
+
+		List<String> users = afBorrowCashService.getRandomUser(); // 得到中奖用户id
+		List<String> list1 = afBorrowCashService.getNotRandomUser(users);// 得到当天未中奖用户id
+		List<String> userNames = afUserService.getUserNameByUserId(users); // 得到中奖用户user_name
+		List<String> list2 = afUserService.getUserNameByUserId(list1);
 		String jsonString = JsonUtil.toJSONString(userNames);
-		//每日中奖用户推送
+		// 每日中奖用户推送
 		for (String userName : userNames) {
-			try{
-				jpushService.pushBorrowCashActivitys(userName, winAmount,"Win");
-			}catch(Exception e){
-				logger.info(userName+"pushBorrowCashActivitys is fail," +e);
+			try {
+				jpushService.pushBorrowCashActivitys(userName, winAmount, "Win");
+			} catch (Exception e) {
+				logger.info(userName + "pushBorrowCashActivitys is fail," + e);
 			}
 		}
-		//每日除中奖用户外全部用户推送
+		// 每日除中奖用户外全部用户推送
 		for (String userName : list2) {
-			try{
-				jpushService.pushBorrowCashActivitys(userName, winAmount,"notWin");
-			}catch(Exception e){
-				logger.info(userName+"pushBorrowCashActivitys is fail," +e);
+			try {
+				jpushService.pushBorrowCashActivitys(userName, winAmount, "notWin");
+			} catch (Exception e) {
+				logger.info(userName + "pushBorrowCashActivitys is fail," + e);
 			}
 		}
-		//发送短信
+		// 发送短信
 		for (String userName : userNames) {
-			try{
-				smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得"+winAmount+"元现金红包，快去查收惊喜吧。回T退订");
-			}catch(Exception e){
-				logger.info("sendBorrowCashActivitys "+userName+" is fails," +e);
+			try {
+				smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得" + winAmount + "元现金红包，快去查收惊喜吧。回T退订");
+			} catch (Exception e) {
+				logger.info("sendBorrowCashActivitys " + userName + " is fails," + e);
 			}
 		}
-		//给用户账号打钱
+		// 给用户账号打钱
 		int amount = Integer.parseInt(winAmount);
-		try{
+		try {
 			afUserAccountService.updateBorrowCashActivity(amount, users);
-		}catch(FanbeiException e){
-			logger.info("sendBorrowCashActivitys is fails," +e);
+		} catch (FanbeiException e) {
+			logger.info("sendBorrowCashActivitys is fails," + e);
 		}
-		//中奖用户存入缓存
-		try{
-			bizCacheUtil.saveObject(winAmount+"_Win_User", jsonString, 60*60*24*7);
+		// 中奖用户存入缓存
+		try {
+			bizCacheUtil.saveObject(winAmount + "_Win_User", jsonString, 60 * 60 * 24 * 7);
 		} catch (Exception e) {
-			logger.info("randomUser redis save is fail,"+jsonString+"" + e);
+			logger.info("randomUser redis save is fail," + jsonString + "" + e);
 		}
 		return jsonString;
 	}
 
-	@RequestMapping(value ="/getWinUser",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	public String getWinUser(Model model) {
+	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public void getWinUser(Model model) {
 		try {
 			String users = (String) bizCacheUtil.getObject("600_Win_User");
 			List<String> list = JSONObject.parseObject(users, List.class);
@@ -571,7 +479,7 @@ public class AppH5ActivityController extends BaseController {
 		} catch (Exception e) {
 			logger.error("600_Win_User get is fail");
 		}
-		
+
 		try {
 			String users = (String) bizCacheUtil.getObject("700_Win_User");
 			List<String> list = JSONObject.parseObject(users, List.class);
@@ -579,7 +487,7 @@ public class AppH5ActivityController extends BaseController {
 		} catch (Exception e) {
 			logger.error("700_Win_User get is fail");
 		}
-		
+
 		try {
 			String users = (String) bizCacheUtil.getObject("800_Win_User");
 			List<String> list = JSONObject.parseObject(users, List.class);
@@ -587,7 +495,7 @@ public class AppH5ActivityController extends BaseController {
 		} catch (Exception e) {
 			logger.error("800_Win_User get is fail");
 		}
-		
+
 		try {
 			String users = (String) bizCacheUtil.getObject("900_Win_User");
 			List<String> list = JSONObject.parseObject(users, List.class);
@@ -595,7 +503,7 @@ public class AppH5ActivityController extends BaseController {
 		} catch (Exception e) {
 			logger.error("900_Win_User get is fail");
 		}
-		
+
 		try {
 			String users = (String) bizCacheUtil.getObject("1000_Win_User");
 			List<String> list = JSONObject.parseObject(users, List.class);
@@ -603,15 +511,15 @@ public class AppH5ActivityController extends BaseController {
 		} catch (Exception e) {
 			logger.error("1000_Win_User get is fail");
 		}
-	
-		return "";
+
 	}
-	@RequestMapping(value ="/getBillionWinUser",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+
+	@RequestMapping(value = "/getBillionWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String getBillionWinUser(){
-		String amount=null;
+	public String getBillionWinUser() {
+		String amount = null;
 		try {
-			 amount = (String) bizCacheUtil.getObject("Billion_Win_User");
+			amount = (String) bizCacheUtil.getObject("Billion_Win_User");
 		} catch (Exception e) {
 			logger.error("Billion_Win_User get is fail");
 		}
