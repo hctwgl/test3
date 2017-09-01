@@ -70,7 +70,6 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	RiskUtil riskUtil;
 	
-	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -159,8 +158,20 @@ public class LoginApi implements ApiHandle {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
+		
+		boolean isNeedRisk = true;
+		if("1".equals(loginType)){
+			Date gmtCreateDate = afUserDo.getGmtCreate();
+			Date date = new Date();
+			long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
+			if(hours<=24){
+				isNeedRisk = false;
+			}
+		}
+		
 		//调用风控可信接口
-		if (context.getAppVersion() >= 381&&!"1".equals(loginType)) {
+		if (context.getAppVersion() >= 381 &&isNeedRisk) {
+				
 			boolean riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
 					loginType,loginTime,ip,phoneType,networkType,osType);
 			if(!riskSucc){
