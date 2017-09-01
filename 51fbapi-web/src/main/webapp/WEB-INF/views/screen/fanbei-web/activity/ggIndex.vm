@@ -60,12 +60,17 @@
             <p class="num" style="display: none">x{{item.num}}</p>
         </div>
     </div>
-    <div class="finalPrize finalPrize01" @click="finalPrize()" v-show="!finalPrizeMask">
+    <!--终极大奖-->
+    <div class="finalPrize finalPrize01" @click="finalPrize()" v-if="content.superPrizeStatus==='YY'">
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
-    <div class="finalPrize finalPrize02" v-show="finalPrizeMask">
+    <div class="finalPrize finalPrize02" @click="finalPrize()" v-if="content.superPrizeStatus==='N'">
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
+    <div class="finalPrize finalPrize03" @click="finalPrize()" v-if="content.superPrizeStatus==='YN'">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
+    </div>
+    <!--领取终极大奖提示弹窗-->
     <div class="alertFinalPrize">
         <img src="$src/gg19.jpg">
         <p class="prizeWord01">恭喜红包领取成功！</p>

@@ -44,11 +44,6 @@ $(function(){
                             var str='';
 
                             for(var j=0;j<presentCardList.length;j++){//判断终极大奖蒙版
-                                /*if(presentCardList[j].num>=2){
-                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
-                                }else{
-                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
-                                }*/
                                 if(presentCardList[j].num>=2){
                                     str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="cardBlur" src="'+presentCardList[j].iconUrl+'"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
                                 }else{

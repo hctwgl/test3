@@ -11,8 +11,7 @@ var domainName = protocol+'//'+host;
 let vm = new Vue({
     el: '#ggIndex',
     data: {
-        content: {},
-        finalPrizeMask:false
+        content: {}
     },
     created: function () {
         this.logData();
@@ -28,9 +27,10 @@ let vm = new Vue({
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
+                    console.log(self.content.superPrizeStatus);
                     self.$nextTick(function () {
                         for(var k=0;k<self.content.boluomeCouponList.length;k++){
-                            console.log(self.content.boluomeCouponList[k].isHas)
+                            //console.log(self.content.boluomeCouponList[k].isHas)
                             if(self.content.boluomeCouponList[k].isHas=='Y'){
                                 $('.coupon').eq(k).addClass('changeGray');
                             }
@@ -49,13 +49,6 @@ let vm = new Vue({
                             if(num>=2){
                                 $('.card').eq(j).find('.num').css('display','block');
                                 $('.presentCard').attr('present','Y');
-                            }
-                        }
-                        for(var j=0;j<self.content.itemsList.length;j++){//是否可领取终极大奖
-                            num=self.content.itemsList[j].num;
-                            if(num==0){
-                                self.finalPrizeMask=true;
-                                break;
                             }
                         }
 
@@ -150,7 +143,6 @@ let vm = new Vue({
         //点击获取终极大奖
         finalPrize:function(){
             let self = this;
-            if(!self.finalPrizeMask){
                 $.ajax({
                     type: 'get',
                     url: '/H5GG/pickUpSuperPrize',
@@ -159,35 +151,42 @@ let vm = new Vue({
                     success: function (returnData) {
                         console.log(returnData)
                         if(returnData.success){
-                            $('.presentCard').attr('present','');
                             $('.mask').css('display','block');
                             $('.alertFinalPrize').css('display','block');
-                            for(var j=0;j<self.content.itemsList.length;j++){
-                                num=self.content.itemsList[j].num;
-                                if(num==0){
+                            self.content.superPrizeStatus='YN';
+                            for(var j=0;j<self.content.itemsList.length;j++) {//点击后卡片num-1
+                                num = self.content.itemsList[j].num;
+                                if (num == 0) {
                                     return ""
-                                }else{
-                                    $('.card').eq(j).find('.num').html('x'+(num-1));
-                                    if(num-1==0){
-                                        $('.card').eq(j).find('.gray').css('display','block');
-                                        $('.card').eq(j).find('.num').css('display','none');
-                                        self.finalPrizeMask=true;
-                                    }else if(num-1==1){
-                                        $('.card').eq(j).find('.num').css('display','none');
-                                    }else if(num-1>=2){
-                                        $('.presentCard').attr('present','Y');
+                                } else {
+                                    $('.card').eq(j).find('.num').html('x' + (num - 1));
+                                    console.log(num-1)
+                                    if (num - 1 == 0) {
+                                        $('.card').eq(j).find('.gray').css('display', 'block');
+                                        $('.card').eq(j).find('.num').css('display', 'none');
+                                        $('.presentCard').attr('present', 'N');
+                                    } else if (num - 1 == 1) {
+                                        $('.card').eq(j).find('.num').css('display', 'none');
+                                        $('.presentCard').attr('present', 'N');
+                                    } else if (num - 1 >= 2) {
+                                        $('.presentCard').attr('present', 'Y');
                                     }
                                 }
                             }
                         }else{
-                            requestMsg(returnData.msg);
+                            if(self.content.superPrizeStatus=='N'&&returnData.url==''){
+                                window.location.href=returnData.data.loginUrl;//未登录
+                            }else if(self.content.superPrizeStatus=='YN'){
+                                requestMsg(returnData.msg);//已领取
+                            }else{
+                                requestMsg(returnData.msg);//已登录缺少卡片
+                            }
                         }
                     },
                     error: function(){
                         requestMsg("请求失败");
                     }
                 })
-            }
 
         },
         //点击获取活动规则

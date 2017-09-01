@@ -11,8 +11,7 @@ var num;//卡片数量
 let vm = new Vue({
     el: '#ggIndexShare',
     data: {
-        content: {},
-        finalPrizeMask:''
+        content: {}
     },
     created: function () {
         this.logData();
@@ -29,9 +28,10 @@ let vm = new Vue({
                     $('.positionImg').fadeOut(4000);
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
+                    console.log(self.content.superPrizeStatus);
                     self.$nextTick(function () {
                         for(var k=0;k<self.content.boluomeCouponList.length;k++){
-                            console.log(self.content.boluomeCouponList[k].isHas)
+                            //console.log(self.content.boluomeCouponList[k].isHas)
                             if(self.content.boluomeCouponList[k].isHas=='Y'){
                                 $('.coupon').eq(k).addClass('changeGray');
                             }
@@ -52,13 +52,6 @@ let vm = new Vue({
                               $('.presentCard').attr('present','Y');
                           }                
                       }
-                       for(var j=0;j<self.content.itemsList.length;j++){//是否可领取终极大奖
-                            num=self.content.itemsList[j].num;
-                            if(num==0){   
-                                self.finalPrizeMask=true;
-                                break;
-                            }
-                        }
                     })
                 }
             })
@@ -131,20 +124,20 @@ let vm = new Vue({
             let self = this;
             userName=getCookie('userName');
             if(userName=='' || !userName){
-                window.location.href="gglogin?urlName="+urlName;
+                window.location.href="gglogin?urlName="+urlName;//未登录
             }else{
-                    if(!self.finalPrizeMask){
-                        $.ajax({
+                    $.ajax({
                             type: 'get',
                             url: '/H5GGShare/pickUpSuperPrize',
                             data:{'activityId':activityId},
                             dataType:'JSON',
                             success: function (returnData) {
-                                console.log(returnData)
+                                console.log(returnData);
                                 if(returnData.success){
                                     //requestMsg(returnData.msg);
                                     $('.mask').css('display','block');
                                     $('.alertFinalPrize').css('display','block');
+                                    self.content.superPrizeStatus='YN';
                                     for(var j=0;j<self.content.itemsList.length;j++){
                                         num=self.content.itemsList[j].num;
                                         if(num==0){
@@ -154,21 +147,23 @@ let vm = new Vue({
                                             if(num-1==0){
                                                 $('.card').eq(j).find('.gray').css('display','block');
                                                 $('.card').eq(j).find('.num').css('display','none');
-                                                self.finalPrizeMask=true;
                                             }else if(num-1==1){
-                                                $('.card').eq(j).find('.num').css('display','none');
+                                                $('.card').eq(j).find('.num').css('display','none')
                                             }
                                         }
                                     }
                                 }else{
-                                    requestMsg(returnData.msg);
+                                    if(self.content.superPrizeStatus=='N'){
+                                        requestMsg(returnData.msg);//已登录缺少卡片
+                                    }else if(self.content.superPrizeStatus=='YN'){
+                                        requestMsg(returnData.msg);//已领取
+                                    }
                                 }
                             },
                             error: function(){
                                 requestMsg("请求失败");
                             }
-                        })
-                    }
+                     })
             }
         },
         presentClick:function(){
