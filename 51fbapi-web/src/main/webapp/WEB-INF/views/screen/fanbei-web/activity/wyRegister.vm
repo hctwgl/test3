@@ -35,7 +35,7 @@
 <div class="register">
 	<input type="text" class="mobile" id="mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入手机号领取红包">
     <input type="password" class="password" id="password" placeholder="请设置登录密码" name="words" maxlength="18">
-    <input type="text" class="verification" id="verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证密码">
+    <input type="text" class="verification" id="verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码">
 	<span class="codeBtn">点击获取</span>
     <button class="submit">确认领取</button>
 	<input type="checkbox" class="input_check" id="input_check" checked>
