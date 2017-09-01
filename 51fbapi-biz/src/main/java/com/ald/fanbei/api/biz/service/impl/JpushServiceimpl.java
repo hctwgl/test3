@@ -674,7 +674,6 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 		*/
 
-
 		try {
 			logger.info("jPushCoupon type=>" + type + " userName=>" + userName);
 			//String userName = StringUtils.EMPTY;

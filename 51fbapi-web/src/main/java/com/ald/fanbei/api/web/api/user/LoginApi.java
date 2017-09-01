@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +72,7 @@ public class LoginApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		String userName = context.getUserName();
+		final String userName = context.getUserName();
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
@@ -83,6 +86,9 @@ public class LoginApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+
+		Integer failCount = afUserDo.getFailCount();
+
 		if (afUserDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
@@ -142,8 +148,6 @@ public class LoginApi implements ApiHandle {
 //			jpushService.gameShareSuccess(user.getUserName());
 //		}
 		loginDo.setResult("true");
-		int userCount = afUserLoginLogService.getCountByUserName(userName);
-		//当用户登录日志为1的时候，发送推送
 
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// reset fail count to 0 and record login ip phone msg
@@ -186,8 +190,13 @@ public class LoginApi implements ApiHandle {
 		}
 
 		resp.setResponseData(jo);
-		if(userCount == 0){
-			jpushService.jPushCoupon("COUPON_POPUPS",userName);
+		if(failCount == -1){
+			new	Timer().schedule(new TimerTask(){
+				public void run(){
+					jpushService.jPushCoupon("COUPON_POPUPS",userName);
+					this.cancel();
+				}
+			},1000 * 60);//一分钟
 		}
 		return resp;
 	}
