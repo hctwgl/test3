@@ -190,13 +190,14 @@ public class LoginApi implements ApiHandle {
 		}
 
 		resp.setResponseData(jo);
+		
 		if(failCount == -1){
 			new	Timer().schedule(new TimerTask(){
 				public void run(){
 					jpushService.jPushCoupon("COUPON_POPUPS",userName);
 					this.cancel();
 				}
-			},1000 * 60);//一分钟
+			},1000 * 5);//一分钟
 		}
 		return resp;
 	}
