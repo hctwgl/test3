@@ -28,7 +28,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     // user mode code from 1100 - 1199
     USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"), 
     USER_NOT_EXIST_ERROR("USER_NOT_EXIST_ERROR",1005,"user not exist error","用户不存在"),
-
+    USER_LOGIN_SMS_NOTEXIST("USER_LOGIN_SMS_NOTEXIST",1016,"user login sms not exist","请获取短信验证码"),
+    USER_LOGIN_SMS_WRONG_ERROR("USER_LOGIN_SMS_WRONG_ERROR",1017,"user login sms wrong error","验证码不正确"),
     
     USER_INVALID_MOBILE_NO("USER_INVALID_MOBILE_NO",1101,"invalid mobile number","无效手机号"),
     USER_HAS_REGIST_ERROR("USER_HAS_REGIST_ERROR",1102,"user has been regist","该号码已经注册"),

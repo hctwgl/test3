@@ -15,7 +15,6 @@ import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
-import com.ald.fanbei.api.biz.bo.risk.RiskSynLoginReqBo;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -75,6 +74,7 @@ public class LoginApi implements ApiHandle {
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		String SUCC = "1";
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		String userName = context.getUserName();
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
@@ -86,7 +86,6 @@ public class LoginApi implements ApiHandle {
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
-		loginType = "1".equals(loginType)?"1":"2";
 		if (StringUtils.isBlank(inputPassSrc)) {
 			logger.error("inputPassSrc can't be empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -161,18 +160,20 @@ public class LoginApi implements ApiHandle {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
 		//调用风控可信接口
-		boolean riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
-				loginType,loginTime,ip,phoneType,networkType,osType);
-		if(!riskSucc){
-			loginDo.setResult("false:需要验证登录短信");
-			afUserLoginLogService.addUserLoginLog(loginDo);
-			JSONObject jo = new JSONObject();
-			jo.put("needVerify",true);
-			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_UNTRUST_ERROW);
-			resp.setResponseData(jo); //失败了返回需要短信验证
-			return resp;
+		if (context.getAppVersion() >= 381&&!"1".equals(loginType)) {
+			boolean riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
+					loginType,loginTime,ip,phoneType,networkType,osType);
+			if(!riskSucc){
+				loginDo.setResult("false:需要验证登录短信");
+				afUserLoginLogService.addUserLoginLog(loginDo);
+				JSONObject jo = new JSONObject();
+				jo.put("needVerify","Y");
+				resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_UNTRUST_ERROW);
+				resp.setResponseData(jo); //失败了返回需要短信验证
+				return resp;
+			}
+			loginType = "2"; //可信登录验证通过，变可信
 		}
-		
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
@@ -206,9 +207,12 @@ public class LoginApi implements ApiHandle {
 			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
 		}
-
+		if (context.getAppVersion() >= 381) {
+		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType, loginTime, ip,
+				phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
+		}
 		resp.setResponseData(jo);
-
+		
 		return resp;
 	}
 

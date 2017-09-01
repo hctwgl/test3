@@ -165,7 +165,8 @@ public class Constants {
 	public static final String EVENT_FINANCE_COUNT = "event_finance_count";
 	public static final String EVENT_FINANCE_LIMIT_WEAK = "event_finance_limit_weak";
 	public static final String EVENT_LOGIN_SYN = "event_login_syn";
-	public static final String EVENT_LOGIN_ASY = "event_login_syn";
+	public static final String EVENT_LOGIN_ASY = "event_login_asy";
+	public static final String EVENT_RIGISTER_ASY = "event_register_asy";
 	
 	public static final String RES_GAME_AWARD_COUNT_LIMIT           = "GAME_AWARD_COUNT_LIMIT";//游戏中奖数量总限制
 	//续期天数限制

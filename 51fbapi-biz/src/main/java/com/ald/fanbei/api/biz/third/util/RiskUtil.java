@@ -44,8 +44,7 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
-import com.ald.fanbei.api.biz.bo.risk.RiskSynLoginReqBo;
-import com.ald.fanbei.api.biz.bo.risk.RiskTrustReqBo;
+import com.ald.fanbei.api.biz.bo.risk.RiskLoginRespBo;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.AsyLoginService;
@@ -99,6 +98,7 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * 
@@ -1782,10 +1782,11 @@ public class RiskUtil extends AbstractThird {
 	public boolean verifySynLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
 			String ip,String phoneType,String networkType,String osType){
 		
-		RiskTrustReqBo reqBo = new RiskTrustReqBo();
-		reqBo.setConsumerNo(consumerNo);
-		reqBo.setEventType(Constants.EVENT_LOGIN_SYN);
-		reqBo.setOrderNo(generatorClusterNo.getRiskLoginNo(new Date()));
+//		RiskTrustReqBo reqBo = new RiskTrustReqBo();
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",Constants.EVENT_LOGIN_SYN);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
 		JSONObject obj = new JSONObject();
 		obj.put("phone", phone);
 		obj.put("blackBox", blackBox);
@@ -1797,24 +1798,28 @@ public class RiskUtil extends AbstractThird {
 		obj.put("phoneType", phoneType);
 		obj.put("networkType", networkType);
 		obj.put("osType", osType);
-		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
 		//Map<String,String> reqBo = new HashMap<String, String>();
-		reqBo.put("signInfo", SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
 		String url = getUrl() + "/modules/api/event/syn/login.htm";
 		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
-		String reqResult = HttpUtil.post(url, reqBo);
+		String reqResult = HttpUtil.post(url, map);
 
-		logThird(reqResult, "verifySynLogin", reqBo);
+		logThird(reqResult, "verifySynLogin", map);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_SYN_LOGIN_VERIFY_ERROR);
 		}
 
-		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
+		RiskLoginRespBo riskResp = JSONObject.parseObject(reqResult, RiskLoginRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
-			riskResp.setSuccess(true);
-			return true;
+			JSONObject jsonObj = JSON.parseObject(riskResp.getData());
+			if("1".equals(jsonObj.getString("isTrust")))
+			{
+				return true;
+			}else{
+				return false;
+			}
 		} else {
-//			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			return false;
 		}
 	}
@@ -1834,17 +1839,17 @@ public class RiskUtil extends AbstractThird {
 	 * @return
 	 */
 	public void verifyASyLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
-			String ip,String phoneType,String networkType,String osType,String result){
+			String ip,String phoneType,String networkType,String osType,String result,String event){
 		
-		RiskTrustReqBo reqBo = new RiskTrustReqBo();
-		reqBo.setConsumerNo(consumerNo);
-		reqBo.setEventType(Constants.EVENT_LOGIN_ASY);
-		reqBo.setOrderNo(generatorClusterNo.getRiskLoginNo(new Date()));
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",event);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
 		JSONObject obj = new JSONObject();
 		obj.put("phone", phone);
 		obj.put("blackBox", blackBox);
 		obj.put("deviceUuid", deviceUuid);
-		obj.put("result",result);
+		obj.put("loginResult",result);
 		obj.put("loginType", loginType);
 		obj.put("loginTime", loginTime);
 //		obj.put("imei", imei);
@@ -1852,9 +1857,49 @@ public class RiskUtil extends AbstractThird {
 		obj.put("phoneType", phoneType);
 		obj.put("networkType", networkType);
 		obj.put("osType", osType);
-		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
 		String url = getUrl() + "/modules/api/event/asy/login.htm";
-		asyLoginService.excute(reqBo, url);
+		asyLoginService.excute(map, url,"asyLoginVerify");
+	}
+	
+	/**
+	 * 风控异步注册通知
+	 * @param consumerNo
+	 * @param phone
+	 * @param blackBox
+	 * @param deviceUuid
+	 * @param loginType
+	 * @param loginTime
+	 * @param ip
+	 * @param phoneType
+	 * @param networkType
+	 * @param osType
+	 * @param result
+	 * @param event
+	 */
+	public void verifyASyRegister(String consumerNo,String phone,String blackBox,String deviceUuid,String registerTime,
+			String ip,String phoneType,String networkType,String osType,String event){
+		
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",event);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("registerResult","1");
+		obj.put("registerTime", registerTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+		String url = getUrl() + "/modules/api/event/asy/register.htm";
+		asyLoginService.excute(map, url,"asyRegisterVerify");
 	}
 	
 }

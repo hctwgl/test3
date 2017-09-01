@@ -115,19 +115,23 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.LOGIN.getCode());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
-        if(smsDo == null){
-        	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", loginTime, ip, phoneType, networkType, osType,FAIL);
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+        if(smsDo == null ){
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_SMS_NOTEXIST);
+        }
+        if(smsDo.getIsCheck() == 1){
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR);
         }
         //判断验证码是否一致并且验证码是否已经做过验证
         String realCode = smsDo.getVerifyCode();
-        if(!StringUtils.equals(verifyCode, realCode)|| smsDo.getIsCheck() == 1){
-        	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", loginTime, ip, phoneType, networkType, osType,FAIL);
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+        if(!StringUtils.equals(verifyCode, realCode)){
+        	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", 
+        			loginTime, ip, phoneType, networkType, osType,FAIL,Constants.EVENT_LOGIN_ASY);
+        	// 更新为已经验证
+         	afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_SMS_WRONG_ERROR);
         }
         //判断验证码是否过期
         if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
-        	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", loginTime, ip, phoneType, networkType, osType,FAIL);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
         }
         // 更新为已经验证
@@ -163,8 +167,10 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
 		}
 
+		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0",
+				loginTime, ip, phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
 		resp.setResponseData(jo);
-		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", loginTime, ip, phoneType, networkType, osType,SUCC);
+		
 		return resp;
 	}
 	
