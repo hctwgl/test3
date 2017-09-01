@@ -2,6 +2,7 @@
 body{
     background-color:#ee1d29;
     color:white;
+    position:relative;
 }
 //首页部分
 #money{
@@ -130,7 +131,7 @@ body{
     font-weight: 500;
     margin-bottom:1.72rem;
 }
-//规则部分
+//活动规则部分
 #rule{
     padding:0.8rem 0.5rem;
     position:relative;
@@ -169,4 +170,127 @@ body{
 }
 #rule .ruleHead .right{
     margin-left:0.5rem;
+}
+//弹窗部分
+.alertRule{
+    width:6.8rem;
+    height:8.34rem;
+    background-color:#ef1f2a;
+    position:absolute;
+    top:43%;
+    left:50%;
+    transform:translateX(-50%) translateY(-50%);
+    display:none;
+    border-radius: .2rem;
+}
+.ruleTitle{
+    text-align:center;
+    margin-top:0.5rem;
+    margin-bottom:0.3rem;
+    
+}
+.word{
+    font-size:0.4rem;
+    color:#fe8744;
+    margin:0 0.25rem;
+}
+.dian{
+    width:0.11rem;
+    height:0.11rem;
+    background-color:#fe8744;
+    border-radius:50%;
+}
+.mask{
+    width:100%;
+    height:100%;
+    background-color: rgba(0,0,0,0.5);
+    position:fixed;
+    top:0;
+    display:none; 
+}
+.close{
+  width:.5rem;
+  height:.5rem;
+  text-align: center;
+  line-height: .5rem;
+  color:black;
+  font-size:0.34rem;
+  border-radius: 50%;
+  position: absolute;
+  right: -0.4rem;
+  top: -0.3rem;
+  transform: translateX(-.28rem);
+  background-color:white;
+}
+ .alertRule .ruleCont{
+    margin:0 auto;
+    font-size:.26rem;
+    color:#4a4a4a;
+    line-height:.45rem;
+    height:6.2rem;
+    text-align: justify;
+    overflow-y: scroll;
+} 
+::-webkit-scrollbar{
+    width: 0;
+    height:0;
+}
+.winningDetail{
+    margin-top:0.7rem;
+    text-align:center;
+    color:white;
+}
+.winningDetail li{
+    margin-bottom:0.9rem;
+}
+.winningDetail .title{
+    font-size:0.3rem;
+    font-weight:500;
+    margin-bottom: 0.51rem;
+}
+.winningDetail  .left{
+    font-size:0.26rem;
+}
+.winningDetail  .right{
+    font-size:0.26rem;
+    margin-left: 1.47rem;
+}
+//顶部文字轮播部分
+.box {
+    height: .6rem;
+    width: 100%;
+    /* margin-left: 10px; */
+    /* display:inline-block;  */
+    background-color: #ffdc1d;
+    display:block;
+}
+
+#scroll_div {
+    overflow: hidden;
+    white-space: nowrap;
+    /* position: relative;  */
+}
+
+#scroll_begin,
+#scroll_end {
+    display: inline;
+    /* position:absolute;
+    right:40%; */
+}
+
+.personAmount {
+    width: 100%;
+    height: .6rem;
+    /* background:#4c4c4c; */
+     
+}
+
+.personAmount p {
+    width:100%;
+    display: inline-block;
+    font-size: .28rem;
+    line-height: .6rem;
+    color: #f42e2d;
+    font-weight:500;
+    text-align:center;
 }
