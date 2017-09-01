@@ -268,7 +268,7 @@ public class H5GGShareController extends H5Controller {
 					List<AfBoluomeActivityResultDo> isHave = afBoluomeActivityResultService
 							.getListByCommonCondition(conditionDo);
 					if (isHave != null && isHave.size() > 0) {//用户已经领取终极大奖,暗的
-						superPrizeStatus = "N";
+						superPrizeStatus = "YN";
 					}else{
 						
 						//是否已经有资格领取
@@ -277,7 +277,6 @@ public class H5GGShareController extends H5Controller {
 						// TODO:判断用户是否有活动配置的所有的卡片
 						if (itemsList != null && itemsList.size() > 0) {
 							//默认是亮的，只要有一个是没有的则为暗的
-							superPrizeStatus = "Y";
 							for (AfBoluomeActivityItemsDo uDo : itemsList) {
 								Long itemsId = uDo.getRid();
 								// 查到用户活动卡片
@@ -289,7 +288,7 @@ public class H5GGShareController extends H5Controller {
 								List<AfBoluomeActivityUserItemsDo> useritemsList = afBoluomeActivityUserItemsService
 										.getListByCommonCondition(useritemsdoo);
 								if (useritemsList == null || useritemsList.size() <= 0) {
-									superPrizeStatus = "N";
+									superPrizeStatus = "N";//没有资格领取
 									break;
 								}
 								userList.add(useritemsList.get(0));
@@ -297,7 +296,7 @@ public class H5GGShareController extends H5Controller {
 							}
 							//最终用userList 和应该得到的卡片数量对比 是否一样最最后一层拦截
 							if (userList != null && userList.size() == itemsList.size()) {
-								superPrizeStatus = "Y";
+								superPrizeStatus = "YY";//有资格领取，并且还未领取
 							}
 						}
 					}

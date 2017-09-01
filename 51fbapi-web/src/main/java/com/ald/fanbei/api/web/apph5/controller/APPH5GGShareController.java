@@ -159,7 +159,8 @@ public class APPH5GGShareController extends BaseController {
 				for (AfBoluomeActivityCouponDo bCouponDo : bList) {
 					Long resourceId = bCouponDo.getCouponId();
 					AfResourceDo couponResourceDo = afResourceService.getResourceByResourceId(resourceId);
-					logger.info("initHomePage getCouponUrl resourceId = {},couponResourceDo = {}", resourceId,couponResourceDo);
+					logger.info("initHomePage getCouponUrl resourceId = {},couponResourceDo = {}", resourceId,
+							couponResourceDo);
 					if (couponResourceDo != null) {
 						String uri = couponResourceDo.getValue();
 						String[] pieces = uri.split("/");
@@ -185,19 +186,21 @@ public class APPH5GGShareController extends BaseController {
 											String result = activityCoupons.substring(1, activityCoupons.length() - 1);
 											String replacement = "," + "\"sceneId\":" + resourceId + "}";
 											String rString = result.replaceAll("}", replacement);
-											//字符串转为json对象
-											BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(rString,
-													BoluomeCouponResponseBo.class);
+											// 字符串转为json对象
+											BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject
+													.parseObject(rString, BoluomeCouponResponseBo.class);
 											String userName = context.getUserName();
 											// 为了兼容从我也要点亮中调用主页接口
 											if (StringUtil.isBlank(userName)) {
 												userName = request.getParameter("userName");
 											}
-											List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(uri);
+											List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil
+													.getActivityCouponList(uri);
 											BrandActivityCouponResponseBo bo = activityCouponList.get(0);
 											if (userName != null) {
 												Long userId = convertUserNameToUserId(userName);
-												if (boluomeUtil.isUserHasCoupon(uri, userId, 1) || bo.getDistributed() >= bo.getTotal()) {
+												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
+														|| bo.getDistributed() >= bo.getTotal()) {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 												} else {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
@@ -245,9 +248,9 @@ public class APPH5GGShareController extends BaseController {
 			if (StringUtil.isBlank(userName)) {
 				userName = request.getParameter("userName");
 			}
-			
-			//定义终极大奖的初始状态（只有有资格领取并且未领取的状态是）
-			String superPrizeStatus = "N";//用户没登陆的时候默认是只灰色状态（已经领取过了）
+
+			// 定义终极大奖的初始状态（只有有资格领取并且未领取的状态是）
+			String superPrizeStatus = "N";// 用户没登陆的时候默认是只灰色状态（已经领取过了）
 			// String userName = request.getParameter("userName");
 			if (!StringUtil.isBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
@@ -258,25 +261,23 @@ public class APPH5GGShareController extends BaseController {
 					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(useritemsDo);
 					data.put("userItemsList", userItemsList);
-					
-				
+
 					// 判断是否已经领取红包
 					AfBoluomeActivityResultDo conditionDo = new AfBoluomeActivityResultDo();
 					conditionDo.setBoluomeActivityId(activityId);
 					conditionDo.setUserId(userId);
 					List<AfBoluomeActivityResultDo> isHave = afBoluomeActivityResultService
 							.getListByCommonCondition(conditionDo);
-					if (isHave != null && isHave.size() > 0) {//用户已经领取终极大奖,暗的
-						superPrizeStatus = "N";
-					}else{
-						
-						//是否已经有资格领取
+					if (isHave != null && isHave.size() > 0) {// 用户已经领取终极大奖,暗的
+						superPrizeStatus = "YN";
+					} else {
+
+						// 是否已经有资格领取
 						// all userItmes list to be deleted later
 						List<AfBoluomeActivityUserItemsDo> userList = new ArrayList<>();
 						// TODO:判断用户是否有活动配置的所有的卡片
 						if (itemsList != null && itemsList.size() > 0) {
-							//默认是亮的，只要有一个是没有的则为暗的
-							superPrizeStatus = "Y";
+							// 默认是亮的，只要有一个是没有的则为暗的
 							for (AfBoluomeActivityItemsDo uDo : itemsList) {
 								Long itemsId = uDo.getRid();
 								// 查到用户活动卡片
@@ -292,16 +293,15 @@ public class APPH5GGShareController extends BaseController {
 									break;
 								}
 								userList.add(useritemsList.get(0));
-							
+
 							}
-							//最终用userList 和应该得到的卡片数量对比 是否一样最最后一层拦截
+							// 最终用userList 和应该得到的卡片数量对比 是否一样最最后一层拦截
 							if (userList != null && userList.size() == itemsList.size()) {
-								superPrizeStatus = "Y";
+								superPrizeStatus = "YY";
 							}
 						}
 					}
-					
-					
+
 					// 修改itemsList内容，把num统计上去
 					itemsList = addNumber(activityId, userId);
 					// 吧用户名传给页面，进行下一步操作。
@@ -312,7 +312,7 @@ public class APPH5GGShareController extends BaseController {
 					}
 				}
 			}
-			
+
 			data.put("superPrizeStatus", superPrizeStatus);
 			data.put("bannerList", bannerList);
 			data.put("fakeFinal", fakeFinal);
@@ -326,10 +326,10 @@ public class APPH5GGShareController extends BaseController {
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("resultStr = {}", resultStr);
-			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", e,resultStr);
+			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", e, resultStr);
 		} catch (Exception exception) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
-			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", exception,resultStr);
+			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", exception, resultStr);
 		}
 
 		return resultStr;
@@ -339,11 +339,11 @@ public class APPH5GGShareController extends BaseController {
 		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
 		t.setBoluomeActivityId(activityId);
 		List<AfBoluomeActivityItemsDo> resultList = afBoluomeActivityItemsService.getListByCommonCondition(t);
-		//选出特殊的那个itemsDo
+		// 选出特殊的那个itemsDo
 		AfBoluomeActivityItemsDo specificDo = null;
-		int specificIndex = 0 ;
+		int specificIndex = 0;
 		if (resultList != null && resultList.size() > 3) {
-			for (int i = 0 ; i < resultList.size();i++) {
+			for (int i = 0; i < resultList.size(); i++) {
 				AfBoluomeActivityItemsDo itemsDo = resultList.get(i);
 				Long itemsId = itemsDo.getRid();
 				AfBoluomeActivityUserItemsDo conditionUserItems = new AfBoluomeActivityUserItemsDo();
@@ -356,7 +356,7 @@ public class APPH5GGShareController extends BaseController {
 				if (numList != null && numList.size() > 0) {
 					int num = numList.size();
 					itemsDo.setNum(num);
-					if (num > 1 && specificDo ==null ) {
+					if (num > 1 && specificDo == null) {
 						specificDo = itemsDo;
 						specificIndex = i;
 					}
@@ -368,8 +368,7 @@ public class APPH5GGShareController extends BaseController {
 				resultList.set(2, specificDo);
 				resultList.set(specificIndex, tempDo);
 			}
-			
-			
+
 		}
 		return resultList;
 	}
@@ -425,13 +424,14 @@ public class APPH5GGShareController extends BaseController {
 			if (addFakeFinal != null) {
 				fakeFinal += addFakeFinal;
 			}
-			/*AfBoluomeActivityResultDo t = new AfBoluomeActivityResultDo();
-			t.setBoluomeActivityId(activityId);
-			List<AfBoluomeActivityResultDo> listResult = afBoluomeActivityResultService.getListByCommonCondition(t);
-			if (listResult != null && listResult.size() > 0) {
-				fakeFinal += listResult.size();
-			}
-*/
+			/*
+			 * AfBoluomeActivityResultDo t = new AfBoluomeActivityResultDo();
+			 * t.setBoluomeActivityId(activityId);
+			 * List<AfBoluomeActivityResultDo> listResult =
+			 * afBoluomeActivityResultService.getListByCommonCondition(t); if
+			 * (listResult != null && listResult.size() > 0) { fakeFinal +=
+			 * listResult.size(); }
+			 */
 			// TOOD:resource +表中获取参与人数（user_items）
 			String fakeJoinStr = fakeResourceDo.getValue1();
 			Integer fakeJoin = new Integer(fakeJoinStr);
@@ -439,18 +439,22 @@ public class APPH5GGShareController extends BaseController {
 			if (addFakeJoin != null) {
 				fakeJoin += addFakeJoin;
 			}
-			/*AfBoluomeActivityUserItemsDo itemsDo = new AfBoluomeActivityUserItemsDo();
-			itemsDo.setBoluomeActivityId(activityId);
-			itemsDo.setStatus("NORMAL");
-			List<AfBoluomeActivityUserItemsDo> listItems = afBoluomeActivityUserItemsService.getListByCommonCondition(itemsDo);
-			if (listItems != null && listItems.size() > 0) {
-				fakeJoin += listItems.size();
-			}*/
+			/*
+			 * AfBoluomeActivityUserItemsDo itemsDo = new
+			 * AfBoluomeActivityUserItemsDo();
+			 * itemsDo.setBoluomeActivityId(activityId);
+			 * itemsDo.setStatus("NORMAL"); List<AfBoluomeActivityUserItemsDo>
+			 * listItems =
+			 * afBoluomeActivityUserItemsService.getListByCommonCondition(
+			 * itemsDo); if (listItems != null && listItems.size() > 0) {
+			 * fakeJoin += listItems.size(); }
+			 */
 			resultMap.put("fakeFinal", fakeFinal);
 			resultMap.put("fakeJoin", fakeJoin);
 		}
 		return resultMap;
 	}
+
 	/**
 	 * 
 	 * @说明：赠送卡片(页面初始化) @param: @param request
@@ -557,7 +561,7 @@ public class APPH5GGShareController extends BaseController {
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("doSendItems" + context, e);
-			 doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		} catch (Exception e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage()).toString();
 			logger.error("doSendItems" + context, e);
@@ -889,11 +893,11 @@ public class APPH5GGShareController extends BaseController {
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("sendToFriend" + context, e);
-			 doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		} catch (Exception e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage()).toString();
 			logger.error("sendToFriend" + context, e);
-			 doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		}
 
 		// doMaidianLog(request, resultStr);
@@ -916,7 +920,7 @@ public class APPH5GGShareController extends BaseController {
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
 			String userName = request.getParameter("friendName");
 
-			logger.info("method = /H5GGShare/ggAskForItems"+"itemsId=" +itemsId+"friendName"+userName);
+			logger.info("method = /H5GGShare/ggAskForItems" + "itemsId=" + itemsId + "friendName" + userName);
 			Long userId = convertUserNameToUserId(userName);// 绱㈣浜虹殑鐢ㄦ埛id
 			AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
 			if (itemsDo != null) {
@@ -1001,12 +1005,14 @@ public class APPH5GGShareController extends BaseController {
 				}
 
 				Map<String, Object> data = new HashMap<>();
-			/*	Map<String, Integer> fakeMap = getFakePerson(activityId);
-				Integer fakeFinal = fakeMap.get("fakeFinal");*/
+				/*
+				 * Map<String, Integer> fakeMap = getFakePerson(activityId);
+				 * Integer fakeFinal = fakeMap.get("fakeFinal");
+				 */
 				int rebateNumber = rankList.size();
-				/*if (fakeFinal != null) {
-					rebateNumber += fakeFinal;
-				}*/
+				/*
+				 * if (fakeFinal != null) { rebateNumber += fakeFinal; }
+				 */
 				data.put("rebateNumber", rebateNumber);
 				data.put("rankList", rankList);
 				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data).toString();
@@ -1099,10 +1105,10 @@ public class APPH5GGShareController extends BaseController {
 				}
 				// to delete
 				if (deleteList != null && deleteList.size() > 0) {
-					for(AfBoluomeActivityUserItemsDo delete : deleteList){
+					for (AfBoluomeActivityUserItemsDo delete : deleteList) {
 						afBoluomeActivityUserItemsService.deleteByRid(delete.getRid());
 					}
-					
+
 					if (resultCoupon != null) {
 						// 把终极大奖给插入用户result表中
 						AfBoluomeActivityResultDo conditionResultDo = new AfBoluomeActivityResultDo();
@@ -1113,11 +1119,11 @@ public class APPH5GGShareController extends BaseController {
 
 						afBoluomeActivityResultService.saveRecord(conditionResultDo);
 
-						//bug:吧现金大奖转为用户余额。
+						// bug:吧现金大奖转为用户余额。
 						AfUserAccountDo accountDo = new AfUserAccountDo();
 						BigDecimal rebateAmount = null;
-						//查到n券对应的金额
-						AfCouponDo userCouponDo = afCouponService.getCouponById(resultCoupon.getCouponId());//afUserCouponService.getUserCouponById(resultCoupon.getCouponId());
+						// 查到n券对应的金额
+						AfCouponDo userCouponDo = afCouponService.getCouponById(resultCoupon.getCouponId());// afUserCouponService.getUserCouponById(resultCoupon.getCouponId());
 						if (userCouponDo != null) {
 							rebateAmount = userCouponDo.getAmount();
 							accountDo.setRebateAmount(rebateAmount);
